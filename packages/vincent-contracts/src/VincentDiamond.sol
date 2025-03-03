@@ -6,10 +6,10 @@ pragma solidity ^0.8.0;
  * @author Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
  * @dev EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
  */
-import {LibDiamond} from "./libraries/LibDiamond.sol";
-import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
+import {LibDiamond} from "./diamond-base/libraries/LibDiamond.sol";
+import {IDiamondCut} from "./diamond-base/interfaces/IDiamondCut.sol";
 
-contract Diamond {
+contract VincentDiamond {
     constructor(address _contractOwner, address _diamondCutFacet) payable {
         LibDiamond.setContractOwner(_contractOwner);
 
@@ -52,5 +52,7 @@ contract Diamond {
         }
     }
 
-    receive() external payable {}
+    receive() external payable {
+        revert("Diamond: Does not accept direct ETH transfers");
+    }
 }
