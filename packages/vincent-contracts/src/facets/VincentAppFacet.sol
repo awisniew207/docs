@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "../VincentDiamondStorage.sol";
+import "../LibVincentDiamondStorage.sol";
+import "../VincentBase.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-contract VincentAppFacet {
+contract VincentAppFacet is VincentBase {
     using VincentAppStorage for VincentAppStorage.AppStorage;
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
@@ -12,21 +13,6 @@ contract VincentAppFacet {
     event NewManagerRegistered(address indexed manager);
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
     event AppEnabled(uint256 indexed appId, bool indexed enabled);
-
-    error NotAppManager(uint256 appId, address caller);
-    error AppNotRegistered(uint256 appId);
-
-    modifier onlyAppManager(uint256 appId) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (as_.appIdToApp[appId].manager != msg.sender) revert NotAppManager(appId, msg.sender);
-        _;
-    }
-
-    modifier onlyRegisteredApp(uint256 appId) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (!as_.registeredApps.contains(appId)) revert AppNotRegistered(appId);
-        _;
-    }
 
     function registerApp() external returns (uint256 newAppId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();

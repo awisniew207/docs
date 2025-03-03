@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "./IPKPNftFacet.sol";
 
 library VincentAppStorage {
     using EnumerableSet for EnumerableSet.UintSet;
@@ -84,4 +85,22 @@ library VincentToolStorage {
 
 library VincentUserStorage {
     bytes32 internal constant USER_STORAGE_SLOT = keccak256("lit.vincent.user.storage");
+
+    struct User {
+        mapping(uint256 => EnumerableSet.UintSet) appIdToPermittedRoleIds;
+        mapping(uint256 => EnumerableSet.UintSet) roleIdToPermittedRoleVersions;
+    }
+
+    struct UserStorage {
+        IPKPNFTFacet PKP_NFT_FACET;
+        EnumerableSet.UintSet registeredUsers;
+        mapping(uint256 => User) pkpTokenIdToUser;
+    }
+
+    function userStorage() internal pure returns (UserStorage storage us) {
+        bytes32 slot = USER_STORAGE_SLOT;
+        assembly {
+            us.slot := slot
+        }
+    }
 }

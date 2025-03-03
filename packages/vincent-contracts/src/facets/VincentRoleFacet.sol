@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "../VincentDiamondStorage.sol";
+import "../LibVincentDiamondStorage.sol";
+import "../VincentBase.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-contract VincentRoleFacet {
-    using VincentRoleStorage for VincentRoleStorage.RoleStorage;
+interface IVincentToolFacet {
+    function registerTool(string calldata toolIpfsCid) external;
+}
+
+contract VincentRoleFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
@@ -20,22 +24,6 @@ contract VincentRoleFacet {
     event ToolsRemovedFromRole(
         uint256 indexed appId, uint256 indexed roleId, uint256 indexed newRoleVersion, uint256 numberOfToolsRemoved
     );
-
-    error NotAppManager(uint256 appId, address caller);
-    error AppNotRegistered(uint256 appId);
-    error RoleNotRegistered(uint256 appId, uint256 roleId);
-
-    modifier onlyAppManager(uint256 appId) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (as_.appIdToApp[appId].manager != msg.sender) revert NotAppManager(appId, msg.sender);
-        _;
-    }
-
-    modifier onlyRegisteredApp(uint256 appId) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (!as_.registeredApps.contains(appId)) revert AppNotRegistered(appId);
-        _;
-    }
 
     modifier onlyRegisteredRole(uint256 appId, uint256 roleId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -67,7 +55,7 @@ contract VincentRoleFacet {
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
         app.roles.add(roleId);
 
-        _addToolsToRole(role, appId, roleId, toolIpfsCids);
+        _addToolsToRole(role, toolIpfsCids);
 
         emit NewRoleRegistered(appId, roleId);
     }
@@ -112,7 +100,7 @@ contract VincentRoleFacet {
         VincentRoleStorage.RoleStorage storage rs_ = VincentRoleStorage.roleStorage();
         VincentRoleStorage.Role storage role = rs_.roleIdToRole[roleId];
 
-        uint256 numberOfToolsAdded = _addToolsToRole(role, appId, roleId, toolIpfsCids);
+        uint256 numberOfToolsAdded = _addToolsToRole(role, toolIpfsCids);
 
         if (numberOfToolsAdded > 0) {
             role.version++;
@@ -151,14 +139,10 @@ contract VincentRoleFacet {
         }
     }
 
-    function _addToolsToRole(
-        VincentRoleStorage.Role storage role,
-        uint256 appId,
-        uint256 roleId,
-        string[] calldata toolIpfsCids
-    ) internal returns (uint256 numberOfToolsAdded) {
-        VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-
+    function _addToolsToRole(VincentRoleStorage.Role storage role, string[] calldata toolIpfsCids)
+        internal
+        returns (uint256 numberOfToolsAdded)
+    {
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
             bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCids[i]));
 
@@ -166,12 +150,7 @@ contract VincentRoleFacet {
                 role.toolIpfsCidHashes.add(hashedIpfsCid);
                 numberOfToolsAdded++;
 
-                if (!ts_.registeredTools.contains(hashedIpfsCid)) {
-                    ts_.registeredTools.add(hashedIpfsCid);
-                    ts_.toolIpfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCids[i];
-
-                    emit NewToolRegistered(appId, roleId, hashedIpfsCid);
-                }
+                IVincentToolFacet(address(this)).registerTool(toolIpfsCids[i]);
             }
         }
     }
