@@ -41,6 +41,10 @@ contract VincentUserFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         us_.pkpTokenIdToPermittedAppIds[pkpTokenId].add(appId);
 
+        if (!us_.registeredUsers.contains(pkpTokenId)) {
+            us_.registeredUsers.add(pkpTokenId);
+        }
+
         // Save some gas by not calling the setToolPolicyParameters function if there are no tool policy parameters to set
         if (toolIpfsCids.length > 0) {
             _setToolPolicyParameters(appId, pkpTokenId, toolIpfsCids, policyParameterNames, policyParameterValues);
