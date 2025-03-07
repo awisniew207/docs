@@ -38,6 +38,10 @@ contract VincentUserFacet is VincentBase {
         // Check if the App Manager has disabled the App
         if (!as_.appIdToApp[appId].enabled) revert AppNotEnabled(appId);
 
+        // Add the PKP Token ID to the App's Delegated User PKPs
+        as_.appIdToApp[appId].delegatedUserPkps.add(pkpTokenId);
+
+        // Add the App ID to the User's Permitted Apps
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         us_.pkpTokenIdToPermittedAppIds[pkpTokenId].add(appId);
 
@@ -52,11 +56,16 @@ contract VincentUserFacet is VincentBase {
     }
 
     function unPermitApp(uint256 appId, uint256 pkpTokenId) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) {
+        // Remove the PKP Token ID from the App's Delegated User PKPs
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        as_.appIdToApp[appId].delegatedUserPkps.remove(pkpTokenId);
+
+        // Remove the App ID from the User's Permitted Apps
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         us_.pkpTokenIdToPermittedAppIds[pkpTokenId].remove(appId);
 
-        VincentUserToolPolicyStorage.UserToolPolicyStorage storage utps_ = VincentUserToolPolicyStorage.userToolPolicyStorage();
         // Delete all the tool policy parameters for the App
+        VincentUserToolPolicyStorage.UserToolPolicyStorage storage utps_ = VincentUserToolPolicyStorage.userToolPolicyStorage();
         delete utps_.pkpTokenIdToUser[pkpTokenId].appIdToAppStorage[appId];
     }
 

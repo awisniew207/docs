@@ -16,6 +16,7 @@ library VincentAppStorage {
         EnumerableSet.AddressSet delegatees;
         EnumerableSet.Bytes32Set authorizedDomains;
         EnumerableSet.Bytes32Set authorizedRedirectUris;
+        EnumerableSet.UintSet delegatedUserPkps;
         address manager;
         bool enabled;
         string name;
