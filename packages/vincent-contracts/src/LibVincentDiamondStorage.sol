@@ -60,45 +60,33 @@ library VincentToolStorage {
     }
 }
 
-/**
- * @dev Unfortunately, Solidity doesn't support deleting nested mappings, so instead of doing something like this:
- * 
- * User PKP Token ID -> App ID -> Tool IPFS CID Hash -> Policy Parameter Name Hash -> Policy Parameter Value
- * mapping(uint256 => mapping(uint256 => mapping(bytes32 => mapping(bytes32 => string)))) policyValues;
- * 
- * We have to map to individual structs so that we can delete all of AppStorage when a User un-permits an App
- * 
- */
-library VincentUserToolPolicyStorage {
-    bytes32 internal constant USER_TOOL_POLICY_STORAGE_SLOT = keccak256("lit.vincent.user.tool.policy.storage");
+library VincentAppToolPolicyStorage {
+    bytes32 internal constant APP_TOOL_POLICY_STORAGE_SLOT = keccak256("lit.vincent.app.tool.policy.storage");
 
-    struct ToolStorage {
+    struct ToolPolicy {
         EnumerableSet.Bytes32Set policyParameterNameHashes;
-        // Policy Parameter Name Hash -> Policy Parameter Value
-        mapping(bytes32 => string) policyParameterNameHashToValue;
+        bytes32 policyIpfsCidHash;
     }
 
-    struct AppStorage {
-        // Tool IPFS CID Hash -> Tool Storage
-        mapping(bytes32 => ToolStorage) toolIpfsCidHashToToolStorage;
+    struct AppToolPolicies {
+        EnumerableSet.Bytes32Set toolPolicyIpfsCidHashes;
+        // Tool IPFS CID Hash => Tool Policy
+        mapping(bytes32 => ToolPolicy) toolIpfsCidHashToToolPolicy;
     }
 
-    struct User {
-        // App ID -> App Storage
-        mapping(uint256 => AppStorage) appIdToAppStorage;
-    }
-
-    struct UserToolPolicyStorage {
-        // Policy Parameter Name Hash -> Policy Parameter Name
+    struct AppToolPolicyStorage {
+        // App ID => App Version => AppToolPolicies
+        mapping(uint256 => mapping(uint256 => AppToolPolicies)) appIdToToolPolicies;
+        // Policy IPFS CID Hash => Policy IPFS CID
+        mapping(bytes32 => string) policyIpfsCidHashToIpfsCid;
+        // Policy Parameter Name Hash => Policy Parameter Name
         mapping(bytes32 => string) policyParameterNameHashToName;
-        // User PKP Token ID -> User
-        mapping(uint256 => User) pkpTokenIdToUser;
     }
 
-    function userToolPolicyStorage() internal pure returns (UserToolPolicyStorage storage utps) {
-        bytes32 slot = USER_TOOL_POLICY_STORAGE_SLOT;
+    function appToolPolicyStorage() internal pure returns (AppToolPolicyStorage storage atps) {
+        bytes32 slot = APP_TOOL_POLICY_STORAGE_SLOT;
         assembly {
-            utps.slot := slot
+            atps.slot := slot
         }
     }
 }
@@ -106,9 +94,20 @@ library VincentUserToolPolicyStorage {
 library VincentUserStorage {
     bytes32 internal constant USER_STORAGE_SLOT = keccak256("lit.vincent.user.storage");
 
+    struct PolicyParametersStorage {
+        // Not every Policy parameter is required, so we keep track
+        // of the ones the User has set
+        EnumerableSet.Bytes32Set policyParameterNameHashes;
+        // Policy Parameter Name Hash -> Policy Parameter Value
+        mapping(bytes32 => string) policyParameterNameHashToValue;
+    }
+
     struct UserStorage {
         EnumerableSet.UintSet registeredUsers;
         mapping(uint256 => EnumerableSet.UintSet) pkpTokenIdToPermittedAppIds;
+        // User PKP Token ID -> App ID -> Tool IPFS CID Hash -> Policy Parameters Storage
+        mapping(uint256 => mapping(uint256 => mapping(bytes32 => PolicyParametersStorage)))
+            userPkpTokenIdToPolicyParametersStorage;
         IPKPNFTFacet PKP_NFT_FACET;
     }
 
