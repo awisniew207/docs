@@ -11,14 +11,20 @@ library VincentAppStorage {
 
     bytes32 internal constant APP_STORAGE_SLOT = keccak256("lit.vincent.app.storage");
 
-    struct App {
+    struct VersionedApp {
         EnumerableSet.Bytes32Set toolIpfsCidHashes;
+        EnumerableSet.UintSet delegatedUserPkps;
+        uint256 version;
+        bool enabled;
+    }
+
+    struct App {
         EnumerableSet.AddressSet delegatees;
         EnumerableSet.Bytes32Set authorizedDomains;
         EnumerableSet.Bytes32Set authorizedRedirectUris;
-        EnumerableSet.UintSet delegatedUserPkps;
+        EnumerableSet.UintSet appVersions;
+        mapping(uint256 => VersionedApp) appVersionToVersionedApp;
         address manager;
-        bool enabled;
         string name;
         string description;
     }
@@ -63,20 +69,15 @@ library VincentToolStorage {
 library VincentAppToolPolicyStorage {
     bytes32 internal constant APP_TOOL_POLICY_STORAGE_SLOT = keccak256("lit.vincent.app.tool.policy.storage");
 
-    struct ToolPolicy {
-        EnumerableSet.Bytes32Set policyParameterNameHashes;
-        bytes32 policyIpfsCidHash;
-    }
-
-    struct AppToolPolicies {
-        EnumerableSet.Bytes32Set toolPolicyIpfsCidHashes;
-        // Tool IPFS CID Hash => Tool Policy
-        mapping(bytes32 => ToolPolicy) toolIpfsCidHashToToolPolicy;
+    struct VersionedToolPolicies {
+        EnumerableSet.Bytes32Set policyIpfsCidHashes;
+        // Policy IPFS CID Hash => Policy Parameter Name Hashes
+        mapping(bytes32 => EnumerableSet.Bytes32Set) policyIpfsCidHashToParameterNameHashes;
     }
 
     struct AppToolPolicyStorage {
-        // App ID => App Version => AppToolPolicies
-        mapping(uint256 => mapping(uint256 => AppToolPolicies)) appIdToToolPolicies;
+        // App ID => App Version => Tool IPFS CID Hash => Tool Policies
+        mapping(uint256 => mapping(uint256 => mapping(bytes32 => VersionedToolPolicies))) appIdToVersionedToolPolicies;
         // Policy IPFS CID Hash => Policy IPFS CID
         mapping(bytes32 => string) policyIpfsCidHashToIpfsCid;
         // Policy Parameter Name Hash => Policy Parameter Name
@@ -94,8 +95,8 @@ library VincentAppToolPolicyStorage {
 library VincentUserStorage {
     bytes32 internal constant USER_STORAGE_SLOT = keccak256("lit.vincent.user.storage");
 
-    struct PolicyParametersStorage {
-        // Not every Policy parameter is required, so we keep track
+    struct ToolPolicyStorage {
+        // Not every Policy parameter may be required, so we keep track
         // of the ones the User has set
         EnumerableSet.Bytes32Set policyParameterNameHashes;
         // Policy Parameter Name Hash -> Policy Parameter Value
@@ -104,10 +105,11 @@ library VincentUserStorage {
 
     struct UserStorage {
         EnumerableSet.UintSet registeredUsers;
-        mapping(uint256 => EnumerableSet.UintSet) pkpTokenIdToPermittedAppIds;
-        // User PKP Token ID -> App ID -> Tool IPFS CID Hash -> Policy Parameters Storage
-        mapping(uint256 => mapping(uint256 => mapping(bytes32 => PolicyParametersStorage)))
-            userPkpTokenIdToPolicyParametersStorage;
+        // User PKP Token ID -> App ID -> Permitted App Versions
+        mapping(uint256 => mapping(uint256 => EnumerableSet.UintSet)) pkpTokenIdToPermittedAppVersions;
+        // User PKP Token ID -> App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
+        mapping(uint256 => mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))))
+            userPkpTokenIdToToolPolicyStorage;
         IPKPNFTFacet PKP_NFT_FACET;
     }
 
