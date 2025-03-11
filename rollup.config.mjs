@@ -8,7 +8,6 @@ const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
 
 export default [
-  // Browser-friendly UMD build
   {
     input: 'src/index.ts',
     output: {
@@ -24,7 +23,6 @@ export default [
       typescript({ tsconfig: './tsconfig.json' })
     ]
   },
-  // CommonJS and ES module builds
   {
     input: 'src/index.ts',
     output: [

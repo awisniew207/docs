@@ -9,20 +9,15 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "browser": "./dist/vincent-sdk.umd.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "node": {
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
-      },
-      "browser": {
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
-      },
-      "default": "./dist/index.mjs"
-    }
-  },
+  "private": true,
+"exports": {
+  ".": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.mjs"
+  }
+},
   "files": [
     "dist"
   ],
@@ -59,5 +54,10 @@
   },
   "dependencies": {
     "@lit-protocol/lit-node-client": "^7.0.8"
-  }
+  },
+  "workspaces": [
+    ".",
+    "examples/nextjs",
+    "examples/nodejs"
+  ]
 }
