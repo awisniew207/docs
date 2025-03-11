@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json'; // Add this import
+import json from '@rollup/plugin-json';
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
@@ -13,14 +13,14 @@ export default [
     input: 'src/index.ts',
     output: {
       name: 'vincentSDK',
-      file: pkg.browser,
+      file: 'dist/vincent-sdk.umd.js',
       format: 'umd',
       sourcemap: true
     },
     plugins: [
       resolve(),
       commonjs(),
-      json(), // Add this plugin
+      json(),
       typescript({ tsconfig: './tsconfig.json' })
     ]
   },
@@ -33,7 +33,7 @@ export default [
     ],
     plugins: [
       typescript({ tsconfig: './tsconfig.json' }),
-      json() // Add this plugin
+      json()
     ],
     external: [...Object.keys(pkg.dependencies || {})]
   }

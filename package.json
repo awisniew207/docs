@@ -1,14 +1,28 @@
 {
   "name": "@test/vincent-sdk",
   "version": "0.0.1",
-  "description": "JWT verification SDK for browser and backend",
+  "description": "Vincent SDK for browser and backend",
   "author": "Lit Protocol",
   "license": "ISC",
   "type": "commonjs",
-  "main": "dist/vincent-sdk.cjs.js",
-  "module": "dist/vincent-sdk.esm.js",
-  "browser": "dist/vincent-sdk.umd.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/vincent-sdk.umd.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "node": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
+      },
+      "browser": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
+      },
+      "default": "./dist/index.mjs"
+    }
+  },
   "files": [
     "dist"
   ],
