@@ -1,6 +1,6 @@
 {
-  "name": "@test/vincent-sdk",
-  "version": "0.1.0-3",
+  "name": "@lit-protocol/vincent-sdk",
+  "version": "0.1.0-4",
   "description": "Vincent SDK for browser and backend",
   "author": "Lit Protocol",
   "license": "ISC",
