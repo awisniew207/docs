@@ -9,15 +9,14 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "browser": "./dist/vincent-sdk.umd.js",
-  "private": true,
-"exports": {
-  ".": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.mjs",
-    "require": "./dist/index.cjs",
-    "default": "./dist/index.mjs"
-  }
-},
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    }
+  },
   "files": [
     "dist"
   ],
@@ -49,15 +48,12 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "rollup": "^4.35.0",
+    "rollup-plugin-visualizer": "^5.14.0",
     "ts-jest": "^29.2.6",
     "typescript": "^5.8.2"
   },
   "dependencies": {
     "@lit-protocol/lit-node-client": "^7.0.8"
   },
-  "workspaces": [
-    ".",
-    "examples/nextjs",
-    "examples/nodejs"
-  ]
+  "sideEffects": false
 }
