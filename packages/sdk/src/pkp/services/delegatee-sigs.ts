@@ -25,7 +25,6 @@ export class DelegateeSigs {
   }
 
   async generateSessionSigs(signer: ethers.Signer) {
-    console.log('clicked');
 
     await this.litNodeClient.connect();
 
@@ -58,12 +57,10 @@ export class DelegateeSigs {
       },
     });
 
-    console.log('sessionSigs: ', sessionSigs);
     return sessionSigs;
   }
 
   async invokeLitAction(signer: ethers.Signer, litActionCID: string, params: any) {
-    console.log('invokeLitAction');
 
     await this.litNodeClient.connect();
 
