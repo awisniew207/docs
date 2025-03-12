@@ -62,7 +62,6 @@ contract VincentUserFacet is VincentBase {
         }
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
         // App versions start at 1, but the appVersions array is 0-indexed
         VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
 
@@ -76,9 +75,8 @@ contract VincentUserFacet is VincentBase {
         us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].add(appVersion);
 
         // Add the PKP Token ID to the global registered agent PKPs if it is not already registered
-        if (!us_.registeredAgentPkps.contains(pkpTokenId)) {
-            us_.registeredAgentPkps.add(pkpTokenId);
-        }
+        // .add will not add the PKP Token ID again if it is already registered
+        us_.registeredAgentPkps.add(pkpTokenId);
 
         // Save some gas by not calling the setToolPolicyParameters function if there are no tool policy parameters to set
         if (toolIpfsCids.length > 0) {
@@ -88,7 +86,7 @@ contract VincentUserFacet is VincentBase {
         }
     }
 
-    function unPermitApp(uint256 pkpTokenId, uint256 appId, uint256 appVersion)
+    function unPermitAppVersion(uint256 pkpTokenId, uint256 appId, uint256 appVersion)
         external
         onlyPkpOwner(pkpTokenId)
         onlyRegisteredApp(appId)
@@ -123,6 +121,20 @@ contract VincentUserFacet is VincentBase {
         );
     }
 
+    /**
+     * @dev Removes policy parameters associated with tools for a given app version.
+     * This function verifies that the tools and policies exist before removing their parameters
+     * from user storage.
+     *
+     * @notice This function is used to remove policy parameters from a tool associated with an app version.
+     *
+     * @param appId The ID of the app from which policy parameters are being removed.
+     * @param pkpTokenId The PKP token ID for the Agent's PKP (Programmable Key Pair).
+     * @param appVersion The version of the app where the policies were applied.
+     * @param toolIpfsCids An array of IPFS CIDs representing the tools from which policies should be removed.
+     * @param policyIpfsCids A 2D array mapping each tool to a list of policy IPFS CIDs to be removed.
+     * @param policyParameterNames A 3D array mapping each policy to a list of associated parameter names to be removed.
+     */
     function removeToolPolicyParameters(
         uint256 appId,
         uint256 pkpTokenId,
@@ -131,60 +143,64 @@ contract VincentUserFacet is VincentBase {
         string[][] calldata policyIpfsCids,
         string[][][] calldata policyParameterNames
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
-        // Validate array lengths
+        // Step 1: Validate input array lengths to ensure they are consistent.
         uint256 toolCount = toolIpfsCids.length;
         if (toolCount != policyIpfsCids.length || toolCount != policyParameterNames.length) {
             revert ToolsAndPoliciesLengthMismatch();
         }
 
+        // Step 2: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
             VincentAppToolPolicyStorage.appToolPolicyStorage();
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
-        // Iterate through tools
+        // Step 3: Iterate over each tool to process its policies and remove parameters.
         for (uint256 i = 0; i < toolCount;) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Validate tool registration for the app version
+            // Step 3.1: Validate that the tool exists for the specified app version.
             VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
                 revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
             }
 
-            // Get the versioned tool policies to check if policies exist
+            // Step 3.2: Fetch the tool policies to check if policies exist.
             VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
                 atps_.appIdToVersionedToolPolicies[appId][appVersion][hashedToolIpfsCid];
 
-            // Access the tool policy storage directly
+            // Step 3.3: Access the tool policy storage for the PKP owner.
             VincentUserStorage.ToolPolicyStorage storage toolStorage =
                 us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][appVersion][hashedToolIpfsCid];
 
+            // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount;) {
                 string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
                 bytes32 hashedPolicyId = keccak256(abi.encodePacked(policyIpfsCid));
 
-                // Verify the policy exists before trying to remove its parameters
+                // Step 4.1: Verify that the policy exists before attempting removal.
                 if (!versionedToolPolicies.policyIpfsCidHashes.contains(hashedPolicyId)) {
                     revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedPolicyId);
                 }
 
-                // Get the policy parameters storage for this policy
+                // Step 4.2: Access the policy parameters storage.
                 VincentUserStorage.PolicyParametersStorage storage policyParams =
                     toolStorage.policyIpfsCidHashToPolicyParametersStorage[hashedPolicyId];
 
+                // Step 5: Iterate through parameters and remove them.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount;) {
                     string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
+                    // Step 5.1: Only remove the parameter if it exists.
                     if (policyParams.policyParameterNameHashes.contains(hashedPolicyParameterName)) {
-                        // Remove the parameter
                         policyParams.policyParameterNameHashes.remove(hashedPolicyParameterName);
                         delete policyParams.policyParameterNameHashToValue[hashedPolicyParameterName];
 
+                        // Step 5.2: Emit an event to record the removal of the policy parameter.
                         emit ToolPolicyParameterRemoved(
                             pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
                         );
@@ -203,6 +219,21 @@ contract VincentUserFacet is VincentBase {
         }
     }
 
+    /**
+     * @dev Associates policy parameters with tools for a given app version.
+     * This function ensures that the provided tools, policies, and parameters are valid,
+     * then stores their corresponding values in user storage.
+     *
+     * @notice This function is called internally to set policy parameters for a user's tool.
+     *
+     * @param appId The ID of the app for which policies are being set.
+     * @param pkpTokenId The PKP token ID for the Agent's PKP (Programmable Key Pair).
+     * @param appVersion The version of the app where the Tools and Policies are registered.
+     * @param toolIpfsCids Array of IPFS CIDs representing the tools being configured.
+     * @param policyIpfsCids 2D array where each tool maps to a list of policies stored on IPFS.
+     * @param policyParameterNames 3D array where each policy maps to a list of parameter names.
+     * @param policyParameterValues 3D array of parameter values matching each parameter name for a policy.
+     */
     function _setToolPolicyParameters(
         uint256 appId,
         uint256 pkpTokenId,
@@ -212,7 +243,7 @@ contract VincentUserFacet is VincentBase {
         string[][][] calldata policyParameterNames,
         string[][][] calldata policyParameterValues
     ) internal {
-        // Validate array lengths
+        // Step 1: Validate input array lengths to prevent mismatches.
         uint256 toolCount = toolIpfsCids.length;
         if (
             toolCount != policyIpfsCids.length || toolCount != policyParameterNames.length
@@ -221,45 +252,52 @@ contract VincentUserFacet is VincentBase {
             revert ToolsAndPoliciesLengthMismatch();
         }
 
+        // Step 2: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
             VincentAppToolPolicyStorage.appToolPolicyStorage();
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
-        // Loop over each Tool so we can add the Policy parameter for each Policy
+        // Step 3: Loop over each tool to process its associated policies and parameters.
         for (uint256 i = 0; i < toolCount;) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Validate tool registration for the app version
+            // Step 3.1: Validate that the tool exists in the specified app version.
             VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
                 revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
             }
 
+            // Step 3.2: Access storage locations for tool policies.
             VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
                 atps_.appIdToVersionedToolPolicies[appId][appVersion][hashedToolIpfsCid];
 
             VincentUserStorage.ToolPolicyStorage storage userToolPolicyStorage =
                 us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][appVersion][hashedToolIpfsCid];
 
+            // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount;) {
                 string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
+                // Step 4.1: Validate that the policy is registered for the tool.
                 if (!versionedToolPolicies.policyIpfsCidHashes.contains(hashedToolPolicy)) {
                     revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedToolPolicy);
                 }
 
+                // Step 4.2: Access storage for policy parameters.
                 VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =
                     userToolPolicyStorage.policyIpfsCidHashToPolicyParametersStorage[hashedToolPolicy];
 
+                // Step 5: Iterate through each parameter associated with the policy.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount;) {
                     string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
+                    // Step 5.1: Ensure that the parameter is valid for the specified policy.
                     if (
                         !versionedToolPolicies.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy].contains(
                             hashedPolicyParameterName
@@ -270,13 +308,14 @@ contract VincentUserFacet is VincentBase {
                         );
                     }
 
-                    // If parameter name is already set, .add will not add it again or revert.
+                    // Step 5.2: Store the parameter name if not already added.
                     policyParametersStorage.policyParameterNameHashes.add(hashedPolicyParameterName);
 
-                    // Store parameter value
+                    // Step 5.3: Set the parameter value.
                     policyParametersStorage.policyParameterNameHashToValue[hashedPolicyParameterName] =
                         policyParameterValues[i][j][k];
 
+                    // Step 5.4: Emit an event for tracking.
                     emit ToolPolicyParameterSet(
                         pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
                     );

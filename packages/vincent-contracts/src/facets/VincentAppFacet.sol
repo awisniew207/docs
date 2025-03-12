@@ -225,66 +225,91 @@ contract VincentAppFacet is VincentBase {
         }
     }
 
+    /**
+     * @dev Registers a new version of an app, associating tools and policies with it.
+     * This function ensures that all provided tools, policies, and parameters are correctly stored
+     * and linked to the new app version.
+     *
+     * @notice This function is used internally to register a new app version and its associated tools and policies.
+     *
+     * @param appId The ID of the app for which a new version is being registered.
+     * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
+     * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
+     * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
+     * @return newAppVersion The newly created version number for the app.
+     */
     function _registerNextAppVersion(
         uint256 appId,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
         string[][][] calldata toolPolicyParameterNames
     ) internal returns (uint256 newAppVersion) {
+        // Step 1: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
         if (toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length) {
             revert ToolsAndPoliciesLengthMismatch();
         }
 
+        // Step 2: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
 
-        // Add the app version to the app
+        // Step 3: Create a new app version.
         app.versionedApps.push();
         newAppVersion = app.versionedApps.length;
 
-        // App versions start at 1, but the appVersions array is 0-indexed
+        // App versions start at 1, but the `versionedApps` array is 0-indexed.
         VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[newAppVersion - 1];
         versionedApp.version = newAppVersion;
         versionedApp.enabled = true;
 
+        // Step 4: Fetch tool policy storage.
         VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
             VincentAppToolPolicyStorage.appToolPolicyStorage();
 
-        // Register the tools for the app version
+        // Step 5: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount;) {
-            string memory toolIpfsCid = toolIpfsCids[i]; // Load into memory
+            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
+            // Step 5.1: Register the tool IPFS CID globally if it hasn't been added already.
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolCid)) {
                 versionedApp.toolIpfsCidHashes.add(hashedToolCid);
                 IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
             }
 
+            // Step 5.2: Fetch the policy storage for this tool.
             VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
                 atps_.appIdToVersionedToolPolicies[appId][newAppVersion][hashedToolCid];
 
+            // Step 6: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
             for (uint256 j = 0; j < policyCount;) {
-                string memory policyIpfsCid = toolPolicies[i][j]; // Load into memory
+                string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
+                // Step 6.1: Register the policy hash.
                 versionedToolPolicies.policyIpfsCidHashes.add(hashedToolPolicy);
 
+                // Step 6.2: Store the policy IPFS CID globally if it's not already stored.
                 if (bytes(atps_.policyIpfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
                     atps_.policyIpfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
+                // Step 7: Fetch parameter storage for this policy.
                 EnumerableSet.Bytes32Set storage policyParameterNameHashes =
                     versionedToolPolicies.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy];
 
+                // Step 8: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount;) {
-                    string memory paramName = toolPolicyParameterNames[i][j][k]; // Load into memory
+                    string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
+                    // Step 8.1: Register the policy parameter.
                     policyParameterNameHashes.add(hashedPolicyParameterName);
 
+                    // Step 8.2: Store the parameter name if not already stored.
                     if (bytes(atps_.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
                         atps_.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
