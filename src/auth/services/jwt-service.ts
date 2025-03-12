@@ -8,7 +8,7 @@ import {
   validateJWTTime, 
   splitJWT, 
   processJWTSignature 
-} from './utils';
+} from '../utils';
 
 /**
  * Creates a signer function compatible with did-jwt that uses a PKP wallet for signing

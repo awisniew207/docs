@@ -26,7 +26,7 @@ export class SessionSigs {
     });
   }
 
-  async createSessionSigs(signer: ethers.Signer) {
+  async generateSessionSigs(signer: ethers.Signer) {
     console.log('clicked');
 
     await this.litNodeClient.connect();
@@ -64,7 +64,23 @@ export class SessionSigs {
     return sessionSigs;
   }
 
-  async invokeLitAction() {
+  async invokeLitAction(signer: ethers.Signer) {
     console.log('invokeLitAction');
+
+    // await this.litNodeClient.connect();
+
+    // const sessionSigs = await this.generateSessionSigs(signer);
+    // const litActionCID = 'QmS4ghgMgPXKJXnQkHdQaQ81fDd3HH9QFfKp4FgH3aS5x';
+    // const pkpPublicKey = "something";
+
+    // const results = await this.litNodeClient.executeJs({
+    //   ipfsId: litActionCID,
+    //     sessionSigs: sessionSigs,
+    //     jsParams: {
+    //         publicKey: pkpPublicKey,
+    //         sigName: "sig",
+    //     },
+    // });
+
   }
 }
