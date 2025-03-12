@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
+import "./diamond-base/libraries/LibDiamond.sol";
 import "./IPKPNftFacet.sol";
 
 library VincentAppStorage {
@@ -114,6 +114,7 @@ library VincentUserStorage {
         // Agent PKP Token ID -> App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
         mapping(uint256 => mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))))
             agentPkpTokenIdToToolPolicyStorage;
+        // PKP NFT contract interface - set once during initialization in the diamond constructor
         IPKPNFTFacet PKP_NFT_FACET;
     }
 
