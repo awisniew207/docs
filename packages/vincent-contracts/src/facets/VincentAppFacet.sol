@@ -268,7 +268,7 @@ contract VincentAppFacet is VincentBase {
             VincentAppToolPolicyStorage.appToolPolicyStorage();
 
         // Step 5: Iterate through each tool to register it with the new app version.
-        for (uint256 i = 0; i < toolCount;) {
+        for (uint256 i = 0; i < toolCount; i++) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
@@ -284,7 +284,7 @@ contract VincentAppFacet is VincentBase {
 
             // Step 6: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
-            for (uint256 j = 0; j < policyCount;) {
+            for (uint256 j = 0; j < policyCount; j++) {
                 string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
@@ -302,7 +302,7 @@ contract VincentAppFacet is VincentBase {
 
                 // Step 8: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
-                for (uint256 k = 0; k < paramCount;) {
+                for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
@@ -313,16 +313,7 @@ contract VincentAppFacet is VincentBase {
                     if (bytes(atps_.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
                         atps_.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
-                    unchecked {
-                        ++k;
-                    }
                 }
-                unchecked {
-                    ++j;
-                }
-            }
-            unchecked {
-                ++i;
             }
         }
     }

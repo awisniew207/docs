@@ -156,7 +156,7 @@ contract VincentUserFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         // Step 3: Iterate over each tool to process its policies and remove parameters.
-        for (uint256 i = 0; i < toolCount;) {
+        for (uint256 i = 0; i < toolCount; i++) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
@@ -176,7 +176,7 @@ contract VincentUserFacet is VincentBase {
 
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
-            for (uint256 j = 0; j < policyCount;) {
+            for (uint256 j = 0; j < policyCount; j++) {
                 string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
                 bytes32 hashedPolicyId = keccak256(abi.encodePacked(policyIpfsCid));
 
@@ -191,7 +191,7 @@ contract VincentUserFacet is VincentBase {
 
                 // Step 5: Iterate through parameters and remove them.
                 uint256 paramCount = policyParameterNames[i][j].length;
-                for (uint256 k = 0; k < paramCount;) {
+                for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
@@ -205,16 +205,7 @@ contract VincentUserFacet is VincentBase {
                             pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
                         );
                     }
-                    unchecked {
-                        ++k;
-                    }
                 }
-                unchecked {
-                    ++j;
-                }
-            }
-            unchecked {
-                ++i;
             }
         }
     }
@@ -259,7 +250,7 @@ contract VincentUserFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         // Step 3: Loop over each tool to process its associated policies and parameters.
-        for (uint256 i = 0; i < toolCount;) {
+        for (uint256 i = 0; i < toolCount; i++) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
@@ -278,7 +269,7 @@ contract VincentUserFacet is VincentBase {
 
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
-            for (uint256 j = 0; j < policyCount;) {
+            for (uint256 j = 0; j < policyCount; j++) {
                 string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
@@ -293,7 +284,7 @@ contract VincentUserFacet is VincentBase {
 
                 // Step 5: Iterate through each parameter associated with the policy.
                 uint256 paramCount = policyParameterNames[i][j].length;
-                for (uint256 k = 0; k < paramCount;) {
+                for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
@@ -319,18 +310,7 @@ contract VincentUserFacet is VincentBase {
                     emit ToolPolicyParameterSet(
                         pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
                     );
-
-                    unchecked {
-                        ++k;
-                    }
                 }
-                unchecked {
-                    ++j;
-                }
-            }
-            unchecked {
-                ++i;
             }
         }
-    }
 }
