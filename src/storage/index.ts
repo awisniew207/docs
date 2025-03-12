@@ -1,0 +1,1 @@
+export { Storage, IStorage, MemoryStorage, BrowserStorage } from './storage'; 

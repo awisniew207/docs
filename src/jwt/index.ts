@@ -1,2 +1,1 @@
-import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature } from "./jwt";
-export { createPKPSigner, createPKPSignedJWT, verifyJWTSignature };
+export { createPKPSigner, createPKPSignedJWT, verifyJWTSignature } from "./jwt";
