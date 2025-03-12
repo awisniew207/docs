@@ -12,13 +12,33 @@ contract VincentUserFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    event ToolPolicyParametersSet(uint256 indexed appId, uint256 indexed pkpTokenId, bytes32 indexed hashedToolIpfsCid, bytes32 hashedPolicyParameterName);
-    event ToolPolicyParametersRemoved(uint256 indexed appId, uint256 indexed pkpTokenId, bytes32 indexed hashedToolIpfsCid, bytes32 hashedPolicyParameterName);
+    event ToolPolicyParameterSet(
+        uint256 indexed pkpTokenId,
+        uint256 indexed appId,
+        uint256 indexed appVersion,
+        bytes32 hashedToolIpfsCid,
+        bytes32 hashedPolicyParameterName
+    );
+    event ToolPolicyParameterRemoved(
+        uint256 indexed pkpTokenId,
+        uint256 indexed appId,
+        uint256 indexed appVersion,
+        bytes32 hashedToolIpfsCid,
+        bytes32 hashedPolicyParameterName
+    );
 
     error NotPkpOwner(uint256 pkpTokenId, address msgSender);
-    error AppNotEnabled(uint256 appId);
-    error ToolIpfsCidsAndPolicyParameterLengthMismatch();
-    error ToolNotRegistered(bytes32 hashedToolIpfsCid);
+    error AppVersionAlreadyPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+    error AppVersionNotPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+    error AppVersionNotEnabled(uint256 appId, uint256 appVersion);
+    error ToolsAndPoliciesLengthMismatch();
+    error ToolNotRegisteredForAppVersion(uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid);
+    error ToolPolicyNotRegisteredForAppVersion(
+        uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid, bytes32 hashedToolPolicy
+    );
+    error PolicyParameterNameNotRegisteredForAppVersion(
+        uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid, bytes32 hashedPolicyParameterName
+    );
 
     modifier onlyPkpOwner(uint256 pkpTokenId) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
@@ -26,124 +46,252 @@ contract VincentUserFacet is VincentBase {
         _;
     }
 
-    function permitApp(
-        uint256 appId,
+    function permitAppVersion(
         uint256 pkpTokenId,
+        uint256 appId,
+        uint256 appVersion,
         string[] calldata toolIpfsCids,
-        string[] calldata policyParameterNames,
-        string[] calldata policyParameterValues
-    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) {
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames,
+        string[][][] calldata policyParameterValues
+    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
+
+        if (us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].contains(appVersion)) {
+            revert AppVersionAlreadyPermitted(pkpTokenId, appId, appVersion);
+        }
+
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
+        // App versions start at 1, but the appVersions array is 0-indexed
+        VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+
         // Check if the App Manager has disabled the App
-        if (!as_.appIdToApp[appId].enabled) revert AppNotEnabled(appId);
+        if (!versionedApp.enabled) revert AppVersionNotEnabled(appId, appVersion);
 
-        // Add the PKP Token ID to the App's Delegated User PKPs
-        as_.appIdToApp[appId].delegatedUserPkps.add(pkpTokenId);
+        // Add the PKP Token ID to the app version's delegated agent PKPs
+        versionedApp.delegatedAgentPkps.add(pkpTokenId);
 
-        // Add the App ID to the User's Permitted Apps
-        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        us_.pkpTokenIdToPermittedAppIds[pkpTokenId].add(appId);
+        // Add the app version to the User's permitted apps
+        us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].add(appVersion);
 
-        if (!us_.registeredUsers.contains(pkpTokenId)) {
-            us_.registeredUsers.add(pkpTokenId);
+        // Add the PKP Token ID to the global registered agent PKPs if it is not already registered
+        if (!us_.registeredAgentPkps.contains(pkpTokenId)) {
+            us_.registeredAgentPkps.add(pkpTokenId);
         }
 
         // Save some gas by not calling the setToolPolicyParameters function if there are no tool policy parameters to set
         if (toolIpfsCids.length > 0) {
-            _setToolPolicyParameters(appId, pkpTokenId, toolIpfsCids, policyParameterNames, policyParameterValues);
+            _setToolPolicyParameters(
+                appId, pkpTokenId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
+            );
         }
     }
 
-    function unPermitApp(uint256 appId, uint256 pkpTokenId) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) {
-        // Remove the PKP Token ID from the App's Delegated User PKPs
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        as_.appIdToApp[appId].delegatedUserPkps.remove(pkpTokenId);
-
-        // Remove the App ID from the User's Permitted Apps
+    function unPermitApp(uint256 pkpTokenId, uint256 appId, uint256 appVersion)
+        external
+        onlyPkpOwner(pkpTokenId)
+        onlyRegisteredApp(appId)
+        onlyRegisteredAppVersion(appId, appVersion)
+    {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        us_.pkpTokenIdToPermittedAppIds[pkpTokenId].remove(appId);
+        if (!us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].contains(appVersion)) {
+            revert AppVersionNotPermitted(pkpTokenId, appId, appVersion);
+        }
 
-        // Delete all the tool policy parameters for the App
-        VincentUserToolPolicyStorage.UserToolPolicyStorage storage utps_ = VincentUserToolPolicyStorage.userToolPolicyStorage();
-        delete utps_.pkpTokenIdToUser[pkpTokenId].appIdToAppStorage[appId];
+        // Remove the PKP Token ID from the App's Delegated Agent PKPs
+        // App versions start at 1, but the appVersions array is 0-indexed
+        VincentAppStorage.appStorage().appIdToApp[appId].versionedApps[appVersion - 1].delegatedAgentPkps.remove(
+            pkpTokenId
+        );
+
+        // Remove the App Version from the User's Permitted App Versions
+        us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].remove(appVersion);
     }
 
     function setToolPolicyParameters(
-        uint256 appId,
         uint256 pkpTokenId,
+        uint256 appId,
+        uint256 appVersion,
         string[] calldata toolIpfsCids,
-        string[] calldata policyParameterNames,
-        string[] calldata policyParameterValues
-    ) public onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) {
-        _setToolPolicyParameters(appId, pkpTokenId, toolIpfsCids, policyParameterNames, policyParameterValues);
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames,
+        string[][][] calldata policyParameterValues
+    ) public onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
+        _setToolPolicyParameters(
+            appId, pkpTokenId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
+        );
     }
 
     function removeToolPolicyParameters(
         uint256 appId,
         uint256 pkpTokenId,
+        uint256 appVersion,
         string[] calldata toolIpfsCids,
-        string[] calldata policyParameterNames
-    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) {
-        if (toolIpfsCids.length != policyParameterNames.length) revert ToolIpfsCidsAndPolicyParameterLengthMismatch();
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames
+    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
+        // Validate array lengths
+        uint256 toolCount = toolIpfsCids.length;
+        if (toolCount != policyIpfsCids.length || toolCount != policyParameterNames.length) {
+            revert ToolsAndPoliciesLengthMismatch();
+        }
 
-        VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-        VincentUserToolPolicyStorage.UserToolPolicyStorage storage utps_ = VincentUserToolPolicyStorage.userToolPolicyStorage();
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
+            VincentAppToolPolicyStorage.appToolPolicyStorage();
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
-        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCids[i]));
+        // Iterate through tools
+        for (uint256 i = 0; i < toolCount;) {
+            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Check if the Tool is registered
-            if (!ts_.registeredTools.contains(hashedToolIpfsCid)) revert ToolNotRegistered(hashedToolIpfsCid);
+            // Validate tool registration for the app version
+            VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+            if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
+                revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
+            }
 
-            VincentUserToolPolicyStorage.ToolStorage storage toolStorage = utps_.pkpTokenIdToUser[pkpTokenId].appIdToAppStorage[appId].toolIpfsCidHashToToolStorage[hashedToolIpfsCid];
+            // Get the versioned tool policies to check if policies exist
+            VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
+                atps_.appIdToVersionedToolPolicies[appId][appVersion][hashedToolIpfsCid];
 
-            bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(policyParameterNames[i]));
+            // Access the tool policy storage directly
+            VincentUserStorage.ToolPolicyStorage storage toolStorage =
+                us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][appVersion][hashedToolIpfsCid];
 
-            // Remove the Policy Parameter Name hash from the Tool Storage
-            toolStorage.policyParameterNameHashes.remove(hashedPolicyParameterName);
+            uint256 policyCount = policyIpfsCids[i].length;
+            for (uint256 j = 0; j < policyCount;) {
+                string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+                bytes32 hashedPolicyId = keccak256(abi.encodePacked(policyIpfsCid));
 
-            // Delete the Policy Parameter Value
-            delete toolStorage.policyParameterNameHashToValue[hashedPolicyParameterName];
+                // Verify the policy exists before trying to remove its parameters
+                if (!versionedToolPolicies.policyIpfsCidHashes.contains(hashedPolicyId)) {
+                    revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedPolicyId);
+                }
 
-            emit ToolPolicyParametersRemoved(appId, pkpTokenId, hashedToolIpfsCid, hashedPolicyParameterName);
+                // Get the policy parameters storage for this policy
+                VincentUserStorage.PolicyParametersStorage storage policyParams =
+                    toolStorage.policyIpfsCidHashToPolicyParametersStorage[hashedPolicyId];
+
+                uint256 paramCount = policyParameterNames[i][j].length;
+                for (uint256 k = 0; k < paramCount;) {
+                    string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+                    bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
+
+                    if (policyParams.policyParameterNameHashes.contains(hashedPolicyParameterName)) {
+                        // Remove the parameter
+                        policyParams.policyParameterNameHashes.remove(hashedPolicyParameterName);
+                        delete policyParams.policyParameterNameHashToValue[hashedPolicyParameterName];
+
+                        emit ToolPolicyParameterRemoved(
+                            pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
+                        );
+                    }
+                    unchecked {
+                        ++k;
+                    }
+                }
+                unchecked {
+                    ++j;
+                }
+            }
+            unchecked {
+                ++i;
+            }
         }
     }
 
     function _setToolPolicyParameters(
         uint256 appId,
         uint256 pkpTokenId,
+        uint256 appVersion,
         string[] calldata toolIpfsCids,
-        string[] calldata policyParameterNames,
-        string[] calldata policyParameterValues
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames,
+        string[][][] calldata policyParameterValues
     ) internal {
-        if (toolIpfsCids.length != policyParameterNames.length || toolIpfsCids.length != policyParameterValues.length) revert ToolIpfsCidsAndPolicyParameterLengthMismatch();
+        // Validate array lengths
+        uint256 toolCount = toolIpfsCids.length;
+        if (
+            toolCount != policyIpfsCids.length || toolCount != policyParameterNames.length
+                || toolCount != policyParameterValues.length
+        ) {
+            revert ToolsAndPoliciesLengthMismatch();
+        }
 
-        VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-        VincentUserToolPolicyStorage.UserToolPolicyStorage storage utps_ = VincentUserToolPolicyStorage.userToolPolicyStorage();
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
+            VincentAppToolPolicyStorage.appToolPolicyStorage();
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
-        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCids[i]));
+        // Loop over each Tool so we can add the Policy parameter for each Policy
+        for (uint256 i = 0; i < toolCount;) {
+            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Check if the Tool is registered
-            if (!ts_.registeredTools.contains(hashedToolIpfsCid)) revert ToolNotRegistered(hashedToolIpfsCid);
-
-            VincentUserToolPolicyStorage.ToolStorage storage toolStorage = utps_.pkpTokenIdToUser[pkpTokenId].appIdToAppStorage[appId].toolIpfsCidHashToToolStorage[hashedToolIpfsCid];
-
-            bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(policyParameterNames[i]));
-
-            // Check if the Policy Parameter Name is registered globally, if not, register it
-            if (bytes(utps_.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
-                utps_.policyParameterNameHashToName[hashedPolicyParameterName] = policyParameterNames[i];
+            // Validate tool registration for the app version
+            VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+            if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
+                revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
             }
 
-            // Add the Policy Parameter Name hash to the User's Tool Policy Storage
-            toolStorage.policyParameterNameHashes.add(hashedPolicyParameterName);
+            VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
+                atps_.appIdToVersionedToolPolicies[appId][appVersion][hashedToolIpfsCid];
 
-            // Set the Policy Parameter Value in the User's Tool Policy Storage
-            toolStorage.policyParameterNameHashToValue[hashedPolicyParameterName] = policyParameterValues[i];
+            VincentUserStorage.ToolPolicyStorage storage userToolPolicyStorage =
+                us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][appVersion][hashedToolIpfsCid];
 
-            emit ToolPolicyParametersSet(appId, pkpTokenId, hashedToolIpfsCid, hashedPolicyParameterName);
+            uint256 policyCount = policyIpfsCids[i].length;
+            for (uint256 j = 0; j < policyCount;) {
+                string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+                bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
+
+                if (!versionedToolPolicies.policyIpfsCidHashes.contains(hashedToolPolicy)) {
+                    revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedToolPolicy);
+                }
+
+                VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =
+                    userToolPolicyStorage.policyIpfsCidHashToPolicyParametersStorage[hashedToolPolicy];
+
+                uint256 paramCount = policyParameterNames[i][j].length;
+                for (uint256 k = 0; k < paramCount;) {
+                    string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+                    bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
+
+                    if (
+                        !versionedToolPolicies.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy].contains(
+                            hashedPolicyParameterName
+                        )
+                    ) {
+                        revert PolicyParameterNameNotRegisteredForAppVersion(
+                            appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
+                        );
+                    }
+
+                    // If parameter name is already set, .add will not add it again or revert.
+                    policyParametersStorage.policyParameterNameHashes.add(hashedPolicyParameterName);
+
+                    // Store parameter value
+                    policyParametersStorage.policyParameterNameHashToValue[hashedPolicyParameterName] =
+                        policyParameterValues[i][j][k];
+
+                    emit ToolPolicyParameterSet(
+                        pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
+                    );
+
+                    unchecked {
+                        ++k;
+                    }
+                }
+                unchecked {
+                    ++j;
+                }
+            }
+            unchecked {
+                ++i;
+            }
         }
     }
 }

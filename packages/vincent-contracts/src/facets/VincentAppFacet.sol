@@ -18,15 +18,17 @@ contract VincentAppFacet is VincentBase {
 
     event NewManagerRegistered(address indexed manager);
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
-    event AppEnabled(uint256 indexed appId, bool indexed enabled);
+    event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
+    event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
     event AuthorizedDomainAdded(uint256 indexed appId, string indexed domain);
     event AuthorizedRedirectUriAdded(uint256 indexed appId, string indexed redirectUri);
     event AuthorizedDomainRemoved(uint256 indexed appId, string indexed domain);
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, string indexed redirectUri);
 
     error NotAppManager(uint256 appId, address msgSender);
-    error DelegateeAlreadyRegisteredToApp(address delegatee, uint256 appId);
-    error DelegateeNotRegisteredToApp(address delegatee, uint256 appId);
+    error ToolsAndPoliciesLengthMismatch();
+    error DelegateeAlreadyRegisteredToApp(uint256 appId, address delegatee);
+    error DelegateeNotRegisteredToApp(uint256 appId, address delegatee);
     error AuthorizedDomainNotRegistered(uint256 appId, bytes32 hashedDomain);
     error AuthorizedRedirectUriNotRegistered(uint256 appId, bytes32 hashedRedirectUri);
 
@@ -41,15 +43,13 @@ contract VincentAppFacet is VincentBase {
         string calldata description,
         string[] calldata authorizedDomains,
         string[] calldata authorizedRedirectUris,
-        string[] calldata toolIpfsCids,
         address[] calldata delegatees
     ) public returns (uint256 newAppId) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
-        newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, toolIpfsCids, delegatees);
+        newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, delegatees);
 
         // Add the manager to the list of registered managers
         // if they are not already in the list
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (!as_.registeredManagers.contains(msg.sender)) {
             as_.registeredManagers.add(msg.sender);
             emit NewManagerRegistered(msg.sender);
@@ -58,10 +58,52 @@ contract VincentAppFacet is VincentBase {
         emit NewAppRegistered(newAppId, msg.sender);
     }
 
-    function enableApp(uint256 appId, bool enabled) external onlyAppManager(appId) onlyRegisteredApp(appId) {
+    function registerAppWithVersion(
+        string calldata name,
+        string calldata description,
+        string[] calldata authorizedDomains,
+        string[] calldata authorizedRedirectUris,
+        address[] calldata delegatees,
+        string[] calldata toolIpfsCids,
+        string[][] calldata toolPolicies,
+        string[][][] calldata toolPolicyParameterNames
+    ) public returns (uint256 newAppId, uint256 newAppVersion) {
+        newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, delegatees);
+        newAppVersion = _registerNextAppVersion(newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+
+        // Add the manager to the list of registered managers
+        // if they are not already in the list
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        as_.appIdToApp[appId].enabled = enabled;
-        emit AppEnabled(appId, enabled);
+        if (!as_.registeredManagers.contains(msg.sender)) {
+            as_.registeredManagers.add(msg.sender);
+            emit NewManagerRegistered(msg.sender);
+        }
+
+        emit NewAppRegistered(newAppId, msg.sender);
+        emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
+    }
+
+    function registerNextAppVersion(
+        uint256 appId,
+        string[] calldata toolIpfsCids,
+        string[][] calldata toolPolicies,
+        string[][][] calldata toolPolicyParameterNames
+    ) public onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
+        newAppVersion = _registerNextAppVersion(appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+
+        emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
+    }
+
+    function enableAppVersion(uint256 appId, uint256 appVersion, bool enabled)
+        external
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+        onlyRegisteredAppVersion(appId, appVersion)
+    {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        // App versions start at 1, but the appVersions array is 0-indexed
+        as_.appIdToApp[appId].versionedApps[appVersion - 1].enabled = enabled;
+        emit AppEnabled(appId, appVersion, enabled);
     }
 
     function addAuthorizedDomain(uint256 appId, string calldata domain)
@@ -122,7 +164,7 @@ contract VincentAppFacet is VincentBase {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
-        if (delegateeAppId != 0) revert DelegateeAlreadyRegisteredToApp(delegatee, delegateeAppId);
+        if (delegateeAppId != 0) revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
 
         as_.appIdToApp[appId].delegatees.add(delegatee);
         as_.delegateeAddressToAppId[delegatee] = appId;
@@ -135,7 +177,7 @@ contract VincentAppFacet is VincentBase {
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
-        if (as_.delegateeAddressToAppId[delegatee] != appId) revert DelegateeNotRegisteredToApp(delegatee, appId);
+        if (as_.delegateeAddressToAppId[delegatee] != appId) revert DelegateeNotRegisteredToApp(appId, delegatee);
 
         as_.appIdToApp[appId].delegatees.remove(delegatee);
         as_.delegateeAddressToAppId[delegatee] = 0;
@@ -146,7 +188,6 @@ contract VincentAppFacet is VincentBase {
         string calldata description,
         string[] calldata authorizedDomains,
         string[] calldata authorizedRedirectUris,
-        string[] calldata toolIpfsCids,
         address[] calldata delegatees
     ) internal returns (uint256 newAppId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -162,7 +203,6 @@ contract VincentAppFacet is VincentBase {
         // Register the app
         VincentAppStorage.App storage app = as_.appIdToApp[newAppId];
         app.manager = msg.sender;
-        app.enabled = true;
         app.name = name;
         app.description = description;
 
@@ -176,18 +216,88 @@ contract VincentAppFacet is VincentBase {
 
         // Add the delegatees to the app
         for (uint256 i = 0; i < delegatees.length; i++) {
+            if (as_.delegateeAddressToAppId[delegatees[i]] != 0) {
+                revert DelegateeAlreadyRegisteredToApp(newAppId, delegatees[i]);
+            }
+
             app.delegatees.add(delegatees[i]);
             as_.delegateeAddressToAppId[delegatees[i]] = newAppId;
         }
+    }
 
-        // Register the tools and add to the app
-        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCids[i]));
+    function _registerNextAppVersion(
+        uint256 appId,
+        string[] calldata toolIpfsCids,
+        string[][] calldata toolPolicies,
+        string[][][] calldata toolPolicyParameterNames
+    ) internal returns (uint256 newAppVersion) {
+        uint256 toolCount = toolIpfsCids.length;
+        if (toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length) {
+            revert ToolsAndPoliciesLengthMismatch();
+        }
 
-            if (!app.toolIpfsCidHashes.contains(hashedIpfsCid)) {
-                app.toolIpfsCidHashes.add(hashedIpfsCid);
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
 
-                IVincentToolFacet(address(this)).registerTool(toolIpfsCids[i]);
+        // Add the app version to the app
+        app.versionedApps.push();
+        newAppVersion = app.versionedApps.length;
+
+        // App versions start at 1, but the appVersions array is 0-indexed
+        VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[newAppVersion - 1];
+        versionedApp.version = newAppVersion;
+        versionedApp.enabled = true;
+
+        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
+            VincentAppToolPolicyStorage.appToolPolicyStorage();
+
+        // Register the tools for the app version
+        for (uint256 i = 0; i < toolCount;) {
+            string memory toolIpfsCid = toolIpfsCids[i]; // Load into memory
+            bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
+
+            if (!versionedApp.toolIpfsCidHashes.contains(hashedToolCid)) {
+                versionedApp.toolIpfsCidHashes.add(hashedToolCid);
+                IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
+            }
+
+            VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
+                atps_.appIdToVersionedToolPolicies[appId][newAppVersion][hashedToolCid];
+
+            uint256 policyCount = toolPolicies[i].length;
+            for (uint256 j = 0; j < policyCount;) {
+                string memory policyIpfsCid = toolPolicies[i][j]; // Load into memory
+                bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
+
+                versionedToolPolicies.policyIpfsCidHashes.add(hashedToolPolicy);
+
+                if (bytes(atps_.policyIpfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
+                    atps_.policyIpfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
+                }
+
+                EnumerableSet.Bytes32Set storage policyParameterNameHashes =
+                    versionedToolPolicies.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy];
+
+                uint256 paramCount = toolPolicyParameterNames[i][j].length;
+                for (uint256 k = 0; k < paramCount;) {
+                    string memory paramName = toolPolicyParameterNames[i][j][k]; // Load into memory
+                    bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
+
+                    policyParameterNameHashes.add(hashedPolicyParameterName);
+
+                    if (bytes(atps_.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
+                        atps_.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
+                    }
+                    unchecked {
+                        ++k;
+                    }
+                }
+                unchecked {
+                    ++j;
+                }
+            }
+            unchecked {
+                ++i;
             }
         }
     }

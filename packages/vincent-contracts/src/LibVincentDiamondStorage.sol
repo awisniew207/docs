@@ -13,7 +13,7 @@ library VincentAppStorage {
 
     struct VersionedApp {
         EnumerableSet.Bytes32Set toolIpfsCidHashes;
-        EnumerableSet.UintSet delegatedUserPkps;
+        EnumerableSet.UintSet delegatedAgentPkps;
         uint256 version;
         bool enabled;
     }
@@ -22,8 +22,7 @@ library VincentAppStorage {
         EnumerableSet.AddressSet delegatees;
         EnumerableSet.Bytes32Set authorizedDomains;
         EnumerableSet.Bytes32Set authorizedRedirectUris;
-        EnumerableSet.UintSet appVersions;
-        mapping(uint256 => VersionedApp) appVersionToVersionedApp;
+        VersionedApp[] versionedApps;
         address manager;
         string name;
         string description;
@@ -95,7 +94,7 @@ library VincentAppToolPolicyStorage {
 library VincentUserStorage {
     bytes32 internal constant USER_STORAGE_SLOT = keccak256("lit.vincent.user.storage");
 
-    struct ToolPolicyStorage {
+    struct PolicyParametersStorage {
         // Not every Policy parameter may be required, so we keep track
         // of the ones the User has set
         EnumerableSet.Bytes32Set policyParameterNameHashes;
@@ -103,13 +102,18 @@ library VincentUserStorage {
         mapping(bytes32 => string) policyParameterNameHashToValue;
     }
 
+    struct ToolPolicyStorage {
+        // Tool Policy CID Hash -> Policy Parameters Storage
+        mapping(bytes32 => PolicyParametersStorage) policyIpfsCidHashToPolicyParametersStorage;
+    }
+
     struct UserStorage {
-        EnumerableSet.UintSet registeredUsers;
-        // User PKP Token ID -> App ID -> Permitted App Versions
-        mapping(uint256 => mapping(uint256 => EnumerableSet.UintSet)) pkpTokenIdToPermittedAppVersions;
-        // User PKP Token ID -> App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
+        EnumerableSet.UintSet registeredAgentPkps;
+        // Agent PKP Token ID -> App ID -> Permitted App Versions
+        mapping(uint256 => mapping(uint256 => EnumerableSet.UintSet)) agentPkpTokenIdToPermittedAppVersions;
+        // Agent PKP Token ID -> App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
         mapping(uint256 => mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))))
-            userPkpTokenIdToToolPolicyStorage;
+            agentPkpTokenIdToToolPolicyStorage;
         IPKPNFTFacet PKP_NFT_FACET;
     }
 
