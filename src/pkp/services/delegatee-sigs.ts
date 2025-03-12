@@ -17,10 +17,8 @@ declare global {
 
 export class DelegateeSigs {
   private litNodeClient: LitNodeClient;
-  private litNetwork: LIT_NETWORKS_KEYS;
 
   constructor(litNetwork: LIT_NETWORKS_KEYS) {
-    this.litNetwork = litNetwork;
     this.litNodeClient = new LitNodeClient({
       litNetwork: litNetwork,
     });
@@ -64,22 +62,19 @@ export class DelegateeSigs {
     return sessionSigs;
   }
 
-  async invokeLitAction(signer: ethers.Signer) {
+  async invokeLitAction(signer: ethers.Signer, litActionCID: string, params: any) {
     console.log('invokeLitAction');
 
-    // await this.litNodeClient.connect();
+    await this.litNodeClient.connect();
 
-    // const sessionSigs = await this.generateSessionSigs(signer);
-    // const litActionCID = 'QmS4ghgMgPXKJXnQkHdQaQ81fDd3HH9QFfKp4FgH3aS5x';
-    // const params = {
-    //   sigName: "sig",
-    //   test: "meow"
-    // }
+    const sessionSigs = await this.generateSessionSigs(signer);
 
-    // const results = await this.litNodeClient.executeJs({
-    //   ipfsId: litActionCID,
-    //     sessionSigs: sessionSigs,
-    //     jsParams: params
-    // });
+    const results = await this.litNodeClient.executeJs({
+      ipfsId: litActionCID,
+        sessionSigs: sessionSigs,
+        jsParams: params
+    });
+
+    return results;
   }
 }
