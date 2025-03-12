@@ -9,6 +9,7 @@ import {
   splitJWT, 
   processJWTSignature 
 } from '../utils';
+import { createJWTConfig } from '../interfaces/create-jwt';
 
 /**
  * Creates a signer function compatible with did-jwt that uses a PKP wallet for signing
@@ -83,30 +84,23 @@ export function createPKPSigner(pkpWallet: PKPEthersWallet) {
  * like iat (issued at), exp (expiration), and iss (issuer). It also includes the
  * PKP public key in the payload, which is used for verification.
  * 
- * @param pkpWallet - The PKP Ethers wallet instance used for signing
- * @param pkp - The PKP information object containing controller information
- * @param payload - The custom payload to include in the JWT
- * @param expiresInMinutes - How long until the JWT expires (defaults to 10 minutes)
- * @param audience - The domain(s) this token is intended for (aud claim)
+ * @param config - Configuration object containing all parameters for JWT creation
  * @returns A promise that resolves to the signed JWT string
  * @example
  * ```typescript
- * const jwt = await createPKPSignedJWT(
- *   pkpWallet,
- *   pkpInfo,
- *   { name: "Lit Protocol User", customField: "value" },
- *   30, // expires in 30 minutes
- *   "example.com" // audience domain
- * );
+ * const jwt = await createPKPSignedJWT({
+ *   pkpWallet: pkpWallet,
+ *   pkp: pkpInfo,
+ *   payload: { name: "Lit Protocol User", customField: "value" },
+ *   expiresInMinutes: 30, // expires in 30 minutes
+ *   audience: "example.com" // audience domain
+ * });
  * ```
  */
 export async function createPKPSignedJWT(
-  pkpWallet: PKPEthersWallet,
-  pkp: any,
-  payload: Record<string, any>,
-  expiresInMinutes: number = 10,  // Default 10-minute expiration
-  audience: string | string[]    // Required audience domain(s)
+  config: createJWTConfig
 ): Promise<string> {
+  const { pkpWallet, pkp, payload, expiresInMinutes = 10, audience } = config;
   const signer = createPKPSigner(pkpWallet);
   
   const iat = Math.floor(Date.now() / 1000);

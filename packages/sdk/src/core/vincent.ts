@@ -2,7 +2,7 @@ import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { DelegateeSigs, fetchDelegatedAgentPKPs, setDelegateeWallet, updateDelegateeWallet } from '../pkp';
-import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature } from '../auth';
+import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature, createJWTConfig } from '../auth';
 import { IStorage, Storage } from '../auth';
 
 export interface VincentSDKConfig {
@@ -27,25 +27,19 @@ export class VincentSDK {
     return createPKPSigner(pkpWallet);
   }
 
-  async createSignedJWT(
-    pkpWallet: PKPEthersWallet,
-    pkp: any,
-    payload: Record<string, any>,
-    expiresInMinutes: number = 10,
-    audience: string | string[]
-  ): Promise<string> {
+  async createSignedJWT(config: createJWTConfig): Promise<string> {
     this.clearJWT();
-    const jwt = await createPKPSignedJWT(pkpWallet, pkp, payload, expiresInMinutes, audience);
+    const jwt = await createPKPSignedJWT(config);
     this.storeJWT(jwt);
     return jwt;
   }
 
-  async verifyJWT(publicKey: string): Promise<boolean> {
+  async verifyJWT(expectedAudience: string): Promise<boolean> {
     const jwt = await this.getJWT();
     if (!jwt) {
       throw new Error('No JWT found');
     }
-    return verifyJWTSignature(jwt, publicKey);
+    return verifyJWTSignature(jwt, expectedAudience);
   }
 
   // Storage Management
