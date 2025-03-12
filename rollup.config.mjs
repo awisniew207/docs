@@ -3,6 +3,8 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
+import terser from '@rollup/plugin-terser';
+import filesize from 'rollup-plugin-filesize';
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
@@ -20,7 +22,12 @@ export default [
       resolve(),
       commonjs(),
       json(),
-      typescript({ tsconfig: './tsconfig.json' })
+      terser(),
+      typescript({ tsconfig: './tsconfig.json' }),
+      filesize({
+        showMinifiedSize: true,
+        showGzippedSize: true,
+      })
     ]
   },
   {
@@ -31,7 +38,12 @@ export default [
     ],
     plugins: [
       typescript({ tsconfig: './tsconfig.json' }),
-      json()
+      json(),
+      terser(),
+      filesize({
+        showMinifiedSize: true,
+        showGzippedSize: true,
+      })
     ],
     external: [...Object.keys(pkg.dependencies || {})]
   }
