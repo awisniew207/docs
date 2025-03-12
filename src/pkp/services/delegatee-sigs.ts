@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-export class SessionSigs {
+export class DelegateeSigs {
   private litNodeClient: LitNodeClient;
   private litNetwork: LIT_NETWORKS_KEYS;
 
@@ -71,16 +71,15 @@ export class SessionSigs {
 
     // const sessionSigs = await this.generateSessionSigs(signer);
     // const litActionCID = 'QmS4ghgMgPXKJXnQkHdQaQ81fDd3HH9QFfKp4FgH3aS5x';
-    // const pkpPublicKey = "something";
+    // const params = {
+    //   sigName: "sig",
+    //   test: "meow"
+    // }
 
     // const results = await this.litNodeClient.executeJs({
     //   ipfsId: litActionCID,
     //     sessionSigs: sessionSigs,
-    //     jsParams: {
-    //         publicKey: pkpPublicKey,
-    //         sigName: "sig",
-    //     },
+    //     jsParams: params
     // });
-
   }
 }

@@ -1,9 +1,9 @@
-import { SessionSigs } from "../pkp";
-import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature } from "../auth";
-import { IStorage, Storage } from "../auth";
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+import { DelegateeSigs } from '../pkp';
+import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature } from '../auth';
+import { IStorage, Storage } from '../auth';
 
 export interface VincentSDKConfig {
   storage?: IStorage;
@@ -17,9 +17,8 @@ export class VincentSDK {
   private network: LIT_NETWORKS_KEYS;
 
   constructor(config: VincentSDKConfig = {}) {
-    // Initialize storage using Storage class which handles environment detection
     this.storage = new Storage(config.storage);
-    this.consentPageUrl = config.consentPageUrl || 'https://consent.vincent.com';
+    this.consentPageUrl = config.consentPageUrl || 'https://demo.vincent.com';
     this.network = config.network || 'datil';
   }
 
@@ -28,11 +27,24 @@ export class VincentSDK {
     return createPKPSigner(pkpWallet);
   }
 
-  async createSignedJWT(pkpWallet: PKPEthersWallet, pkp: any, payload: Record<string, any>, expiresInMinutes: number = 10, audience: string | string[]): Promise<string> {
-    return createPKPSignedJWT(pkpWallet, pkp, payload, expiresInMinutes, audience);
+  async createSignedJWT(
+    pkpWallet: PKPEthersWallet,
+    pkp: any,
+    payload: Record<string, any>,
+    expiresInMinutes: number = 10,
+    audience: string | string[]
+  ): Promise<string> {
+    this.clearJWT();
+    const jwt = await createPKPSignedJWT(pkpWallet, pkp, payload, expiresInMinutes, audience);
+    this.storeJWT(jwt);
+    return jwt;
   }
 
-  async verifyJWT(jwt: string, publicKey: string): Promise<boolean> {
+  async verifyJWT(publicKey: string): Promise<boolean> {
+    const jwt = await this.getJWT();
+    if (!jwt) {
+      throw new Error('No JWT found');
+    }
     return verifyJWTSignature(jwt, publicKey);
   }
 
@@ -49,30 +61,34 @@ export class VincentSDK {
     await this.storage.clearJWT();
   }
 
+  async clearAll(): Promise<void> {
+    await this.storage.clearAll();
+  }
+
+  // Lit Action Invocation for App Owner through Delegatee Wallet
+  async invokeLitAction(signer: ethers.Signer) {
+    const sessionSigs = new DelegateeSigs(this.network);
+    return sessionSigs.invokeLitAction(signer);
+  }
+
   // Agent PKP Management
   async getDelegatedAgentPKPs(): Promise<Array<{ publicKey: string; ethAddress: string }>> {
-    const pkps = await fetch(`${this.consentPageUrl}/api/pkps`).then(res => res.json());
+    const pkps = await fetch(`${this.consentPageUrl}/api/pkps`).then((res) => res.json());
     return pkps;
   }
 
   async setDelegatee(walletAddress: string): Promise<void> {
     await fetch(`${this.consentPageUrl}/api/delegate`, {
       method: 'POST',
-      body: JSON.stringify({ walletAddress })
+      body: JSON.stringify({ walletAddress }),
     });
   }
 
   async updateDelegatee(walletAddress: string): Promise<void> {
     await fetch(`${this.consentPageUrl}/api/delegate`, {
       method: 'PUT',
-      body: JSON.stringify({ walletAddress })
+      body: JSON.stringify({ walletAddress }),
     });
-  }
-
-  // Session Signatures
-  async invokeLitAction(signer: ethers.Signer) {
-    const sessionSigs = new SessionSigs(this.network);
-    return sessionSigs.invokeLitAction(signer);
   }
 
   // Consent Page Management
@@ -81,8 +97,8 @@ export class VincentSDK {
     window.open(url.toString(), '_blank');
   }
 
-  openDelegationConsentPage(): void {
+  openDelegationControlConsentPage(): void {
     const url = new URL('/delegate', this.consentPageUrl);
     window.open(url.toString(), '_blank');
   }
-} 
+}
