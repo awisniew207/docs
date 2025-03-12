@@ -1,10 +1,9 @@
 {
-  "name": "@vincent/source",
-  "version": "0.0.0",
+  "name": "@lit-protocol/vincent-sdk",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {},
-  "private": true,
-  "dependencies": {},
+  "private": false,
   "devDependencies": {
     "@nx/js": "20.4.6",
     "@swc-node/register": "~1.9.1",
@@ -14,5 +13,18 @@
     "prettier": "^2.6.2",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2"
-  }
+  },
+  "description": "Lit Protocol Vincent SDK",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LIT-Protocol/Vincent.git"
+  },
+  "keywords": [
+    "library"
+  ],
+  "bugs": {
+    "url": "https://github.com/LIT-Protocol/Vincent/issues"
+  },
+  "homepage": "https://github.com/LIT-Protocol/Vincent#readme"
 }
