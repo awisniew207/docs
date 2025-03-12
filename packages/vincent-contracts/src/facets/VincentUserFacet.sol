@@ -313,4 +313,5 @@ contract VincentUserFacet is VincentBase {
                 }
             }
         }
+    }
 }
