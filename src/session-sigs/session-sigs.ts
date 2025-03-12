@@ -64,5 +64,7 @@ export class SessionSigs {
     return sessionSigs;
   }
 
-  async invokeLitAction() {}
+  async invokeLitAction() {
+    console.log('invokeLitAction');
+  }
 }
