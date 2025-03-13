@@ -565,4 +565,149 @@ contract VincentAppFacetTest is VincentTestHelper {
         // This should revert with ToolsAndPoliciesLengthMismatch error
         wrappedAppFacet.registerNextAppVersion(appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
     }
+
+    // Test simple utility functions
+    function testGetTotalAppCount() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Check total app count
+        uint256 totalCount = wrappedAppViewFacet.getTotalAppCount();
+        assertEq(totalCount, 1, "Total app count should be 1");
+
+        // Register a second app
+        string[] memory domains = new string[](1);
+        domains[0] = TEST_DOMAIN_2;
+
+        string[] memory redirectUris = new string[](1);
+        redirectUris[0] = TEST_REDIRECT_URI_2;
+
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = TEST_DELEGATEE_2;
+
+        wrappedAppFacet.registerApp("Test App 2", "Test App Description 2", domains, redirectUris, delegatees);
+
+        // Check updated total app count
+        totalCount = wrappedAppViewFacet.getTotalAppCount();
+        assertEq(totalCount, 2, "Total app count should be 2 after registering second app");
+    }
+
+    function testGetAppManager() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Check app manager
+        address manager = wrappedAppViewFacet.getAppManager(appId);
+        assertEq(manager, deployer, "App manager should be the deployer");
+    }
+
+    function testIsAppManager() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Check if deployer is the app manager
+        bool isManager = wrappedAppViewFacet.isAppManager(appId, deployer);
+        assertTrue(isManager, "Deployer should be the app manager");
+
+        // Check if nonOwner is not the app manager
+        isManager = wrappedAppViewFacet.isAppManager(appId, nonOwner);
+        assertFalse(isManager, "nonOwner should not be the app manager");
+    }
+
+    // Test hash-related functions
+    function testGetAuthorizedDomainByHash() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Calculate hash of the domain
+        bytes32 domainHash = keccak256(abi.encodePacked(TEST_DOMAIN_1));
+
+        // Retrieve domain using hash
+        string memory domain = wrappedAppViewFacet.getAuthorizedDomainByHash(domainHash);
+        assertEq(domain, TEST_DOMAIN_1, "Retrieved domain should match the original domain");
+    }
+
+    function testGetAuthorizedRedirectUriByHash() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Calculate hash of the redirect URI
+        bytes32 redirectUriHash = keccak256(abi.encodePacked(TEST_REDIRECT_URI_1));
+
+        // Retrieve redirect URI using hash
+        string memory redirectUri = wrappedAppViewFacet.getAuthorizedRedirectUriByHash(redirectUriHash);
+        assertEq(redirectUri, TEST_REDIRECT_URI_1, "Retrieved redirect URI should match the original redirect URI");
+    }
+
+    function testGetAuthorizedDomainsAndRedirectUrisByAppId() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Add another domain and redirect URI
+        wrappedAppFacet.addAuthorizedDomain(appId, TEST_DOMAIN_2);
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
+
+        // Retrieve domains and redirect URIs
+        (string[] memory domains, string[] memory redirectUris) =
+            wrappedAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId(appId);
+
+        // Verify domains
+        assertEq(domains.length, 2, "Should have 2 authorized domains");
+        // Check if both domains are present (order may vary)
+        bool foundDomain1 = false;
+        bool foundDomain2 = false;
+        for (uint256 i = 0; i < domains.length; i++) {
+            if (keccak256(abi.encodePacked(domains[i])) == keccak256(abi.encodePacked(TEST_DOMAIN_1))) {
+                foundDomain1 = true;
+            } else if (keccak256(abi.encodePacked(domains[i])) == keccak256(abi.encodePacked(TEST_DOMAIN_2))) {
+                foundDomain2 = true;
+            }
+        }
+        assertTrue(foundDomain1, "Domain 1 should be in the list");
+        assertTrue(foundDomain2, "Domain 2 should be in the list");
+
+        // Verify redirect URIs
+        assertEq(redirectUris.length, 2, "Should have 2 authorized redirect URIs");
+        // Check if both redirect URIs are present (order may vary)
+        bool foundUri1 = false;
+        bool foundUri2 = false;
+        for (uint256 i = 0; i < redirectUris.length; i++) {
+            if (keccak256(abi.encodePacked(redirectUris[i])) == keccak256(abi.encodePacked(TEST_REDIRECT_URI_1))) {
+                foundUri1 = true;
+            } else if (keccak256(abi.encodePacked(redirectUris[i])) == keccak256(abi.encodePacked(TEST_REDIRECT_URI_2)))
+            {
+                foundUri2 = true;
+            }
+        }
+        assertTrue(foundUri1, "Redirect URI 1 should be in the list");
+        assertTrue(foundUri2, "Redirect URI 2 should be in the list");
+    }
+
+    function testGetToolCidFromHash() public {
+        // Register a tool
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+
+        // Calculate hash of the tool IPFS CID
+        bytes32 toolHash = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1));
+
+        // Retrieve tool IPFS CID using hash
+        string memory toolIpfsCid = wrappedAppViewFacet.getToolCidFromHash(toolHash);
+        assertEq(toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Retrieved tool IPFS CID should match the original");
+    }
+
+    function testGetAppByDelegatee() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Get app by delegatee
+        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_1);
+
+        // Verify app data
+        assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
+        assertEq(app.manager, deployer, "App manager doesn't match");
+
+        // Test with non-delegatee address - should return an empty app with default values
+        app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
+        assertEq(app.name, "", "Name should be empty for non-delegatee");
+    }
 }
