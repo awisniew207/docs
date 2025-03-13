@@ -74,6 +74,9 @@ contract VincentUserFacet is VincentBase {
         // Add the app version to the User's permitted apps
         us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].add(appVersion);
 
+        // Add the app ID to the User's permitted apps set
+        us_.agentPkpTokenIdToPermittedApps[pkpTokenId].add(appId);
+
         // Add the PKP Token ID to the global registered agent PKPs if it is not already registered
         // .add will not add the PKP Token ID again if it is already registered
         us_.registeredAgentPkps.add(pkpTokenId);
@@ -105,6 +108,11 @@ contract VincentUserFacet is VincentBase {
 
         // Remove the App Version from the User's Permitted App Versions
         us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].remove(appVersion);
+
+        // If there are no more permitted versions for this app, remove the app from the permitted apps set
+        if (us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].length() == 0) {
+            us_.agentPkpTokenIdToPermittedApps[pkpTokenId].remove(appId);
+        }
     }
 
     function setToolPolicyParameters(
@@ -206,6 +214,12 @@ contract VincentUserFacet is VincentBase {
                         );
                     }
                 }
+
+                // Check if there are any parameters left for this policy
+                if (policyParams.policyParameterNameHashes.length() == 0) {
+                    // If no parameters left, remove the policy from the set of policies with parameters
+                    toolStorage.policyIpfsCidHashesWithParameters.remove(hashedPolicyId);
+                }
             }
         }
     }
@@ -306,7 +320,10 @@ contract VincentUserFacet is VincentBase {
                     policyParametersStorage.policyParameterNameHashToValue[hashedPolicyParameterName] =
                         policyParameterValues[i][j][k];
 
-                    // Step 5.4: Emit an event for tracking.
+                    // Step 5.5: Add the policy hash to the set of policies with parameters.
+                    userToolPolicyStorage.policyIpfsCidHashesWithParameters.add(hashedToolPolicy);
+
+                    // Step 5.6: Emit an event for tracking.
                     emit ToolPolicyParameterSet(
                         pkpTokenId, appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
                     );

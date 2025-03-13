@@ -140,8 +140,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.delegatees[0], TEST_DELEGATEE_1, "Delegatee doesn't match");
 
         // Verify versioned app data
-        VincentAppViewFacet.VersionedAppView memory versionedApp =
-            wrappedAppViewFacet.getAppByVersion(appId, appVersion);
+        VincentAppViewFacet.VersionedAppView memory versionedApp = wrappedAppViewFacet.getAppVersion(appId, appVersion);
 
         assertEq(versionedApp.version, 1, "App version should be 1");
         assertEq(versionedApp.enabled, true, "App version should be enabled by default");
@@ -188,8 +187,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(latestVersion, 2, "Latest version should be 2");
 
         // Verify versioned app data
-        VincentAppViewFacet.VersionedAppView memory versionedApp =
-            wrappedAppViewFacet.getAppByVersion(appId, newVersion);
+        VincentAppViewFacet.VersionedAppView memory versionedApp = wrappedAppViewFacet.getAppVersion(appId, newVersion);
 
         assertEq(versionedApp.version, 2, "App version should be 2");
         assertEq(versionedApp.enabled, true, "App version should be enabled by default");

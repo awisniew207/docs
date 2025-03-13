@@ -105,12 +105,16 @@ library VincentUserStorage {
     struct ToolPolicyStorage {
         // Tool Policy CID Hash -> Policy Parameters Storage
         mapping(bytes32 => PolicyParametersStorage) policyIpfsCidHashToPolicyParametersStorage;
+        // Set of Policy IPFS CID Hashes that have parameters set
+        EnumerableSet.Bytes32Set policyIpfsCidHashesWithParameters;
     }
 
     struct UserStorage {
         EnumerableSet.UintSet registeredAgentPkps;
         // Agent PKP Token ID -> App ID -> Permitted App Versions
         mapping(uint256 => mapping(uint256 => EnumerableSet.UintSet)) agentPkpTokenIdToPermittedAppVersions;
+        // Agent PKP Token ID -> Set of App IDs that have at least one permitted version
+        mapping(uint256 => EnumerableSet.UintSet) agentPkpTokenIdToPermittedApps;
         // Agent PKP Token ID -> App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
         mapping(uint256 => mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))))
             agentPkpTokenIdToToolPolicyStorage;
