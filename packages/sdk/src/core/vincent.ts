@@ -73,22 +73,6 @@ export class VincentSDK {
     return sessionSigs.invokeLitAction(signer, litActionCID, params);
   }
 
-  // Agent PKP Management
-  async getDelegatedAgentPKPs(): Promise<void> {
-    const pkps = await fetchDelegatedAgentPKPs();
-    return pkps;
-  }
-
-  async setDelegatee(walletAddress: string): Promise<void> {
-    const txn = await setDelegateeWallet();
-    return txn;
-  }
-
-  async updateDelegatee(walletAddress: string): Promise<void> {
-    const txn = await updateDelegateeWallet();
-    return txn;
-  }
-
   // Consent Page Management
   openSignInConsentPage(): void {
     const url = new URL('/signin', this.consentPageUrl);
