@@ -1,67 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "../helpers/DiamondTestHelper.sol";
-import "../../src/facets/VincentToolFacet.sol";
-import "../../src/facets/VincentToolViewFacet.sol";
+import "../helpers/VincentTestHelper.sol";
 
 /**
  * @title VincentToolFacetTest
- * @dev Tests for the VincentToolFacet contract
+ * @dev Tests for the VincentToolFacet and VincentToolViewFacet contracts
  */
-contract VincentToolFacetTest is DiamondTestHelper {
-    // Vincent facets
-    VincentToolFacet toolFacet;
-    VincentToolViewFacet toolViewFacet;
+contract VincentToolFacetTest is VincentTestHelper {
+    function setUp() public override {
+        // Call parent setup
+        super.setUp();
 
-    // Wrapped facets (to call through the diamond)
-    VincentToolFacet wrappedToolFacet;
-    VincentToolViewFacet wrappedToolViewFacet;
-
-    // Test data
-    string constant TEST_TOOL_IPFS_CID_1 = "QmPK1s3pNYLi9ERiq3BDxKa4XosgWwFRQUydHUtz4YgpqB";
-    string constant TEST_TOOL_IPFS_CID_2 = "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG";
-    bytes32 constant TEST_TOOL_IPFS_CID_HASH_1 = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1));
-    bytes32 constant TEST_TOOL_IPFS_CID_HASH_2 = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2));
-
-    // Event definitions
-    event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
-
-    function setUp() public {
-        // Set up the base diamond with core facets
-        setUpBaseDiamond();
-
-        // Deploy the tool facets
-        toolFacet = new VincentToolFacet();
-        toolViewFacet = new VincentToolViewFacet();
-
-        // Add ToolFacet
-        bytes4[] memory toolSelectors = new bytes4[](2);
-        toolSelectors[0] = VincentToolFacet.registerTool.selector;
-        toolSelectors[1] = VincentToolFacet.registerTools.selector;
-        addFacet(address(toolFacet), toolSelectors);
-
-        // Add ToolViewFacet
-        bytes4[] memory toolViewSelectors = new bytes4[](2);
-        toolViewSelectors[0] = VincentToolViewFacet.getToolIpfsCidByHash.selector;
-        toolViewSelectors[1] = VincentToolViewFacet.getAllRegisteredTools.selector;
-        addFacet(address(toolViewFacet), toolViewSelectors);
-
-        // Create wrapped instances to call through the diamond
-        wrappedToolFacet = VincentToolFacet(address(diamond));
-        wrappedToolViewFacet = VincentToolViewFacet(address(diamond));
+        // Set up the test as the deployer
+        vm.startPrank(deployer);
     }
 
     function testRegisterSingleTool() public {
         // Set up event expectation
         vm.expectEmit(true, false, false, false);
-        emit NewToolRegistered(TEST_TOOL_IPFS_CID_HASH_1);
+        emit NewToolRegistered(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
 
         // Register a tool
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
         // Verify it was registered correctly
-        string memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(TEST_TOOL_IPFS_CID_HASH_1);
+        string memory retrievedCid =
+            wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
         assertEq(retrievedCid, TEST_TOOL_IPFS_CID_1, "Retrieved tool IPFS CID doesn't match registered one");
 
         // Check all tools list
@@ -93,8 +58,10 @@ contract VincentToolFacetTest is DiamondTestHelper {
         wrappedToolFacet.registerTools(tools);
 
         // Verify they were registered correctly
-        string memory retrievedCid1 = wrappedToolViewFacet.getToolIpfsCidByHash(TEST_TOOL_IPFS_CID_HASH_1);
-        string memory retrievedCid2 = wrappedToolViewFacet.getToolIpfsCidByHash(TEST_TOOL_IPFS_CID_HASH_2);
+        string memory retrievedCid1 =
+            wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
+        string memory retrievedCid2 =
+            wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2)));
 
         assertEq(retrievedCid1, TEST_TOOL_IPFS_CID_1, "Retrieved tool 1 IPFS CID doesn't match registered one");
         assertEq(retrievedCid2, TEST_TOOL_IPFS_CID_2, "Retrieved tool 2 IPFS CID doesn't match registered one");
@@ -108,9 +75,9 @@ contract VincentToolFacetTest is DiamondTestHelper {
         bool foundTool2 = false;
 
         for (uint256 i = 0; i < allTools.length; i++) {
-            if (keccak256(abi.encodePacked(allTools[i])) == TEST_TOOL_IPFS_CID_HASH_1) {
+            if (keccak256(abi.encodePacked(allTools[i])) == keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1))) {
                 foundTool1 = true;
-            } else if (keccak256(abi.encodePacked(allTools[i])) == TEST_TOOL_IPFS_CID_HASH_2) {
+            } else if (keccak256(abi.encodePacked(allTools[i])) == keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2))) {
                 foundTool2 = true;
             }
         }
