@@ -53,8 +53,11 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@lit-protocol/auth-helpers": "^7.0.8",
+    "@lit-protocol/constants": "^7.0.8",
     "@lit-protocol/lit-node-client": "^7.0.8",
     "@lit-protocol/pkp-ethers": "^7.0.8",
+    "@lit-protocol/types": "^7.0.8",
     "@noble/secp256k1": "^2.2.3",
     "buffer": "^6.0.3",
     "did-jwt": "^8.0.8",

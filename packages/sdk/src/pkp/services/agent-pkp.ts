@@ -1,5 +1,23 @@
-export async function fetchDelegatedAgentPKPs() {}
+import { getSignerOrProvider, Network } from "../contract/contracts";
 
-export async function setDelegateeWallet() {}
+class VinceContracts {
+    private network: Network;   
 
-export async function updateDelegateeWallet() {}
+    constructor(network: Network) {
+        this.network = network;
+    }
+
+    async fetchDelegatedAgentPKPs(appId: number, version: number) {
+        const contract = await getSignerOrProvider(this.network, true);
+        const pkps = await contract.getAppVersion(appId, version);
+        return pkps;
+    }
+    
+    async setDelegateeWallet(network: Network, appId: number, version: number) {
+        const contract = await getSignerOrProvider(network, true);
+        const pkps = await contract.setDelegateeWallet(appId, version);
+        return pkps;
+    }
+    
+    async updateDelegateeWallet() {}
+}   
