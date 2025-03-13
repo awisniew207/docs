@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useAccount } from "wagmi";
 import DashboardScreen from "@/components/developer/Dashboard";
-import { checkIfAppExists, formCompleteVincentAppForDev } from "@/services/get-app";
+import { checkIfAppExists, formCompleteVincentAppForDev } from "@/services/backend/api";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { VincentApp } from "@/types";
 import CreateAppScreen from "@/components/developer/CreateApp";

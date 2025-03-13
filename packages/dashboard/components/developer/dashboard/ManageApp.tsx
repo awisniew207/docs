@@ -26,7 +26,7 @@ import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
 import { VincentApp } from '@/types';
 import { useAccount } from 'wagmi';
-import { updateApp } from '@/services/api';
+import { updateApp } from '@/services/backend/api';
 
 const formSchema = z.object({
   appName: z
@@ -68,9 +68,9 @@ export default function ManageAppScreen({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      appName: dashboard?.appMetadata.appName || '',
-      appDescription: dashboard?.appMetadata.description || '',
-      email: dashboard?.appMetadata.email || '',
+      appName: dashboard?.appName || '',
+      appDescription: dashboard?.description || '',
+      email: dashboard?.appMetadata?.email || '',
     },
   });
 
@@ -81,9 +81,12 @@ export default function ManageAppScreen({
       if (!address) return;
 
       await updateApp(address, {
+        appId: dashboard.appId,
         name: values.appName,
         description: values.appDescription,
         contactEmail: values.email,
+        authorizedDomains: dashboard.authorizedDomains,
+        authorizedRedirectUris: dashboard.authorizedRedirectUris,
       });
       onSuccess();
     } catch (error) {
@@ -193,13 +196,12 @@ export default function ManageAppScreen({
                 </div>
                 <div className="text-sm">
                   <div className="font-medium">App Name</div>
-                  <div className="mt-1">{dashboard.appMetadata.appName}</div>
+                  <div className="mt-1">{dashboard.appName}</div>
                 </div>
                 <div className="text-sm">
                   <div className="font-medium">Manager Address</div>
-                  <div className="mt-1">{dashboard.appCreator}</div>
                   <div className="mt-1 break-all">
-                    {dashboard.delegatees[0]}
+                    {dashboard.managementWallet}
                   </div>
                 </div>
                 {/* <Button variant="destructive" className="w-full">
@@ -211,13 +213,13 @@ export default function ManageAppScreen({
 
           <Card>
             <CardHeader>
-              <CardTitle>Allowed Roles</CardTitle>
+              <CardTitle>Allowed Delegatees</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {dashboard.roles.map((role) => (
-                  <div key={role.roleName} className="text-sm break-all">
-                    {role.roleName}
+                {dashboard.delegatees.map((delegatee) => (
+                  <div key={delegatee} className="text-sm break-all">
+                    {delegatee}
                   </div>
                 ))}
               </div>

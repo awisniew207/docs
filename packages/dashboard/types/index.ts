@@ -1,26 +1,23 @@
 export interface VincentApp {
-    appCreator: string;
-    appMetadata: AppMetadata;
-    roles: Role[];
+    appId: number;
+    appName: string;
+    description: string;
+    authorizedDomains: string[];
+    authorizedRedirectUris: string[];
     delegatees: string[];
-}
-
-export interface Role {
-    roleId: string;
-    roleName: string;
-    roleDescription: string;
-    toolPolicy: ToolPolicy[];
+    toolPolicies: ToolPolicy[];
+    managementWallet: string;
+    isEnabled: boolean;
+    appMetadata?: AppMetadata; // off-chain
 }
 
 export interface AppMetadata {
-    appName: string;
-    description: string;
     email: string;
 }
 
 export interface ToolPolicy {
-    description: any;
-    toolIpfsCid: any;
+    description: string;
+    toolIpfsCid: string;
     policyVarsSchema: PolicyParamSchema[];
 }
 
@@ -30,45 +27,9 @@ export interface PolicyParamSchema {
     defaultValue: any;
 }
 
-
 export interface Tool {
     toolId: string;
     ipfsCid: string;
-}
-
-export interface Policy {
-    policyId: string;
-    ipfsCid: string;
-    schema: PolicyParamSchema[];
-}
-
-export interface RegisterAppRequest {
-    signedMessage: string;
-    appName: string;
-    appDescription: string;
-    logo?: string;
-    email: string;
-    domain?: string;
-}
-
-export interface UpdateRoleRequest {
-    signedMessage: string;
-    appId: string;
-    roleId: string;
-    roleVersion: string;
-    roleName: string;
-    roleDescription: string;
-    toolPolicy: {
-        tool: Tool;
-        policy: Policy;
-    }[];
-}
-
-export interface RoleResponse {
-    roleId: string;
-    roleVersion: string;
-    toolPolicy: {
-        tool: Tool;
-        policy: Policy;
-    }[];
+    name: string;
+    description: string;
 }

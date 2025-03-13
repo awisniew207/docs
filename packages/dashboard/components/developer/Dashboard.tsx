@@ -1,11 +1,9 @@
 import { VincentApp } from '@/types';
 import { useEffect, useState } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
-import CreateRoleScreen from './dashboard/CreateRole';
-import ManageRoleScreen from './dashboard/ManageRole';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
-import { ArrowRight } from 'lucide-react';
-import { Plus, Settings } from 'lucide-react';
+import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
+import { ArrowRight, Plus, Settings } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import {
@@ -25,11 +23,11 @@ export default function DashboardScreen({
   onRefetch: () => void;
 }) {
   const [dashboard, setDashboard] = useState<VincentApp>();
-  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [showManageApp, setShowManageApp] = useState(false);
   const [showDelegateeManager, setShowDelegateeManager] = useState(false);
-  const [showCreateRole, setShowCreateRole] = useState(false);
+  const [showToolPolicies, setShowToolPolicies] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<VincentApp | null>(null);
 
   useEffect(() => {
     if (vincentApp) {
@@ -60,7 +58,7 @@ export default function DashboardScreen({
     return (
       <ManageAppScreen
         onBack={() => setShowManageApp(false)}
-        dashboard={dashboard}
+        dashboard={selectedApp || dashboard}
         onSuccess={() => {
           setShowManageApp(false);
           handleRefetch();
@@ -69,123 +67,196 @@ export default function DashboardScreen({
     );
   }
 
-  if (showDelegateeManager) {
+  if (showDelegateeManager && selectedApp) {
     return (
       <DelegateeManagerScreen
         onBack={() => setShowDelegateeManager(false)}
-        dashboard={dashboard}
+        dashboard={selectedApp}
       />
     );
   }
 
-  if (showCreateRole) {
+  if (showToolPolicies && selectedApp) {
     return (
-      <CreateRoleScreen
-        onBack={() => setShowCreateRole(false)}
-        dashboard={dashboard}
-        onSuccess={() => {
-          setShowCreateRole(false);
-          handleRefetch();
-        }}
+      <ManageToolPoliciesScreen
+        onBack={() => setShowToolPolicies(false)}
+        dashboard={selectedApp}
       />
     );
   }
 
-  if (selectedRoleId && dashboard) {
+  if (selectedApp) {
     return (
-      <ManageRoleScreen
-        onBack={() => setSelectedRoleId(null)}
-        dashboard={dashboard}
-        onSuccess={() => {
-          setSelectedRoleId(null);
-          handleRefetch();
-        }}
-        roleId={selectedRoleId}
-      />
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => setSelectedApp(null)}
+              className="p-0"
+            >
+              <ArrowRight className="h-4 w-4 rotate-180" />
+            </Button>
+            <h1 className="text-3xl font-bold">{selectedApp.appName}</h1>
+          </div>
+          <div className="flex gap-2 items-center">
+            <Button variant="default" onClick={() => setShowManageApp(true)}>
+              <Settings className="h-4 w-4 mr-2" />
+              Manage App
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => setShowDelegateeManager(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Manage Delegatees
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => setShowToolPolicies(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Manage Tool Policies
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>App Details</CardTitle>
+              <CardDescription>{selectedApp.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="text-sm">
+                  <span className="font-medium">App ID:</span> {selectedApp.appId}
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">Management Wallet:</span>{' '}
+                  {selectedApp.managementWallet}
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">Status:</span>{' '}
+                  <Badge variant={selectedApp.isEnabled ? 'default' : 'secondary'}>
+                    {selectedApp.isEnabled ? 'Enabled' : 'Disabled'}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Tool Policies</CardTitle>
+              <CardDescription>
+                {selectedApp.toolPolicies.length === 0
+                  ? 'No tool policies configured yet.'
+                  : `${selectedApp.toolPolicies.length} tool policies configured`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {selectedApp.toolPolicies.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-600">
+                    Add tool policies to enable functionality for your app
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {selectedApp.toolPolicies.map((policy, index) => (
+                    <Card key={index}>
+                      <CardHeader>
+                        <CardTitle>Tool Policy {index + 1}</CardTitle>
+                        <CardDescription>{policy.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div className="text-sm">
+                            <span className="font-medium">Tool IPFS CID:</span>{' '}
+                            {policy.toolIpfsCid}
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-medium">Policy Variables:</span>{' '}
+                            {policy.policyVarsSchema.length} configured
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Delegatees</CardTitle>
+              <CardDescription>
+                {selectedApp.delegatees.length === 0
+                  ? 'No delegatees configured yet.'
+                  : `${selectedApp.delegatees.length} delegatees configured`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {selectedApp.delegatees.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-600">
+                    Add delegatees to allow other wallets to manage your app
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {selectedApp.delegatees.map((delegatee, index) => (
+                    <div key={index} className="text-sm">
+                      <span className="font-medium">Delegatee {index + 1}:</span>{' '}
+                      {delegatee}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">{dashboard.appMetadata.appName}</h1>
-        <div className="flex gap-2 items-center">
-          <Button variant="default" onClick={() => setShowManageApp(true)}>
-            <Settings className="h-4 w-4 mr-2" />
-            Manage App
-          </Button>
-          <Button variant="default" onClick={() => setShowCreateRole(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create New Role
-          </Button>
-          <Button
-            variant="default"
-            onClick={() => setShowDelegateeManager(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create New Delegatee
-          </Button>
-        </div>
+        <h1 className="text-3xl font-bold">Your Apps</h1>
+        <Button variant="default" onClick={() => setShowManageApp(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create New App
+        </Button>
       </div>
 
-      {dashboard?.roles.length === 0 ? (
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="cursor-pointer hover:bg-gray-50" onClick={() => setSelectedApp(dashboard)}>
           <CardHeader>
-            <CardTitle>No Roles Found</CardTitle>
-            <CardDescription>
-              You haven&apos;t created any roles yet.
-            </CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>{dashboard.appName}</CardTitle>
+              </div>
+              <Badge variant={dashboard.isEnabled ? 'default' : 'secondary'}>
+                {dashboard.isEnabled ? 'Enabled' : 'Disabled'}
+              </Badge>
+            </div>
           </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>{dashboard.toolPolicies.length} Tool Policies</span>
+                <span>{dashboard.delegatees.length} Delegatees</span>
+              </div>
+              <div className="text-sm text-center">
+                Manage App
+              </div>
+            </div>
+          </CardContent>
         </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {dashboard?.roles.map((role) => (
-            <Card key={role.roleId}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle>{role.roleName}</CardTitle>
-                    <CardDescription className="mt-2">
-                      {role.roleDescription}
-                    </CardDescription>
-                  </div>
-                  <Badge
-                    variant={
-                      // role.enabled
-                      //     ? "default"
-                      //     : "secondary"
-
-                      'secondary'
-                    }
-                  >
-                    {/* {role.enabled ? "Enabled" : "Disabled"} */}
-                    {'Enabled'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-sm">
-                    <span className="font-medium">Role ID:</span> {role.roleId}
-                  </div>
-                  {/* <div className="text-sm">
-                                        <span className="font-medium">
-                                            Role Version:
-                                        </span>{" "}
-                                        {role.roleId}
-                                    </div> */}
-                  <Button
-                    className="w-full"
-                    onClick={() => setSelectedRoleId(role.roleId)}
-                  >
-                    Manage Role <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

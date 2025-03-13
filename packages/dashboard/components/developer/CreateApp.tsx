@@ -22,8 +22,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState } from "react";
-import { useAccount } from "wagmi";
-import { registerApp as registerAppApi } from "@/services/api";
+import { useAccount, useChainId } from "wagmi";
+import { VincentContracts } from "@/services/contract/contracts";
+import { Network } from "@/services/contract/config";
 
 // URL normalization helpers
 const normalizeURL = (url: string): string => {
@@ -61,7 +62,29 @@ const formSchema = z.object({
         .min(10, "Description must be at least 10 characters")
         .max(500, "Description cannot exceed 500 characters"),
 
-    managerDelegatees: z.array(z.string()).optional(),
+    authorizedDomains: z
+        .string()
+        .transform((val) => {
+            if (!val) return [];
+            return val.split(",").map((domain) => domain.trim()).filter(Boolean);
+        })
+        .pipe(z.array(z.string())),
+
+    authorizedRedirectUris: z
+        .string()
+        .transform((val) => {
+            if (!val) return [];
+            return val.split(",").map((uri) => normalizeURL(uri.trim())).filter(Boolean);
+        })
+        .pipe(z.array(z.string())),
+
+    delegatees: z
+        .string()
+        .transform((val) => {
+            if (!val) return [];
+            return val.split(",").map((addr) => addr.trim()).filter(Boolean);
+        })
+        .pipe(z.array(z.string())),
 
     logo: z.string().optional(),
 
@@ -117,41 +140,35 @@ export default function CreateAppScreen() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { address } = useAccount();
+    const chainId = useChainId();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             appName: "",
             description: "",
-            managerDelegatees: [],
-            logo: "",
-            supportEmail: "",
-            githubLink: "",
-            websiteUrl: "",
+            authorizedDomains: [],
+            authorizedRedirectUris: [],
+            delegatees: [],
         },
         mode: "onBlur",
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        if (!address) return;
+        if (!address || !chainId) return;
         
         try {
             setIsSubmitting(true);
             setError(null);
 
-            const response = await registerAppApi(address, {
-                name: values.appName,
-                description: values.description,
-                contactEmail: values.supportEmail || "",
-            });
-            
-            if (!response.success || !response.data?.app) {
-                throw new Error(response.error || "Failed to create app");
-            }
-            
-            if (!response.success) {
-                throw new Error(response.error || "Failed to create app");
-            }
+            const contracts = new VincentContracts('datil-dev' as Network);
+            await contracts.registerApp(
+                values.appName,
+                values.description,
+                values.authorizedDomains,
+                values.authorizedRedirectUris,
+                values.delegatees
+            );
             
             window.location.reload();
             
@@ -229,21 +246,39 @@ export default function CreateAppScreen() {
                                             </FormItem>
                                         )}
                                     />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="authorizedDomains"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Authorized Domains
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="example.com, app.example.com"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
 
                                 <div className="space-y-6">
                                     <FormField
                                         control={form.control}
-                                        name="supportEmail"
+                                        name="authorizedRedirectUris"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
-                                                    Contact Email
+                                                    Authorized Redirect URIs
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        type="email"
-                                                        placeholder="support@example.com"
+                                                        placeholder="https://example.com/callback, https://app.example.com/callback"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -252,43 +287,24 @@ export default function CreateAppScreen() {
                                         )}
                                     />
 
-                                    <FormField
+                                    {/* <FormField
                                         control={form.control}
-                                        name="websiteUrl"
+                                        name="delegatees"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
-                                                    Website Domain
+                                                    Delegatee Addresses
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        placeholder="example.com"
+                                                        placeholder="0x123..., 0x456..."
                                                         {...field}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="githubLink"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    GitHub Repository (Optional)
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="github.com/username/repo"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    /> */}
                                 </div>
                             </div>
 
