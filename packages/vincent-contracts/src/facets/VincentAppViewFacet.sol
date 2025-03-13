@@ -146,7 +146,8 @@ contract VincentAppViewFacet {
         versionedAppView.authorizedDomains = appView.authorizedDomains;
         versionedAppView.authorizedRedirectUris = appView.authorizedRedirectUris;
 
-        VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[version];
+        // App versions start at 1, but the appVersions array is 0-indexed
+        VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[version - 1];
 
         versionedAppView.version = versionedApp.version;
         versionedAppView.enabled = versionedApp.enabled;
@@ -367,7 +368,8 @@ contract VincentAppViewFacet {
      */
     function isAppVersionEnabled(uint256 appId, uint256 version) external view returns (bool) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        return as_.appIdToApp[appId].versionedApps[version].enabled;
+        // App versions start at 1, but the appVersions array is 0-indexed
+        return as_.appIdToApp[appId].versionedApps[version - 1].enabled;
     }
 
     /**
@@ -382,7 +384,8 @@ contract VincentAppViewFacet {
         returns (uint256[] memory delegatedAgentPkpTokenIds)
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        return as_.appIdToApp[appId].versionedApps[version].delegatedAgentPkps.values();
+        // App versions start at 1, but the appVersions array is 0-indexed
+        return as_.appIdToApp[appId].versionedApps[version - 1].delegatedAgentPkps.values();
     }
 
     // ==================================================================================
@@ -399,7 +402,8 @@ contract VincentAppViewFacet {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
 
-        VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[version];
+        // App versions start at 1, but the appVersions array is 0-indexed
+        VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[version - 1];
 
         tools = new string[](versionedApp.toolIpfsCidHashes.length());
         for (uint256 i = 0; i < versionedApp.toolIpfsCidHashes.length(); i++) {
@@ -453,12 +457,13 @@ contract VincentAppViewFacet {
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
         for (uint256 i = 0; i < versionCount; i++) {
             uint256 version = permittedVersions.at(i);
-            // Make sure version exists and is enabled
+            // Skip invalid or disabled versions
             if (version >= app.versionedApps.length) continue;
-            if (!app.versionedApps[version].enabled) continue;
+            // App versions start at 1, but the appVersions array is 0-indexed
+            if (!app.versionedApps[version - 1].enabled) continue;
 
             // Check if this version contains the tool
-            if (app.versionedApps[version].toolIpfsCidHashes.contains(toolIpfsCidHash)) {
+            if (app.versionedApps[version - 1].toolIpfsCidHashes.contains(toolIpfsCidHash)) {
                 return true;
             }
         }
@@ -496,9 +501,9 @@ contract VincentAppViewFacet {
         for (uint256 i = 0; i < versionCount; i++) {
             uint256 version = permittedVersions.at(i);
             // Skip invalid or disabled versions
-            if (version >= app.versionedApps.length || !app.versionedApps[version].enabled) continue;
+            if (version >= app.versionedApps.length || !app.versionedApps[version - 1].enabled) continue;
 
-            totalToolsCount += app.versionedApps[version].toolIpfsCidHashes.length();
+            totalToolsCount += app.versionedApps[version - 1].toolIpfsCidHashes.length();
         }
 
         if (totalToolsCount == 0) return new bytes32[](0);
@@ -510,11 +515,11 @@ contract VincentAppViewFacet {
         for (uint256 i = 0; i < versionCount; i++) {
             uint256 version = permittedVersions.at(i);
             // Skip invalid or disabled versions
-            if (version >= app.versionedApps.length || !app.versionedApps[version].enabled) continue;
+            if (version >= app.versionedApps.length || !app.versionedApps[version - 1].enabled) continue;
 
-            uint256 versionToolCount = app.versionedApps[version].toolIpfsCidHashes.length();
+            uint256 versionToolCount = app.versionedApps[version - 1].toolIpfsCidHashes.length();
             for (uint256 j = 0; j < versionToolCount; j++) {
-                allToolHashes[toolIndex] = app.versionedApps[version].toolIpfsCidHashes.at(j);
+                allToolHashes[toolIndex] = app.versionedApps[version - 1].toolIpfsCidHashes.at(j);
                 toolIndex++;
             }
         }

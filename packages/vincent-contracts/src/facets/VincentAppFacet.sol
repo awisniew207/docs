@@ -261,7 +261,7 @@ contract VincentAppFacet is VincentBase {
         // App versions start at 1, but the `versionedApps` array is 0-indexed.
         VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[newAppVersion - 1];
         versionedApp.version = newAppVersion;
-        versionedApp.enabled = true;
+        versionedApp.enabled = true; // App versions are enabled by default
 
         // Step 4: Fetch tool policy storage.
         VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
