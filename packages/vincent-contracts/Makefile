@@ -113,18 +113,22 @@ deploy-vincent-datil: ## Deploy the Vincent Diamond contract to Datil network on
 		--rpc-url $(VINCENT_DEPLOYMENT_RPC_URL)
 
 get-abis: ## Get human-readable ABIs for all facets
-	@echo "Getting ABI for DiamondCutFacet..."
-	@forge inspect DiamondCutFacet abi > out/DiamondCutFacet.abi.json
-	@echo "Getting ABI for DiamondLoupeFacet..."
-	@forge inspect DiamondLoupeFacet abi > out/DiamondLoupeFacet.abi.json
-	@echo "Getting ABI for OwnershipFacet..."
-	@forge inspect OwnershipFacet abi > out/OwnershipFacet.abi.json
+	# @echo "Getting ABI for DiamondCutFacet..."
+	# @forge inspect DiamondCutFacet abi > abis/DiamondCutFacet.abi.json
+	# @echo "Getting ABI for DiamondLoupeFacet..."
+	# @forge inspect DiamondLoupeFacet abi > abis/DiamondLoupeFacet.abi.json
+	# @echo "Getting ABI for OwnershipFacet..."
+	# @forge inspect OwnershipFacet abi > abis/OwnershipFacet.abi.json
 	@echo "Getting ABI for VincentToolFacet..."
-	@forge inspect VincentToolFacet abi > out/VincentToolFacet.abi.json
+	@forge inspect VincentToolFacet abi > abis/VincentToolFacet.abi.json
 	@echo "Getting ABI for VincentToolViewFacet..."
-	@forge inspect VincentToolViewFacet abi > out/VincentToolViewFacet.abi.json
+	@forge inspect VincentToolViewFacet abi > abis/VincentToolViewFacet.abi.json
 	@echo "Getting ABI for VincentAppFacet..."
-	@forge inspect VincentAppFacet abi > out/VincentAppFacet.abi.json
+	@forge inspect VincentAppFacet abi > abis/VincentAppFacet.abi.json
+	@echo "Getting ABI for VincentAppViewFacet..."
+	@forge inspect VincentAppViewFacet abi > abis/VincentAppViewFacet.abi.json
 	@echo "Getting ABI for VincentUserFacet..."
-	@forge inspect VincentUserFacet abi > out/VincentUserFacet.abi.json
-	@echo "ABIs written to out/*.abi.json" 
+	@forge inspect VincentUserFacet abi > abis/VincentUserFacet.abi.json
+	@echo "Getting ABI for VincentUserViewFacet..."
+	@forge inspect VincentUserViewFacet abi > abis/VincentUserViewFacet.abi.json
+	@echo "ABIs written to abis/*.abi.json" 
