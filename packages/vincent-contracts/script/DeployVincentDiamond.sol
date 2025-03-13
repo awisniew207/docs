@@ -11,6 +11,7 @@ import "../src/facets/VincentToolViewFacet.sol";
 import "../src/facets/VincentAppFacet.sol";
 import "../src/facets/VincentAppViewFacet.sol";
 import "../src/facets/VincentUserFacet.sol";
+import "../src/facets/VincentUserViewFacet.sol";
 import "../src/VincentBase.sol";
 import "../src/diamond-base/interfaces/IDiamondCut.sol";
 import "../src/diamond-base/interfaces/IDiamondLoupe.sol";
@@ -41,9 +42,10 @@ contract DeployVincentDiamond is Script {
         VincentAppFacet appFacet = new VincentAppFacet();
         VincentAppViewFacet appViewFacet = new VincentAppViewFacet();
         VincentUserFacet userFacet = new VincentUserFacet();
+        VincentUserViewFacet userViewFacet = new VincentUserViewFacet();
 
         // Build cut struct for adding facets
-        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](7);
+        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](8);
 
         // Add DiamondLoupeFacet
         cut[0] = IDiamondCut.FacetCut({
@@ -92,6 +94,13 @@ contract DeployVincentDiamond is Script {
             facetAddress: address(userFacet),
             action: IDiamondCut.FacetCutAction.Add,
             functionSelectors: getUserFacetSelectors()
+        });
+
+        // Add UserViewFacet
+        cut[7] = IDiamondCut.FacetCut({
+            facetAddress: address(userViewFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: getUserViewFacetSelectors()
         });
 
         return (cut, address(diamondCutFacet));
@@ -213,7 +222,7 @@ contract DeployVincentDiamond is Script {
 
     /// @notice Get function selectors for VincentAppViewFacet
     function getAppViewFacetSelectors() public pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](10);
+        bytes4[] memory selectors = new bytes4[](9);
         selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
         selectors[1] = VincentAppViewFacet.getRegisteredManagers.selector;
         selectors[2] = VincentAppViewFacet.getAppById.selector;
@@ -223,7 +232,6 @@ contract DeployVincentDiamond is Script {
         selectors[6] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
         selectors[7] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
         selectors[8] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
-        selectors[9] = VincentAppViewFacet.getToolCidFromHash.selector;
 
         return selectors;
     }
@@ -235,6 +243,18 @@ contract DeployVincentDiamond is Script {
         selectors[1] = VincentUserFacet.unPermitAppVersion.selector;
         selectors[2] = VincentUserFacet.setToolPolicyParameters.selector;
         selectors[3] = VincentUserFacet.removeToolPolicyParameters.selector;
+        return selectors;
+    }
+
+    /// @notice Get function selectors for VincentUserViewFacet
+    function getUserViewFacetSelectors() public pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](6);
+        selectors[0] = VincentUserViewFacet.getAllRegisteredAgentPkps.selector;
+        selectors[1] = VincentUserViewFacet.getPermittedAppVersionsForPkp.selector;
+        selectors[2] = VincentUserViewFacet.getAllPermittedAppIdsForPkp.selector;
+        selectors[3] = VincentUserViewFacet.getPermittedToolsForPkpAndAppVersion.selector;
+        selectors[4] = VincentUserViewFacet.isToolPermittedForDelegateeAndPkp.selector;
+        selectors[5] = VincentUserViewFacet.getAllPoliciesWithParametersForTool.selector;
         return selectors;
     }
 

@@ -242,18 +242,4 @@ contract VincentAppViewFacet {
                 as_.authorizedRedirectUriHashToRedirectUri[as_.appIdToApp[appId].authorizedRedirectUris.at(i)];
         }
     }
-
-    // ==================================================================================
-    // Tool-related Functions
-    // ==================================================================================
-
-    /**
-     * @notice Retrieves the IPFS CID of a tool from its hash
-     * @param toolIpfsCidHash The hash of the tool IPFS CID
-     * @return The original IPFS CID as a string
-     */
-    function getToolCidFromHash(bytes32 toolIpfsCidHash) external view returns (string memory) {
-        VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
-        return ts.toolIpfsCidHashToIpfsCid[toolIpfsCidHash];
-    }
 }

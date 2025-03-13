@@ -545,7 +545,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         bytes32 toolHash = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1));
 
         // Retrieve tool IPFS CID using hash
-        string memory toolIpfsCid = wrappedAppViewFacet.getToolCidFromHash(toolHash);
+        string memory toolIpfsCid = wrappedToolViewFacet.getToolIpfsCidByHash(toolHash);
         assertEq(toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Retrieved tool IPFS CID should match the original");
     }
 
