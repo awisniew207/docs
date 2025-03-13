@@ -26,7 +26,7 @@ import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
 import { VincentApp } from '@/types';
 import { useAccount } from 'wagmi';
-import { updateApp } from '@/services/backend/api';
+import { updateApp, toggleAppEnabled } from '@/services/backend/api';
 
 const formSchema = z.object({
   appName: z
@@ -63,6 +63,7 @@ export default function ManageAppScreen({
   onSuccess,
 }: AppManagerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
   const { address } = useAccount();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -93,6 +94,23 @@ export default function ManageAppScreen({
       console.error('Error updating app:', error);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleToggleEnabled() {
+    if (!address) return;
+    
+    try {
+      setIsToggling(true);
+      await toggleAppEnabled(address, {
+        appId: dashboard.appId,
+        isEnabled: !dashboard.isEnabled,
+      });
+      onSuccess();
+    } catch (error) {
+      console.error('Error toggling app status:', error);
+    } finally {
+      setIsToggling(false);
     }
   }
 
@@ -181,18 +199,18 @@ export default function ManageAppScreen({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div>
-                  {/* <Badge
-                                        variant={
-                                            dashboard.appMetadata
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                    >
-                                        {dashboard.enabled
-                                            ? "Enabled"
-                                            : "Disabled"}
-                                    </Badge> */}
+                <div className="flex items-center justify-between">
+                  <Badge variant={dashboard.isEnabled ? 'default' : 'secondary'}>
+                    {dashboard.isEnabled ? 'Enabled' : 'Disabled'}
+                  </Badge>
+                  <Button 
+                    variant="default"
+                    className="bg-black text-white"
+                    onClick={handleToggleEnabled}
+                    disabled={isToggling}
+                  >
+                    {isToggling ? 'Updating...' : dashboard.isEnabled ? 'Disable App' : 'Enable App'}
+                  </Button>
                 </div>
                 <div className="text-sm">
                   <div className="font-medium">App Name</div>
@@ -204,9 +222,6 @@ export default function ManageAppScreen({
                     {dashboard.managementWallet}
                   </div>
                 </div>
-                {/* <Button variant="destructive" className="w-full">
-                  Disable Application
-                </Button> */}
               </div>
             </CardContent>
           </Card>

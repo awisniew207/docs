@@ -14,6 +14,8 @@ import {
   CardTitle,
 } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
+import { useAccount } from 'wagmi';
+import { toggleAppEnabled } from '@/services/backend/api';
 
 export default function DashboardScreen({
   vincentApp,
@@ -28,6 +30,8 @@ export default function DashboardScreen({
   const [showToolPolicies, setShowToolPolicies] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<VincentApp | null>(null);
+  const [isToggling, setIsToggling] = useState(false);
+  const { address } = useAccount();
 
   useEffect(() => {
     if (vincentApp) {
@@ -40,6 +44,23 @@ export default function DashboardScreen({
     setIsRefetching(true);
     await onRefetch();
   };
+
+  async function handleToggleEnabled() {
+    if (!address || !dashboard) return;
+    
+    try {
+      setIsToggling(true);
+      await toggleAppEnabled(address, {
+        appId: dashboard.appId,
+        isEnabled: !dashboard.isEnabled,
+      });
+      await handleRefetch();
+    } catch (error) {
+      console.error('Error toggling app status:', error);
+    } finally {
+      setIsToggling(false);
+    }
+  }
 
   if (!dashboard || isRefetching) {
     return (
@@ -100,6 +121,14 @@ export default function DashboardScreen({
             <h1 className="text-3xl font-bold">{selectedApp.appName}</h1>
           </div>
           <div className="flex gap-2 items-center">
+            <Button 
+              variant="default"
+              className="bg-black text-white"
+              onClick={handleToggleEnabled}
+              disabled={isToggling}
+            >
+              {isToggling ? 'Updating...' : selectedApp.isEnabled ? 'Disable App' : 'Enable App'}
+            </Button>
             <Button variant="default" onClick={() => setShowManageApp(true)}>
               <Settings className="h-4 w-4 mr-2" />
               Manage App
