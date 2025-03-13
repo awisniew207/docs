@@ -9,6 +9,7 @@ import "../src/diamond-base/facets/OwnershipFacet.sol";
 import "../src/facets/VincentToolFacet.sol";
 import "../src/facets/VincentToolViewFacet.sol";
 import "../src/facets/VincentAppFacet.sol";
+import "../src/facets/VincentAppViewFacet.sol";
 import "../src/facets/VincentUserFacet.sol";
 import "../src/VincentBase.sol";
 import "../src/diamond-base/interfaces/IDiamondCut.sol";
@@ -38,10 +39,11 @@ contract DeployVincentDiamond is Script {
         VincentToolFacet toolFacet = new VincentToolFacet();
         VincentToolViewFacet toolViewFacet = new VincentToolViewFacet();
         VincentAppFacet appFacet = new VincentAppFacet();
+        VincentAppViewFacet appViewFacet = new VincentAppViewFacet();
         VincentUserFacet userFacet = new VincentUserFacet();
 
         // Build cut struct for adding facets
-        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](6);
+        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](7);
 
         // Add DiamondLoupeFacet
         cut[0] = IDiamondCut.FacetCut({
@@ -78,8 +80,15 @@ contract DeployVincentDiamond is Script {
             functionSelectors: getAppFacetSelectors()
         });
 
-        // Add UserFacet
+        // Add AppViewFacet
         cut[5] = IDiamondCut.FacetCut({
+            facetAddress: address(appViewFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: getAppViewFacetSelectors()
+        });
+
+        // Add UserFacet
+        cut[6] = IDiamondCut.FacetCut({
             facetAddress: address(userFacet),
             action: IDiamondCut.FacetCutAction.Add,
             functionSelectors: getUserFacetSelectors()
@@ -199,6 +208,49 @@ contract DeployVincentDiamond is Script {
         selectors[7] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
         selectors[8] = VincentAppFacet.addDelegatee.selector;
         selectors[9] = VincentAppFacet.removeDelegatee.selector;
+        return selectors;
+    }
+
+    /// @notice Get function selectors for VincentAppViewFacet
+    function getAppViewFacetSelectors() public pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](25);
+        // App Registry and Enumeration functions
+        selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
+        selectors[1] = VincentAppViewFacet.getAllRegisteredApps.selector;
+        selectors[2] = VincentAppViewFacet.getRegisteredManagers.selector;
+
+        // App Data Retrieval functions
+        selectors[3] = VincentAppViewFacet.getAppById.selector;
+        selectors[4] = VincentAppViewFacet.getAppByVersion.selector;
+        selectors[5] = VincentAppViewFacet.getAppLatestVersion.selector;
+        selectors[6] = VincentAppViewFacet.getAppManager.selector;
+
+        // Manager-Related functions
+        selectors[7] = VincentAppViewFacet.getAppsByManager.selector;
+        selectors[8] = VincentAppViewFacet.isAppManager.selector;
+
+        // Delegatee-Related functions
+        selectors[9] = VincentAppViewFacet.getAppByDelegatee.selector;
+        selectors[10] = VincentAppViewFacet.getAppDelegatees.selector;
+        selectors[11] = VincentAppViewFacet.getAppIdByDelegatee.selector;
+        selectors[12] = VincentAppViewFacet.isAppDelegatee.selector;
+
+        // Domain and Redirect URI functions
+        selectors[13] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
+        selectors[14] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
+        selectors[15] = VincentAppViewFacet.getAuthorizedDomainsByAppId.selector;
+        selectors[16] = VincentAppViewFacet.getAuthorizedRedirectUrisByAppId.selector;
+        selectors[17] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
+        selectors[18] = VincentAppViewFacet.isDomainAuthorizedForApp.selector;
+        selectors[19] = VincentAppViewFacet.isRedirectUriAuthorizedForApp.selector;
+
+        // App Version, Tool, and PKP functions
+        selectors[20] = VincentAppViewFacet.isAppVersionEnabled.selector;
+        selectors[21] = VincentAppViewFacet.getAppVersionDelegatedAgentPkpTokenIds.selector;
+        selectors[22] = VincentAppViewFacet.getAppVersionTools.selector;
+        selectors[23] = VincentAppViewFacet.getToolCidFromHash.selector;
+        selectors[24] = VincentAppViewFacet.isToolAuthorizedForPkp.selector;
+
         return selectors;
     }
 

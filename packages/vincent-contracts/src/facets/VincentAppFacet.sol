@@ -163,8 +163,11 @@ contract VincentAppFacet is VincentBase {
     function addDelegatee(uint256 appId, address delegatee) external onlyAppManager(appId) onlyRegisteredApp(appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
+        // Check if the delegatee is already registered to any app
         uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
-        if (delegateeAppId != 0) revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
+        if (delegateeAppId != 0) {
+            revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
+        }
 
         as_.appIdToApp[appId].delegatees.add(delegatee);
         as_.delegateeAddressToAppId[delegatee] = appId;
@@ -192,7 +195,7 @@ contract VincentAppFacet is VincentBase {
     ) internal returns (uint256 newAppId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
-        newAppId = as_.appIdCounter++;
+        newAppId = ++as_.appIdCounter;
 
         // Add the app to the list of registered apps
         as_.registeredApps.add(newAppId);
@@ -216,8 +219,9 @@ contract VincentAppFacet is VincentBase {
 
         // Add the delegatees to the app
         for (uint256 i = 0; i < delegatees.length; i++) {
-            if (as_.delegateeAddressToAppId[delegatees[i]] != 0) {
-                revert DelegateeAlreadyRegisteredToApp(newAppId, delegatees[i]);
+            uint256 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
+            if (existingAppId != 0) {
+                revert DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
             }
 
             app.delegatees.add(delegatees[i]);
