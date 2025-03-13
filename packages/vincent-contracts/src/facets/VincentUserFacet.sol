@@ -12,6 +12,8 @@ contract VincentUserFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    event AppVersionPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
+    event AppVersionUnPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
     event ToolPolicyParameterSet(
         uint256 indexed pkpTokenId,
         uint256 indexed appId,
@@ -81,6 +83,9 @@ contract VincentUserFacet is VincentBase {
         // .add will not add the PKP Token ID again if it is already registered
         us_.registeredAgentPkps.add(pkpTokenId);
 
+        // Emit the AppVersionPermitted event
+        emit AppVersionPermitted(pkpTokenId, appId, appVersion);
+
         // Save some gas by not calling the setToolPolicyParameters function if there are no tool policy parameters to set
         if (toolIpfsCids.length > 0) {
             _setToolPolicyParameters(
@@ -113,6 +118,9 @@ contract VincentUserFacet is VincentBase {
         if (us_.agentPkpTokenIdToPermittedAppVersions[pkpTokenId][appId].length() == 0) {
             us_.agentPkpTokenIdToPermittedApps[pkpTokenId].remove(appId);
         }
+
+        // Emit the AppVersionUnPermitted event
+        emit AppVersionUnPermitted(pkpTokenId, appId, appVersion);
     }
 
     function setToolPolicyParameters(

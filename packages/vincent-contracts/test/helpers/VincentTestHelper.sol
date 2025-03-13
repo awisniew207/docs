@@ -8,6 +8,8 @@ import "../../src/facets/VincentAppFacet.sol";
 import "../../src/facets/VincentAppViewFacet.sol";
 import "../../src/facets/VincentToolFacet.sol";
 import "../../src/facets/VincentToolViewFacet.sol";
+import "../../src/facets/VincentUserFacet.sol";
+import "../../src/facets/VincentUserViewFacet.sol";
 import "../mocks/MockPKPNftFacet.sol";
 
 /**
@@ -32,6 +34,8 @@ abstract contract VincentTestHelper is Test {
     VincentAppViewFacet public wrappedAppViewFacet;
     VincentToolFacet public wrappedToolFacet;
     VincentToolViewFacet public wrappedToolViewFacet;
+    VincentUserFacet public wrappedUserFacet;
+    VincentUserViewFacet public wrappedUserViewFacet;
 
     // Test constants
     // App-related constants
@@ -94,6 +98,8 @@ abstract contract VincentTestHelper is Test {
         wrappedAppViewFacet = VincentAppViewFacet(address(diamond));
         wrappedToolFacet = VincentToolFacet(address(diamond));
         wrappedToolViewFacet = VincentToolViewFacet(address(diamond));
+        wrappedUserFacet = VincentUserFacet(address(diamond));
+        wrappedUserViewFacet = VincentUserViewFacet(address(diamond));
 
         // Set up mock PKP NFT for tests - need to prank again
         vm.startPrank(deployer);
