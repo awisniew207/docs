@@ -188,7 +188,7 @@ export default function DashboardScreen({
               {selectedApp.toolPolicies.length === 0 ? (
                 <div className="text-center py-4">
                   <p className="text-sm text-gray-600">
-                    Add tool policies to enable functionality for your app
+                    No Tool Policies Yet
                   </p>
                 </div>
               ) : (
