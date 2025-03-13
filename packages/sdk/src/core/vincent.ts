@@ -2,7 +2,7 @@ import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { DelegateeSigs, fetchDelegatedAgentPKPs, setDelegateeWallet, updateDelegateeWallet } from '../pkp';
-import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature, createJWTConfig } from '../auth';
+import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature, createJWTConfig, decodeJWT, DecodedJWT } from '../auth';
 import { IStorage, Storage } from '../auth';
 
 export interface VincentSDKConfig {
@@ -32,6 +32,14 @@ export class VincentSDK {
     const jwt = await createPKPSignedJWT(config);
     this.storeJWT(jwt);
     return jwt;
+  }
+
+  async decodeJWT(): Promise<DecodedJWT> {
+    const jwt = await this.getJWT();
+    if (!jwt) {
+      throw new Error('No JWT found');
+    }
+    return decodeJWT(jwt);
   }
 
   async verifyJWT(expectedAudience: string): Promise<boolean> {

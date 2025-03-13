@@ -10,6 +10,7 @@ import {
   processJWTSignature 
 } from '../utils';
 import { createJWTConfig } from '../interfaces/create-jwt';
+import { DecodedJWT } from '../interfaces/decode-jwt';
 
 /**
  * Creates a signer function compatible with did-jwt that uses a PKP wallet for signing
@@ -259,4 +260,22 @@ export async function verifyJWTSignature(jwt: string, expectedAudience: string):
     console.error('JWT verification error:', error);
     return false;
   }
+}
+
+/**
+ * Decodes a JWT string into its payload
+ * 
+ * This function uses the did-jwt library to decode a JWT string into its payload
+ * 
+ * @param jwt - The JWT string to decode
+ * @returns The decoded payload of the JWT
+ * @example
+ * ```typescript
+ * const payload = decodeJWT(jwt);
+ * console.log(payload);
+ * ```
+ */
+export function decodeJWT(jwt: string): DecodedJWT {
+  const decoded = didJWT.decodeJWT(jwt);
+  return decoded;
 }
