@@ -46,7 +46,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         appId = wrappedAppFacet.registerApp(TEST_APP_NAME, TEST_APP_DESCRIPTION, domains, redirectUris, delegatees);
 
         // Verify app was registered correctly
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppById(appId);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
 
         // Verify basic app data
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
@@ -119,7 +119,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
 
         // Verify app was registered correctly
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppById(appId);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
 
         // Verify basic app data
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
@@ -140,14 +140,15 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.delegatees[0], TEST_DELEGATEE_1, "Delegatee doesn't match");
 
         // Verify versioned app data
-        VincentAppViewFacet.VersionedAppView memory versionedApp = wrappedAppViewFacet.getAppVersion(appId, appVersion);
+        (VincentAppViewFacet.App memory appData, VincentAppViewFacet.AppVersion memory version) =
+            wrappedAppViewFacet.getAppVersion(appId, appVersion);
 
-        assertEq(versionedApp.version, 1, "App version should be 1");
-        assertEq(versionedApp.enabled, true, "App version should be enabled by default");
+        assertEq(version.version, 1, "App version should be 1");
+        assertEq(version.enabled, true, "App version should be enabled by default");
 
         // Verify tools
-        assertEq(versionedApp.toolIpfsCidHashes.length, 1, "Should have 1 tool registered");
-        assertEq(versionedApp.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
+        assertEq(version.toolIpfsCidHashes.length, 1, "Should have 1 tool registered");
+        assertEq(version.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
     }
 
     function testRegisterNextAppVersion() public {
@@ -160,13 +161,10 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Set up tool policies
         string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
-        toolPolicies[0][0] = TEST_POLICY_2;
+        toolPolicies[0] = new string[](0);
 
         string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
-        toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
+        toolPolicyParameterNames[0] = new string[][](0);
 
         // Register the tool first
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
@@ -183,18 +181,19 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(newVersion, 2, "New version should be 2");
 
         // Get the app to check its latest version
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppById(appId);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
         assertEq(app.latestVersion, 2, "Latest version should be 2");
 
         // Verify versioned app data
-        VincentAppViewFacet.VersionedAppView memory versionedApp = wrappedAppViewFacet.getAppVersion(appId, newVersion);
+        (VincentAppViewFacet.App memory appData, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, newVersion);
 
-        assertEq(versionedApp.version, 2, "App version should be 2");
-        assertEq(versionedApp.enabled, true, "App version should be enabled by default");
+        assertEq(versionData.version, 2, "App version should be 2");
+        assertEq(versionData.enabled, true, "App version should be enabled by default");
 
         // Verify tools - we can check the tools directly from the versioned app view
-        assertEq(versionedApp.toolIpfsCidHashes.length, 1, "Should have 1 tool registered");
-        assertEq(versionedApp.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_2, "Tool IPFS CID doesn't match");
+        assertEq(versionData.toolIpfsCidHashes.length, 1, "Should have 1 tool registered");
+        assertEq(versionData.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_2, "Tool IPFS CID doesn't match");
     }
 
     function testEnableAppVersion() public {
@@ -209,8 +208,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.enableAppVersion(appId, appVersion, false);
 
         // Verify the app version is disabled by checking the versioned app view
-        VincentAppViewFacet.VersionedAppView memory versionedApp = wrappedAppViewFacet.getAppVersion(appId, appVersion);
-        assertFalse(versionedApp.enabled, "App version should be disabled");
+        (VincentAppViewFacet.App memory versionApp, VincentAppViewFacet.AppVersion memory version) =
+            wrappedAppViewFacet.getAppVersion(appId, appVersion);
+        assertFalse(version.enabled, "App version should be disabled");
 
         // Re-enable the app version
         vm.expectEmit(true, true, true, false);
@@ -219,8 +219,29 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.enableAppVersion(appId, appVersion, true);
 
         // Verify the app version is enabled again
-        versionedApp = wrappedAppViewFacet.getAppVersion(appId, appVersion);
-        assertTrue(versionedApp.enabled, "App version should be enabled");
+        (, version) = wrappedAppViewFacet.getAppVersion(appId, appVersion);
+        assertTrue(version.enabled, "App version should be enabled");
+
+        // Get apps by manager
+        VincentAppViewFacet.AppWithVersions[] memory appsWithVersions = wrappedAppViewFacet.getAppsByManager(deployer);
+
+        // Verify we got one app (there's only one registered)
+        assertEq(appsWithVersions.length, 1, "Should return 1 app for the manager");
+
+        // Check first app
+        assertEq(appsWithVersions[0].app.name, TEST_APP_NAME, "App name should match");
+        assertEq(appsWithVersions[0].app.latestVersion, 1, "App should have 1 version");
+        assertEq(appsWithVersions[0].versions.length, 1, "App should have 1 version in the versions array");
+        assertEq(appsWithVersions[0].versions[0].version, 1, "App version should be 1");
+        assertEq(appsWithVersions[0].versions[0].enabled, true, "App version should be enabled");
+
+        // Register a non-manager account
+        vm.stopPrank();
+        vm.startPrank(nonOwner);
+
+        // Non-manager should have no apps
+        VincentAppViewFacet.AppWithVersions[] memory nonManagerApps = wrappedAppViewFacet.getAppsByManager(nonOwner);
+        assertEq(nonManagerApps.length, 0, "Non-manager should have 0 apps");
     }
 
     function testAddAndRemoveAuthorizedDomain() public {
@@ -235,7 +256,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.addAuthorizedDomain(appId, TEST_DOMAIN_2);
 
         // Verify the domain was added by checking the app's domains
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppById(appId);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
         assertEq(app.authorizedDomains.length, 2, "Should have 2 authorized domains");
 
         // Check if both domains are present (order may vary)
@@ -278,7 +299,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
 
         // Verify the redirect URI was added by checking the app's redirect URIs
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppById(appId);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
         assertEq(app.authorizedRedirectUris.length, 2, "Should have 2 authorized redirect URIs");
 
         // Check if both redirect URIs are present (order may vary)
@@ -323,7 +344,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.addDelegatee(appId, TEST_DELEGATEE_2);
 
         // Verify the delegatee was added by checking the app's delegatees
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppById(appId);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
         assertEq(app.delegatees.length, 2, "Should have 2 delegatees");
 
         // Check if both delegatees are present (order may vary)
@@ -340,7 +361,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertTrue(foundDelegatee2, "Delegatee 2 should be in the list");
 
         // Get app by delegatee to verify it's properly linked
-        VincentAppViewFacet.AppView memory appByDelegatee = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
+        VincentAppViewFacet.App memory appByDelegatee = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
         assertEq(appByDelegatee.name, TEST_APP_NAME, "App name doesn't match when retrieved by delegatee");
 
         // Remove a delegatee
@@ -361,11 +382,12 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId, appVersion) = _registerTestAppWithVersion();
 
         // Get tools directly from the versioned app view
-        VincentAppViewFacet.VersionedAppView memory versionedApp = wrappedAppViewFacet.getAppVersion(appId, appVersion);
+        (VincentAppViewFacet.App memory unused, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, appVersion);
 
         // Verify we got the right tools
-        assertEq(versionedApp.toolIpfsCidHashes.length, 1, "Should have 1 tool");
-        assertEq(versionedApp.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
+        assertEq(versionData.toolIpfsCidHashes.length, 1, "Should have 1 tool");
+        assertEq(versionData.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
     }
 
     function testFailEnableAppVersionAsNonManager() public {
@@ -554,7 +576,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         appId = _registerTestApp();
 
         // Get app by delegatee
-        VincentAppViewFacet.AppView memory app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_1);
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_1);
 
         // Verify app data
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
@@ -563,5 +585,86 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Test with non-delegatee address - should return an empty app with default values
         app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
         assertEq(app.name, "", "Name should be empty for non-delegatee");
+    }
+
+    function testGetAppsByManager() public {
+        // Register an app
+        appId = _registerTestApp();
+
+        // Register a version for the first app
+        string[] memory firstAppToolIpfsCids = new string[](1);
+        firstAppToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create empty policy arrays for first app
+        string[][] memory firstAppToolPolicies = new string[][](1);
+        firstAppToolPolicies[0] = new string[](0);
+
+        string[][][] memory firstAppToolPolicyParameterNames = new string[][][](1);
+        firstAppToolPolicyParameterNames[0] = new string[][](0);
+
+        // Register tool for first app
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+
+        // Register version for first app
+        wrappedAppFacet.registerNextAppVersion(
+            appId, firstAppToolIpfsCids, firstAppToolPolicies, firstAppToolPolicyParameterNames
+        );
+
+        // Register another app with a new version
+        string[] memory domains = new string[](1);
+        domains[0] = TEST_DOMAIN_2;
+
+        string[] memory redirectUris = new string[](1);
+        redirectUris[0] = TEST_REDIRECT_URI_2;
+
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = TEST_DELEGATEE_2;
+
+        uint256 appId2 =
+            wrappedAppFacet.registerApp("Test App 2", "Test App Description 2", domains, redirectUris, delegatees);
+
+        // Register a new version for the second app
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
+
+        // Create empty policy arrays
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](0);
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](0);
+
+        // Register tool for second app
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
+
+        uint256 newVersion =
+            wrappedAppFacet.registerNextAppVersion(appId2, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+
+        // Get apps by manager
+        VincentAppViewFacet.AppWithVersions[] memory appsWithVersions = wrappedAppViewFacet.getAppsByManager(deployer);
+
+        // Verify we got both apps
+        assertEq(appsWithVersions.length, 2, "Should return 2 apps for the manager");
+
+        // Check first app
+        assertEq(appsWithVersions[0].app.name, TEST_APP_NAME, "First app name should match");
+        assertEq(appsWithVersions[0].app.latestVersion, 1, "First app should have 1 version");
+        assertEq(appsWithVersions[0].versions.length, 1, "First app should have 1 version in the versions array");
+        assertEq(appsWithVersions[0].versions[0].version, 1, "First app version should be 1");
+        assertEq(appsWithVersions[0].versions[0].enabled, true, "First app version should be enabled");
+
+        // Check second app
+        assertEq(appsWithVersions[1].app.name, "Test App 2", "Second app name should match");
+        assertEq(appsWithVersions[1].app.latestVersion, 1, "Second app should have 1 version");
+        assertEq(appsWithVersions[1].versions.length, 1, "Second app should have 1 version in the versions array");
+        assertEq(appsWithVersions[1].versions[0].version, 1, "First version should be 1");
+
+        // Register a non-manager account
+        vm.stopPrank();
+        vm.startPrank(nonOwner);
+
+        // Non-manager should have no apps
+        VincentAppViewFacet.AppWithVersions[] memory nonManagerApps = wrappedAppViewFacet.getAppsByManager(nonOwner);
+        assertEq(nonManagerApps.length, 0, "Non-manager should have 0 apps");
     }
 }

@@ -28,7 +28,7 @@ contract VincentAppViewFacet {
      * @notice Represents basic app information including metadata and relationships
      * @dev Used for returning app data in view functions
      */
-    struct AppView {
+    struct App {
         string name;
         string description;
         address manager;
@@ -42,16 +42,20 @@ contract VincentAppViewFacet {
      * @notice Represents a specific version of an app with all associated data
      * @dev Extends AppView with version-specific information
      */
-    struct VersionedAppView {
-        string name;
-        string description;
-        address manager;
-        uint256 version;
-        bool enabled;
-        string[] authorizedDomains;
-        string[] authorizedRedirectUris;
-        string[] toolIpfsCidHashes;
-        uint256[] delegatedAgentPkpTokenIds;
+    struct AppVersion {
+        uint256 version; // Version number
+        bool enabled; // Whether this version is enabled
+        string[] toolIpfsCidHashes; // Tool IPFS CIDs for this version
+        uint256[] delegatedAgentPkpTokenIds; // Delegated agent PKPs for this version
+    }
+
+    /**
+     * @notice Represents an app with all of its versions
+     * @dev Contains the basic app information and an array of all its versions
+     */
+    struct AppWithVersions {
+        App app;
+        AppVersion[] versions;
     }
 
     // ==================================================================================
@@ -83,32 +87,34 @@ contract VincentAppViewFacet {
     /**
      * @notice Retrieves detailed information about an app
      * @param appId ID of the app to retrieve
-     * @return appView Detailed view of the app
+     * @return app Detailed view of the app
      */
-    function getAppById(uint256 appId) public view returns (AppView memory appView) {
+    function getAppById(uint256 appId) public view returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+        VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
-        appView.name = app.name;
-        appView.description = app.description;
-        appView.manager = app.manager;
-        appView.latestVersion = app.versionedApps.length;
-        appView.delegatees = app.delegatees.values();
+        app.name = storedApp.name;
+        app.description = storedApp.description;
+        app.manager = storedApp.manager;
+        // App versions are 1-indexed, so we need to explicitly check if there's at least one version
+        // If no versions, latestVersion should be 0
+        app.latestVersion = storedApp.versionedApps.length > 0 ? storedApp.versionedApps.length : 0;
+        app.delegatees = storedApp.delegatees.values();
 
         // Convert authorized domains from bytes32 hashes to strings
-        uint256 domainCount = app.authorizedDomains.length();
-        appView.authorizedDomains = new string[](domainCount);
+        uint256 domainCount = storedApp.authorizedDomains.length();
+        app.authorizedDomains = new string[](domainCount);
         for (uint256 i = 0; i < domainCount; i++) {
-            bytes32 domainHash = app.authorizedDomains.at(i);
-            appView.authorizedDomains[i] = as_.authorizedDomainHashToDomain[domainHash];
+            bytes32 domainHash = storedApp.authorizedDomains.at(i);
+            app.authorizedDomains[i] = as_.authorizedDomainHashToDomain[domainHash];
         }
 
         // Convert authorized redirect URIs from bytes32 hashes to strings
-        uint256 redirectUriCount = app.authorizedRedirectUris.length();
-        appView.authorizedRedirectUris = new string[](redirectUriCount);
+        uint256 redirectUriCount = storedApp.authorizedRedirectUris.length();
+        app.authorizedRedirectUris = new string[](redirectUriCount);
         for (uint256 i = 0; i < redirectUriCount; i++) {
-            bytes32 redirectUriHash = app.authorizedRedirectUris.at(i);
-            appView.authorizedRedirectUris[i] = as_.authorizedRedirectUriHashToRedirectUri[redirectUriHash];
+            bytes32 redirectUriHash = storedApp.authorizedRedirectUris.at(i);
+            app.authorizedRedirectUris[i] = as_.authorizedRedirectUriHashToRedirectUri[redirectUriHash];
         }
     }
 
@@ -116,38 +122,32 @@ contract VincentAppViewFacet {
      * @notice Retrieves detailed information about a specific version of an app
      * @param appId ID of the app to retrieve
      * @param version Version number of the app to retrieve
-     * @return versionedAppView Detailed view of the app version
+     * @return app Basic app information
+     * @return appVersion Version-specific information
      */
     function getAppVersion(uint256 appId, uint256 version)
-        external
+        public
         view
-        returns (VersionedAppView memory versionedAppView)
+        returns (App memory app, AppVersion memory appVersion)
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
-        VincentAppStorage.App storage app = as_.appIdToApp[appId];
-
-        AppView memory appView = getAppById(appId);
-
-        versionedAppView.name = appView.name;
-        versionedAppView.description = appView.description;
-        versionedAppView.manager = appView.manager;
-        versionedAppView.authorizedDomains = appView.authorizedDomains;
-        versionedAppView.authorizedRedirectUris = appView.authorizedRedirectUris;
+        app = getAppById(appId);
 
         // App versions start at 1, but the appVersions array is 0-indexed
-        VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[version - 1];
+        VincentAppStorage.VersionedApp storage storedVersionedApp = storedApp.versionedApps[version - 1];
 
-        versionedAppView.version = versionedApp.version;
-        versionedAppView.enabled = versionedApp.enabled;
-        versionedAppView.delegatedAgentPkpTokenIds = versionedApp.delegatedAgentPkps.values();
+        appVersion.version = version;
+        appVersion.enabled = storedVersionedApp.enabled;
+        appVersion.delegatedAgentPkpTokenIds = storedVersionedApp.delegatedAgentPkps.values();
 
         VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
 
-        uint256 toolIpfsCidHashesLength = versionedApp.toolIpfsCidHashes.length();
-        versionedAppView.toolIpfsCidHashes = new string[](toolIpfsCidHashesLength);
+        uint256 toolIpfsCidHashesLength = storedVersionedApp.toolIpfsCidHashes.length();
+        appVersion.toolIpfsCidHashes = new string[](toolIpfsCidHashesLength);
         for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
-            versionedAppView.toolIpfsCidHashes[i] = ts.toolIpfsCidHashToIpfsCid[versionedApp.toolIpfsCidHashes.at(i)];
+            appVersion.toolIpfsCidHashes[i] = ts.toolIpfsCidHashToIpfsCid[storedVersionedApp.toolIpfsCidHashes.at(i)];
         }
     }
 
@@ -156,18 +156,37 @@ contract VincentAppViewFacet {
     // ==================================================================================
 
     /**
-     * @notice Retrieves all apps managed by a specific address
+     * @notice Retrieves all apps managed by a specific address with all their versions
      * @param manager Address of the manager
-     * @return appViews Array of apps managed by the specified address
+     * @return appsWithVersions Array of apps with all their versions managed by the specified address
      */
-    function getAppsByManager(address manager) external view returns (AppView[] memory appViews) {
+    function getAppsByManager(address manager) external view returns (AppWithVersions[] memory appsWithVersions) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         uint256[] memory appIds = as_.managerAddressToAppIds[manager].values();
         uint256 appCount = appIds.length;
-        appViews = new AppView[](appCount);
+        appsWithVersions = new AppWithVersions[](appCount);
 
         for (uint256 i = 0; i < appCount; i++) {
-            appViews[i] = getAppById(appIds[i]);
+            // Get the app view
+            App memory app = getAppById(appIds[i]);
+            appsWithVersions[i].app = app;
+
+            // Get all versions for this app
+            uint256 versionCount = app.latestVersion;
+
+            // Only create version arrays for apps that have versions
+            if (versionCount > 0) {
+                appsWithVersions[i].versions = new AppVersion[](versionCount);
+
+                for (uint256 j = 0; j < versionCount; j++) {
+                    // Versions are 1-indexed in the contract
+                    uint256 versionNumber = j + 1;
+                    (, appsWithVersions[i].versions[j]) = getAppVersion(appIds[i], versionNumber);
+                }
+            } else {
+                // For apps with no versions, initialize an empty array
+                appsWithVersions[i].versions = new AppVersion[](0);
+            }
         }
     }
 
@@ -178,12 +197,12 @@ contract VincentAppViewFacet {
     /**
      * @notice Retrieves the app by a delegatee address
      * @param delegatee Address of the delegatee
-     * @return appView Detailed view of the app
+     * @return app Detailed view of the app
      */
-    function getAppByDelegatee(address delegatee) external view returns (AppView memory appView) {
+    function getAppByDelegatee(address delegatee) external view returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         uint256 appId = as_.delegateeAddressToAppId[delegatee];
-        appView = getAppById(appId);
+        app = getAppById(appId);
     }
 
     // ==================================================================================
