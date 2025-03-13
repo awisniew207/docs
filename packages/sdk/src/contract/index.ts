@@ -1,1 +1,1 @@
-export { VinceContracts } from "./contracts";
+export { VincentContracts, VincentContractsConfig } from "./contracts";
