@@ -26,7 +26,7 @@ export const FACET_ABIS = {
   User: USER_FACET_ABI,
 };
 
-export const rpc = 'yellowstone-rpc.litprotocol.com';
+export const rpc = 'https://yellowstone-rpc.litprotocol.com';
 
 /**
  * Get a contract instance for a specific facet of the Vincent Diamond

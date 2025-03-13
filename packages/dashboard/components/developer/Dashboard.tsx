@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
 import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
+import CreateAppScreen from './CreateApp';
 import { ArrowRight, Plus, Settings } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -21,13 +22,14 @@ export default function DashboardScreen({
   vincentApp,
   onRefetch,
 }: {
-  vincentApp: VincentApp;
+  vincentApp: VincentApp[];
   onRefetch: () => void;
 }) {
-  const [dashboard, setDashboard] = useState<VincentApp>();
+  const [dashboard, setDashboard] = useState<VincentApp[]>([]);
   const [showManageApp, setShowManageApp] = useState(false);
   const [showDelegateeManager, setShowDelegateeManager] = useState(false);
   const [showToolPolicies, setShowToolPolicies] = useState(false);
+  const [showCreateApp, setShowCreateApp] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<VincentApp | null>(null);
   const [isToggling, setIsToggling] = useState(false);
@@ -46,13 +48,13 @@ export default function DashboardScreen({
   };
 
   async function handleToggleEnabled() {
-    if (!address || !dashboard) return;
+    if (!address || !selectedApp) return;
     
     try {
       setIsToggling(true);
       await toggleAppEnabled(address, {
-        appId: dashboard.appId,
-        isEnabled: !dashboard.isEnabled,
+        appId: selectedApp.appId,
+        isEnabled: !selectedApp.isEnabled,
       });
       await handleRefetch();
     } catch (error) {
@@ -75,11 +77,23 @@ export default function DashboardScreen({
     );
   }
 
+  if (showCreateApp) {
+    return (
+      <CreateAppScreen
+        onBack={() => setShowCreateApp(false)}
+        onSuccess={() => {
+          setShowCreateApp(false);
+          handleRefetch();
+        }}
+      />
+    );
+  }
+
   if (showManageApp) {
     return (
       <ManageAppScreen
         onBack={() => setShowManageApp(false)}
-        dashboard={selectedApp || dashboard}
+        dashboard={selectedApp || dashboard[0]}
         onSuccess={() => {
           setShowManageApp(false);
           handleRefetch();
@@ -255,36 +269,38 @@ export default function DashboardScreen({
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Your Apps</h1>
-        <Button variant="default" onClick={() => setShowManageApp(true)}>
+        <Button variant="default" onClick={() => setShowCreateApp(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Create New App
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="cursor-pointer hover:bg-gray-50" onClick={() => setSelectedApp(dashboard)}>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle>{dashboard.appName}</CardTitle>
+        {dashboard.map((app, index) => (
+          <Card key={`${index}`} className="cursor-pointer hover:bg-gray-50" onClick={() => setSelectedApp(app)}>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle>{app.appName}</CardTitle>
+                </div>
+                <Badge variant={app.isEnabled ? 'default' : 'secondary'}>
+                  {app.isEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
               </div>
-              <Badge variant={dashboard.isEnabled ? 'default' : 'secondary'}>
-                {dashboard.isEnabled ? 'Enabled' : 'Disabled'}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>{dashboard.toolPolicies.length} Tool Policies</span>
-                <span>{dashboard.delegatees.length} Delegatees</span>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{app.toolPolicies.length} Tool Policies</span>
+                  <span>{app.delegatees.length} Delegatees</span>
+                </div>
+                <div className="text-sm text-center">
+                  Manage App
+                </div>
               </div>
-              <div className="text-sm text-center">
-                Manage App
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

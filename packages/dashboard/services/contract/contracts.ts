@@ -20,7 +20,7 @@ export class VincentContracts {
     authorizedRedirectUris: any,
     delegatees: any
   ) {
-    const contract = await getContract(this.network, 'App');
+    const contract = await getContract(this.network, 'App', true);
     const tx = await contract.registerApp(
       appName,
       appDescription,
@@ -72,13 +72,13 @@ export class VincentContracts {
   }
 
   async getAppsByManager(manager: string) {
-    const contract = await getContract(this.network, 'App');
+    const contract = await getContract(this.network, 'AppView');
     const apps = await contract.getAppsByManager(manager);
     return apps;
   }
 
   async getAppById(appId: number) {
-    const contract = await getContract(this.network, 'App');
+    const contract = await getContract(this.network, 'AppView');
     const app = await contract.getAppById(appId);
     return app;
   }

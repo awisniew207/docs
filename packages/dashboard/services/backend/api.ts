@@ -2,6 +2,7 @@ import { SiweMessage } from "siwe";
 import axios from "axios";
 import { verifyMessage } from "ethers/lib/utils";
 import { VincentApp } from "@/types";
+import { VincentContracts } from "../contract/contracts";
 
 const API_BASE_URL =
     process.env.NEXT_PUBLIC_BE_BASE_URL || "http://localhost:8000/api/v1";
@@ -263,19 +264,41 @@ export async function checkIfAppExists(address: string): Promise<Boolean> {
     return true;
 }
 
-export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp> {
-    return {
-        appId: 0,
-        appName: "Test App",
-        description: "Test Description",
-        authorizedDomains: ["test.com"],
-        authorizedRedirectUris: ["https://test.com"],
-        delegatees: ["0x1234567890123456789012345678901234567890"],
-        toolPolicies: [],
-        managementWallet: address,
-        isEnabled: true,
+export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp[]> {
+    const contracts = new VincentContracts('datil');
+    const apps = await contracts.getAppsByManager(address);
+    console.log('apps', apps);
+    
+    // Map all apps to VincentApp type
+    return apps.map((app: any[]) => ({
+        appId: 0, // This needs to be fetched from somewhere else since it's not in the contract view
+        appName: app[0], // name
+        description: app[1], // description
+        authorizedDomains: app[5], // authorizedDomains
+        authorizedRedirectUris: app[6], // authorizedRedirectUris
+        delegatees: app[4], // delegatees
+        toolPolicies: [], // This needs to be fetched from somewhere else since it's not in the contract view
+        managementWallet: app[2], // manager
+        isEnabled: true, // This needs to be fetched from somewhere else since it's not in the contract view
         appMetadata: {
-            email: "test@test.com",
+            email: "" // This needs to be fetched from somewhere else since it's off-chain
         }
-    }
+    }));
 }
+
+// export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp> {
+//     return {
+//         appId: 0,
+//         appName: "Test App",
+//         description: "Test Description",
+//         authorizedDomains: ["test.com"],
+//         authorizedRedirectUris: ["https://test.com"],
+//         delegatees: ["0x1234567890123456789012345678901234567890"],
+//         toolPolicies: [],
+//         managementWallet: address,
+//         isEnabled: true,
+//         appMetadata: {
+//             email: "test@test.com",
+//         }
+//     }
+// }

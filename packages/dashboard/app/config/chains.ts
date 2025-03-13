@@ -1,18 +1,16 @@
-import { type Chain } from 'viem';
+import { defineChain } from "viem";
 
-export const yellowstone: Chain = {
-  id: 1337,
-  name: 'Yellowstone',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: { http: ['http://localhost:8545'] },
-  },
-  blockExplorers: {
-    default: { name: 'Yellowstone Explorer', url: 'http://localhost:8545' },
-  },
-  testnet: true,
-}; 
+export const yellowstone = defineChain({
+    id: 175188,
+    name: "Yellowstone",
+    nativeCurrency: { name: "Yellowstone", symbol: "YSL", decimals: 18 },
+    rpcUrls: {
+        default: { http: ["https://yellowstone-rpc.litprotocol.com"] },
+    },
+    blockExplorers: {
+        default: {
+            name: "Yellowstone Explorer",
+            url: "https://yellowstone-explorer.litprotocol.com/",
+        },
+    },
+}); 
