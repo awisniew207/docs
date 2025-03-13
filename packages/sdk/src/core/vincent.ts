@@ -1,7 +1,7 @@
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { DelegateeSigs, fetchDelegatedAgentPKPs, setDelegateeWallet, updateDelegateeWallet } from '../pkp';
+import { DelegateeSigs } from '../pkp';
 import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature, createJWTConfig, decodeJWT, DecodedJWT } from '../auth';
 import { IStorage, Storage } from '../auth';
 
