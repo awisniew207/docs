@@ -1,0 +1,1 @@
+export { VinceContracts } from "./contracts";

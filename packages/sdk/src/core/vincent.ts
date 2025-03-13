@@ -1,7 +1,7 @@
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { DelegateeSigs, fetchDelegatedAgentPKPs, setDelegateeWallet, updateDelegateeWallet } from '../pkp';
+import { DelegateeSigs } from '../pkp';
 import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature, createJWTConfig } from '../auth';
 import { IStorage, Storage } from '../auth';
 
@@ -63,22 +63,6 @@ export class VincentSDK {
   async invokeLitAction(signer: ethers.Signer, litActionCID: string, params: any) {
     const sessionSigs = new DelegateeSigs(this.network);
     return sessionSigs.invokeLitAction(signer, litActionCID, params);
-  }
-
-  // Agent PKP Management
-  async getDelegatedAgentPKPs(): Promise<void> {
-    const pkps = await fetchDelegatedAgentPKPs();
-    return pkps;
-  }
-
-  async setDelegatee(walletAddress: string): Promise<void> {
-    const txn = await setDelegateeWallet();
-    return txn;
-  }
-
-  async updateDelegatee(walletAddress: string): Promise<void> {
-    const txn = await updateDelegateeWallet();
-    return txn;
   }
 
   // Consent Page Management
