@@ -35,12 +35,21 @@ importers:
 
   packages/sdk:
     dependencies:
+      '@lit-protocol/auth-helpers':
+        specifier: ^7.0.8
+        version: 7.0.8(typescript@5.8.2)
+      '@lit-protocol/constants':
+        specifier: ^7.0.8
+        version: 7.0.8(typescript@5.8.2)
       '@lit-protocol/lit-node-client':
         specifier: ^7.0.8
         version: 7.0.8(encoding@0.1.13)(typescript@5.8.2)
       '@lit-protocol/pkp-ethers':
         specifier: ^7.0.8
         version: 7.0.8(encoding@0.1.13)(typescript@5.8.2)
+      '@lit-protocol/types':
+        specifier: ^7.0.8
+        version: 7.0.8
       '@noble/secp256k1':
         specifier: ^2.2.3
         version: 2.2.3
@@ -5492,11 +5501,11 @@ snapshots:
   '@ethersproject/abstract-provider@5.7.0':
     dependencies:
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/logger': 5.8.0
       '@ethersproject/networks': 5.8.0
       '@ethersproject/properties': 5.8.0
-      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/transactions': 5.8.0
       '@ethersproject/web': 5.8.0
 
   '@ethersproject/abstract-provider@5.8.0':
@@ -5570,16 +5579,16 @@ snapshots:
 
   '@ethersproject/contracts@5.7.0':
     dependencies:
-      '@ethersproject/abi': 5.7.0
-      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abi': 5.8.0
+      '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
       '@ethersproject/address': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/constants': 5.8.0
       '@ethersproject/logger': 5.8.0
       '@ethersproject/properties': 5.8.0
-      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/transactions': 5.8.0
 
   '@ethersproject/contracts@5.8.0':
     dependencies:
@@ -5713,13 +5722,13 @@ snapshots:
 
   '@ethersproject/providers@5.7.2':
     dependencies:
-      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
       '@ethersproject/address': 5.8.0
       '@ethersproject/base64': 5.8.0
       '@ethersproject/basex': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/constants': 5.8.0
       '@ethersproject/hash': 5.8.0
       '@ethersproject/logger': 5.8.0
@@ -5728,8 +5737,8 @@ snapshots:
       '@ethersproject/random': 5.8.0
       '@ethersproject/rlp': 5.8.0
       '@ethersproject/sha2': 5.8.0
-      '@ethersproject/strings': 5.7.0
-      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/strings': 5.8.0
+      '@ethersproject/transactions': 5.8.0
       '@ethersproject/web': 5.8.0
       bech32: 1.1.4
       ws: 7.4.6
