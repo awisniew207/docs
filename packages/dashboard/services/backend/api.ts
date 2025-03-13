@@ -269,21 +269,33 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
     const apps = await contracts.getAppsByManager(address);
     console.log('apps', apps);
     
-    // Map all apps to VincentApp type
-    return apps.map((app: any[]) => ({
-        appId: 0, // This needs to be fetched from somewhere else since it's not in the contract view
-        appName: app[0], // name
-        description: app[1], // description
-        authorizedDomains: app[5], // authorizedDomains
-        authorizedRedirectUris: app[6], // authorizedRedirectUris
-        delegatees: app[4], // delegatees
-        toolPolicies: [], // This needs to be fetched from somewhere else since it's not in the contract view
-        managementWallet: app[2], // manager
-        isEnabled: true, // This needs to be fetched from somewhere else since it's not in the contract view
-        appMetadata: {
-            email: "" // This needs to be fetched from somewhere else since it's off-chain
-        }
+    // index of app in the array is the appId
+    const completeApps = await Promise.all(apps.map(async (app: any[], index: number) => {
+        console.log('full app', app);
+        const latestVersion = app[3];
+        const versionedApp = await contracts.getAppVersion(index, latestVersion); // Get versioned app details
+        
+        return {
+            appId: index,
+            appName: app[0], // name
+            description: app[1], // description
+            authorizedDomains: app[5], // authorizedDomains
+            authorizedRedirectUris: app[6], // authorizedRedirectUris
+            delegatees: app[4], // delegatees
+            toolPolicies: versionedApp.toolIpfsCidHashes.map((cid: string) => ({
+                toolIpfsCid: cid,
+                policyIpfsCid: "", // This would need to be fetched separately if needed
+                parameters: [] // This would need to be fetched separately if needed
+            })),
+            managementWallet: app[2], // manager
+            isEnabled: versionedApp.enabled,
+            appMetadata: {
+                email: "" // This needs to be fetched from somewhere else since it's off-chain
+            }
+        };
     }));
+    
+    return completeApps;
 }
 
 // export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp> {

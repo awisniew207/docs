@@ -82,4 +82,10 @@ export class VincentContracts {
     const app = await contract.getAppById(appId);
     return app;
   }
+
+  async getAppVersion(appId: number, version: number) {
+    const contract = await getContract(this.network, 'AppView');
+    const appVersion = await contract.getAppVersion(appId, version);
+    return appVersion;
+  }
 }
