@@ -213,43 +213,17 @@ contract DeployVincentDiamond is Script {
 
     /// @notice Get function selectors for VincentAppViewFacet
     function getAppViewFacetSelectors() public pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](25);
-        // App Registry and Enumeration functions
+        bytes4[] memory selectors = new bytes4[](10);
         selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
-        selectors[1] = VincentAppViewFacet.getAllRegisteredApps.selector;
-        selectors[2] = VincentAppViewFacet.getRegisteredManagers.selector;
-
-        // App Data Retrieval functions
-        selectors[3] = VincentAppViewFacet.getAppById.selector;
-        selectors[4] = VincentAppViewFacet.getAppByVersion.selector;
-        selectors[5] = VincentAppViewFacet.getAppLatestVersion.selector;
-        selectors[6] = VincentAppViewFacet.getAppManager.selector;
-
-        // Manager-Related functions
-        selectors[7] = VincentAppViewFacet.getAppsByManager.selector;
-        selectors[8] = VincentAppViewFacet.isAppManager.selector;
-
-        // Delegatee-Related functions
-        selectors[9] = VincentAppViewFacet.getAppByDelegatee.selector;
-        selectors[10] = VincentAppViewFacet.getAppDelegatees.selector;
-        selectors[11] = VincentAppViewFacet.getAppIdByDelegatee.selector;
-        selectors[12] = VincentAppViewFacet.isAppDelegatee.selector;
-
-        // Domain and Redirect URI functions
-        selectors[13] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
-        selectors[14] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
-        selectors[15] = VincentAppViewFacet.getAuthorizedDomainsByAppId.selector;
-        selectors[16] = VincentAppViewFacet.getAuthorizedRedirectUrisByAppId.selector;
-        selectors[17] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
-        selectors[18] = VincentAppViewFacet.isDomainAuthorizedForApp.selector;
-        selectors[19] = VincentAppViewFacet.isRedirectUriAuthorizedForApp.selector;
-
-        // App Version, Tool, and PKP functions
-        selectors[20] = VincentAppViewFacet.isAppVersionEnabled.selector;
-        selectors[21] = VincentAppViewFacet.getAppVersionDelegatedAgentPkpTokenIds.selector;
-        selectors[22] = VincentAppViewFacet.getAppVersionTools.selector;
-        selectors[23] = VincentAppViewFacet.getToolCidFromHash.selector;
-        selectors[24] = VincentAppViewFacet.isToolAuthorizedForPkp.selector;
+        selectors[1] = VincentAppViewFacet.getRegisteredManagers.selector;
+        selectors[2] = VincentAppViewFacet.getAppById.selector;
+        selectors[3] = VincentAppViewFacet.getAppVersion.selector;
+        selectors[4] = VincentAppViewFacet.getAppsByManager.selector;
+        selectors[5] = VincentAppViewFacet.getAppByDelegatee.selector;
+        selectors[6] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
+        selectors[7] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
+        selectors[8] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
+        selectors[9] = VincentAppViewFacet.getToolCidFromHash.selector;
 
         return selectors;
     }
