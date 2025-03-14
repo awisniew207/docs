@@ -21,7 +21,6 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     function testRegisterApp() public {
-        // Set up test data
         string[] memory domains = new string[](2);
         domains[0] = TEST_DOMAIN_1;
         domains[1] = TEST_DOMAIN_2;
@@ -33,10 +32,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory delegatees = new address[](2);
         delegatees[0] = TEST_DELEGATEE_1;
         delegatees[1] = TEST_DELEGATEE_2;
-
-        // Set up event expectations
-        vm.expectEmit(true, false, false, false);
-        emit NewManagerRegistered(deployer);
 
         // The appId will be 1 as it's the first app registered (changing from 0 to 1)
         vm.expectEmit(true, true, false, false);
@@ -71,7 +66,6 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     function testRegisterAppWithVersion() public {
-        // Set up test data
         string[] memory domains = new string[](1);
         domains[0] = TEST_DOMAIN_1;
 
@@ -84,38 +78,28 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        // Set up tool policies
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
-        toolPolicies[0][0] = TEST_POLICY_1;
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
+        policies[0][0] = TEST_POLICY_1;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
-        toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        string[][][] memory policyParams = new string[][][](1);
+        policyParams[0] = new string[][](1);
+        policyParams[0][0] = new string[](1);
+        policyParams[0][0][0] = TEST_POLICY_PARAM_1;
 
-        // Set up event expectations
-        vm.expectEmit(true, false, false, false);
-        emit NewManagerRegistered(deployer);
+        // Register the tool first so it's available for the app version
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
-        // The appId will be 1 as it's the first app registered (changing from 0 to 1)
+        // The appId will be 1 as it's the first app registered
         vm.expectEmit(true, true, false, false);
         emit NewAppRegistered(1, deployer);
 
-        // App version will be 1
         vm.expectEmit(true, true, true, false);
         emit NewAppVersionRegistered(1, 1, deployer);
 
-        // Register the app with version
+        // Register the app with a version
         (appId, appVersion) = wrappedAppFacet.registerAppWithVersion(
-            TEST_APP_NAME,
-            TEST_APP_DESCRIPTION,
-            domains,
-            redirectUris,
-            delegatees,
-            toolIpfsCids,
-            toolPolicies,
-            toolPolicyParameterNames
+            TEST_APP_NAME, TEST_APP_DESCRIPTION, domains, redirectUris, delegatees, toolIpfsCids, policies, policyParams
         );
 
         // Verify app was registered correctly

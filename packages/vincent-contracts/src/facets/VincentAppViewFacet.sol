@@ -71,15 +71,6 @@ contract VincentAppViewFacet {
         return as_.appIdCounter;
     }
 
-    /**
-     * @notice Returns all registered manager addresses
-     * @return managers Array of all registered app manager addresses
-     */
-    function getRegisteredManagers() external view returns (address[] memory managers) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        managers = as_.registeredManagers.values();
-    }
-
     // ==================================================================================
     // App Data Retrieval Functions
     // ==================================================================================

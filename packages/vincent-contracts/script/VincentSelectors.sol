@@ -75,14 +75,13 @@ library VincentSelectors {
     function getVincentAppViewFacetSelectors() internal pure returns (bytes4[] memory) {
         bytes4[] memory selectors = new bytes4[](9);
         selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
-        selectors[1] = VincentAppViewFacet.getRegisteredManagers.selector;
-        selectors[2] = VincentAppViewFacet.getAppById.selector;
-        selectors[3] = VincentAppViewFacet.getAppVersion.selector;
-        selectors[4] = VincentAppViewFacet.getAppsByManager.selector;
-        selectors[5] = VincentAppViewFacet.getAppByDelegatee.selector;
-        selectors[6] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
-        selectors[7] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
-        selectors[8] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
+        selectors[1] = VincentAppViewFacet.getAppById.selector;
+        selectors[2] = VincentAppViewFacet.getAppVersion.selector;
+        selectors[3] = VincentAppViewFacet.getAppsByManager.selector;
+        selectors[4] = VincentAppViewFacet.getAppByDelegatee.selector;
+        selectors[5] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
+        selectors[6] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
+        selectors[7] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
         return selectors;
     }
 

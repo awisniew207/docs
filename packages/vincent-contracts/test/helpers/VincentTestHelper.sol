@@ -63,7 +63,6 @@ abstract contract VincentTestHelper is Test {
     uint256 constant TEST_PKP_TOKEN_ID_2 = 200;
 
     // Event definitions
-    event NewManagerRegistered(address indexed manager);
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
     event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
     event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);

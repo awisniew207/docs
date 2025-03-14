@@ -16,7 +16,6 @@ contract VincentAppFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    event NewManagerRegistered(address indexed manager);
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
     event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
     event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
@@ -46,15 +45,6 @@ contract VincentAppFacet is VincentBase {
         address[] calldata delegatees
     ) public returns (uint256 newAppId) {
         newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, delegatees);
-
-        // Add the manager to the list of registered managers
-        // if they are not already in the list
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (!as_.registeredManagers.contains(msg.sender)) {
-            as_.registeredManagers.add(msg.sender);
-            emit NewManagerRegistered(msg.sender);
-        }
-
         emit NewAppRegistered(newAppId, msg.sender);
     }
 
@@ -70,14 +60,6 @@ contract VincentAppFacet is VincentBase {
     ) public returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, delegatees);
         newAppVersion = _registerNextAppVersion(newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
-
-        // Add the manager to the list of registered managers
-        // if they are not already in the list
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (!as_.registeredManagers.contains(msg.sender)) {
-            as_.registeredManagers.add(msg.sender);
-            emit NewManagerRegistered(msg.sender);
-        }
 
         emit NewAppRegistered(newAppId, msg.sender);
         emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
