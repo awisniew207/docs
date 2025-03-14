@@ -112,12 +112,11 @@ library VincentUserStorage {
     struct UserStorage {
         EnumerableSet.UintSet registeredAgentPkps;
         // Agent PKP Token ID -> App ID -> Permitted App Versions
-        mapping(uint256 => mapping(uint256 => EnumerableSet.UintSet)) agentPkpTokenIdToPermittedAppVersions;
-        // Agent PKP Token ID -> Set of App IDs that have at least one permitted version
+        mapping(uint256 => mapping(uint256 => uint256)) agentPkpTokenIdToPermittedAppVersion;
+        // Agent PKP Token ID -> Set of App IDs that have a permitted version
         mapping(uint256 => EnumerableSet.UintSet) agentPkpTokenIdToPermittedApps;
-        // Agent PKP Token ID -> App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
-        mapping(uint256 => mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))))
-            agentPkpTokenIdToToolPolicyStorage;
+        // Agent PKP Token ID -> App ID -> Tool IPFS CID Hash -> Tool Policy Storage
+        mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))) agentPkpTokenIdToToolPolicyStorage;
         // PKP NFT contract interface - set once during initialization in the diamond constructor
         IPKPNFTFacet PKP_NFT_FACET;
     }

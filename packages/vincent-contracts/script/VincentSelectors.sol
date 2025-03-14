@@ -122,13 +122,12 @@ library VincentSelectors {
      * @dev Get function selectors for VincentUserViewFacet
      */
     function getVincentUserViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](6);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = VincentUserViewFacet.getAllRegisteredAgentPkps.selector;
-        selectors[1] = VincentUserViewFacet.getPermittedAppVersionsForPkp.selector;
+        selectors[1] = VincentUserViewFacet.getPermittedAppVersionForPkp.selector;
         selectors[2] = VincentUserViewFacet.getAllPermittedAppIdsForPkp.selector;
-        selectors[3] = VincentUserViewFacet.getPermittedToolsForPkpAndAppVersion.selector;
-        selectors[4] = VincentUserViewFacet.isToolPermittedForDelegateeAndPkp.selector;
-        selectors[5] = VincentUserViewFacet.getAllPoliciesWithParametersForTool.selector;
+        selectors[3] = VincentUserViewFacet.validateToolExecutionAndGetPolicies.selector;
+        selectors[4] = VincentUserViewFacet.getAllToolsAndPoliciesForApp.selector;
         return selectors;
     }
 }

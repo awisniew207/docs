@@ -83,9 +83,8 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Verify the app version is permitted
-        uint256[] memory permittedVersions = wrappedUserViewFacet.getPermittedAppVersionsForPkp(pkpTokenId, appId);
-        assertEq(permittedVersions.length, 1, "Should have 1 permitted version");
-        assertEq(permittedVersions[0], appVersion, "Version should be permitted");
+        uint256 permittedVersion = wrappedUserViewFacet.getPermittedAppVersionForPkp(pkpTokenId, appId);
+        assertEq(permittedVersion, appVersion, "Version should be permitted");
 
         // Check that the app ID is in the list of permitted apps
         uint256[] memory permittedAppIds = wrappedUserViewFacet.getAllPermittedAppIdsForPkp(pkpTokenId);
@@ -141,15 +140,15 @@ contract VincentUserFacetTest is VincentTestHelper {
         wrappedUserFacet.unPermitAppVersion(pkpTokenId, appId, appVersion);
 
         // Verify the app version is no longer permitted
-        uint256[] memory permittedVersions = wrappedUserViewFacet.getPermittedAppVersionsForPkp(pkpTokenId, appId);
-        assertEq(permittedVersions.length, 0, "Should have 0 permitted versions");
+        uint256 permittedVersion = wrappedUserViewFacet.getPermittedAppVersionForPkp(pkpTokenId, appId);
+        assertEq(permittedVersion, 0, "Version should be unpermitted");
 
         // Check that the app ID is not in the list of permitted apps
         uint256[] memory permittedAppIds = wrappedUserViewFacet.getAllPermittedAppIdsForPkp(pkpTokenId);
         assertEq(permittedAppIds.length, 0, "Should have 0 permitted apps");
     }
 
-    function testGetPermittedToolsForPkpAndAppVersion() public {
+    function testGetAllToolsAndPoliciesForApp() public {
         // First permit the app version
         string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
@@ -172,12 +171,22 @@ contract VincentUserFacetTest is VincentTestHelper {
             pkpTokenId, appId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
         );
 
-        // Get permitted tools
-        string[] memory tools = wrappedUserViewFacet.getPermittedToolsForPkpAndAppVersion(pkpTokenId, appId, appVersion);
+        // Get all tools and policies
+        VincentUserViewFacet.ToolWithPolicies[] memory tools =
+            wrappedUserViewFacet.getAllToolsAndPoliciesForApp(pkpTokenId, appId);
 
         // Verify we get the right tools
         assertEq(tools.length, 1, "Should have 1 tool");
-        assertEq(tools[0], TEST_TOOL_IPFS_CID_1, "Tool should match");
+        assertEq(tools[0].toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Tool should match");
+
+        // Verify we get the right policies
+        assertEq(tools[0].policies.length, 1, "Should have 1 policy");
+        assertEq(tools[0].policies[0].policyIpfsCid, TEST_POLICY_1, "Policy should match");
+
+        // Verify we get the right parameters
+        assertEq(tools[0].policies[0].parameters.length, 1, "Should have 1 parameter");
+        assertEq(tools[0].policies[0].parameters[0].name, TEST_POLICY_PARAM_1, "Parameter name should match");
+        assertEq(tools[0].policies[0].parameters[0].value, "test-value", "Parameter value should match");
     }
 
     function testSetAndGetToolPolicyParameters() public {
@@ -220,16 +229,47 @@ contract VincentUserFacetTest is VincentTestHelper {
             pkpTokenId, appId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
         );
 
-        // Get the policy parameters
-        VincentUserViewFacet.PolicyWithParameters[] memory policies = wrappedUserViewFacet
-            .getAllPoliciesWithParametersForTool(pkpTokenId, appId, appVersion, TEST_TOOL_IPFS_CID_1);
+        // Get the policy parameters using getAllToolsAndPoliciesForApp instead
+        VincentUserViewFacet.ToolWithPolicies[] memory tools =
+            wrappedUserViewFacet.getAllToolsAndPoliciesForApp(pkpTokenId, appId);
+
+        // Find the right tool and policy
+        bool foundTool = false;
+        bool foundPolicy = false;
+        bool foundParameter = false;
+        string memory paramValue;
+
+        for (uint256 i = 0; i < tools.length; i++) {
+            if (keccak256(abi.encodePacked(tools[i].toolIpfsCid)) == hashedToolIpfsCid) {
+                foundTool = true;
+                for (uint256 j = 0; j < tools[i].policies.length; j++) {
+                    if (
+                        keccak256(abi.encodePacked(tools[i].policies[j].policyIpfsCid))
+                            == keccak256(abi.encodePacked(TEST_POLICY_1))
+                    ) {
+                        foundPolicy = true;
+                        for (uint256 k = 0; k < tools[i].policies[j].parameters.length; k++) {
+                            if (
+                                keccak256(abi.encodePacked(tools[i].policies[j].parameters[k].name))
+                                    == hashedPolicyParameterName
+                            ) {
+                                foundParameter = true;
+                                paramValue = tools[i].policies[j].parameters[k].value;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
 
         // Verify we have the policy with parameters
-        assertEq(policies.length, 1, "Should have 1 policy");
-        assertEq(policies[0].policyIpfsCid, TEST_POLICY_1, "Policy should match");
-        assertEq(policies[0].parameters.length, 1, "Should have 1 parameter");
-        assertEq(policies[0].parameters[0].name, TEST_POLICY_PARAM_1, "Parameter name should match");
-        assertEq(policies[0].parameters[0].value, "test-value", "Parameter value should match");
+        assertTrue(foundTool, "Tool should be found");
+        assertTrue(foundPolicy, "Policy should be found");
+        assertTrue(foundParameter, "Parameter should be found");
+        assertEq(paramValue, "test-value", "Parameter value should match");
     }
 
     function testRemoveToolPolicyParameters() public {
@@ -266,12 +306,21 @@ contract VincentUserFacetTest is VincentTestHelper {
             appId, pkpTokenId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames
         );
 
-        // Get the policy parameters
-        VincentUserViewFacet.PolicyWithParameters[] memory policies = wrappedUserViewFacet
-            .getAllPoliciesWithParametersForTool(pkpTokenId, appId, appVersion, TEST_TOOL_IPFS_CID_1);
+        // Get all tools and policies after removal
+        VincentUserViewFacet.ToolWithPolicies[] memory tools =
+            wrappedUserViewFacet.getAllToolsAndPoliciesForApp(pkpTokenId, appId);
 
-        // There should be no parameters left
-        assertEq(policies.length, 0, "Should have 0 policies after removal");
+        // The tool should still exist but with no policies/parameters
+        bool hasPolicies = false;
+        for (uint256 i = 0; i < tools.length; i++) {
+            if (keccak256(abi.encodePacked(tools[i].toolIpfsCid)) == hashedToolIpfsCid) {
+                hasPolicies = tools[i].policies.length > 0;
+                break;
+            }
+        }
+
+        // There should be no policies/parameters left
+        assertFalse(hasPolicies, "Should have 0 policies after removal");
     }
 
     function testIsToolPermittedForDelegateeAndPkp() public {
@@ -297,34 +346,42 @@ contract VincentUserFacetTest is VincentTestHelper {
             pkpTokenId, appId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
         );
 
-        // Check if the tool is permitted
-        bool isPermitted =
-            wrappedUserViewFacet.isToolPermittedForDelegateeAndPkp(TEST_DELEGATEE_1, pkpTokenId, TEST_TOOL_IPFS_CID_1);
-        assertTrue(isPermitted, "Tool should be permitted for delegatee and PKP");
+        // Check if the tool is permitted using validateToolExecutionAndGetPolicies
+        VincentUserViewFacet.ToolExecutionValidation memory validation =
+            wrappedUserViewFacet.validateToolExecutionAndGetPolicies(TEST_DELEGATEE_1, pkpTokenId, TEST_TOOL_IPFS_CID_1);
+        assertTrue(validation.isPermitted, "Tool should be permitted for delegatee and PKP");
 
         // Try with a non-delegatee address (should revert)
         vm.expectRevert(
             abi.encodeWithSelector(VincentUserViewFacet.DelegateeNotAssociatedWithApp.selector, address(0x3))
         );
-        wrappedUserViewFacet.isToolPermittedForDelegateeAndPkp(address(0x3), pkpTokenId, TEST_TOOL_IPFS_CID_1);
+        wrappedUserViewFacet.validateToolExecutionAndGetPolicies(address(0x3), pkpTokenId, TEST_TOOL_IPFS_CID_1);
 
         // Try with a non-permitted app version
         wrappedUserFacet.unPermitAppVersion(pkpTokenId, appId, appVersion);
-        isPermitted =
-            wrappedUserViewFacet.isToolPermittedForDelegateeAndPkp(TEST_DELEGATEE_1, pkpTokenId, TEST_TOOL_IPFS_CID_1);
-        assertFalse(isPermitted, "Tool should not be permitted after unpermitting app version");
+        validation =
+            wrappedUserViewFacet.validateToolExecutionAndGetPolicies(TEST_DELEGATEE_1, pkpTokenId, TEST_TOOL_IPFS_CID_1);
+        assertFalse(validation.isPermitted, "Tool should not be permitted after unpermitting app version");
     }
 
-    function testFailGetPermittedToolsForNonPermittedPkp() public {
-        // Try to get permitted tools for a PKP that doesn't have the app version permitted
-        // This should revert with PkpNotPermittedForAppVersion
-        wrappedUserViewFacet.getPermittedToolsForPkpAndAppVersion(pkpTokenId, appId, appVersion);
+    function testGetToolsForNonPermittedPkp() public {
+        // Try to get tools for a PKP that doesn't have the app version permitted
+        // This should return an empty array, not revert
+        VincentUserViewFacet.ToolWithPolicies[] memory tools =
+            wrappedUserViewFacet.getAllToolsAndPoliciesForApp(pkpTokenId, appId);
+
+        // Verify we get an empty array
+        assertEq(tools.length, 0, "Should have 0 tools for non-permitted PKP");
     }
 
-    function testFailGetPolicyParametersForNonPermittedPkp() public {
-        // Try to get policy parameters for a PKP that doesn't have the app version permitted
-        // This should revert with PkpNotPermittedForAppVersion
-        wrappedUserViewFacet.getAllPoliciesWithParametersForTool(pkpTokenId, appId, appVersion, TEST_TOOL_IPFS_CID_1);
+    function testValidateToolExecutionForNonPermittedPkp() public {
+        // Try to validate tool execution for a PKP that doesn't have the app version permitted
+        VincentUserViewFacet.ToolExecutionValidation memory validation =
+            wrappedUserViewFacet.validateToolExecutionAndGetPolicies(TEST_DELEGATEE_1, pkpTokenId, TEST_TOOL_IPFS_CID_1);
+
+        // Verify validation result shows not permitted
+        assertFalse(validation.isPermitted, "Tool execution should not be permitted for non-permitted PKP");
+        assertEq(validation.policies.length, 0, "Should have 0 policies for non-permitted PKP");
     }
 
     function testFailSetParametersNonPkpOwner() public {
@@ -452,14 +509,12 @@ contract VincentUserFacetTest is VincentTestHelper {
         assertTrue(foundApp2, "App 2 should be permitted");
 
         // Verify versions for app 1
-        uint256[] memory permittedVersions1 = wrappedUserViewFacet.getPermittedAppVersionsForPkp(pkpTokenId, appId);
-        assertEq(permittedVersions1.length, 1, "Should have 1 permitted version for app 1");
-        assertEq(permittedVersions1[0], appVersion, "Version should match for app 1");
+        uint256 permittedVersion1 = wrappedUserViewFacet.getPermittedAppVersionForPkp(pkpTokenId, appId);
+        assertEq(permittedVersion1, appVersion, "Version should match for app 1");
 
         // Verify versions for app 2
-        uint256[] memory permittedVersions2 = wrappedUserViewFacet.getPermittedAppVersionsForPkp(pkpTokenId, appId2);
-        assertEq(permittedVersions2.length, 1, "Should have 1 permitted version for app 2");
-        assertEq(permittedVersions2[0], appVersion2, "Version should match for app 2");
+        uint256 permittedVersion2 = wrappedUserViewFacet.getPermittedAppVersionForPkp(pkpTokenId, appId2);
+        assertEq(permittedVersion2, appVersion2, "Version should match for app 2");
     }
 
     // Helper function to test with a different PKP
@@ -500,12 +555,10 @@ contract VincentUserFacetTest is VincentTestHelper {
         assertTrue(foundPkp2, "PKP 2 should be registered");
 
         // Verify app permissions for both PKPs
-        uint256[] memory permittedVersions1 = wrappedUserViewFacet.getPermittedAppVersionsForPkp(pkpTokenId, appId);
-        uint256[] memory permittedVersions2 = wrappedUserViewFacet.getPermittedAppVersionsForPkp(pkpTokenId2, appId);
+        uint256 permittedVersion1 = wrappedUserViewFacet.getPermittedAppVersionForPkp(pkpTokenId, appId);
+        uint256 permittedVersion2 = wrappedUserViewFacet.getPermittedAppVersionForPkp(pkpTokenId2, appId);
 
-        assertEq(permittedVersions1.length, 1, "PKP 1 should have 1 permitted version");
-        assertEq(permittedVersions2.length, 1, "PKP 2 should have 1 permitted version");
-        assertEq(permittedVersions1[0], appVersion, "PKP 1 permitted version should match");
-        assertEq(permittedVersions2[0], appVersion, "PKP 2 permitted version should match");
+        assertEq(permittedVersion1, appVersion, "PKP 1 permitted version should match");
+        assertEq(permittedVersion2, appVersion, "PKP 2 permitted version should match");
     }
 }
