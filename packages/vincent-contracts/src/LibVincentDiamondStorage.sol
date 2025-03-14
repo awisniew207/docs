@@ -34,7 +34,6 @@ library VincentAppStorage {
         mapping(address => uint256) delegateeAddressToAppId;
         mapping(bytes32 => string) authorizedDomainHashToDomain;
         mapping(bytes32 => string) authorizedRedirectUriHashToRedirectUri;
-        EnumerableSet.UintSet registeredApps;
         EnumerableSet.AddressSet registeredManagers;
         uint256 appIdCounter;
     }

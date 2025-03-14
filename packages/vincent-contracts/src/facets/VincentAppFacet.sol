@@ -197,9 +197,6 @@ contract VincentAppFacet is VincentBase {
 
         newAppId = ++as_.appIdCounter;
 
-        // Add the app to the list of registered apps
-        as_.registeredApps.add(newAppId);
-
         // Add the app to the manager's list of apps
         as_.managerAddressToAppIds[msg.sender].add(newAppId);
 

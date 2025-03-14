@@ -14,13 +14,13 @@ contract VincentBase {
 
     modifier onlyRegisteredApp(uint256 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (!as_.registeredApps.contains(appId)) revert AppNotRegistered(appId);
+        if (appId == 0 || appId > as_.appIdCounter) revert AppNotRegistered(appId);
         _;
     }
 
     modifier onlyRegisteredAppVersion(uint256 appId, uint256 appVersion) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (!as_.registeredApps.contains(appId)) revert AppNotRegistered(appId);
+        if (appId == 0 || appId > as_.appIdCounter) revert AppNotRegistered(appId);
         _;
     }
 }
