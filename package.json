@@ -10,6 +10,7 @@
   },
   "private": false,
   "devDependencies": {
+    "@nx/jest": "^20.5.0",
     "@nx/js": "20.4.6",
     "@nx/linter": "^19.8.4",
     "@swc-node/register": "~1.9.1",
