@@ -1,8 +1,8 @@
 import { getContract, Network } from './config';
 
 export interface VincentContractsConfig {
-    network?: Network;
-  }
+  network?: Network;
+}
 
 export class VincentContracts {
   private network: Network;
