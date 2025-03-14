@@ -5,11 +5,13 @@
   "scripts": {
     "build": "nx run-many --target=build --all",
     "test": "nx run-many --target=test --all",
-    "lint": "nx run-many --target=lint --all"
+    "lint": "nx run-many --target=lint --all",
+    "format": "nx format:write"
   },
   "private": false,
   "devDependencies": {
     "@nx/js": "20.4.6",
+    "@nx/linter": "^19.8.4",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
