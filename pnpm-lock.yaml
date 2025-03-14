@@ -7,33 +7,6 @@ settings:
 importers:
 
   .:
-    devDependencies:
-      '@nx/js':
-        specifier: 20.4.6
-        version: 20.4.6(@babel/traverse@7.26.10)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15)))(typescript@5.7.3)
-      '@swc-node/register':
-        specifier: ~1.9.1
-        version: 1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3)
-      '@swc/core':
-        specifier: ~1.5.7
-        version: 1.5.29(@swc/helpers@0.5.15)
-      '@swc/helpers':
-        specifier: ~0.5.11
-        version: 0.5.15
-      nx:
-        specifier: 20.4.6
-        version: 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))
-      prettier:
-        specifier: ^2.6.2
-        version: 2.8.8
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-      typescript:
-        specifier: ~5.7.2
-        version: 5.7.3
-
-  packages/sdk:
     dependencies:
       '@lit-protocol/auth-helpers':
         specifier: ^7.0.8
@@ -50,9 +23,6 @@ importers:
       '@lit-protocol/types':
         specifier: ^7.0.8
         version: 7.0.8
-      '@noble/secp256k1':
-        specifier: ^2.2.3
-        version: 2.2.3
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -63,6 +33,18 @@ importers:
         specifier: ^5.7.2
         version: 5.8.0
     devDependencies:
+      '@nx/js':
+        specifier: 20.4.6
+        version: 20.4.6(@babel/traverse@7.26.10)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15)))(typescript@5.8.2)
+      '@swc-node/register':
+        specifier: ~1.9.1
+        version: 1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2)
+      '@swc/core':
+        specifier: ~1.5.7
+        version: 1.5.29(@swc/helpers@0.5.15)
+      '@swc/helpers':
+        specifier: ~0.5.11
+        version: 0.5.15
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14
@@ -80,13 +62,31 @@ importers:
         version: 10.1.1(eslint@9.22.0)
       eslint-plugin-prettier:
         specifier: ^5.2.3
-        version: 5.2.3(eslint-config-prettier@10.1.1(eslint@9.22.0))(eslint@9.22.0)(prettier@3.5.3)
+        version: 5.2.3(eslint-config-prettier@10.1.1(eslint@9.22.0))(eslint@9.22.0)(prettier@2.8.8)
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.13.10)(babel-plugin-macros@3.1.0)(ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(typescript@5.8.2))
+      nx:
+        specifier: 20.4.6
+        version: 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))
+      prettier:
+        specifier: ^2.6.2
+        version: 2.8.8
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
+
+  packages/sdk:
+    dependencies:
+      '@noble/secp256k1':
+        specifier: ^2.2.3
+        version: 2.2.3
+      did-jwt:
+        specifier: ^8.0.8
+        version: 8.0.8
 
 packages:
 
@@ -3188,11 +3188,6 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.5.3:
-    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
-    engines: {node: '>=14'}
-    hasBin: true
-
   pretty-format@29.7.0:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -3604,11 +3599,6 @@ packages:
   type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-
-  typescript@5.7.3:
-    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   typescript@5.8.2:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
@@ -4708,13 +4698,13 @@ snapshots:
     dependencies:
       '@ethersproject/address': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/constants': 5.8.0
       '@ethersproject/hash': 5.8.0
       '@ethersproject/keccak256': 5.8.0
       '@ethersproject/logger': 5.8.0
       '@ethersproject/properties': 5.8.0
-      '@ethersproject/strings': 5.7.0
+      '@ethersproject/strings': 5.8.0
 
   '@ethersproject/abi@5.8.0':
     dependencies:
@@ -4750,11 +4740,11 @@ snapshots:
 
   '@ethersproject/abstract-signer@5.7.0':
     dependencies:
-      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/logger': 5.7.0
-      '@ethersproject/properties': 5.7.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/logger': 5.8.0
+      '@ethersproject/properties': 5.8.0
 
   '@ethersproject/abstract-signer@5.8.0':
     dependencies:
@@ -4767,9 +4757,9 @@ snapshots:
   '@ethersproject/address@5.7.0':
     dependencies:
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/keccak256': 5.7.0
-      '@ethersproject/logger': 5.7.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/keccak256': 5.8.0
+      '@ethersproject/logger': 5.8.0
       '@ethersproject/rlp': 5.8.0
 
   '@ethersproject/address@5.8.0':
@@ -4810,7 +4800,7 @@ snapshots:
   '@ethersproject/contracts@5.7.0':
     dependencies:
       '@ethersproject/abi': 5.8.0
-      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
       '@ethersproject/address': 5.8.0
       '@ethersproject/bignumber': 5.8.0
@@ -4835,15 +4825,15 @@ snapshots:
 
   '@ethersproject/hash@5.7.0':
     dependencies:
-      '@ethersproject/abstract-signer': 5.7.0
-      '@ethersproject/address': 5.7.0
+      '@ethersproject/abstract-signer': 5.8.0
+      '@ethersproject/address': 5.8.0
       '@ethersproject/base64': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/keccak256': 5.7.0
-      '@ethersproject/logger': 5.7.0
-      '@ethersproject/properties': 5.7.0
-      '@ethersproject/strings': 5.7.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/keccak256': 5.8.0
+      '@ethersproject/logger': 5.8.0
+      '@ethersproject/properties': 5.8.0
+      '@ethersproject/strings': 5.8.0
 
   '@ethersproject/hash@5.8.0':
     dependencies:
@@ -4859,18 +4849,18 @@ snapshots:
 
   '@ethersproject/hdnode@5.7.0':
     dependencies:
-      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/abstract-signer': 5.8.0
       '@ethersproject/basex': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/logger': 5.7.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/logger': 5.8.0
       '@ethersproject/pbkdf2': 5.8.0
-      '@ethersproject/properties': 5.7.0
+      '@ethersproject/properties': 5.8.0
       '@ethersproject/sha2': 5.8.0
       '@ethersproject/signing-key': 5.8.0
-      '@ethersproject/strings': 5.7.0
-      '@ethersproject/transactions': 5.7.0
-      '@ethersproject/wordlists': 5.7.0
+      '@ethersproject/strings': 5.8.0
+      '@ethersproject/transactions': 5.8.0
+      '@ethersproject/wordlists': 5.8.0
 
   '@ethersproject/hdnode@5.8.0':
     dependencies:
@@ -4889,17 +4879,17 @@ snapshots:
 
   '@ethersproject/json-wallets@5.7.0':
     dependencies:
-      '@ethersproject/abstract-signer': 5.7.0
-      '@ethersproject/address': 5.7.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/hdnode': 5.7.0
-      '@ethersproject/keccak256': 5.7.0
-      '@ethersproject/logger': 5.7.0
+      '@ethersproject/abstract-signer': 5.8.0
+      '@ethersproject/address': 5.8.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/hdnode': 5.8.0
+      '@ethersproject/keccak256': 5.8.0
+      '@ethersproject/logger': 5.8.0
       '@ethersproject/pbkdf2': 5.8.0
-      '@ethersproject/properties': 5.7.0
-      '@ethersproject/random': 5.7.0
-      '@ethersproject/strings': 5.7.0
-      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/properties': 5.8.0
+      '@ethersproject/random': 5.8.0
+      '@ethersproject/strings': 5.8.0
+      '@ethersproject/transactions': 5.8.0
       aes-js: 3.0.0
       scrypt-js: 3.0.1
 
@@ -4921,7 +4911,7 @@ snapshots:
 
   '@ethersproject/keccak256@5.7.0':
     dependencies:
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       js-sha3: 0.8.0
 
   '@ethersproject/keccak256@5.8.0':
@@ -4944,7 +4934,7 @@ snapshots:
 
   '@ethersproject/properties@5.7.0':
     dependencies:
-      '@ethersproject/logger': 5.7.0
+      '@ethersproject/logger': 5.8.0
 
   '@ethersproject/properties@5.8.0':
     dependencies:
@@ -4952,7 +4942,7 @@ snapshots:
 
   '@ethersproject/providers@5.7.2':
     dependencies:
-      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
       '@ethersproject/address': 5.8.0
       '@ethersproject/base64': 5.8.0
@@ -5004,8 +4994,8 @@ snapshots:
 
   '@ethersproject/random@5.7.0':
     dependencies:
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/logger': 5.7.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/logger': 5.8.0
 
   '@ethersproject/random@5.8.0':
     dependencies:
@@ -5043,7 +5033,7 @@ snapshots:
 
   '@ethersproject/strings@5.7.0':
     dependencies:
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/constants': 5.8.0
       '@ethersproject/logger': 5.8.0
 
@@ -5057,7 +5047,7 @@ snapshots:
     dependencies:
       '@ethersproject/address': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/constants': 5.8.0
       '@ethersproject/keccak256': 5.8.0
       '@ethersproject/logger': 5.8.0
@@ -5085,11 +5075,11 @@ snapshots:
 
   '@ethersproject/wallet@5.7.0':
     dependencies:
-      '@ethersproject/abstract-provider': 5.7.0
+      '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
       '@ethersproject/address': 5.8.0
       '@ethersproject/bignumber': 5.8.0
-      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/bytes': 5.8.0
       '@ethersproject/hash': 5.8.0
       '@ethersproject/hdnode': 5.8.0
       '@ethersproject/json-wallets': 5.8.0
@@ -5098,7 +5088,7 @@ snapshots:
       '@ethersproject/properties': 5.8.0
       '@ethersproject/random': 5.8.0
       '@ethersproject/signing-key': 5.8.0
-      '@ethersproject/transactions': 5.7.0
+      '@ethersproject/transactions': 5.8.0
       '@ethersproject/wordlists': 5.8.0
 
   '@ethersproject/wallet@5.8.0':
@@ -5129,11 +5119,11 @@ snapshots:
 
   '@ethersproject/wordlists@5.7.0':
     dependencies:
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/hash': 5.7.0
-      '@ethersproject/logger': 5.7.0
-      '@ethersproject/properties': 5.7.0
-      '@ethersproject/strings': 5.7.0
+      '@ethersproject/bytes': 5.8.0
+      '@ethersproject/hash': 5.8.0
+      '@ethersproject/logger': 5.8.0
+      '@ethersproject/properties': 5.8.0
+      '@ethersproject/strings': 5.8.0
 
   '@ethersproject/wordlists@5.8.0':
     dependencies:
@@ -5972,19 +5962,19 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
 
-  '@nx/devkit@20.4.6(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15)))':
+  '@nx/devkit@20.4.6(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15)))':
     dependencies:
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.2
       minimatch: 9.0.3
-      nx: 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))
+      nx: 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))
       semver: 7.7.1
       tmp: 0.2.3
       tslib: 2.8.1
       yargs-parser: 21.1.1
 
-  '@nx/js@20.4.6(@babel/traverse@7.26.10)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15)))(typescript@5.7.3)':
+  '@nx/js@20.4.6(@babel/traverse@7.26.10)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15)))(typescript@5.8.2)':
     dependencies:
       '@babel/core': 7.26.10
       '@babel/plugin-proposal-decorators': 7.25.9(@babel/core@7.26.10)
@@ -5993,8 +5983,8 @@ snapshots:
       '@babel/preset-env': 7.26.9(@babel/core@7.26.10)
       '@babel/preset-typescript': 7.26.0(@babel/core@7.26.10)
       '@babel/runtime': 7.26.10
-      '@nx/devkit': 20.4.6(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15)))
-      '@nx/workspace': 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))
+      '@nx/devkit': 20.4.6(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15)))
+      '@nx/workspace': 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))
       '@zkochan/js-yaml': 0.0.7
       babel-plugin-const-enum: 1.2.0(@babel/core@7.26.10)
       babel-plugin-macros: 3.1.0
@@ -6013,7 +6003,7 @@ snapshots:
       semver: 7.7.1
       source-map-support: 0.5.19
       tinyglobby: 0.2.12
-      ts-node: 10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(typescript@5.7.3)
+      ts-node: 10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(typescript@5.8.2)
       tsconfig-paths: 4.2.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -6057,12 +6047,12 @@ snapshots:
   '@nx/nx-win32-x64-msvc@20.4.6':
     optional: true
 
-  '@nx/workspace@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))':
+  '@nx/workspace@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))':
     dependencies:
-      '@nx/devkit': 20.4.6(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15)))
+      '@nx/devkit': 20.4.6(nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15)))
       chalk: 4.1.2
       enquirer: 2.3.6
-      nx: 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15))
+      nx: 20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15))
       tslib: 2.8.1
       yargs-parser: 21.1.1
     transitivePeerDependencies:
@@ -6218,7 +6208,7 @@ snapshots:
       '@swc/core': 1.5.29(@swc/helpers@0.5.15)
       '@swc/types': 0.1.19
 
-  '@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3)':
+  '@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2)':
     dependencies:
       '@swc-node/core': 1.13.3(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)
       '@swc-node/sourcemap-support': 0.5.1
@@ -6227,7 +6217,7 @@ snapshots:
       debug: 4.4.0
       pirates: 4.0.6
       tslib: 2.8.1
-      typescript: 5.7.3
+      typescript: 5.8.2
     transitivePeerDependencies:
       - '@swc/types'
       - supports-color
@@ -7323,10 +7313,10 @@ snapshots:
     dependencies:
       eslint: 9.22.0
 
-  eslint-plugin-prettier@5.2.3(eslint-config-prettier@10.1.1(eslint@9.22.0))(eslint@9.22.0)(prettier@3.5.3):
+  eslint-plugin-prettier@5.2.3(eslint-config-prettier@10.1.1(eslint@9.22.0))(eslint@9.22.0)(prettier@2.8.8):
     dependencies:
       eslint: 9.22.0
-      prettier: 3.5.3
+      prettier: 2.8.8
       prettier-linter-helpers: 1.0.0
       synckit: 0.9.2
     optionalDependencies:
@@ -8440,7 +8430,7 @@ snapshots:
     dependencies:
       path-key: 3.1.1
 
-  nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.15)):
+  nx@20.4.6(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2))(@swc/core@1.5.29(@swc/helpers@0.5.15)):
     dependencies:
       '@napi-rs/wasm-runtime': 0.2.4
       '@yarnpkg/lockfile': 1.1.0
@@ -8487,7 +8477,7 @@ snapshots:
       '@nx/nx-linux-x64-musl': 20.4.6
       '@nx/nx-win32-arm64-msvc': 20.4.6
       '@nx/nx-win32-x64-msvc': 20.4.6
-      '@swc-node/register': 1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.7.3)
+      '@swc-node/register': 1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.15))(@swc/types@0.1.19)(typescript@5.8.2)
       '@swc/core': 1.5.29(@swc/helpers@0.5.15)
     transitivePeerDependencies:
       - debug
@@ -8617,8 +8607,6 @@ snapshots:
       fast-diff: 1.3.0
 
   prettier@2.8.8: {}
-
-  prettier@3.5.3: {}
 
   pretty-format@29.7.0:
     dependencies:
@@ -8972,26 +8960,6 @@ snapshots:
     dependencies:
       typescript: 5.8.2
 
-  ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(typescript@5.7.3):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 22.13.10
-      acorn: 8.14.1
-      acorn-walk: 8.3.4
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 5.7.3
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.5.29(@swc/helpers@0.5.15)
-
   ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.15))(@types/node@22.13.10)(typescript@5.8.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
@@ -9011,7 +8979,6 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.5.29(@swc/helpers@0.5.15)
-    optional: true
 
   tsconfig-paths@4.2.0:
     dependencies:
@@ -9040,8 +9007,6 @@ snapshots:
   type-fest@0.6.0: {}
 
   type-fest@0.8.1: {}
-
-  typescript@5.7.3: {}
 
   typescript@5.8.2: {}
 
