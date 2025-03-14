@@ -125,4 +125,4 @@ export class Storage {
   async clearAll(): Promise<void> {
     await this.storage.clear();
   }
-} 
+}

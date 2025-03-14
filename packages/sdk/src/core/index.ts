@@ -1,1 +1,1 @@
-export { VincentSDK, VincentSDKConfig } from "./vincent";
+export { VincentSDK, VincentSDKConfig } from './vincent';

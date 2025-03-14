@@ -26,8 +26,8 @@
     "sdk"
   ],
   "dependencies": {
-   "@noble/secp256k1": "^2.2.3",
-   "did-jwt": "^8.0.8"
+    "@noble/secp256k1": "^2.2.3",
+    "did-jwt": "^8.0.8"
   },
   "sideEffects": false
 }

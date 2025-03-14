@@ -1,1 +1,1 @@
-export { DelegateeSigs } from "./delegatee-sigs";
+export { DelegateeSigs } from './delegatee-sigs';
