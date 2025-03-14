@@ -2,7 +2,11 @@
   "name": "@lit-protocol/vincent-sdk",
   "version": "0.1.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx run-many --target=build --all",
+    "test": "nx run-many --target=test --all",
+    "lint": "nx run-many --target=lint --all"
+  },
   "private": false,
   "devDependencies": {
     "@nx/js": "20.4.6",
