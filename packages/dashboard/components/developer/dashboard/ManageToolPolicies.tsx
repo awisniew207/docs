@@ -108,7 +108,7 @@ export default function ManageToolPoliciesScreen({
     const handleSave = async () => {
         setIsSubmitting(true);
         try {
-            const contracts = new VincentContracts('datil-dev');
+            const contracts = new VincentContracts('datil');
             
             // Prepare the data for the contract call
             const toolIpfsCids = toolPolicies.map(tool => tool.toolIpfsCid);

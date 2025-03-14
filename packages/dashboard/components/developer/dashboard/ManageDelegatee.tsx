@@ -45,7 +45,12 @@ export default function DelegateeManagerScreen({
 
     async function handleConfirmSaved() {
         const contracts = new VincentContracts('datil');
-        await contracts.addDelegatee(dashboard.appId, newAddress);
+        await contracts.registerNextAppVersion(
+            dashboard.appId,
+            dashboard.toolPolicies.map(tool => tool.toolIpfsCid),
+            dashboard.toolPolicies.map(tool => tool.policyVarsSchema.map(schema => schema.defaultValue)),
+            dashboard.toolPolicies.map(tool => tool.policyVarsSchema.map(schema => [schema.paramName]))
+        );
         setDelegatees((prev) => [...prev, newAddress]);
         setShowKeyDialog(false);
         setNewPrivateKey("");
