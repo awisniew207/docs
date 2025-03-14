@@ -23,8 +23,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
-import { VincentContracts } from '@/services/contract/contracts';
-import { Network } from '@/services/contract/config';
+import { VincentContracts } from '@/services';
+import { Network } from '@/services';
 import { ArrowLeft } from 'lucide-react';
 
 // URL normalization helpers

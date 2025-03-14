@@ -24,9 +24,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
-import { VincentApp } from '@/types';
+import { VincentApp } from '@/services/types';
 import { useAccount } from 'wagmi';
-import { updateApp, toggleAppEnabled } from '@/services/backend/api';
+import { VincentContracts } from '@/services/contract/contracts';
+import { updateApp } from '@/services/backend/api';
 
 const formSchema = z.object({
   appName: z
@@ -80,14 +81,11 @@ export default function ManageAppScreen({
       setIsSubmitting(true);
 
       if (!address) return;
-
+      
       await updateApp(address, {
         appId: dashboard.appId,
-        name: values.appName,
-        description: values.appDescription,
         contactEmail: values.email,
-        authorizedDomains: dashboard.authorizedDomains,
-        authorizedRedirectUris: dashboard.authorizedRedirectUris,
+        description: values.appDescription,
       });
       onSuccess();
     } catch (error) {
@@ -102,10 +100,8 @@ export default function ManageAppScreen({
     
     try {
       setIsToggling(true);
-      await toggleAppEnabled(address, {
-        appId: dashboard.appId,
-        isEnabled: !dashboard.isEnabled,
-      });
+      const contracts = new VincentContracts('datil');
+      await contracts.enableAppVersion(dashboard.appId, dashboard.currentVersion, !dashboard.isEnabled);
       onSuccess();
     } catch (error) {
       console.error('Error toggling app status:', error);
@@ -232,7 +228,7 @@ export default function ManageAppScreen({
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {dashboard.delegatees.map((delegatee) => (
+                {dashboard.delegatees.map((delegatee: string) => (
                   <div key={delegatee} className="text-sm break-all">
                     {delegatee}
                   </div>

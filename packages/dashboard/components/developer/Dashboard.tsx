@@ -1,4 +1,4 @@
-import { VincentApp } from '@/types';
+import { VincentApp } from '@/services/types';
 import { useEffect, useState } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
@@ -16,7 +16,7 @@ import {
 } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { useAccount } from 'wagmi';
-import { toggleAppEnabled } from '@/services/backend/api';
+import { VincentContracts } from '@/services';
 
 export default function DashboardScreen({
   vincentApp,
@@ -52,10 +52,8 @@ export default function DashboardScreen({
     
     try {
       setIsToggling(true);
-      await toggleAppEnabled(address, {
-        appId: selectedApp.appId,
-        isEnabled: !selectedApp.isEnabled,
-      });
+      const contracts = new VincentContracts('datil');
+      await contracts.enableAppVersion(selectedApp.appId, selectedApp.currentVersion, !selectedApp.isEnabled);
       await handleRefetch();
     } catch (error) {
       console.error('Error toggling app status:', error);
@@ -143,10 +141,10 @@ export default function DashboardScreen({
             >
               {isToggling ? 'Updating...' : selectedApp.isEnabled ? 'Disable App' : 'Enable App'}
             </Button>
-            <Button variant="default" onClick={() => setShowManageApp(true)}>
+            {/* <Button variant="default" onClick={() => setShowManageApp(true)}>
               <Settings className="h-4 w-4 mr-2" />
               Manage App
-            </Button>
+            </Button> */}
             <Button
               variant="default"
               onClick={() => setShowDelegateeManager(true)}

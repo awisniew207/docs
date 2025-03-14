@@ -11,9 +11,9 @@
     ],
     "outputs": [
       {
-        "name": "appView",
+        "name": "app",
         "type": "tuple",
-        "internalType": "struct VincentAppViewFacet.AppView",
+        "internalType": "struct VincentAppViewFacet.App",
         "components": [
           {
             "name": "name",
@@ -67,9 +67,9 @@
     ],
     "outputs": [
       {
-        "name": "appView",
+        "name": "app",
         "type": "tuple",
-        "internalType": "struct VincentAppViewFacet.AppView",
+        "internalType": "struct VincentAppViewFacet.App",
         "components": [
           {
             "name": "name",
@@ -128,75 +128,9 @@
     ],
     "outputs": [
       {
-        "name": "versionedAppView",
+        "name": "app",
         "type": "tuple",
-        "internalType": "struct VincentAppViewFacet.VersionedAppView",
-        "components": [
-          {
-            "name": "name",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "description",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "manager",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "version",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "enabled",
-            "type": "bool",
-            "internalType": "bool"
-          },
-          {
-            "name": "authorizedDomains",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolIpfsCidHashes",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "delegatedAgentPkpTokenIds",
-            "type": "uint256[]",
-            "internalType": "uint256[]"
-          }
-        ]
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getAppsByManager",
-    "inputs": [
-      {
-        "name": "manager",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "appViews",
-        "type": "tuple[]",
-        "internalType": "struct VincentAppViewFacet.AppView[]",
+        "internalType": "struct VincentAppViewFacet.App",
         "components": [
           {
             "name": "name",
@@ -232,6 +166,123 @@
             "name": "authorizedRedirectUris",
             "type": "string[]",
             "internalType": "string[]"
+          }
+        ]
+      },
+      {
+        "name": "appVersion",
+        "type": "tuple",
+        "internalType": "struct VincentAppViewFacet.AppVersion",
+        "components": [
+          {
+            "name": "version",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "toolIpfsCidHashes",
+            "type": "string[]",
+            "internalType": "string[]"
+          },
+          {
+            "name": "delegatedAgentPkpTokenIds",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getAppsByManager",
+    "inputs": [
+      {
+        "name": "manager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "appsWithVersions",
+        "type": "tuple[]",
+        "internalType": "struct VincentAppViewFacet.AppWithVersions[]",
+        "components": [
+          {
+            "name": "app",
+            "type": "tuple",
+            "internalType": "struct VincentAppViewFacet.App",
+            "components": [
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "manager",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "latestVersion",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "delegatees",
+                "type": "address[]",
+                "internalType": "address[]"
+              },
+              {
+                "name": "authorizedDomains",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "authorizedRedirectUris",
+                "type": "string[]",
+                "internalType": "string[]"
+              }
+            ]
+          },
+          {
+            "name": "versions",
+            "type": "tuple[]",
+            "internalType": "struct VincentAppViewFacet.AppVersion[]",
+            "components": [
+              {
+                "name": "version",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "enabled",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "toolIpfsCidHashes",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "delegatedAgentPkpTokenIds",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+              }
+            ]
           }
         ]
       }

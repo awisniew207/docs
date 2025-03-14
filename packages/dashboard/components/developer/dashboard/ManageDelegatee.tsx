@@ -12,8 +12,8 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { VincentApp } from "@/types";
-import { VincentContracts } from "@/services/contract/contracts";
+import { VincentApp } from "@/services/types";
+import { VincentContracts } from "@/services";
 
 interface DelegateeManagerProps {
     onBack: () => void;
@@ -44,7 +44,7 @@ export default function DelegateeManagerScreen({
     };
 
     async function handleConfirmSaved() {
-        const contracts = new VincentContracts('datil-dev');
+        const contracts = new VincentContracts('datil');
         await contracts.addDelegatee(dashboard.appId, newAddress);
         setDelegatees((prev) => [...prev, newAddress]);
         setShowKeyDialog(false);

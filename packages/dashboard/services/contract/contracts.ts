@@ -63,6 +63,13 @@ export class VincentContracts {
     return tx;
   }
 
+  async enableAppVersion(appId: number, version: number, isEnabled: boolean) {
+    const contract = await getContract(this.network, 'App', true);
+    const tx = await contract.enableAppVersion(appId, version, isEnabled);
+    await tx.wait();
+    return tx;
+  }
+
   // ------------------------------------------------------------ Read functions
 
   async fetchDelegatedAgentPKPs(appId: number, version: number) {

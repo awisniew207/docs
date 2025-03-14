@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { VincentApp, ToolPolicy, PolicyParamSchema } from "@/types";
-import { VincentContracts } from "@/services/contract/contracts";
+import { VincentApp, ToolPolicy, PolicyParamSchema } from "@/services/types";
+import { VincentContracts } from "@/services";
 
 interface ToolPolicyWithId extends ToolPolicy {
     _id?: string; // Frontend-only ID for mapping

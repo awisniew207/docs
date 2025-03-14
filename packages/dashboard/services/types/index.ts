@@ -9,6 +9,7 @@ export interface VincentApp {
     managementWallet: string;
     isEnabled: boolean;
     appMetadata?: AppMetadata; // off-chain
+    currentVersion: number;
 }
 
 export interface AppMetadata {
