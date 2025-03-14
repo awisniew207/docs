@@ -14,6 +14,10 @@ library VincentAppStorage {
     struct VersionedApp {
         EnumerableSet.Bytes32Set toolIpfsCidHashes;
         EnumerableSet.UintSet delegatedAgentPkps;
+        // Tool IPFS CID Hash => Policy IPFS CID Hashes
+        mapping(bytes32 => EnumerableSet.Bytes32Set) toolIpfsCidHashToPolicyIpfsCidHashes;
+        // Policy IPFS CID Hash => Policy Parameter Name Hashes
+        mapping(bytes32 => EnumerableSet.Bytes32Set) policyIpfsCidHashToParameterNameHashes;
         uint256 version;
         bool enabled;
     }
@@ -52,39 +56,18 @@ library VincentToolStorage {
 
     struct ToolStorage {
         EnumerableSet.Bytes32Set registeredTools;
+        // Tool IPFS CID Hash => Tool IPFS CID
         mapping(bytes32 => string) toolIpfsCidHashToIpfsCid;
-    }
-
-    function toolStorage() internal pure returns (ToolStorage storage ts) {
-        bytes32 slot = TOOL_STORAGE_SLOT;
-        assembly {
-            ts.slot := slot
-        }
-    }
-}
-
-library VincentAppToolPolicyStorage {
-    bytes32 internal constant APP_TOOL_POLICY_STORAGE_SLOT = keccak256("lit.vincent.app.tool.policy.storage");
-
-    struct VersionedToolPolicies {
-        EnumerableSet.Bytes32Set policyIpfsCidHashes;
-        // Policy IPFS CID Hash => Policy Parameter Name Hashes
-        mapping(bytes32 => EnumerableSet.Bytes32Set) policyIpfsCidHashToParameterNameHashes;
-    }
-
-    struct AppToolPolicyStorage {
-        // App ID => App Version => Tool IPFS CID Hash => Tool Policies
-        mapping(uint256 => mapping(uint256 => mapping(bytes32 => VersionedToolPolicies))) appIdToVersionedToolPolicies;
         // Policy IPFS CID Hash => Policy IPFS CID
         mapping(bytes32 => string) policyIpfsCidHashToIpfsCid;
         // Policy Parameter Name Hash => Policy Parameter Name
         mapping(bytes32 => string) policyParameterNameHashToName;
     }
 
-    function appToolPolicyStorage() internal pure returns (AppToolPolicyStorage storage atps) {
-        bytes32 slot = APP_TOOL_POLICY_STORAGE_SLOT;
+    function toolStorage() internal pure returns (ToolStorage storage ts) {
+        bytes32 slot = TOOL_STORAGE_SLOT;
         assembly {
-            atps.slot := slot
+            ts.slot := slot
         }
     }
 }

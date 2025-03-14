@@ -236,6 +236,7 @@ contract VincentAppFacet is VincentBase {
         // Step 2: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
+        VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
 
         // Step 3: Create a new app version.
         app.versionedApps.push();
@@ -246,44 +247,40 @@ contract VincentAppFacet is VincentBase {
         versionedApp.version = newAppVersion;
         versionedApp.enabled = true; // App versions are enabled by default
 
-        // Step 4: Fetch tool policy storage.
-        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
-            VincentAppToolPolicyStorage.appToolPolicyStorage();
-
-        // Step 5: Iterate through each tool to register it with the new app version.
+        // Step 4: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Step 5.1: Register the tool IPFS CID globally if it hasn't been added already.
+            // Step 4.1: Register the tool IPFS CID globally if it hasn't been added already.
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolCid)) {
                 versionedApp.toolIpfsCidHashes.add(hashedToolCid);
                 IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
             }
 
-            // Step 5.2: Fetch the policy storage for this tool.
-            VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
-                atps_.appIdToVersionedToolPolicies[appId][newAppVersion][hashedToolCid];
+            // Step 4.2: Fetch the policy storage for this tool.
+            EnumerableSet.Bytes32Set storage toolPolicyIpfsCidHashes =
+                versionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[hashedToolCid];
 
-            // Step 6: Iterate through policies linked to this tool.
+            // Step 5: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
                 string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
-                // Step 6.1: Register the policy hash.
-                versionedToolPolicies.policyIpfsCidHashes.add(hashedToolPolicy);
+                // Step 5.1: Add the policy hash to the VersionedApp
+                toolPolicyIpfsCidHashes.add(hashedToolPolicy);
 
-                // Step 6.2: Store the policy IPFS CID globally if it's not already stored.
-                if (bytes(atps_.policyIpfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
-                    atps_.policyIpfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
+                // Step 5.2: Store the policy IPFS CID globally if it's not already stored.
+                if (bytes(ts.policyIpfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
+                    ts.policyIpfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
-                // Step 7: Fetch parameter storage for this policy.
+                // Step 6: Fetch parameter storage for this policy.
                 EnumerableSet.Bytes32Set storage policyParameterNameHashes =
-                    versionedToolPolicies.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy];
+                    versionedApp.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy];
 
-                // Step 8: Iterate through policy parameters.
+                // Step 7: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
@@ -293,8 +290,8 @@ contract VincentAppFacet is VincentBase {
                     policyParameterNameHashes.add(hashedPolicyParameterName);
 
                     // Step 8.2: Store the parameter name if not already stored.
-                    if (bytes(atps_.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
-                        atps_.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
+                    if (bytes(ts.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
+                        ts.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
                 }
             }

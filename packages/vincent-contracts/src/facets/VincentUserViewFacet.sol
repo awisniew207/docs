@@ -91,8 +91,6 @@ contract VincentUserViewFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
-            VincentAppToolPolicyStorage.appToolPolicyStorage();
 
         // Get the permitted app version for this PKP and app
         uint256 appVersion = us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId];
@@ -140,7 +138,7 @@ contract VincentUserViewFacet is VincentBase {
                 bytes32 policyHash = policyHashes[j];
 
                 // Get the policy IPFS CID
-                tools[i].policies[j].policyIpfsCid = atps_.policyIpfsCidHashToIpfsCid[policyHash];
+                tools[i].policies[j].policyIpfsCid = ts_.policyIpfsCidHashToIpfsCid[policyHash];
 
                 // Get the policy parameters storage
                 VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =
@@ -158,7 +156,7 @@ contract VincentUserViewFacet is VincentBase {
                     bytes32 paramHash = paramNameHashes[k];
 
                     // Get parameter name and value
-                    tools[i].policies[j].parameters[k].name = atps_.policyParameterNameHashToName[paramHash];
+                    tools[i].policies[j].parameters[k].name = ts_.policyParameterNameHashToName[paramHash];
                     tools[i].policies[j].parameters[k].value =
                         policyParametersStorage.policyParameterNameHashToValue[paramHash];
                 }
@@ -182,8 +180,7 @@ contract VincentUserViewFacet is VincentBase {
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
-            VincentAppToolPolicyStorage.appToolPolicyStorage();
+        VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         // Initialize the validation result
         validation.isPermitted = false;
@@ -236,7 +233,7 @@ contract VincentUserViewFacet is VincentBase {
             bytes32 policyHash = policyHashes[i];
 
             // Get the policy IPFS CID
-            validation.policies[i].policyIpfsCid = atps_.policyIpfsCidHashToIpfsCid[policyHash];
+            validation.policies[i].policyIpfsCid = ts_.policyIpfsCidHashToIpfsCid[policyHash];
 
             // Get the policy parameters storage
             VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =
@@ -254,7 +251,7 @@ contract VincentUserViewFacet is VincentBase {
                 bytes32 paramHash = paramNameHashes[j];
 
                 // Get parameter name and value
-                validation.policies[i].parameters[j].name = atps_.policyParameterNameHashToName[paramHash];
+                validation.policies[i].parameters[j].name = ts_.policyParameterNameHashToName[paramHash];
                 validation.policies[i].parameters[j].value =
                     policyParametersStorage.policyParameterNameHashToValue[paramHash];
             }

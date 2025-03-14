@@ -180,8 +180,6 @@ contract VincentUserFacet is VincentBase {
 
         // Step 2: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
-            VincentAppToolPolicyStorage.appToolPolicyStorage();
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         // Step 3: Iterate over each tool to process its policies and remove parameters.
@@ -196,8 +194,8 @@ contract VincentUserFacet is VincentBase {
             }
 
             // Step 3.2: Fetch the tool policies to check if policies exist.
-            VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
-                atps_.appIdToVersionedToolPolicies[appId][appVersion][hashedToolIpfsCid];
+            EnumerableSet.Bytes32Set storage toolPolicyIpfsCidHashes =
+                versionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[hashedToolIpfsCid];
 
             // Step 3.3: Access the tool policy storage for the PKP owner.
             VincentUserStorage.ToolPolicyStorage storage toolStorage =
@@ -210,7 +208,7 @@ contract VincentUserFacet is VincentBase {
                 bytes32 hashedPolicyId = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 4.1: Verify that the policy exists before attempting removal.
-                if (!versionedToolPolicies.policyIpfsCidHashes.contains(hashedPolicyId)) {
+                if (!toolPolicyIpfsCidHashes.contains(hashedPolicyId)) {
                     revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedPolicyId);
                 }
 
@@ -280,8 +278,6 @@ contract VincentUserFacet is VincentBase {
 
         // Step 2: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        VincentAppToolPolicyStorage.AppToolPolicyStorage storage atps_ =
-            VincentAppToolPolicyStorage.appToolPolicyStorage();
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         // Step 3: Loop over each tool to process its associated policies and parameters.
@@ -296,8 +292,8 @@ contract VincentUserFacet is VincentBase {
             }
 
             // Step 3.2: Access storage locations for tool policies.
-            VincentAppToolPolicyStorage.VersionedToolPolicies storage versionedToolPolicies =
-                atps_.appIdToVersionedToolPolicies[appId][appVersion][hashedToolIpfsCid];
+            EnumerableSet.Bytes32Set storage toolPolicyIpfsCidHashes =
+                versionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[hashedToolIpfsCid];
 
             VincentUserStorage.ToolPolicyStorage storage userToolPolicyStorage =
                 us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][hashedToolIpfsCid];
@@ -309,7 +305,7 @@ contract VincentUserFacet is VincentBase {
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 4.1: Validate that the policy is registered for the tool.
-                if (!versionedToolPolicies.policyIpfsCidHashes.contains(hashedToolPolicy)) {
+                if (!toolPolicyIpfsCidHashes.contains(hashedToolPolicy)) {
                     revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedToolPolicy);
                 }
 
@@ -325,7 +321,7 @@ contract VincentUserFacet is VincentBase {
 
                     // Step 5.1: Ensure that the parameter is valid for the specified policy.
                     if (
-                        !versionedToolPolicies.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy].contains(
+                        !versionedApp.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy].contains(
                             hashedPolicyParameterName
                         )
                     ) {
