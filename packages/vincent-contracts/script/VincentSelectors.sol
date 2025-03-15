@@ -55,17 +55,16 @@ library VincentSelectors {
      * @dev Get function selectors for VincentAppFacet
      */
     function getVincentAppFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](10);
+        bytes4[] memory selectors = new bytes4[](9);
         selectors[0] = VincentAppFacet.registerApp.selector;
-        selectors[1] = VincentAppFacet.registerAppWithVersion.selector;
-        selectors[2] = VincentAppFacet.registerNextAppVersion.selector;
-        selectors[3] = VincentAppFacet.enableAppVersion.selector;
-        selectors[4] = VincentAppFacet.addAuthorizedDomain.selector;
-        selectors[5] = VincentAppFacet.removeAuthorizedDomain.selector;
-        selectors[6] = VincentAppFacet.addAuthorizedRedirectUri.selector;
-        selectors[7] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
-        selectors[8] = VincentAppFacet.addDelegatee.selector;
-        selectors[9] = VincentAppFacet.removeDelegatee.selector;
+        selectors[1] = VincentAppFacet.registerNextAppVersion.selector;
+        selectors[2] = VincentAppFacet.enableAppVersion.selector;
+        selectors[3] = VincentAppFacet.addAuthorizedDomain.selector;
+        selectors[4] = VincentAppFacet.removeAuthorizedDomain.selector;
+        selectors[5] = VincentAppFacet.addAuthorizedRedirectUri.selector;
+        selectors[6] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
+        selectors[7] = VincentAppFacet.addDelegatee.selector;
+        selectors[8] = VincentAppFacet.removeDelegatee.selector;
         return selectors;
     }
 
@@ -73,7 +72,7 @@ library VincentSelectors {
      * @dev Get function selectors for VincentAppViewFacet
      */
     function getVincentAppViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](9);
+        bytes4[] memory selectors = new bytes4[](8);
         selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
         selectors[1] = VincentAppViewFacet.getAppById.selector;
         selectors[2] = VincentAppViewFacet.getAppVersion.selector;

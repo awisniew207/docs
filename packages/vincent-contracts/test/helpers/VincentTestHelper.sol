@@ -110,7 +110,7 @@ abstract contract VincentTestHelper is Test {
     /**
      * Helper function to register a test app
      */
-    function _registerTestApp() internal returns (uint256 appId) {
+    function _registerTestApp() internal returns (uint256 appId, uint256 appVersion) {
         string[] memory domains = new string[](1);
         domains[0] = TEST_DOMAIN_1;
 
@@ -120,7 +120,21 @@ abstract contract VincentTestHelper is Test {
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1;
 
-        return wrappedAppFacet.registerApp(TEST_APP_NAME, TEST_APP_DESCRIPTION, domains, redirectUris, delegatees);
+        // Set up empty tool arrays
+        string[] memory toolIpfsCids = new string[](0);
+        string[][] memory toolPolicies = new string[][](0);
+        string[][][] memory toolPolicyParameterNames = new string[][][](0);
+
+        return wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            domains,
+            redirectUris,
+            delegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames
+        );
     }
 
     /**
@@ -153,7 +167,7 @@ abstract contract VincentTestHelper is Test {
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // Register app with version
-        return wrappedAppFacet.registerAppWithVersion(
+        return wrappedAppFacet.registerApp(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             domains,

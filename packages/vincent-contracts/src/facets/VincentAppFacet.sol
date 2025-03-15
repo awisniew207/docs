@@ -42,17 +42,6 @@ contract VincentAppFacet is VincentBase {
         string calldata description,
         string[] calldata authorizedDomains,
         string[] calldata authorizedRedirectUris,
-        address[] calldata delegatees
-    ) public returns (uint256 newAppId) {
-        newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, delegatees);
-        emit NewAppRegistered(newAppId, msg.sender);
-    }
-
-    function registerAppWithVersion(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedDomains,
-        string[] calldata authorizedRedirectUris,
         address[] calldata delegatees,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,

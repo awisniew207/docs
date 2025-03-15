@@ -21,6 +21,7 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     function testRegisterApp() public {
+        // Create test domains, redirectUris, and delegatees
         string[] memory domains = new string[](2);
         domains[0] = TEST_DOMAIN_1;
         domains[1] = TEST_DOMAIN_2;
@@ -33,12 +34,26 @@ contract VincentAppFacetTest is VincentTestHelper {
         delegatees[0] = TEST_DELEGATEE_1;
         delegatees[1] = TEST_DELEGATEE_2;
 
+        // Set up empty tool arrays
+        string[] memory toolIpfsCids = new string[](0);
+        string[][] memory toolPolicies = new string[][](0);
+        string[][][] memory toolPolicyParameterNames = new string[][][](0);
+
         // The appId will be 1 as it's the first app registered (changing from 0 to 1)
         vm.expectEmit(true, true, false, false);
         emit NewAppRegistered(1, deployer);
 
         // Register the app
-        appId = wrappedAppFacet.registerApp(TEST_APP_NAME, TEST_APP_DESCRIPTION, domains, redirectUris, delegatees);
+        (appId, appVersion) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            domains,
+            redirectUris,
+            delegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames
+        );
 
         // Verify app was registered correctly
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
@@ -47,7 +62,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
         assertEq(app.description, TEST_APP_DESCRIPTION, "App description doesn't match");
         assertEq(app.manager, deployer, "App manager doesn't match");
-        assertEq(app.latestVersion, 0, "App latest version should be 0 since no versions were created");
+        assertEq(app.latestVersion, 1, "App latest version should be 1 since we always create a version");
 
         // Verify authorized domains
         assertEq(app.authorizedDomains.length, 2, "Should have 2 authorized domains");
@@ -78,14 +93,14 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policies = new string[][](1);
-        policies[0] = new string[](1);
-        policies[0][0] = TEST_POLICY_1;
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParams = new string[][][](1);
-        policyParams[0] = new string[][](1);
-        policyParams[0][0] = new string[](1);
-        policyParams[0][0][0] = TEST_POLICY_PARAM_1;
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // Register the tool first so it's available for the app version
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
@@ -98,8 +113,15 @@ contract VincentAppFacetTest is VincentTestHelper {
         emit NewAppVersionRegistered(1, 1, deployer);
 
         // Register the app with a version
-        (appId, appVersion) = wrappedAppFacet.registerAppWithVersion(
-            TEST_APP_NAME, TEST_APP_DESCRIPTION, domains, redirectUris, delegatees, toolIpfsCids, policies, policyParams
+        (appId, appVersion) = wrappedAppFacet.registerApp(
+            "Test App",
+            "Test App Description",
+            domains,
+            redirectUris,
+            delegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames
         );
 
         // Verify app was registered correctly
@@ -230,7 +252,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testAddAndRemoveAuthorizedDomain() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Set up event expectations for adding domain
         vm.expectEmit(true, true, false, false);
@@ -273,7 +295,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testAddAndRemoveAuthorizedRedirectUri() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Set up event expectations for adding redirect URI
         vm.expectEmit(true, true, false, false);
@@ -322,7 +344,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testAddAndRemoveDelegatee() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Add a new delegatee
         wrappedAppFacet.addDelegatee(appId, TEST_DELEGATEE_2);
@@ -388,7 +410,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testFailAddDuplicateDelegatee() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Register a second app
         string[] memory domains = new string[](1);
@@ -400,13 +422,27 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1; // Already registered to the first app
 
+        // Set up empty tool arrays
+        string[] memory emptyTools = new string[](0);
+        string[][] memory emptyPolicies = new string[][](0);
+        string[][][] memory emptyPolicyParams = new string[][][](0);
+
         // This should revert with DelegateeAlreadyRegisteredToApp error
-        wrappedAppFacet.registerApp("Test App 2", "Test App Description 2", domains, redirectUris, delegatees);
+        wrappedAppFacet.registerApp(
+            "Test App 2",
+            "Test App Description 2",
+            domains,
+            redirectUris,
+            delegatees,
+            emptyTools,
+            emptyPolicies,
+            emptyPolicyParams
+        );
     }
 
     function testFailRemoveNonExistentDomain() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Try to remove a domain that doesn't exist
         // This should revert with AuthorizedDomainNotRegistered error
@@ -415,7 +451,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testFailRemoveNonExistentRedirectUri() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Try to remove a redirect URI that doesn't exist
         // This should revert with AuthorizedRedirectUriNotRegistered error
@@ -424,7 +460,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testFailToolsAndPoliciesLengthMismatch() public {
         // First register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Set up mismatched arrays
         string[] memory toolIpfsCids = new string[](2);
@@ -451,7 +487,7 @@ contract VincentAppFacetTest is VincentTestHelper {
     // Test simple utility functions
     function testGetTotalAppCount() public {
         // Register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Check total app count
         uint256 totalCount = wrappedAppViewFacet.getTotalAppCount();
@@ -467,7 +503,23 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_2;
 
-        wrappedAppFacet.registerApp("Test App 2", "Test App Description 2", domains, redirectUris, delegatees);
+        // Set up empty tool arrays
+        string[] memory emptyTools = new string[](0);
+        string[][] memory emptyPolicies = new string[][](0);
+        string[][][] memory emptyPolicyParams = new string[][][](0);
+
+        uint256 appId2;
+        uint256 appVersion2;
+        (appId2, appVersion2) = wrappedAppFacet.registerApp(
+            "Test App 2",
+            "Test App Description 2",
+            domains,
+            redirectUris,
+            delegatees,
+            emptyTools,
+            emptyPolicies,
+            emptyPolicyParams
+        );
 
         // Check updated total app count
         totalCount = wrappedAppViewFacet.getTotalAppCount();
@@ -477,7 +529,7 @@ contract VincentAppFacetTest is VincentTestHelper {
     // Test hash-related functions
     function testGetAuthorizedDomainByHash() public {
         // Register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Calculate hash of the domain
         bytes32 domainHash = keccak256(abi.encodePacked(TEST_DOMAIN_1));
@@ -489,7 +541,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testGetAuthorizedRedirectUriByHash() public {
         // Register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Calculate hash of the redirect URI
         bytes32 redirectUriHash = keccak256(abi.encodePacked(TEST_REDIRECT_URI_1));
@@ -501,7 +553,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testGetAuthorizedDomainsAndRedirectUrisByAppId() public {
         // Register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Add another domain and redirect URI
         wrappedAppFacet.addAuthorizedDomain(appId, TEST_DOMAIN_2);
@@ -557,7 +609,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testGetAppByDelegatee() public {
         // Register an app
-        appId = _registerTestApp();
+        (appId, appVersion) = _registerTestApp();
 
         // Get app by delegatee
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_1);
@@ -572,10 +624,10 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     function testGetAppsByManager() public {
-        // Register an app
-        appId = _registerTestApp();
+        // First register an app
+        (appId,) = _registerTestAppWithVersion();
 
-        // Register a version for the first app
+        // Set up data for the next version
         string[] memory firstAppToolIpfsCids = new string[](1);
         firstAppToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
@@ -604,8 +656,21 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_2;
 
-        uint256 appId2 =
-            wrappedAppFacet.registerApp("Test App 2", "Test App Description 2", domains, redirectUris, delegatees);
+        // Define empty arrays for tools, policies, and policyParams
+        string[] memory emptyTools = new string[](0);
+        string[][] memory emptyPolicies = new string[][](0);
+        string[][][] memory emptyPolicyParams = new string[][][](0);
+
+        (uint256 appId2, uint256 appVersion2) = wrappedAppFacet.registerApp(
+            "Test App 2",
+            "Test App Description 2",
+            domains,
+            redirectUris,
+            delegatees,
+            emptyTools,
+            emptyPolicies,
+            emptyPolicyParams
+        );
 
         // Register a new version for the second app
         string[] memory toolIpfsCids = new string[](1);
@@ -632,15 +697,15 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Check first app
         assertEq(appsWithVersions[0].app.name, TEST_APP_NAME, "First app name should match");
-        assertEq(appsWithVersions[0].app.latestVersion, 1, "First app should have 1 version");
-        assertEq(appsWithVersions[0].versions.length, 1, "First app should have 1 version in the versions array");
+        assertEq(appsWithVersions[0].app.latestVersion, 2, "First app should have 2 versions");
+        assertEq(appsWithVersions[0].versions.length, 2, "First app should have 2 versions in the versions array");
         assertEq(appsWithVersions[0].versions[0].version, 1, "First app version should be 1");
         assertEq(appsWithVersions[0].versions[0].enabled, true, "First app version should be enabled");
 
         // Check second app
         assertEq(appsWithVersions[1].app.name, "Test App 2", "Second app name should match");
-        assertEq(appsWithVersions[1].app.latestVersion, 1, "Second app should have 1 version");
-        assertEq(appsWithVersions[1].versions.length, 1, "Second app should have 1 version in the versions array");
+        assertEq(appsWithVersions[1].app.latestVersion, 2, "Second app should have 2 versions");
+        assertEq(appsWithVersions[1].versions.length, 2, "Second app should have 2 versions in the versions array");
         assertEq(appsWithVersions[1].versions[0].version, 1, "First version should be 1");
 
         // Register a non-manager account

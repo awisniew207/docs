@@ -466,7 +466,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         // Register the app
         uint256 appId2;
         uint256 appVersion2;
-        (appId2, appVersion2) = wrappedAppFacet.registerAppWithVersion(
+        (appId2, appVersion2) = wrappedAppFacet.registerApp(
             "Test App 2",
             "Test App Description 2",
             domains,
