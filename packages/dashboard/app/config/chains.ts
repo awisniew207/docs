@@ -2,8 +2,8 @@ import { defineChain } from "viem";
 
 export const yellowstone = defineChain({
     id: 175188,
-    name: "Yellowstone",
-    nativeCurrency: { name: "Yellowstone", symbol: "YSL", decimals: 18 },
+    name: "Chronicle Yellowstone - Lit Protocol Testnet",
+    nativeCurrency: { name: "tstLPX", symbol: "tstLPX", decimals: 18 },
     rpcUrls: {
         default: { http: ["https://yellowstone-rpc.litprotocol.com"] },
     },

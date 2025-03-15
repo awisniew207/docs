@@ -290,7 +290,7 @@ export default function DashboardScreen({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>{app.toolPolicies.length} Tool Policies</span>
-                  <span>{app.delegatees.length} Delegatees</span>
+                  <span>{app.delegatees?.length} Delegatees</span>
                 </div>
                 <div className="text-sm text-center">
                   Manage App

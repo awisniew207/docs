@@ -176,14 +176,14 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setError(null);
 
       const contracts = new VincentContracts('datil' as Network);
-      await contracts.registerApp(
+      const receipt = await contracts.registerApp(
         values.appName,
         values.description,
         values.authorizedDomains,
         values.authorizedRedirectUris,
         []
       );
-
+      console.log('receipt', receipt);
       onSuccess?.();
       window.location.reload();
     } catch (err) {

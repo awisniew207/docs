@@ -65,6 +65,9 @@ export class VincentContracts {
 
   async enableAppVersion(appId: number, version: number, isEnabled: boolean) {
     const contract = await getContract(this.network, 'App', true);
+    console.log('appId', appId);
+    console.log('version', version);
+    console.log('isEnabled', isEnabled);
     const tx = await contract.enableAppVersion(appId, version, isEnabled);
     await tx.wait();
     return tx;

@@ -25,12 +25,11 @@ export default function Developer() {
             if (!address) return;
 
             try {
-                const exists = await checkIfAppExists(address);
+                const appData = await formCompleteVincentAppForDev(address);
+                console.log("dashboard appData", appData);
+                const exists = appData && appData.length > 0;
                 setHasApp(exists);
-
                 if (exists) {
-                    const appData = await formCompleteVincentAppForDev(address);
-                    console.log("dashboard appData", appData);
                     setApp(appData);
                 }
             } catch (error) {
