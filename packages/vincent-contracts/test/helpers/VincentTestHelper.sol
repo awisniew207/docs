@@ -10,6 +10,13 @@ import "../../src/facets/VincentToolFacet.sol";
 import "../../src/facets/VincentToolViewFacet.sol";
 import "../../src/facets/VincentUserFacet.sol";
 import "../../src/facets/VincentUserViewFacet.sol";
+import "../../src/diamond-base/facets/DiamondCutFacet.sol";
+import "../../src/diamond-base/facets/DiamondLoupeFacet.sol";
+import "../../src/diamond-base/facets/OwnershipFacet.sol";
+import "../../src/diamond-base/interfaces/IDiamondCut.sol";
+import "../../src/diamond-base/interfaces/IDiamondLoupe.sol";
+import "../../src/diamond-base/interfaces/IERC165.sol";
+import "../../src/diamond-base/interfaces/IERC173.sol";
 import "../mocks/MockPKPNftFacet.sol";
 
 /**
@@ -28,6 +35,9 @@ abstract contract VincentTestHelper is Test {
     // Diamond and facets
     VincentDiamond public diamond;
     DeployVincentDiamond public deployScript;
+    DiamondCutFacet public diamondCutFacet;
+    DiamondLoupeFacet public diamondLoupeFacet;
+    OwnershipFacet public ownershipFacet;
 
     // Wrapped facets (for calling through the diamond)
     VincentAppFacet public wrappedAppFacet;
@@ -79,16 +89,15 @@ abstract contract VincentTestHelper is Test {
         // Create non-owner account
         nonOwner = makeAddr("non-owner");
 
-        // Deploy mock PKP NFT contract - need to prank as deployer
-        vm.startPrank(deployer);
-        mockPkpNft = new MockPKPNftFacet();
-        vm.stopPrank(); // Stop the prank before calling deployToNetwork
-
         // Set environment variables for deployment
         vm.setEnv("VINCENT_DEPLOYER_PRIVATE_KEY", "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
 
-        // Deploy using the deployment script - no need for prank as it uses broadcast internally
+        // Option 1: Deploy using the deployment script
+        // This is the default method used by the original VincentTestHelper
         deployScript = new DeployVincentDiamond();
+        vm.startPrank(deployer);
+        mockPkpNft = new MockPKPNftFacet();
+        vm.stopPrank();
         address diamondAddress = deployScript.deployToNetwork("test", address(mockPkpNft));
         diamond = VincentDiamond(payable(diamondAddress));
 
@@ -100,11 +109,99 @@ abstract contract VincentTestHelper is Test {
         wrappedUserFacet = VincentUserFacet(address(diamond));
         wrappedUserViewFacet = VincentUserViewFacet(address(diamond));
 
-        // Set up mock PKP NFT for tests - need to prank again
+        // Set up mock PKP NFT for tests
         vm.startPrank(deployer);
         mockPkpNft.setOwner(TEST_PKP_TOKEN_ID_1, deployer);
         mockPkpNft.setOwner(TEST_PKP_TOKEN_ID_2, nonOwner);
         vm.stopPrank();
+    }
+
+    /**
+     * @dev Alternative setup method from DiamondTestHelper
+     * Sets up the basic Diamond infrastructure with core facets
+     * Does not add any Vincent-specific facets - those should be added by the caller
+     */
+    function setUpBaseDiamond() internal {
+        // Deploy core facets
+        diamondCutFacet = new DiamondCutFacet();
+        diamondLoupeFacet = new DiamondLoupeFacet();
+        ownershipFacet = new OwnershipFacet();
+
+        // Deploy mock PKP NFT contract if not already deployed
+        if (address(mockPkpNft) == address(0)) {
+            mockPkpNft = new MockPKPNftFacet();
+        }
+
+        // Deploy Diamond with cut facet
+        diamond = new VincentDiamond(address(this), address(diamondCutFacet), address(mockPkpNft));
+
+        // Create facet cuts array for core facets
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](2);
+
+        // DiamondLoupeFacet
+        cuts[0] = IDiamondCut.FacetCut({
+            facetAddress: address(diamondLoupeFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: getDiamondLoupeFacetSelectors()
+        });
+
+        // OwnershipFacet
+        cuts[1] = IDiamondCut.FacetCut({
+            facetAddress: address(ownershipFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: getOwnershipFacetSelectors()
+        });
+
+        // Execute diamond cut to add core facets
+        IDiamondCut(address(diamond)).diamondCut(cuts, address(0), new bytes(0));
+
+        // Setup the wrapped facets for convenience
+        wrappedAppFacet = VincentAppFacet(address(diamond));
+        wrappedAppViewFacet = VincentAppViewFacet(address(diamond));
+        wrappedToolFacet = VincentToolFacet(address(diamond));
+        wrappedToolViewFacet = VincentToolViewFacet(address(diamond));
+        wrappedUserFacet = VincentUserFacet(address(diamond));
+        wrappedUserViewFacet = VincentUserViewFacet(address(diamond));
+    }
+
+    /**
+     * @dev Add a single facet to the diamond
+     * @param facetAddress Address of the facet contract
+     * @param selectors Array of function selectors to add
+     */
+    function addFacet(address facetAddress, bytes4[] memory selectors) internal {
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](1);
+
+        cuts[0] = IDiamondCut.FacetCut({
+            facetAddress: facetAddress,
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: selectors
+        });
+
+        IDiamondCut(address(diamond)).diamondCut(cuts, address(0), new bytes(0));
+    }
+
+    /**
+     * @dev Get Diamond Loupe facet selectors
+     */
+    function getDiamondLoupeFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](5);
+        selectors[0] = IDiamondLoupe.facets.selector;
+        selectors[1] = IDiamondLoupe.facetFunctionSelectors.selector;
+        selectors[2] = IDiamondLoupe.facetAddresses.selector;
+        selectors[3] = IDiamondLoupe.facetAddress.selector;
+        selectors[4] = IERC165.supportsInterface.selector;
+        return selectors;
+    }
+
+    /**
+     * @dev Get Ownership facet selectors
+     */
+    function getOwnershipFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](2);
+        selectors[0] = IERC173.owner.selector;
+        selectors[1] = IERC173.transferOwnership.selector;
+        return selectors;
     }
 
     /**
