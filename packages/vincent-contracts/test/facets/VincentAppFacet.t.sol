@@ -25,11 +25,7 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     function testRegisterApp() public {
-        // Create test domains, redirectUris, and delegatees
-        string[] memory domains = new string[](2);
-        domains[0] = TEST_DOMAIN_1;
-        domains[1] = TEST_DOMAIN_2;
-
+        // Create test redirectUris, and delegatees
         string[] memory redirectUris = new string[](2);
         redirectUris[0] = TEST_REDIRECT_URI_1;
         redirectUris[1] = TEST_REDIRECT_URI_2;
@@ -51,7 +47,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId, appVersion) = wrappedAppFacet.registerApp(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
-            domains,
             redirectUris,
             delegatees,
             toolIpfsCids,
@@ -68,11 +63,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.manager, deployer, "App manager doesn't match");
         assertEq(app.latestVersion, 1, "App latest version should be 1 since we always create a version");
 
-        // Verify authorized domains
-        assertEq(app.authorizedDomains.length, 2, "Should have 2 authorized domains");
-        assertEq(app.authorizedDomains[0], TEST_DOMAIN_1, "First domain doesn't match");
-        assertEq(app.authorizedDomains[1], TEST_DOMAIN_2, "Second domain doesn't match");
-
         // Verify authorized redirect URIs
         assertEq(app.authorizedRedirectUris.length, 2, "Should have 2 authorized redirect URIs");
         assertEq(app.authorizedRedirectUris[0], TEST_REDIRECT_URI_1, "First redirect URI doesn't match");
@@ -85,9 +75,7 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     function testRegisterAppWithVersion() public {
-        string[] memory domains = new string[](1);
-        domains[0] = TEST_DOMAIN_1;
-
+        // Removed the domains array initialization
         string[] memory redirectUris = new string[](1);
         redirectUris[0] = TEST_REDIRECT_URI_1;
 
@@ -116,11 +104,10 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.expectEmit(true, true, true, false);
         emit NewAppVersionRegistered(1, 1, deployer);
 
-        // Register the app with a version
+        // Register the app with a version - removed domains parameter
         (appId, appVersion) = wrappedAppFacet.registerApp(
             "Test App",
             "Test App Description",
-            domains,
             redirectUris,
             delegatees,
             toolIpfsCids,
@@ -137,9 +124,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.manager, deployer, "App manager doesn't match");
         assertEq(app.latestVersion, 1, "App latest version should be 1");
 
-        // Verify authorized domains
-        assertEq(app.authorizedDomains.length, 1, "Should have 1 authorized domain");
-        assertEq(app.authorizedDomains[0], TEST_DOMAIN_1, "Domain doesn't match");
+        // Removed authorizedDomains verification since domains are no longer tracked
 
         // Verify authorized redirect URIs
         assertEq(app.authorizedRedirectUris.length, 1, "Should have 1 authorized redirect URI");
@@ -252,49 +237,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Non-manager should have no apps
         VincentAppViewFacet.AppWithVersions[] memory nonManagerApps = wrappedAppViewFacet.getAppsByManager(nonOwner);
         assertEq(nonManagerApps.length, 0, "Non-manager should have 0 apps");
-    }
-
-    function testAddAndRemoveAuthorizedDomain() public {
-        // First register an app
-        (appId, appVersion) = _registerTestApp();
-
-        // Set up event expectations for adding domain
-        vm.expectEmit(true, true, false, false);
-        emit AuthorizedDomainAdded(appId, TEST_DOMAIN_2);
-
-        // Add an authorized domain
-        wrappedAppFacet.addAuthorizedDomain(appId, TEST_DOMAIN_2);
-
-        // Verify the domain was added by checking the app's domains
-        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
-        assertEq(app.authorizedDomains.length, 2, "Should have 2 authorized domains");
-
-        // Check if both domains are present (order may vary)
-        bool foundDomain1 = false;
-        bool foundDomain2 = false;
-        for (uint256 i = 0; i < app.authorizedDomains.length; i++) {
-            if (keccak256(abi.encodePacked(app.authorizedDomains[i])) == keccak256(abi.encodePacked(TEST_DOMAIN_1))) {
-                foundDomain1 = true;
-            } else if (
-                keccak256(abi.encodePacked(app.authorizedDomains[i])) == keccak256(abi.encodePacked(TEST_DOMAIN_2))
-            ) {
-                foundDomain2 = true;
-            }
-        }
-        assertTrue(foundDomain1, "Domain 1 should be in the list");
-        assertTrue(foundDomain2, "Domain 2 should be in the list");
-
-        // Set up event expectations for removing domain
-        vm.expectEmit(true, true, false, false);
-        emit AuthorizedDomainRemoved(appId, TEST_DOMAIN_2);
-
-        // Remove the authorized domain
-        wrappedAppFacet.removeAuthorizedDomain(appId, TEST_DOMAIN_2);
-
-        // Verify the domain was removed
-        app = wrappedAppViewFacet.getAppById(appId);
-        assertEq(app.authorizedDomains.length, 1, "Should have 1 authorized domain");
-        assertEq(app.authorizedDomains[0], TEST_DOMAIN_1, "Remaining domain should be TEST_DOMAIN_1");
     }
 
     function testAddAndRemoveAuthorizedRedirectUri() public {
@@ -417,9 +359,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId, appVersion) = _registerTestApp();
 
         // Register a second app
-        string[] memory domains = new string[](1);
-        domains[0] = TEST_DOMAIN_2;
-
+        // Removed domains array
         string[] memory redirectUris = new string[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
@@ -435,22 +375,12 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.registerApp(
             "Test App 2",
             "Test App Description 2",
-            domains,
             redirectUris,
             delegatees,
             emptyTools,
             emptyPolicies,
             emptyPolicyParams
         );
-    }
-
-    function testFailRemoveNonExistentDomain() public {
-        // First register an app
-        (appId, appVersion) = _registerTestApp();
-
-        // Try to remove a domain that doesn't exist
-        // This should revert with AuthorizedDomainNotRegistered error
-        wrappedAppFacet.removeAuthorizedDomain(appId, "non-existent-domain.com");
     }
 
     function testFailRemoveNonExistentRedirectUri() public {
@@ -498,9 +428,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(totalCount, 1, "Total app count should be 1");
 
         // Register a second app
-        string[] memory domains = new string[](1);
-        domains[0] = TEST_DOMAIN_2;
-
+        // Removed domains array
         string[] memory redirectUris = new string[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
@@ -517,7 +445,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId2, appVersion2) = wrappedAppFacet.registerApp(
             "Test App 2",
             "Test App Description 2",
-            domains,
             redirectUris,
             delegatees,
             emptyTools,
@@ -531,17 +458,7 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     // Test hash-related functions
-    function testGetAuthorizedDomainByHash() public {
-        // Register an app
-        (appId, appVersion) = _registerTestApp();
-
-        // Calculate hash of the domain
-        bytes32 domainHash = keccak256(abi.encodePacked(TEST_DOMAIN_1));
-
-        // Retrieve domain using hash
-        string memory domain = wrappedAppViewFacet.getAuthorizedDomainByHash(domainHash);
-        assertEq(domain, TEST_DOMAIN_1, "Retrieved domain should match the original domain");
-    }
+    // Removed testGetAuthorizedDomainByHash function as domains are no longer tracked
 
     function testGetAuthorizedRedirectUriByHash() public {
         // Register an app
@@ -555,32 +472,15 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(redirectUri, TEST_REDIRECT_URI_1, "Retrieved redirect URI should match the original redirect URI");
     }
 
-    function testGetAuthorizedDomainsAndRedirectUrisByAppId() public {
+    function testGetAuthorizedRedirectUrisByAppId() public {
         // Register an app
         (appId, appVersion) = _registerTestApp();
 
-        // Add another domain and redirect URI
-        wrappedAppFacet.addAuthorizedDomain(appId, TEST_DOMAIN_2);
+        // Add another redirect URI
         wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
 
-        // Retrieve domains and redirect URIs
-        (string[] memory domains, string[] memory redirectUris) =
-            wrappedAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId(appId);
-
-        // Verify domains
-        assertEq(domains.length, 2, "Should have 2 authorized domains");
-        // Check if both domains are present (order may vary)
-        bool foundDomain1 = false;
-        bool foundDomain2 = false;
-        for (uint256 i = 0; i < domains.length; i++) {
-            if (keccak256(abi.encodePacked(domains[i])) == keccak256(abi.encodePacked(TEST_DOMAIN_1))) {
-                foundDomain1 = true;
-            } else if (keccak256(abi.encodePacked(domains[i])) == keccak256(abi.encodePacked(TEST_DOMAIN_2))) {
-                foundDomain2 = true;
-            }
-        }
-        assertTrue(foundDomain1, "Domain 1 should be in the list");
-        assertTrue(foundDomain2, "Domain 2 should be in the list");
+        // Retrieve redirect URIs
+        string[] memory redirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
 
         // Verify redirect URIs
         assertEq(redirectUris.length, 2, "Should have 2 authorized redirect URIs");
@@ -651,9 +551,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
 
         // Register another app with a new version
-        string[] memory domains = new string[](1);
-        domains[0] = TEST_DOMAIN_2;
-
+        // Removed domains array
         string[] memory redirectUris = new string[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
@@ -668,7 +566,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId2, uint256 appVersion2) = wrappedAppFacet.registerApp(
             "Test App 2",
             "Test App Description 2",
-            domains,
             redirectUris,
             delegatees,
             emptyTools,

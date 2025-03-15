@@ -34,7 +34,6 @@ contract VincentAppViewFacet {
         address manager;
         uint256 latestVersion;
         address[] delegatees;
-        string[] authorizedDomains;
         string[] authorizedRedirectUris;
     }
 
@@ -91,14 +90,6 @@ contract VincentAppViewFacet {
         // If no versions, latestVersion should be 0
         app.latestVersion = storedApp.versionedApps.length > 0 ? storedApp.versionedApps.length : 0;
         app.delegatees = storedApp.delegatees.values();
-
-        // Convert authorized domains from bytes32 hashes to strings
-        uint256 domainCount = storedApp.authorizedDomains.length();
-        app.authorizedDomains = new string[](domainCount);
-        for (uint256 i = 0; i < domainCount; i++) {
-            bytes32 domainHash = storedApp.authorizedDomains.at(i);
-            app.authorizedDomains[i] = as_.authorizedDomainHashToDomain[domainHash];
-        }
 
         // Convert authorized redirect URIs from bytes32 hashes to strings
         uint256 redirectUriCount = storedApp.authorizedRedirectUris.length();
@@ -201,16 +192,6 @@ contract VincentAppViewFacet {
     // ==================================================================================
 
     /**
-     * @notice Retrieves a domain from its hash
-     * @param domainHash Hash of the domain
-     * @return domain Domain string
-     */
-    function getAuthorizedDomainByHash(bytes32 domainHash) external view returns (string memory domain) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        return as_.authorizedDomainHashToDomain[domainHash];
-    }
-
-    /**
      * @notice Retrieves a redirect URI from its hash
      * @param redirectUriHash Hash of the redirect URI
      * @return redirectUri Redirect URI string
@@ -225,24 +206,12 @@ contract VincentAppViewFacet {
     }
 
     /**
-     * @notice Retrieves both authorized domains and redirect URIs for a specific app
+     * @notice Retrieves authorized redirect URIs for a specific app
      * @param appId ID of the app
-     * @return domains Array of authorized domain strings
      * @return redirectUris Array of authorized redirect URI strings
      */
-    function getAuthorizedDomainsAndRedirectUrisByAppId(uint256 appId)
-        external
-        view
-        returns (string[] memory domains, string[] memory redirectUris)
-    {
+    function getAuthorizedRedirectUrisByAppId(uint256 appId) external view returns (string[] memory redirectUris) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
-        // Get domains
-        uint256 domainCount = as_.appIdToApp[appId].authorizedDomains.length();
-        domains = new string[](domainCount);
-        for (uint256 i = 0; i < domainCount; i++) {
-            domains[i] = as_.authorizedDomainHashToDomain[as_.appIdToApp[appId].authorizedDomains.at(i)];
-        }
 
         // Get redirect URIs
         uint256 redirectUriCount = as_.appIdToApp[appId].authorizedRedirectUris.length();

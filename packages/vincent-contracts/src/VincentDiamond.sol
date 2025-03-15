@@ -172,16 +172,14 @@ contract VincentDiamond {
 
     /// @dev Get VincentAppFacet selectors
     function getVincentAppFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](9);
+        bytes4[] memory selectors = new bytes4[](7);
         selectors[0] = VincentAppFacet.registerApp.selector;
         selectors[1] = VincentAppFacet.registerNextAppVersion.selector;
         selectors[2] = VincentAppFacet.enableAppVersion.selector;
-        selectors[3] = VincentAppFacet.addAuthorizedDomain.selector;
-        selectors[4] = VincentAppFacet.removeAuthorizedDomain.selector;
-        selectors[5] = VincentAppFacet.addAuthorizedRedirectUri.selector;
-        selectors[6] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
-        selectors[7] = VincentAppFacet.addDelegatee.selector;
-        selectors[8] = VincentAppFacet.removeDelegatee.selector;
+        selectors[3] = VincentAppFacet.addAuthorizedRedirectUri.selector;
+        selectors[4] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
+        selectors[5] = VincentAppFacet.addDelegatee.selector;
+        selectors[6] = VincentAppFacet.removeDelegatee.selector;
         return selectors;
     }
 
@@ -193,9 +191,9 @@ contract VincentDiamond {
         selectors[2] = VincentAppViewFacet.getAppVersion.selector;
         selectors[3] = VincentAppViewFacet.getAppsByManager.selector;
         selectors[4] = VincentAppViewFacet.getAppByDelegatee.selector;
-        selectors[5] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
-        selectors[6] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
-        selectors[7] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
+        selectors[5] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
+        selectors[6] = VincentAppViewFacet.getAuthorizedRedirectUrisByAppId.selector;
+        selectors[7] = bytes4(0); // Not used, keep array size for backward compatibility
         return selectors;
     }
 

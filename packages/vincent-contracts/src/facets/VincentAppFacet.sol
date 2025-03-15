@@ -19,16 +19,13 @@ contract VincentAppFacet is VincentBase {
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
     event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
     event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
-    event AuthorizedDomainAdded(uint256 indexed appId, string indexed domain);
     event AuthorizedRedirectUriAdded(uint256 indexed appId, string indexed redirectUri);
-    event AuthorizedDomainRemoved(uint256 indexed appId, string indexed domain);
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, string indexed redirectUri);
 
     error NotAppManager(uint256 appId, address msgSender);
     error ToolsAndPoliciesLengthMismatch();
     error DelegateeAlreadyRegisteredToApp(uint256 appId, address delegatee);
     error DelegateeNotRegisteredToApp(uint256 appId, address delegatee);
-    error AuthorizedDomainNotRegistered(uint256 appId, bytes32 hashedDomain);
     error AuthorizedRedirectUriNotRegistered(uint256 appId, bytes32 hashedRedirectUri);
 
     modifier onlyAppManager(uint256 appId) {
@@ -40,14 +37,13 @@ contract VincentAppFacet is VincentBase {
     function registerApp(
         string calldata name,
         string calldata description,
-        string[] calldata authorizedDomains,
         string[] calldata authorizedRedirectUris,
         address[] calldata delegatees,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
         string[][][] calldata toolPolicyParameterNames
     ) public returns (uint256 newAppId, uint256 newAppVersion) {
-        newAppId = _registerApp(name, description, authorizedDomains, authorizedRedirectUris, delegatees);
+        newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
         newAppVersion = _registerNextAppVersion(newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
 
         emit NewAppRegistered(newAppId, msg.sender);
@@ -75,33 +71,6 @@ contract VincentAppFacet is VincentBase {
         // App versions start at 1, but the appVersions array is 0-indexed
         as_.appIdToApp[appId].versionedApps[appVersion - 1].enabled = enabled;
         emit AppEnabled(appId, appVersion, enabled);
-    }
-
-    function addAuthorizedDomain(uint256 appId, string calldata domain)
-        external
-        onlyAppManager(appId)
-        onlyRegisteredApp(appId)
-    {
-        _addAuthorizedDomain(appId, domain);
-    }
-
-    function removeAuthorizedDomain(uint256 appId, string calldata domain)
-        external
-        onlyAppManager(appId)
-        onlyRegisteredApp(appId)
-    {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
-        bytes32 hashedDomain = keccak256(abi.encodePacked(domain));
-
-        if (!as_.appIdToApp[appId].authorizedDomains.contains(hashedDomain)) {
-            revert AuthorizedDomainNotRegistered(appId, hashedDomain);
-        }
-
-        as_.appIdToApp[appId].authorizedDomains.remove(hashedDomain);
-        delete as_.authorizedDomainHashToDomain[hashedDomain];
-
-        emit AuthorizedDomainRemoved(appId, domain);
     }
 
     function addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
@@ -160,7 +129,6 @@ contract VincentAppFacet is VincentBase {
     function _registerApp(
         string calldata name,
         string calldata description,
-        string[] calldata authorizedDomains,
         string[] calldata authorizedRedirectUris,
         address[] calldata delegatees
     ) internal returns (uint256 newAppId) {
@@ -176,10 +144,6 @@ contract VincentAppFacet is VincentBase {
         app.manager = msg.sender;
         app.name = name;
         app.description = description;
-
-        for (uint256 i = 0; i < authorizedDomains.length; i++) {
-            _addAuthorizedDomain(newAppId, authorizedDomains[i]);
-        }
 
         for (uint256 i = 0; i < authorizedRedirectUris.length; i++) {
             _addAuthorizedRedirectUri(newAppId, authorizedRedirectUris[i]);
@@ -285,17 +249,6 @@ contract VincentAppFacet is VincentBase {
                 }
             }
         }
-    }
-
-    function _addAuthorizedDomain(uint256 appId, string calldata domain) internal {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
-        bytes32 hashedDomain = keccak256(abi.encodePacked(domain));
-
-        as_.appIdToApp[appId].authorizedDomains.add(hashedDomain);
-        as_.authorizedDomainHashToDomain[hashedDomain] = domain;
-
-        emit AuthorizedDomainAdded(appId, domain);
     }
 
     function _addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri) internal {

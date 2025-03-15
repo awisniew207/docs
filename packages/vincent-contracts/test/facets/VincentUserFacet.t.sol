@@ -439,9 +439,6 @@ contract VincentUserFacetTest is VincentTestHelper {
 
     function testMultiplePermissions() public {
         // Register another app with a version
-        string[] memory domains = new string[](1);
-        domains[0] = TEST_DOMAIN_2;
-
         string[] memory redirectUris = new string[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
@@ -469,7 +466,6 @@ contract VincentUserFacetTest is VincentTestHelper {
         (appId2, appVersion2) = wrappedAppFacet.registerApp(
             "Test App 2",
             "Test App Description 2",
-            domains,
             redirectUris,
             delegatees,
             toolIpfsCids,

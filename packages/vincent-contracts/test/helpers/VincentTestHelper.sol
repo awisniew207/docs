@@ -111,9 +111,6 @@ abstract contract VincentTestHelper is Test {
      * @return appVersion The version of the registered app
      */
     function _registerTestApp() internal returns (uint256 appId, uint256 appVersion) {
-        string[] memory domains = new string[](1);
-        domains[0] = TEST_DOMAIN_1;
-
         string[] memory redirectUris = new string[](1);
         redirectUris[0] = TEST_REDIRECT_URI_1;
 
@@ -133,11 +130,10 @@ abstract contract VincentTestHelper is Test {
         toolPolicyParameterNames[0][0] = new string[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        // Register app with version
+        // Register app with version (removed domains parameter)
         return wrappedAppFacet.registerApp(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
-            domains,
             redirectUris,
             delegatees,
             toolIpfsCids,

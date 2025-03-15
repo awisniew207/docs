@@ -24,7 +24,6 @@ library VincentAppStorage {
 
     struct App {
         EnumerableSet.AddressSet delegatees;
-        EnumerableSet.Bytes32Set authorizedDomains;
         EnumerableSet.Bytes32Set authorizedRedirectUris;
         VersionedApp[] versionedApps;
         address manager;
@@ -36,7 +35,6 @@ library VincentAppStorage {
         mapping(uint256 => App) appIdToApp;
         mapping(address => EnumerableSet.UintSet) managerAddressToAppIds;
         mapping(address => uint256) delegateeAddressToAppId;
-        mapping(bytes32 => string) authorizedDomainHashToDomain;
         mapping(bytes32 => string) authorizedRedirectUriHashToRedirectUri;
         uint256 appIdCounter;
     }
