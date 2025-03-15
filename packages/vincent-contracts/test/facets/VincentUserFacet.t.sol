@@ -92,7 +92,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         assertEq(permittedAppIds[0], appId, "App should be permitted");
 
         // Verify agent PKP is registered
-        uint256[] memory registeredPkps = wrappedUserViewFacet.getAllRegisteredAgentPkps();
+        uint256[] memory registeredPkps = wrappedUserViewFacet.getAllRegisteredAgentPkps(deployer);
         bool foundPkp = false;
         for (uint256 i = 0; i < registeredPkps.length; i++) {
             if (registeredPkps[i] == pkpTokenId) {
@@ -538,7 +538,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Verify both PKPs are registered as agents
-        uint256[] memory registeredPkps = wrappedUserViewFacet.getAllRegisteredAgentPkps();
+        uint256[] memory registeredPkps = wrappedUserViewFacet.getAllRegisteredAgentPkps(deployer);
         assertEq(registeredPkps.length, 2, "Should have 2 registered PKPs");
 
         // Check PKP IDs (order may vary)

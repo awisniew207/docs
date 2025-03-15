@@ -73,6 +73,9 @@ library VincentToolStorage {
 }
 
 library VincentUserStorage {
+    using EnumerableSet for EnumerableSet.UintSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
+
     bytes32 internal constant USER_STORAGE_SLOT = keccak256("lit.vincent.user.storage");
 
     struct PolicyParametersStorage {
@@ -90,14 +93,20 @@ library VincentUserStorage {
         EnumerableSet.Bytes32Set policyIpfsCidHashesWithParameters;
     }
 
+    struct AgentStorage {
+        // Set of App IDs that have a permitted version
+        EnumerableSet.UintSet permittedApps;
+        // App ID -> Permitted App Version
+        mapping(uint256 => uint256) permittedAppVersion;
+        // App ID -> Tool IPFS CID Hash -> Tool Policy Storage
+        mapping(uint256 => mapping(bytes32 => ToolPolicyStorage)) toolPolicyStorage;
+    }
+
     struct UserStorage {
-        EnumerableSet.UintSet registeredAgentPkps;
-        // Agent PKP Token ID -> App ID -> Permitted App Versions
-        mapping(uint256 => mapping(uint256 => uint256)) agentPkpTokenIdToPermittedAppVersion;
-        // Agent PKP Token ID -> Set of App IDs that have a permitted version
-        mapping(uint256 => EnumerableSet.UintSet) agentPkpTokenIdToPermittedApps;
-        // Agent PKP Token ID -> App ID -> Tool IPFS CID Hash -> Tool Policy Storage
-        mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))) agentPkpTokenIdToToolPolicyStorage;
+        // User PKP ETH address => registered Agent PKP token IDs
+        mapping(address => EnumerableSet.UintSet) userAddressToRegisteredAgentPkps;
+        // PKP Token ID -> Agent Storage
+        mapping(uint256 => AgentStorage) agentPkpTokenIdToAgentStorage;
         // PKP NFT contract interface - set once during initialization in the diamond constructor
         IPKPNFTFacet PKP_NFT_FACET;
     }

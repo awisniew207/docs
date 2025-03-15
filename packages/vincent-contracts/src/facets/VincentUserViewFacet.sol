@@ -51,9 +51,9 @@ contract VincentUserViewFacet is VincentBase {
      * @dev Gets all PKP tokens that are registered as agents in the system
      * @return An array of PKP token IDs that are registered as agents
      */
-    function getAllRegisteredAgentPkps() external view returns (uint256[] memory) {
+    function getAllRegisteredAgentPkps(address userAddress) external view returns (uint256[] memory) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        return us_.registeredAgentPkps.values();
+        return us_.userAddressToRegisteredAgentPkps[userAddress].values();
     }
 
     /**
@@ -64,7 +64,7 @@ contract VincentUserViewFacet is VincentBase {
      */
     function getPermittedAppVersionForPkp(uint256 pkpTokenId, uint256 appId) external view returns (uint256) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        return us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId];
+        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId];
     }
 
     /**
@@ -74,7 +74,7 @@ contract VincentUserViewFacet is VincentBase {
      */
     function getAllPermittedAppIdsForPkp(uint256 pkpTokenId) external view returns (uint256[] memory) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        return us_.agentPkpTokenIdToPermittedApps[pkpTokenId].values();
+        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedApps.values();
     }
 
     /**
@@ -93,7 +93,7 @@ contract VincentUserViewFacet is VincentBase {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         // Get the permitted app version for this PKP and app
-        uint256 appVersion = us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId];
+        uint256 appVersion = us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId];
 
         // If no version is permitted (appVersion == 0), return an empty array
         if (appVersion == 0) {
@@ -124,7 +124,7 @@ contract VincentUserViewFacet is VincentBase {
 
             // Get the tool policy storage for this PKP, app, and tool
             VincentUserStorage.ToolPolicyStorage storage toolPolicyStorage =
-                us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][toolHash];
+                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][toolHash];
 
             // Get all policies that have parameters set for this tool
             bytes32[] memory policyHashes = toolPolicyStorage.policyIpfsCidHashesWithParameters.values();
@@ -198,7 +198,7 @@ contract VincentUserViewFacet is VincentBase {
         bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         // Get the permitted app version for this PKP and app
-        uint256 appVersion = us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId];
+        uint256 appVersion = us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId];
 
         // If no version is permitted (appVersion == 0), return early with isPermitted = false
         if (appVersion == 0) {
@@ -219,7 +219,7 @@ contract VincentUserViewFacet is VincentBase {
 
         // Get the tool policy storage for this PKP, app, and tool
         VincentUserStorage.ToolPolicyStorage storage toolPolicyStorage =
-            us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][hashedToolIpfsCid];
+            us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][hashedToolIpfsCid];
 
         // Get all policies that have parameters set for this tool
         bytes32[] memory policyHashes = toolPolicyStorage.policyIpfsCidHashesWithParameters.values();

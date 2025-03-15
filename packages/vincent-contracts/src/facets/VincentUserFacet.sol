@@ -12,6 +12,7 @@ contract VincentUserFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    event NewUserAgentPkpRegistered(address indexed userAddress, uint256 indexed pkpTokenId);
     event AppVersionPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
     event AppVersionUnPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
     event ToolPolicyParameterSet(
@@ -59,7 +60,8 @@ contract VincentUserFacet is VincentBase {
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
-        uint256 currentPermittedAppVersion = us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId];
+        VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
+        uint256 currentPermittedAppVersion = agentStorage.permittedAppVersion[appId];
 
         if (currentPermittedAppVersion == appVersion) {
             revert AppVersionAlreadyPermitted(pkpTokenId, appId, appVersion);
@@ -73,6 +75,9 @@ contract VincentUserFacet is VincentBase {
         // Check if the App Manager has disabled the App
         if (!newVersionedApp.enabled) revert AppVersionNotEnabled(appId, appVersion);
 
+        // Check if User has permitted a previous app version,
+        // if so, remove the PKP Token ID from the previous VersionedApp's delegated agent PKPs
+        // before continuing with permitting the new app version
         if (currentPermittedAppVersion != 0) {
             // Get currently permitted VersionedApp
             VincentAppStorage.VersionedApp storage previousVersionedApp =
@@ -88,17 +93,18 @@ contract VincentUserFacet is VincentBase {
         newVersionedApp.delegatedAgentPkps.add(pkpTokenId);
 
         // Set the new permitted app version
-        us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId] = appVersion;
+        agentStorage.permittedAppVersion[appId] = appVersion;
 
         // Add the app ID to the User's permitted apps set
         // .add will not add the app ID again if it is already registered
-        us_.agentPkpTokenIdToPermittedApps[pkpTokenId].add(appId);
+        agentStorage.permittedApps.add(appId);
 
-        // Add the PKP Token ID to the global registered agent PKPs if it is not already registered
+        // Add pkpTokenId to the User's registered agent PKPs
         // .add will not add the PKP Token ID again if it is already registered
-        us_.registeredAgentPkps.add(pkpTokenId);
+        if (us_.userAddressToRegisteredAgentPkps[msg.sender].add(pkpTokenId)) {
+            emit NewUserAgentPkpRegistered(msg.sender, pkpTokenId);
+        }
 
-        // Emit the AppVersionPermitted event
         emit AppVersionPermitted(pkpTokenId, appId, appVersion);
 
         // Save some gas by not calling the setToolPolicyParameters function if there are no tool policy parameters to set
@@ -116,7 +122,7 @@ contract VincentUserFacet is VincentBase {
         onlyRegisteredAppVersion(appId, appVersion)
     {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        if (us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId] != appVersion) {
+        if (us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId] != appVersion) {
             revert AppVersionNotPermitted(pkpTokenId, appId, appVersion);
         }
 
@@ -127,10 +133,10 @@ contract VincentUserFacet is VincentBase {
         );
 
         // Remove the App Version from the User's Permitted App Versions
-        us_.agentPkpTokenIdToPermittedAppVersion[pkpTokenId][appId] = 0;
+        us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId] = 0;
 
         // Remove the app from the User's permitted apps set
-        us_.agentPkpTokenIdToPermittedApps[pkpTokenId].remove(appId);
+        us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedApps.remove(appId);
 
         // Emit the AppVersionUnPermitted event
         emit AppVersionUnPermitted(pkpTokenId, appId, appVersion);
@@ -199,7 +205,7 @@ contract VincentUserFacet is VincentBase {
 
             // Step 3.3: Access the tool policy storage for the PKP owner.
             VincentUserStorage.ToolPolicyStorage storage toolStorage =
-                us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][hashedToolIpfsCid];
+                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][hashedToolIpfsCid];
 
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
@@ -296,7 +302,7 @@ contract VincentUserFacet is VincentBase {
                 versionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[hashedToolIpfsCid];
 
             VincentUserStorage.ToolPolicyStorage storage userToolPolicyStorage =
-                us_.agentPkpTokenIdToToolPolicyStorage[pkpTokenId][appId][hashedToolIpfsCid];
+                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][hashedToolIpfsCid];
 
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
