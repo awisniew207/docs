@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import {Test} from "forge-std/Test.sol";
+
 import "../helpers/VincentTestHelper.sol";
+import "../../src/facets/VincentAppFacet.sol";
+import "../../src/facets/VincentToolFacet.sol";
 
 /**
  * @title VincentAppFacetTest
@@ -159,7 +163,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testRegisterNextAppVersion() public {
         // First register an app
-        (appId,) = _registerTestAppWithVersion();
+        (appId,) = _registerTestApp();
 
         // Set up data for the next version
         string[] memory toolIpfsCids = new string[](1);
@@ -204,7 +208,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testEnableAppVersion() public {
         // First register an app with a version
-        (appId, appVersion) = _registerTestAppWithVersion();
+        (appId, appVersion) = _registerTestApp();
 
         // Set up event expectations
         vm.expectEmit(true, true, true, false);
@@ -385,7 +389,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testGetVersionToolsAndPolicies() public {
         // First register an app with a version and tools/policies
-        (appId, appVersion) = _registerTestAppWithVersion();
+        (appId, appVersion) = _registerTestApp();
 
         // Get tools directly from the versioned app view
         (VincentAppViewFacet.App memory unused, VincentAppViewFacet.AppVersion memory versionData) =
@@ -398,7 +402,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testFailEnableAppVersionAsNonManager() public {
         // First register an app with a version
-        (appId, appVersion) = _registerTestAppWithVersion();
+        (appId, appVersion) = _registerTestApp();
 
         // Try to enable app version as non-manager (should revert)
         vm.stopPrank();
@@ -625,7 +629,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testGetAppsByManager() public {
         // First register an app
-        (appId,) = _registerTestAppWithVersion();
+        (appId,) = _registerTestApp();
 
         // Set up data for the next version
         string[] memory firstAppToolIpfsCids = new string[](1);

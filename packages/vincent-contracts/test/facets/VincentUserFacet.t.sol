@@ -42,7 +42,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         pkpTokenId = TEST_PKP_TOKEN_ID_1;
 
         // Register an app with a version for testing
-        (appId, appVersion) = _registerTestAppWithVersion();
+        (appId, appVersion) = _registerTestApp();
     }
 
     function testPermitAppVersion() public {

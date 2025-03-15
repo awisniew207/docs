@@ -18,9 +18,6 @@ import "../src/diamond-base/interfaces/IDiamondLoupe.sol";
 import "../src/diamond-base/interfaces/IERC165.sol";
 import "../src/diamond-base/interfaces/IERC173.sol";
 
-// Import the selectors library
-import "./VincentSelectors.sol";
-
 /// @title Vincent Diamond Deployment Script
 /// @notice Foundry script for deploying the Vincent Diamond to multiple networks
 /// @dev Uses environment variables for private key and PKP NFT contract addresses
@@ -33,9 +30,12 @@ contract DeployVincentDiamond is Script {
     error MissingEnvironmentVariable(string name);
 
     /// @notice Deploy facets for the diamond
-    /// @return facets Array of deployed facet addresses and their cut data
+    /// @return facets Array of deployed facet addresses
     /// @return diamondCutFacetAddress Address of the DiamondCutFacet
-    function deployFacets() internal returns (IDiamondCut.FacetCut[] memory, address) {
+    function deployFacets()
+        internal
+        returns (VincentDiamond.FacetAddresses memory facets, address diamondCutFacetAddress)
+    {
         // Deploy facets
         DiamondCutFacet diamondCutFacet = new DiamondCutFacet();
         DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet();
@@ -47,87 +47,44 @@ contract DeployVincentDiamond is Script {
         VincentUserFacet userFacet = new VincentUserFacet();
         VincentUserViewFacet userViewFacet = new VincentUserViewFacet();
 
-        // Build cut struct for adding facets
-        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](8);
-
-        // Add DiamondLoupeFacet
-        cut[0] = IDiamondCut.FacetCut({
-            facetAddress: address(diamondLoupeFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getDiamondLoupeFacetSelectors()
+        // Create facets struct
+        facets = VincentDiamond.FacetAddresses({
+            diamondLoupeFacet: address(diamondLoupeFacet),
+            ownershipFacet: address(ownershipFacet),
+            vincentAppFacet: address(appFacet),
+            vincentAppViewFacet: address(appViewFacet),
+            vincentToolFacet: address(toolFacet),
+            vincentToolViewFacet: address(toolViewFacet),
+            vincentUserFacet: address(userFacet),
+            vincentUserViewFacet: address(userViewFacet)
         });
 
-        // Add OwnershipFacet
-        cut[1] = IDiamondCut.FacetCut({
-            facetAddress: address(ownershipFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getOwnershipFacetSelectors()
-        });
+        diamondCutFacetAddress = address(diamondCutFacet);
 
-        // Add ToolFacet
-        cut[2] = IDiamondCut.FacetCut({
-            facetAddress: address(toolFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getVincentToolFacetSelectors()
-        });
-
-        // Add ToolViewFacet
-        cut[3] = IDiamondCut.FacetCut({
-            facetAddress: address(toolViewFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getVincentToolViewFacetSelectors()
-        });
-
-        // Add AppFacet
-        cut[4] = IDiamondCut.FacetCut({
-            facetAddress: address(appFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getVincentAppFacetSelectors()
-        });
-
-        // Add AppViewFacet
-        cut[5] = IDiamondCut.FacetCut({
-            facetAddress: address(appViewFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getVincentAppViewFacetSelectors()
-        });
-
-        // Add UserFacet
-        cut[6] = IDiamondCut.FacetCut({
-            facetAddress: address(userFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getVincentUserFacetSelectors()
-        });
-
-        // Add UserViewFacet
-        cut[7] = IDiamondCut.FacetCut({
-            facetAddress: address(userViewFacet),
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: VincentSelectors.getVincentUserViewFacetSelectors()
-        });
-
-        return (cut, address(diamondCutFacet));
+        return (facets, diamondCutFacetAddress);
     }
 
     /// @notice Log deployment details
     /// @param network Network name
     /// @param diamond Diamond contract address
     /// @param pkpNFTAddress PKP NFT contract address
-    /// @param facets Array of deployed facet addresses
+    /// @param facets Struct containing deployed facet addresses
     function logDeployment(
         string memory network,
         address diamond,
         address pkpNFTAddress,
-        IDiamondCut.FacetCut[] memory facets
+        VincentDiamond.FacetAddresses memory facets
     ) internal view {
         console.log("Vincent Diamond deployed for", network, "to:", address(diamond));
         console.log("Using PKP NFT contract:", pkpNFTAddress);
-        for (uint256 i = 0; i < facets.length;) {
-            console.log(string.concat("Facet ", vm.toString(i), ":"), facets[i].facetAddress);
-            unchecked {
-                ++i;
-            }
-        }
+        console.log("DiamondLoupeFacet:", facets.diamondLoupeFacet);
+        console.log("OwnershipFacet:", facets.ownershipFacet);
+        console.log("VincentAppFacet:", facets.vincentAppFacet);
+        console.log("VincentAppViewFacet:", facets.vincentAppViewFacet);
+        console.log("VincentToolFacet:", facets.vincentToolFacet);
+        console.log("VincentToolViewFacet:", facets.vincentToolViewFacet);
+        console.log("VincentUserFacet:", facets.vincentUserFacet);
+        console.log("VincentUserViewFacet:", facets.vincentUserViewFacet);
     }
 
     /// @notice Deploy to a specific network
@@ -149,25 +106,22 @@ contract DeployVincentDiamond is Script {
         // Start broadcasting transactions
         vm.startBroadcast(deployerPrivateKey);
 
-        // Deploy facets and get cut data
-        (IDiamondCut.FacetCut[] memory cut, address diamondCutFacetAddress) = deployFacets();
+        // Deploy facets and get facet addresses
+        (VincentDiamond.FacetAddresses memory facets, address diamondCutFacetAddress) = deployFacets();
 
-        // Deploy the Diamond with the diamondCut facet and owner
+        // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
         VincentDiamond diamond = new VincentDiamond(
             vm.addr(deployerPrivateKey), // contract owner
-            diamondCutFacetAddress,
+            diamondCutFacetAddress, // diamond cut facet
+            facets, // all other facets
             pkpNFTAddress // PKP NFT contract address - set immutably
         );
-
-        // Execute diamond cut to add facets without initialization
-        // All initialization is now handled in the VincentDiamond constructor
-        IDiamondCut(address(diamond)).diamondCut(cut, address(0), new bytes(0));
 
         // Stop broadcasting transactions
         vm.stopBroadcast();
 
         // Log deployment details
-        logDeployment(network, address(diamond), pkpNFTAddress, cut);
+        logDeployment(network, address(diamond), pkpNFTAddress, facets);
 
         return address(diamond);
     }

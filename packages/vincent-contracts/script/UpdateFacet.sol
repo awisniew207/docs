@@ -22,8 +22,10 @@ import {VincentUserViewFacet} from "../src/facets/VincentUserViewFacet.sol";
 import {DiamondInit} from "../src/diamond-base/upgradeInitializers/DiamondInit.sol";
 import {Strings} from "../lib/openzeppelin-contracts/contracts/utils/Strings.sol";
 
-// Import the selectors library
-import {VincentSelectors} from "./VincentSelectors.sol";
+// Import the VincentDiamond to use its selector methods
+import {VincentDiamond} from "../src/VincentDiamond.sol";
+import {IERC165} from "../src/diamond-base/interfaces/IERC165.sol";
+import {IERC173} from "../src/diamond-base/interfaces/IERC173.sol";
 
 /**
  * @title UpdateFacet
@@ -185,7 +187,7 @@ contract UpdateFacet is Script {
         // If we get here, the facet wasn't found in the diamond
         console2.log("Warning: Facet not found in diamond. Will use default selectors.");
 
-        // Fall back to hard-coded selectors from the selector library
+        // Fall back to hard-coded selectors from the selector helper functions
         return getDefaultSelectors(facetToUpdate);
     }
 
@@ -207,22 +209,90 @@ contract UpdateFacet is Script {
      * @return selectors The function selectors for the facet
      */
     function getDefaultSelectors(string memory facetName) internal pure returns (bytes4[] memory) {
-        // Only allow Vincent-specific facets
+        // Using the same selector logic as in VincentDiamond contract
         if (compareStrings(facetName, "VincentAppFacet")) {
-            return VincentSelectors.getVincentAppFacetSelectors();
+            return getVincentAppFacetSelectors();
         } else if (compareStrings(facetName, "VincentAppViewFacet")) {
-            return VincentSelectors.getVincentAppViewFacetSelectors();
+            return getVincentAppViewFacetSelectors();
         } else if (compareStrings(facetName, "VincentToolFacet")) {
-            return VincentSelectors.getVincentToolFacetSelectors();
+            return getVincentToolFacetSelectors();
         } else if (compareStrings(facetName, "VincentToolViewFacet")) {
-            return VincentSelectors.getVincentToolViewFacetSelectors();
+            return getVincentToolViewFacetSelectors();
         } else if (compareStrings(facetName, "VincentUserFacet")) {
-            return VincentSelectors.getVincentUserFacetSelectors();
+            return getVincentUserFacetSelectors();
         } else if (compareStrings(facetName, "VincentUserViewFacet")) {
-            return VincentSelectors.getVincentUserViewFacetSelectors();
+            return getVincentUserViewFacetSelectors();
         } else {
             revert(string.concat("Invalid or non-upgradeable facet name: ", facetName));
         }
+    }
+
+    // The following functions replicate the selector methods from VincentDiamond
+
+    /// @dev Get VincentAppFacet selectors
+    function getVincentAppFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](9);
+        selectors[0] = VincentAppFacet.registerApp.selector;
+        selectors[1] = VincentAppFacet.registerNextAppVersion.selector;
+        selectors[2] = VincentAppFacet.enableAppVersion.selector;
+        selectors[3] = VincentAppFacet.addAuthorizedDomain.selector;
+        selectors[4] = VincentAppFacet.removeAuthorizedDomain.selector;
+        selectors[5] = VincentAppFacet.addAuthorizedRedirectUri.selector;
+        selectors[6] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
+        selectors[7] = VincentAppFacet.addDelegatee.selector;
+        selectors[8] = VincentAppFacet.removeDelegatee.selector;
+        return selectors;
+    }
+
+    /// @dev Get VincentAppViewFacet selectors
+    function getVincentAppViewFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](8);
+        selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
+        selectors[1] = VincentAppViewFacet.getAppById.selector;
+        selectors[2] = VincentAppViewFacet.getAppVersion.selector;
+        selectors[3] = VincentAppViewFacet.getAppsByManager.selector;
+        selectors[4] = VincentAppViewFacet.getAppByDelegatee.selector;
+        selectors[5] = VincentAppViewFacet.getAuthorizedDomainByHash.selector;
+        selectors[6] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
+        selectors[7] = VincentAppViewFacet.getAuthorizedDomainsAndRedirectUrisByAppId.selector;
+        return selectors;
+    }
+
+    /// @dev Get VincentToolFacet selectors
+    function getVincentToolFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](2);
+        selectors[0] = VincentToolFacet.registerTool.selector;
+        selectors[1] = VincentToolFacet.registerTools.selector;
+        return selectors;
+    }
+
+    /// @dev Get VincentToolViewFacet selectors
+    function getVincentToolViewFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](2);
+        selectors[0] = VincentToolViewFacet.getToolIpfsCidByHash.selector;
+        selectors[1] = VincentToolViewFacet.getAllRegisteredTools.selector;
+        return selectors;
+    }
+
+    /// @dev Get VincentUserFacet selectors
+    function getVincentUserFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](4);
+        selectors[0] = VincentUserFacet.permitAppVersion.selector;
+        selectors[1] = VincentUserFacet.unPermitAppVersion.selector;
+        selectors[2] = VincentUserFacet.setToolPolicyParameters.selector;
+        selectors[3] = VincentUserFacet.removeToolPolicyParameters.selector;
+        return selectors;
+    }
+
+    /// @dev Get VincentUserViewFacet selectors
+    function getVincentUserViewFacetSelectors() internal pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](5);
+        selectors[0] = VincentUserViewFacet.getAllRegisteredAgentPkps.selector;
+        selectors[1] = VincentUserViewFacet.getPermittedAppVersionForPkp.selector;
+        selectors[2] = VincentUserViewFacet.getAllPermittedAppIdsForPkp.selector;
+        selectors[3] = VincentUserViewFacet.validateToolExecutionAndGetPolicies.selector;
+        selectors[4] = VincentUserViewFacet.getAllToolsAndPoliciesForApp.selector;
+        return selectors;
     }
 
     /**
