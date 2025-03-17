@@ -26,5 +26,16 @@
   "bugs": {
     "url": "https://github.com/LIT-Protocol/Vincent/issues"
   },
-  "homepage": "https://github.com/LIT-Protocol/Vincent#readme"
+  "homepage": "https://github.com/LIT-Protocol/Vincent#readme",
+  "dependencies": {
+    "@lit-protocol/auth-browser": "^7.0.8",
+    "@lit-protocol/auth-helpers": "^7.0.8",
+    "@lit-protocol/constants": "^7.0.8",
+    "@lit-protocol/contracts": "^0.0.90",
+    "@lit-protocol/misc": "^7.0.8",
+    "@lit-protocol/types": "^7.0.8",
+    "@lit-protocol/vincent-sdk": "0.1.0-7",
+    "@stytch/nextjs": "^21.4.1",
+    "pino-pretty": "^13.0.0"
+  }
 }

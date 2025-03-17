@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
 
     return config;
   },
+  experimental: {
+    serverComponentsHmrCache: false, // defaults to true
+  },
 };
 
 export default nextConfig;
