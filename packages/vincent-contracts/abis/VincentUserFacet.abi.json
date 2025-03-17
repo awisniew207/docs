@@ -198,6 +198,25 @@
   },
   {
     "type": "event",
+    "name": "NewUserAgentPkpRegistered",
+    "inputs": [
+      {
+        "name": "userAddress",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "pkpTokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "ToolPolicyParameterRemoved",
     "inputs": [
       {

@@ -16,6 +16,11 @@
         "internalType": "struct VincentAppViewFacet.App",
         "components": [
           {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "name",
             "type": "string",
             "internalType": "string"
@@ -39,11 +44,6 @@
             "name": "delegatees",
             "type": "address[]",
             "internalType": "address[]"
-          },
-          {
-            "name": "authorizedDomains",
-            "type": "string[]",
-            "internalType": "string[]"
           },
           {
             "name": "authorizedRedirectUris",
@@ -72,6 +72,11 @@
         "internalType": "struct VincentAppViewFacet.App",
         "components": [
           {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "name",
             "type": "string",
             "internalType": "string"
@@ -95,11 +100,6 @@
             "name": "delegatees",
             "type": "address[]",
             "internalType": "address[]"
-          },
-          {
-            "name": "authorizedDomains",
-            "type": "string[]",
-            "internalType": "string[]"
           },
           {
             "name": "authorizedRedirectUris",
@@ -133,6 +133,11 @@
         "internalType": "struct VincentAppViewFacet.App",
         "components": [
           {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "name",
             "type": "string",
             "internalType": "string"
@@ -158,11 +163,6 @@
             "internalType": "address[]"
           },
           {
-            "name": "authorizedDomains",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
             "name": "authorizedRedirectUris",
             "type": "string[]",
             "internalType": "string[]"
@@ -185,14 +185,43 @@
             "internalType": "bool"
           },
           {
-            "name": "toolIpfsCidHashes",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
             "name": "delegatedAgentPkpTokenIds",
             "type": "uint256[]",
             "internalType": "uint256[]"
+          },
+          {
+            "name": "tools",
+            "type": "tuple[]",
+            "internalType": "struct VincentAppViewFacet.Tool[]",
+            "components": [
+              {
+                "name": "toolIpfsCid",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "policies",
+                "type": "tuple[]",
+                "internalType": "struct VincentAppViewFacet.Policy[]",
+                "components": [
+                  {
+                    "name": "policyIpfsCid",
+                    "type": "string",
+                    "internalType": "string"
+                  },
+                  {
+                    "name": "policySchemaIpfsCid",
+                    "type": "string",
+                    "internalType": "string"
+                  },
+                  {
+                    "name": "parameterNames",
+                    "type": "string[]",
+                    "internalType": "string[]"
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
@@ -221,6 +250,11 @@
             "internalType": "struct VincentAppViewFacet.App",
             "components": [
               {
+                "name": "id",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
                 "name": "name",
                 "type": "string",
                 "internalType": "string"
@@ -246,11 +280,6 @@
                 "internalType": "address[]"
               },
               {
-                "name": "authorizedDomains",
-                "type": "string[]",
-                "internalType": "string[]"
-              },
-              {
                 "name": "authorizedRedirectUris",
                 "type": "string[]",
                 "internalType": "string[]"
@@ -273,61 +302,47 @@
                 "internalType": "bool"
               },
               {
-                "name": "toolIpfsCidHashes",
-                "type": "string[]",
-                "internalType": "string[]"
-              },
-              {
                 "name": "delegatedAgentPkpTokenIds",
                 "type": "uint256[]",
                 "internalType": "uint256[]"
+              },
+              {
+                "name": "tools",
+                "type": "tuple[]",
+                "internalType": "struct VincentAppViewFacet.Tool[]",
+                "components": [
+                  {
+                    "name": "toolIpfsCid",
+                    "type": "string",
+                    "internalType": "string"
+                  },
+                  {
+                    "name": "policies",
+                    "type": "tuple[]",
+                    "internalType": "struct VincentAppViewFacet.Policy[]",
+                    "components": [
+                      {
+                        "name": "policyIpfsCid",
+                        "type": "string",
+                        "internalType": "string"
+                      },
+                      {
+                        "name": "policySchemaIpfsCid",
+                        "type": "string",
+                        "internalType": "string"
+                      },
+                      {
+                        "name": "parameterNames",
+                        "type": "string[]",
+                        "internalType": "string[]"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
         ]
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getAuthorizedDomainByHash",
-    "inputs": [
-      {
-        "name": "domainHash",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "domain",
-        "type": "string",
-        "internalType": "string"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getAuthorizedDomainsAndRedirectUrisByAppId",
-    "inputs": [
-      {
-        "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "domains",
-        "type": "string[]",
-        "internalType": "string[]"
-      },
-      {
-        "name": "redirectUris",
-        "type": "string[]",
-        "internalType": "string[]"
       }
     ],
     "stateMutability": "view"
@@ -353,13 +368,19 @@
   },
   {
     "type": "function",
-    "name": "getRegisteredManagers",
-    "inputs": [],
+    "name": "getAuthorizedRedirectUrisByAppId",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
     "outputs": [
       {
-        "name": "managers",
-        "type": "address[]",
-        "internalType": "address[]"
+        "name": "redirectUris",
+        "type": "string[]",
+        "internalType": "string[]"
       }
     ],
     "stateMutability": "view"
