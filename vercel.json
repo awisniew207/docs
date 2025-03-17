@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx nx build dashboard",
+  "outputDirectory": "packages/dashboard/.next",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+} 
