@@ -1,7 +1,5 @@
 'use client';
-import './page.css'; // For backward compatibility - this imports dashboard.css
 import './dashboard.css'; // Dashboard-specific styling
-import './styles/login.module.css';
 import Header from '@/components/layout/Header';
 import { WagmiProvider } from 'wagmi';
 import { http, createConfig } from 'wagmi';
