@@ -328,22 +328,6 @@
   },
   {
     "type": "error",
-    "name": "AuthorizedRedirectUriNotRegistered",
-    "inputs": [
-      {
-        "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "hashedRedirectUri",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "DelegateeAlreadyRegisteredToApp",
     "inputs": [
       {
@@ -376,6 +360,11 @@
   },
   {
     "type": "error",
+    "name": "NoRedirectUrisProvided",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotAppManager",
     "inputs": [
       {
@@ -403,6 +392,22 @@
         "name": "policyIpfsCid",
         "type": "string",
         "internalType": "string"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "RedirectUriNotRegisteredToApp",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "hashedRedirectUri",
+        "type": "bytes32",
+        "internalType": "bytes32"
       }
     ]
   },

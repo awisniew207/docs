@@ -470,6 +470,36 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
     }
 
+    /**
+     * @notice Test that app registration fails when no redirect URIs are provided
+     * @dev This test attempts to register an app with an empty redirectUris array, which should revert
+     */
+    function testFailRegisterAppWithEmptyRedirectUris() public {
+        // Create empty redirect URIs array
+        string[] memory redirectUris = new string[](0);
+
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = TEST_DELEGATEE_1;
+
+        // Set up empty tool arrays
+        string[] memory toolIpfsCids = new string[](0);
+        string[][] memory toolPolicies = new string[][](0);
+        string[][][] memory toolPolicyParameterNames = new string[][][](0);
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](0);
+
+        // This should revert with NoRedirectUrisProvided error
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            redirectUris,
+            delegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
+        );
+    }
+
     // Test simple utility functions
     function testGetTotalAppCount() public {
         // Register an app

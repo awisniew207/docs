@@ -99,7 +99,12 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param hashedRedirectUri Hash of the redirect URI that is not registered
      */
-    error AuthorizedRedirectUriNotRegistered(uint256 appId, bytes32 hashedRedirectUri);
+    error RedirectUriNotRegisteredToApp(uint256 appId, bytes32 hashedRedirectUri);
+
+    /**
+     * @notice Error thrown when no redirect URIs are provided during app registration
+     */
+    error NoRedirectUrisProvided();
 
     /**
      * @notice Error thrown when a policy schema is not provided for a policy
@@ -224,7 +229,7 @@ contract VincentAppFacet is VincentBase {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 
         if (!as_.appIdToApp[appId].authorizedRedirectUris.contains(hashedRedirectUri)) {
-            revert AuthorizedRedirectUriNotRegistered(appId, hashedRedirectUri);
+            revert RedirectUriNotRegisteredToApp(appId, hashedRedirectUri);
         }
 
         as_.appIdToApp[appId].authorizedRedirectUris.remove(hashedRedirectUri);
@@ -287,6 +292,11 @@ contract VincentAppFacet is VincentBase {
         address[] calldata delegatees
     ) internal returns (uint256 newAppId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+
+        // Require at least one authorized redirect URI
+        if (authorizedRedirectUris.length == 0) {
+            revert NoRedirectUrisProvided();
+        }
 
         newAppId = ++as_.appIdCounter;
 
