@@ -47,6 +47,7 @@ export default function AuthenticatedConsentForm ({
   const [isAppAlreadyPermitted, setIsAppAlreadyPermitted] =
     useState<boolean>(false);
   const [checkingPermissions, setCheckingPermissions] = useState<boolean>(true);
+  const [showingAuthorizedMessage, setShowingAuthorizedMessage] = useState<boolean>(false);
 
   // ===== JWT and Redirect Functions =====
   
@@ -289,14 +290,19 @@ export default function AuthenticatedConsentForm ({
           console.log(
             'App is already permitted. Generating JWT and redirecting...'
           );
-          // Show success animation briefly
-          setShowSuccess(true);
+          // First show only "already authorized" message
+          setShowingAuthorizedMessage(true);
           const jwt = await generateJWT();
-
-          // Short delay to allow the success animation to be seen
+          
+          // Delay showing the success animation
           setTimeout(() => {
-            redirectWithJWT(jwt);
-          }, 1500);
+            setShowSuccess(true);
+            
+            // After animation is shown, wait before redirecting
+            setTimeout(() => {
+              redirectWithJWT(jwt);
+            }, 1000);
+          }, 2000); // Show message for 2 seconds before animation
         }
       } catch (err) {
         console.error(
@@ -350,26 +356,28 @@ export default function AuthenticatedConsentForm ({
   // ===== Render Logic =====
   
   // If the app is already permitted, show a brief loading spinner or success animation
-  if (isAppAlreadyPermitted || (showSuccess && checkingPermissions)) {
+  if (isAppAlreadyPermitted || (showSuccess && checkingPermissions) || showingAuthorizedMessage) {
     return (
       <div className='container'>
         <div className='consent-form-container'>
-          <div className='animation-overlay'>
-            <svg className='success-checkmark' viewBox='0 0 52 52'>
-              <circle
-                className='success-checkmark__circle'
-                cx='26'
-                cy='26'
-                r='25'
-                fill='none'
-              />
-              <path
-                className='success-checkmark__check'
-                fill='none'
-                d='M14.1 27.2l7.1 7.2 16.7-16.8'
-              />
-            </svg>
-          </div>
+          {showSuccess && (
+            <div className='animation-overlay'>
+              <svg className='success-checkmark' viewBox='0 0 52 52'>
+                <circle
+                  className='success-checkmark__circle'
+                  cx='26'
+                  cy='26'
+                  r='25'
+                  fill='none'
+                />
+                <path
+                  className='success-checkmark__check'
+                  fill='none'
+                  d='M14.1 27.2l7.1 7.2 16.7-16.8'
+                />
+              </svg>
+            </div>
+          )}
           <p className='auto-redirect-message'>
             This app is already authorized. Redirecting...
           </p>
