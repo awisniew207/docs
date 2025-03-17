@@ -43,15 +43,18 @@ contract VincentDiamond {
     /// @param _diamondCutFacet Address of the DiamondCutFacet
     /// @param _facets Struct containing all other facet addresses
     /// @param _pkpNFTContract Address of the PKP NFT contract
+    /// @param _approvedToolsManager Address of the approved tools manager
     constructor(
         address _contractOwner,
         address _diamondCutFacet,
         FacetAddresses memory _facets,
-        address _pkpNFTContract
+        address _pkpNFTContract,
+        address _approvedToolsManager
     ) payable {
         // Validate inputs
         if (_pkpNFTContract == address(0)) revert InvalidPKPNFTContract();
         if (_diamondCutFacet == address(0)) revert InvalidFacetAddress();
+        if (_approvedToolsManager == address(0)) revert InvalidFacetAddress();
 
         // Validate all facet addresses
         if (
@@ -65,6 +68,10 @@ contract VincentDiamond {
 
         // Set the contract owner
         LibDiamond.setContractOwner(_contractOwner);
+
+        // Initialize the approvedToolsManager
+        VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
+        ts.approvedToolsManager = _approvedToolsManager;
 
         // Initialize ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
@@ -199,17 +206,23 @@ contract VincentDiamond {
 
     /// @dev Get VincentToolFacet selectors
     function getVincentToolFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](2);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = VincentToolFacet.registerTool.selector;
         selectors[1] = VincentToolFacet.registerTools.selector;
+        selectors[2] = VincentToolFacet.approveTools.selector;
+        selectors[3] = VincentToolFacet.removeToolApprovals.selector;
+        selectors[4] = VincentToolFacet.updateApprovedToolsManager.selector;
         return selectors;
     }
 
     /// @dev Get VincentToolViewFacet selectors
     function getVincentToolViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](2);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = VincentToolViewFacet.getToolIpfsCidByHash.selector;
         selectors[1] = VincentToolViewFacet.getAllRegisteredTools.selector;
+        selectors[2] = VincentToolViewFacet.getAllApprovedTools.selector;
+        selectors[3] = VincentToolViewFacet.isToolApproved.selector;
+        selectors[4] = VincentToolViewFacet.getApprovedToolsManager.selector;
         return selectors;
     }
 

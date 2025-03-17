@@ -61,12 +61,16 @@ library VincentToolStorage {
         EnumerableSet.Bytes32Set registeredTools;
         // Tool IPFS CID Hash => Tool IPFS CID
         mapping(bytes32 => string) toolIpfsCidHashToIpfsCid;
+        // A list of approved/reviewed Tool IPFS CID Hashes
+        EnumerableSet.Bytes32Set approvedIpfsCidHashes;
         // Policy IPFS CID Hash => Policy IPFS CID
         mapping(bytes32 => string) policyIpfsCidHashToIpfsCid;
         // Policy Parameter Name Hash => Policy Parameter Name
         mapping(bytes32 => string) policyParameterNameHashToName;
         // Policy Schema IPFS CID Hash => Policy Schema IPFS CID
         mapping(bytes32 => string) policySchemaIpfsCidHashToIpfsCid;
+        // Address of the manager who can add/remove tools from the approved list
+        address approvedToolsManager;
     }
 
     function toolStorage() internal pure returns (ToolStorage storage ts) {

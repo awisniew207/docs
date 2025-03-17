@@ -114,7 +114,8 @@ contract DeployVincentDiamond is Script {
             vm.addr(deployerPrivateKey), // contract owner
             diamondCutFacetAddress, // diamond cut facet
             facets, // all other facets
-            pkpNFTAddress // PKP NFT contract address - set immutably
+            pkpNFTAddress, // PKP NFT contract address - set immutably
+            vm.addr(deployerPrivateKey) // approved tools manager - initially set to contract owner
         );
 
         // Stop broadcasting transactions

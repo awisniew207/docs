@@ -73,6 +73,9 @@ abstract contract VincentTestHelper is Test {
     event AuthorizedDomainRemoved(uint256 indexed appId, string indexed domain);
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, string indexed redirectUri);
     event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
+    event ToolApproved(bytes32 indexed toolIpfsCidHash);
+    event ToolApprovalRemoved(bytes32 indexed toolIpfsCidHash);
+    event ApprovedToolsManagerUpdated(address indexed previousManager, address indexed newManager);
 
     function setUp() public virtual {
         // Setup deployer account using default anvil account
