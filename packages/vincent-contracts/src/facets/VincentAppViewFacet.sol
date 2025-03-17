@@ -162,31 +162,29 @@ contract VincentAppViewFacet {
             appVersion.tools[i].toolIpfsCid = toolIpfsCid;
 
             // Get the policies for this tool
-            EnumerableSet.Bytes32Set storage policyIpfsCidHashes =
-                storedVersionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[toolIpfsCidHash];
-
-            uint256 policyCount = policyIpfsCidHashes.length();
+            VincentAppStorage.ToolPolicies storage toolPolicies =
+                storedVersionedApp.toolIpfsCidHashToToolPolicies[toolIpfsCidHash];
+            uint256 policyCount = toolPolicies.policyIpfsCidHashes.length();
             appVersion.tools[i].policies = new Policy[](policyCount);
 
             // Iterate through each policy for this tool
             for (uint256 j = 0; j < policyCount; j++) {
-                bytes32 policyIpfsCidHash = policyIpfsCidHashes.at(j);
+                bytes32 policyIpfsCidHash = toolPolicies.policyIpfsCidHashes.at(j);
                 string memory policyIpfsCid = ts.policyIpfsCidHashToIpfsCid[policyIpfsCidHash];
 
                 // Set the policy IPFS CID
                 appVersion.tools[i].policies[j].policyIpfsCid = policyIpfsCid;
 
-                // Get the policy storage to access schema and parameters
-                VincentAppStorage.PolicyStorage storage policyStorage =
-                    storedVersionedApp.policyIpfsCidHashToPolicyStorage[policyIpfsCidHash];
+                // Get the policy data to access schema and parameters
+                VincentAppStorage.Policy storage policy = toolPolicies.policyIpfsCidHashToPolicy[policyIpfsCidHash];
 
                 // Get the policy schema IPFS CID
-                bytes32 policySchemaIpfsCidHash = policyStorage.policySchemaIpfsCidHash;
+                bytes32 policySchemaIpfsCidHash = policy.policySchemaIpfsCidHash;
                 string memory policySchemaIpfsCid = ts.policySchemaIpfsCidHashToIpfsCid[policySchemaIpfsCidHash];
                 appVersion.tools[i].policies[j].policySchemaIpfsCid = policySchemaIpfsCid;
 
-                // Get the policy parameter names - fixed to use the correct field name in PolicyStorage
-                EnumerableSet.Bytes32Set storage policyParamNameHashes = policyStorage.policyParameterNameHashes;
+                // Get the policy parameter names
+                EnumerableSet.Bytes32Set storage policyParamNameHashes = policy.policyParameterNameHashes;
                 uint256 paramCount = policyParamNameHashes.length();
                 appVersion.tools[i].policies[j].parameterNames = new string[](paramCount);
 

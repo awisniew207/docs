@@ -6,35 +6,132 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "../LibVincentDiamondStorage.sol";
 import "../VincentBase.sol";
 
+/**
+ * @title IVincentToolFacet
+ * @notice Interface for the VincentToolFacet contract to allow tool registration from the app facet
+ * @dev This interface is used to register tools when registering a new app version
+ */
 interface IVincentToolFacet {
+    /**
+     * @notice Register a new tool by its IPFS CID
+     * @param toolIpfsCid IPFS CID of the tool to register
+     */
     function registerTool(string calldata toolIpfsCid) external;
 }
 
+/**
+ * @title VincentAppFacet
+ * @notice A facet of the Vincent Diamond that manages application registration and configuration
+ * @dev This contract allows registration of apps, app versions, redirect URIs, and delegatees
+ */
 contract VincentAppFacet is VincentBase {
     using VincentAppStorage for VincentAppStorage.AppStorage;
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    /**
+     * @notice Emitted when a new app is registered
+     * @param appId Unique identifier for the newly registered app
+     * @param manager Address of the app manager
+     */
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
+
+    /**
+     * @notice Emitted when a new app version is registered
+     * @param appId ID of the app for which a new version is registered
+     * @param appVersion Version number of the newly registered app version
+     * @param manager Address of the app manager who registered the new version
+     */
     event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
+
+    /**
+     * @notice Emitted when an app version's enabled status is changed
+     * @param appId ID of the app
+     * @param appVersion Version number of the app being enabled/disabled
+     * @param enabled New enabled status of the app version
+     */
     event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
+
+    /**
+     * @notice Emitted when a new authorized redirect URI is added to an app
+     * @param appId ID of the app
+     * @param redirectUri The redirect URI that was added
+     */
     event AuthorizedRedirectUriAdded(uint256 indexed appId, string indexed redirectUri);
+
+    /**
+     * @notice Emitted when an authorized redirect URI is removed from an app
+     * @param appId ID of the app
+     * @param redirectUri The redirect URI that was removed
+     */
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, string indexed redirectUri);
 
+    /**
+     * @notice Error thrown when a non-manager attempts to modify an app
+     * @param appId ID of the app being modified
+     * @param msgSender Address that attempted the unauthorized modification
+     */
     error NotAppManager(uint256 appId, address msgSender);
+
+    /**
+     * @notice Error thrown when tool and policy array lengths don't match
+     * @dev This ensures each tool has appropriate policy configurations
+     */
     error ToolsAndPoliciesLengthMismatch();
+
+    /**
+     * @notice Error thrown when attempting to register a delegatee already associated with an app
+     * @param appId ID of the app the delegatee is already registered to
+     * @param delegatee Address of the delegatee that is already registered
+     */
     error DelegateeAlreadyRegisteredToApp(uint256 appId, address delegatee);
+
+    /**
+     * @notice Error thrown when trying to remove a delegatee not registered to the specified app
+     * @param appId ID of the app from which removal was attempted
+     * @param delegatee Address of the delegatee that is not registered to the app
+     */
     error DelegateeNotRegisteredToApp(uint256 appId, address delegatee);
+
+    /**
+     * @notice Error thrown when trying to remove a redirect URI not registered to the app
+     * @param appId ID of the app
+     * @param hashedRedirectUri Hash of the redirect URI that is not registered
+     */
     error AuthorizedRedirectUriNotRegistered(uint256 appId, bytes32 hashedRedirectUri);
+
+    /**
+     * @notice Error thrown when a policy schema is not provided for a policy
+     * @param appId ID of the app
+     * @param policyIpfsCid IPFS CID of the policy missing a schema
+     */
     error PolicySchemaMissing(uint256 appId, string policyIpfsCid);
 
+    /**
+     * @notice Modifier to restrict function access to the app manager only
+     * @param appId ID of the app
+     */
     modifier onlyAppManager(uint256 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (as_.appIdToApp[appId].manager != msg.sender) revert NotAppManager(appId, msg.sender);
         _;
     }
 
+    /**
+     * @notice Register a new application with initial version, tools, and policies
+     * @dev This function combines app registration and first version registration in one call
+     * @param name Name of the application
+     * @param description Description of the application
+     * @param authorizedRedirectUris List of authorized redirect URIs for the application
+     * @param delegatees List of delegatee addresses for the application
+     * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this app
+     * @param toolPolicies 2D array mapping each tool to its associated policies
+     * @param toolPolicySchemaIpfsCids 2D array mapping each policy to its schema IPFS CID
+     * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
+     * @return newAppId The ID of the newly registered app
+     * @return newAppVersion The version number of the newly registered app version (always 1 for new apps)
+     */
     function registerApp(
         string calldata name,
         string calldata description,
@@ -54,6 +151,16 @@ contract VincentAppFacet is VincentBase {
         emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
 
+    /**
+     * @notice Register a new version of an existing application
+     * @dev Only the app manager can register new versions of an existing app
+     * @param appId ID of the app for which to register a new version
+     * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this version
+     * @param toolPolicies 2D array mapping each tool to its associated policies
+     * @param toolPolicySchemaIpfsCids 2D array mapping each policy to its schema IPFS CID
+     * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
+     * @return newAppVersion The version number of the newly registered app version
+     */
     function registerNextAppVersion(
         uint256 appId,
         string[] calldata toolIpfsCids,
@@ -68,6 +175,13 @@ contract VincentAppFacet is VincentBase {
         emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
     }
 
+    /**
+     * @notice Enable or disable a specific app version
+     * @dev Only the app manager can change the enabled status of an app version
+     * @param appId ID of the app
+     * @param appVersion Version number of the app to enable/disable
+     * @param enabled Whether to enable (true) or disable (false) the app version
+     */
     function enableAppVersion(uint256 appId, uint256 appVersion, bool enabled)
         external
         onlyAppManager(appId)
@@ -80,6 +194,12 @@ contract VincentAppFacet is VincentBase {
         emit AppEnabled(appId, appVersion, enabled);
     }
 
+    /**
+     * @notice Add a new authorized redirect URI to an app
+     * @dev Only the app manager can add redirect URIs
+     * @param appId ID of the app
+     * @param redirectUri The redirect URI to add
+     */
     function addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
         external
         onlyAppManager(appId)
@@ -88,6 +208,12 @@ contract VincentAppFacet is VincentBase {
         _addAuthorizedRedirectUri(appId, redirectUri);
     }
 
+    /**
+     * @notice Remove an authorized redirect URI from an app
+     * @dev Only the app manager can remove redirect URIs
+     * @param appId ID of the app
+     * @param redirectUri The redirect URI to remove
+     */
     function removeAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
         external
         onlyAppManager(appId)
@@ -107,6 +233,12 @@ contract VincentAppFacet is VincentBase {
         emit AuthorizedRedirectUriRemoved(appId, redirectUri);
     }
 
+    /**
+     * @notice Add a new delegatee to an app
+     * @dev Only the app manager can add delegatees. A delegatee can only be associated with one app at a time.
+     * @param appId ID of the app
+     * @param delegatee Address of the delegatee to add
+     */
     function addDelegatee(uint256 appId, address delegatee) external onlyAppManager(appId) onlyRegisteredApp(appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
@@ -120,6 +252,12 @@ contract VincentAppFacet is VincentBase {
         as_.delegateeAddressToAppId[delegatee] = appId;
     }
 
+    /**
+     * @notice Remove a delegatee from an app
+     * @dev Only the app manager can remove delegatees
+     * @param appId ID of the app
+     * @param delegatee Address of the delegatee to remove
+     */
     function removeDelegatee(uint256 appId, address delegatee)
         external
         onlyAppManager(appId)
@@ -133,6 +271,15 @@ contract VincentAppFacet is VincentBase {
         as_.delegateeAddressToAppId[delegatee] = 0;
     }
 
+    /**
+     * @notice Internal function to register a new app
+     * @dev Sets up the basic app structure and associates redirect URIs and delegatees
+     * @param name Name of the application
+     * @param description Description of the application
+     * @param authorizedRedirectUris List of authorized redirect URIs for the application
+     * @param delegatees List of delegatee addresses for the application
+     * @return newAppId The ID of the newly registered app
+     */
     function _registerApp(
         string calldata name,
         string calldata description,
@@ -223,9 +370,9 @@ contract VincentAppFacet is VincentBase {
                 IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
             }
 
-            // Step 4.2: Fetch the policy storage for this tool.
-            EnumerableSet.Bytes32Set storage toolPolicyIpfsCidHashes =
-                versionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[hashedToolCid];
+            // Step 4.2: Fetch the tool policies storage for this tool.
+            VincentAppStorage.ToolPolicies storage toolPoliciesStorage =
+                versionedApp.toolIpfsCidHashToToolPolicies[hashedToolCid];
 
             // Step 5: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
@@ -238,8 +385,8 @@ contract VincentAppFacet is VincentBase {
                 string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
-                // Step 5.1: Add the policy hash to the VersionedApp
-                toolPolicyIpfsCidHashes.add(hashedToolPolicy);
+                // Step 5.1: Add the policy hash to the ToolPolicies
+                toolPoliciesStorage.policyIpfsCidHashes.add(hashedToolPolicy);
 
                 // Step 5.2: Store the policy IPFS CID globally if it's not already stored.
                 if (bytes(ts.policyIpfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
@@ -256,20 +403,20 @@ contract VincentAppFacet is VincentBase {
 
                 bytes32 hashedPolicySchemaIpfsCid = keccak256(abi.encodePacked(policySchemaIpfsCid));
 
-                // Create or get the PolicyStorage for this policy
-                VincentAppStorage.PolicyStorage storage policyStorage =
-                    versionedApp.policyIpfsCidHashToPolicyStorage[hashedToolPolicy];
+                // Create or get the Policy for this policy
+                VincentAppStorage.Policy storage policy =
+                    toolPoliciesStorage.policyIpfsCidHashToPolicy[hashedToolPolicy];
 
                 // Store the policy schema IPFS CID hash
-                policyStorage.policySchemaIpfsCidHash = hashedPolicySchemaIpfsCid;
+                policy.policySchemaIpfsCidHash = hashedPolicySchemaIpfsCid;
 
                 // Store the policy schema IPFS CID globally if it's not already stored
                 if (bytes(ts.policySchemaIpfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid]).length == 0) {
                     ts.policySchemaIpfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid] = policySchemaIpfsCid;
                 }
 
-                // Step 6: Get the PolicyStorage for this policy
-                EnumerableSet.Bytes32Set storage policyParameterNameHashes = policyStorage.policyParameterNameHashes;
+                // Step 6: Get the Policy parameter name hashes for this policy
+                EnumerableSet.Bytes32Set storage policyParameterNameHashes = policy.policyParameterNameHashes;
 
                 // Step 7: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
@@ -289,6 +436,12 @@ contract VincentAppFacet is VincentBase {
         }
     }
 
+    /**
+     * @notice Internal function to add an authorized redirect URI to an app
+     * @dev Registers the redirect URI and links it to the app
+     * @param appId ID of the app
+     * @param redirectUri The redirect URI to add
+     */
     function _addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri) internal {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
