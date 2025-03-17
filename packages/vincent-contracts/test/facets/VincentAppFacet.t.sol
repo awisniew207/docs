@@ -58,6 +58,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
 
         // Verify basic app data
+        assertEq(app.id, appId, "App ID doesn't match");
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
         assertEq(app.description, TEST_APP_DESCRIPTION, "App description doesn't match");
         assertEq(app.manager, deployer, "App manager doesn't match");
@@ -119,6 +120,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
 
         // Verify basic app data
+        assertEq(app.id, appId, "App ID doesn't match");
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
         assertEq(app.description, TEST_APP_DESCRIPTION, "App description doesn't match");
         assertEq(app.manager, deployer, "App manager doesn't match");
@@ -177,6 +179,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Get the app to check its latest version
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+        assertEq(app.id, appId, "App ID doesn't match");
         assertEq(app.latestVersion, 2, "Latest version should be 2");
 
         // Verify versioned app data
@@ -224,6 +227,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(appsWithVersions.length, 1, "Should return 1 app for the manager");
 
         // Check first app
+        assertEq(appsWithVersions[0].app.id, appId, "App ID doesn't match");
         assertEq(appsWithVersions[0].app.name, TEST_APP_NAME, "App name should match");
         assertEq(appsWithVersions[0].app.latestVersion, 1, "App should have 1 version");
         assertEq(appsWithVersions[0].versions.length, 1, "App should have 1 version in the versions array");
@@ -597,7 +601,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(appsWithVersions.length, 2, "Should return 2 apps for the manager");
 
         // Check first app
-        assertEq(appsWithVersions[0].app.name, TEST_APP_NAME, "First app name should match");
+        assertEq(appsWithVersions[0].app.id, appId, "App ID doesn't match");
+        assertEq(appsWithVersions[0].app.name, TEST_APP_NAME, "App name should match");
         assertEq(appsWithVersions[0].app.latestVersion, 2, "First app should have 2 versions");
         assertEq(appsWithVersions[0].versions.length, 2, "First app should have 2 versions in the versions array");
         assertEq(appsWithVersions[0].versions[0].version, 1, "First app version should be 1");
