@@ -326,11 +326,9 @@ contract VincentUserFacet is VincentBase {
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 5.1: Ensure that the parameter is valid for the specified policy.
-                    if (
-                        !versionedApp.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy].contains(
-                            hashedPolicyParameterName
-                        )
-                    ) {
+                    VincentAppStorage.PolicyStorage storage policyStorage =
+                        versionedApp.policyIpfsCidHashToPolicyStorage[hashedToolPolicy];
+                    if (!policyStorage.policyParameterNameHashes.contains(hashedPolicyParameterName)) {
                         revert PolicyParameterNameNotRegisteredForAppVersion(
                             appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
                         );

@@ -11,13 +11,18 @@ library VincentAppStorage {
 
     bytes32 internal constant APP_STORAGE_SLOT = keccak256("lit.vincent.app.storage");
 
+    struct PolicyStorage {
+        EnumerableSet.Bytes32Set policyParameterNameHashes;
+        bytes32 policySchemaIpfsCidHash;
+    }
+
     struct VersionedApp {
         EnumerableSet.Bytes32Set toolIpfsCidHashes;
         EnumerableSet.UintSet delegatedAgentPkps;
         // Tool IPFS CID Hash => Policy IPFS CID Hashes
         mapping(bytes32 => EnumerableSet.Bytes32Set) toolIpfsCidHashToPolicyIpfsCidHashes;
-        // Policy IPFS CID Hash => Policy Parameter Name Hashes
-        mapping(bytes32 => EnumerableSet.Bytes32Set) policyIpfsCidHashToParameterNameHashes;
+        // Policy IPFS CID Hash => Policy Storage
+        mapping(bytes32 => PolicyStorage) policyIpfsCidHashToPolicyStorage;
         uint256 version;
         bool enabled;
     }
@@ -60,6 +65,8 @@ library VincentToolStorage {
         mapping(bytes32 => string) policyIpfsCidHashToIpfsCid;
         // Policy Parameter Name Hash => Policy Parameter Name
         mapping(bytes32 => string) policyParameterNameHashToName;
+        // Policy Schema IPFS CID Hash => Policy Schema IPFS CID
+        mapping(bytes32 => string) policySchemaIpfsCidHashToIpfsCid;
     }
 
     function toolStorage() internal pure returns (ToolStorage storage ts) {

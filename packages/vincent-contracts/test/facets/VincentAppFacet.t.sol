@@ -38,6 +38,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[] memory toolIpfsCids = new string[](0);
         string[][] memory toolPolicies = new string[][](0);
         string[][][] memory toolPolicyParameterNames = new string[][][](0);
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](0);
 
         // The appId will be 1 as it's the first app registered (changing from 0 to 1)
         vm.expectEmit(true, true, false, false);
@@ -51,7 +52,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames
+            toolPolicyParameterNames,
+            toolPolicySchemaIpfsCids
         );
 
         // Verify app was registered correctly
@@ -95,6 +97,10 @@ contract VincentAppFacetTest is VincentTestHelper {
         toolPolicyParameterNames[0][0] = new string[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
+
         // Register the tool first so it's available for the app version
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
@@ -105,7 +111,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.expectEmit(true, true, true, false);
         emit NewAppVersionRegistered(1, 1, deployer);
 
-        // Register the app with a version - removed domains parameter
+        // Register the app with a version
         (appId, appVersion) = wrappedAppFacet.registerApp(
             "Test App",
             "Test App Description",
@@ -113,7 +119,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames
+            toolPolicyParameterNames,
+            toolPolicySchemaIpfsCids
         );
 
         // Verify app was registered correctly
@@ -125,8 +132,6 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.description, TEST_APP_DESCRIPTION, "App description doesn't match");
         assertEq(app.manager, deployer, "App manager doesn't match");
         assertEq(app.latestVersion, 1, "App latest version should be 1");
-
-        // Removed authorizedDomains verification since domains are no longer tracked
 
         // Verify authorized redirect URIs
         assertEq(app.authorizedRedirectUris.length, 1, "Should have 1 authorized redirect URI");
@@ -143,9 +148,20 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(version.version, 1, "App version should be 1");
         assertEq(version.enabled, true, "App version should be enabled by default");
 
-        // Verify tools
-        assertEq(version.toolIpfsCidHashes.length, 1, "Should have 1 tool registered");
-        assertEq(version.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
+        // Verify tools and policies
+        assertEq(version.tools.length, 1, "Should have 1 tool");
+        assertEq(version.tools[0].toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
+        assertEq(version.tools[0].policies.length, 1, "Tool should have 1 policy");
+        assertEq(version.tools[0].policies[0].policyIpfsCid, TEST_POLICY_1, "Policy IPFS CID doesn't match");
+        assertEq(
+            version.tools[0].policies[0].policySchemaIpfsCid,
+            TEST_POLICY_SCHEMA_1,
+            "Policy schema IPFS CID doesn't match"
+        );
+        assertEq(version.tools[0].policies[0].parameterNames.length, 1, "Policy should have 1 parameter");
+        assertEq(
+            version.tools[0].policies[0].parameterNames[0], TEST_POLICY_PARAM_1, "Policy parameter name doesn't match"
+        );
     }
 
     function testRegisterNextAppVersion() public {
@@ -158,10 +174,17 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Set up tool policies
         string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](0);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = TEST_POLICY_2;
 
         string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](0);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
+
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
 
         // Register the tool first
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
@@ -171,8 +194,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         emit NewAppVersionRegistered(appId, 2, deployer);
 
         // Register the next app version
-        uint256 newVersion =
-            wrappedAppFacet.registerNextAppVersion(appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+        uint256 newVersion = wrappedAppFacet.registerNextAppVersion(
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+        );
 
         // Verify the new version was registered correctly
         assertEq(newVersion, 2, "New version should be 2");
@@ -189,9 +213,22 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(versionData.version, 2, "App version should be 2");
         assertEq(versionData.enabled, true, "App version should be enabled by default");
 
-        // Verify tools - we can check the tools directly from the versioned app view
-        assertEq(versionData.toolIpfsCidHashes.length, 1, "Should have 1 tool registered");
-        assertEq(versionData.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_2, "Tool IPFS CID doesn't match");
+        // Verify tools and policies
+        assertEq(versionData.tools.length, 1, "Should have 1 tool");
+        assertEq(versionData.tools[0].toolIpfsCid, TEST_TOOL_IPFS_CID_2, "Tool IPFS CID doesn't match");
+        assertEq(versionData.tools[0].policies.length, 1, "Tool should have 1 policy");
+        assertEq(versionData.tools[0].policies[0].policyIpfsCid, TEST_POLICY_2, "Policy IPFS CID doesn't match");
+        assertEq(
+            versionData.tools[0].policies[0].policySchemaIpfsCid,
+            TEST_POLICY_SCHEMA_2,
+            "Policy schema IPFS CID doesn't match"
+        );
+        assertEq(versionData.tools[0].policies[0].parameterNames.length, 1, "Policy should have 1 parameter");
+        assertEq(
+            versionData.tools[0].policies[0].parameterNames[0],
+            TEST_POLICY_PARAM_2,
+            "Policy parameter name doesn't match"
+        );
     }
 
     function testEnableAppVersion() public {
@@ -342,8 +379,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             wrappedAppViewFacet.getAppVersion(appId, appVersion);
 
         // Verify we got the right tools
-        assertEq(versionData.toolIpfsCidHashes.length, 1, "Should have 1 tool");
-        assertEq(versionData.toolIpfsCidHashes[0], TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
+        assertEq(versionData.tools.length, 1, "Should have 1 tool");
+        assertEq(versionData.tools[0].toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Tool IPFS CID doesn't match");
     }
 
     function testFailEnableAppVersionAsNonManager() public {
@@ -375,6 +412,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[][] memory emptyPolicies = new string[][](0);
         string[][][] memory emptyPolicyParams = new string[][][](0);
 
+        // Set up empty policy schemas but use the correct structure
+        string[][] memory policySchemas = new string[][](0);
+
         // This should revert with DelegateeAlreadyRegisteredToApp error
         wrappedAppFacet.registerApp(
             "Test App 2",
@@ -383,7 +423,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             emptyTools,
             emptyPolicies,
-            emptyPolicyParams
+            emptyPolicyParams,
+            policySchemas
         );
     }
 
@@ -418,8 +459,15 @@ contract VincentAppFacetTest is VincentTestHelper {
         toolPolicyParameterNames[1][0] = new string[](1);
         toolPolicyParameterNames[1][0][0] = TEST_POLICY_PARAM_2;
 
+        // Policy schema arrays - proper values despite mismatch with other arrays
+        string[][] memory policySchemas = new string[][](1);
+        policySchemas[0] = new string[](1);
+        policySchemas[0][0] = TEST_POLICY_SCHEMA_1;
+
         // This should revert with ToolsAndPoliciesLengthMismatch error
-        wrappedAppFacet.registerNextAppVersion(appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+        wrappedAppFacet.registerNextAppVersion(
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, policySchemas
+        );
     }
 
     // Test simple utility functions
@@ -444,6 +492,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[][] memory emptyPolicies = new string[][](0);
         string[][][] memory emptyPolicyParams = new string[][][](0);
 
+        // Set up policy schemas with test constant for proper testing
+        string[][] memory policySchemas = new string[][](0);
+
         uint256 appId2;
         uint256 appVersion2;
         (appId2, appVersion2) = wrappedAppFacet.registerApp(
@@ -453,7 +504,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             emptyTools,
             emptyPolicies,
-            emptyPolicyParams
+            emptyPolicyParams,
+            policySchemas // Use the policy schemas
         );
 
         // Check updated total app count
@@ -539,19 +591,30 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[] memory firstAppToolIpfsCids = new string[](1);
         firstAppToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        // Create empty policy arrays for first app
+        // Create policy arrays for first app - must have entries to match schema
         string[][] memory firstAppToolPolicies = new string[][](1);
-        firstAppToolPolicies[0] = new string[](0);
+        firstAppToolPolicies[0] = new string[](1);
+        firstAppToolPolicies[0][0] = ""; // Empty string policy
 
         string[][][] memory firstAppToolPolicyParameterNames = new string[][][](1);
-        firstAppToolPolicyParameterNames[0] = new string[][](0);
+        firstAppToolPolicyParameterNames[0] = new string[][](1);
+        firstAppToolPolicyParameterNames[0][0] = new string[](0); // No parameters
+
+        // Add policy schema for testing
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
 
         // Register tool for first app
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
         // Register version for first app
         wrappedAppFacet.registerNextAppVersion(
-            appId, firstAppToolIpfsCids, firstAppToolPolicies, firstAppToolPolicyParameterNames
+            appId,
+            firstAppToolIpfsCids,
+            firstAppToolPolicies,
+            firstAppToolPolicyParameterNames,
+            toolPolicySchemaIpfsCids
         );
 
         // Register another app with a new version
@@ -574,25 +637,34 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             emptyTools,
             emptyPolicies,
-            emptyPolicyParams
+            emptyPolicyParams,
+            new string[][](0) // Empty policy schema IPFS CIDs
         );
 
         // Register a new version for the second app
         string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
-        // Create empty policy arrays
+        // Set up tool policies - must have entries to match schema
         string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](0);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = ""; // Empty string policy
 
         string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](0);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](0); // No parameters
+
+        // Add policy schema for second app
+        string[][] memory secondAppPolicySchemas = new string[][](1);
+        secondAppPolicySchemas[0] = new string[](1);
+        secondAppPolicySchemas[0][0] = TEST_POLICY_SCHEMA_2;
 
         // Register tool for second app
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
 
-        uint256 newVersion =
-            wrappedAppFacet.registerNextAppVersion(appId2, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+        uint256 newVersion = wrappedAppFacet.registerNextAppVersion(
+            appId2, toolIpfsCids, toolPolicies, toolPolicyParameterNames, secondAppPolicySchemas
+        );
 
         // Get apps by manager
         VincentAppViewFacet.AppWithVersions[] memory appsWithVersions = wrappedAppViewFacet.getAppsByManager(deployer);
@@ -621,5 +693,172 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Non-manager should have no apps
         VincentAppViewFacet.AppWithVersions[] memory nonManagerApps = wrappedAppViewFacet.getAppsByManager(nonOwner);
         assertEq(nonManagerApps.length, 0, "Non-manager should have 0 apps");
+    }
+
+    function testAddToolsAndPoliciesWithEmptyParams() public {
+        // First register an app
+        (appId,) = _registerTestApp();
+
+        // Set up data for the next version
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
+
+        // Set up tool policies - need at least one empty policy to match schema
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = ""; // Empty string policy
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](0); // No parameters
+
+        // Test with a valid policy schema
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
+
+        // Register the tool first
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
+
+        // Register the next app version
+        wrappedAppFacet.registerNextAppVersion(
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+        );
+    }
+
+    function testRegisterNextVersionWithMultipleTools() public {
+        // First register an app
+        (appId,) = _registerTestApp();
+
+        // Set up data for the next version - two tools
+        string[] memory toolIpfsCids = new string[](2);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1; // reuse existing tool
+        toolIpfsCids[1] = TEST_TOOL_IPFS_CID_2; // add new tool
+
+        // Set up tool policies
+        string[][] memory toolPolicies = new string[][](2);
+        // First tool, reuse existing policy
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = TEST_POLICY_1;
+        // Second tool, new policy
+        toolPolicies[1] = new string[](1);
+        toolPolicies[1][0] = TEST_POLICY_2;
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](2);
+        // First tool policy parameters
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        // Second tool policy parameters
+        toolPolicyParameterNames[1] = new string[][](1);
+        toolPolicyParameterNames[1][0] = new string[](1);
+        toolPolicyParameterNames[1][0][0] = TEST_POLICY_PARAM_2;
+
+        // Set up policy schemas
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](2);
+        // First tool policy schema
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
+        // Second tool policy schema
+        toolPolicySchemaIpfsCids[1] = new string[](1);
+        toolPolicySchemaIpfsCids[1][0] = TEST_POLICY_SCHEMA_2;
+
+        // Register the new tool
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
+
+        // Set up event expectations
+        vm.expectEmit(true, true, true, false);
+        emit NewAppVersionRegistered(appId, 2, deployer);
+
+        wrappedAppFacet.registerNextAppVersion(
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+        );
+    }
+
+    function testRegisterMultipleApps() public {
+        // Register first app via the test helper
+        (appId, appVersion) = _registerTestApp();
+
+        // Create data for second app
+        string[] memory redirectUris = new string[](1);
+        redirectUris[0] = TEST_REDIRECT_URI_2;
+
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = TEST_DELEGATEE_2;
+
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
+
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = TEST_POLICY_2;
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
+
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
+
+        // First register the tool
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
+
+        // The second appId will be 2
+        vm.expectEmit(true, true, false, false);
+        emit NewAppRegistered(2, deployer);
+
+        // Register second app
+        (uint256 appId2, uint256 appVersion2) = wrappedAppFacet.registerApp(
+            "Second App",
+            "Second App Description",
+            redirectUris,
+            delegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames,
+            toolPolicySchemaIpfsCids
+        );
+
+        // Verify second app data
+        assertEq(appId2, 2, "Second app ID should be 2");
+        assertEq(appVersion2, 1, "Second app version should be 1");
+
+        // Verify app was registered correctly
+        VincentAppViewFacet.App memory app2 = wrappedAppViewFacet.getAppById(appId2);
+        assertEq(app2.name, "Second App", "App name doesn't match");
+    }
+
+    function testUnauthorizedAppVersionAccess() public {
+        // First register an app via the test helper
+        (appId, appVersion) = _registerTestApp();
+
+        // Set up data for the next version
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
+
+        // Set up tool policies
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](0);
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](0);
+
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](0);
+
+        // Register the tool first
+        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
+
+        // Switch to non-owner
+        vm.stopPrank();
+        vm.startPrank(nonOwner);
+
+        // Should revert when non-owner tries to add an app version
+        vm.expectRevert(abi.encodeWithSelector(VincentAppFacet.NotAppManager.selector, appId, nonOwner));
+        wrappedAppFacet.registerNextAppVersion(
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+        );
     }
 }

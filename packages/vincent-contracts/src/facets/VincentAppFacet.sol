@@ -27,6 +27,7 @@ contract VincentAppFacet is VincentBase {
     error DelegateeAlreadyRegisteredToApp(uint256 appId, address delegatee);
     error DelegateeNotRegisteredToApp(uint256 appId, address delegatee);
     error AuthorizedRedirectUriNotRegistered(uint256 appId, bytes32 hashedRedirectUri);
+    error PolicySchemaMissing(uint256 appId, string policyIpfsCid);
 
     modifier onlyAppManager(uint256 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -41,10 +42,13 @@ contract VincentAppFacet is VincentBase {
         address[] calldata delegatees,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames
+        string[][][] calldata toolPolicyParameterNames,
+        string[][] calldata toolPolicySchemaIpfsCids
     ) public returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
-        newAppVersion = _registerNextAppVersion(newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+        newAppVersion = _registerNextAppVersion(
+            newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+        );
 
         emit NewAppRegistered(newAppId, msg.sender);
         emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
@@ -54,9 +58,12 @@ contract VincentAppFacet is VincentBase {
         uint256 appId,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames
+        string[][][] calldata toolPolicyParameterNames,
+        string[][] calldata toolPolicySchemaIpfsCids
     ) public onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
-        newAppVersion = _registerNextAppVersion(appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames);
+        newAppVersion = _registerNextAppVersion(
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+        );
 
         emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
     }
@@ -172,17 +179,22 @@ contract VincentAppFacet is VincentBase {
      * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
      * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
      * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
+     * @param toolPolicySchemaIpfsCids A 2D array mapping each policy to its policy schema IPFS CID.
      * @return newAppVersion The newly created version number for the app.
      */
     function _registerNextAppVersion(
         uint256 appId,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames
+        string[][][] calldata toolPolicyParameterNames,
+        string[][] calldata toolPolicySchemaIpfsCids
     ) internal returns (uint256 newAppVersion) {
         // Step 1: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
-        if (toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length) {
+        if (
+            toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length
+                || toolCount != toolPolicySchemaIpfsCids.length
+        ) {
             revert ToolsAndPoliciesLengthMismatch();
         }
 
@@ -217,6 +229,11 @@ contract VincentAppFacet is VincentBase {
 
             // Step 5: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
+            // Validate policy schema array length matches policy count
+            if (policyCount != toolPolicySchemaIpfsCids[i].length) {
+                revert ToolsAndPoliciesLengthMismatch();
+            }
+
             for (uint256 j = 0; j < policyCount; j++) {
                 string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
@@ -229,9 +246,30 @@ contract VincentAppFacet is VincentBase {
                     ts.policyIpfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
-                // Step 6: Fetch parameter storage for this policy.
-                EnumerableSet.Bytes32Set storage policyParameterNameHashes =
-                    versionedApp.policyIpfsCidHashToParameterNameHashes[hashedToolPolicy];
+                // Step 5.3: Get the policy schema IPFS CID and store it
+                string memory policySchemaIpfsCid = toolPolicySchemaIpfsCids[i][j]; // Cache calldata value
+
+                // Only require a policy schema if the policy is not empty
+                if (bytes(policyIpfsCid).length > 0 && bytes(policySchemaIpfsCid).length == 0) {
+                    revert PolicySchemaMissing(appId, policyIpfsCid);
+                }
+
+                bytes32 hashedPolicySchemaIpfsCid = keccak256(abi.encodePacked(policySchemaIpfsCid));
+
+                // Create or get the PolicyStorage for this policy
+                VincentAppStorage.PolicyStorage storage policyStorage =
+                    versionedApp.policyIpfsCidHashToPolicyStorage[hashedToolPolicy];
+
+                // Store the policy schema IPFS CID hash
+                policyStorage.policySchemaIpfsCidHash = hashedPolicySchemaIpfsCid;
+
+                // Store the policy schema IPFS CID globally if it's not already stored
+                if (bytes(ts.policySchemaIpfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid]).length == 0) {
+                    ts.policySchemaIpfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid] = policySchemaIpfsCid;
+                }
+
+                // Step 6: Get the PolicyStorage for this policy
+                EnumerableSet.Bytes32Set storage policyParameterNameHashes = policyStorage.policyParameterNameHashes;
 
                 // Step 7: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;

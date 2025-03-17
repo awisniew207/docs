@@ -25,6 +25,15 @@ contract VincentAppViewFacet {
     // ==================================================================================
 
     /**
+     * @notice Represents an app with all of its versions
+     * @dev Contains the basic app information and an array of all its versions
+     */
+    struct AppWithVersions {
+        App app;
+        AppVersion[] versions;
+    }
+
+    /**
      * @notice Represents basic app information including metadata and relationships
      * @dev Used for returning app data in view functions
      */
@@ -45,17 +54,27 @@ contract VincentAppViewFacet {
     struct AppVersion {
         uint256 version; // Version number
         bool enabled; // Whether this version is enabled
-        string[] toolIpfsCidHashes; // Tool IPFS CIDs for this version
         uint256[] delegatedAgentPkpTokenIds; // Delegated agent PKPs for this version
+        Tool[] tools; // Tools with their associated policies
     }
 
     /**
-     * @notice Represents an app with all of its versions
-     * @dev Contains the basic app information and an array of all its versions
+     * @notice Represents a tool with its associated policies
+     * @dev Used for returning tool data in view functions
      */
-    struct AppWithVersions {
-        App app;
-        AppVersion[] versions;
+    struct Tool {
+        string toolIpfsCid; // Tool IPFS CID
+        Policy[] policies; // Policies associated with this tool
+    }
+
+    /**
+     * @notice Represents policy information including schema and parameters
+     * @dev Used for returning policy data in view functions
+     */
+    struct Policy {
+        string policyIpfsCid; // Policy IPFS CID
+        string policySchemaIpfsCid; // Policy Schema IPFS CID
+        string[] parameterNames; // Parameter names for this policy
     }
 
     // ==================================================================================
@@ -128,10 +147,55 @@ contract VincentAppViewFacet {
 
         VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
 
+        // Get the tool IPFS CIDs
         uint256 toolIpfsCidHashesLength = storedVersionedApp.toolIpfsCidHashes.length();
-        appVersion.toolIpfsCidHashes = new string[](toolIpfsCidHashesLength);
+
+        // Create the tools array
+        appVersion.tools = new Tool[](toolIpfsCidHashesLength);
+
+        // Iterate through each tool
         for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
-            appVersion.toolIpfsCidHashes[i] = ts.toolIpfsCidHashToIpfsCid[storedVersionedApp.toolIpfsCidHashes.at(i)];
+            bytes32 toolIpfsCidHash = storedVersionedApp.toolIpfsCidHashes.at(i);
+            string memory toolIpfsCid = ts.toolIpfsCidHashToIpfsCid[toolIpfsCidHash];
+
+            // Set up the tool entry
+            appVersion.tools[i].toolIpfsCid = toolIpfsCid;
+
+            // Get the policies for this tool
+            EnumerableSet.Bytes32Set storage policyIpfsCidHashes =
+                storedVersionedApp.toolIpfsCidHashToPolicyIpfsCidHashes[toolIpfsCidHash];
+
+            uint256 policyCount = policyIpfsCidHashes.length();
+            appVersion.tools[i].policies = new Policy[](policyCount);
+
+            // Iterate through each policy for this tool
+            for (uint256 j = 0; j < policyCount; j++) {
+                bytes32 policyIpfsCidHash = policyIpfsCidHashes.at(j);
+                string memory policyIpfsCid = ts.policyIpfsCidHashToIpfsCid[policyIpfsCidHash];
+
+                // Set the policy IPFS CID
+                appVersion.tools[i].policies[j].policyIpfsCid = policyIpfsCid;
+
+                // Get the policy storage to access schema and parameters
+                VincentAppStorage.PolicyStorage storage policyStorage =
+                    storedVersionedApp.policyIpfsCidHashToPolicyStorage[policyIpfsCidHash];
+
+                // Get the policy schema IPFS CID
+                bytes32 policySchemaIpfsCidHash = policyStorage.policySchemaIpfsCidHash;
+                string memory policySchemaIpfsCid = ts.policySchemaIpfsCidHashToIpfsCid[policySchemaIpfsCidHash];
+                appVersion.tools[i].policies[j].policySchemaIpfsCid = policySchemaIpfsCid;
+
+                // Get the policy parameter names - fixed to use the correct field name in PolicyStorage
+                EnumerableSet.Bytes32Set storage policyParamNameHashes = policyStorage.policyParameterNameHashes;
+                uint256 paramCount = policyParamNameHashes.length();
+                appVersion.tools[i].policies[j].parameterNames = new string[](paramCount);
+
+                // Iterate through each parameter name
+                for (uint256 k = 0; k < paramCount; k++) {
+                    bytes32 paramNameHash = policyParamNameHashes.at(k);
+                    appVersion.tools[i].policies[j].parameterNames[k] = ts.policyParameterNameHashToName[paramNameHash];
+                }
+            }
         }
     }
 

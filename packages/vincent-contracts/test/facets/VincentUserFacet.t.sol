@@ -457,6 +457,10 @@ contract VincentUserFacetTest is VincentTestHelper {
         toolPolicyParameterNames[0][0] = new string[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
 
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
+
         // Register tool first
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
 
@@ -470,7 +474,8 @@ contract VincentUserFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames
+            toolPolicyParameterNames,
+            toolPolicySchemaIpfsCids
         );
 
         // Permit both app versions

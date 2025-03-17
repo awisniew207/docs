@@ -57,6 +57,8 @@ abstract contract VincentTestHelper is Test {
     string constant TEST_POLICY_2 = "QmTestPolicy2";
     string constant TEST_POLICY_PARAM_1 = "param1";
     string constant TEST_POLICY_PARAM_2 = "param2";
+    string constant TEST_POLICY_SCHEMA_1 = "QmTestPolicySchema1";
+    string constant TEST_POLICY_SCHEMA_2 = "QmTestPolicySchema2";
 
     // PKP-related constants
     uint256 constant TEST_PKP_TOKEN_ID_1 = 100;
@@ -130,7 +132,12 @@ abstract contract VincentTestHelper is Test {
         toolPolicyParameterNames[0][0] = new string[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        // Register app with version (removed domains parameter)
+        // Set up policy schemas
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
+        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
+
+        // Register app with version
         return wrappedAppFacet.registerApp(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
@@ -138,7 +145,8 @@ abstract contract VincentTestHelper is Test {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames
+            toolPolicyParameterNames,
+            toolPolicySchemaIpfsCids
         );
     }
 }
