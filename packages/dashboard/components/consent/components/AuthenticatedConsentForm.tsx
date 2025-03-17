@@ -135,17 +135,12 @@ export default function AuthenticatedConsentForm ({
     // Connect the wallet to the contract and assign it back to a variable
     const connectedContract = userRegistryContract.connect(userPkpWallet);
     
-    // ALWAYS use a hardcoded safe value for toolIpfsCidHashes to avoid overflow errors
-    const safeToolHashes = ["1"]; // Hardcoded safe value
-    
-    console.log("Using hardcoded tool hashes for approval:", safeToolHashes);
-    
     // Use the connected contract to send the transaction
     const txResponse = await connectedContract.permitAppVersion(
       agentPKP.tokenId,
       appId,
       Number(appInfo.latestVersion),
-      safeToolHashes,
+      [],
       [[]],
       [[[]]],
       [[[]]],
