@@ -474,8 +474,8 @@ contract VincentUserFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames,
-            toolPolicySchemaIpfsCids
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
         );
 
         // Permit both app versions

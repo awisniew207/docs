@@ -42,12 +42,12 @@ contract VincentAppFacet is VincentBase {
         address[] calldata delegatees,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        string[][] calldata toolPolicySchemaIpfsCids
+        string[][] calldata toolPolicySchemaIpfsCids,
+        string[][][] calldata toolPolicyParameterNames
     ) public returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
         newAppVersion = _registerNextAppVersion(
-            newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+            newAppId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
 
         emit NewAppRegistered(newAppId, msg.sender);
@@ -58,11 +58,11 @@ contract VincentAppFacet is VincentBase {
         uint256 appId,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        string[][] calldata toolPolicySchemaIpfsCids
+        string[][] calldata toolPolicySchemaIpfsCids,
+        string[][][] calldata toolPolicyParameterNames
     ) public onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
         newAppVersion = _registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+            appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
 
         emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
@@ -178,22 +178,22 @@ contract VincentAppFacet is VincentBase {
      * @param appId The ID of the app for which a new version is being registered.
      * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
      * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
-     * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
      * @param toolPolicySchemaIpfsCids A 2D array mapping each policy to its policy schema IPFS CID.
+     * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
      * @return newAppVersion The newly created version number for the app.
      */
     function _registerNextAppVersion(
         uint256 appId,
         string[] calldata toolIpfsCids,
         string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        string[][] calldata toolPolicySchemaIpfsCids
+        string[][] calldata toolPolicySchemaIpfsCids,
+        string[][][] calldata toolPolicyParameterNames
     ) internal returns (uint256 newAppVersion) {
         // Step 1: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
         if (
-            toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length
-                || toolCount != toolPolicySchemaIpfsCids.length
+            toolCount != toolPolicies.length || toolCount != toolPolicySchemaIpfsCids.length
+                || toolCount != toolPolicyParameterNames.length
         ) {
             revert ToolsAndPoliciesLengthMismatch();
         }

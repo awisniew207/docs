@@ -52,8 +52,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames,
-            toolPolicySchemaIpfsCids
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
         );
 
         // Verify app was registered correctly
@@ -119,8 +119,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames,
-            toolPolicySchemaIpfsCids
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
         );
 
         // Verify app was registered correctly
@@ -195,7 +195,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Register the next app version
         uint256 newVersion = wrappedAppFacet.registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+            appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
 
         // Verify the new version was registered correctly
@@ -412,7 +412,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[][] memory emptyPolicies = new string[][](0);
         string[][][] memory emptyPolicyParams = new string[][][](0);
 
-        // Set up empty policy schemas but use the correct structure
+        // Define empty policy schemas
         string[][] memory policySchemas = new string[][](0);
 
         // This should revert with DelegateeAlreadyRegisteredToApp error
@@ -423,8 +423,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             emptyTools,
             emptyPolicies,
-            emptyPolicyParams,
-            policySchemas
+            policySchemas,
+            emptyPolicyParams
         );
     }
 
@@ -466,7 +466,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // This should revert with ToolsAndPoliciesLengthMismatch error
         wrappedAppFacet.registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, policySchemas
+            appId, toolIpfsCids, toolPolicies, policySchemas, toolPolicyParameterNames
         );
     }
 
@@ -492,7 +492,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[][] memory emptyPolicies = new string[][](0);
         string[][][] memory emptyPolicyParams = new string[][][](0);
 
-        // Set up policy schemas with test constant for proper testing
+        // Define empty policy schemas
         string[][] memory policySchemas = new string[][](0);
 
         uint256 appId2;
@@ -504,8 +504,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             emptyTools,
             emptyPolicies,
-            emptyPolicyParams,
-            policySchemas // Use the policy schemas
+            policySchemas,
+            emptyPolicyParams
         );
 
         // Check updated total app count
@@ -613,8 +613,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             appId,
             firstAppToolIpfsCids,
             firstAppToolPolicies,
-            firstAppToolPolicyParameterNames,
-            toolPolicySchemaIpfsCids
+            toolPolicySchemaIpfsCids,
+            firstAppToolPolicyParameterNames
         );
 
         // Register another app with a new version
@@ -630,6 +630,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         string[][] memory emptyPolicies = new string[][](0);
         string[][][] memory emptyPolicyParams = new string[][][](0);
 
+        // Define empty policy schemas
+        string[][] memory policySchemas = new string[][](0);
+
         (uint256 appId2, uint256 appVersion2) = wrappedAppFacet.registerApp(
             "Test App 2",
             "Test App Description 2",
@@ -637,8 +640,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             emptyTools,
             emptyPolicies,
-            emptyPolicyParams,
-            new string[][](0) // Empty policy schema IPFS CIDs
+            policySchemas,
+            emptyPolicyParams
         );
 
         // Register a new version for the second app
@@ -663,7 +666,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
 
         uint256 newVersion = wrappedAppFacet.registerNextAppVersion(
-            appId2, toolIpfsCids, toolPolicies, toolPolicyParameterNames, secondAppPolicySchemas
+            appId2, toolIpfsCids, toolPolicies, secondAppPolicySchemas, toolPolicyParameterNames
         );
 
         // Get apps by manager
@@ -722,7 +725,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Register the next app version
         wrappedAppFacet.registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+            appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
     }
 
@@ -771,7 +774,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         emit NewAppVersionRegistered(appId, 2, deployer);
 
         wrappedAppFacet.registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+            appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
     }
 
@@ -817,8 +820,8 @@ contract VincentAppFacetTest is VincentTestHelper {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames,
-            toolPolicySchemaIpfsCids
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
         );
 
         // Verify second app data
@@ -858,7 +861,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Should revert when non-owner tries to add an app version
         vm.expectRevert(abi.encodeWithSelector(VincentAppFacet.NotAppManager.selector, appId, nonOwner));
         wrappedAppFacet.registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicySchemaIpfsCids
+            appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
     }
 }

@@ -145,8 +145,8 @@ abstract contract VincentTestHelper is Test {
             delegatees,
             toolIpfsCids,
             toolPolicies,
-            toolPolicyParameterNames,
-            toolPolicySchemaIpfsCids
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
         );
     }
 }
