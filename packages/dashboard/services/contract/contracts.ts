@@ -1,14 +1,19 @@
 import { getContract, Network } from './config';
+import { ethers } from 'ethers';
 
 export interface VincentContractsConfig {
   network?: Network;
+  signer?: ethers.Signer;
 }
 
 export class VincentContracts {
   private network: Network;
+  private signer?: ethers.Signer;
 
-  constructor(network: Network) {
+  // Uses browser signer by default
+  constructor(network: Network, signer?: ethers.Signer) {
     this.network = network;
+    this.signer = signer;
   }
 
   // ------------------------------------------------------------ Write functions
@@ -20,7 +25,7 @@ export class VincentContracts {
     authorizedRedirectUris: any,
     delegatees: any
   ) {
-    const contract = await getContract(this.network, 'App', true);
+    const contract = await getContract(this.network, 'App', true, this.signer);
     const tx = await contract.registerApp(
       appName,
       appDescription,
@@ -33,14 +38,14 @@ export class VincentContracts {
   }
 
   async addDelegatee(appId: number, delegatee: string) {
-    const contract = await getContract(this.network, 'App', true);
+    const contract = await getContract(this.network, 'App', true, this.signer);
     const tx = await contract.addDelegatee(appId, delegatee);
     await tx.wait();
     return tx;
   }
 
   async removeDelegatee(appId: number, delegatee: string) {
-    const contract = await getContract(this.network, 'App', true);
+    const contract = await getContract(this.network, 'App', true, this.signer);
     const tx = await contract.removeDelegatee(appId, delegatee);
     await tx.wait();
     return tx;
@@ -52,7 +57,7 @@ export class VincentContracts {
     toolPolicies: string[][],
     toolPolicyParameterNames: string[][][]
   ) {
-    const contract = await getContract(this.network, 'App', true);
+    const contract = await getContract(this.network, 'App', true, this.signer);
     const tx = await contract.registerNextAppVersion(
       appId,
       toolIpfsCids,
@@ -64,7 +69,7 @@ export class VincentContracts {
   }
 
   async enableAppVersion(appId: number, version: number, isEnabled: boolean) {
-    const contract = await getContract(this.network, 'App', true);
+    const contract = await getContract(this.network, 'App', true, this.signer);
     console.log('appId', appId);
     console.log('version', version);
     console.log('isEnabled', isEnabled);

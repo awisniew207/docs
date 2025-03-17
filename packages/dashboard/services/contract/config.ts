@@ -28,22 +28,26 @@ export const FACET_ABIS = {
 
 export const rpc = 'https://yellowstone-rpc.litprotocol.com';
 
-// CURRENTLY DEFAULTS TO BROWSER SIGNER
 /**
  * Get a contract instance for a specific facet of the Vincent Diamond
  * @param network The network to connect to
  * @param facet The contract facet to use
  * @param isSigner Whether to use a signer (for transactions) or provider (for read-only)
+ * @param customSigner Optional custom signer to use instead of browser signer
  * @returns A contract instance for the specified facet
  */
 export async function getContract(
   network: Network,
   facet: ContractFacet,
-  isSigner: boolean = false
+  isSigner: boolean = false,
+  customSigner?: ethers.Signer
 ) {
   const abi = FACET_ABIS[facet];
 
   if (isSigner) {
+    if (customSigner) {
+      return new ethers.Contract(VINCENT_DIAMOND_ADDRESS[network], abi, customSigner);
+    }
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send('eth_requestAccounts', []);
     const signer = provider.getSigner();

@@ -3,6 +3,7 @@ import { VincentContracts } from "./contract/contracts";
 
 export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp[]> {
     const contracts = new VincentContracts('datil');
+    console.log('address', address);
     const apps = await contracts.getAppsByManager(address);
     console.log('apps', apps);
 
