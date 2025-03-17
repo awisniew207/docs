@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,7 +14,7 @@ const IpfsDetails = () => {
     const router = useRouter();
     const ipfsCid = params.cid;
 
-    const fetchIpfsContent = async () => {
+    const fetchIpfsContent = useCallback(async () => {
         try {
             const response = await axios.get(`https://ipfs.io/ipfs/${ipfsCid}`);
             setIpfsContent(response.data);
@@ -22,11 +22,11 @@ const IpfsDetails = () => {
             console.error("Error fetching IPFS content:", error);
             setIpfsContent("Error loading IPFS content");
         }
-    };
+    }, [ipfsCid]);
 
     useEffect(() => {
         fetchIpfsContent();
-    }, [ipfsCid]);
+    }, [fetchIpfsContent]);
 
     return (
         <div className="max-w-4xl mx-auto p-6">

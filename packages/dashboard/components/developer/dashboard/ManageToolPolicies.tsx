@@ -39,15 +39,17 @@ export default function ManageToolPoliciesScreen({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        setToolPolicies((dashboard.toolPolicies || []).map(policy => ({
-            ...policy,
-            _id: crypto.randomUUID(),
-            policyVarsSchema: policy.policyVarsSchema.map(schema => ({
-                ...schema,
-                _id: crypto.randomUUID()
-            }))
-        })));
-    }, []);
+        if (dashboard && dashboard.toolPolicies) {
+            setToolPolicies((dashboard.toolPolicies || []).map(policy => ({
+                ...policy,
+                _id: crypto.randomUUID(),
+                policyVarsSchema: policy.policyVarsSchema.map(schema => ({
+                    ...schema,
+                    _id: crypto.randomUUID()
+                }))
+            })));
+        }
+    }, [dashboard, dashboard.toolPolicies]);
 
     const handleAddTool = () => {
         const newTool: ToolPolicyWithId = {

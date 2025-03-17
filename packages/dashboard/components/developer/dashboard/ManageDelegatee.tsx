@@ -34,7 +34,7 @@ export default function DelegateeManagerScreen({
 
     useEffect(() => {
         setDelegatees(dashboard.delegatees || []);
-    }, []);
+    }, [dashboard.delegatees]);
 
     const handleGenerateDelegatee = () => {
         const wallet = Wallet.createRandom();
@@ -100,7 +100,7 @@ export default function DelegateeManagerScreen({
                         <div className="flex gap-2">
                             <Button
                                 className="flex-1"
-                                onClick={(e) => setCopying(true)}
+                                onClick={() => setCopying(true)}
                                 disabled={copying}
                             >
                                 {copying ? (

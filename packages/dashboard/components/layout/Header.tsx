@@ -16,7 +16,6 @@ export default function Header() {
               account,
               chain,
               openAccountModal,
-              openChainModal,
               openConnectModal,
               mounted,
             }) => {

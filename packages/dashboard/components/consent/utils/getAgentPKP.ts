@@ -48,18 +48,3 @@ export async function getAgentPKP(userAddress: string): Promise<IRelayPKP> {
     }
   }
 }
-
-/**
- * Checks if a user has an available Agent PKP
- * 
- * @param userAddress The ETH address of the user's current PKP
- * @returns Promise<boolean> True if the user has an Agent PKP, false otherwise
- */
-export async function hasAgentPKP(userAddress: string): Promise<boolean> {
-  try {
-    await getAgentPKP(userAddress);
-    return true;
-  } catch (error) {
-    return false;
-  }
-} 

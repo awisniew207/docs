@@ -10,7 +10,6 @@ interface LoginProps {
   authWithWebAuthn: (credentialId: string, userId: string) => Promise<void>;
   authWithStytch: (sessionJwt: string, userId: string, method: 'email' | 'phone') => Promise<void>;
   registerWithWebAuthn?: (credentialId: string) => Promise<void>;
-  error?: Error;
 }
 
 type AuthView = 'default' | 'email' | 'phone' | 'wallet' | 'webauthn';
@@ -20,7 +19,6 @@ export default function LoginMethods({
   authWithWebAuthn,
   authWithStytch,
   registerWithWebAuthn,
-  error,
 }: LoginProps) {
   const [view, setView] = useState<AuthView>('default');
 

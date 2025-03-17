@@ -25,7 +25,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     event.preventDefault();
     setLoading(true);
     try {
-      let response;
+      let response: any;
       if (method === 'email') {
         response = await stytchClient.otps.email.loginOrCreate(userId);
       } else {
@@ -37,6 +37,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       setMethodId(response.method_id);
       setStep('verify');
     } catch (err) {
+      console.error(`Error sending ${method} OTP:`, err);
     } finally {
       setLoading(false);
     }
@@ -65,6 +66,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       
       await authWithStytch(response.session_jwt, response.user_id, method);
     } catch (err) {
+      console.error(`Error authenticating with ${method} OTP:`, err);
     } finally {
       setLoading(false);
     }

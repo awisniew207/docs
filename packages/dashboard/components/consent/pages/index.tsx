@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 
@@ -47,7 +47,7 @@ export default function IndexView() {
   }, []);
 
   // Function to generate session signatures on-demand
-  async function generateSessionSigs() {
+  const generateSessionSigs = useCallback(async () => {
     if (!authMethod || !userPKP) return;
 
     setSessionLoading(true);
@@ -72,7 +72,7 @@ export default function IndexView() {
     } finally {
       setSessionLoading(false);
     }
-  }
+  }, [authMethod, userPKP, setSessionSigs, setAgentPKP, setSessionError, setSessionLoading]);
 
   async function handleRegisterWithWebAuthn() {
     const newPKP = await registerWebAuthn();
@@ -100,7 +100,7 @@ export default function IndexView() {
     if (authMethod && userPKP) {
       generateSessionSigs();
     }
-  }, [authMethod, userPKP]);
+  }, [authMethod, userPKP, generateSessionSigs]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -234,7 +234,6 @@ export default function IndexView() {
       authWithWebAuthn={authWithWebAuthn}
       authWithStytch={authWithStytch}
       registerWithWebAuthn={handleRegisterWithWebAuthn}
-      error={error}
     />
   );
 } 

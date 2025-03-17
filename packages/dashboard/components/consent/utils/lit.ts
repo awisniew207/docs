@@ -16,7 +16,6 @@ import {
 } from '@lit-protocol/constants';
 import {
   AuthMethod,
-  GetSessionSigsProps,
   IRelayPKP,
   SessionSigs,
   LIT_NETWORKS_KEYS,

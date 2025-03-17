@@ -4,7 +4,7 @@ import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
 import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
 import CreateAppScreen from './CreateApp';
-import { ArrowRight, Plus, Settings } from 'lucide-react';
+import { ArrowRight, Plus } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import {
@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
-import { ScrollArea } from '../ui/scroll-area';
 import { useAccount } from 'wagmi';
 import { VincentContracts } from '@/services';
 
