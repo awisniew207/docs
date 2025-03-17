@@ -87,6 +87,9 @@ abstract contract VincentTestHelper is Test {
         // Set environment variables for deployment
         vm.setEnv("VINCENT_DEPLOYER_PRIVATE_KEY", "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
 
+        // Set the approved tools manager as the deployer for testing
+        vm.setEnv("APPROVED_TOOLS_MANAGER_ADDRESS", vm.toString(deployer));
+
         // Deploy using the deployment script
         deployScript = new DeployVincentDiamond();
         vm.startPrank(deployer);

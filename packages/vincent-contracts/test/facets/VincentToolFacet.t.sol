@@ -254,7 +254,14 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
 
-        // Approve the tools (as the deployer, who is initially the manager)
+        // Update the approved tools manager to our test manager
+        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
+
+        // Switch to the approved tools manager
+        vm.stopPrank();
+        vm.startPrank(approvedToolsManager);
+
+        // Approve the tools as the manager
         string[] memory tools = new string[](2);
         tools[0] = TEST_TOOL_IPFS_CID_1;
         tools[1] = TEST_TOOL_IPFS_CID_2;
