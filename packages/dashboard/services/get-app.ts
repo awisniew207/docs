@@ -1,5 +1,6 @@
 import { VincentApp } from "@/services/types";
 import { VincentContracts } from "./contract/contracts";
+import { BigNumber } from "ethers";
 
 export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp[]> {
     const contracts = new VincentContracts('datil');
@@ -10,6 +11,7 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
     return apps.map((appData: [any[], any[]], index: number) => {
         const [app, versions] = appData;
         const [
+            id,
             name,
             description,
             manager,
@@ -23,7 +25,7 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
         const isEnabled = latestVersionData ? latestVersionData.enabled : false;
 
         return {
-            appId: index,
+            appId: BigNumber.from(id).toNumber(),
             appName: name,
             description: description,
             authorizedDomains: authorizedDomains,
@@ -35,7 +37,7 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
             appMetadata: {
                 email: "", // Not fetching off-chain data for now
             },
-            currentVersion: latestVersion.toNumber(),
+            currentVersion: BigNumber.from(latestVersion).toNumber(),
         };
     });
 }
