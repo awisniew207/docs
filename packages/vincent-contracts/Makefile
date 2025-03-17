@@ -42,11 +42,16 @@ deploy-vincent: ## Deploy the Vincent Diamond contract to all Datil networks
 		echo "Error: DATIL_PKP_NFT_CONTRACT_ADDRESS is not set in .env"; \
 		exit 1; \
 	fi
+	@if [ -z "$(APPROVED_TOOLS_MANAGER_ADDRESS)" ]; then \
+		echo "Error: APPROVED_TOOLS_MANAGER_ADDRESS is not set in .env"; \
+		exit 1; \
+	fi
 	@echo "Deploying Vincent Diamond to $(VINCENT_DEPLOYMENT_RPC_URL)..."
 	@echo "Using PKP NFT contracts:"
 	@echo "  Datil Dev:  $(DATIL_DEV_PKP_NFT_CONTRACT_ADDRESS)"
 	@echo "  Datil Test: $(DATIL_TEST_PKP_NFT_CONTRACT_ADDRESS)"
 	@echo "  Datil:      $(DATIL_PKP_NFT_CONTRACT_ADDRESS)"
+	@echo "Using approved tools manager: $(APPROVED_TOOLS_MANAGER_ADDRESS)"
 	@forge script script/DeployVincentDiamond.sol:DeployVincentDiamond -vvv \
 		--broadcast \
 		--private-key $(VINCENT_DEPLOYER_PRIVATE_KEY) \
@@ -65,8 +70,13 @@ deploy-vincent-datil-dev: ## Deploy the Vincent Diamond contract to Datil Dev ne
 		echo "Error: DATIL_DEV_PKP_NFT_CONTRACT_ADDRESS is not set in .env"; \
 		exit 1; \
 	fi
+	@if [ -z "$(APPROVED_TOOLS_MANAGER_ADDRESS)" ]; then \
+		echo "Error: APPROVED_TOOLS_MANAGER_ADDRESS is not set in .env"; \
+		exit 1; \
+	fi
 	@echo "Deploying Vincent Diamond to Datil Dev network ($(VINCENT_DEPLOYMENT_RPC_URL))..."
 	@echo "Using PKP NFT contract: $(DATIL_DEV_PKP_NFT_CONTRACT_ADDRESS)"
+	@echo "Using approved tools manager: $(APPROVED_TOOLS_MANAGER_ADDRESS)"
 	@forge script script/DeployVincentDiamond.sol:DeployVincentDiamond --sig "deployToDatilDev()" -vvv \
 		--broadcast \
 		--private-key $(VINCENT_DEPLOYER_PRIVATE_KEY) \
@@ -85,8 +95,13 @@ deploy-vincent-datil-test: ## Deploy the Vincent Diamond contract to Datil Test 
 		echo "Error: DATIL_TEST_PKP_NFT_CONTRACT_ADDRESS is not set in .env"; \
 		exit 1; \
 	fi
+	@if [ -z "$(APPROVED_TOOLS_MANAGER_ADDRESS)" ]; then \
+		echo "Error: APPROVED_TOOLS_MANAGER_ADDRESS is not set in .env"; \
+		exit 1; \
+	fi
 	@echo "Deploying Vincent Diamond to Datil Test network ($(VINCENT_DEPLOYMENT_RPC_URL))..."
 	@echo "Using PKP NFT contract: $(DATIL_TEST_PKP_NFT_CONTRACT_ADDRESS)"
+	@echo "Using approved tools manager: $(APPROVED_TOOLS_MANAGER_ADDRESS)"
 	@forge script script/DeployVincentDiamond.sol:DeployVincentDiamond --sig "deployToDatilTest()" -vvv \
 		--broadcast \
 		--private-key $(VINCENT_DEPLOYER_PRIVATE_KEY) \
@@ -105,8 +120,13 @@ deploy-vincent-datil: ## Deploy the Vincent Diamond contract to Datil network on
 		echo "Error: DATIL_PKP_NFT_CONTRACT_ADDRESS is not set in .env"; \
 		exit 1; \
 	fi
+	@if [ -z "$(APPROVED_TOOLS_MANAGER_ADDRESS)" ]; then \
+		echo "Error: APPROVED_TOOLS_MANAGER_ADDRESS is not set in .env"; \
+		exit 1; \
+	fi
 	@echo "Deploying Vincent Diamond to Datil network ($(VINCENT_DEPLOYMENT_RPC_URL))..."
 	@echo "Using PKP NFT contract: $(DATIL_PKP_NFT_CONTRACT_ADDRESS)"
+	@echo "Using approved tools manager: $(APPROVED_TOOLS_MANAGER_ADDRESS)"
 	@forge script script/DeployVincentDiamond.sol:DeployVincentDiamond --sig "deployToDatil()" -vvv \
 		--broadcast \
 		--private-key $(VINCENT_DEPLOYER_PRIVATE_KEY) \

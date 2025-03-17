@@ -68,15 +68,18 @@ contract DeployVincentDiamond is Script {
     /// @param network Network name
     /// @param diamond Diamond contract address
     /// @param pkpNFTAddress PKP NFT contract address
+    /// @param approvedToolsManager Approved tools manager address
     /// @param facets Struct containing deployed facet addresses
     function logDeployment(
         string memory network,
         address diamond,
         address pkpNFTAddress,
+        address approvedToolsManager,
         VincentDiamond.FacetAddresses memory facets
     ) internal view {
         console.log("Vincent Diamond deployed for", network, "to:", address(diamond));
         console.log("Using PKP NFT contract:", pkpNFTAddress);
+        console.log("Approved Tools Manager:", approvedToolsManager);
         console.log("DiamondLoupeFacet:", facets.diamondLoupeFacet);
         console.log("OwnershipFacet:", facets.ownershipFacet);
         console.log("VincentAppFacet:", facets.vincentAppFacet);
@@ -103,6 +106,22 @@ contract DeployVincentDiamond is Script {
             revert MissingEnvironmentVariable("VINCENT_DEPLOYER_PRIVATE_KEY");
         }
 
+        // Get the deployer address
+        address deployerAddress = vm.addr(deployerPrivateKey);
+
+        // Get approved tools manager address - this is required
+        address approvedToolsManager;
+        try vm.envAddress("APPROVED_TOOLS_MANAGER_ADDRESS") returns (address managedAddress) {
+            if (managedAddress != address(0)) {
+                approvedToolsManager = managedAddress;
+                console.log("Using approved tools manager:", approvedToolsManager);
+            } else {
+                revert MissingEnvironmentVariable("APPROVED_TOOLS_MANAGER_ADDRESS (zero address provided)");
+            }
+        } catch {
+            revert MissingEnvironmentVariable("APPROVED_TOOLS_MANAGER_ADDRESS");
+        }
+
         // Start broadcasting transactions
         vm.startBroadcast(deployerPrivateKey);
 
@@ -111,18 +130,18 @@ contract DeployVincentDiamond is Script {
 
         // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
         VincentDiamond diamond = new VincentDiamond(
-            vm.addr(deployerPrivateKey), // contract owner
+            deployerAddress, // contract owner
             diamondCutFacetAddress, // diamond cut facet
             facets, // all other facets
             pkpNFTAddress, // PKP NFT contract address - set immutably
-            vm.addr(deployerPrivateKey) // approved tools manager - initially set to contract owner
+            approvedToolsManager // approved tools manager
         );
 
         // Stop broadcasting transactions
         vm.stopBroadcast();
 
         // Log deployment details
-        logDeployment(network, address(diamond), pkpNFTAddress, facets);
+        logDeployment(network, address(diamond), pkpNFTAddress, approvedToolsManager, facets);
 
         return address(diamond);
     }
