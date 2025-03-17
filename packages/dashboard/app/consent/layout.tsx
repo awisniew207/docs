@@ -4,7 +4,7 @@ import React from 'react';
 import { StytchProvider } from '@stytch/nextjs';
 import { createStytchUIClient } from '@stytch/nextjs/ui';
 import './page.css';  // Importing the global CSS file
-
+import SessionValidator from '../../components/consent/components/SessionValidator';
 // Create Stytch client only on the client side
 let stytchClient: any = null;
 if (typeof window !== 'undefined') {
@@ -35,6 +35,7 @@ export default function ConsentLayout({
           <StytchProvider stytch={stytchClient}>
             <div className="consent-container">
               {children}
+              <SessionValidator />
             </div>
           </StytchProvider>
         ) : (

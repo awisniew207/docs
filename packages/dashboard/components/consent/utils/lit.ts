@@ -38,7 +38,7 @@ export const SELECTED_LIT_NETWORK =
 export const litNodeClient: LitNodeClient = new LitNodeClient({
   alertWhenUnauthorized: false,
   litNetwork: SELECTED_LIT_NETWORK,
-  debug: true,
+  debug: false,
 });
 
 litNodeClient.connect();
@@ -149,12 +149,20 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
   const options = await webAuthnProvider.register();
 
   if (options.user) {
-    options.user.displayName = "Lit Protocol User";
-    options.user.name = "lit-protocol-user";
+    const displayName = prompt("Enter display name for your passkey:", "Lit Protocol User") || "Lit Protocol User";
+    options.user.displayName = displayName;
+    options.user.name = displayName.toLowerCase().replace(/\s+/g, '-');
+    // Make sure id exists - use name as id if missing
+    if (!options.user.id) {
+      options.user.id = options.user.name;
+    }
   } else {
+    const displayName = prompt("Enter display name for your passkey:", "Lit Protocol User") || "Lit Protocol User";
+    const userName = displayName.toLowerCase().replace(/\s+/g, '-');
     options.user = {
-      displayName: "Lit Protocol User",
-      name: "lit-protocol-user",
+      displayName: displayName,
+      name: userName,
+      id: userName,
     };
   }
 

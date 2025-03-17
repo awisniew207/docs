@@ -532,12 +532,6 @@ export default function AuthenticatedConsentForm ({
                     <strong>Version:</strong>{' '}
                     {versionData.version ? versionData.version.toString() : '1'}
                   </p>
-                  <div className='tool-hash-info'>
-                    <p>
-                      <strong>Tool IPFS Hash:</strong>
-                    </p>
-                    <p className='tool-hash'>{versionData.toolIpfsCidHashes}</p>
-                  </div>
                 </>
               )}
             </div>
