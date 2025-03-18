@@ -17,5 +17,5 @@ export interface createJWTConfig {
   pkp: IRelayPKP;
   payload: Record<string, unknown>;
   expiresInMinutes: number;
-  audience: string;
+  audience: string | string[];
 }
