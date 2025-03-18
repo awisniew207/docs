@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import "../LibVincentDiamondStorage.sol";
+import "../VincentBase.sol";
 
 /**
  * @title VincentAppViewFacet
@@ -11,17 +12,11 @@ import "../LibVincentDiamondStorage.sol";
  * @dev Read-only facet for the Vincent Diamond contract that exposes methods to query
  *      registered apps, their versions, tools, policies, and related metadata
  */
-contract VincentAppViewFacet {
+contract VincentAppViewFacet is VincentBase {
     using VincentAppStorage for VincentAppStorage.AppStorage;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
-
-    /**
-     * @notice Thrown when trying to access a non-existent app
-     * @param appId The ID of the app that does not exist
-     */
-    error AppNotRegistered(uint256 appId);
 
     /**
      * @notice Thrown when trying to access an invalid version of an app
@@ -129,7 +124,7 @@ contract VincentAppViewFacet {
      * @param appId ID of the app to retrieve
      * @return app Detailed view of the app containing its metadata and relationships
      */
-    function getAppById(uint256 appId) public view returns (App memory app) {
+    function getAppById(uint256 appId) public view onlyRegisteredApp(appId) returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
@@ -161,6 +156,7 @@ contract VincentAppViewFacet {
     function getAppVersion(uint256 appId, uint256 version)
         public
         view
+        onlyRegisteredAppVersion(appId, version)
         returns (App memory app, AppVersion memory appVersion)
     {
         // Step 1: Access storage and get app data
@@ -171,8 +167,8 @@ contract VincentAppViewFacet {
         app = getAppById(appId);
 
         // Step 3: Retrieve the specific version data
-        // Note: App versions are 1-indexed, but the storage array is 0-indexed
-        VincentAppStorage.VersionedApp storage storedVersionedApp = storedApp.versionedApps[version - 1];
+        VincentAppStorage.VersionedApp storage storedVersionedApp =
+            storedApp.versionedApps[getVersionedAppIndex(version)];
 
         // Step 4: Set basic version information
         appVersion.version = version;
@@ -320,7 +316,12 @@ contract VincentAppViewFacet {
      * @param appId ID of the app to query
      * @return redirectUris Array of authorized redirect URI strings for the specified app
      */
-    function getAuthorizedRedirectUrisByAppId(uint256 appId) external view returns (string[] memory redirectUris) {
+    function getAuthorizedRedirectUrisByAppId(uint256 appId)
+        external
+        view
+        onlyRegisteredApp(appId)
+        returns (string[] memory redirectUris)
+    {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         // Get redirect URIs
