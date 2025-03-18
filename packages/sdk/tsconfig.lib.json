@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": true,
-    "types": ["node"]
+    "types": []
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]
