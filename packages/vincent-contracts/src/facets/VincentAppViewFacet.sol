@@ -25,6 +25,12 @@ contract VincentAppViewFacet is VincentBase {
      */
     error InvalidAppVersion(uint256 appId, uint256 appVersion);
 
+    /**
+     * @notice Thrown when trying to access a delegatee that is not registered with any app
+     * @param delegatee The address of the delegatee that is not registered
+     */
+    error DelegateeNotRegistered(address delegatee);
+
     // ==================================================================================
     // Data Structures
     // ==================================================================================
@@ -283,11 +289,18 @@ contract VincentAppViewFacet is VincentBase {
      * @notice Retrieves the app by a delegatee address
      * @dev Looks up the app ID associated with a delegatee address and returns the app data
      * @param delegatee Address of the delegatee
-     * @return app Detailed view of the app the delegatee is associated with, or an empty app if not found
+     * @return app Detailed view of the app the delegatee is associated with
      */
     function getAppByDelegatee(address delegatee) external view returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         uint256 appId = as_.delegateeAddressToAppId[delegatee];
+
+        // If appId is 0, delegatee is not associated with any app, revert
+        if (appId == 0) {
+            revert DelegateeNotRegistered(delegatee);
+        }
+
+        // Otherwise, get the app data
         app = getAppById(appId);
     }
 

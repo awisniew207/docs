@@ -368,9 +368,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.delegatees.length, 1, "Should have 1 delegatee");
         assertEq(app.delegatees[0], TEST_DELEGATEE_1, "Remaining delegatee should be TEST_DELEGATEE_1");
 
-        // Get app by delegatee after removal - should return empty app
-        appByDelegatee = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
-        assertEq(appByDelegatee.name, "", "App name should be empty for removed delegatee");
+        // Expect revert when trying to get app by removed delegatee
+        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.DelegateeNotRegistered.selector, TEST_DELEGATEE_2));
+        wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
     }
 
     function testGetVersionToolsAndPolicies() public {
@@ -648,9 +648,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.name, TEST_APP_NAME, "App name doesn't match");
         assertEq(app.manager, deployer, "App manager doesn't match");
 
-        // Test with non-delegatee address - should return an empty app with default values
-        app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
-        assertEq(app.name, "", "Name should be empty for non-delegatee");
+        // Test with non-delegatee address - should revert with DelegateeNotRegistered
+        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.DelegateeNotRegistered.selector, TEST_DELEGATEE_2));
+        wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_2);
     }
 
     function testGetAppsByManager() public {
