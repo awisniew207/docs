@@ -70,7 +70,8 @@ contract VincentUserFacet is VincentBase {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         // App versions start at 1, but the appVersions array is 0-indexed
-        VincentAppStorage.VersionedApp storage newVersionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+        VincentAppStorage.VersionedApp storage newVersionedApp =
+            as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
 
         // Check if the App Manager has disabled the App
         if (!newVersionedApp.enabled) revert AppVersionNotEnabled(appId, appVersion);
@@ -81,7 +82,7 @@ contract VincentUserFacet is VincentBase {
         if (currentPermittedAppVersion != 0) {
             // Get currently permitted VersionedApp
             VincentAppStorage.VersionedApp storage previousVersionedApp =
-                as_.appIdToApp[appId].versionedApps[currentPermittedAppVersion - 1];
+                as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(currentPermittedAppVersion)];
 
             // Remove the PKP Token ID from the previous VersionedApp's delegated agent PKPs
             previousVersionedApp.delegatedAgentPkps.remove(pkpTokenId);
@@ -127,9 +128,9 @@ contract VincentUserFacet is VincentBase {
 
         // Remove the PKP Token ID from the App's Delegated Agent PKPs
         // App versions start at 1, but the appVersions array is 0-indexed
-        VincentAppStorage.appStorage().appIdToApp[appId].versionedApps[appVersion - 1].delegatedAgentPkps.remove(
-            pkpTokenId
-        );
+        VincentAppStorage.appStorage().appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)]
+            .delegatedAgentPkps
+            .remove(pkpTokenId);
 
         // Remove the App Version from the User's Permitted App Versions
         us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId] = 0;
@@ -193,7 +194,8 @@ contract VincentUserFacet is VincentBase {
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 3.1: Validate that the tool exists for the specified app version.
-            VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+            VincentAppStorage.VersionedApp storage versionedApp =
+                as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
                 revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
             }
@@ -291,7 +293,8 @@ contract VincentUserFacet is VincentBase {
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 3.1: Validate that the tool exists in the specified app version.
-            VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+            VincentAppStorage.VersionedApp storage versionedApp =
+                as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
                 revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
             }

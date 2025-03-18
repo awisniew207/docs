@@ -101,7 +101,8 @@ contract VincentUserViewFacet is VincentBase {
         }
 
         // Get the app version
-        VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+        VincentAppStorage.VersionedApp storage versionedApp =
+            as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
 
         // If the app version is not enabled, return an empty array
         if (!versionedApp.enabled) {
@@ -208,7 +209,8 @@ contract VincentUserViewFacet is VincentBase {
         validation.appVersion = appVersion;
 
         // Check if the app version is enabled and the tool is registered for this app version
-        VincentAppStorage.VersionedApp storage versionedApp = as_.appIdToApp[appId].versionedApps[appVersion - 1];
+        VincentAppStorage.VersionedApp storage versionedApp =
+            as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
 
         if (!versionedApp.enabled || !versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
             return validation;
