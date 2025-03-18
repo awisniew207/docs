@@ -45,8 +45,8 @@ importers:
         specifier: ^7.0.8
         version: 7.0.8(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-sdk':
-        specifier: 0.1.0-7
-        version: 0.1.0-7(@walletconnect/modal@2.7.0(@types/react@19.0.10)(react@19.0.0))(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.8.2)(utf-8-validate@5.0.10)
+        specifier: 0.1.0-8
+        version: 0.1.0-8
       '@radix-ui/react-dialog':
         specifier: ^1.1.6
         version: 1.1.6(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -202,7 +202,11 @@ importers:
         specifier: ^5
         version: 5.8.2
 
-  packages/dashboard: {}
+  packages/dashboard:
+    dependencies:
+      '@lit-protocol/vincent-sdk':
+        specifier: 0.1.0-8
+        version: 0.1.0-8
 
   packages/sdk:
     dependencies:
@@ -1526,8 +1530,8 @@ packages:
   '@lit-protocol/uint8arrays@7.0.8':
     resolution: {integrity: sha512-e5D3kw+BuaKwreD3Wgn7Cvke67m3IR8qVMW5bhf4UqpjxF1nHjfoZsjdJu1R6FMxSw0vzxkcMOjm8CwVdMULuQ==}
 
-  '@lit-protocol/vincent-sdk@0.1.0-7':
-    resolution: {integrity: sha512-d+Gkl0K6vfeK28BzO6WIwD/hb33Hbo1/jT8hwNPJt4eA0UaNVsWYGSns10mUPFeaw41zr6cWxCOtbfdFoIrK/w==}
+  '@lit-protocol/vincent-sdk@0.1.0-8':
+    resolution: {integrity: sha512-+8ROKPxjIjrW1tZ0BVOoQkN8KyK1cS/K+nUlKJl60tzfQqANDp+2ATrREd2Yk13A61zeM7lmE9ZiB5tHJO5bKA==}
 
   '@lit-protocol/wasm@7.0.8':
     resolution: {integrity: sha512-fQMEGo5nQ6qBcUTvQP5BpENX5ZfFqLeUfapYBsdQJWvAw31EoHo+yFQwkplZd+DzABLT7IacllP/LiPzhh3PPg==}
@@ -9758,42 +9762,10 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@lit-protocol/vincent-sdk@0.1.0-7(@walletconnect/modal@2.7.0(@types/react@19.0.10)(react@19.0.0))(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.8.2)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-sdk@0.1.0-8':
     dependencies:
-      '@lit-protocol/auth-helpers': 7.0.8(bufferutil@4.0.9)(typescript@5.8.2)(utf-8-validate@5.0.10)
-      '@lit-protocol/constants': 7.0.8(bufferutil@4.0.9)(typescript@5.8.2)(utf-8-validate@5.0.10)
-      '@lit-protocol/lit-node-client': 7.0.8(@walletconnect/modal@2.7.0(@types/react@19.0.10)(react@19.0.0))(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.8.2)(utf-8-validate@5.0.10)
-      '@lit-protocol/pkp-ethers': 7.0.8(@walletconnect/modal@2.7.0(@types/react@19.0.10)(react@19.0.0))(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.8.2)(utf-8-validate@5.0.10)
-      '@lit-protocol/types': 7.0.8(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@noble/secp256k1': 2.2.3
-      buffer: 6.0.3
       did-jwt: 8.0.8
-      ethers: 5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@react-native-async-storage/async-storage'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/kv'
-      - '@walletconnect/modal'
-      - aws4fetch
-      - bufferutil
-      - db0
-      - encoding
-      - ioredis
-      - supports-color
-      - typescript
-      - uploadthing
-      - utf-8-validate
 
   '@lit-protocol/wasm@7.0.8(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:

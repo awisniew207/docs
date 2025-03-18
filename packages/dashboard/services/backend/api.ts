@@ -54,7 +54,6 @@ export async function registerApp(
         name: string;
         description: string;
         contactEmail: string;
-        authorizedDomains: string[];
         authorizedRedirectUris: string[];
     }
 ) {

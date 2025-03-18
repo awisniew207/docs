@@ -17,7 +17,6 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
             manager,
             latestVersion,
             delegatees,
-            authorizedDomains,
             authorizedRedirectUris
         ] = app;
 
@@ -28,7 +27,6 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
             appId: BigNumber.from(id).toNumber(),
             appName: name,
             description: description,
-            authorizedDomains: authorizedDomains,
             authorizedRedirectUris: authorizedRedirectUris,
             delegatees: delegatees,
             toolPolicies: versions,
@@ -47,7 +45,6 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
 //         appId: 0,
 //         appName: "Test App",
 //         description: "Test Description",
-//         authorizedDomains: ["test.com"],
 //         authorizedRedirectUris: ["https://test.com"],
 //         delegatees: ["0x1234567890123456789012345678901234567890"],
 //         toolPolicies: [],

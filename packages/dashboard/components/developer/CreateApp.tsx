@@ -63,16 +63,6 @@ const formSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description cannot exceed 500 characters'),
 
-  authorizedDomains: z
-    .string()
-    .transform((val) => {
-      if (!val) return [];
-      return val
-        .split(',')
-        .map((domain) => domain.trim())
-        .filter(Boolean);
-    }),
-
   authorizedRedirectUris: z
     .string()
     .transform((val) => {
@@ -145,7 +135,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     defaultValues: {
       appName: '',
       description: '',
-      authorizedDomains: [],
       authorizedRedirectUris: [],
     },
     mode: 'onBlur',
@@ -179,7 +168,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       const receipt = await contracts.registerApp(
         values.appName,
         values.description,
-        values.authorizedDomains,
         values.authorizedRedirectUris,
         []
       );
@@ -250,23 +238,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                           <Textarea
                             placeholder="Describe your application..."
                             rows={6}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="authorizedDomains"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Authorized Domains</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="example.com, app.example.com"
                             {...field}
                           />
                         </FormControl>

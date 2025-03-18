@@ -21,7 +21,6 @@ export class VincentContracts {
   async registerApp(
     appName: string,
     appDescription: string,
-    authorizedDomains: any,
     authorizedRedirectUris: any,
     delegatees: any
   ) {
@@ -29,7 +28,6 @@ export class VincentContracts {
     const tx = await contract.registerApp(
       appName,
       appDescription,
-      authorizedDomains,
       authorizedRedirectUris,
       delegatees
     );

@@ -25,7 +25,6 @@ interface AppView {
   manager: string;
   latestVersion: ethers.BigNumber | number;
   delegatees: string[] | any[];
-  authorizedDomains: string[] | any[];
   authorizedRedirectUris: string[] | any[];
 }
 

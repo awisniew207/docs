@@ -2,7 +2,6 @@ export interface VincentApp {
     appId: number;
     appName: string;
     description: string;
-    authorizedDomains: string[];
     authorizedRedirectUris: string[];
     delegatees: string[];
     toolPolicies: ToolPolicy[];
