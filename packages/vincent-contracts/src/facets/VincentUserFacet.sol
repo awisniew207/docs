@@ -57,7 +57,7 @@ contract VincentUserFacet is VincentBase {
         string[][] calldata policyIpfsCids,
         string[][][] calldata policyParameterNames,
         string[][][] calldata policyParameterValues
-    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
+    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
@@ -118,7 +118,6 @@ contract VincentUserFacet is VincentBase {
     function unPermitAppVersion(uint256 pkpTokenId, uint256 appId, uint256 appVersion)
         external
         onlyPkpOwner(pkpTokenId)
-        onlyRegisteredApp(appId)
         onlyRegisteredAppVersion(appId, appVersion)
     {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
@@ -150,7 +149,7 @@ contract VincentUserFacet is VincentBase {
         string[][] calldata policyIpfsCids,
         string[][][] calldata policyParameterNames,
         string[][][] calldata policyParameterValues
-    ) public onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
+    ) public onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         _setToolPolicyParameters(
             appId, pkpTokenId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
         );
@@ -177,7 +176,7 @@ contract VincentUserFacet is VincentBase {
         string[] calldata toolIpfsCids,
         string[][] calldata policyIpfsCids,
         string[][][] calldata policyParameterNames
-    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredApp(appId) onlyRegisteredAppVersion(appId, appVersion) {
+    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         // Step 1: Validate input array lengths to ensure they are consistent.
         uint256 toolCount = toolIpfsCids.length;
         if (toolCount != policyIpfsCids.length || toolCount != policyParameterNames.length) {

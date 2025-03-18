@@ -16,6 +16,9 @@ contract VincentAppFacetTest is VincentTestHelper {
     uint256 public appId;
     uint256 public appVersion;
 
+    event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
+    event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
+
     function setUp() public override {
         // Call parent setup
         super.setUp();
@@ -286,7 +289,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Set up event expectations for adding redirect URI
         vm.expectEmit(true, true, false, false);
-        emit AuthorizedRedirectUriAdded(appId, TEST_REDIRECT_URI_2);
+        emit AuthorizedRedirectUriAdded(appId, keccak256(abi.encodePacked(TEST_REDIRECT_URI_2)));
 
         // Add an authorized redirect URI
         wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
@@ -316,7 +319,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Set up event expectations for removing redirect URI
         vm.expectEmit(true, true, false, false);
-        emit AuthorizedRedirectUriRemoved(appId, TEST_REDIRECT_URI_2);
+        emit AuthorizedRedirectUriRemoved(appId, keccak256(abi.encodePacked(TEST_REDIRECT_URI_2)));
 
         // Remove the authorized redirect URI
         wrappedAppFacet.removeAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
@@ -435,6 +438,43 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Try to remove a redirect URI that doesn't exist
         // This should revert with AuthorizedRedirectUriNotRegistered error
         wrappedAppFacet.removeAuthorizedRedirectUri(appId, "https://non-existent.com/callback");
+    }
+
+    /**
+     * @notice Test that removing the last redirect URI of an app fails
+     * @dev This test registers an app with a single redirect URI,
+     *      then attempts to remove it, which should revert with CannotRemoveLastRedirectUri
+     */
+    function testRemoveLastRedirectUri() public {
+        // Register an app with just one redirect URI
+        string[] memory redirectUris = new string[](1);
+        redirectUris[0] = TEST_REDIRECT_URI_1;
+
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = TEST_DELEGATEE_1;
+
+        // Set up empty tool arrays
+        string[] memory toolIpfsCids = new string[](0);
+        string[][] memory toolPolicies = new string[][](0);
+        string[][][] memory toolPolicyParameterNames = new string[][][](0);
+        string[][] memory toolPolicySchemaIpfsCids = new string[][](0);
+
+        // Register the app with a single redirect URI
+        (appId, appVersion) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            redirectUris,
+            delegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames
+        );
+
+        // Attempt to remove the only redirect URI
+        // This should revert with CannotRemoveLastRedirectUri error
+        vm.expectRevert(abi.encodeWithSelector(VincentAppFacet.CannotRemoveLastRedirectUri.selector, appId));
+        wrappedAppFacet.removeAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
     }
 
     function testFailToolsAndPoliciesLengthMismatch() public {

@@ -56,16 +56,18 @@ contract VincentAppFacet is VincentBase {
     /**
      * @notice Emitted when a new authorized redirect URI is added to an app
      * @param appId ID of the app
-     * @param redirectUri The redirect URI that was added
+     * @param hashedRedirectUri The keccak256 hash of the redirect URI that was added.
+     *                          Original value can be retrieved using VincentAppViewFacet
      */
-    event AuthorizedRedirectUriAdded(uint256 indexed appId, string indexed redirectUri);
+    event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
 
     /**
      * @notice Emitted when an authorized redirect URI is removed from an app
      * @param appId ID of the app
-     * @param redirectUri The redirect URI that was removed
+     * @param hashedRedirectUri The keccak256 hash of the redirect URI that was removed.
+     *                          Original value can be retrieved using VincentAppViewFacet
      */
-    event AuthorizedRedirectUriRemoved(uint256 indexed appId, string indexed redirectUri);
+    event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
 
     /**
      * @notice Error thrown when a non-manager attempts to modify an app
@@ -82,6 +84,7 @@ contract VincentAppFacet is VincentBase {
 
     /**
      * @notice Error thrown when attempting to register a delegatee already associated with an app
+     * @dev Delegatees are unique to apps and cannot be used with multiple apps simultaneously
      * @param appId ID of the app the delegatee is already registered to
      * @param delegatee Address of the delegatee that is already registered
      */
@@ -103,8 +106,15 @@ contract VincentAppFacet is VincentBase {
 
     /**
      * @notice Error thrown when no redirect URIs are provided during app registration
+     * @dev At least one redirect URI is required for app registration
      */
     error NoRedirectUrisProvided();
+
+    /**
+     * @notice Error thrown when trying to remove the last redirect URI of an app
+     * @param appId ID of the app
+     */
+    error CannotRemoveLastRedirectUri(uint256 appId);
 
     /**
      * @notice Error thrown when a policy schema is not provided for a policy
@@ -148,11 +158,11 @@ contract VincentAppFacet is VincentBase {
         string[][][] calldata toolPolicyParameterNames
     ) public returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
+        emit NewAppRegistered(newAppId, msg.sender);
+
         newAppVersion = _registerNextAppVersion(
             newAppId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
-
-        emit NewAppRegistered(newAppId, msg.sender);
         emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
 
@@ -190,12 +200,10 @@ contract VincentAppFacet is VincentBase {
     function enableAppVersion(uint256 appId, uint256 appVersion, bool enabled)
         external
         onlyAppManager(appId)
-        onlyRegisteredApp(appId)
         onlyRegisteredAppVersion(appId, appVersion)
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        // App versions start at 1, but the appVersions array is 0-indexed
-        as_.appIdToApp[appId].versionedApps[appVersion - 1].enabled = enabled;
+        as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)].enabled = enabled;
         emit AppEnabled(appId, appVersion, enabled);
     }
 
@@ -210,7 +218,7 @@ contract VincentAppFacet is VincentBase {
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
-        _addAuthorizedRedirectUri(appId, redirectUri);
+        _addAuthorizedRedirectUri(VincentAppStorage.appStorage(), appId, redirectUri);
     }
 
     /**
@@ -232,10 +240,15 @@ contract VincentAppFacet is VincentBase {
             revert RedirectUriNotRegisteredToApp(appId, hashedRedirectUri);
         }
 
+        // Check if this is the last redirect URI
+        if (as_.appIdToApp[appId].authorizedRedirectUris.length() == 1) {
+            revert CannotRemoveLastRedirectUri(appId);
+        }
+
         as_.appIdToApp[appId].authorizedRedirectUris.remove(hashedRedirectUri);
         delete as_.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri];
 
-        emit AuthorizedRedirectUriRemoved(appId, redirectUri);
+        emit AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
     }
 
     /**
@@ -291,12 +304,12 @@ contract VincentAppFacet is VincentBase {
         string[] calldata authorizedRedirectUris,
         address[] calldata delegatees
     ) internal returns (uint256 newAppId) {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
         // Require at least one authorized redirect URI
         if (authorizedRedirectUris.length == 0) {
             revert NoRedirectUrisProvided();
         }
+
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         newAppId = ++as_.appIdCounter;
 
@@ -310,7 +323,7 @@ contract VincentAppFacet is VincentBase {
         app.description = description;
 
         for (uint256 i = 0; i < authorizedRedirectUris.length; i++) {
-            _addAuthorizedRedirectUri(newAppId, authorizedRedirectUris[i]);
+            _addAuthorizedRedirectUri(as_, newAppId, authorizedRedirectUris[i]);
         }
 
         // Add the delegatees to the app
@@ -331,6 +344,7 @@ contract VincentAppFacet is VincentBase {
      * and linked to the new app version.
      *
      * @notice This function is used internally to register a new app version and its associated tools and policies.
+     * @notice App versions are enabled by default when registered.
      *
      * @param appId The ID of the app for which a new version is being registered.
      * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
@@ -364,10 +378,12 @@ contract VincentAppFacet is VincentBase {
         app.versionedApps.push();
         newAppVersion = app.versionedApps.length;
 
-        // App versions start at 1, but the `versionedApps` array is 0-indexed.
-        VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[newAppVersion - 1];
+        VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[getVersionedAppIndex(newAppVersion)];
         versionedApp.version = newAppVersion;
         versionedApp.enabled = true; // App versions are enabled by default
+
+        // Store this once outside the loop instead of repeatedly accessing it
+        EnumerableSet.Bytes32Set storage toolIpfsCidHashes = versionedApp.toolIpfsCidHashes;
 
         // Step 4: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
@@ -375,8 +391,8 @@ contract VincentAppFacet is VincentBase {
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 4.1: Register the tool IPFS CID globally if it hasn't been added already.
-            if (!versionedApp.toolIpfsCidHashes.contains(hashedToolCid)) {
-                versionedApp.toolIpfsCidHashes.add(hashedToolCid);
+            if (!toolIpfsCidHashes.contains(hashedToolCid)) {
+                toolIpfsCidHashes.add(hashedToolCid);
                 IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
             }
 
@@ -413,7 +429,7 @@ contract VincentAppFacet is VincentBase {
 
                 bytes32 hashedPolicySchemaIpfsCid = keccak256(abi.encodePacked(policySchemaIpfsCid));
 
-                // Create or get the Policy for this policy
+                // Create a new Policy storage structure for this policy in the current app version
                 VincentAppStorage.Policy storage policy =
                     toolPoliciesStorage.policyIpfsCidHashToPolicy[hashedToolPolicy];
 
@@ -452,14 +468,16 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param redirectUri The redirect URI to add
      */
-    function _addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri) internal {
-        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-
+    function _addAuthorizedRedirectUri(
+        VincentAppStorage.AppStorage storage appStorage,
+        uint256 appId,
+        string calldata redirectUri
+    ) internal {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 
-        as_.appIdToApp[appId].authorizedRedirectUris.add(hashedRedirectUri);
-        as_.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri] = redirectUri;
+        appStorage.appIdToApp[appId].authorizedRedirectUris.add(hashedRedirectUri);
+        appStorage.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri] = redirectUri;
 
-        emit AuthorizedRedirectUriAdded(appId, redirectUri);
+        emit AuthorizedRedirectUriAdded(appId, hashedRedirectUri);
     }
 }

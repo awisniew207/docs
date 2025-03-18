@@ -244,7 +244,7 @@ contract UpdateFacet is Script {
 
     /// @dev Get VincentAppViewFacet selectors
     function getVincentAppViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](8);
+        bytes4[] memory selectors = new bytes4[](7);
         selectors[0] = VincentAppViewFacet.getTotalAppCount.selector;
         selectors[1] = VincentAppViewFacet.getAppById.selector;
         selectors[2] = VincentAppViewFacet.getAppVersion.selector;
@@ -252,7 +252,6 @@ contract UpdateFacet is Script {
         selectors[4] = VincentAppViewFacet.getAppByDelegatee.selector;
         selectors[5] = VincentAppViewFacet.getAuthorizedRedirectUriByHash.selector;
         selectors[6] = VincentAppViewFacet.getAuthorizedRedirectUrisByAppId.selector;
-        selectors[7] = bytes4(0); // Not used, keep array size for backward compatibility
         return selectors;
     }
 
