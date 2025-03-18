@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-sdk",
-  "version": "0.1.0-14",
+  "version": "0.1.1-1",
   "description": "Vincent SDK for browser and backend",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -16,5 +16,8 @@
     "@noble/secp256k1": "^2.2.3",
     "did-jwt": "^8.0.8"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ]
 }
