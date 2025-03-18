@@ -7,8 +7,9 @@ import "../LibVincentDiamondStorage.sol";
 
 /**
  * @title VincentAppViewFacet
- * @notice Provides view functions for accessing app-related data
- * @dev Read-only facet for the Vincent Diamond contract
+ * @notice Provides view functions for accessing app-related data in the Vincent ecosystem
+ * @dev Read-only facet for the Vincent Diamond contract that exposes methods to query
+ *      registered apps, their versions, tools, policies, and related metadata
  */
 contract VincentAppViewFacet {
     using VincentAppStorage for VincentAppStorage.AppStorage;
@@ -16,8 +17,17 @@ contract VincentAppViewFacet {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    // Add error declarations here
+    /**
+     * @notice Thrown when trying to access a non-existent app
+     * @param appId The ID of the app that does not exist
+     */
     error AppNotRegistered(uint256 appId);
+
+    /**
+     * @notice Thrown when trying to access an invalid version of an app
+     * @param appId The ID of the app
+     * @param appVersion The invalid version number
+     */
     error InvalidAppVersion(uint256 appId, uint256 appVersion);
 
     // ==================================================================================
@@ -27,6 +37,8 @@ contract VincentAppViewFacet {
     /**
      * @notice Represents an app with all of its versions
      * @dev Contains the basic app information and an array of all its versions
+     * @param app The basic app information
+     * @param versions Array of all versions of the app
      */
     struct AppWithVersions {
         App app;
@@ -36,6 +48,13 @@ contract VincentAppViewFacet {
     /**
      * @notice Represents basic app information including metadata and relationships
      * @dev Used for returning app data in view functions
+     * @param id Unique identifier for the app
+     * @param name Human-readable name of the app
+     * @param description Detailed description of the app
+     * @param manager Address of the account that manages this app
+     * @param latestVersion The most recent version number of this app
+     * @param delegatees Array of addresses that are delegated to act on behalf of this app
+     * @param authorizedRedirectUris Array of redirect URIs authorized for this app
      */
     struct App {
         uint256 id;
@@ -50,31 +69,40 @@ contract VincentAppViewFacet {
     /**
      * @notice Represents a specific version of an app with all associated data
      * @dev Extends AppView with version-specific information
+     * @param version Version number (1-indexed)
+     * @param enabled Flag indicating if this version is currently enabled
+     * @param delegatedAgentPkpTokenIds Array of Agent PKP token IDs that have permitted this version
+     * @param tools Array of tools with their associated policies for this version
      */
     struct AppVersion {
-        uint256 version; // Version number
-        bool enabled; // Whether this version is enabled
-        uint256[] delegatedAgentPkpTokenIds; // Delegated agent PKPs for this version
-        Tool[] tools; // Tools with their associated policies
+        uint256 version;
+        bool enabled;
+        uint256[] delegatedAgentPkpTokenIds;
+        Tool[] tools;
     }
 
     /**
      * @notice Represents a tool with its associated policies
      * @dev Used for returning tool data in view functions
+     * @param toolIpfsCid IPFS CID of the tool's Lit Action
+     * @param policies Array of policies associated with this tool
      */
     struct Tool {
-        string toolIpfsCid; // Tool IPFS CID
-        Policy[] policies; // Policies associated with this tool
+        string toolIpfsCid;
+        Policy[] policies;
     }
 
     /**
      * @notice Represents policy information including schema and parameters
      * @dev Used for returning policy data in view functions
+     * @param policyIpfsCid IPFS CID pointing to the policy's Lit Action
+     * @param policySchemaIpfsCid IPFS CID pointing to the policy's schema
+     * @param parameterNames Array of parameter names defined for this policy
      */
     struct Policy {
-        string policyIpfsCid; // Policy IPFS CID
-        string policySchemaIpfsCid; // Policy Schema IPFS CID
-        string[] parameterNames; // Parameter names for this policy
+        string policyIpfsCid;
+        string policySchemaIpfsCid;
+        string[] parameterNames;
     }
 
     // ==================================================================================
@@ -83,7 +111,8 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Returns the total count of registered apps
-     * @return The current app ID counter value
+     * @dev Returns the current app ID counter value, which represents the total number of apps that have been registered
+     * @return The total number of apps registered in the system
      */
     function getTotalAppCount() external view returns (uint256) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -96,8 +125,9 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Retrieves detailed information about an app
+     * @dev Fetches app data from storage and formats it into the App struct
      * @param appId ID of the app to retrieve
-     * @return app Detailed view of the app
+     * @return app Detailed view of the app containing its metadata and relationships
      */
     function getAppById(uint256 appId) public view returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -107,9 +137,8 @@ contract VincentAppViewFacet {
         app.name = storedApp.name;
         app.description = storedApp.description;
         app.manager = storedApp.manager;
-        // App versions are 1-indexed, so we need to explicitly check if there's at least one version
-        // If no versions, latestVersion should be 0
-        app.latestVersion = storedApp.versionedApps.length > 0 ? storedApp.versionedApps.length : 0;
+        // App versions are 1-indexed, so the array length corresponds directly to the latest version number
+        app.latestVersion = storedApp.versionedApps.length;
         app.delegatees = storedApp.delegatees.values();
 
         // Convert authorized redirect URIs from bytes32 hashes to strings
@@ -123,73 +152,86 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Retrieves detailed information about a specific version of an app
+     * @dev Fetches basic app data and version-specific information from storage
      * @param appId ID of the app to retrieve
-     * @param version Version number of the app to retrieve
+     * @param version Version number of the app to retrieve (1-indexed)
      * @return app Basic app information
-     * @return appVersion Version-specific information
+     * @return appVersion Version-specific information including tools and policies
      */
     function getAppVersion(uint256 appId, uint256 version)
         public
         view
         returns (App memory app, AppVersion memory appVersion)
     {
+        // Step 1: Access storage and get app data
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
+        // Step 2: Retrieve basic app information
         app = getAppById(appId);
 
-        // App versions start at 1, but the appVersions array is 0-indexed
+        // Step 3: Retrieve the specific version data
+        // Note: App versions are 1-indexed, but the storage array is 0-indexed
         VincentAppStorage.VersionedApp storage storedVersionedApp = storedApp.versionedApps[version - 1];
 
+        // Step 4: Set basic version information
         appVersion.version = version;
         appVersion.enabled = storedVersionedApp.enabled;
         appVersion.delegatedAgentPkpTokenIds = storedVersionedApp.delegatedAgentPkps.values();
 
+        // Step 5: Prepare to access tool data
         VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
 
-        // Get the tool IPFS CIDs
+        // Step 6: Get the number of tools for this version
         uint256 toolIpfsCidHashesLength = storedVersionedApp.toolIpfsCidHashes.length();
 
-        // Create the tools array
+        // Step 7: Initialize the tools array with the appropriate size
         appVersion.tools = new Tool[](toolIpfsCidHashesLength);
 
-        // Iterate through each tool
+        // Step 8: Iterate through each tool for this version
         for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
+            // Step 8.1: Get the tool hash and resolve to the actual IPFS CID
             bytes32 toolIpfsCidHash = storedVersionedApp.toolIpfsCidHashes.at(i);
             string memory toolIpfsCid = ts.toolIpfsCidHashToIpfsCid[toolIpfsCidHash];
 
-            // Set up the tool entry
+            // Step 8.2: Set the tool IPFS CID in the return structure
             appVersion.tools[i].toolIpfsCid = toolIpfsCid;
 
-            // Get the policies for this tool
+            // Step 9: Get the policies for this specific tool
             VincentAppStorage.ToolPolicies storage toolPolicies =
                 storedVersionedApp.toolIpfsCidHashToToolPolicies[toolIpfsCidHash];
             uint256 policyCount = toolPolicies.policyIpfsCidHashes.length();
+
+            // Step 9.1: Initialize the policies array for this tool
             appVersion.tools[i].policies = new Policy[](policyCount);
 
-            // Iterate through each policy for this tool
+            // Step 10: Iterate through each policy for this tool
             for (uint256 j = 0; j < policyCount; j++) {
+                // Step 10.1: Get the policy hash and resolve to the actual IPFS CID
                 bytes32 policyIpfsCidHash = toolPolicies.policyIpfsCidHashes.at(j);
                 string memory policyIpfsCid = ts.policyIpfsCidHashToIpfsCid[policyIpfsCidHash];
 
-                // Set the policy IPFS CID
+                // Step 10.2: Set the policy IPFS CID in the return structure
                 appVersion.tools[i].policies[j].policyIpfsCid = policyIpfsCid;
 
-                // Get the policy data to access schema and parameters
+                // Step 11: Get the policy data to access schema and parameters
                 VincentAppStorage.Policy storage policy = toolPolicies.policyIpfsCidHashToPolicy[policyIpfsCidHash];
 
-                // Get the policy schema IPFS CID
+                // Step 11.1: Get and set the policy schema IPFS CID
                 bytes32 policySchemaIpfsCidHash = policy.policySchemaIpfsCidHash;
                 string memory policySchemaIpfsCid = ts.policySchemaIpfsCidHashToIpfsCid[policySchemaIpfsCidHash];
                 appVersion.tools[i].policies[j].policySchemaIpfsCid = policySchemaIpfsCid;
 
-                // Get the policy parameter names
+                // Step 12: Get and process the policy parameter names
                 EnumerableSet.Bytes32Set storage policyParamNameHashes = policy.policyParameterNameHashes;
                 uint256 paramCount = policyParamNameHashes.length();
+
+                // Step 12.1: Initialize the parameter names array
                 appVersion.tools[i].policies[j].parameterNames = new string[](paramCount);
 
-                // Iterate through each parameter name
+                // Step 12.2: Iterate through each parameter name
                 for (uint256 k = 0; k < paramCount; k++) {
+                    // Step 12.3: Get the parameter name hash and resolve to the actual name
                     bytes32 paramNameHash = policyParamNameHashes.at(k);
                     appVersion.tools[i].policies[j].parameterNames[k] = ts.policyParameterNameHashToName[paramNameHash];
                 }
@@ -203,7 +245,8 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Retrieves all apps managed by a specific address with all their versions
-     * @param manager Address of the manager
+     * @dev Finds all apps associated with the manager address and loads their complete data including versions
+     * @param manager Address of the manager to query
      * @return appsWithVersions Array of apps with all their versions managed by the specified address
      */
     function getAppsByManager(address manager) external view returns (AppWithVersions[] memory appsWithVersions) {
@@ -242,8 +285,9 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Retrieves the app by a delegatee address
+     * @dev Looks up the app ID associated with a delegatee address and returns the app data
      * @param delegatee Address of the delegatee
-     * @return app Detailed view of the app
+     * @return app Detailed view of the app the delegatee is associated with, or an empty app if not found
      */
     function getAppByDelegatee(address delegatee) external view returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -257,8 +301,9 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Retrieves a redirect URI from its hash
-     * @param redirectUriHash Hash of the redirect URI
-     * @return redirectUri Redirect URI string
+     * @dev Converts a redirect URI hash back to its original string value
+     * @param redirectUriHash Hash of the redirect URI to look up
+     * @return redirectUri Original redirect URI string corresponding to the hash
      */
     function getAuthorizedRedirectUriByHash(bytes32 redirectUriHash)
         external
@@ -271,8 +316,9 @@ contract VincentAppViewFacet {
 
     /**
      * @notice Retrieves authorized redirect URIs for a specific app
-     * @param appId ID of the app
-     * @return redirectUris Array of authorized redirect URI strings
+     * @dev Looks up all redirect URI hashes for an app and converts them to string values
+     * @param appId ID of the app to query
+     * @return redirectUris Array of authorized redirect URI strings for the specified app
      */
     function getAuthorizedRedirectUrisByAppId(uint256 appId) external view returns (string[] memory redirectUris) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();

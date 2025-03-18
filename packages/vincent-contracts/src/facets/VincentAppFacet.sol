@@ -100,9 +100,9 @@ contract VincentAppFacet is VincentBase {
     /**
      * @notice Error thrown when trying to remove a redirect URI not registered to the app
      * @param appId ID of the app
-     * @param hashedRedirectUri Hash of the redirect URI that is not registered
+     * @param redirectUri The redirect URI that is not registered
      */
-    error RedirectUriNotRegisteredToApp(uint256 appId, bytes32 hashedRedirectUri);
+    error RedirectUriNotRegisteredToApp(uint256 appId, string redirectUri);
 
     /**
      * @notice Error thrown when no redirect URIs are provided during app registration
@@ -237,7 +237,7 @@ contract VincentAppFacet is VincentBase {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 
         if (!as_.appIdToApp[appId].authorizedRedirectUris.contains(hashedRedirectUri)) {
-            revert RedirectUriNotRegisteredToApp(appId, hashedRedirectUri);
+            revert RedirectUriNotRegisteredToApp(appId, redirectUri);
         }
 
         // Check if this is the last redirect URI
