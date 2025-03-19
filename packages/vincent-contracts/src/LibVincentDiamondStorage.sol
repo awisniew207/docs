@@ -34,9 +34,9 @@ library VincentAppStorage {
      */
     struct Policy {
         EnumerableSet.Bytes32Set policyParameterNameHashes;
-        bytes32 policySchemaIpfsCidHash;
         // Policy Parameter Name Hash => Policy Parameter Type
         mapping(bytes32 => ParameterType) policyParameterNameHashToType;
+        bytes32 policySchemaIpfsCidHash;
     }
 
     /**

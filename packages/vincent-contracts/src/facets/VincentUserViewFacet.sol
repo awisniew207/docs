@@ -87,9 +87,10 @@ contract VincentUserViewFacet is VincentBase {
         PolicyParameter[] parameters;
     }
 
-    // Struct to hold a parameter name and its value
+    // Struct to hold a parameter name, type, and value
     struct PolicyParameter {
         bytes name;
+        VincentAppStorage.ParameterType paramType;
         bytes value;
     }
 
@@ -233,12 +234,17 @@ contract VincentUserViewFacet is VincentBase {
                 // Create the parameters array for this policy
                 tools[i].policies[j].parameters = new PolicyParameter[](paramCount);
 
-                // For each parameter, get its name and value
+                // For each parameter, get its name, type, and value
                 for (uint256 k = 0; k < paramCount; k++) {
                     bytes32 paramHash = paramNameHashes[k];
 
-                    // Get parameter name and value
+                    // Get the policy data to access parameter type
+                    VincentAppStorage.Policy storage policy =
+                        versionedApp.toolIpfsCidHashToToolPolicies[toolHash].policyIpfsCidHashToPolicy[policyHash];
+
+                    // Get parameter name, type, and value
                     tools[i].policies[j].parameters[k].name = ts_.policyParameterNameHashToName[paramHash];
+                    tools[i].policies[j].parameters[k].paramType = policy.policyParameterNameHashToType[paramHash];
                     tools[i].policies[j].parameters[k].value =
                         policyParametersStorage.policyParameterNameHashToValue[paramHash];
                 }
@@ -342,12 +348,17 @@ contract VincentUserViewFacet is VincentBase {
             // Create the parameters array for this policy
             validation.policies[i].parameters = new PolicyParameter[](paramCount);
 
-            // For each parameter, get its name and value
+            // For each parameter, get its name, type, and value
             for (uint256 j = 0; j < paramCount; j++) {
                 bytes32 paramHash = paramNameHashes[j];
 
-                // Get parameter name and value
+                // Get the policy data to access parameter type
+                VincentAppStorage.Policy storage policy =
+                    versionedApp.toolIpfsCidHashToToolPolicies[hashedToolIpfsCid].policyIpfsCidHashToPolicy[policyHash];
+
+                // Get parameter name, type, and value
                 validation.policies[i].parameters[j].name = ts_.policyParameterNameHashToName[paramHash];
+                validation.policies[i].parameters[j].paramType = policy.policyParameterNameHashToType[paramHash];
                 validation.policies[i].parameters[j].value =
                     policyParametersStorage.policyParameterNameHashToValue[paramHash];
             }

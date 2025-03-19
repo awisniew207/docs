@@ -115,11 +115,13 @@ contract VincentAppViewFacet is VincentBase {
      * @param policyIpfsCid IPFS CID pointing to the policy's Lit Action
      * @param policySchemaIpfsCid IPFS CID pointing to the policy's schema
      * @param parameterNames Array of parameter names defined for this policy
+     * @param parameterTypes Array of parameter types defined for this policy
      */
     struct Policy {
         bytes policyIpfsCid;
         bytes policySchemaIpfsCid;
         bytes[] parameterNames;
+        VincentAppStorage.ParameterType[] parameterTypes;
     }
 
     // ==================================================================================
@@ -240,18 +242,25 @@ contract VincentAppViewFacet is VincentBase {
                 bytes memory policySchemaIpfsCid = ts.ipfsCidHashToIpfsCid[policySchemaIpfsCidHash];
                 appVersion.tools[i].policies[j].policySchemaIpfsCid = policySchemaIpfsCid;
 
-                // Step 12: Get and process the policy parameter names
+                // Step 12: Get and process the policy parameter names and types
                 EnumerableSet.Bytes32Set storage policyParamNameHashes = policy.policyParameterNameHashes;
                 uint256 paramCount = policyParamNameHashes.length();
 
-                // Step 12.1: Initialize the parameter names array
+                // Step 12.1: Initialize the parameter names and types arrays
                 appVersion.tools[i].policies[j].parameterNames = new bytes[](paramCount);
+                appVersion.tools[i].policies[j].parameterTypes = new VincentAppStorage.ParameterType[](paramCount);
 
                 // Step 12.2: Iterate through each parameter name
                 for (uint256 k = 0; k < paramCount; k++) {
-                    // Step 12.3: Get the parameter name hash and resolve to the actual name
+                    // Step 12.2.1: Get the parameter name hash
                     bytes32 paramNameHash = policyParamNameHashes.at(k);
+
+                    // Step 12.2.2: Get and set the parameter name
                     appVersion.tools[i].policies[j].parameterNames[k] = ts.policyParameterNameHashToName[paramNameHash];
+
+                    // Step 12.2.3: Get and set the parameter type
+                    appVersion.tools[i].policies[j].parameterTypes[k] =
+                        policy.policyParameterNameHashToType[paramNameHash];
                 }
             }
         }
