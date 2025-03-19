@@ -482,7 +482,6 @@ contract VincentAppFacet is VincentBase {
         newAppVersion = app.versionedApps.length;
 
         VincentAppStorage.VersionedApp storage versionedApp = app.versionedApps[getVersionedAppIndex(newAppVersion)];
-        versionedApp.version = newAppVersion;
         versionedApp.enabled = true; // App versions are enabled by default
 
         // Store this once outside the loop instead of repeatedly accessing it

@@ -22,6 +22,8 @@ library VincentAppStorage {
         UINT256_ARRAY,
         BOOL,
         BOOL_ARRAY,
+        ADDRESS,
+        ADDRESS_ARRAY,
         STRING,
         STRING_ARRAY,
         BYTES,
@@ -53,7 +55,6 @@ library VincentAppStorage {
         EnumerableSet.UintSet delegatedAgentPkps;
         // Tool IPFS CID Hash => Tool Policies (contains both policy IDs and their data)
         mapping(bytes32 => ToolPolicies) toolIpfsCidHashToToolPolicies;
-        uint256 version;
         bool enabled;
     }
 
