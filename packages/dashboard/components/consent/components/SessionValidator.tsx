@@ -101,17 +101,9 @@ const SessionValidator: React.FC = () => {
           }
 
           if (walletSig) {
-            const ethersWallet = new ethers.Wallet(
-              '0x867266a73bfc47cf6d739d9732824441f060f042ea912f0043a87d28077193d2'
-            );
-            const { capacityDelegationAuthSig } =
-              await litNodeClient.createCapacityDelegationAuthSig({
-                dAppOwnerWallet: ethersWallet,
-                capacityTokenId: '142580',
-              });
-
+            await litNodeClient.connect();
             const attemptedSessionSigs = await litNodeClient.getSessionSigs({
-              capabilityAuthSigs: [walletSig, capacityDelegationAuthSig],
+              capabilityAuthSigs: [walletSig],
               resourceAbilityRequests: [
                 {
                   resource: new LitActionResource('*'),
@@ -129,6 +121,12 @@ const SessionValidator: React.FC = () => {
 
             // Store session sigs in state for later use
             setSessionSigs(attemptedSessionSigs);
+            console.log('Session sigs:', attemptedSessionSigs);
+
+            if(!attemptedSessionSigs) {
+              setHasCheckedSession(true);
+              return;
+            }
 
             const validationResult = await validateSessionSigs(
               attemptedSessionSigs

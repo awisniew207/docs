@@ -1,1 +1,0 @@
-export { registerApp, updateApp } from './api';

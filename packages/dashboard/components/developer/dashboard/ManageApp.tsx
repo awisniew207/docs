@@ -24,11 +24,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
-import { VincentApp } from '@/services/types';
 import { useAccount } from 'wagmi';
 import { VincentContracts } from '@/services/contract/contracts';
-import { updateApp } from '@/services/backend/api';
-
+import { AppView } from '@/services/types';
 const formSchema = z.object({
   appName: z
     .string()

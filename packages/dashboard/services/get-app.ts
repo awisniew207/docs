@@ -1,12 +1,10 @@
-import { VincentApp } from "@/services/types";
+import { AppView } from "./types";
 import { VincentContracts } from "./contract/contracts";
 import { BigNumber } from "ethers";
 
-export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp[]> {
+export async function formCompleteVincentAppForDev(address: string): Promise<AppView[]> {
     const contracts = new VincentContracts('datil');
-    console.log('address', address);
     const apps = await contracts.getAppsByManager(address);
-    console.log('apps', apps);
 
     return apps.map((appData: [any[], any[]], index: number) => {
         const [app, versions] = appData;
@@ -39,20 +37,3 @@ export async function formCompleteVincentAppForDev(address: string): Promise<Vin
         };
     });
 }
-
-// export async function formCompleteVincentAppForDev(address: string): Promise<VincentApp[]> {
-//     return [{
-//         appId: 0,
-//         appName: "Test App",
-//         description: "Test Description",
-//         authorizedRedirectUris: ["https://test.com"],
-//         delegatees: ["0x1234567890123456789012345678901234567890"],
-//         toolPolicies: [],
-//         managementWallet: address,
-//         isEnabled: true,
-//         appMetadata: {
-//             email: "test@test.com",
-//         },
-//         currentVersion: 0,
-//     }]
-// }

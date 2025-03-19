@@ -1,4 +1,4 @@
-import { VincentApp } from '@/services/types';
+import { AppView } from '@/services/types';
 import { useEffect, useState } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
@@ -21,16 +21,16 @@ export default function DashboardScreen({
   vincentApp,
   onRefetch,
 }: {
-  vincentApp: VincentApp[];
+  vincentApp: AppView[];
   onRefetch: () => void;
 }) {
-  const [dashboard, setDashboard] = useState<VincentApp[]>([]);
+  const [dashboard, setDashboard] = useState<AppView[]>([]);
   const [showManageApp, setShowManageApp] = useState(false);
   const [showDelegateeManager, setShowDelegateeManager] = useState(false);
   const [showToolPolicies, setShowToolPolicies] = useState(false);
   const [showCreateApp, setShowCreateApp] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
-  const [selectedApp, setSelectedApp] = useState<VincentApp | null>(null);
+  const [selectedApp, setSelectedApp] = useState<AppView | null>(null);
   const [isToggling, setIsToggling] = useState(false);
   const { address } = useAccount();
 
@@ -204,26 +204,7 @@ export default function DashboardScreen({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {selectedApp.toolPolicies.map((policy, index) => (
-                    <Card key={index}>
-                      <CardHeader>
-                        <CardTitle>Tool Policy {index + 1}</CardTitle>
-                        <CardDescription>{policy.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          <div className="text-sm">
-                            <span className="font-medium">Tool IPFS CID:</span>{' '}
-                            {policy.toolIpfsCid}
-                          </div>
-                          <div className="text-sm">
-                            <span className="font-medium">Policy Variables:</span>{' '}
-                            {policy.policyVarsSchema.length} configured
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+
                 </div>
               )}
             </CardContent>
@@ -247,12 +228,7 @@ export default function DashboardScreen({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {selectedApp.delegatees.map((delegatee, index) => (
-                    <div key={index} className="text-sm">
-                      <span className="font-medium">Delegatee {index + 1}:</span>{' '}
-                      {delegatee}
-                    </div>
-                  ))}
+                  
                 </div>
               )}
             </CardContent>

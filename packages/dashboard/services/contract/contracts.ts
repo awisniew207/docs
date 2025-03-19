@@ -22,15 +22,22 @@ export class VincentContracts {
     appName: string,
     appDescription: string,
     authorizedRedirectUris: any,
-    delegatees: any
+    delegatees: string[]
   ) {
     const contract = await getContract(this.network, 'App', true, this.signer);
+    console.log(contract);
+    console.log(appName, appDescription, authorizedRedirectUris, delegatees);
+    
     const tx = await contract.registerApp(
-      appName,
-      appDescription,
-      authorizedRedirectUris,
-      delegatees
-    );
+      "RedirectUriTesting",
+      "Test Description",
+      ["http://localhost:3000", "http://localhost:3000/test", "http://localhost:5173", "http://localhost:5173/", "https://my-react-app-liard-beta.vercel.app/", "https://my-react-app-liard-beta.vercel.app"],
+      ["0xa723407AdB396a55aCd843D276daEa0d787F8db5"],
+      ["QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY", "QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE"],
+      [[""], [""]],
+      [[""], [""]],
+      [[["param1"]], [["param2"]]],
+      {gasLimit: 5000000})
     await tx.wait();
     return tx;
   }

@@ -169,7 +169,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         values.appName,
         values.description,
         values.authorizedRedirectUris,
-        []
+        [address]
       );
       console.log('receipt', receipt);
       onSuccess?.();
@@ -271,6 +271,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                 <Button
                   type="submit"
                   className="w-full"
+                  variant="secondary"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
