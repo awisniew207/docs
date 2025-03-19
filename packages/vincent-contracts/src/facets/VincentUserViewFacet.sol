@@ -21,6 +21,14 @@ contract VincentUserViewFacet is VincentBase {
     );
     error DelegateeNotAssociatedWithApp(address delegatee);
 
+    // Struct to hold the result of tool execution validation and policy retrieval
+    struct ToolExecutionValidation {
+        bool isPermitted; // Whether the delegatee is permitted to use the PKP to execute the tool
+        uint256 appId; // The ID of the app associated with the delegatee
+        uint256 appVersion; // The permitted app version
+        PolicyWithParameters[] policies; // All policies with their parameters
+    }
+
     // Struct to represent a tool with all its policies and parameters
     struct ToolWithPolicies {
         string toolIpfsCid; // The IPFS CID of the tool
@@ -37,14 +45,6 @@ contract VincentUserViewFacet is VincentBase {
     struct PolicyParameter {
         string name;
         string value;
-    }
-
-    // Struct to hold the result of tool execution validation and policy retrieval
-    struct ToolExecutionValidation {
-        bool isPermitted; // Whether the delegatee is permitted to use the PKP to execute the tool
-        uint256 appId; // The ID of the app associated with the delegatee
-        uint256 appVersion; // The permitted app version
-        PolicyWithParameters[] policies; // All policies with their parameters
     }
 
     /**

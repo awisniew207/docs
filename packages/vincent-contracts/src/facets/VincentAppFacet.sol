@@ -156,7 +156,7 @@ contract VincentAppFacet is VincentBase {
         string[][] calldata toolPolicies,
         string[][] calldata toolPolicySchemaIpfsCids,
         string[][][] calldata toolPolicyParameterNames
-    ) public returns (uint256 newAppId, uint256 newAppVersion) {
+    ) external returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
         emit NewAppRegistered(newAppId, msg.sender);
 
@@ -182,7 +182,7 @@ contract VincentAppFacet is VincentBase {
         string[][] calldata toolPolicies,
         string[][] calldata toolPolicySchemaIpfsCids,
         string[][][] calldata toolPolicyParameterNames
-    ) public onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
+    ) external onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
         newAppVersion = _registerNextAppVersion(
             appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
         );
@@ -246,7 +246,6 @@ contract VincentAppFacet is VincentBase {
         }
 
         as_.appIdToApp[appId].authorizedRedirectUris.remove(hashedRedirectUri);
-        delete as_.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri];
 
         emit AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
     }
