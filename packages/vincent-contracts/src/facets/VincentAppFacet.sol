@@ -70,6 +70,20 @@ contract VincentAppFacet is VincentBase {
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
 
     /**
+     * @notice Emitted when a new delegatee is added to an app
+     * @param appId ID of the app
+     * @param delegatee Address of the delegatee added to the app
+     */
+    event DelegateeAdded(uint256 indexed appId, address indexed delegatee);
+
+    /**
+     * @notice Emitted when a delegatee is removed from an app
+     * @param appId ID of the app
+     * @param delegatee Address of the delegatee removed from the app
+     */
+    event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
+
+    /**
      * @notice Error thrown when a non-manager attempts to modify an app
      * @param appId ID of the app being modified
      * @param msgSender Address that attempted the unauthorized modification
@@ -122,6 +136,58 @@ contract VincentAppFacet is VincentBase {
      * @param policyIpfsCid IPFS CID of the policy missing a schema
      */
     error PolicySchemaMissing(uint256 appId, bytes policyIpfsCid);
+
+    /**
+     * @notice Error thrown when trying to set app version enabled status to its current status
+     * @param appId ID of the app
+     * @param appVersion Version number of the app
+     * @param enabled Current enabled status
+     */
+    error AppVersionAlreadyInRequestedState(uint256 appId, uint256 appVersion, bool enabled);
+
+    /**
+     * @notice Error thrown when trying to add a redirect URI that already exists for the app
+     * @param appId ID of the app
+     * @param redirectUri The redirect URI that already exists
+     */
+    error RedirectUriAlreadyAuthorizedForApp(uint256 appId, bytes redirectUri);
+
+    /**
+     * @notice Error thrown when adding a delegatee to an app fails
+     * @param appId ID of the app
+     * @param delegatee Address of the delegatee that failed to add
+     */
+    error FailedToAddDelegatee(uint256 appId, address delegatee);
+
+    /**
+     * @notice Error thrown when tool policy parameter names length doesn't match schema
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     * @param policyIndex Index of the policy in the policies array
+     */
+    error PolicyParameterNamesSchemaMismatch(uint256 appId, uint256 toolIndex, uint256 policyIndex);
+
+    /**
+     * @notice Error thrown when trying to use an empty policy IPFS CID
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     */
+    error EmptyPolicyIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
+
+    /**
+     * @notice Error thrown when a tool IPFS CID is empty
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     */
+    error EmptyToolIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
+
+    /**
+     * @notice Error thrown when adding a tool to the set fails
+     * @param appId ID of the app
+     * @param appVersion Version number of the app
+     * @param toolIpfsCid IPFS CID of the tool that failed to add
+     */
+    error FailedToAddTool(uint256 appId, uint256 appVersion, bytes toolIpfsCid);
 
     /**
      * @notice Modifier to restrict function access to the app manager only
@@ -203,7 +269,17 @@ contract VincentAppFacet is VincentBase {
         onlyRegisteredAppVersion(appId, appVersion)
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)].enabled = enabled;
+
+        // Cache the versioned app to avoid duplicate storage reads
+        VincentAppStorage.VersionedApp storage versionedApp =
+            as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
+
+        // Revert if trying to set to the same status
+        if (versionedApp.enabled == enabled) {
+            revert AppVersionAlreadyInRequestedState(appId, appVersion, enabled);
+        }
+
+        versionedApp.enabled = enabled;
         emit AppEnabled(appId, appVersion, enabled);
     }
 
@@ -265,8 +341,14 @@ contract VincentAppFacet is VincentBase {
             revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
         }
 
-        as_.appIdToApp[appId].delegatees.add(delegatee);
+        // Check that the delegatee was successfully added
+        if (!as_.appIdToApp[appId].delegatees.add(delegatee)) {
+            revert FailedToAddDelegatee(appId, delegatee);
+        }
+
         as_.delegateeAddressToAppId[delegatee] = appId;
+
+        emit DelegateeAdded(appId, delegatee);
     }
 
     /**
@@ -286,6 +368,8 @@ contract VincentAppFacet is VincentBase {
 
         as_.appIdToApp[appId].delegatees.remove(delegatee);
         as_.delegateeAddressToAppId[delegatee] = 0;
+
+        emit DelegateeRemoved(appId, delegatee);
     }
 
     /**
@@ -332,7 +416,11 @@ contract VincentAppFacet is VincentBase {
                 revert DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
             }
 
-            app.delegatees.add(delegatees[i]);
+            // Check that the delegatee was successfully added
+            if (!app.delegatees.add(delegatees[i])) {
+                revert FailedToAddDelegatee(newAppId, delegatees[i]);
+            }
+
             as_.delegateeAddressToAppId[delegatees[i]] = newAppId;
         }
     }
@@ -387,12 +475,30 @@ contract VincentAppFacet is VincentBase {
         // Step 4: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
             bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+
+            // Validate tool IPFS CID is not empty
+            if (toolIpfsCid.length == 0) {
+                revert EmptyToolIpfsCidNotAllowed(appId, i);
+            }
+
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 4.1: Register the tool IPFS CID globally if it hasn't been added already.
             if (!toolIpfsCidHashes.contains(hashedToolCid)) {
-                toolIpfsCidHashes.add(hashedToolCid);
-                IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
+                if (!toolIpfsCidHashes.add(hashedToolCid)) {
+                    revert FailedToAddTool(appId, newAppVersion, toolIpfsCid);
+                }
+                // Attempt to register the tool, but don't revert if it's already registered
+                try IVincentToolFacet(address(this)).registerTool(toolIpfsCid) {
+                    // Tool registered successfully
+                } catch Error(string memory reason) {
+                    // If the error is because the tool is already registered, continue
+                    // Otherwise, propagate the error
+                    if (keccak256(bytes(reason)) != keccak256(bytes("ToolAlreadyRegistered"))) {
+                        revert(reason);
+                    }
+                    // Tool is already registered, continue
+                }
             }
 
             // Step 4.2: Fetch the tool policies storage for this tool.
@@ -408,6 +514,12 @@ contract VincentAppFacet is VincentBase {
 
             for (uint256 j = 0; j < policyCount; j++) {
                 bytes memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
+
+                // Validate non-empty policy IPFS CID
+                if (policyIpfsCid.length == 0) {
+                    revert EmptyPolicyIpfsCidNotAllowed(appId, i);
+                }
+
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 5.1: Add the policy hash to the ToolPolicies
@@ -474,7 +586,11 @@ contract VincentAppFacet is VincentBase {
     ) internal {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 
-        appStorage.appIdToApp[appId].authorizedRedirectUris.add(hashedRedirectUri);
+        // If the redirect URI was not added (already exists), revert
+        if (!appStorage.appIdToApp[appId].authorizedRedirectUris.add(hashedRedirectUri)) {
+            revert RedirectUriAlreadyAuthorizedForApp(appId, redirectUri);
+        }
+
         appStorage.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri] = redirectUri;
 
         emit AuthorizedRedirectUriAdded(appId, hashedRedirectUri);

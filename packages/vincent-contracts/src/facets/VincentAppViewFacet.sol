@@ -19,17 +19,33 @@ contract VincentAppViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice Thrown when trying to access an invalid version of an app
-     * @param appId The ID of the app
-     * @param appVersion The invalid version number
-     */
-    error InvalidAppVersion(uint256 appId, uint256 appVersion);
-
-    /**
      * @notice Thrown when trying to access a delegatee that is not registered with any app
      * @param delegatee The address of the delegatee that is not registered
      */
     error DelegateeNotRegistered(address delegatee);
+
+    /**
+     * @notice Thrown when trying to access a redirect URI that doesn't exist
+     * @param redirectUriHash The hash of the redirect URI that was not found
+     */
+    error RedirectUriNotFound(bytes32 redirectUriHash);
+
+    /**
+     * @notice Thrown when trying to query by a zero address
+     */
+    error ZeroAddressNotAllowed();
+
+    /**
+     * @notice Thrown when no apps are found for the specified manager
+     * @param manager The address of the manager with no apps
+     */
+    error NoAppsFoundForManager(address manager);
+
+    /**
+     * @notice Thrown when an app has no redirect URIs configured
+     * @param appId The ID of the app with no redirect URIs
+     */
+    error NoAuthorizedRedirectUrisFoundForApp(uint256 appId);
 
     // ==================================================================================
     // Data Structures
@@ -252,9 +268,20 @@ contract VincentAppViewFacet is VincentBase {
      * @return appsWithVersions Array of apps with all their versions managed by the specified address
      */
     function getAppsByManager(address manager) external view returns (AppWithVersions[] memory appsWithVersions) {
+        // Check for zero address
+        if (manager == address(0)) {
+            revert ZeroAddressNotAllowed();
+        }
+
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         uint256[] memory appIds = as_.managerAddressToAppIds[manager].values();
         uint256 appCount = appIds.length;
+
+        // Check if the manager has any apps
+        if (appCount == 0) {
+            revert NoAppsFoundForManager(manager);
+        }
+
         appsWithVersions = new AppWithVersions[](appCount);
 
         for (uint256 i = 0; i < appCount; i++) {
@@ -292,6 +319,11 @@ contract VincentAppViewFacet is VincentBase {
      * @return app Detailed view of the app the delegatee is associated with
      */
     function getAppByDelegatee(address delegatee) external view returns (App memory app) {
+        // Check for zero address
+        if (delegatee == address(0)) {
+            revert ZeroAddressNotAllowed();
+        }
+
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         uint256 appId = as_.delegateeAddressToAppId[delegatee];
 
@@ -316,7 +348,14 @@ contract VincentAppViewFacet is VincentBase {
      */
     function getAuthorizedRedirectUriByHash(bytes32 redirectUriHash) external view returns (bytes memory redirectUri) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        return as_.authorizedRedirectUriHashToRedirectUri[redirectUriHash];
+        redirectUri = as_.authorizedRedirectUriHashToRedirectUri[redirectUriHash];
+
+        // Check if the redirect URI exists
+        if (redirectUri.length == 0) {
+            revert RedirectUriNotFound(redirectUriHash);
+        }
+
+        return redirectUri;
     }
 
     /**
@@ -335,6 +374,12 @@ contract VincentAppViewFacet is VincentBase {
 
         // Get redirect URIs
         uint256 redirectUriCount = as_.appIdToApp[appId].authorizedRedirectUris.length();
+
+        // Check if the app has no redirect URIs
+        if (redirectUriCount == 0) {
+            revert NoAuthorizedRedirectUrisFoundForApp(appId);
+        }
+
         redirectUris = new bytes[](redirectUriCount);
         for (uint256 i = 0; i < redirectUriCount; i++) {
             redirectUris[i] =

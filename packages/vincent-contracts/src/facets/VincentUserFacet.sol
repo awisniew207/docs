@@ -42,10 +42,24 @@ contract VincentUserFacet is VincentBase {
     error PolicyParameterNameNotRegisteredForAppVersion(
         uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid, bytes32 hashedPolicyParameterName
     );
+    error InvalidInput();
+    error EmptyParameterValue(bytes parameterName);
+    error ZeroPkpTokenId();
+    error PkpTokenDoesNotExist(uint256 pkpTokenId);
 
     modifier onlyPkpOwner(uint256 pkpTokenId) {
+        if (pkpTokenId == 0) {
+            revert ZeroPkpTokenId();
+        }
+
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        if (us_.PKP_NFT_FACET.ownerOf(pkpTokenId) != msg.sender) revert NotPkpOwner(pkpTokenId, msg.sender);
+
+        try us_.PKP_NFT_FACET.ownerOf(pkpTokenId) returns (address owner) {
+            if (owner != msg.sender) revert NotPkpOwner(pkpTokenId, msg.sender);
+        } catch {
+            revert PkpTokenDoesNotExist(pkpTokenId);
+        }
+
         _;
     }
 
@@ -58,6 +72,13 @@ contract VincentUserFacet is VincentBase {
         bytes[][][] calldata policyParameterNames,
         bytes[][][] calldata policyParameterValues
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
+        if (
+            toolIpfsCids.length != policyIpfsCids.length || toolIpfsCids.length != policyParameterNames.length
+                || toolIpfsCids.length != policyParameterValues.length
+        ) {
+            revert ToolsAndPoliciesLengthMismatch();
+        }
+
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
@@ -151,6 +172,10 @@ contract VincentUserFacet is VincentBase {
         bytes[][][] calldata policyParameterNames,
         bytes[][][] calldata policyParameterValues
     ) public onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
+        if (toolIpfsCids.length == 0) {
+            revert InvalidInput();
+        }
+
         _setToolPolicyParameters(
             appId, pkpTokenId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
         );
@@ -179,6 +204,10 @@ contract VincentUserFacet is VincentBase {
         bytes[][][] calldata policyParameterNames
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         // Step 1: Validate input array lengths to ensure they are consistent.
+        if (toolIpfsCids.length == 0) {
+            revert InvalidInput();
+        }
+
         uint256 toolCount = toolIpfsCids.length;
         if (toolCount != policyIpfsCids.length || toolCount != policyParameterNames.length) {
             revert ToolsAndPoliciesLengthMismatch();
@@ -324,7 +353,13 @@ contract VincentUserFacet is VincentBase {
                 // Step 5: Iterate through each parameter associated with the policy.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    bytes memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+                    bytes memory paramName = policyParameterNames[i][j][k];
+                    bytes memory paramValue = policyParameterValues[i][j][k];
+
+                    if (paramValue.length == 0) {
+                        revert EmptyParameterValue(paramName);
+                    }
+
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 5.1: Ensure that the parameter is valid for the specified policy.

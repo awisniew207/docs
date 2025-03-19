@@ -15,11 +15,57 @@ contract VincentUserViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    /**
+     * @notice Thrown when a PKP is not permitted for a specific app version
+     * @param pkpTokenId The PKP token ID
+     * @param appId The app ID
+     * @param appVersion The app version
+     */
     error PkpNotPermittedForAppVersion(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+
+    /**
+     * @notice Thrown when a policy parameter is not set for a PKP
+     * @param pkpTokenId The PKP token ID
+     * @param appId The app ID
+     * @param appVersion The app version
+     * @param policyIpfsCid The policy IPFS CID
+     * @param parameterName The parameter name
+     */
     error PolicyParameterNotSetForPkp(
         uint256 pkpTokenId, uint256 appId, uint256 appVersion, bytes policyIpfsCid, bytes parameterName
     );
+
+    /**
+     * @notice Thrown when a delegatee is not associated with any app
+     * @param delegatee The delegatee address
+     */
     error DelegateeNotAssociatedWithApp(address delegatee);
+
+    /**
+     * @notice Thrown when an invalid PKP token ID is provided
+     */
+    error InvalidPkpTokenId();
+
+    /**
+     * @notice Thrown when an invalid app ID is provided
+     */
+    error InvalidAppId();
+
+    /**
+     * @notice Thrown when an empty tool IPFS CID is provided
+     */
+    error EmptyToolIpfsCid();
+
+    /**
+     * @notice Thrown when a zero address is provided
+     */
+    error ZeroAddressNotAllowed();
+
+    /**
+     * @notice Thrown when no registered PKPs are found for a user
+     * @param userAddress The user address
+     */
+    error NoRegisteredPkpsFound(address userAddress);
 
     // Struct to hold the result of tool execution validation and policy retrieval
     struct ToolExecutionValidation {
@@ -52,8 +98,20 @@ contract VincentUserViewFacet is VincentBase {
      * @return An array of PKP token IDs that are registered as agents
      */
     function getAllRegisteredAgentPkps(address userAddress) external view returns (uint256[] memory) {
+        // Check for zero address
+        if (userAddress == address(0)) {
+            revert ZeroAddressNotAllowed();
+        }
+
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        return us_.userAddressToRegisteredAgentPkps[userAddress].values();
+        uint256[] memory pkps = us_.userAddressToRegisteredAgentPkps[userAddress].values();
+
+        // Check if there are any registered PKPs
+        if (pkps.length == 0) {
+            revert NoRegisteredPkpsFound(userAddress);
+        }
+
+        return pkps;
     }
 
     /**
@@ -63,6 +121,15 @@ contract VincentUserViewFacet is VincentBase {
      * @return An array of app versions that are permitted for the PKP token
      */
     function getPermittedAppVersionForPkp(uint256 pkpTokenId, uint256 appId) external view returns (uint256) {
+        // Check for invalid PKP token ID and app ID
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        if (appId == 0) {
+            revert InvalidAppId();
+        }
+
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId];
     }
@@ -73,6 +140,11 @@ contract VincentUserViewFacet is VincentBase {
      * @return An array of app IDs that have permissions for the PKP token
      */
     function getAllPermittedAppIdsForPkp(uint256 pkpTokenId) external view returns (uint256[] memory) {
+        // Check for invalid PKP token ID
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedApps.values();
     }
@@ -88,6 +160,15 @@ contract VincentUserViewFacet is VincentBase {
         view
         returns (ToolWithPolicies[] memory tools)
     {
+        // Check for invalid PKP token ID and app ID
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        if (appId == 0) {
+            revert InvalidAppId();
+        }
+
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
@@ -179,6 +260,19 @@ contract VincentUserViewFacet is VincentBase {
         view
         returns (ToolExecutionValidation memory validation)
     {
+        // Check for invalid inputs
+        if (delegatee == address(0)) {
+            revert ZeroAddressNotAllowed();
+        }
+
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        if (toolIpfsCid.length == 0) {
+            revert EmptyToolIpfsCid();
+        }
+
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
