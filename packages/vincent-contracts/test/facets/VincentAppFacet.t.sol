@@ -832,4 +832,323 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test enabling and disabling an app version
+     * @dev Verifies that app versions can be enabled and disabled by the app manager
+     */
+    function testEnableAppVersion() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Verify app version is enabled by default
+        (VincentAppViewFacet.App memory app, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, versionNumber);
+        assertTrue(versionData.enabled, "App version should be enabled by default");
+
+        // Expect the AppEnabled event with enabled = false
+        vm.expectEmit(true, true, true, false);
+        emit AppEnabled(appId, versionNumber, false);
+
+        // Disable the app version
+        wrappedAppFacet.enableAppVersion(appId, versionNumber, false);
+
+        // Verify app version is now disabled
+        (app, versionData) = wrappedAppViewFacet.getAppVersion(appId, versionNumber);
+        assertFalse(versionData.enabled, "App version should be disabled");
+
+        // Expect the AppEnabled event with enabled = true
+        vm.expectEmit(true, true, true, false);
+        emit AppEnabled(appId, versionNumber, true);
+
+        // Re-enable the app version
+        wrappedAppFacet.enableAppVersion(appId, versionNumber, true);
+
+        // Verify app version is enabled again
+        (app, versionData) = wrappedAppViewFacet.getAppVersion(appId, versionNumber);
+        assertTrue(versionData.enabled, "App version should be enabled again");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that enabling an app version to its current state fails
+     * @dev Verifies the AppVersionAlreadyInRequestedState error is thrown
+     */
+    function testEnableAppVersionAlreadyInRequestedState() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // App version is enabled by default, try to enable it again
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AppVersionAlreadyInRequestedState(uint256,uint256,bool)", appId, versionNumber, true
+            )
+        );
+
+        wrappedAppFacet.enableAppVersion(appId, versionNumber, true);
+
+        // Disable the app version
+        wrappedAppFacet.enableAppVersion(appId, versionNumber, false);
+
+        // Try to disable it again
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AppVersionAlreadyInRequestedState(uint256,uint256,bool)", appId, versionNumber, false
+            )
+        );
+
+        wrappedAppFacet.enableAppVersion(appId, versionNumber, false);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that only the app manager can enable/disable an app version
+     * @dev Verifies the NotAppManager error is thrown for non-managers
+     */
+    function testEnableAppVersionNotAppManager() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        vm.stopPrank();
+
+        // Switch to a different address (not the app manager)
+        vm.startPrank(address(0xBEEF));
+
+        // Expect the call to revert with NotAppManager error
+        vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
+
+        // Try to enable the app version as non-manager
+        wrappedAppFacet.enableAppVersion(appId, versionNumber, false);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test adding a new authorized redirect URI to an app
+     * @dev Verifies that new redirect URIs can be added by the app manager
+     */
+    function testAddAuthorizedRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one redirect URI
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Verify initial redirect URI count
+        bytes[] memory initialRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        assertEq(initialRedirectUris.length, 1, "Should have 1 redirect URI initially");
+
+        // Create a new redirect URI to add
+        bytes memory newRedirectUri = TEST_REDIRECT_URI_2;
+        bytes32 hashedNewRedirectUri = keccak256(abi.encodePacked(newRedirectUri));
+
+        // Expect the AuthorizedRedirectUriAdded event
+        vm.expectEmit(true, true, false, false);
+        emit AuthorizedRedirectUriAdded(appId, hashedNewRedirectUri);
+
+        // Add a new redirect URI
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, newRedirectUri);
+
+        // Verify redirect URI was added
+        bytes[] memory updatedRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        assertEq(updatedRedirectUris.length, 2, "Should have 2 redirect URIs after adding");
+
+        // Verify both URIs exist
+        bool foundOriginalUri = false;
+        bool foundNewUri = false;
+
+        for (uint256 i = 0; i < updatedRedirectUris.length; i++) {
+            bytes32 uriHash = keccak256(abi.encodePacked(updatedRedirectUris[i]));
+            if (uriHash == keccak256(TEST_REDIRECT_URI_1)) {
+                foundOriginalUri = true;
+            } else if (uriHash == keccak256(TEST_REDIRECT_URI_2)) {
+                foundNewUri = true;
+            }
+        }
+
+        assertTrue(foundOriginalUri, "Original URI should still exist");
+        assertTrue(foundNewUri, "New URI should be added");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test adding a duplicate redirect URI
+     * @dev Verifies the RedirectUriAlreadyAuthorizedForApp error is thrown
+     */
+    function testAddDuplicateAuthorizedRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one redirect URI
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Try to add the same redirect URI again
+        vm.expectRevert(
+            abi.encodeWithSignature("RedirectUriAlreadyAuthorizedForApp(uint256,bytes)", appId, TEST_REDIRECT_URI_1)
+        );
+
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that only the app manager can add redirect URIs
+     * @dev Verifies the NotAppManager error is thrown for non-managers
+     */
+    function testAddAuthorizedRedirectUriNotAppManager() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        vm.stopPrank();
+
+        // Switch to a different address (not the app manager)
+        vm.startPrank(address(0xBEEF));
+
+        // Expect the call to revert with NotAppManager error
+        vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
+
+        // Try to add a redirect URI as non-manager
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test removing an authorized redirect URI from an app
+     * @dev Verifies that redirect URIs can be removed by the app manager
+     */
+    function testRemoveAuthorizedRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // Register an app with two redirect URIs
+        bytes[] memory twoRedirectUris = new bytes[](2);
+        twoRedirectUris[0] = TEST_REDIRECT_URI_1;
+        twoRedirectUris[1] = TEST_REDIRECT_URI_2;
+
+        // Register app with two redirect URIs
+        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            twoRedirectUris,
+            testDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Verify initial redirect URI count
+        bytes[] memory initialRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        assertEq(initialRedirectUris.length, 2, "Should have 2 redirect URIs initially");
+
+        // Get the hash of the redirect URI we'll remove
+        bytes32 hashedRedirectUri = keccak256(abi.encodePacked(TEST_REDIRECT_URI_1));
+
+        // Expect the AuthorizedRedirectUriRemoved event
+        vm.expectEmit(true, true, false, false);
+        emit AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
+
+        // Remove a redirect URI
+        wrappedAppFacet.removeAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
+
+        // Verify redirect URI was removed
+        bytes[] memory updatedRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        assertEq(updatedRedirectUris.length, 1, "Should have 1 redirect URI after removal");
+
+        // Verify the remaining URI is the correct one
+        assertEq(
+            keccak256(abi.encodePacked(updatedRedirectUris[0])),
+            keccak256(TEST_REDIRECT_URI_2),
+            "The remaining URI should be the second one"
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removing a non-existent redirect URI fails
+     * @dev Verifies the RedirectUriNotRegisteredToApp error is thrown
+     */
+    function testRemoveNonExistentRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one redirect URI
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Try to remove a redirect URI that doesn't exist
+        bytes memory nonExistentUri = bytes("https://non-existent.com/callback");
+
+        vm.expectRevert(abi.encodeWithSignature("RedirectUriNotRegisteredToApp(uint256,bytes)", appId, nonExistentUri));
+
+        wrappedAppFacet.removeAuthorizedRedirectUri(appId, nonExistentUri);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removing the last redirect URI fails
+     * @dev Verifies the CannotRemoveLastRedirectUri error is thrown
+     */
+    function testRemoveLastRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one redirect URI
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Try to remove the only redirect URI
+        vm.expectRevert(abi.encodeWithSignature("CannotRemoveLastRedirectUri(uint256)", appId));
+
+        wrappedAppFacet.removeAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that only the app manager can remove redirect URIs
+     * @dev Verifies the NotAppManager error is thrown for non-managers
+     */
+    function testRemoveAuthorizedRedirectUriNotAppManager() public {
+        vm.startPrank(deployer);
+
+        // Register an app with two redirect URIs
+        bytes[] memory twoRedirectUris = new bytes[](2);
+        twoRedirectUris[0] = TEST_REDIRECT_URI_1;
+        twoRedirectUris[1] = TEST_REDIRECT_URI_2;
+
+        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            twoRedirectUris,
+            testDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+
+        // Switch to a different address (not the app manager)
+        vm.startPrank(address(0xBEEF));
+
+        // Expect the call to revert with NotAppManager error
+        vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
+
+        // Try to remove a redirect URI as non-manager
+        wrappedAppFacet.removeAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
+
+        vm.stopPrank();
+    }
 }
