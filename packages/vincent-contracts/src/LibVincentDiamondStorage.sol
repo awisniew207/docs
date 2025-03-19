@@ -8,8 +8,25 @@ import "./IPKPNftFacet.sol";
 library VincentAppStorage {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
 
     bytes32 internal constant APP_STORAGE_SLOT = keccak256("lit.vincent.app.storage");
+
+    /**
+     * @notice Enum representing all supported Solidity parameter types
+     */
+    enum ParameterType {
+        INT256,
+        INT256_ARRAY,
+        UINT256,
+        UINT256_ARRAY,
+        BOOL,
+        BOOL_ARRAY,
+        STRING,
+        STRING_ARRAY,
+        BYTES,
+        BYTES_ARRAY
+    }
 
     /**
      * @notice Policy data structure storing parameter names and the policy schema
@@ -18,6 +35,8 @@ library VincentAppStorage {
     struct Policy {
         EnumerableSet.Bytes32Set policyParameterNameHashes;
         bytes32 policySchemaIpfsCidHash;
+        // Policy Parameter Name Hash => Policy Parameter Type
+        mapping(bytes32 => ParameterType) policyParameterNameHashToType;
     }
 
     /**

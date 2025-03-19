@@ -210,6 +210,7 @@ contract VincentAppFacet is VincentBase {
      * @param toolPolicies 2D array mapping each tool to its associated policies
      * @param toolPolicySchemaIpfsCids 2D array mapping each policy to its schema IPFS CID
      * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
+     * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
      * @return newAppId The ID of the newly registered app
      * @return newAppVersion The version number of the newly registered app version (always 1 for new apps)
      */
@@ -221,13 +222,19 @@ contract VincentAppFacet is VincentBase {
         bytes[] calldata toolIpfsCids,
         bytes[][] calldata toolPolicies,
         bytes[][] calldata toolPolicySchemaIpfsCids,
-        bytes[][][] calldata toolPolicyParameterNames
+        bytes[][][] calldata toolPolicyParameterNames,
+        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) external returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
         emit NewAppRegistered(newAppId, msg.sender);
 
         newAppVersion = _registerNextAppVersion(
-            newAppId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
+            newAppId,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames,
+            toolPolicyParameterTypes
         );
         emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
@@ -240,6 +247,7 @@ contract VincentAppFacet is VincentBase {
      * @param toolPolicies 2D array mapping each tool to its associated policies
      * @param toolPolicySchemaIpfsCids 2D array mapping each policy to its schema IPFS CID
      * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
+     * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
      * @return newAppVersion The version number of the newly registered app version
      */
     function registerNextAppVersion(
@@ -247,10 +255,16 @@ contract VincentAppFacet is VincentBase {
         bytes[] calldata toolIpfsCids,
         bytes[][] calldata toolPolicies,
         bytes[][] calldata toolPolicySchemaIpfsCids,
-        bytes[][][] calldata toolPolicyParameterNames
+        bytes[][][] calldata toolPolicyParameterNames,
+        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) external onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
         newAppVersion = _registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
+            appId,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicySchemaIpfsCids,
+            toolPolicyParameterNames,
+            toolPolicyParameterTypes
         );
 
         emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
@@ -438,6 +452,7 @@ contract VincentAppFacet is VincentBase {
      * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
      * @param toolPolicySchemaIpfsCids A 2D array mapping each policy to its policy schema IPFS CID.
      * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
+     * @param toolPolicyParameterTypes A 3D array mapping each policy parameter to its type.
      * @return newAppVersion The newly created version number for the app.
      */
     function _registerNextAppVersion(
@@ -445,13 +460,14 @@ contract VincentAppFacet is VincentBase {
         bytes[] calldata toolIpfsCids,
         bytes[][] calldata toolPolicies,
         bytes[][] calldata toolPolicySchemaIpfsCids,
-        bytes[][][] calldata toolPolicyParameterNames
+        bytes[][][] calldata toolPolicyParameterNames,
+        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) internal returns (uint256 newAppVersion) {
         // Step 1: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
         if (
             toolCount != toolPolicies.length || toolCount != toolPolicySchemaIpfsCids.length
-                || toolCount != toolPolicyParameterNames.length
+                || toolCount != toolPolicyParameterNames.length || toolCount != toolPolicyParameterTypes.length
         ) {
             revert ToolsAndPoliciesLengthMismatch();
         }
@@ -568,6 +584,10 @@ contract VincentAppFacet is VincentBase {
                     if (ts.policyParameterNameHashToName[hashedPolicyParameterName].length == 0) {
                         ts.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
+
+                    // Step 8.3: Store the parameter type
+                    VincentAppStorage.ParameterType paramType = toolPolicyParameterTypes[i][j][k];
+                    policy.policyParameterNameHashToType[hashedPolicyParameterName] = paramType;
                 }
             }
         }
