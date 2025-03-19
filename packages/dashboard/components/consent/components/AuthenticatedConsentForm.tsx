@@ -25,7 +25,7 @@ interface AppView {
   manager: string;
   latestVersion: ethers.BigNumber | number;
   delegatees: string[] | any[];
-  authorizedRedirectUris: string[] | any[];
+  authorizedRedirectUris: string[];
 }
 
 export default function AuthenticatedConsentForm ({
@@ -47,11 +47,12 @@ export default function AuthenticatedConsentForm ({
     useState<boolean>(false);
   const [checkingPermissions, setCheckingPermissions] = useState<boolean>(true);
   const [showingAuthorizedMessage, setShowingAuthorizedMessage] = useState<boolean>(false);
+  const [isUriUntrusted, setIsUriUntrusted] = useState<boolean>(false);
 
   // ===== JWT and Redirect Functions =====
   
   // Generate JWT for redirection
-  const generateJWT = useCallback(async (): Promise<string | null> => {
+  const generateJWT = useCallback(async (appInfo: AppView): Promise<string | null> => {
     if (!agentPKP || !referrerUrl) {
       console.log('Cannot generate JWT: missing agentPKP or referrerUrl');
       return null;
@@ -70,9 +71,9 @@ export default function AuthenticatedConsentForm ({
       const jwt = await vincent.createSignedJWT({
         pkpWallet: agentPkpWallet as any,
         pkp: agentPKP,
-        payload: { name: 'User Name', customClaim: 'value' },
+        payload: {},
         expiresInMinutes: 30,
-        audience: referrerUrl,
+        audience: appInfo.authorizedRedirectUris,
       });
 
       if (jwt) {
@@ -191,7 +192,7 @@ export default function AuthenticatedConsentForm ({
           await approveConsent();
 
           // Then generate JWT after successful consent approval
-          const jwt = await generateJWT();
+          const jwt = await generateJWT(appInfo);
 
           // Show success animation
           setShowSuccess(true);
@@ -259,6 +260,18 @@ export default function AuthenticatedConsentForm ({
         return;
       }
 
+    async function verifyUri (appInfo: AppView) {
+      if (!referrerUrl) {
+        return false;
+      }
+      const authorizedRedirectUris = appInfo?.authorizedRedirectUris;
+      if (!authorizedRedirectUris || !authorizedRedirectUris.includes(referrerUrl)) {
+        return false;
+      }
+  
+      return true;
+    }
+
       try {
         // Get all permitted app IDs for this PKP
         const userViewRegistryContract = getUserViewRegistryContract();
@@ -274,6 +287,15 @@ export default function AuthenticatedConsentForm ({
         appRawInfo = await appRegistryContract.getAppById(Number(appId));
 
         setAppInfo(appRawInfo);
+
+        const isUriVerified = await verifyUri(appRawInfo);
+        
+        if (!isUriVerified) {
+          setIsUriUntrusted(true);
+          setCheckingPermissions(false);
+          setIsLoading(false);
+          return;
+        }
 
         // Check if the current app ID is in the permitted list
         const appIdNum = Number(appId);
@@ -291,7 +313,7 @@ export default function AuthenticatedConsentForm ({
           );
           // First show only "already authorized" message
           setShowingAuthorizedMessage(true);
-          const jwt = await generateJWT();
+          const jwt = await generateJWT(appRawInfo);
           
           // Delay showing the success animation
           setTimeout(() => {
@@ -316,7 +338,7 @@ export default function AuthenticatedConsentForm ({
     }
 
     checkAppPermissionAndFetchData();
-  }, [appId, agentPKP, referrerUrl, generateJWT, redirectWithJWT]);
+  }, [appId, agentPKP, referrerUrl]);
 
   // Fetch app info from database
   useEffect(() => {
@@ -353,6 +375,41 @@ export default function AuthenticatedConsentForm ({
   }, [appId, agentPKP, isAppAlreadyPermitted, appInfo, checkingPermissions]);
 
   // ===== Render Logic =====
+  
+  // If URL is untrusted, show an error message
+  if (isUriUntrusted) {
+    return (
+      <div className="consent-form-container">
+        <h1>Untrusted URI</h1>
+        
+        <div className="alert alert--error">
+          <p>This application is trying to redirect to a URI that is not on its list of authorized redirect URIs. For your security, this request has been blocked.</p>
+        </div>
+        
+        {referrerUrl && (
+          <div className="details-card" style={{backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb"}}>
+            <div style={{width: "100%"}}>
+              <p><strong>Untrusted URI:</strong></p>
+              <code className="monospace" style={{display: "block", marginTop: "0.5rem", wordBreak: "break-all", backgroundColor: "#ffffff", padding: "0.5rem", borderRadius: "4px", fontSize: "0.875rem"}}>{referrerUrl}</code>
+            </div>
+          </div>
+        )}
+        
+        <div className="details-card" style={{flexDirection: "column", backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb"}}>
+          <h4 style={{marginTop: 0, marginBottom: "0.5rem", fontSize: "1rem"}}>Authorized Redirect URIs:</h4>
+          {appInfo && appInfo.authorizedRedirectUris && appInfo.authorizedRedirectUris.length > 0 ? (
+            <ul className="permissions-list" style={{marginTop: "0.5rem"}}>
+              {appInfo.authorizedRedirectUris.map((url, index) => (
+                <li key={index} style={{backgroundColor: "#ffffff", fontSize: "0.875rem"}}>{url}</li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{fontSize: "0.875rem"}}>No authorized redirect URIs have been configured for this application.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
   
   // If the app is already permitted, show a brief loading spinner or success animation
   if (isAppAlreadyPermitted || (showSuccess && checkingPermissions) || showingAuthorizedMessage) {
