@@ -32,19 +32,19 @@ contract VincentToolFacet {
         _;
     }
 
-    function registerTool(string calldata toolIpfsCid) public {
+    function registerTool(bytes calldata toolIpfsCid) public {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         if (!ts_.registeredTools.contains(hashedIpfsCid)) {
             ts_.registeredTools.add(hashedIpfsCid);
-            ts_.toolIpfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
+            ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
             emit NewToolRegistered(hashedIpfsCid);
         }
     }
 
-    function registerTools(string[] calldata toolIpfsCids) external {
+    function registerTools(bytes[] calldata toolIpfsCids) external {
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
             registerTool(toolIpfsCids[i]);
         }
@@ -55,11 +55,11 @@ contract VincentToolFacet {
      * @dev Only callable by the approved tools manager
      * @param toolIpfsCids Array of IPFS CIDs of the tools to approve (can be a single tool)
      */
-    function approveTools(string[] calldata toolIpfsCids) external onlyApprovedToolsManager {
+    function approveTools(bytes[] calldata toolIpfsCids) external onlyApprovedToolsManager {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i];
+            bytes memory toolIpfsCid = toolIpfsCids[i];
             bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Ensure the tool is not already approved
@@ -83,11 +83,11 @@ contract VincentToolFacet {
      * @dev Only callable by the approved tools manager
      * @param toolIpfsCids Array of IPFS CIDs of the tools to remove from the approved list (can be a single tool)
      */
-    function removeToolApprovals(string[] calldata toolIpfsCids) external onlyApprovedToolsManager {
+    function removeToolApprovals(bytes[] calldata toolIpfsCids) external onlyApprovedToolsManager {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i];
+            bytes memory toolIpfsCid = toolIpfsCids[i];
             bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Ensure the tool is approved

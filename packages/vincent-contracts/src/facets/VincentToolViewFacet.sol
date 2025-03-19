@@ -9,17 +9,17 @@ contract VincentToolViewFacet {
     using VincentToolStorage for VincentToolStorage.ToolStorage;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    function getToolIpfsCidByHash(bytes32 toolIpfsCidHash) external view returns (string memory) {
-        return VincentToolStorage.toolStorage().toolIpfsCidHashToIpfsCid[toolIpfsCidHash];
+    function getToolIpfsCidByHash(bytes32 toolIpfsCidHash) external view returns (bytes memory) {
+        return VincentToolStorage.toolStorage().ipfsCidHashToIpfsCid[toolIpfsCidHash];
     }
 
-    function getAllRegisteredTools() external view returns (string[] memory toolIpfsCids) {
+    function getAllRegisteredTools() external view returns (bytes[] memory toolIpfsCids) {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         uint256 toolCount = ts_.registeredTools.length();
-        toolIpfsCids = new string[](toolCount);
+        toolIpfsCids = new bytes[](toolCount);
         for (uint256 i = 0; i < toolCount; i++) {
-            toolIpfsCids[i] = ts_.toolIpfsCidHashToIpfsCid[ts_.registeredTools.at(i)];
+            toolIpfsCids[i] = ts_.ipfsCidHashToIpfsCid[ts_.registeredTools.at(i)];
         }
     }
 
@@ -27,14 +27,14 @@ contract VincentToolViewFacet {
      * @notice Get all approved tools
      * @return toolIpfsCids Array of approved tool IPFS CIDs
      */
-    function getAllApprovedTools() external view returns (string[] memory toolIpfsCids) {
+    function getAllApprovedTools() external view returns (bytes[] memory toolIpfsCids) {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         uint256 toolCount = ts_.approvedIpfsCidHashes.length();
-        toolIpfsCids = new string[](toolCount);
+        toolIpfsCids = new bytes[](toolCount);
         for (uint256 i = 0; i < toolCount; i++) {
             bytes32 hashedIpfsCid = ts_.approvedIpfsCidHashes.at(i);
-            toolIpfsCids[i] = ts_.toolIpfsCidHashToIpfsCid[hashedIpfsCid];
+            toolIpfsCids[i] = ts_.ipfsCidHashToIpfsCid[hashedIpfsCid];
         }
     }
 
@@ -43,7 +43,7 @@ contract VincentToolViewFacet {
      * @param toolIpfsCid The IPFS CID of the tool to check
      * @return isApproved Whether the tool is approved
      */
-    function isToolApproved(string calldata toolIpfsCid) external view returns (bool isApproved) {
+    function isToolApproved(bytes calldata toolIpfsCid) external view returns (bool isApproved) {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
         bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
         return ts_.approvedIpfsCidHashes.contains(hashedIpfsCid);

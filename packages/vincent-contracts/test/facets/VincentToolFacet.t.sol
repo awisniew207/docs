@@ -31,12 +31,12 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
         // Verify it was registered correctly
-        string memory retrievedCid =
+        bytes memory retrievedCid =
             wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
         assertEq(retrievedCid, TEST_TOOL_IPFS_CID_1, "Retrieved tool IPFS CID doesn't match registered one");
 
         // Check all tools list
-        string[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
+        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
         assertEq(allTools.length, 1, "Should have exactly 1 tool registered");
         assertEq(allTools[0], TEST_TOOL_IPFS_CID_1, "Tool in list doesn't match registered one");
     }
@@ -50,13 +50,13 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
         // Check all tools list - should still have only one entry
-        string[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
+        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
         assertEq(allTools.length, 1, "Should still have exactly 1 tool registered");
     }
 
     function testRegisterMultipleTools() public {
-        // Set up string array for multiple tools
-        string[] memory tools = new string[](2);
+        // Set up bytes array for multiple tools
+        bytes[] memory tools = new bytes[](2);
         tools[0] = TEST_TOOL_IPFS_CID_1;
         tools[1] = TEST_TOOL_IPFS_CID_2;
 
@@ -64,16 +64,16 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTools(tools);
 
         // Verify they were registered correctly
-        string memory retrievedCid1 =
+        bytes memory retrievedCid1 =
             wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
-        string memory retrievedCid2 =
+        bytes memory retrievedCid2 =
             wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2)));
 
         assertEq(retrievedCid1, TEST_TOOL_IPFS_CID_1, "Retrieved tool 1 IPFS CID doesn't match registered one");
         assertEq(retrievedCid2, TEST_TOOL_IPFS_CID_2, "Retrieved tool 2 IPFS CID doesn't match registered one");
 
         // Check all tools list
-        string[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
+        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
         assertEq(allTools.length, 2, "Should have exactly 2 tools registered");
 
         // Check the contents of allTools list (order might vary)
@@ -94,7 +94,7 @@ contract VincentToolFacetTest is VincentTestHelper {
 
     function testRegisterDuplicateToolsInBatch() public {
         // Create array with duplicate entries
-        string[] memory tools = new string[](3);
+        bytes[] memory tools = new bytes[](3);
         tools[0] = TEST_TOOL_IPFS_CID_1;
         tools[1] = TEST_TOOL_IPFS_CID_2;
         tools[2] = TEST_TOOL_IPFS_CID_1; // Duplicate
@@ -103,7 +103,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTools(tools);
 
         // Check all tools list - should have 2 entries (no duplicates)
-        string[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
+        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
         assertEq(allTools.length, 2, "Should have exactly 2 tools registered (no duplicates)");
     }
 
@@ -115,7 +115,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         bytes32 emptyStringHash = keccak256(abi.encodePacked(""));
 
         // Verify it was registered correctly
-        string memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(emptyStringHash);
+        bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(emptyStringHash);
         assertEq(retrievedCid, "", "Empty string tool not registered correctly");
     }
 
@@ -124,7 +124,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         bytes32 nonExistentHash = keccak256(abi.encodePacked("non-existent-tool"));
 
         // Trying to get a non-existent tool should return an empty string
-        string memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(nonExistentHash);
+        bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(nonExistentHash);
         assertEq(retrievedCid, "", "Non-existent tool should return empty string");
     }
 
@@ -176,7 +176,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(approvedToolsManager);
 
         // Set up array with tools to approve
-        string[] memory tools = new string[](2);
+        bytes[] memory tools = new bytes[](2);
         tools[0] = TEST_TOOL_IPFS_CID_1;
         tools[1] = TEST_TOOL_IPFS_CID_2;
 
@@ -190,7 +190,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.approveTools(tools);
 
         // Verify the tools were approved
-        string[] memory approvedTools = wrappedToolViewFacet.getAllApprovedTools();
+        bytes[] memory approvedTools = wrappedToolViewFacet.getAllApprovedTools();
         assertEq(approvedTools.length, 2, "Should have exactly 2 approved tools");
 
         // Check that the tools are in the approved list (order might vary)
@@ -227,7 +227,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(approvedToolsManager);
 
         // Set up array with a tool that doesn't exist
-        string[] memory tools = new string[](1);
+        bytes[] memory tools = new bytes[](1);
         tools[0] = "non-existent-tool";
 
         // Should revert when trying to approve a tool that isn't registered
@@ -242,14 +242,14 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
 
         // Try to approve as the deployer (no longer the manager)
-        string[] memory tools = new string[](1);
+        bytes[] memory tools = new bytes[](1);
         tools[0] = TEST_TOOL_IPFS_CID_1;
 
         // Should revert when called by non-manager
         wrappedToolFacet.approveTools(tools);
     }
 
-    function testRemoveToolApprovals() public {
+    function testRemoveToolApproval() public {
         // Register tools first
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
@@ -262,13 +262,13 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(approvedToolsManager);
 
         // Approve the tools as the manager
-        string[] memory tools = new string[](2);
+        bytes[] memory tools = new bytes[](2);
         tools[0] = TEST_TOOL_IPFS_CID_1;
         tools[1] = TEST_TOOL_IPFS_CID_2;
         wrappedToolFacet.approveTools(tools);
 
         // Set up array with tools to remove
-        string[] memory toolsToRemove = new string[](1);
+        bytes[] memory toolsToRemove = new bytes[](1);
         toolsToRemove[0] = TEST_TOOL_IPFS_CID_1;
 
         // Set up event expectation for removing approval
@@ -279,7 +279,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.removeToolApprovals(toolsToRemove);
 
         // Verify the tool was removed from the approved list
-        string[] memory approvedTools = wrappedToolViewFacet.getAllApprovedTools();
+        bytes[] memory approvedTools = wrappedToolViewFacet.getAllApprovedTools();
         assertEq(approvedTools.length, 1, "Should have exactly 1 approved tool left");
         assertEq(approvedTools[0], TEST_TOOL_IPFS_CID_2, "Remaining tool should be TEST_TOOL_IPFS_CID_2");
 
@@ -296,7 +296,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
 
         // Set up array with tools to remove
-        string[] memory toolsToRemove = new string[](1);
+        bytes[] memory toolsToRemove = new bytes[](1);
         toolsToRemove[0] = TEST_TOOL_IPFS_CID_1;
 
         // Should revert when trying to remove approval for a tool that isn't approved
@@ -306,7 +306,7 @@ contract VincentToolFacetTest is VincentTestHelper {
     function testFailRemoveToolApprovalAsNonManager() public {
         // Register and approve a tool
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
-        string[] memory tools = new string[](1);
+        bytes[] memory tools = new bytes[](1);
         tools[0] = TEST_TOOL_IPFS_CID_1;
         wrappedToolFacet.approveTools(tools);
 
@@ -314,7 +314,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
 
         // Try to remove approval as the deployer (no longer the manager)
-        string[] memory toolsToRemove = new string[](1);
+        bytes[] memory toolsToRemove = new bytes[](1);
         toolsToRemove[0] = TEST_TOOL_IPFS_CID_1;
 
         // Should revert when called by non-manager

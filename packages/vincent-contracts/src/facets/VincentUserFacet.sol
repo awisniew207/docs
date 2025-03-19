@@ -53,10 +53,10 @@ contract VincentUserFacet is VincentBase {
         uint256 pkpTokenId,
         uint256 appId,
         uint256 appVersion,
-        string[] calldata toolIpfsCids,
-        string[][] calldata policyIpfsCids,
-        string[][][] calldata policyParameterNames,
-        string[][][] calldata policyParameterValues
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata policyIpfsCids,
+        bytes[][][] calldata policyParameterNames,
+        bytes[][][] calldata policyParameterValues
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
@@ -146,10 +146,10 @@ contract VincentUserFacet is VincentBase {
         uint256 pkpTokenId,
         uint256 appId,
         uint256 appVersion,
-        string[] calldata toolIpfsCids,
-        string[][] calldata policyIpfsCids,
-        string[][][] calldata policyParameterNames,
-        string[][][] calldata policyParameterValues
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata policyIpfsCids,
+        bytes[][][] calldata policyParameterNames,
+        bytes[][][] calldata policyParameterValues
     ) public onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         _setToolPolicyParameters(
             appId, pkpTokenId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
@@ -174,9 +174,9 @@ contract VincentUserFacet is VincentBase {
         uint256 appId,
         uint256 pkpTokenId,
         uint256 appVersion,
-        string[] calldata toolIpfsCids,
-        string[][] calldata policyIpfsCids,
-        string[][][] calldata policyParameterNames
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata policyIpfsCids,
+        bytes[][][] calldata policyParameterNames
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         // Step 1: Validate input array lengths to ensure they are consistent.
         uint256 toolCount = toolIpfsCids.length;
@@ -190,7 +190,7 @@ contract VincentUserFacet is VincentBase {
 
         // Step 3: Iterate over each tool to process its policies and remove parameters.
         for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 3.1: Validate that the tool exists for the specified app version.
@@ -211,7 +211,7 @@ contract VincentUserFacet is VincentBase {
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
-                string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+                bytes memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
                 bytes32 hashedPolicyId = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 4.1: Verify that the policy exists before attempting removal.
@@ -226,7 +226,7 @@ contract VincentUserFacet is VincentBase {
                 // Step 5: Iterate through parameters and remove them.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+                    bytes memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 5.1: Only remove the parameter if it exists.
@@ -269,10 +269,10 @@ contract VincentUserFacet is VincentBase {
         uint256 appId,
         uint256 pkpTokenId,
         uint256 appVersion,
-        string[] calldata toolIpfsCids,
-        string[][] calldata policyIpfsCids,
-        string[][][] calldata policyParameterNames,
-        string[][][] calldata policyParameterValues
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata policyIpfsCids,
+        bytes[][][] calldata policyParameterNames,
+        bytes[][][] calldata policyParameterValues
     ) internal {
         // Step 1: Validate input array lengths to prevent mismatches.
         uint256 toolCount = toolIpfsCids.length;
@@ -289,7 +289,7 @@ contract VincentUserFacet is VincentBase {
 
         // Step 3: Loop over each tool to process its associated policies and parameters.
         for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 3.1: Validate that the tool exists in the specified app version.
@@ -309,7 +309,7 @@ contract VincentUserFacet is VincentBase {
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
-                string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+                bytes memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 4.1: Validate that the policy is registered for the tool.
@@ -324,7 +324,7 @@ contract VincentUserFacet is VincentBase {
                 // Step 5: Iterate through each parameter associated with the policy.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+                    bytes memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 5.1: Ensure that the parameter is valid for the specified policy.

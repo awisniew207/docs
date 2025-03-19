@@ -17,7 +17,7 @@ contract VincentUserViewFacet is VincentBase {
 
     error PkpNotPermittedForAppVersion(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
     error PolicyParameterNotSetForPkp(
-        uint256 pkpTokenId, uint256 appId, uint256 appVersion, string policyIpfsCid, string parameterName
+        uint256 pkpTokenId, uint256 appId, uint256 appVersion, bytes policyIpfsCid, bytes parameterName
     );
     error DelegateeNotAssociatedWithApp(address delegatee);
 
@@ -31,20 +31,20 @@ contract VincentUserViewFacet is VincentBase {
 
     // Struct to represent a tool with all its policies and parameters
     struct ToolWithPolicies {
-        string toolIpfsCid; // The IPFS CID of the tool
+        bytes toolIpfsCid; // The IPFS CID of the tool
         PolicyWithParameters[] policies; // All policies associated with this tool and their parameters
     }
 
     // Struct to represent a policy with its parameters
     struct PolicyWithParameters {
-        string policyIpfsCid;
+        bytes policyIpfsCid;
         PolicyParameter[] parameters;
     }
 
     // Struct to hold a parameter name and its value
     struct PolicyParameter {
-        string name;
-        string value;
+        bytes name;
+        bytes value;
     }
 
     /**
@@ -121,7 +121,7 @@ contract VincentUserViewFacet is VincentBase {
             bytes32 toolHash = toolHashes[i];
 
             // Get the tool IPFS CID
-            tools[i].toolIpfsCid = ts_.toolIpfsCidHashToIpfsCid[toolHash];
+            tools[i].toolIpfsCid = ts_.ipfsCidHashToIpfsCid[toolHash];
 
             // Get the tool policy storage for this PKP, app, and tool
             VincentUserStorage.ToolPolicyStorage storage toolPolicyStorage =
@@ -139,7 +139,7 @@ contract VincentUserViewFacet is VincentBase {
                 bytes32 policyHash = policyHashes[j];
 
                 // Get the policy IPFS CID
-                tools[i].policies[j].policyIpfsCid = ts_.policyIpfsCidHashToIpfsCid[policyHash];
+                tools[i].policies[j].policyIpfsCid = ts_.ipfsCidHashToIpfsCid[policyHash];
 
                 // Get the policy parameters storage
                 VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =
@@ -174,7 +174,7 @@ contract VincentUserViewFacet is VincentBase {
      * @param toolIpfsCid The IPFS CID of the tool
      * @return validation A struct containing validation result and policy information
      */
-    function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata toolIpfsCid)
+    function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, bytes calldata toolIpfsCid)
         external
         view
         returns (ToolExecutionValidation memory validation)
@@ -235,7 +235,7 @@ contract VincentUserViewFacet is VincentBase {
             bytes32 policyHash = policyHashes[i];
 
             // Get the policy IPFS CID
-            validation.policies[i].policyIpfsCid = ts_.policyIpfsCidHashToIpfsCid[policyHash];
+            validation.policies[i].policyIpfsCid = ts_.ipfsCidHashToIpfsCid[policyHash];
 
             // Get the policy parameters storage
             VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =

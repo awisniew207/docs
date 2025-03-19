@@ -47,22 +47,22 @@ contract VincentUserFacetTest is VincentTestHelper {
 
     function testPermitAppVersion() public {
         // Create parameter arrays for permitAppVersion
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
-        policyParameterValues[0][0][0] = "test-value";
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
+        policyParameterValues[0][0][0] = "test-value-1";
 
         // The permit function only emits ToolPolicyParameterSet events
         // We need to check for the hashedToolIpfsCid and hashedPolicyParameterName
@@ -106,22 +106,22 @@ contract VincentUserFacetTest is VincentTestHelper {
     function testUnPermitAppVersion() public {
         // First permit the app version
         // Create parameter arrays for permitAppVersion
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
-        policyParameterValues[0][0][0] = "test-value";
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
+        policyParameterValues[0][0][0] = "initial-value";
 
         // The permit function also emits ToolPolicyParameterSet events
         bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1));
@@ -150,21 +150,21 @@ contract VincentUserFacetTest is VincentTestHelper {
 
     function testGetAllToolsAndPoliciesForApp() public {
         // First permit the app version
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
         policyParameterValues[0][0][0] = "test-value";
 
         wrappedUserFacet.permitAppVersion(
@@ -191,32 +191,32 @@ contract VincentUserFacetTest is VincentTestHelper {
 
     function testSetAndGetToolPolicyParameters() public {
         // First permit the app version with no parameters
-        string[] memory emptyTools = new string[](0);
-        string[][] memory emptyPolicies = new string[][](0);
-        string[][][] memory emptyParamNames = new string[][][](0);
-        string[][][] memory emptyParamValues = new string[][][](0);
+        bytes[] memory emptyTools = new bytes[](0);
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][][] memory emptyParamNames = new bytes[][][](0);
+        bytes[][][] memory emptyParamValues = new bytes[][][](0);
 
         wrappedUserFacet.permitAppVersion(
             pkpTokenId, appId, appVersion, emptyTools, emptyPolicies, emptyParamNames, emptyParamValues
         );
 
         // Set up parameter arrays for setToolPolicyParameters
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
-        policyParameterValues[0][0][0] = "test-value";
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
+        policyParameterValues[0][0][0] = "test-value-all-tools";
 
         // Set up event expectations
         bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1));
@@ -237,7 +237,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         bool foundTool = false;
         bool foundPolicy = false;
         bool foundParameter = false;
-        string memory paramValue;
+        bytes memory paramValue;
 
         for (uint256 i = 0; i < tools.length; i++) {
             if (keccak256(abi.encodePacked(tools[i].toolIpfsCid)) == hashedToolIpfsCid) {
@@ -269,27 +269,27 @@ contract VincentUserFacetTest is VincentTestHelper {
         assertTrue(foundTool, "Tool should be found");
         assertTrue(foundPolicy, "Policy should be found");
         assertTrue(foundParameter, "Parameter should be found");
-        assertEq(paramValue, "test-value", "Parameter value should match");
+        assertEq(paramValue, "test-value-all-tools", "Parameter value should match");
     }
 
     function testRemoveToolPolicyParameters() public {
         // First permit the app version with parameters
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
-        policyParameterValues[0][0][0] = "test-value";
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
+        policyParameterValues[0][0][0] = "parameter-to-be-removed";
 
         wrappedUserFacet.permitAppVersion(
             pkpTokenId, appId, appVersion, toolIpfsCids, policyIpfsCids, policyParameterNames, policyParameterValues
@@ -325,21 +325,21 @@ contract VincentUserFacetTest is VincentTestHelper {
 
     function testIsToolPermittedForDelegateeAndPkp() public {
         // First permit the app version
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
         policyParameterValues[0][0][0] = "test-value";
 
         wrappedUserFacet.permitAppVersion(
@@ -390,21 +390,21 @@ contract VincentUserFacetTest is VincentTestHelper {
         vm.startPrank(nonOwner);
 
         // Set up parameter arrays
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][][] memory policyParameterValues = new string[][][](1);
-        policyParameterValues[0] = new string[][](1);
-        policyParameterValues[0][0] = new string[](1);
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
         policyParameterValues[0][0][0] = "test-value";
 
         // This should revert with NotPkpOwner
@@ -419,16 +419,16 @@ contract VincentUserFacetTest is VincentTestHelper {
         vm.startPrank(nonOwner);
 
         // Set up parameter arrays
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory policyIpfsCids = new string[][](1);
-        policyIpfsCids[0] = new string[](1);
+        bytes[][] memory policyIpfsCids = new bytes[][](1);
+        policyIpfsCids[0] = new bytes[](1);
         policyIpfsCids[0][0] = TEST_POLICY_1;
 
-        string[][][] memory policyParameterNames = new string[][][](1);
-        policyParameterNames[0] = new string[][](1);
-        policyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory policyParameterNames = new bytes[][][](1);
+        policyParameterNames[0] = new bytes[][](1);
+        policyParameterNames[0][0] = new bytes[](1);
         policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // This should revert with NotPkpOwner
@@ -439,26 +439,26 @@ contract VincentUserFacetTest is VincentTestHelper {
 
     function testMultiplePermissions() public {
         // Register another app with a version
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_2;
 
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_2;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
 
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
 
         // Register tool first
@@ -478,11 +478,16 @@ contract VincentUserFacetTest is VincentTestHelper {
             toolPolicyParameterNames
         );
 
-        // Permit both app versions
-        string[] memory emptyTools = new string[](0);
-        string[][] memory emptyPolicies = new string[][](0);
-        string[][][] memory emptyParamNames = new string[][][](0);
-        string[][][] memory emptyParamValues = new string[][][](0);
+        // Set up empty arrays for when we need them
+        bytes[] memory emptyTools = new bytes[](0);
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][][] memory emptyParamNames = new bytes[][][](0);
+        bytes[][][] memory emptyParamValues = new bytes[][][](0);
+
+        // Mock that the user owns the PKP
+        vm.stopPrank();
+        vm.startPrank(deployer);
+        mockPkpNft.setOwner(pkpTokenId, deployer);
 
         wrappedUserFacet.permitAppVersion(
             pkpTokenId, appId, appVersion, emptyTools, emptyPolicies, emptyParamNames, emptyParamValues
@@ -525,10 +530,10 @@ contract VincentUserFacetTest is VincentTestHelper {
         mockPkpNft.setOwner(pkpTokenId2, deployer);
 
         // Permit app version for both PKPs
-        string[] memory emptyTools = new string[](0);
-        string[][] memory emptyPolicies = new string[][](0);
-        string[][][] memory emptyParamNames = new string[][][](0);
-        string[][][] memory emptyParamValues = new string[][][](0);
+        bytes[] memory emptyTools = new bytes[](0);
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][][] memory emptyParamNames = new bytes[][][](0);
+        bytes[][][] memory emptyParamValues = new bytes[][][](0);
 
         wrappedUserFacet.permitAppVersion(
             pkpTokenId, appId, appVersion, emptyTools, emptyPolicies, emptyParamNames, emptyParamValues

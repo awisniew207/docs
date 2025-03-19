@@ -16,7 +16,7 @@ interface IVincentToolFacet {
      * @notice Register a new tool by its IPFS CID
      * @param toolIpfsCid IPFS CID of the tool to register
      */
-    function registerTool(string calldata toolIpfsCid) external;
+    function registerTool(bytes calldata toolIpfsCid) external;
 }
 
 /**
@@ -102,7 +102,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param redirectUri The redirect URI that is not registered
      */
-    error RedirectUriNotRegisteredToApp(uint256 appId, string redirectUri);
+    error RedirectUriNotRegisteredToApp(uint256 appId, bytes redirectUri);
 
     /**
      * @notice Error thrown when no redirect URIs are provided during app registration
@@ -121,7 +121,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param policyIpfsCid IPFS CID of the policy missing a schema
      */
-    error PolicySchemaMissing(uint256 appId, string policyIpfsCid);
+    error PolicySchemaMissing(uint256 appId, bytes policyIpfsCid);
 
     /**
      * @notice Modifier to restrict function access to the app manager only
@@ -148,14 +148,14 @@ contract VincentAppFacet is VincentBase {
      * @return newAppVersion The version number of the newly registered app version (always 1 for new apps)
      */
     function registerApp(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedRedirectUris,
+        bytes calldata name,
+        bytes calldata description,
+        bytes[] calldata authorizedRedirectUris,
         address[] calldata delegatees,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][] calldata toolPolicySchemaIpfsCids,
-        string[][][] calldata toolPolicyParameterNames
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata toolPolicies,
+        bytes[][] calldata toolPolicySchemaIpfsCids,
+        bytes[][][] calldata toolPolicyParameterNames
     ) external returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
         emit NewAppRegistered(newAppId, msg.sender);
@@ -178,10 +178,10 @@ contract VincentAppFacet is VincentBase {
      */
     function registerNextAppVersion(
         uint256 appId,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][] calldata toolPolicySchemaIpfsCids,
-        string[][][] calldata toolPolicyParameterNames
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata toolPolicies,
+        bytes[][] calldata toolPolicySchemaIpfsCids,
+        bytes[][][] calldata toolPolicyParameterNames
     ) external onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
         newAppVersion = _registerNextAppVersion(
             appId, toolIpfsCids, toolPolicies, toolPolicySchemaIpfsCids, toolPolicyParameterNames
@@ -213,7 +213,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param redirectUri The redirect URI to add
      */
-    function addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
+    function addAuthorizedRedirectUri(uint256 appId, bytes calldata redirectUri)
         external
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
@@ -227,7 +227,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param redirectUri The redirect URI to remove
      */
-    function removeAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
+    function removeAuthorizedRedirectUri(uint256 appId, bytes calldata redirectUri)
         external
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
@@ -298,9 +298,9 @@ contract VincentAppFacet is VincentBase {
      * @return newAppId The ID of the newly registered app
      */
     function _registerApp(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedRedirectUris,
+        bytes calldata name,
+        bytes calldata description,
+        bytes[] calldata authorizedRedirectUris,
         address[] calldata delegatees
     ) internal returns (uint256 newAppId) {
         // Require at least one authorized redirect URI
@@ -354,10 +354,10 @@ contract VincentAppFacet is VincentBase {
      */
     function _registerNextAppVersion(
         uint256 appId,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][] calldata toolPolicySchemaIpfsCids,
-        string[][][] calldata toolPolicyParameterNames
+        bytes[] calldata toolIpfsCids,
+        bytes[][] calldata toolPolicies,
+        bytes[][] calldata toolPolicySchemaIpfsCids,
+        bytes[][][] calldata toolPolicyParameterNames
     ) internal returns (uint256 newAppVersion) {
         // Step 1: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
@@ -386,7 +386,7 @@ contract VincentAppFacet is VincentBase {
 
         // Step 4: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 4.1: Register the tool IPFS CID globally if it hasn't been added already.
@@ -407,22 +407,22 @@ contract VincentAppFacet is VincentBase {
             }
 
             for (uint256 j = 0; j < policyCount; j++) {
-                string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
+                bytes memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 5.1: Add the policy hash to the ToolPolicies
                 toolPoliciesStorage.policyIpfsCidHashes.add(hashedToolPolicy);
 
                 // Step 5.2: Store the policy IPFS CID globally if it's not already stored.
-                if (bytes(ts.policyIpfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
-                    ts.policyIpfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
+                if (ts.ipfsCidHashToIpfsCid[hashedToolPolicy].length == 0) {
+                    ts.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
                 // Step 5.3: Get the policy schema IPFS CID and store it
-                string memory policySchemaIpfsCid = toolPolicySchemaIpfsCids[i][j]; // Cache calldata value
+                bytes memory policySchemaIpfsCid = toolPolicySchemaIpfsCids[i][j]; // Cache calldata value
 
                 // Only require a policy schema if the policy is not empty
-                if (bytes(policyIpfsCid).length > 0 && bytes(policySchemaIpfsCid).length == 0) {
+                if (policyIpfsCid.length > 0 && policySchemaIpfsCid.length == 0) {
                     revert PolicySchemaMissing(appId, policyIpfsCid);
                 }
 
@@ -436,8 +436,8 @@ contract VincentAppFacet is VincentBase {
                 policy.policySchemaIpfsCidHash = hashedPolicySchemaIpfsCid;
 
                 // Store the policy schema IPFS CID globally if it's not already stored
-                if (bytes(ts.policySchemaIpfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid]).length == 0) {
-                    ts.policySchemaIpfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid] = policySchemaIpfsCid;
+                if (ts.ipfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid].length == 0) {
+                    ts.ipfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid] = policySchemaIpfsCid;
                 }
 
                 // Step 6: Get the Policy parameter name hashes for this policy
@@ -446,14 +446,14 @@ contract VincentAppFacet is VincentBase {
                 // Step 7: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
+                    bytes memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 8.1: Register the policy parameter.
                     policyParameterNameHashes.add(hashedPolicyParameterName);
 
                     // Step 8.2: Store the parameter name if not already stored.
-                    if (bytes(ts.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
+                    if (ts.policyParameterNameHashToName[hashedPolicyParameterName].length == 0) {
                         ts.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
                 }
@@ -470,7 +470,7 @@ contract VincentAppFacet is VincentBase {
     function _addAuthorizedRedirectUri(
         VincentAppStorage.AppStorage storage appStorage,
         uint256 appId,
-        string calldata redirectUri
+        bytes calldata redirectUri
     ) internal {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 

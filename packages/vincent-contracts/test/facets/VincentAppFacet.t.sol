@@ -16,9 +16,6 @@ contract VincentAppFacetTest is VincentTestHelper {
     uint256 public appId;
     uint256 public appVersion;
 
-    event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
-    event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
-
     function setUp() public override {
         // Call parent setup
         super.setUp();
@@ -29,7 +26,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testRegisterApp() public {
         // Create test redirectUris, and delegatees
-        string[] memory redirectUris = new string[](2);
+        bytes[] memory redirectUris = new bytes[](2);
         redirectUris[0] = TEST_REDIRECT_URI_1;
         redirectUris[1] = TEST_REDIRECT_URI_2;
 
@@ -38,10 +35,10 @@ contract VincentAppFacetTest is VincentTestHelper {
         delegatees[1] = TEST_DELEGATEE_2;
 
         // Set up empty tool arrays
-        string[] memory toolIpfsCids = new string[](0);
-        string[][] memory toolPolicies = new string[][](0);
-        string[][][] memory toolPolicyParameterNames = new string[][][](0);
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](0);
+        bytes[] memory toolIpfsCids = new bytes[](0);
+        bytes[][] memory toolPolicies = new bytes[][](0);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](0);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](0);
 
         // The appId will be 1 as it's the first app registered (changing from 0 to 1)
         vm.expectEmit(true, true, false, false);
@@ -82,26 +79,26 @@ contract VincentAppFacetTest is VincentTestHelper {
 
     function testRegisterAppWithVersion() public {
         // Removed the domains array initialization
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_1;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1;
 
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_1;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
 
         // Register the tool first so it's available for the app version
@@ -172,21 +169,21 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId,) = _registerTestApp();
 
         // Set up data for the next version
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
         // Set up tool policies
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_2;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
 
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
 
         // Register the tool first
@@ -404,19 +401,19 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Register a second app
         // Removed domains array
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1; // Already registered to the first app
 
         // Set up empty tool arrays
-        string[] memory emptyTools = new string[](0);
-        string[][] memory emptyPolicies = new string[][](0);
-        string[][][] memory emptyPolicyParams = new string[][][](0);
+        bytes[] memory emptyTools = new bytes[](0);
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][][] memory emptyPolicyParams = new bytes[][][](0);
 
         // Define empty policy schemas
-        string[][] memory policySchemas = new string[][](0);
+        bytes[][] memory policySchemas = new bytes[][](0);
 
         // This should revert with DelegateeAlreadyRegisteredToApp error
         wrappedAppFacet.registerApp(
@@ -447,17 +444,17 @@ contract VincentAppFacetTest is VincentTestHelper {
      */
     function testRemoveLastRedirectUri() public {
         // Register an app with just one redirect URI
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_1;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1;
 
         // Set up empty tool arrays
-        string[] memory toolIpfsCids = new string[](0);
-        string[][] memory toolPolicies = new string[][](0);
-        string[][][] memory toolPolicyParameterNames = new string[][][](0);
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](0);
+        bytes[] memory toolIpfsCids = new bytes[](0);
+        bytes[][] memory toolPolicies = new bytes[][](0);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](0);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](0);
 
         // Register the app with a single redirect URI
         (appId, appVersion) = wrappedAppFacet.registerApp(
@@ -482,26 +479,26 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId, appVersion) = _registerTestApp();
 
         // Set up mismatched arrays
-        string[] memory toolIpfsCids = new string[](2);
+        bytes[] memory toolIpfsCids = new bytes[](2);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
         toolIpfsCids[1] = TEST_TOOL_IPFS_CID_2;
 
         // Only one policy for two tools (mismatch)
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_1;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](2);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](2);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
-        toolPolicyParameterNames[1] = new string[][](1);
-        toolPolicyParameterNames[1][0] = new string[](1);
+        toolPolicyParameterNames[1] = new bytes[][](1);
+        toolPolicyParameterNames[1][0] = new bytes[](1);
         toolPolicyParameterNames[1][0][0] = TEST_POLICY_PARAM_2;
 
         // Policy schema arrays - proper values despite mismatch with other arrays
-        string[][] memory policySchemas = new string[][](1);
-        policySchemas[0] = new string[](1);
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](1);
         policySchemas[0][0] = TEST_POLICY_SCHEMA_1;
 
         // This should revert with ToolsAndPoliciesLengthMismatch error
@@ -516,16 +513,16 @@ contract VincentAppFacetTest is VincentTestHelper {
      */
     function testFailRegisterAppWithEmptyRedirectUris() public {
         // Create empty redirect URIs array
-        string[] memory redirectUris = new string[](0);
+        bytes[] memory redirectUris = new bytes[](0);
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1;
 
         // Set up empty tool arrays
-        string[] memory toolIpfsCids = new string[](0);
-        string[][] memory toolPolicies = new string[][](0);
-        string[][][] memory toolPolicyParameterNames = new string[][][](0);
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](0);
+        bytes[] memory toolIpfsCids = new bytes[](0);
+        bytes[][] memory toolPolicies = new bytes[][](0);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](0);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](0);
 
         // This should revert with NoRedirectUrisProvided error
         wrappedAppFacet.registerApp(
@@ -551,19 +548,19 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Register a second app
         // Removed domains array
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_2;
 
         // Set up empty tool arrays
-        string[] memory emptyTools = new string[](0);
-        string[][] memory emptyPolicies = new string[][](0);
-        string[][][] memory emptyPolicyParams = new string[][][](0);
+        bytes[] memory emptyTools = new bytes[](0);
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][][] memory emptyPolicyParams = new bytes[][][](0);
 
         // Define empty policy schemas
-        string[][] memory policySchemas = new string[][](0);
+        bytes[][] memory policySchemas = new bytes[][](0);
 
         uint256 appId2;
         uint256 appVersion2;
@@ -594,7 +591,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         bytes32 redirectUriHash = keccak256(abi.encodePacked(TEST_REDIRECT_URI_1));
 
         // Retrieve redirect URI using hash
-        string memory redirectUri = wrappedAppViewFacet.getAuthorizedRedirectUriByHash(redirectUriHash);
+        bytes memory redirectUri = wrappedAppViewFacet.getAuthorizedRedirectUriByHash(redirectUriHash);
         assertEq(redirectUri, TEST_REDIRECT_URI_1, "Retrieved redirect URI should match the original redirect URI");
     }
 
@@ -606,7 +603,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_2);
 
         // Retrieve redirect URIs
-        string[] memory redirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        bytes[] memory redirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
 
         // Verify redirect URIs
         assertEq(redirectUris.length, 2, "Should have 2 authorized redirect URIs");
@@ -633,7 +630,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         bytes32 toolHash = keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1));
 
         // Retrieve tool IPFS CID using hash
-        string memory toolIpfsCid = wrappedToolViewFacet.getToolIpfsCidByHash(toolHash);
+        bytes memory toolIpfsCid = wrappedToolViewFacet.getToolIpfsCidByHash(toolHash);
         assertEq(toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Retrieved tool IPFS CID should match the original");
     }
 
@@ -658,21 +655,21 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId,) = _registerTestApp();
 
         // Set up data for the next version
-        string[] memory firstAppToolIpfsCids = new string[](1);
+        bytes[] memory firstAppToolIpfsCids = new bytes[](1);
         firstAppToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
         // Create policy arrays for first app - must have entries to match schema
-        string[][] memory firstAppToolPolicies = new string[][](1);
-        firstAppToolPolicies[0] = new string[](1);
+        bytes[][] memory firstAppToolPolicies = new bytes[][](1);
+        firstAppToolPolicies[0] = new bytes[](1);
         firstAppToolPolicies[0][0] = ""; // Empty string policy
 
-        string[][][] memory firstAppToolPolicyParameterNames = new string[][][](1);
-        firstAppToolPolicyParameterNames[0] = new string[][](1);
-        firstAppToolPolicyParameterNames[0][0] = new string[](0); // No parameters
+        bytes[][][] memory firstAppToolPolicyParameterNames = new bytes[][][](1);
+        firstAppToolPolicyParameterNames[0] = new bytes[][](1);
+        firstAppToolPolicyParameterNames[0][0] = new bytes[](0); // No parameters
 
         // Add policy schema for testing
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
 
         // Register tool for first app
@@ -689,19 +686,19 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Register another app with a new version
         // Removed domains array
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_2;
 
         // Define empty arrays for tools, policies, and policyParams
-        string[] memory emptyTools = new string[](0);
-        string[][] memory emptyPolicies = new string[][](0);
-        string[][][] memory emptyPolicyParams = new string[][][](0);
+        bytes[] memory emptyTools = new bytes[](0);
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][][] memory emptyPolicyParams = new bytes[][][](0);
 
         // Define empty policy schemas
-        string[][] memory policySchemas = new string[][](0);
+        bytes[][] memory policySchemas = new bytes[][](0);
 
         (uint256 appId2, uint256 appVersion2) = wrappedAppFacet.registerApp(
             "Test App 2",
@@ -715,21 +712,21 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
 
         // Register a new version for the second app
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
         // Set up tool policies - must have entries to match schema
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = ""; // Empty string policy
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](0); // No parameters
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](0); // No parameters
 
         // Add policy schema for second app
-        string[][] memory secondAppPolicySchemas = new string[][](1);
-        secondAppPolicySchemas[0] = new string[](1);
+        bytes[][] memory secondAppPolicySchemas = new bytes[][](1);
+        secondAppPolicySchemas[0] = new bytes[](1);
         secondAppPolicySchemas[0][0] = TEST_POLICY_SCHEMA_2;
 
         // Register tool for second app
@@ -773,21 +770,21 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId,) = _registerTestApp();
 
         // Set up data for the next version
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
         // Set up tool policies - need at least one empty policy to match schema
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = ""; // Empty string policy
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](0); // No parameters
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](0); // No parameters
 
         // Test with a valid policy schema
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
 
         // Register the tool first
@@ -804,36 +801,36 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId,) = _registerTestApp();
 
         // Set up data for the next version - two tools
-        string[] memory toolIpfsCids = new string[](2);
+        bytes[] memory toolIpfsCids = new bytes[](2);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1; // reuse existing tool
         toolIpfsCids[1] = TEST_TOOL_IPFS_CID_2; // add new tool
 
         // Set up tool policies
-        string[][] memory toolPolicies = new string[][](2);
+        bytes[][] memory toolPolicies = new bytes[][](2);
         // First tool, reuse existing policy
-        toolPolicies[0] = new string[](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_1;
         // Second tool, new policy
-        toolPolicies[1] = new string[](1);
+        toolPolicies[1] = new bytes[](1);
         toolPolicies[1][0] = TEST_POLICY_2;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](2);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](2);
         // First tool policy parameters
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
         // Second tool policy parameters
-        toolPolicyParameterNames[1] = new string[][](1);
-        toolPolicyParameterNames[1][0] = new string[](1);
+        toolPolicyParameterNames[1] = new bytes[][](1);
+        toolPolicyParameterNames[1][0] = new bytes[](1);
         toolPolicyParameterNames[1][0][0] = TEST_POLICY_PARAM_2;
 
         // Set up policy schemas
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](2);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](2);
         // First tool policy schema
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
         // Second tool policy schema
-        toolPolicySchemaIpfsCids[1] = new string[](1);
+        toolPolicySchemaIpfsCids[1] = new bytes[](1);
         toolPolicySchemaIpfsCids[1][0] = TEST_POLICY_SCHEMA_2;
 
         // Register the new tool
@@ -853,26 +850,26 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId, appVersion) = _registerTestApp();
 
         // Create data for second app
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_2;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_2;
 
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_2;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
 
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_2;
 
         // First register the tool
@@ -908,18 +905,18 @@ contract VincentAppFacetTest is VincentTestHelper {
         (appId, appVersion) = _registerTestApp();
 
         // Set up data for the next version
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_2;
 
         // Set up tool policies
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](0);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](0);
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](0);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](0);
 
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](0);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](0);
 
         // Register the tool first
         wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);

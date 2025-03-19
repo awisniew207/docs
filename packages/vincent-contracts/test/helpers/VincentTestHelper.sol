@@ -39,26 +39,26 @@ abstract contract VincentTestHelper is Test {
 
     // Test constants
     // App-related constants
-    string constant TEST_APP_NAME = "Test App";
-    string constant TEST_APP_DESCRIPTION = "Test App Description";
-    string constant TEST_DOMAIN_1 = "test.com";
-    string constant TEST_DOMAIN_2 = "example.com";
-    string constant TEST_REDIRECT_URI_1 = "https://test.com/callback";
-    string constant TEST_REDIRECT_URI_2 = "https://example.com/callback";
+    bytes constant TEST_APP_NAME = bytes("Test App");
+    bytes constant TEST_APP_DESCRIPTION = bytes("Test App Description");
+    bytes constant TEST_DOMAIN_1 = bytes("test.com");
+    bytes constant TEST_DOMAIN_2 = bytes("example.com");
+    bytes constant TEST_REDIRECT_URI_1 = bytes("https://test.com/callback");
+    bytes constant TEST_REDIRECT_URI_2 = bytes("https://example.com/callback");
     address constant TEST_DELEGATEE_1 = address(0x1);
     address constant TEST_DELEGATEE_2 = address(0x2);
 
     // Tool-related constants
-    string constant TEST_TOOL_IPFS_CID_1 = "QmPK1s3pNYLi9ERiq3BDxKa4XosgWwFRQUydHUtz4YgpqB";
-    string constant TEST_TOOL_IPFS_CID_2 = "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG";
+    bytes constant TEST_TOOL_IPFS_CID_1 = bytes("QmPK1s3pNYLi9ERiq3BDxKa4XosgWwFRQUydHUtz4YgpqB");
+    bytes constant TEST_TOOL_IPFS_CID_2 = bytes("QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG");
 
     // Policy-related constants
-    string constant TEST_POLICY_1 = "QmTestPolicy1";
-    string constant TEST_POLICY_2 = "QmTestPolicy2";
-    string constant TEST_POLICY_PARAM_1 = "param1";
-    string constant TEST_POLICY_PARAM_2 = "param2";
-    string constant TEST_POLICY_SCHEMA_1 = "QmTestPolicySchema1";
-    string constant TEST_POLICY_SCHEMA_2 = "QmTestPolicySchema2";
+    bytes constant TEST_POLICY_1 = bytes("QmTestPolicy1");
+    bytes constant TEST_POLICY_2 = bytes("QmTestPolicy2");
+    bytes constant TEST_POLICY_PARAM_1 = bytes("param1");
+    bytes constant TEST_POLICY_PARAM_2 = bytes("param2");
+    bytes constant TEST_POLICY_SCHEMA_1 = bytes("QmTestPolicySchema1");
+    bytes constant TEST_POLICY_SCHEMA_2 = bytes("QmTestPolicySchema2");
 
     // PKP-related constants
     uint256 constant TEST_PKP_TOKEN_ID_1 = 100;
@@ -68,10 +68,10 @@ abstract contract VincentTestHelper is Test {
     event NewAppRegistered(uint256 indexed appId, address indexed manager);
     event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
     event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
-    event AuthorizedDomainAdded(uint256 indexed appId, string indexed domain);
-    event AuthorizedRedirectUriAdded(uint256 indexed appId, string indexed redirectUri);
-    event AuthorizedDomainRemoved(uint256 indexed appId, string indexed domain);
-    event AuthorizedRedirectUriRemoved(uint256 indexed appId, string indexed redirectUri);
+    event AuthorizedDomainAdded(uint256 indexed appId, bytes32 indexed hashedDomain);
+    event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
+    event AuthorizedDomainRemoved(uint256 indexed appId, bytes32 indexed hashedDomain);
+    event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
     event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
     event ToolApproved(bytes32 indexed toolIpfsCidHash);
     event ToolApprovalRemoved(bytes32 indexed toolIpfsCidHash);
@@ -119,28 +119,28 @@ abstract contract VincentTestHelper is Test {
      * @return appVersion The version of the registered app
      */
     function _registerTestApp() internal returns (uint256 appId, uint256 appVersion) {
-        string[] memory redirectUris = new string[](1);
+        bytes[] memory redirectUris = new bytes[](1);
         redirectUris[0] = TEST_REDIRECT_URI_1;
 
         address[] memory delegatees = new address[](1);
         delegatees[0] = TEST_DELEGATEE_1;
 
-        string[] memory toolIpfsCids = new string[](1);
+        bytes[] memory toolIpfsCids = new bytes[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
         // Set up tool policies
-        string[][] memory toolPolicies = new string[][](1);
-        toolPolicies[0] = new string[](1);
+        bytes[][] memory toolPolicies = new bytes[][](1);
+        toolPolicies[0] = new bytes[](1);
         toolPolicies[0][0] = TEST_POLICY_1;
 
-        string[][][] memory toolPolicyParameterNames = new string[][][](1);
-        toolPolicyParameterNames[0] = new string[][](1);
-        toolPolicyParameterNames[0][0] = new string[](1);
+        bytes[][][] memory toolPolicyParameterNames = new bytes[][][](1);
+        toolPolicyParameterNames[0] = new bytes[][](1);
+        toolPolicyParameterNames[0][0] = new bytes[](1);
         toolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // Set up policy schemas
-        string[][] memory toolPolicySchemaIpfsCids = new string[][](1);
-        toolPolicySchemaIpfsCids[0] = new string[](1);
+        bytes[][] memory toolPolicySchemaIpfsCids = new bytes[][](1);
+        toolPolicySchemaIpfsCids[0] = new bytes[](1);
         toolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
 
         // Register app with version
