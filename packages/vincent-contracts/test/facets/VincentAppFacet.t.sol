@@ -484,4 +484,352 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test registering a new version of an existing app
+     * @dev Verifies that a new app version can be registered with updated tools/policies
+     */
+    function testRegisterNextAppVersion() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create updated data for the second version
+        bytes[] memory updatedToolIpfsCids = new bytes[](1);
+        updatedToolIpfsCids[0] = TEST_TOOL_IPFS_CID_2; // Use a different tool
+
+        // Prepare matching policy arrays for the new tool
+        bytes[][] memory updatedPolicies = new bytes[][](1);
+        updatedPolicies[0] = new bytes[](1);
+        updatedPolicies[0][0] = TEST_POLICY_2;
+
+        bytes[][] memory updatedPolicySchemas = new bytes[][](1);
+        updatedPolicySchemas[0] = new bytes[](1);
+        updatedPolicySchemas[0][0] = TEST_POLICY_SCHEMA_2;
+
+        bytes[][][] memory updatedParameterNames = new bytes[][][](1);
+        updatedParameterNames[0] = new bytes[][](1);
+        updatedParameterNames[0][0] = new bytes[](1);
+        updatedParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
+
+        VincentAppStorage.ParameterType[][][] memory updatedParameterTypes =
+            new VincentAppStorage.ParameterType[][][](1);
+        updatedParameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        updatedParameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        updatedParameterTypes[0][0][0] = VincentAppStorage.ParameterType.BOOL;
+
+        // Expect the NewAppVersionRegistered event
+        vm.expectEmit(true, true, true, false);
+        emit NewAppVersionRegistered(appId, 2, deployer);
+
+        // Register a new version of the app
+        uint256 newVersionNumber = wrappedAppFacet.registerNextAppVersion(
+            appId,
+            updatedToolIpfsCids,
+            updatedPolicies,
+            updatedPolicySchemas,
+            updatedParameterNames,
+            updatedParameterTypes
+        );
+
+        // Verify new version number
+        assertEq(newVersionNumber, 2, "New version number should be 2");
+
+        // Verify app version is created and enabled
+        (VincentAppViewFacet.App memory app, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, newVersionNumber);
+        assertTrue(versionData.enabled, "New app version should be enabled");
+
+        // Verify tools were correctly registered in the new version
+        assertEq(versionData.tools.length, 1, "App version should have 1 tool");
+        assertEq(
+            keccak256(versionData.tools[0].toolIpfsCid), keccak256(TEST_TOOL_IPFS_CID_2), "Tool IPFS CID should match"
+        );
+
+        // Verify policies were correctly registered for the new tool
+        assertEq(versionData.tools[0].policies.length, 1, "Tool should have 1 policy");
+        assertEq(
+            keccak256(versionData.tools[0].policies[0].policyIpfsCid),
+            keccak256(TEST_POLICY_2),
+            "Policy IPFS CID should match"
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with multiple tools
+     * @dev Verifies that a complex app version with multiple tools and policies can be registered
+     */
+    function testRegisterNextAppVersionWithMultipleTools() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create data for a more complex second version with multiple tools
+        bytes[] memory multiToolIpfsCids = new bytes[](2);
+        multiToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1; // Reuse the first tool
+        multiToolIpfsCids[1] = TEST_TOOL_IPFS_CID_2; // Add a second tool
+
+        // Each tool has 2 policies
+        bytes[][] memory multiToolPolicies = new bytes[][](2);
+        multiToolPolicies[0] = new bytes[](2);
+        multiToolPolicies[0][0] = TEST_POLICY_1;
+        multiToolPolicies[0][1] = TEST_POLICY_2;
+        multiToolPolicies[1] = new bytes[](2);
+        multiToolPolicies[1][0] = TEST_POLICY_1;
+        multiToolPolicies[1][1] = TEST_POLICY_2;
+
+        // Policy schemas for each policy
+        bytes[][] memory multiToolPolicySchemas = new bytes[][](2);
+        multiToolPolicySchemas[0] = new bytes[](2);
+        multiToolPolicySchemas[0][0] = TEST_POLICY_SCHEMA_1;
+        multiToolPolicySchemas[0][1] = TEST_POLICY_SCHEMA_2;
+        multiToolPolicySchemas[1] = new bytes[](2);
+        multiToolPolicySchemas[1][0] = TEST_POLICY_SCHEMA_1;
+        multiToolPolicySchemas[1][1] = TEST_POLICY_SCHEMA_2;
+
+        // Parameter names for each policy
+        bytes[][][] memory multiToolParamNames = new bytes[][][](2);
+        // First tool's policies
+        multiToolParamNames[0] = new bytes[][](2);
+        multiToolParamNames[0][0] = new bytes[](1);
+        multiToolParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+        multiToolParamNames[0][1] = new bytes[](1);
+        multiToolParamNames[0][1][0] = TEST_POLICY_PARAM_2;
+        // Second tool's policies
+        multiToolParamNames[1] = new bytes[][](2);
+        multiToolParamNames[1][0] = new bytes[](1);
+        multiToolParamNames[1][0][0] = TEST_POLICY_PARAM_1;
+        multiToolParamNames[1][1] = new bytes[](1);
+        multiToolParamNames[1][1][0] = TEST_POLICY_PARAM_2;
+
+        // Parameter types for each parameter
+        VincentAppStorage.ParameterType[][][] memory multiToolParamTypes = new VincentAppStorage.ParameterType[][][](2);
+        // First tool's policies
+        multiToolParamTypes[0] = new VincentAppStorage.ParameterType[][](2);
+        multiToolParamTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        multiToolParamTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        multiToolParamTypes[0][1] = new VincentAppStorage.ParameterType[](1);
+        multiToolParamTypes[0][1][0] = VincentAppStorage.ParameterType.BOOL;
+        // Second tool's policies
+        multiToolParamTypes[1] = new VincentAppStorage.ParameterType[][](2);
+        multiToolParamTypes[1][0] = new VincentAppStorage.ParameterType[](1);
+        multiToolParamTypes[1][0][0] = VincentAppStorage.ParameterType.STRING;
+        multiToolParamTypes[1][1] = new VincentAppStorage.ParameterType[](1);
+        multiToolParamTypes[1][1][0] = VincentAppStorage.ParameterType.UINT256;
+
+        // Register a new version of the app with multiple tools
+        uint256 newVersionNumber = wrappedAppFacet.registerNextAppVersion(
+            appId,
+            multiToolIpfsCids,
+            multiToolPolicies,
+            multiToolPolicySchemas,
+            multiToolParamNames,
+            multiToolParamTypes
+        );
+
+        // Verify new version number
+        assertEq(newVersionNumber, 2, "New version number should be 2");
+
+        // Verify app version data to check tool count
+        (VincentAppViewFacet.App memory app, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, newVersionNumber);
+
+        // Verify tools were correctly registered
+        assertEq(versionData.tools.length, 2, "App version should have 2 tools");
+
+        // Verify each tool has 2 policies
+        assertEq(versionData.tools[0].policies.length, 2, "First tool should have 2 policies");
+        assertEq(versionData.tools[1].policies.length, 2, "Second tool should have 2 policies");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that only the app manager can register a new app version
+     * @dev Verifies the onlyAppManager modifier works correctly
+     */
+    function testRegisterNextAppVersionNotAppManager() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        vm.stopPrank();
+
+        // Switch to a different address (not the app manager)
+        vm.startPrank(address(0xBEEF));
+
+        // Expect the call to revert with NotAppManager error
+        vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
+
+        // Try to register a new version of the app as non-manager
+        wrappedAppFacet.registerNextAppVersion(
+            appId,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with mismatched tool and policy array lengths
+     * @dev Verifies that version registration fails when array lengths don't match
+     */
+    function testRegisterNextAppVersionWithMismatchedArrays() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create mismatched arrays (more tools than policies)
+        bytes[] memory extraTools = new bytes[](2);
+        extraTools[0] = TEST_TOOL_IPFS_CID_1;
+        extraTools[1] = TEST_TOOL_IPFS_CID_2;
+
+        // Expect the call to revert with ToolsAndPoliciesLengthMismatch error
+        vm.expectRevert(abi.encodeWithSignature("ToolsAndPoliciesLengthMismatch()"));
+
+        // Try to register a new app version with mismatched arrays
+        wrappedAppFacet.registerNextAppVersion(
+            appId,
+            extraTools, // 2 tools
+            testToolPolicies, // 1 policy array
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with an empty tool IPFS CID
+     * @dev Verifies that registration fails with EmptyToolIpfsCidNotAllowed error
+     */
+    function testRegisterNextAppVersionWithEmptyToolIpfsCid() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create tool array with an empty IPFS CID
+        bytes[] memory emptyToolCids = new bytes[](1);
+        emptyToolCids[0] = bytes("");
+
+        // Create matching policy arrays
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidNotAllowed(uint256,uint256)", appId, 0));
+
+        // Try to register a new app version with an empty tool IPFS CID
+        wrappedAppFacet.registerNextAppVersion(
+            appId,
+            emptyToolCids,
+            policies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with an empty policy IPFS CID
+     * @dev Verifies that registration fails with EmptyPolicyIpfsCidNotAllowed error
+     */
+    function testRegisterNextAppVersionWithEmptyPolicyIpfsCid() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create policy array with an empty IPFS CID
+        bytes[][] memory emptyPolicies = new bytes[][](1);
+        emptyPolicies[0] = new bytes[](1);
+        emptyPolicies[0][0] = bytes("");
+
+        vm.expectRevert(abi.encodeWithSignature("EmptyPolicyIpfsCidNotAllowed(uint256,uint256)", appId, 0));
+
+        // Try to register a new app version with an empty policy IPFS CID
+        wrappedAppFacet.registerNextAppVersion(
+            appId,
+            testToolIpfsCids,
+            emptyPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering multiple versions of the same app sequentially
+     * @dev Verifies that version numbers increment correctly
+     */
+    function testRegisterMultipleAppVersionsSequentially() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+        assertEq(firstVersionNumber, 1, "First version number should be 1");
+
+        // Create different tools for each version
+        bytes[] memory secondVersionTool = new bytes[](1);
+        secondVersionTool[0] = TEST_TOOL_IPFS_CID_2;
+
+        // Register second version
+        uint256 secondVersionNumber = wrappedAppFacet.registerNextAppVersion(
+            appId,
+            secondVersionTool,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        assertEq(secondVersionNumber, 2, "Second version number should be 2");
+
+        // Create a third version with a different tool
+        bytes[] memory thirdVersionTool = new bytes[](1);
+        thirdVersionTool[0] = bytes("QmThirdToolIpfsCid");
+
+        // Register third version
+        uint256 thirdVersionNumber = wrappedAppFacet.registerNextAppVersion(
+            appId,
+            thirdVersionTool,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        assertEq(thirdVersionNumber, 3, "Third version number should be 3");
+
+        // Verify all versions exist and are enabled
+        (VincentAppViewFacet.App memory appV1, VincentAppViewFacet.AppVersion memory versionDataV1) =
+            wrappedAppViewFacet.getAppVersion(appId, 1);
+        assertTrue(versionDataV1.enabled, "First version should be enabled");
+
+        (VincentAppViewFacet.App memory appV2, VincentAppViewFacet.AppVersion memory versionDataV2) =
+            wrappedAppViewFacet.getAppVersion(appId, 2);
+        assertTrue(versionDataV2.enabled, "Second version should be enabled");
+
+        (VincentAppViewFacet.App memory appV3, VincentAppViewFacet.AppVersion memory versionDataV3) =
+            wrappedAppViewFacet.getAppVersion(appId, 3);
+        assertTrue(versionDataV3.enabled, "Third version should be enabled");
+
+        vm.stopPrank();
+    }
 }
