@@ -48,7 +48,7 @@ export default function AuthenticatedConsentForm ({
   const [checkingPermissions, setCheckingPermissions] = useState<boolean>(true);
   const [showingAuthorizedMessage, setShowingAuthorizedMessage] = useState<boolean>(false);
   const [isUriUntrusted, setIsUriUntrusted] = useState<boolean>(false);
-
+  const [authorizedDomains, setAuthorizedDomains] = useState<string[]>([]);
   // ===== JWT and Redirect Functions =====
   
   // Generate JWT for redirection
@@ -264,12 +264,41 @@ export default function AuthenticatedConsentForm ({
       if (!referrerUrl) {
         return false;
       }
-      const authorizedRedirectUris = appInfo?.authorizedRedirectUris;
-      if (!authorizedRedirectUris || !authorizedRedirectUris.includes(referrerUrl)) {
+      
+      try {
+        // Extract domain and port from referrer URL
+        const referrerUrl_obj = new URL(referrerUrl);
+        const referrerDomain = referrerUrl_obj.hostname;
+        const referrerPort = referrerUrl_obj.port || (referrerUrl_obj.protocol === 'https:' ? '443' : '80');
+        
+        // Get domains and ports from authorized URIs
+        const authorizedDomainsWithPorts = appInfo?.authorizedRedirectUris?.map(uri => {
+          try {
+            const url = new URL(uri);
+            const domain = url.hostname;
+            const port = url.port || (url.protocol === 'https:' ? '443' : '80');
+            return { domain, port, fullDomain: domain + (port === '80' || port === '443' ? '' : ':' + port) };
+          } catch (e) {
+            console.error(`Invalid URI in authorizedRedirectUris: ${uri}`, e);
+            return null;
+          }
+        }).filter(item => item !== null) || [];
+        
+        console.log('Authorized domains with ports:', authorizedDomainsWithPorts);
+        
+        // Store just the display domains for UI display
+        const displayDomains = authorizedDomainsWithPorts.map(item => item?.fullDomain || '');
+        const uniqueDomains = [...new Set(displayDomains)];
+        setAuthorizedDomains(uniqueDomains);
+        
+        // Check if referrer domain and port are in the list of authorized domains and ports
+        return authorizedDomainsWithPorts.some(item => 
+          item?.domain === referrerDomain && item?.port === referrerPort
+        );
+      } catch (e) {
+        console.error('Error parsing referrer URL:', e);
         return false;
       }
-  
-      return true;
     }
 
       try {
@@ -382,25 +411,26 @@ export default function AuthenticatedConsentForm ({
       <div className="consent-form-container">
         <h1>Untrusted URI</h1>
         
-        <div className="alert alert--error">
-          <p>This application is trying to redirect to a URI that is not on its list of authorized redirect URIs. For your security, this request has been blocked.</p>
-        </div>
-        
-        {referrerUrl && (
-          <div className="details-card" style={{backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb"}}>
-            <div style={{width: "100%"}}>
-              <p><strong>Untrusted URI:</strong></p>
-              <code className="monospace" style={{display: "block", marginTop: "0.5rem", wordBreak: "break-all", backgroundColor: "#ffffff", padding: "0.5rem", borderRadius: "4px", fontSize: "0.875rem"}}>{referrerUrl}</code>
+        <div className="alert alert--error" style={{display: "block"}}>
+          <p style={{display: "block"}}>This application is trying to redirect to a URI that is not on its list of authorized redirect URIs. For your security, this request has been blocked.</p>
+          {referrerUrl && (
+            <div style={{display: "block", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.2)"}}>
+              <div style={{display: "block"}}>
+                <strong>Untrusted URI:</strong>
+              </div>
+              <div style={{display: "block", marginTop: "8px", paddingLeft: "0"}}>
+                <span style={{whiteSpace: "normal", wordBreak: "break-all", fontFamily: "monospace"}}>{referrerUrl}</span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         
         <div className="details-card" style={{flexDirection: "column", backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb"}}>
           <h4 style={{marginTop: 0, marginBottom: "0.5rem", fontSize: "1rem"}}>Authorized Redirect URIs:</h4>
           {appInfo && appInfo.authorizedRedirectUris && appInfo.authorizedRedirectUris.length > 0 ? (
             <ul className="permissions-list" style={{marginTop: "0.5rem"}}>
-              {appInfo.authorizedRedirectUris.map((url, index) => (
-                <li key={index} style={{backgroundColor: "#ffffff", fontSize: "0.875rem"}}>{url}</li>
+              {authorizedDomains.map((domain, index) => (
+                <li key={index} style={{backgroundColor: "#ffffff", fontSize: "0.875rem"}}>{domain}</li>
               ))}
             </ul>
           ) : (
