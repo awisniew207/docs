@@ -257,17 +257,22 @@ contract UpdateFacet is Script {
 
     /// @dev Get VincentToolFacet selectors
     function getVincentToolFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](2);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = VincentToolFacet.registerTool.selector;
         selectors[1] = VincentToolFacet.registerTools.selector;
+        selectors[2] = VincentToolFacet.approveTools.selector;
+        selectors[3] = VincentToolFacet.removeToolApprovals.selector;
+        selectors[4] = VincentToolFacet.updateApprovedToolsManager.selector;
         return selectors;
     }
 
     /// @dev Get VincentToolViewFacet selectors
     function getVincentToolViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](2);
+        bytes4[] memory selectors = new bytes4[](4);
         selectors[0] = VincentToolViewFacet.getToolIpfsCidByHash.selector;
-        selectors[1] = VincentToolViewFacet.getAllRegisteredTools.selector;
+        selectors[1] = VincentToolViewFacet.getAllApprovedTools.selector;
+        selectors[2] = VincentToolViewFacet.isToolApproved.selector;
+        selectors[3] = VincentToolViewFacet.getApprovedToolsManager.selector;
         return selectors;
     }
 
