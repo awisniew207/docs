@@ -89,7 +89,6 @@ library VincentToolStorage {
     bytes32 internal constant TOOL_STORAGE_SLOT = keccak256("lit.vincent.tool.storage");
 
     struct ToolStorage {
-        EnumerableSet.Bytes32Set registeredTools;
         // A list of approved/reviewed Tool IPFS CID Hashes
         EnumerableSet.Bytes32Set approvedIpfsCidHashes;
         // Policy Parameter Name Hash => Policy Parameter Name

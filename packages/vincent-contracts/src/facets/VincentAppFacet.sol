@@ -503,17 +503,15 @@ contract VincentAppFacet is VincentBase {
                 if (!toolIpfsCidHashes.add(hashedToolCid)) {
                     revert FailedToAddTool(appId, newAppVersion, toolIpfsCid);
                 }
-                // Attempt to register the tool, but don't revert if it's already registered
-                try IVincentToolFacet(address(this)).registerTool(toolIpfsCid) {
-                    // Tool registered successfully
-                } catch Error(string memory reason) {
-                    // If the error is because the tool is already registered, continue
-                    // Otherwise, propagate the error
-                    if (keccak256(bytes(reason)) != keccak256(bytes("ToolAlreadyRegistered"))) {
-                        revert(reason);
-                    }
-                    // Tool is already registered, continue
+
+                // First check if the tool is already registered in global storage
+                // before trying to register it again
+                if (ts.ipfsCidHashToIpfsCid[hashedToolCid].length == 0) {
+                    // Tool not yet registered globally, so register it
+                    IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
                 }
+                // If tool is already registered globally, just continue
+                // without trying to register it again
             }
 
             // Step 4.2: Fetch the tool policies storage for this tool.

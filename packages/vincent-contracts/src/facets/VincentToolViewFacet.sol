@@ -47,26 +47,6 @@ contract VincentToolViewFacet {
     }
 
     /**
-     * @notice Retrieves all registered tools
-     * @return toolIpfsCids Array of registered tool IPFS CIDs
-     */
-    function getAllRegisteredTools() external view returns (bytes[] memory toolIpfsCids) {
-        VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-
-        uint256 toolCount = ts_.registeredTools.length();
-
-        // Check if there are any registered tools
-        if (toolCount == 0) {
-            revert NoToolsRegistered();
-        }
-
-        toolIpfsCids = new bytes[](toolCount);
-        for (uint256 i = 0; i < toolCount; i++) {
-            toolIpfsCids[i] = ts_.ipfsCidHashToIpfsCid[ts_.registeredTools.at(i)];
-        }
-    }
-
-    /**
      * @notice Get all approved tools
      * @return toolIpfsCids Array of approved tool IPFS CIDs
      */

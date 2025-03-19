@@ -84,8 +84,7 @@ contract VincentToolFacet {
 
         bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-        if (!ts_.registeredTools.contains(hashedIpfsCid)) {
-            ts_.registeredTools.add(hashedIpfsCid);
+        if (ts_.ipfsCidHashToIpfsCid[hashedIpfsCid].length == 0) {
             ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
             emit NewToolRegistered(hashedIpfsCid);
         } else {
@@ -133,7 +132,7 @@ contract VincentToolFacet {
             }
 
             // Ensure the tool is registered
-            if (!ts_.registeredTools.contains(hashedIpfsCid)) {
+            if (ts_.ipfsCidHashToIpfsCid[hashedIpfsCid].length == 0) {
                 revert ToolNotRegistered(hashedIpfsCid);
             }
 
