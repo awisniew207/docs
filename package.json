@@ -21,8 +21,8 @@
     "start:dashboard": "nx serve dashboard --prod",
     "lint:dashboard": "nx lint dashboard",
     "install:contracts": "cd packages/vincent-contracts && forge install",
-    "build:contracts": "cd packages/vincent-contracts && make build",
-    "gen-abis:contracts": "cd packages/vincent-contracts && make get-abis && make run-postbuild-scripts"
+    "make:contracts": "cd packages/vincent-contracts && make",
+    "build:contracts": "nx build vincent-contracts"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
