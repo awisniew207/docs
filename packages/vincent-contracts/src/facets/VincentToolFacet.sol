@@ -74,7 +74,7 @@ contract VincentToolFacet {
         _;
     }
 
-    function registerTools(bytes[] calldata toolIpfsCids) external {
+    function registerTools(string[] calldata toolIpfsCids) external {
         // Validate that the array is not empty
         if (toolIpfsCids.length == 0) {
             revert EmptyToolIpfsCidsArray();
@@ -82,10 +82,10 @@ contract VincentToolFacet {
 
         uint256 toolCount = toolIpfsCids.length;
         for (uint256 i = 0; i < toolCount; i++) {
-            bytes memory toolIpfsCid = toolIpfsCids[i];
+            string memory toolIpfsCid = toolIpfsCids[i];
 
             // Validate that tool IPFS CID is not empty
-            if (toolIpfsCid.length == 0) {
+            if (bytes(toolIpfsCid).length == 0) {
                 revert EmptyToolIpfsCid();
             }
 
@@ -93,7 +93,7 @@ contract VincentToolFacet {
 
             bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            if (ts_.ipfsCidHashToIpfsCid[hashedIpfsCid].length == 0) {
+            if (bytes(ts_.ipfsCidHashToIpfsCid[hashedIpfsCid]).length == 0) {
                 ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
                 emit NewToolRegistered(hashedIpfsCid);
             } else {
@@ -107,7 +107,7 @@ contract VincentToolFacet {
      * @dev Only callable by the approved tools manager
      * @param toolIpfsCids Array of IPFS CIDs of the tools to approve (can be a single tool)
      */
-    function approveTools(bytes[] calldata toolIpfsCids) external onlyApprovedToolsManager {
+    function approveTools(string[] calldata toolIpfsCids) external onlyApprovedToolsManager {
         // Validate that the array is not empty
         if (toolIpfsCids.length == 0) {
             revert EmptyToolIpfsCidsArray();
@@ -116,10 +116,10 @@ contract VincentToolFacet {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            bytes memory toolIpfsCid = toolIpfsCids[i];
+            string memory toolIpfsCid = toolIpfsCids[i];
 
             // Validate that tool IPFS CID is not empty
-            if (toolIpfsCid.length == 0) {
+            if (bytes(toolIpfsCid).length == 0) {
                 revert EmptyToolIpfsCid();
             }
 
@@ -131,7 +131,7 @@ contract VincentToolFacet {
             }
 
             // Ensure the tool is registered
-            if (ts_.ipfsCidHashToIpfsCid[hashedIpfsCid].length == 0) {
+            if (bytes(ts_.ipfsCidHashToIpfsCid[hashedIpfsCid]).length == 0) {
                 revert ToolNotRegistered(hashedIpfsCid);
             }
 
@@ -146,7 +146,7 @@ contract VincentToolFacet {
      * @dev Only callable by the approved tools manager
      * @param toolIpfsCids Array of IPFS CIDs of the tools to remove from the approved list (can be a single tool)
      */
-    function removeToolApprovals(bytes[] calldata toolIpfsCids) external onlyApprovedToolsManager {
+    function removeToolApprovals(string[] calldata toolIpfsCids) external onlyApprovedToolsManager {
         // Validate that the array is not empty
         if (toolIpfsCids.length == 0) {
             revert EmptyToolIpfsCidsArray();
@@ -155,10 +155,10 @@ contract VincentToolFacet {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            bytes memory toolIpfsCid = toolIpfsCids[i];
+            string memory toolIpfsCid = toolIpfsCids[i];
 
             // Validate that tool IPFS CID is not empty
-            if (toolIpfsCid.length == 0) {
+            if (bytes(toolIpfsCid).length == 0) {
                 revert EmptyToolIpfsCid();
             }
 

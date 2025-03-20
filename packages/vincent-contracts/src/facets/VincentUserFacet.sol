@@ -35,15 +35,15 @@ contract VincentUserFacet is VincentBase {
     error AppVersionNotPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
     error AppVersionNotEnabled(uint256 appId, uint256 appVersion);
     error ToolsAndPoliciesLengthMismatch();
-    error ToolNotRegisteredForAppVersion(uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid);
+    error ToolNotRegisteredForAppVersion(uint256 appId, uint256 appVersion, string toolIpfsCid);
     error ToolPolicyNotRegisteredForAppVersion(
-        uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid, bytes32 hashedToolPolicy
+        uint256 appId, uint256 appVersion, string toolIpfsCid, string toolPolicyIpfsCid
     );
     error PolicyParameterNameNotRegisteredForAppVersion(
-        uint256 appId, uint256 appVersion, bytes32 hashedToolIpfsCid, bytes32 hashedPolicyParameterName
+        uint256 appId, uint256 appVersion, string toolIpfsCid, string toolPolicyIpfsCid, string policyParameterName
     );
     error InvalidInput();
-    error EmptyParameterValue(bytes parameterName);
+    error EmptyParameterValue(string parameterName);
     error ZeroPkpTokenId();
     error PkpTokenDoesNotExist(uint256 pkpTokenId);
     error EmptyToolIpfsCid();
@@ -70,9 +70,9 @@ contract VincentUserFacet is VincentBase {
         uint256 pkpTokenId,
         uint256 appId,
         uint256 appVersion,
-        bytes[] calldata toolIpfsCids,
-        bytes[][] calldata policyIpfsCids,
-        bytes[][][] calldata policyParameterNames,
+        string[] calldata toolIpfsCids,
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames,
         bytes[][][] calldata policyParameterValues
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         if (
@@ -170,9 +170,9 @@ contract VincentUserFacet is VincentBase {
         uint256 pkpTokenId,
         uint256 appId,
         uint256 appVersion,
-        bytes[] calldata toolIpfsCids,
-        bytes[][] calldata policyIpfsCids,
-        bytes[][][] calldata policyParameterNames,
+        string[] calldata toolIpfsCids,
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames,
         bytes[][][] calldata policyParameterValues
     ) public onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         if (toolIpfsCids.length == 0) {
@@ -202,9 +202,9 @@ contract VincentUserFacet is VincentBase {
         uint256 appId,
         uint256 pkpTokenId,
         uint256 appVersion,
-        bytes[] calldata toolIpfsCids,
-        bytes[][] calldata policyIpfsCids,
-        bytes[][][] calldata policyParameterNames
+        string[] calldata toolIpfsCids,
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames
     ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         // Step 1: Validate input array lengths to ensure they are consistent.
         if (toolIpfsCids.length == 0) {
@@ -222,10 +222,10 @@ contract VincentUserFacet is VincentBase {
 
         // Step 3: Iterate over each tool to process its policies and remove parameters.
         for (uint256 i = 0; i < toolCount; i++) {
-            bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
 
             // Validate tool IPFS CID is not empty
-            if (toolIpfsCid.length == 0) {
+            if (bytes(toolIpfsCid).length == 0) {
                 revert EmptyToolIpfsCid();
             }
 
@@ -235,7 +235,7 @@ contract VincentUserFacet is VincentBase {
             VincentAppStorage.VersionedApp storage versionedApp =
                 as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
-                revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
+                revert ToolNotRegisteredForAppVersion(appId, appVersion, toolIpfsCid);
             }
 
             // Step 3.2: Fetch the tool policies to check if policies exist.
@@ -249,10 +249,10 @@ contract VincentUserFacet is VincentBase {
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
-                bytes memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+                string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
 
                 // Validate policy IPFS CID is not empty
-                if (policyIpfsCid.length == 0) {
+                if (bytes(policyIpfsCid).length == 0) {
                     revert EmptyPolicyIpfsCid();
                 }
 
@@ -260,7 +260,7 @@ contract VincentUserFacet is VincentBase {
 
                 // Step 4.1: Verify that the policy exists before attempting removal.
                 if (!toolPolicies.policyIpfsCidHashes.contains(hashedPolicyId)) {
-                    revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedPolicyId);
+                    revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, toolIpfsCid, policyIpfsCid);
                 }
 
                 // Step 4.2: Access the policy parameters storage.
@@ -270,10 +270,10 @@ contract VincentUserFacet is VincentBase {
                 // Step 5: Iterate through parameters and remove them.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    bytes memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+                    string memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
 
                     // Validate parameter name is not empty
-                    if (paramName.length == 0) {
+                    if (bytes(paramName).length == 0) {
                         revert EmptyParameterName();
                     }
 
@@ -319,9 +319,9 @@ contract VincentUserFacet is VincentBase {
         uint256 appId,
         uint256 pkpTokenId,
         uint256 appVersion,
-        bytes[] calldata toolIpfsCids,
-        bytes[][] calldata policyIpfsCids,
-        bytes[][][] calldata policyParameterNames,
+        string[] calldata toolIpfsCids,
+        string[][] calldata policyIpfsCids,
+        string[][][] calldata policyParameterNames,
         bytes[][][] calldata policyParameterValues
     ) internal {
         // Step 1: Validate input array lengths to prevent mismatches.
@@ -339,10 +339,10 @@ contract VincentUserFacet is VincentBase {
 
         // Step 3: Loop over each tool to process its associated policies and parameters.
         for (uint256 i = 0; i < toolCount; i++) {
-            bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
 
             // Validate tool IPFS CID is not empty
-            if (toolIpfsCid.length == 0) {
+            if (bytes(toolIpfsCid).length == 0) {
                 revert EmptyToolIpfsCid();
             }
 
@@ -352,7 +352,7 @@ contract VincentUserFacet is VincentBase {
             VincentAppStorage.VersionedApp storage versionedApp =
                 as_.appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
             if (!versionedApp.toolIpfsCidHashes.contains(hashedToolIpfsCid)) {
-                revert ToolNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid);
+                revert ToolNotRegisteredForAppVersion(appId, appVersion, toolIpfsCid);
             }
 
             // Step 3.2: Access storage locations for tool policies.
@@ -365,10 +365,10 @@ contract VincentUserFacet is VincentBase {
             // Step 4: Iterate through each policy associated with the tool.
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
-                bytes memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+                string memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
 
                 // Validate policy IPFS CID is not empty
-                if (policyIpfsCid.length == 0) {
+                if (bytes(policyIpfsCid).length == 0) {
                     revert EmptyPolicyIpfsCid();
                 }
 
@@ -376,7 +376,7 @@ contract VincentUserFacet is VincentBase {
 
                 // Step 4.1: Validate that the policy is registered for the tool.
                 if (!toolPolicies.policyIpfsCidHashes.contains(hashedToolPolicy)) {
-                    revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, hashedToolIpfsCid, hashedToolPolicy);
+                    revert ToolPolicyNotRegisteredForAppVersion(appId, appVersion, toolIpfsCid, policyIpfsCid);
                 }
 
                 // Step 4.2: Access storage for policy parameters.
@@ -386,11 +386,11 @@ contract VincentUserFacet is VincentBase {
                 // Step 5: Iterate through each parameter associated with the policy.
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    bytes memory paramName = policyParameterNames[i][j][k];
+                    string memory paramName = policyParameterNames[i][j][k];
                     bytes memory paramValue = policyParameterValues[i][j][k];
 
                     // Validate parameter name is not empty
-                    if (paramName.length == 0) {
+                    if (bytes(paramName).length == 0) {
                         revert EmptyParameterName();
                     }
 
@@ -405,7 +405,7 @@ contract VincentUserFacet is VincentBase {
                     VincentAppStorage.Policy storage policy = toolPolicies.policyIpfsCidHashToPolicy[hashedToolPolicy];
                     if (!policy.policyParameterNameHashes.contains(hashedPolicyParameterName)) {
                         revert PolicyParameterNameNotRegisteredForAppVersion(
-                            appId, appVersion, hashedToolIpfsCid, hashedPolicyParameterName
+                            appId, appVersion, toolIpfsCid, policyIpfsCid, paramName
                         );
                     }
 

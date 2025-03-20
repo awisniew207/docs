@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "../../helpers/VincentTestHelper.sol";
 import "../../../src/VincentBase.sol";
@@ -125,11 +125,11 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 versionNumber) = _registerTestApp();
 
         // Verify initial redirect URI count
-        bytes[] memory initialRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory initialRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
         assertEq(initialRedirectUris.length, 1, "Should have 1 redirect URI initially");
 
         // Create a new redirect URI to add
-        bytes memory newRedirectUri = TEST_REDIRECT_URI_2;
+        string memory newRedirectUri = TEST_REDIRECT_URI_2;
         bytes32 hashedNewRedirectUri = keccak256(abi.encodePacked(newRedirectUri));
 
         // Expect the AuthorizedRedirectUriAdded event
@@ -140,7 +140,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.addAuthorizedRedirectUri(appId, newRedirectUri);
 
         // Verify redirect URI was added
-        bytes[] memory updatedRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory updatedRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
         assertEq(updatedRedirectUris.length, 2, "Should have 2 redirect URIs after adding");
 
         // Verify both URIs exist
@@ -149,9 +149,9 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         for (uint256 i = 0; i < updatedRedirectUris.length; i++) {
             bytes32 uriHash = keccak256(abi.encodePacked(updatedRedirectUris[i]));
-            if (uriHash == keccak256(TEST_REDIRECT_URI_1)) {
+            if (uriHash == keccak256(abi.encodePacked(TEST_REDIRECT_URI_1))) {
                 foundOriginalUri = true;
-            } else if (uriHash == keccak256(TEST_REDIRECT_URI_2)) {
+            } else if (uriHash == keccak256(abi.encodePacked(TEST_REDIRECT_URI_2))) {
                 foundNewUri = true;
             }
         }
@@ -174,7 +174,7 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Try to add the same redirect URI again
         vm.expectRevert(
-            abi.encodeWithSignature("RedirectUriAlreadyAuthorizedForApp(uint256,bytes)", appId, TEST_REDIRECT_URI_1)
+            abi.encodeWithSignature("RedirectUriAlreadyAuthorizedForApp(uint256,string)", appId, TEST_REDIRECT_URI_1)
         );
 
         wrappedAppFacet.addAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
@@ -214,7 +214,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register an app with two redirect URIs
-        bytes[] memory twoRedirectUris = new bytes[](2);
+        string[] memory twoRedirectUris = new string[](2);
         twoRedirectUris[0] = TEST_REDIRECT_URI_1;
         twoRedirectUris[1] = TEST_REDIRECT_URI_2;
 
@@ -231,7 +231,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
 
         // Verify initial redirect URI count
-        bytes[] memory initialRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory initialRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
         assertEq(initialRedirectUris.length, 2, "Should have 2 redirect URIs initially");
 
         // Get the hash of the redirect URI we'll remove
@@ -245,13 +245,13 @@ contract VincentAppFacetTest is VincentTestHelper {
         wrappedAppFacet.removeAuthorizedRedirectUri(appId, TEST_REDIRECT_URI_1);
 
         // Verify redirect URI was removed
-        bytes[] memory updatedRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory updatedRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
         assertEq(updatedRedirectUris.length, 1, "Should have 1 redirect URI after removal");
 
         // Verify the remaining URI is the correct one
         assertEq(
             keccak256(abi.encodePacked(updatedRedirectUris[0])),
-            keccak256(TEST_REDIRECT_URI_2),
+            keccak256(abi.encodePacked(TEST_REDIRECT_URI_2)),
             "The remaining URI should be the second one"
         );
 
@@ -269,9 +269,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 versionNumber) = _registerTestApp();
 
         // Try to remove a redirect URI that doesn't exist
-        bytes memory nonExistentUri = bytes("https://non-existent.com/callback");
+        string memory nonExistentUri = "https://non-existent.com/callback";
 
-        vm.expectRevert(abi.encodeWithSignature("RedirectUriNotRegisteredToApp(uint256,bytes)", appId, nonExistentUri));
+        vm.expectRevert(abi.encodeWithSignature("RedirectUriNotRegisteredToApp(uint256,string)", appId, nonExistentUri));
 
         wrappedAppFacet.removeAuthorizedRedirectUri(appId, nonExistentUri);
 
@@ -304,7 +304,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register an app with two redirect URIs
-        bytes[] memory twoRedirectUris = new bytes[](2);
+        string[] memory twoRedirectUris = new string[](2);
         twoRedirectUris[0] = TEST_REDIRECT_URI_1;
         twoRedirectUris[1] = TEST_REDIRECT_URI_2;
 
@@ -395,8 +395,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
         (uint256 secondAppId, uint256 secondVersionNumber) = wrappedAppFacet.registerApp(
-            bytes("Second App"),
-            bytes("Second App Description"),
+            "Second App",
+            "Second App Description",
             testRedirectUris,
             secondAppDelegatees,
             testToolIpfsCids,
@@ -480,17 +480,13 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Verify the remaining delegatee is the correct one
         assertEq(app.delegatees[0], TEST_DELEGATEE_2, "The remaining delegatee should be the second one");
 
-        // Verify the removed delegatee can now be added to another app
-        bytes memory secondAppName = bytes("Second App");
-        bytes memory secondAppDesc = bytes("Second App Description");
-
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_1; // Use the previously removed delegatee
 
         // Should be able to register a new app with the removed delegatee
         (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
-            secondAppName,
-            secondAppDesc,
+            "Second App",
+            "Second App Description",
             testRedirectUris,
             secondAppDelegatees,
             testToolIpfsCids,
@@ -577,8 +573,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
         wrappedAppFacet.registerApp(
-            bytes("Second App"),
-            bytes("Second App Description"),
+            "Second App",
+            "Second App Description",
             testRedirectUris,
             secondAppDelegatees,
             testToolIpfsCids,
@@ -607,8 +603,14 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Verify app data
         assertEq(app.id, appId, "App ID should match");
-        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
-        assertEq(keccak256(app.description), keccak256(TEST_APP_DESCRIPTION), "App description should match");
+        assertEq(
+            keccak256(abi.encodePacked(app.name)), keccak256(abi.encodePacked(TEST_APP_NAME)), "App name should match"
+        );
+        assertEq(
+            keccak256(abi.encodePacked(app.description)),
+            keccak256(abi.encodePacked(TEST_APP_DESCRIPTION)),
+            "App description should match"
+        );
         assertEq(app.manager, deployer, "App manager should be deployer");
         assertEq(app.latestVersion, 1, "App latest version should be 1");
         assertEq(app.delegatees.length, 1, "App should have 1 delegatee");
@@ -616,7 +618,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.authorizedRedirectUris.length, 1, "App should have 1 redirect URI");
         assertEq(
             keccak256(abi.encodePacked(app.authorizedRedirectUris[0])),
-            keccak256(TEST_REDIRECT_URI_1),
+            keccak256(abi.encodePacked(TEST_REDIRECT_URI_1)),
             "App redirect URI should match"
         );
 
@@ -654,23 +656,29 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Verify app data
         assertEq(app.id, appId, "App ID should match");
-        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+        assertEq(
+            keccak256(abi.encodePacked(app.name)), keccak256(abi.encodePacked(TEST_APP_NAME)), "App name should match"
+        );
 
         // Verify version data
         assertEq(version.version, versionNumber, "Version number should match");
         assertTrue(version.enabled, "Version should be enabled");
         assertEq(version.tools.length, 1, "Version should have 1 tool");
-        assertEq(keccak256(version.tools[0].toolIpfsCid), keccak256(TEST_TOOL_IPFS_CID_1), "Tool IPFS CID should match");
+        assertEq(
+            keccak256(abi.encodePacked(version.tools[0].toolIpfsCid)),
+            keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)),
+            "Tool IPFS CID should match"
+        );
         assertEq(version.tools[0].policies.length, 1, "Tool should have 1 policy");
         assertEq(
-            keccak256(version.tools[0].policies[0].policyIpfsCid),
-            keccak256(TEST_POLICY_1),
+            keccak256(abi.encodePacked(version.tools[0].policies[0].policyIpfsCid)),
+            keccak256(abi.encodePacked(TEST_POLICY_1)),
             "Policy IPFS CID should match"
         );
         assertEq(version.tools[0].policies[0].parameterNames.length, 1, "Policy should have 1 parameter name");
         assertEq(
-            keccak256(version.tools[0].policies[0].parameterNames[0]),
-            keccak256(TEST_POLICY_PARAM_1),
+            keccak256(abi.encodePacked(version.tools[0].policies[0].parameterNames[0])),
+            keccak256(abi.encodePacked(TEST_POLICY_PARAM_1)),
             "Parameter name should match"
         );
         assertEq(version.tools[0].policies[0].parameterTypes.length, 1, "Policy should have 1 parameter type");
@@ -733,8 +741,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
         (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
-            bytes("Second App"),
-            bytes("Second App Description"),
+            "Second App",
+            "Second App Description",
             testRedirectUris,
             secondAppDelegatees,
             testToolIpfsCids,
@@ -751,14 +759,20 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Verify first app data
         assertEq(appsWithVersions[0].app.id, firstAppId, "First app ID should match");
-        assertEq(keccak256(appsWithVersions[0].app.name), keccak256(TEST_APP_NAME), "First app name should match");
+        assertEq(
+            keccak256(abi.encodePacked(appsWithVersions[0].app.name)),
+            keccak256(abi.encodePacked(TEST_APP_NAME)),
+            "First app name should match"
+        );
         assertEq(appsWithVersions[0].versions.length, 1, "First app should have 1 version");
         assertEq(appsWithVersions[0].versions[0].version, 1, "First app version number should be 1");
 
         // Verify second app data
         assertEq(appsWithVersions[1].app.id, secondAppId, "Second app ID should match");
         assertEq(
-            keccak256(appsWithVersions[1].app.name), keccak256(bytes("Second App")), "Second app name should match"
+            keccak256(abi.encodePacked(appsWithVersions[1].app.name)),
+            keccak256(abi.encodePacked("Second App")),
+            "Second app name should match"
         );
         assertEq(appsWithVersions[1].versions.length, 1, "Second app should have 1 version");
         assertEq(appsWithVersions[1].versions[0].version, 1, "Second app version number should be 1");
@@ -810,7 +824,9 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Verify app data
         assertEq(app.id, appId, "App ID should match");
-        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+        assertEq(
+            keccak256(abi.encodePacked(app.name)), keccak256(abi.encodePacked(TEST_APP_NAME)), "App name should match"
+        );
         assertEq(app.delegatees.length, 1, "App should have 1 delegatee");
         assertEq(app.delegatees[0], TEST_DELEGATEE_1, "App delegatee should match");
 
@@ -860,10 +876,14 @@ contract VincentAppFacetTest is VincentTestHelper {
         bytes32 redirectUriHash = keccak256(abi.encodePacked(TEST_REDIRECT_URI_1));
 
         // Get redirect URI by hash
-        bytes memory redirectUri = wrappedAppViewFacet.getAuthorizedRedirectUriByHash(redirectUriHash);
+        string memory redirectUri = wrappedAppViewFacet.getAuthorizedRedirectUriByHash(redirectUriHash);
 
         // Verify redirect URI
-        assertEq(keccak256(abi.encodePacked(redirectUri)), keccak256(TEST_REDIRECT_URI_1), "Redirect URI should match");
+        assertEq(
+            keccak256(abi.encodePacked(redirectUri)),
+            keccak256(abi.encodePacked(TEST_REDIRECT_URI_1)),
+            "Redirect URI should match"
+        );
 
         vm.stopPrank();
     }
@@ -891,7 +911,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register an app with multiple redirect URIs
-        bytes[] memory multipleRedirectUris = new bytes[](2);
+        string[] memory multipleRedirectUris = new string[](2);
         multipleRedirectUris[0] = TEST_REDIRECT_URI_1;
         multipleRedirectUris[1] = TEST_REDIRECT_URI_2;
 
@@ -907,7 +927,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
 
         // Get redirect URIs by app ID
-        bytes[] memory redirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory redirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
 
         // Verify redirect URIs count
         assertEq(redirectUris.length, 2, "App should have 2 redirect URIs");
@@ -918,9 +938,9 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         for (uint256 i = 0; i < redirectUris.length; i++) {
             bytes32 uriHash = keccak256(abi.encodePacked(redirectUris[i]));
-            if (uriHash == keccak256(TEST_REDIRECT_URI_1)) {
+            if (uriHash == keccak256(abi.encodePacked(TEST_REDIRECT_URI_1))) {
                 foundUri1 = true;
-            } else if (uriHash == keccak256(TEST_REDIRECT_URI_2)) {
+            } else if (uriHash == keccak256(abi.encodePacked(TEST_REDIRECT_URI_2))) {
                 foundUri2 = true;
             }
         }
@@ -956,14 +976,11 @@ contract VincentAppFacetTest is VincentTestHelper {
         // First register a valid app
         (uint256 appId,) = _registerTestApp();
 
-        // Create an empty redirect URI
-        bytes memory emptyRedirectUri = bytes("");
-
         // Expect the call to revert with EmptyRedirectUriNotAllowed error
         vm.expectRevert(abi.encodeWithSignature("EmptyRedirectUriNotAllowed()"));
 
         // Try to add an empty redirect URI to the existing app
-        wrappedAppFacet.addAuthorizedRedirectUri(appId, emptyRedirectUri);
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, "");
 
         vm.stopPrank();
     }

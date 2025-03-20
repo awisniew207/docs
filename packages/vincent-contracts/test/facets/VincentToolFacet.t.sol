@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "../helpers/VincentTestHelper.sol";
 import "../../src/VincentBase.sol";
@@ -25,7 +25,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create a new tool IPFS CID
-        bytes memory newToolIpfsCid = bytes("QmNewTestTool");
+        string memory newToolIpfsCid = "QmNewTestTool";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(newToolIpfsCid));
 
         // Expect the NewToolRegistered event
@@ -33,14 +33,16 @@ contract VincentToolFacetTest is VincentTestHelper {
         emit NewToolRegistered(hashedToolCid);
 
         // Register the tool (using registerTools with a single-item array)
-        bytes[] memory singleToolArray = new bytes[](1);
+        string[] memory singleToolArray = new string[](1);
         singleToolArray[0] = newToolIpfsCid;
         wrappedToolFacet.registerTools(singleToolArray);
 
         // Verify the tool was registered by checking if it's retrievable
-        bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(hashedToolCid);
+        string memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(hashedToolCid);
         assertEq(
-            keccak256(retrievedCid), keccak256(newToolIpfsCid), "Retrieved tool IPFS CID should match registered one"
+            keccak256(abi.encodePacked(retrievedCid)),
+            keccak256(abi.encodePacked(newToolIpfsCid)),
+            "Retrieved tool IPFS CID should match registered one"
         );
 
         vm.stopPrank();
@@ -57,8 +59,8 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCid()"));
 
         // Try to register a tool with an empty IPFS CID
-        bytes[] memory singleToolArray = new bytes[](1);
-        singleToolArray[0] = bytes("");
+        string[] memory singleToolArray = new string[](1);
+        singleToolArray[0] = "";
         wrappedToolFacet.registerTools(singleToolArray);
 
         vm.stopPrank();
@@ -72,11 +74,11 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create a tool IPFS CID
-        bytes memory toolIpfsCid = bytes("QmTestToolForDuplication");
+        string memory toolIpfsCid = "QmTestToolForDuplication";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         // Register the tool first time
-        bytes[] memory singleToolArray = new bytes[](1);
+        string[] memory singleToolArray = new string[](1);
         singleToolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(singleToolArray);
 
@@ -97,10 +99,10 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create array of tool IPFS CIDs
-        bytes[] memory toolIpfsCids = new bytes[](3);
-        toolIpfsCids[0] = bytes("QmBatchTool1");
-        toolIpfsCids[1] = bytes("QmBatchTool2");
-        toolIpfsCids[2] = bytes("QmBatchTool3");
+        string[] memory toolIpfsCids = new string[](3);
+        toolIpfsCids[0] = "QmBatchTool1";
+        toolIpfsCids[1] = "QmBatchTool2";
+        toolIpfsCids[2] = "QmBatchTool3";
 
         // Calculate hashes for verification
         bytes32[] memory hashedToolCids = new bytes32[](3);
@@ -113,10 +115,10 @@ contract VincentToolFacetTest is VincentTestHelper {
 
         // Verify all tools were registered
         for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(hashedToolCids[i]);
+            string memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(hashedToolCids[i]);
             assertEq(
-                keccak256(retrievedCid),
-                keccak256(toolIpfsCids[i]),
+                keccak256(abi.encodePacked(retrievedCid)),
+                keccak256(abi.encodePacked(toolIpfsCids[i])),
                 "Retrieved tool IPFS CID should match registered one"
             );
         }
@@ -132,7 +134,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty array
-        bytes[] memory emptyToolIpfsCids = new bytes[](0);
+        string[] memory emptyToolIpfsCids = new string[](0);
 
         // Expect the call to revert with EmptyToolIpfsCidsArray error
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidsArray()"));
@@ -151,11 +153,11 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register a tool first
-        bytes memory toolIpfsCid = bytes("QmToolToApprove");
+        string memory toolIpfsCid = "QmToolToApprove";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         // Register the tool with a single-item array
-        bytes[] memory toolArray = new bytes[](1);
+        string[] memory toolArray = new string[](1);
         toolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(toolArray);
 
@@ -181,10 +183,10 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register multiple tools first
-        bytes[] memory toolIpfsCids = new bytes[](3);
-        toolIpfsCids[0] = bytes("QmBatchApprove1");
-        toolIpfsCids[1] = bytes("QmBatchApprove2");
-        toolIpfsCids[2] = bytes("QmBatchApprove3");
+        string[] memory toolIpfsCids = new string[](3);
+        toolIpfsCids[0] = "QmBatchApprove1";
+        toolIpfsCids[1] = "QmBatchApprove2";
+        toolIpfsCids[2] = "QmBatchApprove3";
 
         wrappedToolFacet.registerTools(toolIpfsCids);
 
@@ -214,10 +216,10 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register a tool first
-        bytes memory toolIpfsCid = bytes("QmToolForAuth");
+        string memory toolIpfsCid = "QmToolForAuth";
 
         // Register the tool with a single-item array
-        bytes[] memory toolArray = new bytes[](1);
+        string[] memory toolArray = new string[](1);
         toolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(toolArray);
 
@@ -243,11 +245,11 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create a tool IPFS CID without registering it
-        bytes memory unregisteredToolIpfsCid = bytes("QmUnregisteredTool");
+        string memory unregisteredToolIpfsCid = "QmUnregisteredTool";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(unregisteredToolIpfsCid));
 
         // Create array with single unregistered tool
-        bytes[] memory toolsToApprove = new bytes[](1);
+        string[] memory toolsToApprove = new string[](1);
         toolsToApprove[0] = unregisteredToolIpfsCid;
 
         // Expect the call to revert with ToolNotRegistered error
@@ -267,11 +269,11 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register and approve a tool
-        bytes memory toolIpfsCid = bytes("QmAlreadyApprovedTool");
+        string memory toolIpfsCid = "QmAlreadyApprovedTool";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         // Register the tool with a single-item array
-        bytes[] memory toolArray = new bytes[](1);
+        string[] memory toolArray = new string[](1);
         toolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(toolArray);
 
@@ -295,7 +297,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty array
-        bytes[] memory emptyToolIpfsCids = new bytes[](0);
+        string[] memory emptyToolIpfsCids = new string[](0);
 
         // Expect the call to revert with EmptyToolIpfsCidsArray error
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidsArray()"));
@@ -314,8 +316,8 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create array with an empty IPFS CID
-        bytes[] memory toolsWithEmptyCid = new bytes[](1);
-        toolsWithEmptyCid[0] = bytes("");
+        string[] memory toolsWithEmptyCid = new string[](1);
+        toolsWithEmptyCid[0] = "";
 
         // Expect the call to revert with EmptyToolIpfsCid error
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCid()"));
@@ -334,11 +336,11 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register and approve a tool first
-        bytes memory toolIpfsCid = bytes("QmToolToUnapprove");
+        string memory toolIpfsCid = "QmToolToUnapprove";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         // Register the tool with a single-item array
-        bytes[] memory toolArray = new bytes[](1);
+        string[] memory toolArray = new string[](1);
         toolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(toolArray);
 
@@ -371,10 +373,10 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register and approve multiple tools first
-        bytes[] memory toolIpfsCids = new bytes[](3);
-        toolIpfsCids[0] = bytes("QmBatchRemove1");
-        toolIpfsCids[1] = bytes("QmBatchRemove2");
-        toolIpfsCids[2] = bytes("QmBatchRemove3");
+        string[] memory toolIpfsCids = new string[](3);
+        toolIpfsCids[0] = "QmBatchRemove1";
+        toolIpfsCids[1] = "QmBatchRemove2";
+        toolIpfsCids[2] = "QmBatchRemove3";
 
         wrappedToolFacet.registerTools(toolIpfsCids);
         wrappedToolFacet.approveTools(toolIpfsCids);
@@ -411,10 +413,10 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register and approve a tool first
-        bytes memory toolIpfsCid = bytes("QmToolForAuthRemoval");
+        string memory toolIpfsCid = "QmToolForAuthRemoval";
 
         // Register the tool with a single-item array
-        bytes[] memory toolArray = new bytes[](1);
+        string[] memory toolArray = new string[](1);
         toolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(toolArray);
 
@@ -443,11 +445,11 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Register a tool but don't approve it
-        bytes memory toolIpfsCid = bytes("QmNotApprovedTool");
+        string memory toolIpfsCid = "QmNotApprovedTool";
         bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
         // Register the tool with a single-item array
-        bytes[] memory toolArray = new bytes[](1);
+        string[] memory toolArray = new string[](1);
         toolArray[0] = toolIpfsCid;
         wrappedToolFacet.registerTools(toolArray);
 
@@ -468,7 +470,7 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty array
-        bytes[] memory emptyToolIpfsCids = new bytes[](0);
+        string[] memory emptyToolIpfsCids = new string[](0);
 
         // Expect the call to revert with EmptyToolIpfsCidsArray error
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidsArray()"));
@@ -487,8 +489,8 @@ contract VincentToolFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create array with an empty IPFS CID
-        bytes[] memory toolsWithEmptyCid = new bytes[](1);
-        toolsWithEmptyCid[0] = bytes("");
+        string[] memory toolsWithEmptyCid = new string[](1);
+        toolsWithEmptyCid[0] = "";
 
         // Expect the call to revert with EmptyToolIpfsCid error
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCid()"));

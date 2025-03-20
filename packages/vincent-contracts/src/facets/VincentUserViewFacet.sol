@@ -32,7 +32,7 @@ contract VincentUserViewFacet is VincentBase {
      * @param parameterName The parameter name
      */
     error PolicyParameterNotSetForPkp(
-        uint256 pkpTokenId, uint256 appId, uint256 appVersion, bytes policyIpfsCid, bytes parameterName
+        uint256 pkpTokenId, uint256 appId, uint256 appVersion, string policyIpfsCid, string parameterName
     );
 
     /**
@@ -77,19 +77,19 @@ contract VincentUserViewFacet is VincentBase {
 
     // Struct to represent a tool with all its policies and parameters
     struct ToolWithPolicies {
-        bytes toolIpfsCid; // The IPFS CID of the tool
+        string toolIpfsCid; // The IPFS CID of the tool
         PolicyWithParameters[] policies; // All policies associated with this tool and their parameters
     }
 
     // Struct to represent a policy with its parameters
     struct PolicyWithParameters {
-        bytes policyIpfsCid;
+        string policyIpfsCid;
         PolicyParameter[] parameters;
     }
 
     // Struct to hold a parameter name, type, and value
     struct PolicyParameter {
-        bytes name;
+        string name;
         VincentAppStorage.ParameterType paramType;
         bytes value;
     }
@@ -261,7 +261,7 @@ contract VincentUserViewFacet is VincentBase {
      * @param toolIpfsCid The IPFS CID of the tool
      * @return validation A struct containing validation result and policy information
      */
-    function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, bytes calldata toolIpfsCid)
+    function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata toolIpfsCid)
         external
         view
         returns (ToolExecutionValidation memory validation)
@@ -275,7 +275,7 @@ contract VincentUserViewFacet is VincentBase {
             revert InvalidPkpTokenId();
         }
 
-        if (toolIpfsCid.length == 0) {
+        if (bytes(toolIpfsCid).length == 0) {
             revert EmptyToolIpfsCid();
         }
 

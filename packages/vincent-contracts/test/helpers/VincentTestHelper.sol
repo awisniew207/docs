@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "forge-std/Test.sol";
 import "../../script/DeployVincentDiamond.sol";
@@ -81,24 +81,24 @@ abstract contract VincentTestHelper is Test {
     // ==================================================================================
 
     // App-related constants for consistent test data
-    bytes constant TEST_APP_NAME = bytes("Test App");
-    bytes constant TEST_APP_DESCRIPTION = bytes("Test App Description");
-    bytes constant TEST_DOMAIN_1 = bytes("test.com");
-    bytes constant TEST_DOMAIN_2 = bytes("example.com");
-    bytes constant TEST_REDIRECT_URI_1 = bytes("https://test.com/callback");
-    bytes constant TEST_REDIRECT_URI_2 = bytes("https://example.com/callback");
+    string constant TEST_APP_NAME = "Test App";
+    string constant TEST_APP_DESCRIPTION = "Test App Description";
+    string constant TEST_DOMAIN_1 = "test.com";
+    string constant TEST_DOMAIN_2 = "example.com";
+    string constant TEST_REDIRECT_URI_1 = "https://test.com/callback";
+    string constant TEST_REDIRECT_URI_2 = "https://example.com/callback";
     address constant TEST_DELEGATEE_1 = address(0x1);
     address constant TEST_DELEGATEE_2 = address(0x2);
 
     // Tool-related constants - IPFS CIDs for tool identification
-    bytes constant TEST_TOOL_IPFS_CID_1 = bytes("QmTestTool1");
-    bytes constant TEST_TOOL_IPFS_CID_2 = bytes("QmTestTool2");
+    string constant TEST_TOOL_IPFS_CID_1 = "QmTestTool1";
+    string constant TEST_TOOL_IPFS_CID_2 = "QmTestTool2";
 
     // Policy-related constants for tool permissions and configurations
-    bytes constant TEST_POLICY_1 = bytes("QmTestPolicy1");
-    bytes constant TEST_POLICY_2 = bytes("QmTestPolicy2");
-    bytes constant TEST_POLICY_PARAM_1 = bytes("param1");
-    bytes constant TEST_POLICY_PARAM_2 = bytes("param2");
+    string constant TEST_POLICY_1 = "QmTestPolicy1";
+    string constant TEST_POLICY_2 = "QmTestPolicy2";
+    string constant TEST_POLICY_PARAM_1 = "param1";
+    string constant TEST_POLICY_PARAM_2 = "param2";
 
     // Parameter value constants for each ParameterType
     int256 constant TEST_POLICY_PARAM_INT256_VALUE = -123;
@@ -128,19 +128,19 @@ abstract contract VincentTestHelper is Test {
     // ==================================================================================
 
     /// @notice Test redirect URIs for app registration tests
-    bytes[] internal testRedirectUris;
+    string[] internal testRedirectUris;
 
     /// @notice Test delegatees for app registration tests
     address[] internal testDelegatees;
 
     /// @notice Test tool IPFS CIDs for app registration tests
-    bytes[] internal testToolIpfsCids;
+    string[] internal testToolIpfsCids;
 
     /// @notice Test policies for each tool (2D array: [toolIndex][policyIndex])
-    bytes[][] internal testToolPolicies;
+    string[][] internal testToolPolicies;
 
     /// @notice Test parameter names for each policy (3D array: [toolIndex][policyIndex][paramIndex])
-    bytes[][][] internal testToolPolicyParameterNames;
+    string[][][] internal testToolPolicyParameterNames;
 
     /// @notice Test parameter types for each policy parameter (3D array: [toolIndex][policyIndex][paramIndex])
     VincentAppStorage.ParameterType[][][] internal testToolPolicyParameterTypes;
@@ -247,7 +247,7 @@ abstract contract VincentTestHelper is Test {
      */
     function _initializeTestData() internal {
         // Set up test redirect URIs
-        testRedirectUris = new bytes[](1);
+        testRedirectUris = new string[](1);
         testRedirectUris[0] = TEST_REDIRECT_URI_1;
 
         // Set up test delegatees
@@ -255,18 +255,18 @@ abstract contract VincentTestHelper is Test {
         testDelegatees[0] = TEST_DELEGATEE_1;
 
         // Set up test tools
-        testToolIpfsCids = new bytes[](1);
+        testToolIpfsCids = new string[](1);
         testToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
         // Set up test tool policies
-        testToolPolicies = new bytes[][](1);
-        testToolPolicies[0] = new bytes[](1);
+        testToolPolicies = new string[][](1);
+        testToolPolicies[0] = new string[](1);
         testToolPolicies[0][0] = TEST_POLICY_1;
 
         // Set up test parameter names
-        testToolPolicyParameterNames = new bytes[][][](1);
-        testToolPolicyParameterNames[0] = new bytes[][](1);
-        testToolPolicyParameterNames[0][0] = new bytes[](1);
+        testToolPolicyParameterNames = new string[][][](1);
+        testToolPolicyParameterNames[0] = new string[][](1);
+        testToolPolicyParameterNames[0][0] = new string[](1);
         testToolPolicyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // Set up test parameter types

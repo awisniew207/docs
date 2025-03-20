@@ -35,11 +35,11 @@ contract VincentToolViewFacet {
      * @param toolIpfsCidHash The hash of the tool's IPFS CID
      * @return The tool's IPFS CID
      */
-    function getToolIpfsCidByHash(bytes32 toolIpfsCidHash) external view returns (bytes memory) {
-        bytes memory toolIpfsCid = VincentToolStorage.toolStorage().ipfsCidHashToIpfsCid[toolIpfsCidHash];
+    function getToolIpfsCidByHash(bytes32 toolIpfsCidHash) external view returns (string memory) {
+        string memory toolIpfsCid = VincentToolStorage.toolStorage().ipfsCidHashToIpfsCid[toolIpfsCidHash];
 
         // Check if the tool exists
-        if (toolIpfsCid.length == 0) {
+        if (bytes(toolIpfsCid).length == 0) {
             revert ToolHashNotFound(toolIpfsCidHash);
         }
 
@@ -50,7 +50,7 @@ contract VincentToolViewFacet {
      * @notice Get all approved tools
      * @return toolIpfsCids Array of approved tool IPFS CIDs
      */
-    function getAllApprovedTools() external view returns (bytes[] memory toolIpfsCids) {
+    function getAllApprovedTools() external view returns (string[] memory toolIpfsCids) {
         VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
 
         uint256 toolCount = ts_.approvedIpfsCidHashes.length();
@@ -60,7 +60,7 @@ contract VincentToolViewFacet {
             revert NoToolsApproved();
         }
 
-        toolIpfsCids = new bytes[](toolCount);
+        toolIpfsCids = new string[](toolCount);
         for (uint256 i = 0; i < toolCount; i++) {
             bytes32 hashedIpfsCid = ts_.approvedIpfsCidHashes.at(i);
             toolIpfsCids[i] = ts_.ipfsCidHashToIpfsCid[hashedIpfsCid];
@@ -72,9 +72,9 @@ contract VincentToolViewFacet {
      * @param toolIpfsCid The IPFS CID of the tool to check
      * @return isApproved Whether the tool is approved
      */
-    function isToolApproved(bytes calldata toolIpfsCid) external view returns (bool isApproved) {
+    function isToolApproved(string calldata toolIpfsCid) external view returns (bool isApproved) {
         // Check for empty input
-        if (toolIpfsCid.length == 0) {
+        if (bytes(toolIpfsCid).length == 0) {
             revert EmptyToolIpfsCid();
         }
 

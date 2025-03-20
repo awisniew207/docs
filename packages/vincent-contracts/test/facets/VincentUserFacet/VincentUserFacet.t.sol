@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "../../helpers/VincentTestHelper.sol";
 import "../../../src/VincentBase.sol";
@@ -410,17 +410,17 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Create arrays with an empty tool IPFS CID
-        bytes[] memory toolIpfsCidsWithEmpty = new bytes[](1);
-        toolIpfsCidsWithEmpty[0] = bytes(""); // Empty tool IPFS CID
+        string[] memory toolIpfsCidsWithEmpty = new string[](1);
+        toolIpfsCidsWithEmpty[0] = ""; // Empty tool IPFS CID
 
         // Create matching arrays for policies and parameters
-        bytes[][] memory testPolicies = new bytes[][](1);
-        testPolicies[0] = new bytes[](1);
+        string[][] memory testPolicies = new string[][](1);
+        testPolicies[0] = new string[](1);
         testPolicies[0][0] = TEST_POLICY_1;
 
-        bytes[][][] memory testParamNames = new bytes[][][](1);
-        testParamNames[0] = new bytes[][](1);
-        testParamNames[0][0] = new bytes[](1);
+        string[][][] memory testParamNames = new string[][][](1);
+        testParamNames[0] = new string[][](1);
+        testParamNames[0][0] = new string[](1);
         testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         bytes[][][] memory testParamValues = new bytes[][][](1);
@@ -459,16 +459,16 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Create arrays with valid tool but empty policy IPFS CID
-        bytes[] memory toolIpfsCids = new bytes[](1);
+        string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        bytes[][] memory policiesWithEmpty = new bytes[][](1);
-        policiesWithEmpty[0] = new bytes[](1);
-        policiesWithEmpty[0][0] = bytes(""); // Empty policy IPFS CID
+        string[][] memory policiesWithEmpty = new string[][](1);
+        policiesWithEmpty[0] = new string[](1);
+        policiesWithEmpty[0][0] = ""; // Empty policy IPFS CID
 
-        bytes[][][] memory testParamNames = new bytes[][][](1);
-        testParamNames[0] = new bytes[][](1);
-        testParamNames[0][0] = new bytes[](1);
+        string[][][] memory testParamNames = new string[][][](1);
+        testParamNames[0] = new string[][](1);
+        testParamNames[0][0] = new string[](1);
         testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         bytes[][][] memory testParamValues = new bytes[][][](1);
@@ -507,17 +507,17 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Create arrays with valid tool and policy but empty parameter name
-        bytes[] memory toolIpfsCids = new bytes[](1);
+        string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        bytes[][] memory policies = new bytes[][](1);
-        policies[0] = new bytes[](1);
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
         policies[0][0] = TEST_POLICY_1;
 
-        bytes[][][] memory paramNamesWithEmpty = new bytes[][][](1);
-        paramNamesWithEmpty[0] = new bytes[][](1);
-        paramNamesWithEmpty[0][0] = new bytes[](1);
-        paramNamesWithEmpty[0][0][0] = bytes(""); // Empty parameter name
+        string[][][] memory paramNamesWithEmpty = new string[][][](1);
+        paramNamesWithEmpty[0] = new string[][](1);
+        paramNamesWithEmpty[0][0] = new string[](1);
+        paramNamesWithEmpty[0][0][0] = ""; // Empty parameter name
 
         bytes[][][] memory testParamValues = new bytes[][][](1);
         testParamValues[0] = new bytes[][](1);
@@ -555,17 +555,17 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Create arrays with an empty tool IPFS CID
-        bytes[] memory toolIpfsCidsWithEmpty = new bytes[](1);
-        toolIpfsCidsWithEmpty[0] = bytes(""); // Empty tool IPFS CID
+        string[] memory toolIpfsCidsWithEmpty = new string[](1);
+        toolIpfsCidsWithEmpty[0] = ""; // Empty tool IPFS CID
 
         // Create matching arrays for policies and parameters
-        bytes[][] memory testPolicies = new bytes[][](1);
-        testPolicies[0] = new bytes[](1);
+        string[][] memory testPolicies = new string[][](1);
+        testPolicies[0] = new string[](1);
         testPolicies[0][0] = TEST_POLICY_1;
 
-        bytes[][][] memory testParamNames = new bytes[][][](1);
-        testParamNames[0] = new bytes[][](1);
-        testParamNames[0][0] = new bytes[](1);
+        string[][][] memory testParamNames = new string[][][](1);
+        testParamNames[0] = new string[][](1);
+        testParamNames[0][0] = new string[](1);
         testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // Expect revert with EmptyToolIpfsCid error
@@ -599,16 +599,16 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Create arrays with valid tool but empty policy IPFS CID
-        bytes[] memory toolIpfsCids = new bytes[](1);
+        string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        bytes[][] memory policiesWithEmpty = new bytes[][](1);
-        policiesWithEmpty[0] = new bytes[](1);
-        policiesWithEmpty[0][0] = bytes(""); // Empty policy IPFS CID
+        string[][] memory policiesWithEmpty = new string[][](1);
+        policiesWithEmpty[0] = new string[](1);
+        policiesWithEmpty[0][0] = ""; // Empty policy IPFS CID
 
-        bytes[][][] memory testParamNames = new bytes[][][](1);
-        testParamNames[0] = new bytes[][](1);
-        testParamNames[0][0] = new bytes[](1);
+        string[][][] memory testParamNames = new string[][][](1);
+        testParamNames[0] = new string[][](1);
+        testParamNames[0][0] = new string[](1);
         testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
 
         // Expect revert with EmptyPolicyIpfsCid error
@@ -642,17 +642,17 @@ contract VincentUserFacetTest is VincentTestHelper {
         );
 
         // Create arrays with valid tool and policy but empty parameter name
-        bytes[] memory toolIpfsCids = new bytes[](1);
+        string[] memory toolIpfsCids = new string[](1);
         toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
 
-        bytes[][] memory policies = new bytes[][](1);
-        policies[0] = new bytes[](1);
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
         policies[0][0] = TEST_POLICY_1;
 
-        bytes[][][] memory paramNamesWithEmpty = new bytes[][][](1);
-        paramNamesWithEmpty[0] = new bytes[][](1);
-        paramNamesWithEmpty[0][0] = new bytes[](1);
-        paramNamesWithEmpty[0][0][0] = bytes(""); // Empty parameter name
+        string[][][] memory paramNamesWithEmpty = new string[][][](1);
+        paramNamesWithEmpty[0] = new string[][](1);
+        paramNamesWithEmpty[0][0] = new string[](1);
+        paramNamesWithEmpty[0][0][0] = ""; // Empty parameter name
 
         // Expect revert with EmptyParameterName error
         vm.expectRevert(EmptyParameterName.selector);

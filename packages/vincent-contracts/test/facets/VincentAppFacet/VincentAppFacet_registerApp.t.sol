@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "../../helpers/VincentTestHelper.sol";
 import "../../../src/VincentBase.sol";
@@ -49,8 +49,14 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Verify app data was stored correctly by checking view functions
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
-        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
-        assertEq(keccak256(app.description), keccak256(TEST_APP_DESCRIPTION), "App description should match");
+        assertEq(
+            keccak256(abi.encodePacked(app.name)), keccak256(abi.encodePacked(TEST_APP_NAME)), "App name should match"
+        );
+        assertEq(
+            keccak256(abi.encodePacked(app.description)),
+            keccak256(abi.encodePacked(TEST_APP_DESCRIPTION)),
+            "App description should match"
+        );
         assertEq(app.manager, deployer, "App manager should be deployer");
 
         // Verify app version is enabled
@@ -63,10 +69,12 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(app.delegatees[0], TEST_DELEGATEE_1, "Delegatee should match");
 
         // Verify redirect URI was added
-        bytes[] memory appRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory appRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
         assertEq(appRedirectUris.length, 1, "Should have 1 redirect URI");
         assertEq(
-            keccak256(abi.encodePacked(appRedirectUris[0])), keccak256(TEST_REDIRECT_URI_1), "Redirect URI should match"
+            keccak256(abi.encodePacked(appRedirectUris[0])),
+            keccak256(abi.encodePacked(TEST_REDIRECT_URI_1)),
+            "Redirect URI should match"
         );
 
         // Verify tools were correctly registered
@@ -88,8 +96,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(firstAppVersion, 1, "First app version should be 1");
 
         // Create different data for second app
-        bytes memory secondAppName = bytes("Second App");
-        bytes memory secondAppDesc = bytes("Second App Description");
+        string memory secondAppName = "Second App";
+        string memory secondAppDesc = "Second App Description";
 
         // Use different delegatee for second app to avoid conflict
         address[] memory secondAppDelegatees = new address[](1);
@@ -121,8 +129,16 @@ contract VincentAppFacetTest is VincentTestHelper {
         VincentAppViewFacet.App memory app1 = wrappedAppViewFacet.getAppById(firstAppId);
         VincentAppViewFacet.App memory app2 = wrappedAppViewFacet.getAppById(secondAppId);
 
-        assertEq(keccak256(app1.name), keccak256(TEST_APP_NAME), "First app name should match");
-        assertEq(keccak256(app2.name), keccak256(secondAppName), "Second app name should match");
+        assertEq(
+            keccak256(abi.encodePacked(app1.name)),
+            keccak256(abi.encodePacked(TEST_APP_NAME)),
+            "First app name should match"
+        );
+        assertEq(
+            keccak256(abi.encodePacked(app2.name)),
+            keccak256(abi.encodePacked(secondAppName)),
+            "Second app name should match"
+        );
 
         vm.stopPrank();
     }
@@ -135,32 +151,32 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create app with multiple tools and policies
-        bytes[] memory multiToolIpfsCids = new bytes[](2);
+        string[] memory multiToolIpfsCids = new string[](2);
         multiToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
         multiToolIpfsCids[1] = TEST_TOOL_IPFS_CID_2;
 
         // Each tool has 2 policies
-        bytes[][] memory multiToolPolicies = new bytes[][](2);
-        multiToolPolicies[0] = new bytes[](2);
+        string[][] memory multiToolPolicies = new string[][](2);
+        multiToolPolicies[0] = new string[](2);
         multiToolPolicies[0][0] = TEST_POLICY_1;
         multiToolPolicies[0][1] = TEST_POLICY_2;
-        multiToolPolicies[1] = new bytes[](2);
+        multiToolPolicies[1] = new string[](2);
         multiToolPolicies[1][0] = TEST_POLICY_1;
         multiToolPolicies[1][1] = TEST_POLICY_2;
 
         // Parameter names for each policy
-        bytes[][][] memory multiToolParamNames = new bytes[][][](2);
+        string[][][] memory multiToolParamNames = new string[][][](2);
         // First tool's policies
-        multiToolParamNames[0] = new bytes[][](2);
-        multiToolParamNames[0][0] = new bytes[](1);
+        multiToolParamNames[0] = new string[][](2);
+        multiToolParamNames[0][0] = new string[](1);
         multiToolParamNames[0][0][0] = TEST_POLICY_PARAM_1;
-        multiToolParamNames[0][1] = new bytes[](1);
+        multiToolParamNames[0][1] = new string[](1);
         multiToolParamNames[0][1][0] = TEST_POLICY_PARAM_2;
         // Second tool's policies
-        multiToolParamNames[1] = new bytes[][](2);
-        multiToolParamNames[1][0] = new bytes[](1);
+        multiToolParamNames[1] = new string[][](2);
+        multiToolParamNames[1][0] = new string[](1);
         multiToolParamNames[1][0][0] = TEST_POLICY_PARAM_1;
-        multiToolParamNames[1][1] = new bytes[](1);
+        multiToolParamNames[1][1] = new string[](1);
         multiToolParamNames[1][1][0] = TEST_POLICY_PARAM_2;
 
         // Parameter types for each parameter
@@ -216,7 +232,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty redirect URIs array
-        bytes[] memory emptyRedirectUris = new bytes[](0);
+        string[] memory emptyRedirectUris = new string[](0);
 
         // Expect the call to revert with NoRedirectUrisProvided error
         vm.expectRevert(abi.encodeWithSignature("NoRedirectUrisProvided()"));
@@ -244,7 +260,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty app name
-        bytes memory emptyName = bytes("");
+        string memory emptyName = "";
 
         // Expect the call to revert with EmptyAppNameNotAllowed error
         vm.expectRevert(abi.encodeWithSignature("EmptyAppNameNotAllowed()"));
@@ -272,7 +288,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty app description
-        bytes memory emptyDescription = bytes("");
+        string memory emptyDescription = "";
 
         // Expect the call to revert with EmptyAppDescriptionNotAllowed error
         vm.expectRevert(abi.encodeWithSignature("EmptyAppDescriptionNotAllowed()"));
@@ -300,8 +316,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create redirect URIs array with an empty URI
-        bytes[] memory redirectUrisWithEmpty = new bytes[](1);
-        redirectUrisWithEmpty[0] = bytes("");
+        string[] memory redirectUrisWithEmpty = new string[](1);
+        redirectUrisWithEmpty[0] = "";
 
         // Expect the call to revert with EmptyRedirectUriNotAllowed error
         vm.expectRevert(abi.encodeWithSignature("EmptyRedirectUriNotAllowed()"));
@@ -358,7 +374,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create mismatched arrays (more tools than policies)
-        bytes[] memory extraTools = new bytes[](2);
+        string[] memory extraTools = new string[](2);
         extraTools[0] = TEST_TOOL_IPFS_CID_1;
         extraTools[1] = TEST_TOOL_IPFS_CID_2;
 
@@ -397,8 +413,8 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Create a new app using the same delegatee
         wrappedAppFacet.registerApp(
-            bytes("Second App"),
-            bytes("Second app description"),
+            "Second App",
+            "Second app description",
             testRedirectUris,
             testDelegatees, // Contains TEST_DELEGATEE_1 which is already registered
             testToolIpfsCids,
@@ -418,12 +434,12 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create tool array with an empty IPFS CID
-        bytes[] memory emptyToolCids = new bytes[](1);
-        emptyToolCids[0] = bytes("");
+        string[] memory emptyToolCids = new string[](1);
+        emptyToolCids[0] = "";
 
         // Create matching policy arrays
-        bytes[][] memory policies = new bytes[][](1);
-        policies[0] = new bytes[](1);
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
         policies[0][0] = TEST_POLICY_1;
 
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidNotAllowed(uint256,uint256)", 1, 0));
@@ -450,9 +466,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create policy array with an empty IPFS CID
-        bytes[][] memory emptyPolicies = new bytes[][](1);
-        emptyPolicies[0] = new bytes[](1);
-        emptyPolicies[0][0] = bytes("");
+        string[][] memory emptyPolicies = new string[][](1);
+        emptyPolicies[0] = new string[](1);
+        emptyPolicies[0][0] = "";
 
         vm.expectRevert(abi.encodeWithSignature("EmptyPolicyIpfsCidNotAllowed(uint256,uint256)", 1, 0));
 
@@ -478,7 +494,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create redirect URIs array with duplicates
-        bytes[] memory duplicateRedirectUris = new bytes[](2);
+        string[] memory duplicateRedirectUris = new string[](2);
         duplicateRedirectUris[0] = TEST_REDIRECT_URI_1;
         duplicateRedirectUris[1] = TEST_REDIRECT_URI_1; // Same as first one
 
@@ -486,7 +502,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         // The first URI will be added, but when trying to add the duplicate,
         // it should revert with this error
         vm.expectRevert(
-            abi.encodeWithSignature("RedirectUriAlreadyAuthorizedForApp(uint256,bytes)", 1, TEST_REDIRECT_URI_1)
+            abi.encodeWithSignature("RedirectUriAlreadyAuthorizedForApp(uint256,string)", 1, TEST_REDIRECT_URI_1)
         );
 
         // Attempt to register app with duplicate URIs - this should fail
@@ -512,7 +528,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create redirect URIs array with multiple URIs
-        bytes[] memory multipleRedirectUris = new bytes[](2);
+        string[] memory multipleRedirectUris = new string[](2);
         multipleRedirectUris[0] = TEST_REDIRECT_URI_1;
         multipleRedirectUris[1] = TEST_REDIRECT_URI_2; // Different URI
 
@@ -529,7 +545,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
 
         // Verify both redirect URIs were stored
-        bytes[] memory appRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+        string[] memory appRedirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
         assertEq(appRedirectUris.length, 2, "Should have stored 2 redirect URIs");
 
         // Sort order is not guaranteed, so check that both URIs exist
@@ -538,9 +554,9 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         for (uint256 i = 0; i < appRedirectUris.length; i++) {
             bytes32 uriHash = keccak256(abi.encodePacked(appRedirectUris[i]));
-            if (uriHash == keccak256(TEST_REDIRECT_URI_1)) {
+            if (uriHash == keccak256(abi.encodePacked(TEST_REDIRECT_URI_1))) {
                 foundURI1 = true;
-            } else if (uriHash == keccak256(TEST_REDIRECT_URI_2)) {
+            } else if (uriHash == keccak256(abi.encodePacked(TEST_REDIRECT_URI_2))) {
                 foundURI2 = true;
             }
         }
@@ -562,17 +578,17 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create updated data for the second version
-        bytes[] memory updatedToolIpfsCids = new bytes[](1);
+        string[] memory updatedToolIpfsCids = new string[](1);
         updatedToolIpfsCids[0] = TEST_TOOL_IPFS_CID_2; // Use a different tool
 
         // Prepare matching policy arrays for the new tool
-        bytes[][] memory updatedPolicies = new bytes[][](1);
-        updatedPolicies[0] = new bytes[](1);
+        string[][] memory updatedPolicies = new string[][](1);
+        updatedPolicies[0] = new string[](1);
         updatedPolicies[0][0] = TEST_POLICY_2;
 
-        bytes[][][] memory updatedParameterNames = new bytes[][][](1);
-        updatedParameterNames[0] = new bytes[][](1);
-        updatedParameterNames[0][0] = new bytes[](1);
+        string[][][] memory updatedParameterNames = new string[][][](1);
+        updatedParameterNames[0] = new string[][](1);
+        updatedParameterNames[0][0] = new string[](1);
         updatedParameterNames[0][0][0] = TEST_POLICY_PARAM_2;
 
         VincentAppStorage.ParameterType[][][] memory updatedParameterTypes =
@@ -601,14 +617,16 @@ contract VincentAppFacetTest is VincentTestHelper {
         // Verify tools were correctly registered in the new version
         assertEq(versionData.tools.length, 1, "App version should have 1 tool");
         assertEq(
-            keccak256(versionData.tools[0].toolIpfsCid), keccak256(TEST_TOOL_IPFS_CID_2), "Tool IPFS CID should match"
+            keccak256(abi.encodePacked(versionData.tools[0].toolIpfsCid)),
+            keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2)),
+            "Tool IPFS CID should match"
         );
 
         // Verify policies were correctly registered for the new tool
         assertEq(versionData.tools[0].policies.length, 1, "Tool should have 1 policy");
         assertEq(
-            keccak256(versionData.tools[0].policies[0].policyIpfsCid),
-            keccak256(TEST_POLICY_2),
+            keccak256(abi.encodePacked(versionData.tools[0].policies[0].policyIpfsCid)),
+            keccak256(abi.encodePacked(TEST_POLICY_2)),
             "Policy IPFS CID should match"
         );
 
@@ -626,32 +644,32 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create data for a more complex second version with multiple tools
-        bytes[] memory multiToolIpfsCids = new bytes[](2);
+        string[] memory multiToolIpfsCids = new string[](2);
         multiToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1; // Reuse the first tool
         multiToolIpfsCids[1] = TEST_TOOL_IPFS_CID_2; // Add a second tool
 
         // Each tool has 2 policies
-        bytes[][] memory multiToolPolicies = new bytes[][](2);
-        multiToolPolicies[0] = new bytes[](2);
+        string[][] memory multiToolPolicies = new string[][](2);
+        multiToolPolicies[0] = new string[](2);
         multiToolPolicies[0][0] = TEST_POLICY_1;
         multiToolPolicies[0][1] = TEST_POLICY_2;
-        multiToolPolicies[1] = new bytes[](2);
+        multiToolPolicies[1] = new string[](2);
         multiToolPolicies[1][0] = TEST_POLICY_1;
         multiToolPolicies[1][1] = TEST_POLICY_2;
 
         // Parameter names for each policy
-        bytes[][][] memory multiToolParamNames = new bytes[][][](2);
+        string[][][] memory multiToolParamNames = new string[][][](2);
         // First tool's policies
-        multiToolParamNames[0] = new bytes[][](2);
-        multiToolParamNames[0][0] = new bytes[](1);
+        multiToolParamNames[0] = new string[][](2);
+        multiToolParamNames[0][0] = new string[](1);
         multiToolParamNames[0][0][0] = TEST_POLICY_PARAM_1;
-        multiToolParamNames[0][1] = new bytes[](1);
+        multiToolParamNames[0][1] = new string[](1);
         multiToolParamNames[0][1][0] = TEST_POLICY_PARAM_2;
         // Second tool's policies
-        multiToolParamNames[1] = new bytes[][](2);
-        multiToolParamNames[1][0] = new bytes[](1);
+        multiToolParamNames[1] = new string[][](2);
+        multiToolParamNames[1][0] = new string[](1);
         multiToolParamNames[1][0][0] = TEST_POLICY_PARAM_1;
-        multiToolParamNames[1][1] = new bytes[](1);
+        multiToolParamNames[1][1] = new string[](1);
         multiToolParamNames[1][1][0] = TEST_POLICY_PARAM_2;
 
         // Parameter types for each parameter
@@ -728,7 +746,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create mismatched arrays (more tools than policies)
-        bytes[] memory extraTools = new bytes[](2);
+        string[] memory extraTools = new string[](2);
         extraTools[0] = TEST_TOOL_IPFS_CID_1;
         extraTools[1] = TEST_TOOL_IPFS_CID_2;
 
@@ -758,12 +776,12 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create tool array with an empty IPFS CID
-        bytes[] memory emptyToolCids = new bytes[](1);
-        emptyToolCids[0] = bytes("");
+        string[] memory emptyToolCids = new string[](1);
+        emptyToolCids[0] = "";
 
         // Create matching policy arrays
-        bytes[][] memory policies = new bytes[][](1);
-        policies[0] = new bytes[](1);
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
         policies[0][0] = TEST_POLICY_1;
 
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidNotAllowed(uint256,uint256)", appId, 0));
@@ -787,9 +805,9 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create policy array with an empty IPFS CID
-        bytes[][] memory emptyPolicies = new bytes[][](1);
-        emptyPolicies[0] = new bytes[](1);
-        emptyPolicies[0][0] = bytes("");
+        string[][] memory emptyPolicies = new string[][](1);
+        emptyPolicies[0] = new string[](1);
+        emptyPolicies[0][0] = "";
 
         vm.expectRevert(abi.encodeWithSignature("EmptyPolicyIpfsCidNotAllowed(uint256,uint256)", appId, 0));
 
@@ -813,7 +831,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(firstVersionNumber, 1, "First version number should be 1");
 
         // Create different tools for each version
-        bytes[] memory secondVersionTool = new bytes[](1);
+        string[] memory secondVersionTool = new string[](1);
         secondVersionTool[0] = TEST_TOOL_IPFS_CID_2;
 
         // Register second version
@@ -824,8 +842,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         assertEq(secondVersionNumber, 2, "Second version number should be 2");
 
         // Create a third version with a different tool
-        bytes[] memory thirdVersionTool = new bytes[](1);
-        thirdVersionTool[0] = bytes("QmThirdToolIpfsCid");
+        string[] memory thirdVersionTool = new string[](1);
+        thirdVersionTool[0] = "QmThirdToolIpfsCid";
 
         // Register third version
         uint256 thirdVersionNumber = wrappedAppFacet.registerNextAppVersion(
@@ -858,11 +876,11 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create empty tools array
-        bytes[] memory emptyToolsArray = new bytes[](0);
+        string[] memory emptyToolsArray = new string[](0);
 
         // Create matching empty arrays for policies and parameters
-        bytes[][] memory emptyPolicies = new bytes[][](0);
-        bytes[][][] memory emptyParameterNames = new bytes[][][](0);
+        string[][] memory emptyPolicies = new string[][](0);
+        string[][][] memory emptyParameterNames = new string[][][](0);
         VincentAppStorage.ParameterType[][][] memory emptyParameterTypes = new VincentAppStorage.ParameterType[][][](0);
 
         // Expect the call to revert with NoToolsProvided error
@@ -894,11 +912,11 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create empty tools array for the next version
-        bytes[] memory emptyToolsArray = new bytes[](0);
+        string[] memory emptyToolsArray = new string[](0);
 
         // Create matching empty arrays for policies and parameters
-        bytes[][] memory emptyPolicies = new bytes[][](0);
-        bytes[][][] memory emptyParameterNames = new bytes[][][](0);
+        string[][] memory emptyPolicies = new string[][](0);
+        string[][][] memory emptyParameterNames = new string[][][](0);
         VincentAppStorage.ParameterType[][][] memory emptyParameterTypes = new VincentAppStorage.ParameterType[][][](0);
 
         // Expect the call to revert with NoToolsProvided error
@@ -920,15 +938,15 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create tools array with one tool
-        bytes[] memory toolsArray = new bytes[](1);
+        string[] memory toolsArray = new string[](1);
         toolsArray[0] = TEST_TOOL_IPFS_CID_1;
 
         // Create empty policies array for the tool
-        bytes[][] memory emptyPoliciesForTool = new bytes[][](1);
-        emptyPoliciesForTool[0] = new bytes[](0); // Empty policies for the tool
+        string[][] memory emptyPoliciesForTool = new string[][](1);
+        emptyPoliciesForTool[0] = new string[](0); // Empty policies for the tool
 
-        bytes[][][] memory parameterNames = new bytes[][][](1);
-        parameterNames[0] = new bytes[][](0);
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](0);
 
         VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
         parameterTypes[0] = new VincentAppStorage.ParameterType[][](0);
@@ -948,7 +966,9 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         // Verify app was registered
         VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
-        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+        assertEq(
+            keccak256(abi.encodePacked(app.name)), keccak256(abi.encodePacked(TEST_APP_NAME)), "App name should match"
+        );
 
         // Verify app version was registered
         (VincentAppViewFacet.App memory appData, VincentAppViewFacet.AppVersion memory versionData) =
@@ -974,15 +994,15 @@ contract VincentAppFacetTest is VincentTestHelper {
         (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
 
         // Create tools array with one tool
-        bytes[] memory toolsArray = new bytes[](1);
+        string[] memory toolsArray = new string[](1);
         toolsArray[0] = TEST_TOOL_IPFS_CID_2; // Use a different tool
 
         // Create empty policies array for the tool
-        bytes[][] memory emptyPoliciesForTool = new bytes[][](1);
-        emptyPoliciesForTool[0] = new bytes[](0); // Empty policies for the tool
+        string[][] memory emptyPoliciesForTool = new string[][](1);
+        emptyPoliciesForTool[0] = new string[](0); // Empty policies for the tool
 
-        bytes[][][] memory parameterNames = new bytes[][][](1);
-        parameterNames[0] = new bytes[][](0);
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](0);
 
         VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
         parameterTypes[0] = new VincentAppStorage.ParameterType[][](0);
@@ -1014,19 +1034,19 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create tools array with one tool
-        bytes[] memory toolsArray = new bytes[](1);
+        string[] memory toolsArray = new string[](1);
         toolsArray[0] = TEST_TOOL_IPFS_CID_1;
 
         // Create policies array for the tool
-        bytes[][] memory policies = new bytes[][](1);
-        policies[0] = new bytes[](1);
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
         policies[0][0] = TEST_POLICY_1;
 
         // Create parameter names array with an empty parameter name
-        bytes[][][] memory parameterNames = new bytes[][][](1);
-        parameterNames[0] = new bytes[][](1);
-        parameterNames[0][0] = new bytes[](1);
-        parameterNames[0][0][0] = bytes(""); // Empty parameter name
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](1);
+        parameterNames[0][0] = new string[](1);
+        parameterNames[0][0][0] = ""; // Empty parameter name
 
         VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
         parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
@@ -1061,18 +1081,18 @@ contract VincentAppFacetTest is VincentTestHelper {
         vm.startPrank(deployer);
 
         // Create tools array with one tool
-        bytes[] memory toolsArray = new bytes[](1);
+        string[] memory toolsArray = new string[](1);
         toolsArray[0] = TEST_TOOL_IPFS_CID_1;
 
         // Create policies array for the tool
-        bytes[][] memory policies = new bytes[][](1);
-        policies[0] = new bytes[](1);
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
         policies[0][0] = TEST_POLICY_1;
 
         // Create parameter names array with no parameters for the policy
-        bytes[][][] memory parameterNames = new bytes[][][](1);
-        parameterNames[0] = new bytes[][](1);
-        parameterNames[0][0] = new bytes[](0); // No parameters
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](1);
+        parameterNames[0][0] = new string[](0); // No parameters
 
         VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
         parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);

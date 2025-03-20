@@ -75,12 +75,12 @@ contract VincentAppViewFacet is VincentBase {
      */
     struct App {
         uint256 id;
-        bytes name;
-        bytes description;
+        string name;
+        string description;
         address manager;
         uint256 latestVersion;
         address[] delegatees;
-        bytes[] authorizedRedirectUris;
+        string[] authorizedRedirectUris;
     }
 
     /**
@@ -105,7 +105,7 @@ contract VincentAppViewFacet is VincentBase {
      * @param policies Array of policies associated with this tool
      */
     struct Tool {
-        bytes toolIpfsCid;
+        string toolIpfsCid;
         Policy[] policies;
     }
 
@@ -117,8 +117,8 @@ contract VincentAppViewFacet is VincentBase {
      * @param parameterTypes Array of parameter types defined for this policy
      */
     struct Policy {
-        bytes policyIpfsCid;
-        bytes[] parameterNames;
+        string policyIpfsCid;
+        string[] parameterNames;
         VincentAppStorage.ParameterType[] parameterTypes;
     }
 
@@ -160,7 +160,7 @@ contract VincentAppViewFacet is VincentBase {
 
         // Convert authorized redirect URIs from bytes32 hashes to strings
         uint256 redirectUriCount = storedApp.authorizedRedirectUris.length();
-        app.authorizedRedirectUris = new bytes[](redirectUriCount);
+        app.authorizedRedirectUris = new string[](redirectUriCount);
         for (uint256 i = 0; i < redirectUriCount; i++) {
             bytes32 redirectUriHash = storedApp.authorizedRedirectUris.at(i);
             app.authorizedRedirectUris[i] = as_.authorizedRedirectUriHashToRedirectUri[redirectUriHash];
@@ -210,7 +210,7 @@ contract VincentAppViewFacet is VincentBase {
         for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
             // Step 8.1: Get the tool hash and resolve to the actual IPFS CID
             bytes32 toolIpfsCidHash = storedVersionedApp.toolIpfsCidHashes.at(i);
-            bytes memory toolIpfsCid = ts.ipfsCidHashToIpfsCid[toolIpfsCidHash];
+            string memory toolIpfsCid = ts.ipfsCidHashToIpfsCid[toolIpfsCidHash];
 
             // Step 8.2: Set the tool IPFS CID in the return structure
             appVersion.tools[i].toolIpfsCid = toolIpfsCid;
@@ -227,7 +227,7 @@ contract VincentAppViewFacet is VincentBase {
             for (uint256 j = 0; j < policyCount; j++) {
                 // Step 10.1: Get the policy hash and resolve to the actual IPFS CID
                 bytes32 policyIpfsCidHash = toolPolicies.policyIpfsCidHashes.at(j);
-                bytes memory policyIpfsCid = ts.ipfsCidHashToIpfsCid[policyIpfsCidHash];
+                string memory policyIpfsCid = ts.ipfsCidHashToIpfsCid[policyIpfsCidHash];
 
                 // Step 10.2: Set the policy IPFS CID in the return structure
                 appVersion.tools[i].policies[j].policyIpfsCid = policyIpfsCid;
@@ -240,7 +240,7 @@ contract VincentAppViewFacet is VincentBase {
                 uint256 paramCount = policyParamNameHashes.length();
 
                 // Step 12.1: Initialize the parameter names and types arrays
-                appVersion.tools[i].policies[j].parameterNames = new bytes[](paramCount);
+                appVersion.tools[i].policies[j].parameterNames = new string[](paramCount);
                 appVersion.tools[i].policies[j].parameterTypes = new VincentAppStorage.ParameterType[](paramCount);
 
                 // Step 12.2: Iterate through each parameter name
@@ -348,12 +348,16 @@ contract VincentAppViewFacet is VincentBase {
      * @param redirectUriHash Hash of the redirect URI to look up
      * @return redirectUri Original redirect URI string corresponding to the hash
      */
-    function getAuthorizedRedirectUriByHash(bytes32 redirectUriHash) external view returns (bytes memory redirectUri) {
+    function getAuthorizedRedirectUriByHash(bytes32 redirectUriHash)
+        external
+        view
+        returns (string memory redirectUri)
+    {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         redirectUri = as_.authorizedRedirectUriHashToRedirectUri[redirectUriHash];
 
         // Check if the redirect URI exists
-        if (redirectUri.length == 0) {
+        if (bytes(redirectUri).length == 0) {
             revert RedirectUriNotFound(redirectUriHash);
         }
 
@@ -370,7 +374,7 @@ contract VincentAppViewFacet is VincentBase {
         external
         view
         onlyRegisteredApp(appId)
-        returns (bytes[] memory redirectUris)
+        returns (string[] memory redirectUris)
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
@@ -382,7 +386,7 @@ contract VincentAppViewFacet is VincentBase {
             revert NoAuthorizedRedirectUrisFoundForApp(appId);
         }
 
-        redirectUris = new bytes[](redirectUriCount);
+        redirectUris = new string[](redirectUriCount);
         for (uint256 i = 0; i < redirectUriCount; i++) {
             redirectUris[i] =
                 as_.authorizedRedirectUriHashToRedirectUri[as_.appIdToApp[appId].authorizedRedirectUris.at(i)];
