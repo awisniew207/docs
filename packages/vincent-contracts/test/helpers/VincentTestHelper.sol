@@ -102,6 +102,25 @@ abstract contract VincentTestHelper is Test {
     bytes constant TEST_POLICY_SCHEMA_1 = bytes("QmTestPolicySchema1");
     bytes constant TEST_POLICY_SCHEMA_2 = bytes("QmTestPolicySchema2");
 
+    // Parameter value constants for each ParameterType
+    int256 constant TEST_POLICY_PARAM_INT256_VALUE = -123;
+    int256[] TEST_POLICY_PARAM_INT256_ARRAY_VALUE = [int256(-1), int256(-2), int256(-3)];
+
+    uint256 constant TEST_POLICY_PARAM_UINT256_VALUE = 456;
+    uint256[] TEST_POLICY_PARAM_UINT256_ARRAY_VALUE = [uint256(1), uint256(2), uint256(3)];
+
+    bool constant TEST_POLICY_PARAM_BOOL_VALUE = true;
+    bool[] TEST_POLICY_PARAM_BOOL_ARRAY_VALUE = [true, false, true];
+
+    address constant TEST_POLICY_PARAM_ADDRESS_VALUE = address(0x123);
+    address[] TEST_POLICY_PARAM_ADDRESS_ARRAY_VALUE = [address(0x123), address(0x456), address(0x789)];
+
+    string constant TEST_POLICY_PARAM_STRING_VALUE = "test-string-value";
+    string[] TEST_POLICY_PARAM_STRING_ARRAY_VALUE = ["value1", "value2", "value3"];
+
+    bytes constant TEST_POLICY_PARAM_BYTES_VALUE = bytes("0x1234abcd");
+    bytes[] TEST_POLICY_PARAM_BYTES_ARRAY_VALUE = [bytes("0xaabb"), bytes("0xccdd"), bytes("0xeeff")];
+
     // PKP-related constants - token IDs for PKP NFTs
     uint256 constant TEST_PKP_TOKEN_ID_1 = 1;
     uint256 constant TEST_PKP_TOKEN_ID_2 = 2;
@@ -131,6 +150,9 @@ abstract contract VincentTestHelper is Test {
     /// @notice Test parameter types for each policy parameter (3D array: [toolIndex][policyIndex][paramIndex])
     VincentAppStorage.ParameterType[][][] internal testToolPolicyParameterTypes;
 
+    /// @notice Test parameter values for each policy parameter (3D array: [toolIndex][policyIndex][paramIndex])
+    bytes[][][] internal testToolPolicyParameterValues;
+
     // ==================================================================================
     // Events - defined here for easy access in tests for event emission verification
     // ==================================================================================
@@ -151,6 +173,13 @@ abstract contract VincentTestHelper is Test {
     event ToolApproved(bytes32 indexed toolIpfsCidHash);
     event ToolApprovalRemoved(bytes32 indexed toolIpfsCidHash);
     event ApprovedToolsManagerUpdated(address indexed previousManager, address indexed newManager);
+
+    // User-related errors
+    error NotPkpOwner(uint256 pkpTokenId, address msgSender);
+    error AppVersionNotRegistered(uint256 appId, uint256 appVersion);
+    error DelegateeNotAssociatedWithApp(address delegatee);
+    error NoRegisteredPkpsFound(address userAddress);
+    error InvalidPkpTokenId();
 
     /**
      * @notice Sets up the complete testing environment for Vincent
@@ -252,6 +281,12 @@ abstract contract VincentTestHelper is Test {
         testToolPolicyParameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
         testToolPolicyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
         testToolPolicyParameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Set up test parameter values
+        testToolPolicyParameterValues = new bytes[][][](1);
+        testToolPolicyParameterValues[0] = new bytes[][](1);
+        testToolPolicyParameterValues[0][0] = new bytes[](1);
+        testToolPolicyParameterValues[0][0][0] = abi.encode(TEST_POLICY_PARAM_STRING_VALUE);
     }
 
     /**
