@@ -185,7 +185,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         values.appName,
         values.description,
         authorizedRedirectUris,
-        [address],
+        [],
         toolIpfsCids,
         toolPolicies,
         toolPolicySchemaIpfsCids,

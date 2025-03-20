@@ -82,6 +82,9 @@ export default function DelegateeManagerScreen({
             setNewAddress("");
             
             alert("Delegatee added successfully!");
+            
+            // Notify parent to refresh
+            onBack();
         } catch (error: any) {
             console.error("Error adding generated delegatee:", error);
             
@@ -156,6 +159,9 @@ export default function DelegateeManagerScreen({
                 setShowAddDialog(false);
                 setManualAddress("");
                 alert("Delegatee added successfully!");
+                
+                // Notify parent to refresh
+                onBack();
             } catch (innerError: any) {
                 console.error("Detailed error:", innerError);
                 let errorMessage = "Failed to add delegatee. ";
@@ -196,6 +202,9 @@ export default function DelegateeManagerScreen({
             // Update UI
             setDelegatees(prev => prev.filter(addr => addr !== delegateeAddress));
             alert("Delegatee removed successfully");
+            
+            // Notify parent to refresh
+            onBack();
         } catch (error: any) {
             console.error("Error removing delegatee:", error);
             alert(`Failed to remove delegatee: ${error.message || "Unknown error"}`);

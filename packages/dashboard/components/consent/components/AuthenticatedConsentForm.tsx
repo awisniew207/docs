@@ -4,6 +4,7 @@ import { VincentSDK } from '@lit-protocol/vincent-sdk';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 import { useUrlAppId } from '../hooks/useUrlAppId';
+import { useUrlRedirectUri } from '../hooks/useUrlRedirectUri';
 import { litNodeClient } from '../utils/lit';
 import * as ethers from 'ethers';
 import {
@@ -35,26 +36,25 @@ export default function AuthenticatedConsentForm ({
   userPKP,
 }: AuthenticatedConsentFormProps) {
   const { appId, error: urlError } = useUrlAppId();
+  const { redirectUri, error: redirectError } = useUrlRedirectUri();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showDisapproval, setShowDisapproval] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [appInfo, setAppInfo] = useState<AppView | null>(null);
-  const [referrerUrl, setReferrerUrl] = useState<string | null>(null);
   const [generatedJwt, setGeneratedJwt] = useState<string | null>(null);
   const [isAppAlreadyPermitted, setIsAppAlreadyPermitted] =
     useState<boolean>(false);
   const [checkingPermissions, setCheckingPermissions] = useState<boolean>(true);
   const [showingAuthorizedMessage, setShowingAuthorizedMessage] = useState<boolean>(false);
   const [isUriUntrusted, setIsUriUntrusted] = useState<boolean>(false);
-  const [authorizedDomains, setAuthorizedDomains] = useState<string[]>([]);
   // ===== JWT and Redirect Functions =====
   
   // Generate JWT for redirection
   const generateJWT = useCallback(async (appInfo: AppView): Promise<string | null> => {
-    if (!agentPKP || !referrerUrl) {
-      console.log('Cannot generate JWT: missing agentPKP or referrerUrl');
+    if (!agentPKP || !redirectUri) {
+      console.log('Cannot generate JWT: missing agentPKP or redirectUri');
       return null;
     }
 
@@ -87,12 +87,12 @@ export default function AuthenticatedConsentForm ({
     }
 
     return null;
-  }, [agentPKP, referrerUrl, sessionSigs]);
+  }, [agentPKP, redirectUri, sessionSigs]);
 
   // Redirect with JWT
   const redirectWithJWT = useCallback(async (jwt: string | null) => {
-    if (!referrerUrl) {
-      console.error('No referrer URL available for redirect');
+    if (!redirectUri) {
+      console.error('No redirect URI available for redirect');
       return;
     }
 
@@ -102,18 +102,18 @@ export default function AuthenticatedConsentForm ({
     if (jwtToUse) {
       console.log('Redirecting with JWT:', jwtToUse);
       try {
-        const redirectUrl = new URL(referrerUrl);
+        const redirectUrl = new URL(redirectUri);
         redirectUrl.searchParams.set('jwt', jwtToUse);
         window.location.href = redirectUrl.toString();
       } catch (error) {
         console.error('Error creating redirect URL:', error);
-        window.location.href = referrerUrl;
+        window.location.href = redirectUri;
       }
     } else {
       console.log('No JWT available, redirecting without JWT');
-      window.location.href = referrerUrl;
+      window.location.href = redirectUri;
     }
-  }, [referrerUrl, generatedJwt]);
+  }, [redirectUri, generatedJwt]);
 
   // ===== Consent Approval Functions =====
   
@@ -235,22 +235,14 @@ export default function AuthenticatedConsentForm ({
       // Then wait a moment before redirecting
       setTimeout(() => {
         // Redirect to the referrer URL without the JWT
-        if (referrerUrl) {
-          window.location.href = referrerUrl;
+        if (redirectUri) {
+          window.location.href = redirectUri;
         }
       }, 100); // Small delay to ensure callback completes
     }, 2000); // Animation display time
-  }, [referrerUrl]);
+  }, [redirectUri]);
 
   // ===== Data Loading Effects =====
-  
-  // Load referrer URL from session storage
-  useEffect(() => {
-    const storedReferrerUrl = sessionStorage.getItem('referrerUrl');
-    if (storedReferrerUrl) {
-      setReferrerUrl(storedReferrerUrl);
-    }
-  }, []);
 
   // Check if app is already permitted for this PKP and fetch all app data
   useEffect(() => {
@@ -261,42 +253,37 @@ export default function AuthenticatedConsentForm ({
       }
 
     async function verifyUri (appInfo: AppView) {
-      if (!referrerUrl) {
+      if (!redirectUri) {
         return false;
       }
       
       try {
-        // Extract domain and port from referrer URL
-        const referrerUrl_obj = new URL(referrerUrl);
-        const referrerDomain = referrerUrl_obj.hostname;
-        const referrerPort = referrerUrl_obj.port || (referrerUrl_obj.protocol === 'https:' ? '443' : '80');
+        // Normalize redirectUri by ensuring it has a protocol
+        let normalizedRedirectUri = redirectUri;
+        if (!normalizedRedirectUri.startsWith('http://') && !normalizedRedirectUri.startsWith('https://')) {
+          normalizedRedirectUri = 'https://' + normalizedRedirectUri;
+        }
         
-        // Get domains and ports from authorized URIs
-        const authorizedDomainsWithPorts = appInfo?.authorizedRedirectUris?.map(uri => {
-          try {
-            const url = new URL(uri);
-            const domain = url.hostname;
-            const port = url.port || (url.protocol === 'https:' ? '443' : '80');
-            return { domain, port, fullDomain: domain + (port === '80' || port === '443' ? '' : ':' + port) };
-          } catch (e) {
-            console.error(`Invalid URI in authorizedRedirectUris: ${uri}`, e);
-            return null;
+        // Check if the normalized redirectUri matches any authorized URI
+        const isAuthorized = appInfo?.authorizedRedirectUris?.some(uri => {
+          // Normalize authorized URI as well
+          let normalizedUri = uri;
+          if (!normalizedUri.startsWith('http://') && !normalizedUri.startsWith('https://')) {
+            normalizedUri = 'https://' + normalizedUri;
           }
-        }).filter(item => item !== null) || [];
+          return normalizedUri === normalizedRedirectUri;
+        }) || false;
         
-        console.log('Authorized domains with ports:', authorizedDomainsWithPorts);
+        console.log('Redirect URI check:', { 
+          redirectUri, 
+          normalizedRedirectUri,
+          authorizedUris: appInfo?.authorizedRedirectUris,
+          isAuthorized 
+        });
         
-        // Store just the display domains for UI display
-        const displayDomains = authorizedDomainsWithPorts.map(item => item?.fullDomain || '');
-        const uniqueDomains = [...new Set(displayDomains)];
-        setAuthorizedDomains(uniqueDomains);
-        
-        // Check if referrer domain and port are in the list of authorized domains and ports
-        return authorizedDomainsWithPorts.some(item => 
-          item?.domain === referrerDomain && item?.port === referrerPort
-        );
+        return isAuthorized;
       } catch (e) {
-        console.error('Error parsing referrer URL:', e);
+        console.error('Error verifying redirect URI:', e);
         return false;
       }
     }
@@ -336,7 +323,7 @@ export default function AuthenticatedConsentForm ({
         setIsAppAlreadyPermitted(isPermitted);
 
         // If app is already permitted, generate JWT and redirect immediately
-        if (isPermitted && referrerUrl) {
+        if (isPermitted && redirectUri) {
           console.log(
             'App is already permitted. Generating JWT and redirecting...'
           );
@@ -367,7 +354,7 @@ export default function AuthenticatedConsentForm ({
     }
 
     checkAppPermissionAndFetchData();
-  }, [appId, agentPKP, referrerUrl]);
+  }, [appId, agentPKP, redirectUri]);
 
   // Fetch app info from database
   useEffect(() => {
@@ -413,13 +400,13 @@ export default function AuthenticatedConsentForm ({
         
         <div className="alert alert--error" style={{display: "block"}}>
           <p style={{display: "block"}}>This application is trying to redirect to a URI that is not on its list of authorized redirect URIs. For your security, this request has been blocked.</p>
-          {referrerUrl && (
+          {redirectUri && (
             <div style={{display: "block", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.2)"}}>
               <div style={{display: "block"}}>
                 <strong>Untrusted URI:</strong>
               </div>
               <div style={{display: "block", marginTop: "8px", paddingLeft: "0"}}>
-                <span style={{whiteSpace: "normal", wordBreak: "break-all", fontFamily: "monospace"}}>{referrerUrl}</span>
+                <span style={{whiteSpace: "normal", wordBreak: "break-all", fontFamily: "monospace"}}>{redirectUri}</span>
               </div>
             </div>
           )}
@@ -429,8 +416,8 @@ export default function AuthenticatedConsentForm ({
           <h4 style={{marginTop: 0, marginBottom: "0.5rem", fontSize: "1rem"}}>Authorized Redirect URIs:</h4>
           {appInfo && appInfo.authorizedRedirectUris && appInfo.authorizedRedirectUris.length > 0 ? (
             <ul className="permissions-list" style={{marginTop: "0.5rem"}}>
-              {authorizedDomains.map((domain, index) => (
-                <li key={index} style={{backgroundColor: "#ffffff", fontSize: "0.875rem"}}>{domain}</li>
+              {appInfo.authorizedRedirectUris.map((uri, index) => (
+                <li key={index} style={{backgroundColor: "#ffffff", fontSize: "0.875rem"}}>{uri}</li>
               ))}
             </ul>
           ) : (

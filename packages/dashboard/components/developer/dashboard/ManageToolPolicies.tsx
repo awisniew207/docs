@@ -199,6 +199,9 @@ export default function ManageToolPoliciesScreen({
             console.log("Transaction confirmed:", receipt);
             
             alert("Tool Policies saved successfully");
+            
+            // Return to the dashboard view automatically
+            onBack();
         } catch (error: any) {
             console.error("Error saving tool policies:", error);
             let errorMessage = "Failed to save tool policies: ";
@@ -302,7 +305,7 @@ export default function ManageToolPoliciesScreen({
                     </Button>
                     <h1 className="text-3xl font-bold">Tool Policies</h1>
                 </div>
-                <Button onClick={handleAddTool}>
+                <Button onClick={handleAddTool} className="text-black">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Tool Policy
                 </Button>
@@ -326,7 +329,7 @@ export default function ManageToolPoliciesScreen({
             </Card>
 
             <div className="flex justify-end">
-                <Button onClick={handleSaveToolPolicies} disabled={isSubmitting}>
+                <Button onClick={handleSaveToolPolicies} disabled={isSubmitting} className="text-black">
                     {isSubmitting ? "Saving..." : "Save Changes"}
                 </Button>
             </div>

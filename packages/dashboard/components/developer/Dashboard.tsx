@@ -1,5 +1,5 @@
 import { AppView } from '@/services/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
 import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
@@ -32,14 +32,33 @@ export default function DashboardScreen({
   const [showCreateApp, setShowCreateApp] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppView | null>(null);
+  const selectedAppIdRef = useRef<number | null>(null);
   const { address } = useAccount();
 
   useEffect(() => {
     if (vincentApp) {
       setDashboard(vincentApp);
+      
+      // Update selectedApp if it exists and matches one of the refreshed apps
+      if (selectedApp && selectedAppIdRef.current === selectedApp.appId) {
+        const refreshedApp = vincentApp.find(app => app.appId === selectedApp.appId);
+        if (refreshedApp) {
+          setSelectedApp(refreshedApp);
+        }
+      }
+      
       setIsRefetching(false);
     }
   }, [vincentApp]);
+
+  // Update the ref whenever selectedApp changes
+  useEffect(() => {
+    if (selectedApp) {
+      selectedAppIdRef.current = selectedApp.appId;
+    } else {
+      selectedAppIdRef.current = null;
+    }
+  }, [selectedApp]);
 
   const handleRefetch = async () => {
     setIsRefetching(true);
@@ -87,17 +106,22 @@ export default function DashboardScreen({
   if (showDelegateeManager && selectedApp) {
     return (
       <DelegateeManagerScreen
-        onBack={() => setShowDelegateeManager(false)}
+        onBack={() => {
+          setShowDelegateeManager(false);
+          handleRefetch();
+        }}
         dashboard={selectedApp}
       />
     );
   }
 
   if (showToolPolicies && selectedApp) {
-    console.log(selectedApp);
     return (
       <ManageToolPoliciesScreen
-        onBack={() => setShowToolPolicies(false)}
+        onBack={() => {
+          setShowToolPolicies(false);
+          handleRefetch();
+        }}
         dashboard={selectedApp}
       />
     );
@@ -106,7 +130,10 @@ export default function DashboardScreen({
   if (showAdvancedFunctions && selectedApp) {
     return (
       <ManageAdvancedFunctionsScreen
-        onBack={() => setShowAdvancedFunctions(false)}
+        onBack={() => {
+          setShowAdvancedFunctions(false);
+          handleRefetch();
+        }}
         dashboard={selectedApp}
         onSuccess={handleRefetch}
       />
@@ -180,7 +207,7 @@ export default function DashboardScreen({
               <CardDescription className="text-black">
                 {selectedApp.toolPolicies.length === 0
                   ? 'No tool policies configured yet.'
-                  : `${selectedApp.toolPolicies.length} tool policies configured`}
+                  : `${selectedApp.toolPolicies.length} app versions with tool policies`}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -192,38 +219,81 @@ export default function DashboardScreen({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {selectedApp.toolPolicies.map((tool, i) => (
-                    <div key={i} className="border-b border-gray-100 pb-2 mb-2 text-black">
-                      <div className="font-medium mb-1">Tool CID:</div>
-                      <div className="text-sm truncate">
-                        {tool && tool.toolIpfsCid ? 
-                          tool.toolIpfsCid : 
-                          'No CID available'}
-                      </div>
-                      
-                      {tool && tool.policies && tool.policies.length > 0 ? (
-                        <div className="mt-2">
-                          <div className="font-medium mb-1">Policies:</div>
-                          <div className="pl-2 text-sm">
-                            {tool.policies.map((policy: any, j: number) => (
-                              <div key={j} className="mb-1">
-                                <div className="text-xs">
-                                  {policy && policy.policyIpfsCid ? policy.policyIpfsCid : 'No policy CID'}{' '}
-                                  {policy && policy.parameterNames ? 
-                                    `(${policy.parameterNames.join(', ')})` : 
-                                    '(No parameters)'}
-                                </div>
+                  {selectedApp.toolPolicies.map((versionData, i) => {
+                    // Extract values from the array and named properties
+                    const version = versionData.version || versionData[0];
+                    const enabled = versionData.enabled !== undefined ? versionData.enabled : versionData[1];
+                    const tools = versionData.tools || versionData[3];
+                    
+                    if (!tools || tools.length === 0) return null;
+
+                    return (
+                      <div key={i} className="mb-4">
+                        <div className="font-medium mb-2 text-black">
+                          Version: {version.toString()} {enabled ? "(Enabled)" : "(Disabled)"}
+                        </div>
+                        
+                        {tools.map((tool: any, j: number) => {
+                          // Extract tool data (supports both array and object format)
+                          const toolData = Array.isArray(tool) 
+                            ? { 
+                                toolIpfsCid: tool[0], 
+                                policies: Array.isArray(tool[1]) ? tool[1] : [] 
+                              } 
+                            : tool;
+
+                          return (
+                            <div key={j} className="border-b border-gray-100 pb-2 mb-2 ml-4 text-black">
+                              <div className="font-medium mb-1">Tool CID:</div>
+                              <div className="text-sm truncate">
+                                {toolData.toolIpfsCid ? 
+                                  toolData.toolIpfsCid : 
+                                  'No CID available'}
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-2">
-                          <div className="text-xs italic">No policies defined for this tool</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                              
+                              {toolData.policies && toolData.policies.length > 0 ? (
+                                <div className="mt-2">
+                                  <div className="font-medium mb-1">Policies:</div>
+                                  <div className="pl-2 text-sm">
+                                    {toolData.policies.map((policy: any, k: number) => {
+                                      // Extract policy data (supports both array and object format)
+                                      const policyData = Array.isArray(policy)
+                                        ? { 
+                                            policyIpfsCid: policy[0] || '', 
+                                            policySchemaIpfsCid: policy[1] || '', 
+                                            parameterNames: policy[2] || [] 
+                                          }
+                                        : policy || {};
+
+                                      return (
+                                        <div key={k} className="mb-1">
+                                          <div className="text-xs">
+                                            <span className="font-medium">Policy CID:</span> {policyData.policyIpfsCid || 'No policy CID'}<br/>
+                                            <span className="font-medium">Schema CID:</span> {policyData.policySchemaIpfsCid || 'No schema'}<br/>
+                                            {policyData.parameterNames && policyData.parameterNames.length > 0 ? (
+                                              <span>
+                                                <span className="font-medium">Parameters:</span> {policyData.parameterNames.join(', ')}
+                                              </span>
+                                            ) : (
+                                              <span className="text-xs italic">(No parameters)</span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="mt-2">
+                                  <div className="text-xs italic">No policies defined for this tool</div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
