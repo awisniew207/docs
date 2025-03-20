@@ -1,7 +1,7 @@
 {
   "name": "vincent-contracts",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/vincent-contracts/src",
+  "sourceRoot": "packages/vincent-contracts/src.ts",
   "projectType": "library",
   "targets": {
     "build": {

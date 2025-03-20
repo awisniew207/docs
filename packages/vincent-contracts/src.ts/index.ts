@@ -8,4 +8,4 @@ export const vincentContractData = {
     contractData: datilContractData,
     diamondAddress: datilDiamondAddress
   }
-}
+} as const;

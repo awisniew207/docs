@@ -6,6 +6,6 @@
     "types": [],
     "skipLibCheck": true
   },
-  "include": ["index.ts"],
+  "include": ["src.ts/**/*"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 } 

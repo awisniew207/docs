@@ -3,7 +3,7 @@ import { abiToSignatures } from "./utils/abiToSignatures";
 const targetAndOutputDir = [
   {
     target: './broadcast/DeployVincentDiamond.sol/175188/deployToDatil-latest.json',
-    outputDir: './networks/vDatil/datil-mainnet'
+    outputDir: './src.ts/networks/vDatil/datil-mainnet'
   },
 
   // ... other networks
