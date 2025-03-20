@@ -1,0 +1,20 @@
+{
+  "name": "vincent-contracts",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/vincent-contracts/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/vincent-contracts/dist",
+        "main": "packages/vincent-contracts/index.ts",
+        "tsConfig": "packages/vincent-contracts/tsconfig.lib.json",
+        "assets": ["packages/vincent-contracts/*.md"],
+        "formats": ["cjs"]
+      }
+    }
+  },
+  "tags": []
+}

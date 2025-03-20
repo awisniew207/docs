@@ -1,0 +1,14 @@
+{
+  "name": "@lit-protocol/vincent-contracts",
+  "version": "0.1.1-1",
+  "description": "Lit Protocol Vincent Contracts",
+  "author": "Lit Protocol",
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ]
+}

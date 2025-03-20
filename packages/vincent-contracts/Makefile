@@ -1,6 +1,6 @@
 -include .env
 
-.PHONY: help build test test-verbose test-match deploy-vincent deploy-vincent-datil get-abis update-facet
+.PHONY: help build test test-verbose test-match deploy-vincent deploy-vincent-datil get-abis update-facet run-postbuild-scripts
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -109,22 +109,28 @@ update-facet: ## Update a specific facet in the Vincent Diamond contract. Usage:
 		--rpc-url $(VINCENT_DEPLOYMENT_RPC_URL)
 
 get-abis: ## Get human-readable ABIs for all facets
-	# @echo "Getting ABI for DiamondCutFacet..."
-	# @forge inspect DiamondCutFacet abi > abis/DiamondCutFacet.abi.json
-	# @echo "Getting ABI for DiamondLoupeFacet..."
-	# @forge inspect DiamondLoupeFacet abi > abis/DiamondLoupeFacet.abi.json
-	# @echo "Getting ABI for OwnershipFacet..."
-	# @forge inspect OwnershipFacet abi > abis/OwnershipFacet.abi.json
 	@echo "Getting ABI for VincentToolFacet..."
-	@forge inspect VincentToolFacet abi > abis/VincentToolFacet.abi.json
+	@forge inspect VincentToolFacet abi --json > abis/VincentToolFacet.abi.json
 	@echo "Getting ABI for VincentToolViewFacet..."
-	@forge inspect VincentToolViewFacet abi > abis/VincentToolViewFacet.abi.json
+	@forge inspect VincentToolViewFacet abi --json > abis/VincentToolViewFacet.abi.json
 	@echo "Getting ABI for VincentAppFacet..."
-	@forge inspect VincentAppFacet abi > abis/VincentAppFacet.abi.json
+	@forge inspect VincentAppFacet abi --json > abis/VincentAppFacet.abi.json
 	@echo "Getting ABI for VincentAppViewFacet..."
-	@forge inspect VincentAppViewFacet abi > abis/VincentAppViewFacet.abi.json
+	@forge inspect VincentAppViewFacet abi --json > abis/VincentAppViewFacet.abi.json
 	@echo "Getting ABI for VincentUserFacet..."
-	@forge inspect VincentUserFacet abi > abis/VincentUserFacet.abi.json
+	@forge inspect VincentUserFacet abi --json > abis/VincentUserFacet.abi.json
 	@echo "Getting ABI for VincentUserViewFacet..."
-	@forge inspect VincentUserViewFacet abi > abis/VincentUserViewFacet.abi.json
-	@echo "ABIs written to abis/*.abi.json" 
+	@forge inspect VincentUserViewFacet abi --json > abis/VincentUserViewFacet.abi.json
+	@echo "ABIs written to abis/*.abi.json"
+
+run-postbuild-scripts: ## Run all postbuild scripts in numerical order
+	@echo "Running postbuild scripts..."
+	@for script in $$(ls -v postbuild-scripts/*.ts); do \
+		echo "Running $$script..."; \
+		bun run $$script; \
+		if [ $$? -ne 0 ]; then \
+			echo "Error running $$script"; \
+			exit 1; \
+		fi; \
+	done
+	@echo "All postbuild scripts completed successfully." 
