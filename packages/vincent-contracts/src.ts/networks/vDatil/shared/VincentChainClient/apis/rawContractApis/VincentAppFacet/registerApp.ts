@@ -74,26 +74,3 @@ export async function registerApp(request: RegisterAppRequest, ctx: VincentNetwo
 
   return { hash, receipt, decodedLogs };
 }
-
-
-if (import.meta.main) {
-  const { vincentNetworkContext } = await import('../../../_vincentConfig');
-  const { privateKeyToAccount, generatePrivateKey } = await import('viem/accounts');
-
-  const account = privateKeyToAccount(generatePrivateKey());
-
-  const res = await registerApp(
-    {
-      appName: 'Test App',
-      appDescription: 'Test Description',
-      authorizedRedirectUris: ['http://localhost:3000'],
-      delegatees: [account.address],
-      toolIpfsCids: ['QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY'],
-      toolPolicies: [['QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE']],
-      toolPolicyParameterNames: [[['param1']]],
-      toolPolicyParameterTypes: [[['BYTES']]],
-    },
-    vincentNetworkContext
-  );
-  console.log(res);
-}
