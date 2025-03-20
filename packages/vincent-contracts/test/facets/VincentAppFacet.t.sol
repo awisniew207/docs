@@ -1374,4 +1374,405 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test suite for VincentAppViewFacet
+     * @dev Tests all view methods of the VincentAppViewFacet
+     */
+
+    /**
+     * @notice Test getting the total app count
+     * @dev Verifies that getTotalAppCount returns the correct number of apps
+     */
+    function testGetTotalAppCount() public {
+        vm.startPrank(deployer);
+
+        // Initial state - no apps registered
+        assertEq(wrappedAppViewFacet.getTotalAppCount(), 0, "Initial app count should be 0");
+
+        // Register an app
+        _registerTestApp();
+        assertEq(wrappedAppViewFacet.getTotalAppCount(), 1, "After registering 1 app, count should be 1");
+
+        // Register another app
+        address[] memory secondAppDelegatees = new address[](1);
+        secondAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        wrappedAppFacet.registerApp(
+            bytes("Second App"),
+            bytes("Second App Description"),
+            testRedirectUris,
+            secondAppDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        assertEq(wrappedAppViewFacet.getTotalAppCount(), 2, "After registering 2 apps, count should be 2");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app by ID
+     * @dev Verifies that getAppById returns the correct app data
+     */
+    function testGetAppById() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Get the app by ID
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+
+        // Verify app data
+        assertEq(app.id, appId, "App ID should match");
+        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+        assertEq(keccak256(app.description), keccak256(TEST_APP_DESCRIPTION), "App description should match");
+        assertEq(app.manager, deployer, "App manager should be deployer");
+        assertEq(app.latestVersion, 1, "App latest version should be 1");
+        assertEq(app.delegatees.length, 1, "App should have 1 delegatee");
+        assertEq(app.delegatees[0], TEST_DELEGATEE_1, "App delegatee should match");
+        assertEq(app.authorizedRedirectUris.length, 1, "App should have 1 redirect URI");
+        assertEq(
+            keccak256(abi.encodePacked(app.authorizedRedirectUris[0])),
+            keccak256(TEST_REDIRECT_URI_1),
+            "App redirect URI should match"
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app by non-existent ID
+     * @dev Verifies that getAppById reverts when given a non-existent app ID
+     */
+    function testGetAppByIdNonExistent() public {
+        vm.startPrank(deployer);
+
+        // Try to get a non-existent app
+        uint256 nonExistentAppId = 999;
+        vm.expectRevert(abi.encodeWithSignature("AppNotRegistered(uint256)", nonExistentAppId));
+        wrappedAppViewFacet.getAppById(nonExistentAppId);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app version
+     * @dev Verifies that getAppVersion returns the correct app version data
+     */
+    function testGetAppVersion() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Get the app version
+        (VincentAppViewFacet.App memory app, VincentAppViewFacet.AppVersion memory version) =
+            wrappedAppViewFacet.getAppVersion(appId, versionNumber);
+
+        // Verify app data
+        assertEq(app.id, appId, "App ID should match");
+        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+
+        // Verify version data
+        assertEq(version.version, versionNumber, "Version number should match");
+        assertTrue(version.enabled, "Version should be enabled");
+        assertEq(version.tools.length, 1, "Version should have 1 tool");
+        assertEq(keccak256(version.tools[0].toolIpfsCid), keccak256(TEST_TOOL_IPFS_CID_1), "Tool IPFS CID should match");
+        assertEq(version.tools[0].policies.length, 1, "Tool should have 1 policy");
+        assertEq(
+            keccak256(version.tools[0].policies[0].policyIpfsCid),
+            keccak256(TEST_POLICY_1),
+            "Policy IPFS CID should match"
+        );
+        assertEq(
+            keccak256(version.tools[0].policies[0].policySchemaIpfsCid),
+            keccak256(TEST_POLICY_SCHEMA_1),
+            "Policy schema IPFS CID should match"
+        );
+        assertEq(version.tools[0].policies[0].parameterNames.length, 1, "Policy should have 1 parameter name");
+        assertEq(
+            keccak256(version.tools[0].policies[0].parameterNames[0]),
+            keccak256(TEST_POLICY_PARAM_1),
+            "Parameter name should match"
+        );
+        assertEq(version.tools[0].policies[0].parameterTypes.length, 1, "Policy should have 1 parameter type");
+        assertEq(
+            uint256(version.tools[0].policies[0].parameterTypes[0]),
+            uint256(VincentAppStorage.ParameterType.STRING),
+            "Parameter type should match"
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app version with non-existent app ID
+     * @dev Verifies that getAppVersion reverts when given a non-existent app ID
+     */
+    function testGetAppVersionNonExistentApp() public {
+        vm.startPrank(deployer);
+
+        // Try to get a non-existent app version
+        uint256 nonExistentAppId = 999;
+        uint256 versionNumber = 1;
+        vm.expectRevert(abi.encodeWithSignature("AppNotRegistered(uint256)", nonExistentAppId));
+        wrappedAppViewFacet.getAppVersion(nonExistentAppId, versionNumber);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app version with non-existent version number
+     * @dev Verifies that getAppVersion reverts when given a non-existent version number
+     */
+    function testGetAppVersionNonExistentVersion() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Try to get a non-existent version
+        uint256 nonExistentVersionNumber = 999;
+        vm.expectRevert(
+            abi.encodeWithSignature("AppVersionNotRegistered(uint256,uint256)", appId, nonExistentVersionNumber)
+        );
+        wrappedAppViewFacet.getAppVersion(appId, nonExistentVersionNumber);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting apps by manager
+     * @dev Verifies that getAppsByManager returns all apps for a manager
+     */
+    function testGetAppsByManager() public {
+        vm.startPrank(deployer);
+
+        // Register two apps
+        (uint256 firstAppId, uint256 firstAppVersion) = _registerTestApp();
+
+        address[] memory secondAppDelegatees = new address[](1);
+        secondAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+            bytes("Second App"),
+            bytes("Second App Description"),
+            testRedirectUris,
+            secondAppDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Get apps by manager
+        VincentAppViewFacet.AppWithVersions[] memory appsWithVersions = wrappedAppViewFacet.getAppsByManager(deployer);
+
+        // Verify apps count
+        assertEq(appsWithVersions.length, 2, "Manager should have 2 apps");
+
+        // Verify first app data
+        assertEq(appsWithVersions[0].app.id, firstAppId, "First app ID should match");
+        assertEq(keccak256(appsWithVersions[0].app.name), keccak256(TEST_APP_NAME), "First app name should match");
+        assertEq(appsWithVersions[0].versions.length, 1, "First app should have 1 version");
+        assertEq(appsWithVersions[0].versions[0].version, 1, "First app version number should be 1");
+
+        // Verify second app data
+        assertEq(appsWithVersions[1].app.id, secondAppId, "Second app ID should match");
+        assertEq(
+            keccak256(appsWithVersions[1].app.name), keccak256(bytes("Second App")), "Second app name should match"
+        );
+        assertEq(appsWithVersions[1].versions.length, 1, "Second app should have 1 version");
+        assertEq(appsWithVersions[1].versions[0].version, 1, "Second app version number should be 1");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting apps by a manager with no apps
+     * @dev Verifies that getAppsByManager reverts when given a manager with no apps
+     */
+    function testGetAppsByManagerNoApps() public {
+        vm.startPrank(deployer);
+
+        // Try to get apps for a manager with no apps
+        address managerWithNoApps = address(0xBEEF);
+        vm.expectRevert(abi.encodeWithSignature("NoAppsFoundForManager(address)", managerWithNoApps));
+        wrappedAppViewFacet.getAppsByManager(managerWithNoApps);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting apps by zero address
+     * @dev Verifies that getAppsByManager reverts when given a zero address
+     */
+    function testGetAppsByManagerZeroAddress() public {
+        vm.startPrank(deployer);
+
+        // Try to get apps for zero address
+        vm.expectRevert(abi.encodeWithSignature("ZeroAddressNotAllowed()"));
+        wrappedAppViewFacet.getAppsByManager(address(0));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app by delegatee
+     * @dev Verifies that getAppByDelegatee returns the correct app
+     */
+    function testGetAppByDelegatee() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Get app by delegatee
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppByDelegatee(TEST_DELEGATEE_1);
+
+        // Verify app data
+        assertEq(app.id, appId, "App ID should match");
+        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+        assertEq(app.delegatees.length, 1, "App should have 1 delegatee");
+        assertEq(app.delegatees[0], TEST_DELEGATEE_1, "App delegatee should match");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app by a non-registered delegatee
+     * @dev Verifies that getAppByDelegatee reverts when given a non-registered delegatee
+     */
+    function testGetAppByDelegateeNotRegistered() public {
+        vm.startPrank(deployer);
+
+        // Try to get app for a non-registered delegatee
+        address nonRegisteredDelegatee = address(0xCAFE);
+        vm.expectRevert(abi.encodeWithSignature("DelegateeNotRegistered(address)", nonRegisteredDelegatee));
+        wrappedAppViewFacet.getAppByDelegatee(nonRegisteredDelegatee);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app by zero address delegatee
+     * @dev Verifies that getAppByDelegatee reverts when given a zero address
+     */
+    function testGetAppByDelegateeZeroAddress() public {
+        vm.startPrank(deployer);
+
+        // Try to get app for zero address
+        vm.expectRevert(abi.encodeWithSignature("ZeroAddressNotAllowed()"));
+        wrappedAppViewFacet.getAppByDelegatee(address(0));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting authorized redirect URI by hash
+     * @dev Verifies that getAuthorizedRedirectUriByHash returns the correct redirect URI
+     */
+    function testGetAuthorizedRedirectUriByHash() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Get the hash of the redirect URI
+        bytes32 redirectUriHash = keccak256(abi.encodePacked(TEST_REDIRECT_URI_1));
+
+        // Get redirect URI by hash
+        bytes memory redirectUri = wrappedAppViewFacet.getAuthorizedRedirectUriByHash(redirectUriHash);
+
+        // Verify redirect URI
+        assertEq(keccak256(abi.encodePacked(redirectUri)), keccak256(TEST_REDIRECT_URI_1), "Redirect URI should match");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting authorized redirect URI by non-existent hash
+     * @dev Verifies that getAuthorizedRedirectUriByHash reverts when given a non-existent hash
+     */
+    function testGetAuthorizedRedirectUriByHashNotFound() public {
+        vm.startPrank(deployer);
+
+        // Try to get redirect URI for a non-existent hash
+        bytes32 nonExistentHash = keccak256(abi.encodePacked("non-existent"));
+        vm.expectRevert(abi.encodeWithSignature("RedirectUriNotFound(bytes32)", nonExistentHash));
+        wrappedAppViewFacet.getAuthorizedRedirectUriByHash(nonExistentHash);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting authorized redirect URIs by app ID
+     * @dev Verifies that getAuthorizedRedirectUrisByAppId returns all redirect URIs for an app
+     */
+    function testGetAuthorizedRedirectUrisByAppId() public {
+        vm.startPrank(deployer);
+
+        // Register an app with multiple redirect URIs
+        bytes[] memory multipleRedirectUris = new bytes[](2);
+        multipleRedirectUris[0] = TEST_REDIRECT_URI_1;
+        multipleRedirectUris[1] = TEST_REDIRECT_URI_2;
+
+        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            multipleRedirectUris,
+            testDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Get redirect URIs by app ID
+        bytes[] memory redirectUris = wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(appId);
+
+        // Verify redirect URIs count
+        assertEq(redirectUris.length, 2, "App should have 2 redirect URIs");
+
+        // Verify redirect URIs (order is not guaranteed)
+        bool foundUri1 = false;
+        bool foundUri2 = false;
+
+        for (uint256 i = 0; i < redirectUris.length; i++) {
+            bytes32 uriHash = keccak256(abi.encodePacked(redirectUris[i]));
+            if (uriHash == keccak256(TEST_REDIRECT_URI_1)) {
+                foundUri1 = true;
+            } else if (uriHash == keccak256(TEST_REDIRECT_URI_2)) {
+                foundUri2 = true;
+            }
+        }
+
+        assertTrue(foundUri1, "Should contain first redirect URI");
+        assertTrue(foundUri2, "Should contain second redirect URI");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting authorized redirect URIs by non-existent app ID
+     * @dev Verifies that getAuthorizedRedirectUrisByAppId reverts when given a non-existent app ID
+     */
+    function testGetAuthorizedRedirectUrisByAppIdNonExistent() public {
+        vm.startPrank(deployer);
+
+        // Try to get redirect URIs for a non-existent app
+        uint256 nonExistentAppId = 999;
+        vm.expectRevert(abi.encodeWithSignature("AppNotRegistered(uint256)", nonExistentAppId));
+        wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(nonExistentAppId);
+
+        vm.stopPrank();
+    }
 }
