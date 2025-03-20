@@ -250,6 +250,124 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     /**
+     * @notice Test registering an app with empty name
+     * @dev Verifies that app registration fails when an empty name is provided
+     */
+    function testRegisterAppWithEmptyName() public {
+        vm.startPrank(deployer);
+
+        // Create empty app name
+        bytes memory emptyName = bytes("");
+
+        // Expect the call to revert with EmptyAppNameNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("EmptyAppNameNotAllowed()"));
+
+        // Call registerApp with empty name
+        wrappedAppFacet.registerApp(
+            emptyName,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with empty description
+     * @dev Verifies that app registration fails when an empty description is provided
+     */
+    function testRegisterAppWithEmptyDescription() public {
+        vm.startPrank(deployer);
+
+        // Create empty app description
+        bytes memory emptyDescription = bytes("");
+
+        // Expect the call to revert with EmptyAppDescriptionNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("EmptyAppDescriptionNotAllowed()"));
+
+        // Call registerApp with empty description
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            emptyDescription,
+            testRedirectUris,
+            testDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with empty redirect URI
+     * @dev Verifies that app registration fails when an empty redirect URI is provided
+     */
+    function testRegisterAppWithEmptyRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // Create redirect URIs array with an empty URI
+        bytes[] memory redirectUrisWithEmpty = new bytes[](1);
+        redirectUrisWithEmpty[0] = bytes("");
+
+        // Expect the call to revert with EmptyRedirectUriNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("EmptyRedirectUriNotAllowed()"));
+
+        // Call registerApp with empty redirect URI
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            redirectUrisWithEmpty,
+            testDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with zero address delegatee
+     * @dev Verifies that app registration fails when a zero address delegatee is provided
+     */
+    function testRegisterAppWithZeroAddressDelegatee() public {
+        vm.startPrank(deployer);
+
+        // Create delegatees array with a zero address
+        address[] memory delegateesWithZeroAddress = new address[](1);
+        delegateesWithZeroAddress[0] = address(0);
+
+        // Expect the call to revert with ZeroAddressDelegateeNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("ZeroAddressDelegateeNotAllowed()"));
+
+        // Call registerApp with zero address delegatee
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            delegateesWithZeroAddress,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
      * @notice Test registering an app with mismatched tool and policy array lengths
      * @dev Verifies that app registration fails when array lengths don't match
      */
@@ -385,7 +503,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         missingSchemas[0] = new bytes[](1);
         missingSchemas[0][0] = bytes("");
 
-        vm.expectRevert(abi.encodeWithSignature("PolicySchemaMissing(uint256,bytes)", 1, testToolPolicies[0][0]));
+        vm.expectRevert(abi.encodeWithSignature("EmptyPolicySchemaIpfsCidNotAllowed(uint256,uint256,uint256)", 1, 0, 0));
 
         wrappedAppFacet.registerApp(
             TEST_APP_NAME,
@@ -1772,6 +1890,421 @@ contract VincentAppFacetTest is VincentTestHelper {
         uint256 nonExistentAppId = 999;
         vm.expectRevert(abi.encodeWithSignature("AppNotRegistered(uint256)", nonExistentAppId));
         wrappedAppViewFacet.getAuthorizedRedirectUrisByAppId(nonExistentAppId);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test adding an empty redirect URI to an existing app
+     * @dev Verifies that adding an empty redirect URI fails with EmptyRedirectUriNotAllowed error
+     */
+    function testAddEmptyRedirectUri() public {
+        vm.startPrank(deployer);
+
+        // First register a valid app
+        (uint256 appId,) = _registerTestApp();
+
+        // Create an empty redirect URI
+        bytes memory emptyRedirectUri = bytes("");
+
+        // Expect the call to revert with EmptyRedirectUriNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("EmptyRedirectUriNotAllowed()"));
+
+        // Try to add an empty redirect URI to the existing app
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, emptyRedirectUri);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test adding a zero address delegatee to an existing app
+     * @dev Verifies that adding a zero address delegatee fails with ZeroAddressDelegateeNotAllowed error
+     */
+    function testAddZeroAddressDelegatee() public {
+        vm.startPrank(deployer);
+
+        // First register a valid app
+        (uint256 appId,) = _registerTestApp();
+
+        // Expect the call to revert with ZeroAddressDelegateeNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("ZeroAddressDelegateeNotAllowed()"));
+
+        // Try to add a zero address delegatee to the existing app
+        wrappedAppFacet.addDelegatee(appId, address(0));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with an empty tools array
+     * @dev Verifies that app registration fails with NoToolsProvided error
+     */
+    function testRegisterAppWithEmptyToolsArray() public {
+        vm.startPrank(deployer);
+
+        // Create empty tools array
+        bytes[] memory emptyToolsArray = new bytes[](0);
+
+        // Create matching empty arrays for policies and parameters
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][] memory emptyPolicySchemas = new bytes[][](0);
+        bytes[][][] memory emptyParameterNames = new bytes[][][](0);
+        VincentAppStorage.ParameterType[][][] memory emptyParameterTypes = new VincentAppStorage.ParameterType[][][](0);
+
+        // Expect the call to revert with NoToolsProvided error
+        vm.expectRevert(abi.encodeWithSignature("NoToolsProvided(uint256)", 1));
+
+        // Call registerApp with empty tools array
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            emptyToolsArray,
+            emptyPolicies,
+            emptyPolicySchemas,
+            emptyParameterNames,
+            emptyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with an empty tools array
+     * @dev Verifies that version registration fails with NoToolsProvided error
+     */
+    function testRegisterNextAppVersionWithEmptyToolsArray() public {
+        vm.startPrank(deployer);
+
+        // First register an app with valid tools
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create empty tools array for the next version
+        bytes[] memory emptyToolsArray = new bytes[](0);
+
+        // Create matching empty arrays for policies and parameters
+        bytes[][] memory emptyPolicies = new bytes[][](0);
+        bytes[][] memory emptyPolicySchemas = new bytes[][](0);
+        bytes[][][] memory emptyParameterNames = new bytes[][][](0);
+        VincentAppStorage.ParameterType[][][] memory emptyParameterTypes = new VincentAppStorage.ParameterType[][][](0);
+
+        // Expect the call to revert with NoToolsProvided error
+        vm.expectRevert(abi.encodeWithSignature("NoToolsProvided(uint256)", appId));
+
+        // Try to register a new app version with empty tools array
+        wrappedAppFacet.registerNextAppVersion(
+            appId, emptyToolsArray, emptyPolicies, emptyPolicySchemas, emptyParameterNames, emptyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with a tool that has no policies
+     * @dev Verifies that tools can be registered without policies
+     */
+    function testRegisterAppWithToolWithoutPolicies() public {
+        vm.startPrank(deployer);
+
+        // Create tools array with one tool
+        bytes[] memory toolsArray = new bytes[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create empty policies array for the tool
+        bytes[][] memory emptyPoliciesForTool = new bytes[][](1);
+        emptyPoliciesForTool[0] = new bytes[](0); // Empty policies for the tool
+
+        // Create matching arrays for policy schemas and parameters
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](0);
+
+        bytes[][][] memory parameterNames = new bytes[][][](1);
+        parameterNames[0] = new bytes[][](0);
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](0);
+
+        // Register app with a tool that has no policies
+        // This should not revert
+        (uint256 appId, uint256 versionId) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            emptyPoliciesForTool,
+            policySchemas,
+            parameterNames,
+            parameterTypes
+        );
+
+        // Verify app was registered
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+        assertEq(keccak256(app.name), keccak256(TEST_APP_NAME), "App name should match");
+
+        // Verify app version was registered
+        (VincentAppViewFacet.App memory appData, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, versionId);
+        assertTrue(versionData.enabled, "App version should be enabled");
+
+        // Verify the tool was registered
+        assertEq(versionData.tools.length, 1, "Should have 1 tool");
+        // And the tool has no policies
+        assertEq(versionData.tools[0].policies.length, 0, "Tool should have 0 policies");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with a tool that has no policies
+     * @dev Verifies that a new version can be registered with tools that have no policies
+     */
+    function testRegisterNextAppVersionWithToolWithoutPolicies() public {
+        vm.startPrank(deployer);
+
+        // First register an app with valid tools
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create tools array with one tool
+        bytes[] memory toolsArray = new bytes[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_2; // Use a different tool
+
+        // Create empty policies array for the tool
+        bytes[][] memory emptyPoliciesForTool = new bytes[][](1);
+        emptyPoliciesForTool[0] = new bytes[](0); // Empty policies for the tool
+
+        // Create matching arrays for policy schemas and parameters
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](0);
+
+        bytes[][][] memory parameterNames = new bytes[][][](1);
+        parameterNames[0] = new bytes[][](0);
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](0);
+
+        // Register a new app version with a tool that has no policies
+        // This should not revert
+        uint256 newVersionId = wrappedAppFacet.registerNextAppVersion(
+            appId, toolsArray, emptyPoliciesForTool, policySchemas, parameterNames, parameterTypes
+        );
+
+        // Verify the new version was registered
+        (VincentAppViewFacet.App memory appData, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, newVersionId);
+        assertTrue(versionData.enabled, "New app version should be enabled");
+
+        // Verify the tool was registered
+        assertEq(versionData.tools.length, 1, "Should have 1 tool");
+        // And the tool has no policies
+        assertEq(versionData.tools[0].policies.length, 0, "Tool should have 0 policies");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with an empty policy schema
+     * @dev Verifies that app registration fails with EmptyPolicySchemaIpfsCidNotAllowed error when a tool has policies
+     */
+    function testRegisterAppWithEmptyPolicySchema() public {
+        vm.startPrank(deployer);
+
+        // Create tools array with one tool
+        bytes[] memory toolsArray = new bytes[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policies array for the tool
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        // Create policy schemas array with an empty schema
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](1);
+        policySchemas[0][0] = bytes(""); // Empty policy schema
+
+        // Create parameter names and types arrays
+        bytes[][][] memory parameterNames = new bytes[][][](1);
+        parameterNames[0] = new bytes[][](1);
+        parameterNames[0][0] = new bytes[](1);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Expect the call to revert with EmptyPolicySchemaIpfsCidNotAllowed error
+        vm.expectRevert(abi.encodeWithSignature("EmptyPolicySchemaIpfsCidNotAllowed(uint256,uint256,uint256)", 1, 0, 0));
+
+        // Call registerApp with an empty policy schema
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policies,
+            policySchemas,
+            parameterNames,
+            parameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with an empty parameter name
+     * @dev Verifies that app registration fails with EmptyParameterNameNotAllowed error when a tool has policies with parameters
+     */
+    function testRegisterAppWithEmptyParameterName() public {
+        vm.startPrank(deployer);
+
+        // Create tools array with one tool
+        bytes[] memory toolsArray = new bytes[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policies array for the tool
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        // Create policy schemas array
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](1);
+        policySchemas[0][0] = TEST_POLICY_SCHEMA_1;
+
+        // Create parameter names array with an empty parameter name
+        bytes[][][] memory parameterNames = new bytes[][][](1);
+        parameterNames[0] = new bytes[][](1);
+        parameterNames[0][0] = new bytes[](1);
+        parameterNames[0][0][0] = bytes(""); // Empty parameter name
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Expect the call to revert with EmptyParameterNameNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature("EmptyParameterNameNotAllowed(uint256,uint256,uint256,uint256)", 1, 0, 0, 0)
+        );
+
+        // Call registerApp with an empty parameter name
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policies,
+            policySchemas,
+            parameterNames,
+            parameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with no parameters for a policy
+     * @dev Verifies that app registration fails with NoParametersProvidedForPolicy error when a tool has policies
+     */
+    function testRegisterAppWithNoParametersForPolicy() public {
+        vm.startPrank(deployer);
+
+        // Create tools array with one tool
+        bytes[] memory toolsArray = new bytes[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policies array for the tool
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        // Create policy schemas array
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](1);
+        policySchemas[0][0] = TEST_POLICY_SCHEMA_1;
+
+        // Create parameter names array with no parameters for the policy
+        bytes[][][] memory parameterNames = new bytes[][][](1);
+        parameterNames[0] = new bytes[][](1);
+        parameterNames[0][0] = new bytes[](0); // No parameters
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](0); // No parameter types
+
+        // Expect the call to revert with NoParametersProvidedForPolicy error
+        vm.expectRevert(abi.encodeWithSignature("NoParametersProvidedForPolicy(uint256,uint256,uint256)", 1, 0, 0));
+
+        // Call registerApp with no parameters for a policy
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policies,
+            policySchemas,
+            parameterNames,
+            parameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with mismatched parameter names and types arrays
+     * @dev Verifies that app registration fails with PolicyParameterNamesSchemaMismatch error
+     */
+    function testRegisterAppWithMismatchedParameterArrays() public {
+        vm.startPrank(deployer);
+
+        // Create tools array with one tool
+        bytes[] memory toolsArray = new bytes[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policies array for the tool
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        // Create policy schemas array
+        bytes[][] memory policySchemas = new bytes[][](1);
+        policySchemas[0] = new bytes[](1);
+        policySchemas[0][0] = TEST_POLICY_SCHEMA_1;
+
+        // Create parameter names array with two parameters
+        bytes[][][] memory parameterNames = new bytes[][][](1);
+        parameterNames[0] = new bytes[][](1);
+        parameterNames[0][0] = new bytes[](2); // Two parameters
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[0][0][1] = TEST_POLICY_PARAM_2;
+
+        // Create parameter types array with only one type (mismatched with names)
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1); // Only one parameter type
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Expect the call to revert with PolicyParameterNamesSchemaMismatch error
+        vm.expectRevert(abi.encodeWithSignature("PolicyParameterNamesSchemaMismatch(uint256,uint256,uint256)", 1, 0, 0));
+
+        // Call registerApp with mismatched parameter arrays
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policies,
+            policySchemas,
+            parameterNames,
+            parameterTypes
+        );
 
         vm.stopPrank();
     }

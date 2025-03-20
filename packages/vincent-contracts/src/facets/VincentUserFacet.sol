@@ -46,6 +46,9 @@ contract VincentUserFacet is VincentBase {
     error EmptyParameterValue(bytes parameterName);
     error ZeroPkpTokenId();
     error PkpTokenDoesNotExist(uint256 pkpTokenId);
+    error EmptyToolIpfsCid();
+    error EmptyPolicyIpfsCid();
+    error EmptyParameterName();
 
     modifier onlyPkpOwner(uint256 pkpTokenId) {
         if (pkpTokenId == 0) {
@@ -220,6 +223,12 @@ contract VincentUserFacet is VincentBase {
         // Step 3: Iterate over each tool to process its policies and remove parameters.
         for (uint256 i = 0; i < toolCount; i++) {
             bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+
+            // Validate tool IPFS CID is not empty
+            if (toolIpfsCid.length == 0) {
+                revert EmptyToolIpfsCid();
+            }
+
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 3.1: Validate that the tool exists for the specified app version.
@@ -241,6 +250,12 @@ contract VincentUserFacet is VincentBase {
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
                 bytes memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+
+                // Validate policy IPFS CID is not empty
+                if (policyIpfsCid.length == 0) {
+                    revert EmptyPolicyIpfsCid();
+                }
+
                 bytes32 hashedPolicyId = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 4.1: Verify that the policy exists before attempting removal.
@@ -256,6 +271,12 @@ contract VincentUserFacet is VincentBase {
                 uint256 paramCount = policyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
                     bytes memory paramName = policyParameterNames[i][j][k]; // Cache calldata value
+
+                    // Validate parameter name is not empty
+                    if (paramName.length == 0) {
+                        revert EmptyParameterName();
+                    }
+
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 5.1: Only remove the parameter if it exists.
@@ -319,6 +340,12 @@ contract VincentUserFacet is VincentBase {
         // Step 3: Loop over each tool to process its associated policies and parameters.
         for (uint256 i = 0; i < toolCount; i++) {
             bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+
+            // Validate tool IPFS CID is not empty
+            if (toolIpfsCid.length == 0) {
+                revert EmptyToolIpfsCid();
+            }
+
             bytes32 hashedToolIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 3.1: Validate that the tool exists in the specified app version.
@@ -339,6 +366,12 @@ contract VincentUserFacet is VincentBase {
             uint256 policyCount = policyIpfsCids[i].length;
             for (uint256 j = 0; j < policyCount; j++) {
                 bytes memory policyIpfsCid = policyIpfsCids[i][j]; // Cache calldata value
+
+                // Validate policy IPFS CID is not empty
+                if (policyIpfsCid.length == 0) {
+                    revert EmptyPolicyIpfsCid();
+                }
+
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
                 // Step 4.1: Validate that the policy is registered for the tool.
@@ -356,6 +389,12 @@ contract VincentUserFacet is VincentBase {
                     bytes memory paramName = policyParameterNames[i][j][k];
                     bytes memory paramValue = policyParameterValues[i][j][k];
 
+                    // Validate parameter name is not empty
+                    if (paramName.length == 0) {
+                        revert EmptyParameterName();
+                    }
+
+                    // Validate parameter value is not empty
                     if (paramValue.length == 0) {
                         revert EmptyParameterValue(paramName);
                     }

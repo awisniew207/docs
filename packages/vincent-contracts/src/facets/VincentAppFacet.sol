@@ -182,12 +182,70 @@ contract VincentAppFacet is VincentBase {
     error EmptyToolIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
 
     /**
+     * @notice Error thrown when app name is empty
+     */
+    error EmptyAppNameNotAllowed();
+
+    /**
+     * @notice Error thrown when app description is empty
+     */
+    error EmptyAppDescriptionNotAllowed();
+
+    /**
+     * @notice Error thrown when a redirect URI is empty
+     */
+    error EmptyRedirectUriNotAllowed();
+
+    /**
+     * @notice Error thrown when a delegatee address is the zero address
+     */
+    error ZeroAddressDelegateeNotAllowed();
+
+    /**
+     * @notice Error thrown when no tools are provided during app version registration
+     * @param appId ID of the app
+     */
+    error NoToolsProvided(uint256 appId);
+
+    /**
+     * @notice Error thrown when no policies are provided for a tool
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool with no policies
+     */
+    error NoPoliciesProvidedForTool(uint256 appId, uint256 toolIndex);
+
+    /**
      * @notice Error thrown when adding a tool to the set fails
      * @param appId ID of the app
      * @param appVersion Version number of the app
      * @param toolIpfsCid IPFS CID of the tool that failed to add
      */
     error FailedToAddTool(uint256 appId, uint256 appVersion, bytes toolIpfsCid);
+
+    /**
+     * @notice Error thrown when a policy parameter name is empty
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     * @param policyIndex Index of the policy in the policies array
+     * @param paramIndex Index of the parameter in the parameters array
+     */
+    error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
+
+    /**
+     * @notice Error thrown when a policy schema IPFS CID is empty
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     * @param policyIndex Index of the policy in the policies array
+     */
+    error EmptyPolicySchemaIpfsCidNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex);
+
+    /**
+     * @notice Error thrown when no parameters are provided for a policy
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     * @param policyIndex Index of the policy in the policies array
+     */
+    error NoParametersProvidedForPolicy(uint256 appId, uint256 toolIndex, uint256 policyIndex);
 
     /**
      * @notice Modifier to restrict function access to the app manager only
@@ -308,6 +366,11 @@ contract VincentAppFacet is VincentBase {
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
+        // Check that the redirect URI is not empty
+        if (redirectUri.length == 0) {
+            revert EmptyRedirectUriNotAllowed();
+        }
+
         _addAuthorizedRedirectUri(VincentAppStorage.appStorage(), appId, redirectUri);
     }
 
@@ -348,6 +411,11 @@ contract VincentAppFacet is VincentBase {
      */
     function addDelegatee(uint256 appId, address delegatee) external onlyAppManager(appId) onlyRegisteredApp(appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+
+        // Check that the delegatee is not the zero address
+        if (delegatee == address(0)) {
+            revert ZeroAddressDelegateeNotAllowed();
+        }
 
         // Check if the delegatee is already registered to any app
         uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
@@ -401,6 +469,15 @@ contract VincentAppFacet is VincentBase {
         bytes[] calldata authorizedRedirectUris,
         address[] calldata delegatees
     ) internal returns (uint256 newAppId) {
+        // Validate app name and description are not empty
+        if (name.length == 0) {
+            revert EmptyAppNameNotAllowed();
+        }
+
+        if (description.length == 0) {
+            revert EmptyAppDescriptionNotAllowed();
+        }
+
         // Require at least one authorized redirect URI
         if (authorizedRedirectUris.length == 0) {
             revert NoRedirectUrisProvided();
@@ -420,11 +497,20 @@ contract VincentAppFacet is VincentBase {
         app.description = description;
 
         for (uint256 i = 0; i < authorizedRedirectUris.length; i++) {
+            // Check that the redirect URI is not empty
+            if (authorizedRedirectUris[i].length == 0) {
+                revert EmptyRedirectUriNotAllowed();
+            }
             _addAuthorizedRedirectUri(as_, newAppId, authorizedRedirectUris[i]);
         }
 
         // Add the delegatees to the app
         for (uint256 i = 0; i < delegatees.length; i++) {
+            // Check that the delegatee is not the zero address
+            if (delegatees[i] == address(0)) {
+                revert ZeroAddressDelegateeNotAllowed();
+            }
+
             uint256 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
             if (existingAppId != 0) {
                 revert DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
@@ -463,7 +549,12 @@ contract VincentAppFacet is VincentBase {
         bytes[][][] calldata toolPolicyParameterNames,
         VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) internal returns (uint256 newAppVersion) {
-        // Step 1: Validate input array lengths to ensure all tools have corresponding policies and parameters.
+        // Step 1: Check that at least one tool is provided
+        if (toolIpfsCids.length == 0) {
+            revert NoToolsProvided(appId);
+        }
+
+        // Step 2: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
         if (
             toolCount != toolPolicies.length || toolCount != toolPolicySchemaIpfsCids.length
@@ -472,12 +563,12 @@ contract VincentAppFacet is VincentBase {
             revert ToolsAndPoliciesLengthMismatch();
         }
 
-        // Step 2: Fetch necessary storage references.
+        // Step 3: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
         VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
 
-        // Step 3: Create a new app version.
+        // Step 4: Create a new app version.
         app.versionedApps.push();
         newAppVersion = app.versionedApps.length;
 
@@ -487,7 +578,7 @@ contract VincentAppFacet is VincentBase {
         // Store this once outside the loop instead of repeatedly accessing it
         EnumerableSet.Bytes32Set storage toolIpfsCidHashes = versionedApp.toolIpfsCidHashes;
 
-        // Step 4: Iterate through each tool to register it with the new app version.
+        // Step 5: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
             bytes memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
 
@@ -498,7 +589,7 @@ contract VincentAppFacet is VincentBase {
 
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Step 4.1: Register the tool IPFS CID globally if it hasn't been added already.
+            // Step 5.1: Register the tool IPFS CID globally if it hasn't been added already.
             if (!toolIpfsCidHashes.contains(hashedToolCid)) {
                 if (!toolIpfsCidHashes.add(hashedToolCid)) {
                     revert FailedToAddTool(appId, newAppVersion, toolIpfsCid);
@@ -519,12 +610,13 @@ contract VincentAppFacet is VincentBase {
                 // without trying to register it again
             }
 
-            // Step 4.2: Fetch the tool policies storage for this tool.
+            // Step 5.2: Fetch the tool policies storage for this tool.
             VincentAppStorage.ToolPolicies storage toolPoliciesStorage =
                 versionedApp.toolIpfsCidHashToToolPolicies[hashedToolCid];
 
-            // Step 5: Iterate through policies linked to this tool.
+            // Step 6: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
+
             // Validate policy schema array length matches policy count
             if (policyCount != toolPolicySchemaIpfsCids[i].length) {
                 revert ToolsAndPoliciesLengthMismatch();
@@ -540,20 +632,20 @@ contract VincentAppFacet is VincentBase {
 
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
-                // Step 5.1: Add the policy hash to the ToolPolicies
+                // Step 6.1: Add the policy hash to the ToolPolicies
                 toolPoliciesStorage.policyIpfsCidHashes.add(hashedToolPolicy);
 
-                // Step 5.2: Store the policy IPFS CID globally if it's not already stored.
+                // Step 6.2: Store the policy IPFS CID globally if it's not already stored.
                 if (ts.ipfsCidHashToIpfsCid[hashedToolPolicy].length == 0) {
                     ts.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
-                // Step 5.3: Get the policy schema IPFS CID and store it
+                // Step 6.3: Get the policy schema IPFS CID and store it
                 bytes memory policySchemaIpfsCid = toolPolicySchemaIpfsCids[i][j]; // Cache calldata value
 
-                // Only require a policy schema if the policy is not empty
-                if (policyIpfsCid.length > 0 && policySchemaIpfsCid.length == 0) {
-                    revert PolicySchemaMissing(appId, policyIpfsCid);
+                // Check for empty policy schema IPFS CID
+                if (policySchemaIpfsCid.length == 0) {
+                    revert EmptyPolicySchemaIpfsCidNotAllowed(appId, i, j);
                 }
 
                 bytes32 hashedPolicySchemaIpfsCid = keccak256(abi.encodePacked(policySchemaIpfsCid));
@@ -570,13 +662,30 @@ contract VincentAppFacet is VincentBase {
                     ts.ipfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid] = policySchemaIpfsCid;
                 }
 
-                // Step 6: Get the Policy parameter name hashes for this policy
+                // Step 7: Get the Policy parameter name hashes for this policy
                 EnumerableSet.Bytes32Set storage policyParameterNameHashes = policy.policyParameterNameHashes;
 
-                // Step 7: Iterate through policy parameters.
+                // Step 8: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
+
+                // Ensure at least one parameter is provided for the policy
+                if (paramCount == 0) {
+                    revert NoParametersProvidedForPolicy(appId, i, j);
+                }
+
+                // Check that parameter types array has the same length as parameter names array
+                if (paramCount != toolPolicyParameterTypes[i][j].length) {
+                    revert PolicyParameterNamesSchemaMismatch(appId, i, j);
+                }
+
                 for (uint256 k = 0; k < paramCount; k++) {
                     bytes memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
+
+                    // Check for empty parameter name
+                    if (paramName.length == 0) {
+                        revert EmptyParameterNameNotAllowed(appId, i, j, k);
+                    }
+
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 8.1: Register the policy parameter.

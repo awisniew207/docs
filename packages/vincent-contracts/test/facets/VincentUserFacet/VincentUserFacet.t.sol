@@ -389,4 +389,279 @@ contract VincentUserFacetTest is VincentTestHelper {
         // Try to get permitted app IDs for an invalid PKP (0)
         wrappedUserViewFacet.getAllPermittedAppIdsForPkp(0);
     }
+
+    /**
+     * @notice Test that setToolPolicyParameters reverts with EmptyToolIpfsCid when an empty tool IPFS CID is provided
+     * @dev Verifies that empty tool IPFS CIDs are rejected
+     */
+    function testSetToolPolicyParametersEmptyToolIpfsCid() public {
+        // Start as deployer (owner of TEST_PKP_TOKEN_ID_1)
+        vm.startPrank(deployer);
+
+        // First permit app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        // Create arrays with an empty tool IPFS CID
+        bytes[] memory toolIpfsCidsWithEmpty = new bytes[](1);
+        toolIpfsCidsWithEmpty[0] = bytes(""); // Empty tool IPFS CID
+
+        // Create matching arrays for policies and parameters
+        bytes[][] memory testPolicies = new bytes[][](1);
+        testPolicies[0] = new bytes[](1);
+        testPolicies[0][0] = TEST_POLICY_1;
+
+        bytes[][][] memory testParamNames = new bytes[][][](1);
+        testParamNames[0] = new bytes[][](1);
+        testParamNames[0][0] = new bytes[](1);
+        testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+
+        bytes[][][] memory testParamValues = new bytes[][][](1);
+        testParamValues[0] = new bytes[][](1);
+        testParamValues[0][0] = new bytes[](1);
+        testParamValues[0][0][0] = abi.encode(TEST_POLICY_PARAM_STRING_VALUE);
+
+        // Expect revert with EmptyToolIpfsCid error
+        vm.expectRevert(EmptyToolIpfsCid.selector);
+
+        // Try to set tool policy parameters with empty tool IPFS CID
+        wrappedUserFacet.setToolPolicyParameters(
+            TEST_PKP_TOKEN_ID_1, appId, appVersion, toolIpfsCidsWithEmpty, testPolicies, testParamNames, testParamValues
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that setToolPolicyParameters reverts with EmptyPolicyIpfsCid when an empty policy IPFS CID is provided
+     * @dev Verifies that empty policy IPFS CIDs are rejected
+     */
+    function testSetToolPolicyParametersEmptyPolicyIpfsCid() public {
+        // Start as deployer (owner of TEST_PKP_TOKEN_ID_1)
+        vm.startPrank(deployer);
+
+        // First permit app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        // Create arrays with valid tool but empty policy IPFS CID
+        bytes[] memory toolIpfsCids = new bytes[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        bytes[][] memory policiesWithEmpty = new bytes[][](1);
+        policiesWithEmpty[0] = new bytes[](1);
+        policiesWithEmpty[0][0] = bytes(""); // Empty policy IPFS CID
+
+        bytes[][][] memory testParamNames = new bytes[][][](1);
+        testParamNames[0] = new bytes[][](1);
+        testParamNames[0][0] = new bytes[](1);
+        testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+
+        bytes[][][] memory testParamValues = new bytes[][][](1);
+        testParamValues[0] = new bytes[][](1);
+        testParamValues[0][0] = new bytes[](1);
+        testParamValues[0][0][0] = abi.encode(TEST_POLICY_PARAM_STRING_VALUE);
+
+        // Expect revert with EmptyPolicyIpfsCid error
+        vm.expectRevert(EmptyPolicyIpfsCid.selector);
+
+        // Try to set tool policy parameters with empty policy IPFS CID
+        wrappedUserFacet.setToolPolicyParameters(
+            TEST_PKP_TOKEN_ID_1, appId, appVersion, toolIpfsCids, policiesWithEmpty, testParamNames, testParamValues
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that setToolPolicyParameters reverts with EmptyParameterName when an empty parameter name is provided
+     * @dev Verifies that empty parameter names are rejected
+     */
+    function testSetToolPolicyParametersEmptyParameterName() public {
+        // Start as deployer (owner of TEST_PKP_TOKEN_ID_1)
+        vm.startPrank(deployer);
+
+        // First permit app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        // Create arrays with valid tool and policy but empty parameter name
+        bytes[] memory toolIpfsCids = new bytes[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        bytes[][][] memory paramNamesWithEmpty = new bytes[][][](1);
+        paramNamesWithEmpty[0] = new bytes[][](1);
+        paramNamesWithEmpty[0][0] = new bytes[](1);
+        paramNamesWithEmpty[0][0][0] = bytes(""); // Empty parameter name
+
+        bytes[][][] memory testParamValues = new bytes[][][](1);
+        testParamValues[0] = new bytes[][](1);
+        testParamValues[0][0] = new bytes[](1);
+        testParamValues[0][0][0] = abi.encode(TEST_POLICY_PARAM_STRING_VALUE);
+
+        // Expect revert with EmptyParameterName error
+        vm.expectRevert(EmptyParameterName.selector);
+
+        // Try to set tool policy parameters with empty parameter name
+        wrappedUserFacet.setToolPolicyParameters(
+            TEST_PKP_TOKEN_ID_1, appId, appVersion, toolIpfsCids, policies, paramNamesWithEmpty, testParamValues
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removeToolPolicyParameters reverts with EmptyToolIpfsCid when an empty tool IPFS CID is provided
+     * @dev Verifies that empty tool IPFS CIDs are rejected in removal
+     */
+    function testRemoveToolPolicyParametersEmptyToolIpfsCid() public {
+        // Start as deployer (owner of TEST_PKP_TOKEN_ID_1)
+        vm.startPrank(deployer);
+
+        // First permit app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        // Create arrays with an empty tool IPFS CID
+        bytes[] memory toolIpfsCidsWithEmpty = new bytes[](1);
+        toolIpfsCidsWithEmpty[0] = bytes(""); // Empty tool IPFS CID
+
+        // Create matching arrays for policies and parameters
+        bytes[][] memory testPolicies = new bytes[][](1);
+        testPolicies[0] = new bytes[](1);
+        testPolicies[0][0] = TEST_POLICY_1;
+
+        bytes[][][] memory testParamNames = new bytes[][][](1);
+        testParamNames[0] = new bytes[][](1);
+        testParamNames[0][0] = new bytes[](1);
+        testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+
+        // Expect revert with EmptyToolIpfsCid error
+        vm.expectRevert(EmptyToolIpfsCid.selector);
+
+        // Try to remove tool policy parameters with empty tool IPFS CID
+        wrappedUserFacet.removeToolPolicyParameters(
+            appId, TEST_PKP_TOKEN_ID_1, appVersion, toolIpfsCidsWithEmpty, testPolicies, testParamNames
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removeToolPolicyParameters reverts with EmptyPolicyIpfsCid when an empty policy IPFS CID is provided
+     * @dev Verifies that empty policy IPFS CIDs are rejected in removal
+     */
+    function testRemoveToolPolicyParametersEmptyPolicyIpfsCid() public {
+        // Start as deployer (owner of TEST_PKP_TOKEN_ID_1)
+        vm.startPrank(deployer);
+
+        // First permit app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        // Create arrays with valid tool but empty policy IPFS CID
+        bytes[] memory toolIpfsCids = new bytes[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        bytes[][] memory policiesWithEmpty = new bytes[][](1);
+        policiesWithEmpty[0] = new bytes[](1);
+        policiesWithEmpty[0][0] = bytes(""); // Empty policy IPFS CID
+
+        bytes[][][] memory testParamNames = new bytes[][][](1);
+        testParamNames[0] = new bytes[][](1);
+        testParamNames[0][0] = new bytes[](1);
+        testParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+
+        // Expect revert with EmptyPolicyIpfsCid error
+        vm.expectRevert(EmptyPolicyIpfsCid.selector);
+
+        // Try to remove tool policy parameters with empty policy IPFS CID
+        wrappedUserFacet.removeToolPolicyParameters(
+            appId, TEST_PKP_TOKEN_ID_1, appVersion, toolIpfsCids, policiesWithEmpty, testParamNames
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removeToolPolicyParameters reverts with EmptyParameterName when an empty parameter name is provided
+     * @dev Verifies that empty parameter names are rejected in removal
+     */
+    function testRemoveToolPolicyParametersEmptyParameterName() public {
+        // Start as deployer (owner of TEST_PKP_TOKEN_ID_1)
+        vm.startPrank(deployer);
+
+        // First permit app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        // Create arrays with valid tool and policy but empty parameter name
+        bytes[] memory toolIpfsCids = new bytes[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        bytes[][] memory policies = new bytes[][](1);
+        policies[0] = new bytes[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        bytes[][][] memory paramNamesWithEmpty = new bytes[][][](1);
+        paramNamesWithEmpty[0] = new bytes[][](1);
+        paramNamesWithEmpty[0][0] = new bytes[](1);
+        paramNamesWithEmpty[0][0][0] = bytes(""); // Empty parameter name
+
+        // Expect revert with EmptyParameterName error
+        vm.expectRevert(EmptyParameterName.selector);
+
+        // Try to remove tool policy parameters with empty parameter name
+        wrappedUserFacet.removeToolPolicyParameters(
+            appId, TEST_PKP_TOKEN_ID_1, appVersion, toolIpfsCids, policies, paramNamesWithEmpty
+        );
+
+        vm.stopPrank();
+    }
 }

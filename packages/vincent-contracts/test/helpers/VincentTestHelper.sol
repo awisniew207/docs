@@ -180,6 +180,9 @@ abstract contract VincentTestHelper is Test {
     error DelegateeNotAssociatedWithApp(address delegatee);
     error NoRegisteredPkpsFound(address userAddress);
     error InvalidPkpTokenId();
+    error EmptyToolIpfsCid();
+    error EmptyPolicyIpfsCid();
+    error EmptyParameterName();
 
     /**
      * @notice Sets up the complete testing environment for Vincent
