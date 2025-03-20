@@ -2,322 +2,582 @@
 pragma solidity ^0.8.24;
 
 import "../helpers/VincentTestHelper.sol";
+import "../../src/VincentBase.sol";
+import "../../src/LibVincentDiamondStorage.sol";
 
 /**
  * @title VincentToolFacetTest
- * @dev Tests for the VincentToolFacet and VincentToolViewFacet contracts
+ * @notice Test contract for VincentToolFacet
+ * @dev Tests functions related to tool registration and approval
  */
 contract VincentToolFacetTest is VincentTestHelper {
-    // Test variables
-    address public approvedToolsManager;
-
     function setUp() public override {
-        // Call parent setup
+        // Call parent setUp to deploy the diamond and initialize standard test data
         super.setUp();
+    }
 
-        // Create a new address for the approved tools manager
-        approvedToolsManager = makeAddr("approved-tools-manager");
-
-        // Set up the test as the deployer
+    /**
+     * @notice Test registering a new tool
+     * @dev Verifies that a tool can be registered with its IPFS CID
+     */
+    function testRegisterTool() public {
+        // Start as deployer
         vm.startPrank(deployer);
-    }
 
-    function testRegisterSingleTool() public {
-        // Set up event expectation
+        // Create a new tool IPFS CID
+        bytes memory newToolIpfsCid = bytes("QmNewTestTool");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(newToolIpfsCid));
+
+        // Expect the NewToolRegistered event
         vm.expectEmit(true, false, false, false);
-        emit NewToolRegistered(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
+        emit NewToolRegistered(hashedToolCid);
 
-        // Register a tool
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+        // Register the tool (using registerTools with a single-item array)
+        bytes[] memory singleToolArray = new bytes[](1);
+        singleToolArray[0] = newToolIpfsCid;
+        wrappedToolFacet.registerTools(singleToolArray);
 
-        // Verify it was registered correctly
-        bytes memory retrievedCid =
-            wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
-        assertEq(retrievedCid, TEST_TOOL_IPFS_CID_1, "Retrieved tool IPFS CID doesn't match registered one");
+        // Verify the tool was registered by checking if it's retrievable
+        bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(hashedToolCid);
+        assertEq(
+            keccak256(retrievedCid), keccak256(newToolIpfsCid), "Retrieved tool IPFS CID should match registered one"
+        );
 
-        // Check all tools list
-        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
-        assertEq(allTools.length, 1, "Should have exactly 1 tool registered");
-        assertEq(allTools[0], TEST_TOOL_IPFS_CID_1, "Tool in list doesn't match registered one");
+        vm.stopPrank();
     }
 
-    function testRegisterSameToolTwice() public {
+    /**
+     * @notice Test registering a tool with an empty IPFS CID
+     * @dev Verifies that registering a tool with an empty IPFS CID fails
+     */
+    function testRegisterToolWithEmptyIpfsCid() public {
+        vm.startPrank(deployer);
+
+        // Expect the call to revert with EmptyToolIpfsCid error
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCid()"));
+
+        // Try to register a tool with an empty IPFS CID
+        bytes[] memory singleToolArray = new bytes[](1);
+        singleToolArray[0] = bytes("");
+        wrappedToolFacet.registerTools(singleToolArray);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a tool that's already registered
+     * @dev Verifies that registering the same tool twice fails with ToolAlreadyRegistered error
+     */
+    function testRegisterToolAlreadyRegistered() public {
+        vm.startPrank(deployer);
+
+        // Create a tool IPFS CID
+        bytes memory toolIpfsCid = bytes("QmTestToolForDuplication");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
+
         // Register the tool first time
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+        bytes[] memory singleToolArray = new bytes[](1);
+        singleToolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(singleToolArray);
 
-        // When registering the same tool again, no event should be emitted
-        // This verifies the duplicate prevention logic
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+        // Expect the call to revert with ToolAlreadyRegistered error
+        vm.expectRevert(abi.encodeWithSignature("ToolAlreadyRegistered(bytes32)", hashedToolCid));
 
-        // Check all tools list - should still have only one entry
-        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
-        assertEq(allTools.length, 1, "Should still have exactly 1 tool registered");
+        // Try to register the same tool again
+        wrappedToolFacet.registerTools(singleToolArray);
+
+        vm.stopPrank();
     }
 
-    function testRegisterMultipleTools() public {
-        // Set up bytes array for multiple tools
-        bytes[] memory tools = new bytes[](2);
-        tools[0] = TEST_TOOL_IPFS_CID_1;
-        tools[1] = TEST_TOOL_IPFS_CID_2;
+    /**
+     * @notice Test registering multiple tools at once
+     * @dev Verifies that multiple tools can be registered in a single transaction
+     */
+    function testRegisterTools() public {
+        vm.startPrank(deployer);
 
-        // Register multiple tools at once
-        wrappedToolFacet.registerTools(tools);
+        // Create array of tool IPFS CIDs
+        bytes[] memory toolIpfsCids = new bytes[](3);
+        toolIpfsCids[0] = bytes("QmBatchTool1");
+        toolIpfsCids[1] = bytes("QmBatchTool2");
+        toolIpfsCids[2] = bytes("QmBatchTool3");
 
-        // Verify they were registered correctly
-        bytes memory retrievedCid1 =
-            wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
-        bytes memory retrievedCid2 =
-            wrappedToolViewFacet.getToolIpfsCidByHash(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2)));
-
-        assertEq(retrievedCid1, TEST_TOOL_IPFS_CID_1, "Retrieved tool 1 IPFS CID doesn't match registered one");
-        assertEq(retrievedCid2, TEST_TOOL_IPFS_CID_2, "Retrieved tool 2 IPFS CID doesn't match registered one");
-
-        // Check all tools list
-        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
-        assertEq(allTools.length, 2, "Should have exactly 2 tools registered");
-
-        // Check the contents of allTools list (order might vary)
-        bool foundTool1 = false;
-        bool foundTool2 = false;
-
-        for (uint256 i = 0; i < allTools.length; i++) {
-            if (keccak256(abi.encodePacked(allTools[i])) == keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1))) {
-                foundTool1 = true;
-            } else if (keccak256(abi.encodePacked(allTools[i])) == keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2))) {
-                foundTool2 = true;
-            }
+        // Calculate hashes for verification
+        bytes32[] memory hashedToolCids = new bytes32[](3);
+        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+            hashedToolCids[i] = keccak256(abi.encodePacked(toolIpfsCids[i]));
         }
 
-        assertTrue(foundTool1, "Tool 1 not found in the list of all tools");
-        assertTrue(foundTool2, "Tool 2 not found in the list of all tools");
+        // Register multiple tools
+        wrappedToolFacet.registerTools(toolIpfsCids);
+
+        // Verify all tools were registered
+        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+            bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(hashedToolCids[i]);
+            assertEq(
+                keccak256(retrievedCid),
+                keccak256(toolIpfsCids[i]),
+                "Retrieved tool IPFS CID should match registered one"
+            );
+        }
+
+        vm.stopPrank();
     }
 
-    function testRegisterDuplicateToolsInBatch() public {
-        // Create array with duplicate entries
-        bytes[] memory tools = new bytes[](3);
-        tools[0] = TEST_TOOL_IPFS_CID_1;
-        tools[1] = TEST_TOOL_IPFS_CID_2;
-        tools[2] = TEST_TOOL_IPFS_CID_1; // Duplicate
+    /**
+     * @notice Test registering tools with an empty array
+     * @dev Verifies that calling registerTools with an empty array fails
+     */
+    function testRegisterToolsWithEmptyArray() public {
+        vm.startPrank(deployer);
 
-        // Register tools
-        wrappedToolFacet.registerTools(tools);
+        // Create empty array
+        bytes[] memory emptyToolIpfsCids = new bytes[](0);
 
-        // Check all tools list - should have 2 entries (no duplicates)
-        bytes[] memory allTools = wrappedToolViewFacet.getAllRegisteredTools();
-        assertEq(allTools.length, 2, "Should have exactly 2 tools registered (no duplicates)");
+        // Expect the call to revert with EmptyToolIpfsCidsArray error
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidsArray()"));
+
+        // Try to register with empty array
+        wrappedToolFacet.registerTools(emptyToolIpfsCids);
+
+        vm.stopPrank();
     }
 
-    function testEmptyStringTool() public {
-        // Register an empty string
-        wrappedToolFacet.registerTool("");
+    /**
+     * @notice Test approving a tool
+     * @dev Verifies that the approved tools manager can approve a registered tool
+     */
+    function testApproveTool() public {
+        vm.startPrank(deployer);
 
-        // Calculate the hash of empty string
-        bytes32 emptyStringHash = keccak256(abi.encodePacked(""));
+        // Register a tool first
+        bytes memory toolIpfsCid = bytes("QmToolToApprove");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-        // Verify it was registered correctly
-        bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(emptyStringHash);
-        assertEq(retrievedCid, "", "Empty string tool not registered correctly");
+        // Register the tool with a single-item array
+        bytes[] memory toolArray = new bytes[](1);
+        toolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(toolArray);
+
+        // Expect the ToolApproved event
+        vm.expectEmit(true, false, false, false);
+        emit ToolApproved(hashedToolCid);
+
+        // Approve the tool
+        wrappedToolFacet.approveTools(toolArray);
+
+        // Verify the tool is approved
+        bool isApproved = wrappedToolViewFacet.isToolApproved(toolIpfsCid);
+        assertTrue(isApproved, "Tool should be approved");
+
+        vm.stopPrank();
     }
 
-    function testGetNonExistentTool() public {
-        // Calculate a random hash
-        bytes32 nonExistentHash = keccak256(abi.encodePacked("non-existent-tool"));
+    /**
+     * @notice Test approving multiple tools at once
+     * @dev Verifies that multiple tools can be approved in a single transaction
+     */
+    function testApproveMultipleTools() public {
+        vm.startPrank(deployer);
 
-        // Trying to get a non-existent tool should return an empty string
-        bytes memory retrievedCid = wrappedToolViewFacet.getToolIpfsCidByHash(nonExistentHash);
-        assertEq(retrievedCid, "", "Non-existent tool should return empty string");
+        // Register multiple tools first
+        bytes[] memory toolIpfsCids = new bytes[](3);
+        toolIpfsCids[0] = bytes("QmBatchApprove1");
+        toolIpfsCids[1] = bytes("QmBatchApprove2");
+        toolIpfsCids[2] = bytes("QmBatchApprove3");
+
+        wrappedToolFacet.registerTools(toolIpfsCids);
+
+        // Calculate hashes for verification
+        bytes32[] memory hashedToolCids = new bytes32[](3);
+        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+            hashedToolCids[i] = keccak256(abi.encodePacked(toolIpfsCids[i]));
+        }
+
+        // Approve all tools
+        wrappedToolFacet.approveTools(toolIpfsCids);
+
+        // Verify all tools are approved
+        for (uint256 i = 0; i < hashedToolCids.length; i++) {
+            bool isApproved = wrappedToolViewFacet.isToolApproved(toolIpfsCids[i]);
+            assertTrue(isApproved, "Tool should be approved");
+        }
+
+        vm.stopPrank();
     }
 
-    // Tests for the new approved tools functionality
+    /**
+     * @notice Test approving a tool with non-approved tools manager
+     * @dev Verifies that only the approved tools manager can approve tools
+     */
+    function testApproveToolNotApprovedToolsManager() public {
+        vm.startPrank(deployer);
 
-    function testUpdateApprovedToolsManager() public {
-        // Check the initial approved tools manager (should be the contract deployer)
-        address initialManager = wrappedToolViewFacet.getApprovedToolsManager();
-        assertEq(initialManager, deployer, "Initial approved tools manager should be the deployer");
+        // Register a tool first
+        bytes memory toolIpfsCid = bytes("QmToolForAuth");
 
-        // Set up event expectation for updating the manager
-        vm.expectEmit(true, true, false, false);
-        emit ApprovedToolsManagerUpdated(deployer, approvedToolsManager);
+        // Register the tool with a single-item array
+        bytes[] memory toolArray = new bytes[](1);
+        toolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(toolArray);
 
-        // Update the approved tools manager
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
-
-        // Verify the manager was updated
-        address newManager = wrappedToolViewFacet.getApprovedToolsManager();
-        assertEq(newManager, approvedToolsManager, "Approved tools manager should be updated");
-    }
-
-    function testFailUpdateApprovedToolsManagerToZeroAddress() public {
-        // Try to update to zero address, should revert
-        wrappedToolFacet.updateApprovedToolsManager(address(0));
-    }
-
-    function testFailUpdateApprovedToolsManagerAsNonOwner() public {
-        // Stop being the deployer
         vm.stopPrank();
 
-        // Start being a non-owner
+        // Switch to non-owner account (not the approved tools manager)
         vm.startPrank(nonOwner);
 
-        // Should revert when called by non-owner
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
+        // Expect the call to revert with NotApprovedToolsManager error
+        vm.expectRevert(abi.encodeWithSignature("NotApprovedToolsManager(address)", nonOwner));
+
+        // Try to approve the tool as non-manager
+        wrappedToolFacet.approveTools(toolArray);
+
+        vm.stopPrank();
     }
 
-    function testApproveToolsAsManager() public {
-        // Register tools first
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
+    /**
+     * @notice Test approving a tool that's not registered
+     * @dev Verifies that approving an unregistered tool fails
+     */
+    function testApproveToolNotRegistered() public {
+        vm.startPrank(deployer);
 
-        // Set the approved tools manager (initially it's the deployer)
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
+        // Create a tool IPFS CID without registering it
+        bytes memory unregisteredToolIpfsCid = bytes("QmUnregisteredTool");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(unregisteredToolIpfsCid));
 
-        // Switch to the approved tools manager
+        // Create array with single unregistered tool
+        bytes[] memory toolsToApprove = new bytes[](1);
+        toolsToApprove[0] = unregisteredToolIpfsCid;
+
+        // Expect the call to revert with ToolNotRegistered error
+        vm.expectRevert(abi.encodeWithSignature("ToolNotRegistered(bytes32)", hashedToolCid));
+
+        // Try to approve an unregistered tool
+        wrappedToolFacet.approveTools(toolsToApprove);
+
         vm.stopPrank();
-        vm.startPrank(approvedToolsManager);
+    }
 
-        // Set up array with tools to approve
-        bytes[] memory tools = new bytes[](2);
-        tools[0] = TEST_TOOL_IPFS_CID_1;
-        tools[1] = TEST_TOOL_IPFS_CID_2;
+    /**
+     * @notice Test approving a tool that's already approved
+     * @dev Verifies that approving an already approved tool fails
+     */
+    function testApproveToolAlreadyApproved() public {
+        vm.startPrank(deployer);
 
-        // Set up event expectations for approving tools
+        // Register and approve a tool
+        bytes memory toolIpfsCid = bytes("QmAlreadyApprovedTool");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
+
+        // Register the tool with a single-item array
+        bytes[] memory toolArray = new bytes[](1);
+        toolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(toolArray);
+
+        // Approve the tool
+        wrappedToolFacet.approveTools(toolArray);
+
+        // Expect the call to revert with ToolAlreadyApproved error
+        vm.expectRevert(abi.encodeWithSignature("ToolAlreadyApproved(bytes32)", hashedToolCid));
+
+        // Try to approve the tool again
+        wrappedToolFacet.approveTools(toolArray);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test approving tools with an empty array
+     * @dev Verifies that calling approveTools with an empty array fails
+     */
+    function testApproveToolsWithEmptyArray() public {
+        vm.startPrank(deployer);
+
+        // Create empty array
+        bytes[] memory emptyToolIpfsCids = new bytes[](0);
+
+        // Expect the call to revert with EmptyToolIpfsCidsArray error
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidsArray()"));
+
+        // Try to approve with empty array
+        wrappedToolFacet.approveTools(emptyToolIpfsCids);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test approving a tool with an empty IPFS CID
+     * @dev Verifies that approving a tool with an empty IPFS CID fails
+     */
+    function testApproveToolWithEmptyIpfsCid() public {
+        vm.startPrank(deployer);
+
+        // Create array with an empty IPFS CID
+        bytes[] memory toolsWithEmptyCid = new bytes[](1);
+        toolsWithEmptyCid[0] = bytes("");
+
+        // Expect the call to revert with EmptyToolIpfsCid error
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCid()"));
+
+        // Try to approve a tool with empty IPFS CID
+        wrappedToolFacet.approveTools(toolsWithEmptyCid);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test removing a tool approval
+     * @dev Verifies that the approved tools manager can remove tool approvals
+     */
+    function testRemoveToolApproval() public {
+        vm.startPrank(deployer);
+
+        // Register and approve a tool first
+        bytes memory toolIpfsCid = bytes("QmToolToUnapprove");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
+
+        // Register the tool with a single-item array
+        bytes[] memory toolArray = new bytes[](1);
+        toolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(toolArray);
+
+        // Approve the tool
+        wrappedToolFacet.approveTools(toolArray);
+
+        // Verify the tool is initially approved
+        bool isApprovedBefore = wrappedToolViewFacet.isToolApproved(toolIpfsCid);
+        assertTrue(isApprovedBefore, "Tool should be approved initially");
+
+        // Expect the ToolApprovalRemoved event
         vm.expectEmit(true, false, false, false);
-        emit ToolApproved(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
-        vm.expectEmit(true, false, false, false);
-        emit ToolApproved(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2)));
+        emit ToolApprovalRemoved(hashedToolCid);
 
-        // Approve the tools
-        wrappedToolFacet.approveTools(tools);
+        // Remove the tool approval
+        wrappedToolFacet.removeToolApprovals(toolArray);
 
-        // Verify the tools were approved
-        bytes[] memory approvedTools = wrappedToolViewFacet.getAllApprovedTools();
-        assertEq(approvedTools.length, 2, "Should have exactly 2 approved tools");
+        // Verify the tool is no longer approved
+        bool isApprovedAfter = wrappedToolViewFacet.isToolApproved(toolIpfsCid);
+        assertFalse(isApprovedAfter, "Tool should no longer be approved");
 
-        // Check that the tools are in the approved list (order might vary)
-        bool foundTool1 = false;
-        bool foundTool2 = false;
+        vm.stopPrank();
+    }
 
-        for (uint256 i = 0; i < approvedTools.length; i++) {
-            if (keccak256(abi.encodePacked(approvedTools[i])) == keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1))) {
-                foundTool1 = true;
-            } else if (
-                keccak256(abi.encodePacked(approvedTools[i])) == keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_2))
-            ) {
-                foundTool2 = true;
-            }
+    /**
+     * @notice Test removing multiple tool approvals at once
+     * @dev Verifies that multiple tool approvals can be removed in a single transaction
+     */
+    function testRemoveMultipleToolApprovals() public {
+        vm.startPrank(deployer);
+
+        // Register and approve multiple tools first
+        bytes[] memory toolIpfsCids = new bytes[](3);
+        toolIpfsCids[0] = bytes("QmBatchRemove1");
+        toolIpfsCids[1] = bytes("QmBatchRemove2");
+        toolIpfsCids[2] = bytes("QmBatchRemove3");
+
+        wrappedToolFacet.registerTools(toolIpfsCids);
+        wrappedToolFacet.approveTools(toolIpfsCids);
+
+        // Calculate hashes for verification
+        bytes32[] memory hashedToolCids = new bytes32[](3);
+        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+            hashedToolCids[i] = keccak256(abi.encodePacked(toolIpfsCids[i]));
         }
 
-        assertTrue(foundTool1, "Tool 1 not found in the list of approved tools");
-        assertTrue(foundTool2, "Tool 2 not found in the list of approved tools");
+        // Verify all tools are initially approved
+        for (uint256 i = 0; i < hashedToolCids.length; i++) {
+            bool isApproved = wrappedToolViewFacet.isToolApproved(toolIpfsCids[i]);
+            assertTrue(isApproved, "Tool should be approved initially");
+        }
 
-        // Verify with isToolApproved function
-        bool isApproved1 = wrappedToolViewFacet.isToolApproved(TEST_TOOL_IPFS_CID_1);
-        bool isApproved2 = wrappedToolViewFacet.isToolApproved(TEST_TOOL_IPFS_CID_2);
+        // Remove all tool approvals
+        wrappedToolFacet.removeToolApprovals(toolIpfsCids);
 
-        assertTrue(isApproved1, "Tool 1 should be approved");
-        assertTrue(isApproved2, "Tool 2 should be approved");
-    }
+        // Verify no tools are approved afterwards
+        for (uint256 i = 0; i < hashedToolCids.length; i++) {
+            bool isApproved = wrappedToolViewFacet.isToolApproved(toolIpfsCids[i]);
+            assertFalse(isApproved, "Tool should no longer be approved");
+        }
 
-    function testFailApproveToolThatDoesNotExist() public {
-        // Set the approved tools manager (initially it's the deployer)
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
-
-        // Switch to the approved tools manager
         vm.stopPrank();
-        vm.startPrank(approvedToolsManager);
-
-        // Set up array with a tool that doesn't exist
-        bytes[] memory tools = new bytes[](1);
-        tools[0] = "non-existent-tool";
-
-        // Should revert when trying to approve a tool that isn't registered
-        wrappedToolFacet.approveTools(tools);
     }
 
-    function testFailApproveToolAsNonManager() public {
-        // Register a tool
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+    /**
+     * @notice Test removing a tool approval with non-approved tools manager
+     * @dev Verifies that only the approved tools manager can remove tool approvals
+     */
+    function testRemoveToolApprovalNotApprovedToolsManager() public {
+        vm.startPrank(deployer);
 
-        // Set the approved tools manager to someone else
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
+        // Register and approve a tool first
+        bytes memory toolIpfsCid = bytes("QmToolForAuthRemoval");
 
-        // Try to approve as the deployer (no longer the manager)
-        bytes[] memory tools = new bytes[](1);
-        tools[0] = TEST_TOOL_IPFS_CID_1;
+        // Register the tool with a single-item array
+        bytes[] memory toolArray = new bytes[](1);
+        toolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(toolArray);
 
-        // Should revert when called by non-manager
-        wrappedToolFacet.approveTools(tools);
-    }
+        // Approve the tool
+        wrappedToolFacet.approveTools(toolArray);
 
-    function testRemoveToolApproval() public {
-        // Register tools first
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_2);
-
-        // Update the approved tools manager to our test manager
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
-
-        // Switch to the approved tools manager
         vm.stopPrank();
-        vm.startPrank(approvedToolsManager);
 
-        // Approve the tools as the manager
-        bytes[] memory tools = new bytes[](2);
-        tools[0] = TEST_TOOL_IPFS_CID_1;
-        tools[1] = TEST_TOOL_IPFS_CID_2;
-        wrappedToolFacet.approveTools(tools);
+        // Switch to non-owner account (not the approved tools manager)
+        vm.startPrank(nonOwner);
 
-        // Set up array with tools to remove
-        bytes[] memory toolsToRemove = new bytes[](1);
-        toolsToRemove[0] = TEST_TOOL_IPFS_CID_1;
+        // Expect the call to revert with NotApprovedToolsManager error
+        vm.expectRevert(abi.encodeWithSignature("NotApprovedToolsManager(address)", nonOwner));
 
-        // Set up event expectation for removing approval
-        vm.expectEmit(true, false, false, false);
-        emit ToolApprovalRemoved(keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)));
+        // Try to remove the tool approval as non-manager
+        wrappedToolFacet.removeToolApprovals(toolArray);
 
-        // Remove approval for one tool
-        wrappedToolFacet.removeToolApprovals(toolsToRemove);
-
-        // Verify the tool was removed from the approved list
-        bytes[] memory approvedTools = wrappedToolViewFacet.getAllApprovedTools();
-        assertEq(approvedTools.length, 1, "Should have exactly 1 approved tool left");
-        assertEq(approvedTools[0], TEST_TOOL_IPFS_CID_2, "Remaining tool should be TEST_TOOL_IPFS_CID_2");
-
-        // Verify with isToolApproved function
-        bool isApproved1 = wrappedToolViewFacet.isToolApproved(TEST_TOOL_IPFS_CID_1);
-        bool isApproved2 = wrappedToolViewFacet.isToolApproved(TEST_TOOL_IPFS_CID_2);
-
-        assertFalse(isApproved1, "Tool 1 should no longer be approved");
-        assertTrue(isApproved2, "Tool 2 should still be approved");
+        vm.stopPrank();
     }
 
-    function testFailRemoveToolApprovalThatIsNotApproved() public {
+    /**
+     * @notice Test removing an approval for a tool that's not approved
+     * @dev Verifies that removing an approval for a non-approved tool fails
+     */
+    function testRemoveToolApprovalNotApproved() public {
+        vm.startPrank(deployer);
+
         // Register a tool but don't approve it
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
+        bytes memory toolIpfsCid = bytes("QmNotApprovedTool");
+        bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-        // Set up array with tools to remove
-        bytes[] memory toolsToRemove = new bytes[](1);
-        toolsToRemove[0] = TEST_TOOL_IPFS_CID_1;
+        // Register the tool with a single-item array
+        bytes[] memory toolArray = new bytes[](1);
+        toolArray[0] = toolIpfsCid;
+        wrappedToolFacet.registerTools(toolArray);
 
-        // Should revert when trying to remove approval for a tool that isn't approved
-        wrappedToolFacet.removeToolApprovals(toolsToRemove);
+        // Expect the call to revert with ToolNotApproved error
+        vm.expectRevert(abi.encodeWithSignature("ToolNotApproved(bytes32)", hashedToolCid));
+
+        // Try to remove approval for a non-approved tool
+        wrappedToolFacet.removeToolApprovals(toolArray);
+
+        vm.stopPrank();
     }
 
-    function testFailRemoveToolApprovalAsNonManager() public {
-        // Register and approve a tool
-        wrappedToolFacet.registerTool(TEST_TOOL_IPFS_CID_1);
-        bytes[] memory tools = new bytes[](1);
-        tools[0] = TEST_TOOL_IPFS_CID_1;
-        wrappedToolFacet.approveTools(tools);
+    /**
+     * @notice Test removing tool approvals with an empty array
+     * @dev Verifies that calling removeToolApprovals with an empty array fails
+     */
+    function testRemoveToolApprovalsWithEmptyArray() public {
+        vm.startPrank(deployer);
 
-        // Set the approved tools manager to someone else
-        wrappedToolFacet.updateApprovedToolsManager(approvedToolsManager);
+        // Create empty array
+        bytes[] memory emptyToolIpfsCids = new bytes[](0);
 
-        // Try to remove approval as the deployer (no longer the manager)
-        bytes[] memory toolsToRemove = new bytes[](1);
-        toolsToRemove[0] = TEST_TOOL_IPFS_CID_1;
+        // Expect the call to revert with EmptyToolIpfsCidsArray error
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidsArray()"));
 
-        // Should revert when called by non-manager
-        wrappedToolFacet.removeToolApprovals(toolsToRemove);
+        // Try to remove approvals with empty array
+        wrappedToolFacet.removeToolApprovals(emptyToolIpfsCids);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test removing a tool approval with an empty IPFS CID
+     * @dev Verifies that removing a tool approval with an empty IPFS CID fails
+     */
+    function testRemoveToolApprovalWithEmptyIpfsCid() public {
+        vm.startPrank(deployer);
+
+        // Create array with an empty IPFS CID
+        bytes[] memory toolsWithEmptyCid = new bytes[](1);
+        toolsWithEmptyCid[0] = bytes("");
+
+        // Expect the call to revert with EmptyToolIpfsCid error
+        vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCid()"));
+
+        // Try to remove approval for a tool with empty IPFS CID
+        wrappedToolFacet.removeToolApprovals(toolsWithEmptyCid);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test updating the approved tools manager
+     * @dev Verifies that the contract owner can update the approved tools manager
+     */
+    function testUpdateApprovedToolsManager() public {
+        vm.startPrank(deployer);
+
+        // Get current manager
+        address currentManager = wrappedToolViewFacet.getApprovedToolsManager();
+
+        // Create a new manager address
+        address newManager = makeAddr("new-tools-manager");
+
+        // Expect the ApprovedToolsManagerUpdated event
+        vm.expectEmit(true, true, false, false);
+        emit ApprovedToolsManagerUpdated(currentManager, newManager);
+
+        // Update the approved tools manager
+        wrappedToolFacet.updateApprovedToolsManager(newManager);
+
+        // Verify the manager was updated
+        address updatedManager = wrappedToolViewFacet.getApprovedToolsManager();
+        assertEq(updatedManager, newManager, "Approved tools manager should be updated");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test updating the approved tools manager by a non-owner
+     * @dev Verifies that only the contract owner can update the approved tools manager
+     */
+    function testUpdateApprovedToolsManagerNotOwner() public {
+        // Start as non-owner
+        vm.startPrank(nonOwner);
+
+        // Create a new manager address
+        address newManager = makeAddr("new-tools-manager-from-non-owner");
+
+        // Expect the call to revert with LibDiamond's owner check
+        vm.expectRevert("LibDiamond: Must be contract owner");
+
+        // Try to update the approved tools manager as non-owner
+        wrappedToolFacet.updateApprovedToolsManager(newManager);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test updating the approved tools manager to the zero address
+     * @dev Verifies that the approved tools manager cannot be set to the zero address
+     */
+    function testUpdateApprovedToolsManagerToZeroAddress() public {
+        vm.startPrank(deployer);
+
+        // Expect the call to revert with InvalidApprovedToolsManager error
+        vm.expectRevert(abi.encodeWithSignature("InvalidApprovedToolsManager(address)", address(0)));
+
+        // Try to update the approved tools manager to the zero address
+        wrappedToolFacet.updateApprovedToolsManager(address(0));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test updating the approved tools manager to the current manager
+     * @dev Verifies that the approved tools manager cannot be set to the same address
+     */
+    function testUpdateApprovedToolsManagerToSameAddress() public {
+        vm.startPrank(deployer);
+
+        // Get current manager
+        address currentManager = wrappedToolViewFacet.getApprovedToolsManager();
+
+        // Expect the call to revert with InvalidApprovedToolsManager error
+        vm.expectRevert(abi.encodeWithSignature("InvalidApprovedToolsManager(address)", currentManager));
+
+        // Try to update the approved tools manager to the same address
+        wrappedToolFacet.updateApprovedToolsManager(currentManager);
+
+        vm.stopPrank();
     }
 }

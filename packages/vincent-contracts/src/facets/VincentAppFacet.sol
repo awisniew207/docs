@@ -13,10 +13,10 @@ import "../VincentBase.sol";
  */
 interface IVincentToolFacet {
     /**
-     * @notice Register a new tool by its IPFS CID
-     * @param toolIpfsCid IPFS CID of the tool to register
+     * @notice Register new tools by their IPFS CIDs
+     * @param toolIpfsCids Array of IPFS CIDs of the tools to register
      */
-    function registerTool(bytes calldata toolIpfsCid) external;
+    function registerTools(bytes[] calldata toolIpfsCids) external;
 }
 
 /**
@@ -507,8 +507,13 @@ contract VincentAppFacet is VincentBase {
                 // First check if the tool is already registered in global storage
                 // before trying to register it again
                 if (ts.ipfsCidHashToIpfsCid[hashedToolCid].length == 0) {
-                    // Tool not yet registered globally, so register it
-                    IVincentToolFacet(address(this)).registerTool(toolIpfsCid);
+                    // Note: We're registering tools one by one rather than batching them
+                    // for simplicity and explicit error handling. While batching would be
+                    // more gas-efficient, it adds complexity for handling already registered
+                    // tools since registerTools reverts if any tool is already registered.
+                    bytes[] memory singleToolArray = new bytes[](1);
+                    singleToolArray[0] = toolIpfsCid;
+                    IVincentToolFacet(address(this)).registerTools(singleToolArray);
                 }
                 // If tool is already registered globally, just continue
                 // without trying to register it again

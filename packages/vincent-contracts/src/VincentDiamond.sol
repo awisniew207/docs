@@ -239,12 +239,11 @@ contract VincentDiamond {
     }
 
     function getVincentToolFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](5);
-        selectors[0] = VincentToolFacet.registerTool.selector;
-        selectors[1] = VincentToolFacet.registerTools.selector;
-        selectors[2] = VincentToolFacet.approveTools.selector;
-        selectors[3] = VincentToolFacet.removeToolApprovals.selector;
-        selectors[4] = VincentToolFacet.updateApprovedToolsManager.selector;
+        bytes4[] memory selectors = new bytes4[](4);
+        selectors[0] = VincentToolFacet.registerTools.selector;
+        selectors[1] = VincentToolFacet.approveTools.selector;
+        selectors[2] = VincentToolFacet.removeToolApprovals.selector;
+        selectors[3] = VincentToolFacet.updateApprovedToolsManager.selector;
         return selectors;
     }
 

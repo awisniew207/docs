@@ -74,32 +74,31 @@ contract VincentToolFacet {
         _;
     }
 
-    function registerTool(bytes calldata toolIpfsCid) public {
-        // Validate that tool IPFS CID is not empty
-        if (toolIpfsCid.length == 0) {
-            revert EmptyToolIpfsCid();
-        }
-
-        VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-
-        bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
-
-        if (ts_.ipfsCidHashToIpfsCid[hashedIpfsCid].length == 0) {
-            ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
-            emit NewToolRegistered(hashedIpfsCid);
-        } else {
-            revert ToolAlreadyRegistered(hashedIpfsCid);
-        }
-    }
-
     function registerTools(bytes[] calldata toolIpfsCids) external {
         // Validate that the array is not empty
         if (toolIpfsCids.length == 0) {
             revert EmptyToolIpfsCidsArray();
         }
 
-        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
-            registerTool(toolIpfsCids[i]);
+        uint256 toolCount = toolIpfsCids.length;
+        for (uint256 i = 0; i < toolCount; i++) {
+            bytes memory toolIpfsCid = toolIpfsCids[i];
+
+            // Validate that tool IPFS CID is not empty
+            if (toolIpfsCid.length == 0) {
+                revert EmptyToolIpfsCid();
+            }
+
+            VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
+
+            bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
+
+            if (ts_.ipfsCidHashToIpfsCid[hashedIpfsCid].length == 0) {
+                ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
+                emit NewToolRegistered(hashedIpfsCid);
+            } else {
+                revert ToolAlreadyRegistered(hashedIpfsCid);
+            }
         }
     }
 
