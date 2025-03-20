@@ -22,8 +22,6 @@ import "../src/diamond-base/interfaces/IERC173.sol";
 /// @notice Foundry script for deploying the Vincent Diamond to multiple networks
 /// @dev Uses environment variables for private key and PKP NFT contract addresses
 /// @custom:env VINCENT_DEPLOYER_PRIVATE_KEY - Private key of the deployer
-/// @custom:env DATIL_DEV_PKP_NFT_CONTRACT_ADDRESS - PKP NFT contract address on Datil Dev
-/// @custom:env DATIL_TEST_PKP_NFT_CONTRACT_ADDRESS - PKP NFT contract address on Datil Test
 /// @custom:env DATIL_PKP_NFT_CONTRACT_ADDRESS - PKP NFT contract address on Datil
 contract DeployVincentDiamond is Script {
     /// @notice Error thrown when required environment variables are missing
@@ -146,18 +144,6 @@ contract DeployVincentDiamond is Script {
         return address(diamond);
     }
 
-    /// @notice Deploy to Datil Dev network
-    function deployToDatilDev() public returns (address) {
-        address pkpNFTAddress = vm.envAddress("DATIL_DEV_PKP_NFT_CONTRACT_ADDRESS");
-        return deployToNetwork("Datil Dev", pkpNFTAddress);
-    }
-
-    /// @notice Deploy to Datil Test network
-    function deployToDatilTest() public returns (address) {
-        address pkpNFTAddress = vm.envAddress("DATIL_TEST_PKP_NFT_CONTRACT_ADDRESS");
-        return deployToNetwork("Datil Test", pkpNFTAddress);
-    }
-
     /// @notice Deploy to Datil network
     function deployToDatil() public returns (address) {
         address pkpNFTAddress = vm.envAddress("DATIL_PKP_NFT_CONTRACT_ADDRESS");
@@ -167,8 +153,6 @@ contract DeployVincentDiamond is Script {
     /// @notice Main deployment function
     function run() public {
         // Deploy to all networks
-        deployToDatilDev();
-        deployToDatilTest();
         deployToDatil();
     }
 }
