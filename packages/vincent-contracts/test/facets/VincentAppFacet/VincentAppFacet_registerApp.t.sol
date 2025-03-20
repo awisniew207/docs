@@ -1072,47 +1072,4 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
-
-    /**
-     * @notice Test registering an app with no parameters for a policy
-     * @dev Verifies that app registration fails with NoParametersProvidedForPolicy error when a tool has policies
-     */
-    function testRegisterAppWithNoParametersForPolicy() public {
-        vm.startPrank(deployer);
-
-        // Create tools array with one tool
-        string[] memory toolsArray = new string[](1);
-        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
-
-        // Create policies array for the tool
-        string[][] memory policies = new string[][](1);
-        policies[0] = new string[](1);
-        policies[0][0] = TEST_POLICY_1;
-
-        // Create parameter names array with no parameters for the policy
-        string[][][] memory parameterNames = new string[][][](1);
-        parameterNames[0] = new string[][](1);
-        parameterNames[0][0] = new string[](0); // No parameters
-
-        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
-        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
-        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](0); // No parameter types
-
-        // Expect the call to revert with NoParametersProvidedForPolicy error
-        vm.expectRevert(abi.encodeWithSignature("NoParametersProvidedForPolicy(uint256,uint256,uint256)", 1, 0, 0));
-
-        // Call registerApp with no parameters for a policy
-        wrappedAppFacet.registerApp(
-            TEST_APP_NAME,
-            TEST_APP_DESCRIPTION,
-            testRedirectUris,
-            testDelegatees,
-            toolsArray,
-            policies,
-            parameterNames,
-            parameterTypes
-        );
-
-        vm.stopPrank();
-    }
 }

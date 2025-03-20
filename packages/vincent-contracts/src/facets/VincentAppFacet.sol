@@ -217,14 +217,6 @@ contract VincentAppFacet is VincentBase {
     error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
 
     /**
-     * @notice Error thrown when no parameters are provided for a policy
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     */
-    error NoParametersProvidedForPolicy(uint256 appId, uint256 toolIndex, uint256 policyIndex);
-
-    /**
      * @notice Modifier to restrict function access to the app manager only
      * @param appId ID of the app
      */
@@ -605,11 +597,6 @@ contract VincentAppFacet is VincentBase {
 
                 // Step 8: Iterate through policy parameters.
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
-
-                // Ensure at least one parameter is provided for the policy
-                if (paramCount == 0) {
-                    revert NoParametersProvidedForPolicy(appId, i, j);
-                }
 
                 for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
