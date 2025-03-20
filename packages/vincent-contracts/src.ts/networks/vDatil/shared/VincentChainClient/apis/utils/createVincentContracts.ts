@@ -66,6 +66,7 @@ export const createVincentContracts = (
       contractData.VincentAppFacet.methods.removeAuthorizedRedirectUri,
       contractData.VincentAppFacet.methods.removeDelegatee,
       ...contractData.VincentAppFacet.events,
+      ...contractData.VincentAppFacet.errors,
     ],
     client: { public: publicClient, wallet: walletClient },
   });
@@ -83,6 +84,7 @@ export const createVincentContracts = (
       contractData.VincentAppViewFacet.methods.getAuthorizedRedirectUrisByAppId,
       contractData.VincentAppViewFacet.methods.getTotalAppCount,
       ...contractData.VincentAppViewFacet.events,
+      ...contractData.VincentAppViewFacet.errors,
     ],
     client: { public: publicClient, wallet: walletClient },
   });
@@ -97,6 +99,7 @@ export const createVincentContracts = (
       contractData.VincentToolFacet.methods.removeToolApprovals,
       contractData.VincentToolFacet.methods.updateApprovedToolsManager,
       ...contractData.VincentToolFacet.events,
+      ...contractData.VincentToolFacet.errors,
     ],
     client: { public: publicClient, wallet: walletClient },
   });
@@ -111,6 +114,7 @@ export const createVincentContracts = (
       contractData.VincentToolViewFacet.methods.getToolIpfsCidByHash,
       contractData.VincentToolViewFacet.methods.isToolApproved,
       ...contractData.VincentToolViewFacet.events,
+      ...contractData.VincentToolViewFacet.errors,
     ],
     client: { public: publicClient, wallet: walletClient },
   });
@@ -125,6 +129,7 @@ export const createVincentContracts = (
       contractData.VincentUserFacet.methods.setToolPolicyParameters,
       contractData.VincentUserFacet.methods.unPermitAppVersion,
       ...contractData.VincentUserFacet.events,
+      ...contractData.VincentUserFacet.errors,
     ],
     client: { public: publicClient, wallet: walletClient },
   });
@@ -141,6 +146,7 @@ export const createVincentContracts = (
       contractData.VincentUserViewFacet.methods
         .validateToolExecutionAndGetPolicies,
       ...contractData.VincentUserViewFacet.events,
+      ...contractData.VincentUserViewFacet.errors,
     ],
     client: { public: publicClient, wallet: walletClient },
   });

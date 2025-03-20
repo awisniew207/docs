@@ -6,3 +6,4 @@ import {
 export const vincentNetworkContext = vincentMainnetNetworkContext;
 
 export type VincentNetworkContext = VincentDatilMainnetNetworkContext;
+

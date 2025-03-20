@@ -47,6 +47,7 @@ export function abiToSignatures(
         [key: string]: any;
       };
       events: any[];
+      errors: any[];
     };
   } = {};
 
@@ -63,6 +64,7 @@ export function abiToSignatures(
 
     const methods = {};
     const events: any[] = [];
+    const errors: any[] = [];
 
     abi.forEach((abiItem) => {
       if (abiItem.type === 'function') {
@@ -76,6 +78,8 @@ export function abiToSignatures(
         }
       } else if (abiItem.type === 'event') {
         events.push(abiItem);
+      } else if (abiItem.type === 'error') {
+        errors.push(abiItem);
       }
     });
 
@@ -83,6 +87,7 @@ export function abiToSignatures(
       address,
       methods,
       events,
+      errors,
     };
   }
 
