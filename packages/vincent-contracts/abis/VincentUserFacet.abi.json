@@ -20,23 +20,23 @@
       },
       {
         "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       },
       {
         "name": "policyIpfsCids",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "policyParameterNames",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       },
       {
         "name": "policyParameterValues",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       }
     ],
     "outputs": [],
@@ -63,18 +63,18 @@
       },
       {
         "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       },
       {
         "name": "policyIpfsCids",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "policyParameterNames",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       }
     ],
     "outputs": [],
@@ -101,23 +101,23 @@
       },
       {
         "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       },
       {
         "name": "policyIpfsCids",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "policyParameterNames",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       },
       {
         "name": "policyParameterValues",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       }
     ],
     "outputs": [],
@@ -376,6 +376,37 @@
   },
   {
     "type": "error",
+    "name": "EmptyParameterName",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyParameterValue",
+    "inputs": [
+      {
+        "name": "parameterName",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyPolicyIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyToolIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInput",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotPkpOwner",
     "inputs": [
       {
@@ -387,6 +418,17 @@
         "name": "msgSender",
         "type": "address",
         "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PkpTokenDoesNotExist",
+    "inputs": [
+      {
+        "name": "pkpTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ]
   },
@@ -466,6 +508,11 @@
   {
     "type": "error",
     "name": "ToolsAndPoliciesLengthMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroPkpTokenId",
     "inputs": []
   }
 ]

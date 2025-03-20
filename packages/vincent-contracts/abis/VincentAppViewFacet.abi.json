@@ -22,13 +22,13 @@
           },
           {
             "name": "name",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "description",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "manager",
@@ -47,8 +47,8 @@
           },
           {
             "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
+            "type": "bytes[]",
+            "internalType": "bytes[]"
           }
         ]
       }
@@ -78,13 +78,13 @@
           },
           {
             "name": "name",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "description",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "manager",
@@ -103,8 +103,8 @@
           },
           {
             "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
+            "type": "bytes[]",
+            "internalType": "bytes[]"
           }
         ]
       }
@@ -139,13 +139,13 @@
           },
           {
             "name": "name",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "description",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "manager",
@@ -164,8 +164,8 @@
           },
           {
             "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
+            "type": "bytes[]",
+            "internalType": "bytes[]"
           }
         ]
       },
@@ -196,8 +196,8 @@
             "components": [
               {
                 "name": "toolIpfsCid",
-                "type": "string",
-                "internalType": "string"
+                "type": "bytes",
+                "internalType": "bytes"
               },
               {
                 "name": "policies",
@@ -206,18 +206,23 @@
                 "components": [
                   {
                     "name": "policyIpfsCid",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   },
                   {
                     "name": "policySchemaIpfsCid",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   },
                   {
                     "name": "parameterNames",
-                    "type": "string[]",
-                    "internalType": "string[]"
+                    "type": "bytes[]",
+                    "internalType": "bytes[]"
+                  },
+                  {
+                    "name": "parameterTypes",
+                    "type": "uint8[]",
+                    "internalType": "enum VincentAppStorage.ParameterType[]"
                   }
                 ]
               }
@@ -256,13 +261,13 @@
               },
               {
                 "name": "name",
-                "type": "string",
-                "internalType": "string"
+                "type": "bytes",
+                "internalType": "bytes"
               },
               {
                 "name": "description",
-                "type": "string",
-                "internalType": "string"
+                "type": "bytes",
+                "internalType": "bytes"
               },
               {
                 "name": "manager",
@@ -281,8 +286,8 @@
               },
               {
                 "name": "authorizedRedirectUris",
-                "type": "string[]",
-                "internalType": "string[]"
+                "type": "bytes[]",
+                "internalType": "bytes[]"
               }
             ]
           },
@@ -313,8 +318,8 @@
                 "components": [
                   {
                     "name": "toolIpfsCid",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   },
                   {
                     "name": "policies",
@@ -323,18 +328,23 @@
                     "components": [
                       {
                         "name": "policyIpfsCid",
-                        "type": "string",
-                        "internalType": "string"
+                        "type": "bytes",
+                        "internalType": "bytes"
                       },
                       {
                         "name": "policySchemaIpfsCid",
-                        "type": "string",
-                        "internalType": "string"
+                        "type": "bytes",
+                        "internalType": "bytes"
                       },
                       {
                         "name": "parameterNames",
-                        "type": "string[]",
-                        "internalType": "string[]"
+                        "type": "bytes[]",
+                        "internalType": "bytes[]"
+                      },
+                      {
+                        "name": "parameterTypes",
+                        "type": "uint8[]",
+                        "internalType": "enum VincentAppStorage.ParameterType[]"
                       }
                     ]
                   }
@@ -360,8 +370,8 @@
     "outputs": [
       {
         "name": "redirectUri",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "stateMutability": "view"
@@ -379,8 +389,8 @@
     "outputs": [
       {
         "name": "redirectUris",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       }
     ],
     "stateMutability": "view"
@@ -411,7 +421,7 @@
   },
   {
     "type": "error",
-    "name": "InvalidAppVersion",
+    "name": "AppVersionNotRegistered",
     "inputs": [
       {
         "name": "appId",
@@ -424,5 +434,54 @@
         "internalType": "uint256"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "DelegateeNotRegistered",
+    "inputs": [
+      {
+        "name": "delegatee",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoAppsFoundForManager",
+    "inputs": [
+      {
+        "name": "manager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoAuthorizedRedirectUrisFoundForApp",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "RedirectUriNotFound",
+    "inputs": [
+      {
+        "name": "redirectUriHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressNotAllowed",
+    "inputs": []
   }
 ]

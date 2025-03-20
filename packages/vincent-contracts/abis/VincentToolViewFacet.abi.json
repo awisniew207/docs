@@ -6,21 +6,8 @@
     "outputs": [
       {
         "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getAllRegisteredTools",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       }
     ],
     "stateMutability": "view"
@@ -51,8 +38,8 @@
     "outputs": [
       {
         "name": "",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "stateMutability": "view"
@@ -63,8 +50,8 @@
     "inputs": [
       {
         "name": "toolIpfsCid",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "outputs": [
@@ -75,5 +62,31 @@
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "EmptyToolIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoToolsApproved",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoToolsRegistered",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ToolHashNotFound",
+    "inputs": [
+      {
+        "name": "toolIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
   }
 ]

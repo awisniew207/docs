@@ -10,8 +10,8 @@
       },
       {
         "name": "redirectUri",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "outputs": [],
@@ -64,18 +64,18 @@
     "inputs": [
       {
         "name": "name",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       },
       {
         "name": "description",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       },
       {
         "name": "authorizedRedirectUris",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       },
       {
         "name": "delegatees",
@@ -84,23 +84,28 @@
       },
       {
         "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       },
       {
         "name": "toolPolicies",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "toolPolicySchemaIpfsCids",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "toolPolicyParameterNames",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
+      },
+      {
+        "name": "toolPolicyParameterTypes",
+        "type": "uint8[][][]",
+        "internalType": "enum VincentAppStorage.ParameterType[][][]"
       }
     ],
     "outputs": [
@@ -128,23 +133,28 @@
       },
       {
         "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
+        "type": "bytes[]",
+        "internalType": "bytes[]"
       },
       {
         "name": "toolPolicies",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "toolPolicySchemaIpfsCids",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "type": "bytes[][]",
+        "internalType": "bytes[][]"
       },
       {
         "name": "toolPolicyParameterNames",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
+      },
+      {
+        "name": "toolPolicyParameterTypes",
+        "type": "uint8[][][]",
+        "internalType": "enum VincentAppStorage.ParameterType[][][]"
       }
     ],
     "outputs": [
@@ -167,8 +177,8 @@
       },
       {
         "name": "redirectUri",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "outputs": [],
@@ -228,10 +238,10 @@
         "internalType": "uint256"
       },
       {
-        "name": "redirectUri",
-        "type": "string",
+        "name": "hashedRedirectUri",
+        "type": "bytes32",
         "indexed": true,
-        "internalType": "string"
+        "internalType": "bytes32"
       }
     ],
     "anonymous": false
@@ -247,10 +257,48 @@
         "internalType": "uint256"
       },
       {
-        "name": "redirectUri",
-        "type": "string",
+        "name": "hashedRedirectUri",
+        "type": "bytes32",
         "indexed": true,
-        "internalType": "string"
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "DelegateeAdded",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "delegatee",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "DelegateeRemoved",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "delegatee",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       }
     ],
     "anonymous": false
@@ -312,6 +360,27 @@
   },
   {
     "type": "error",
+    "name": "AppVersionAlreadyInRequestedState",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "appVersion",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "enabled",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "AppVersionNotRegistered",
     "inputs": [
       {
@@ -321,6 +390,17 @@
       },
       {
         "name": "appVersion",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "CannotRemoveLastRedirectUri",
+    "inputs": [
+      {
+        "name": "appId",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -360,8 +440,187 @@
   },
   {
     "type": "error",
+    "name": "EmptyAppDescriptionNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyAppNameNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyParameterNameNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyPolicyIpfsCidNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyPolicySchemaIpfsCidNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyRedirectUriNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyToolIpfsCidNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "FailedToAddDelegatee",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "delegatee",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "FailedToAddTool",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "appVersion",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIpfsCid",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoParametersProvidedForPolicy",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoPoliciesProvidedForTool",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "NoRedirectUrisProvided",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoToolsProvided",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",
@@ -381,6 +640,27 @@
   },
   {
     "type": "error",
+    "name": "PolicyParameterNamesSchemaMismatch",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "PolicySchemaMissing",
     "inputs": [
       {
@@ -390,8 +670,24 @@
       },
       {
         "name": "policyIpfsCid",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "RedirectUriAlreadyAuthorizedForApp",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "redirectUri",
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ]
   },
@@ -405,15 +701,20 @@
         "internalType": "uint256"
       },
       {
-        "name": "hashedRedirectUri",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "name": "redirectUri",
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ]
   },
   {
     "type": "error",
     "name": "ToolsAndPoliciesLengthMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressDelegateeNotAllowed",
     "inputs": []
   }
 ]

@@ -60,8 +60,8 @@
         "components": [
           {
             "name": "toolIpfsCid",
-            "type": "string",
-            "internalType": "string"
+            "type": "bytes",
+            "internalType": "bytes"
           },
           {
             "name": "policies",
@@ -70,8 +70,8 @@
             "components": [
               {
                 "name": "policyIpfsCid",
-                "type": "string",
-                "internalType": "string"
+                "type": "bytes",
+                "internalType": "bytes"
               },
               {
                 "name": "parameters",
@@ -80,13 +80,18 @@
                 "components": [
                   {
                     "name": "name",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
+                  },
+                  {
+                    "name": "paramType",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.ParameterType"
                   },
                   {
                     "name": "value",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   }
                 ]
               }
@@ -137,8 +142,8 @@
       },
       {
         "name": "toolIpfsCid",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "outputs": [
@@ -169,8 +174,8 @@
             "components": [
               {
                 "name": "policyIpfsCid",
-                "type": "string",
-                "internalType": "string"
+                "type": "bytes",
+                "internalType": "bytes"
               },
               {
                 "name": "parameters",
@@ -179,13 +184,18 @@
                 "components": [
                   {
                     "name": "name",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
+                  },
+                  {
+                    "name": "paramType",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.ParameterType"
                   },
                   {
                     "name": "value",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   }
                 ]
               }
@@ -236,6 +246,32 @@
   },
   {
     "type": "error",
+    "name": "EmptyToolIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidAppId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidPkpTokenId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoRegisteredPkpsFound",
+    "inputs": [
+      {
+        "name": "userAddress",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "PkpNotPermittedForAppVersion",
     "inputs": [
       {
@@ -276,14 +312,19 @@
       },
       {
         "name": "policyIpfsCid",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       },
       {
         "name": "parameterName",
-        "type": "string",
-        "internalType": "string"
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressNotAllowed",
+    "inputs": []
   }
 ]
