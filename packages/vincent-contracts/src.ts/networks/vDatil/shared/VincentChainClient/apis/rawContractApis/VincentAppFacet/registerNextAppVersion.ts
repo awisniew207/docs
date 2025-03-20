@@ -4,25 +4,28 @@ import { VincentNetworkContext } from '../../../_vincentConfig';
 import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
-import { parameterTypeSchema, ParameterTypeInput } from './schemas/ParameterType';
+import { ParameterTypeInput, parameterTypeSchema } from './schemas/ParameterType';
 
-const RegisterAppRequest = z.object({
-  appName: z.string(),
-  appDescription: z.string(),
-  authorizedRedirectUris: z.array(z.string()),
-  delegatees: z.array(z.string().transform((val) => val as `0x${string}`)),
+const RegisterNextAppVersionRequest = z.object({
+  appId: z.bigint(),
   toolIpfsCids: z.array(z.string()),
   toolPolicies: z.array(z.array(z.string())),
   toolPolicyParameterNames: z.array(z.array(z.array(z.string()))),
   toolPolicyParameterTypes: z.array(z.array(z.array(parameterTypeSchema)))
 });
 
-type RegisterAppRequest = Omit<z.input<typeof RegisterAppRequest>, 'toolPolicyParameterTypes'> & {
+type RegisterNextAppVersionRequest = Omit<z.input<typeof RegisterNextAppVersionRequest>, 'toolPolicyParameterTypes'> & {
   toolPolicyParameterTypes: ParameterTypeInput[][][];
 };
 
-export async function registerApp(request: RegisterAppRequest, ctx: VincentNetworkContext) {
-  const validatedRequest = RegisterAppRequest.parse(request);
+/**
+ * Registers a new version of an existing app on the Vincent network
+ * @param request The registration request containing app version details
+ * @param ctx The Vincent network context
+ * @returns Object containing transaction hash, receipt, and decoded logs
+ */
+export async function registerNextAppVersion(request: RegisterNextAppVersionRequest, ctx: VincentNetworkContext) {
+  const validatedRequest = RegisterNextAppVersionRequest.parse(request);
   logger.debug({ validatedRequest });
 
   const {
@@ -32,12 +35,9 @@ export async function registerApp(request: RegisterAppRequest, ctx: VincentNetwo
 
   const hash = await callWithAdjustedOverrides(
     vincentAppFacetContract,
-    "registerApp",
+    "registerNextAppVersion",
     [
-      validatedRequest.appName,
-      validatedRequest.appDescription,
-      validatedRequest.authorizedRedirectUris,
-      validatedRequest.delegatees,
+      validatedRequest.appId,
       validatedRequest.toolIpfsCids,
       validatedRequest.toolPolicies,
       validatedRequest.toolPolicyParameterNames,

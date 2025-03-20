@@ -25,5 +25,9 @@ describe('registerApp', () => {
     expect(res.hash).toBeDefined();
     expect(res.receipt).toBeDefined();
     expect(res.decodedLogs).toBeDefined();
+
+    const appId = res.decodedLogs.find((log) => log.eventName === 'NewAppVersionRegistered')?.args.appId;
+
+    console.log("App ID: ", appId);
   });
 });
