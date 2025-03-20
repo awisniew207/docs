@@ -99,8 +99,6 @@ abstract contract VincentTestHelper is Test {
     bytes constant TEST_POLICY_2 = bytes("QmTestPolicy2");
     bytes constant TEST_POLICY_PARAM_1 = bytes("param1");
     bytes constant TEST_POLICY_PARAM_2 = bytes("param2");
-    bytes constant TEST_POLICY_SCHEMA_1 = bytes("QmTestPolicySchema1");
-    bytes constant TEST_POLICY_SCHEMA_2 = bytes("QmTestPolicySchema2");
 
     // Parameter value constants for each ParameterType
     int256 constant TEST_POLICY_PARAM_INT256_VALUE = -123;
@@ -140,9 +138,6 @@ abstract contract VincentTestHelper is Test {
 
     /// @notice Test policies for each tool (2D array: [toolIndex][policyIndex])
     bytes[][] internal testToolPolicies;
-
-    /// @notice Test policy schemas for each policy (2D array: [toolIndex][policyIndex])
-    bytes[][] internal testToolPolicySchemaIpfsCids;
 
     /// @notice Test parameter names for each policy (3D array: [toolIndex][policyIndex][paramIndex])
     bytes[][][] internal testToolPolicyParameterNames;
@@ -268,11 +263,6 @@ abstract contract VincentTestHelper is Test {
         testToolPolicies[0] = new bytes[](1);
         testToolPolicies[0][0] = TEST_POLICY_1;
 
-        // Set up test policy schemas
-        testToolPolicySchemaIpfsCids = new bytes[][](1);
-        testToolPolicySchemaIpfsCids[0] = new bytes[](1);
-        testToolPolicySchemaIpfsCids[0][0] = TEST_POLICY_SCHEMA_1;
-
         // Set up test parameter names
         testToolPolicyParameterNames = new bytes[][][](1);
         testToolPolicyParameterNames[0] = new bytes[][](1);
@@ -318,7 +308,6 @@ abstract contract VincentTestHelper is Test {
             testDelegatees,
             testToolIpfsCids,
             testToolPolicies,
-            testToolPolicySchemaIpfsCids,
             testToolPolicyParameterNames,
             testToolPolicyParameterTypes
         );

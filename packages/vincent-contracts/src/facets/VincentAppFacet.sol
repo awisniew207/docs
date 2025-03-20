@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -131,13 +131,6 @@ contract VincentAppFacet is VincentBase {
     error CannotRemoveLastRedirectUri(uint256 appId);
 
     /**
-     * @notice Error thrown when a policy schema is not provided for a policy
-     * @param appId ID of the app
-     * @param policyIpfsCid IPFS CID of the policy missing a schema
-     */
-    error PolicySchemaMissing(uint256 appId, bytes policyIpfsCid);
-
-    /**
      * @notice Error thrown when trying to set app version enabled status to its current status
      * @param appId ID of the app
      * @param appVersion Version number of the app
@@ -158,14 +151,6 @@ contract VincentAppFacet is VincentBase {
      * @param delegatee Address of the delegatee that failed to add
      */
     error FailedToAddDelegatee(uint256 appId, address delegatee);
-
-    /**
-     * @notice Error thrown when tool policy parameter names length doesn't match schema
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     */
-    error PolicyParameterNamesSchemaMismatch(uint256 appId, uint256 toolIndex, uint256 policyIndex);
 
     /**
      * @notice Error thrown when trying to use an empty policy IPFS CID
@@ -232,14 +217,6 @@ contract VincentAppFacet is VincentBase {
     error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
 
     /**
-     * @notice Error thrown when a policy schema IPFS CID is empty
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     */
-    error EmptyPolicySchemaIpfsCidNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex);
-
-    /**
      * @notice Error thrown when no parameters are provided for a policy
      * @param appId ID of the app
      * @param toolIndex Index of the tool in the tools array
@@ -266,7 +243,6 @@ contract VincentAppFacet is VincentBase {
      * @param delegatees List of delegatee addresses for the application
      * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this app
      * @param toolPolicies 2D array mapping each tool to its associated policies
-     * @param toolPolicySchemaIpfsCids 2D array mapping each policy to its schema IPFS CID
      * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
      * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
      * @return newAppId The ID of the newly registered app
@@ -279,7 +255,6 @@ contract VincentAppFacet is VincentBase {
         address[] calldata delegatees,
         bytes[] calldata toolIpfsCids,
         bytes[][] calldata toolPolicies,
-        bytes[][] calldata toolPolicySchemaIpfsCids,
         bytes[][][] calldata toolPolicyParameterNames,
         VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) external returns (uint256 newAppId, uint256 newAppVersion) {
@@ -287,12 +262,7 @@ contract VincentAppFacet is VincentBase {
         emit NewAppRegistered(newAppId, msg.sender);
 
         newAppVersion = _registerNextAppVersion(
-            newAppId,
-            toolIpfsCids,
-            toolPolicies,
-            toolPolicySchemaIpfsCids,
-            toolPolicyParameterNames,
-            toolPolicyParameterTypes
+            newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
         );
         emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
@@ -303,7 +273,6 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app for which to register a new version
      * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this version
      * @param toolPolicies 2D array mapping each tool to its associated policies
-     * @param toolPolicySchemaIpfsCids 2D array mapping each policy to its schema IPFS CID
      * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
      * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
      * @return newAppVersion The version number of the newly registered app version
@@ -312,17 +281,11 @@ contract VincentAppFacet is VincentBase {
         uint256 appId,
         bytes[] calldata toolIpfsCids,
         bytes[][] calldata toolPolicies,
-        bytes[][] calldata toolPolicySchemaIpfsCids,
         bytes[][][] calldata toolPolicyParameterNames,
         VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) external onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
         newAppVersion = _registerNextAppVersion(
-            appId,
-            toolIpfsCids,
-            toolPolicies,
-            toolPolicySchemaIpfsCids,
-            toolPolicyParameterNames,
-            toolPolicyParameterTypes
+            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
         );
 
         emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
@@ -536,7 +499,6 @@ contract VincentAppFacet is VincentBase {
      * @param appId The ID of the app for which a new version is being registered.
      * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
      * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
-     * @param toolPolicySchemaIpfsCids A 2D array mapping each policy to its policy schema IPFS CID.
      * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
      * @param toolPolicyParameterTypes A 3D array mapping each policy parameter to its type.
      * @return newAppVersion The newly created version number for the app.
@@ -545,7 +507,6 @@ contract VincentAppFacet is VincentBase {
         uint256 appId,
         bytes[] calldata toolIpfsCids,
         bytes[][] calldata toolPolicies,
-        bytes[][] calldata toolPolicySchemaIpfsCids,
         bytes[][][] calldata toolPolicyParameterNames,
         VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) internal returns (uint256 newAppVersion) {
@@ -557,8 +518,8 @@ contract VincentAppFacet is VincentBase {
         // Step 2: Validate input array lengths to ensure all tools have corresponding policies and parameters.
         uint256 toolCount = toolIpfsCids.length;
         if (
-            toolCount != toolPolicies.length || toolCount != toolPolicySchemaIpfsCids.length
-                || toolCount != toolPolicyParameterNames.length || toolCount != toolPolicyParameterTypes.length
+            toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length
+                || toolCount != toolPolicyParameterTypes.length
         ) {
             revert ToolsAndPoliciesLengthMismatch();
         }
@@ -617,11 +578,6 @@ contract VincentAppFacet is VincentBase {
             // Step 6: Iterate through policies linked to this tool.
             uint256 policyCount = toolPolicies[i].length;
 
-            // Validate policy schema array length matches policy count
-            if (policyCount != toolPolicySchemaIpfsCids[i].length) {
-                revert ToolsAndPoliciesLengthMismatch();
-            }
-
             for (uint256 j = 0; j < policyCount; j++) {
                 bytes memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
 
@@ -640,27 +596,9 @@ contract VincentAppFacet is VincentBase {
                     ts.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
-                // Step 6.3: Get the policy schema IPFS CID and store it
-                bytes memory policySchemaIpfsCid = toolPolicySchemaIpfsCids[i][j]; // Cache calldata value
-
-                // Check for empty policy schema IPFS CID
-                if (policySchemaIpfsCid.length == 0) {
-                    revert EmptyPolicySchemaIpfsCidNotAllowed(appId, i, j);
-                }
-
-                bytes32 hashedPolicySchemaIpfsCid = keccak256(abi.encodePacked(policySchemaIpfsCid));
-
                 // Create a new Policy storage structure for this policy in the current app version
                 VincentAppStorage.Policy storage policy =
                     toolPoliciesStorage.policyIpfsCidHashToPolicy[hashedToolPolicy];
-
-                // Store the policy schema IPFS CID hash
-                policy.policySchemaIpfsCidHash = hashedPolicySchemaIpfsCid;
-
-                // Store the policy schema IPFS CID globally if it's not already stored
-                if (ts.ipfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid].length == 0) {
-                    ts.ipfsCidHashToIpfsCid[hashedPolicySchemaIpfsCid] = policySchemaIpfsCid;
-                }
 
                 // Step 7: Get the Policy parameter name hashes for this policy
                 EnumerableSet.Bytes32Set storage policyParameterNameHashes = policy.policyParameterNameHashes;
@@ -671,11 +609,6 @@ contract VincentAppFacet is VincentBase {
                 // Ensure at least one parameter is provided for the policy
                 if (paramCount == 0) {
                     revert NoParametersProvidedForPolicy(appId, i, j);
-                }
-
-                // Check that parameter types array has the same length as parameter names array
-                if (paramCount != toolPolicyParameterTypes[i][j].length) {
-                    revert PolicyParameterNamesSchemaMismatch(appId, i, j);
                 }
 
                 for (uint256 k = 0; k < paramCount; k++) {

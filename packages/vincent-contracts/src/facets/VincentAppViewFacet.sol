@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -110,16 +110,14 @@ contract VincentAppViewFacet is VincentBase {
     }
 
     /**
-     * @notice Represents policy information including schema and parameters
+     * @notice Represents policy information including parameters
      * @dev Used for returning policy data in view functions
      * @param policyIpfsCid IPFS CID pointing to the policy's Lit Action
-     * @param policySchemaIpfsCid IPFS CID pointing to the policy's schema
      * @param parameterNames Array of parameter names defined for this policy
      * @param parameterTypes Array of parameter types defined for this policy
      */
     struct Policy {
         bytes policyIpfsCid;
-        bytes policySchemaIpfsCid;
         bytes[] parameterNames;
         VincentAppStorage.ParameterType[] parameterTypes;
     }
@@ -234,13 +232,8 @@ contract VincentAppViewFacet is VincentBase {
                 // Step 10.2: Set the policy IPFS CID in the return structure
                 appVersion.tools[i].policies[j].policyIpfsCid = policyIpfsCid;
 
-                // Step 11: Get the policy data to access schema and parameters
+                // Step 11: Get the policy data to access parameters
                 VincentAppStorage.Policy storage policy = toolPolicies.policyIpfsCidHashToPolicy[policyIpfsCidHash];
-
-                // Step 11.1: Get and set the policy schema IPFS CID
-                bytes32 policySchemaIpfsCidHash = policy.policySchemaIpfsCidHash;
-                bytes memory policySchemaIpfsCid = ts.ipfsCidHashToIpfsCid[policySchemaIpfsCidHash];
-                appVersion.tools[i].policies[j].policySchemaIpfsCid = policySchemaIpfsCid;
 
                 // Step 12: Get and process the policy parameter names and types
                 EnumerableSet.Bytes32Set storage policyParamNameHashes = policy.policyParameterNameHashes;

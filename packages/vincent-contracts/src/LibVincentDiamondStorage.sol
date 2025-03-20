@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.29;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "./diamond-base/libraries/LibDiamond.sol";
@@ -31,14 +31,13 @@ library VincentAppStorage {
     }
 
     /**
-     * @notice Policy data structure storing parameter names and the policy schema
+     * @notice Policy data structure storing parameter names and types
      * @dev Renamed from PolicyStorage to Policy for clarity
      */
     struct Policy {
         EnumerableSet.Bytes32Set policyParameterNameHashes;
         // Policy Parameter Name Hash => Policy Parameter Type
         mapping(bytes32 => ParameterType) policyParameterNameHashToType;
-        bytes32 policySchemaIpfsCidHash;
     }
 
     /**
@@ -93,7 +92,7 @@ library VincentToolStorage {
         EnumerableSet.Bytes32Set approvedIpfsCidHashes;
         // Policy Parameter Name Hash => Policy Parameter Name
         mapping(bytes32 => bytes) policyParameterNameHashToName;
-        // Tool, Policy, Policy Schema IPFS CID Hash => IPFS CID
+        // Tool and Policy IPFS CID Hash => IPFS CID
         mapping(bytes32 => bytes) ipfsCidHashToIpfsCid;
         // Address of the manager who can add/remove tools from the approved list
         address approvedToolsManager;
