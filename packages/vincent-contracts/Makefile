@@ -116,15 +116,15 @@ get-abis: ## Get human-readable ABIs for all facets
 	# @echo "Getting ABI for OwnershipFacet..."
 	# @forge inspect OwnershipFacet abi > abis/OwnershipFacet.abi.json
 	@echo "Getting ABI for VincentToolFacet..."
-	@forge inspect VincentToolFacet abi > abis/VincentToolFacet.abi.json
+	@forge inspect VincentToolFacet abi --json > abis/VincentToolFacet.abi.json
 	@echo "Getting ABI for VincentToolViewFacet..."
-	@forge inspect VincentToolViewFacet abi > abis/VincentToolViewFacet.abi.json
+	@forge inspect VincentToolViewFacet abi --json > abis/VincentToolViewFacet.abi.json
 	@echo "Getting ABI for VincentAppFacet..."
-	@forge inspect VincentAppFacet abi > abis/VincentAppFacet.abi.json
+	@forge inspect VincentAppFacet abi --json > abis/VincentAppFacet.abi.json
 	@echo "Getting ABI for VincentAppViewFacet..."
-	@forge inspect VincentAppViewFacet abi > abis/VincentAppViewFacet.abi.json
+	@forge inspect VincentAppViewFacet abi --json > abis/VincentAppViewFacet.abi.json
 	@echo "Getting ABI for VincentUserFacet..."
-	@forge inspect VincentUserFacet abi > abis/VincentUserFacet.abi.json
+	@forge inspect VincentUserFacet abi --json > abis/VincentUserFacet.abi.json
 	@echo "Getting ABI for VincentUserViewFacet..."
-	@forge inspect VincentUserViewFacet abi > abis/VincentUserViewFacet.abi.json
+	@forge inspect VincentUserViewFacet abi --json > abis/VincentUserViewFacet.abi.json
 	@echo "ABIs written to abis/*.abi.json" 

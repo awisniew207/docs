@@ -1,21 +1,92 @@
-
-╭----------+-----------------------------------------------------+------------╮
-| Type     | Signature                                           | Selector   |
-+=============================================================================+
-| error    | EmptyToolIpfsCid()                                  | 0xceda0ab1 |
-|----------+-----------------------------------------------------+------------|
-| error    | NoToolsApproved()                                   | 0xb21d5a81 |
-|----------+-----------------------------------------------------+------------|
-| error    | NoToolsRegistered()                                 | 0x141f0e0d |
-|----------+-----------------------------------------------------+------------|
-| error    | ToolHashNotFound(bytes32)                           | 0x5ccc5990 |
-|----------+-----------------------------------------------------+------------|
-| function | getAllApprovedTools() view returns (string[])       | 0xf9948a50 |
-|----------+-----------------------------------------------------+------------|
-| function | getApprovedToolsManager() view returns (address)    | 0x18beae49 |
-|----------+-----------------------------------------------------+------------|
-| function | getToolIpfsCidByHash(bytes32) view returns (string) | 0xd5289df5 |
-|----------+-----------------------------------------------------+------------|
-| function | isToolApproved(string) view returns (bool)          | 0xcca414aa |
-╰----------+-----------------------------------------------------+------------╯
-
+[
+  {
+    "type": "function",
+    "name": "getAllApprovedTools",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "toolIpfsCids",
+        "type": "string[]",
+        "internalType": "string[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getApprovedToolsManager",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "manager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getToolIpfsCidByHash",
+    "inputs": [
+      {
+        "name": "toolIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isToolApproved",
+    "inputs": [
+      {
+        "name": "toolIpfsCid",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "isApproved",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "EmptyToolIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoToolsApproved",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoToolsRegistered",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ToolHashNotFound",
+    "inputs": [
+      {
+        "name": "toolIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  }
+]
