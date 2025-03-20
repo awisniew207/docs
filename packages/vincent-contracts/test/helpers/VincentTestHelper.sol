@@ -143,6 +143,8 @@ abstract contract VincentTestHelper is Test {
     event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
     event AuthorizedDomainRemoved(uint256 indexed appId, bytes32 indexed hashedDomain);
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
+    event DelegateeAdded(uint256 indexed appId, address indexed delegatee);
+    event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
 
     // Tool-related events
     event NewToolRegistered(bytes32 indexed toolIpfsCidHash);

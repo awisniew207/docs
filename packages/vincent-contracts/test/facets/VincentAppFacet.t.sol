@@ -1151,4 +1151,227 @@ contract VincentAppFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test adding a delegatee to an app
+     * @dev Verifies that delegatees can be added by the app manager
+     */
+    function testAddDelegatee() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one delegatee
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Verify initial delegatee count
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+        assertEq(app.delegatees.length, 1, "Should have 1 delegatee initially");
+        assertEq(app.delegatees[0], TEST_DELEGATEE_1, "Initial delegatee should match");
+
+        // Create a new delegatee to add
+        address newDelegatee = address(0xCAFE);
+
+        // Expect the DelegateeAdded event
+        vm.expectEmit(true, true, false, false);
+        emit DelegateeAdded(appId, newDelegatee);
+
+        // Add a new delegatee
+        wrappedAppFacet.addDelegatee(appId, newDelegatee);
+
+        // Verify delegatee was added
+        app = wrappedAppViewFacet.getAppById(appId);
+        assertEq(app.delegatees.length, 2, "Should have 2 delegatees after adding");
+
+        // Verify both delegatees exist
+        bool foundOriginalDelegatee = false;
+        bool foundNewDelegatee = false;
+
+        for (uint256 i = 0; i < app.delegatees.length; i++) {
+            if (app.delegatees[i] == TEST_DELEGATEE_1) {
+                foundOriginalDelegatee = true;
+            } else if (app.delegatees[i] == newDelegatee) {
+                foundNewDelegatee = true;
+            }
+        }
+
+        assertTrue(foundOriginalDelegatee, "Original delegatee should still exist");
+        assertTrue(foundNewDelegatee, "New delegatee should be added");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test adding a delegatee already registered to another app
+     * @dev Verifies the DelegateeAlreadyRegisteredToApp error is thrown
+     */
+    function testAddDelegateeAlreadyRegistered() public {
+        vm.startPrank(deployer);
+
+        // Register first app with a delegatee
+        (uint256 firstAppId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Register a second app with a different delegatee
+        address[] memory secondAppDelegatees = new address[](1);
+        secondAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        (uint256 secondAppId, uint256 secondVersionNumber) = wrappedAppFacet.registerApp(
+            bytes("Second App"),
+            bytes("Second App Description"),
+            testRedirectUris,
+            secondAppDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Try to add the delegatee from the first app to the second app
+        vm.expectRevert(
+            abi.encodeWithSignature("DelegateeAlreadyRegisteredToApp(uint256,address)", firstAppId, TEST_DELEGATEE_1)
+        );
+
+        wrappedAppFacet.addDelegatee(secondAppId, TEST_DELEGATEE_1);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that only the app manager can add delegatees
+     * @dev Verifies the NotAppManager error is thrown for non-managers
+     */
+    function testAddDelegateeNotAppManager() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        vm.stopPrank();
+
+        // Switch to a different address (not the app manager)
+        vm.startPrank(address(0xBEEF));
+
+        // Expect the call to revert with NotAppManager error
+        vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
+
+        // Try to add a delegatee as non-manager
+        wrappedAppFacet.addDelegatee(appId, address(0xCAFE));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test removing a delegatee from an app
+     * @dev Verifies that delegatees can be removed by the app manager
+     */
+    function testRemoveDelegatee() public {
+        vm.startPrank(deployer);
+
+        // Register an app with two delegatees
+        address[] memory twoDelegatees = new address[](2);
+        twoDelegatees[0] = TEST_DELEGATEE_1;
+        twoDelegatees[1] = TEST_DELEGATEE_2;
+
+        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            twoDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Verify initial delegatee count
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+        assertEq(app.delegatees.length, 2, "Should have 2 delegatees initially");
+
+        // Expect the DelegateeRemoved event
+        vm.expectEmit(true, true, false, false);
+        emit DelegateeRemoved(appId, TEST_DELEGATEE_1);
+
+        // Remove a delegatee
+        wrappedAppFacet.removeDelegatee(appId, TEST_DELEGATEE_1);
+
+        // Verify delegatee was removed
+        app = wrappedAppViewFacet.getAppById(appId);
+        assertEq(app.delegatees.length, 1, "Should have 1 delegatee after removal");
+
+        // Verify the remaining delegatee is the correct one
+        assertEq(app.delegatees[0], TEST_DELEGATEE_2, "The remaining delegatee should be the second one");
+
+        // Verify the removed delegatee can now be added to another app
+        bytes memory secondAppName = bytes("Second App");
+        bytes memory secondAppDesc = bytes("Second App Description");
+
+        address[] memory secondAppDelegatees = new address[](1);
+        secondAppDelegatees[0] = TEST_DELEGATEE_1; // Use the previously removed delegatee
+
+        // Should be able to register a new app with the removed delegatee
+        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+            secondAppName,
+            secondAppDesc,
+            testRedirectUris,
+            secondAppDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicySchemaIpfsCids,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Verify the delegatee was added to the second app
+        VincentAppViewFacet.App memory secondApp = wrappedAppViewFacet.getAppById(secondAppId);
+        assertEq(secondApp.delegatees.length, 1, "Second app should have 1 delegatee");
+        assertEq(secondApp.delegatees[0], TEST_DELEGATEE_1, "Second app delegatee should match");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test removing a delegatee not registered to the app
+     * @dev Verifies the DelegateeNotRegisteredToApp error is thrown
+     */
+    function testRemoveDelegateeNotRegistered() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one delegatee
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Try to remove a delegatee that's not registered to the app
+        address nonRegisteredDelegatee = address(0xCAFE);
+
+        vm.expectRevert(
+            abi.encodeWithSignature("DelegateeNotRegisteredToApp(uint256,address)", appId, nonRegisteredDelegatee)
+        );
+
+        wrappedAppFacet.removeDelegatee(appId, nonRegisteredDelegatee);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that only the app manager can remove delegatees
+     * @dev Verifies the NotAppManager error is thrown for non-managers
+     */
+    function testRemoveDelegateeNotAppManager() public {
+        vm.startPrank(deployer);
+
+        // Register an app with one delegatee
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        vm.stopPrank();
+
+        // Switch to a different address (not the app manager)
+        vm.startPrank(address(0xBEEF));
+
+        // Expect the call to revert with NotAppManager error
+        vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
+
+        // Try to remove a delegatee as non-manager
+        wrappedAppFacet.removeDelegatee(appId, TEST_DELEGATEE_1);
+
+        vm.stopPrank();
+    }
 }
