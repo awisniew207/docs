@@ -7,19 +7,6 @@ import "../LibVincentDiamondStorage.sol";
 import "../VincentBase.sol";
 
 /**
- * @title IVincentToolFacet
- * @notice Interface for the VincentToolFacet contract to allow tool registration from the app facet
- * @dev This interface is used to register tools when registering a new app version
- */
-interface IVincentToolFacet {
-    /**
-     * @notice Register new tools by their IPFS CIDs
-     * @param toolIpfsCids Array of IPFS CIDs of the tools to register
-     */
-    function registerTools(string[] calldata toolIpfsCids) external;
-}
-
-/**
  * @title VincentAppFacet
  * @notice A facet of the Vincent Diamond that manages application registration and configuration
  * @dev This contract allows registration of apps, app versions, redirect URIs, and delegatees
@@ -84,6 +71,12 @@ contract VincentAppFacet is VincentBase {
     event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
 
     /**
+     * @notice Emitted when a new tool is registered
+     * @param toolIpfsCidHash The keccak256 hash of the tool's IPFS CID that was registered
+     */
+    event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
+
+    /**
      * @notice Error thrown when a non-manager attempts to modify an app
      * @param appId ID of the app being modified
      * @param msgSender Address that attempted the unauthorized modification
@@ -146,13 +139,6 @@ contract VincentAppFacet is VincentBase {
     error RedirectUriAlreadyAuthorizedForApp(uint256 appId, string redirectUri);
 
     /**
-     * @notice Error thrown when adding a delegatee to an app fails
-     * @param appId ID of the app
-     * @param delegatee Address of the delegatee that failed to add
-     */
-    error FailedToAddDelegatee(uint256 appId, address delegatee);
-
-    /**
      * @notice Error thrown when trying to use an empty policy IPFS CID
      * @param appId ID of the app
      * @param toolIndex Index of the tool in the tools array
@@ -198,14 +184,6 @@ contract VincentAppFacet is VincentBase {
      * @param toolIndex Index of the tool with no policies
      */
     error NoPoliciesProvidedForTool(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when adding a tool to the set fails
-     * @param appId ID of the app
-     * @param appVersion Version number of the app
-     * @param toolIpfsCid IPFS CID of the tool that failed to add
-     */
-    error FailedToAddTool(uint256 appId, uint256 appVersion, string toolIpfsCid);
 
     /**
      * @notice Error thrown when a policy parameter name is empty
@@ -378,10 +356,7 @@ contract VincentAppFacet is VincentBase {
             revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
         }
 
-        // Check that the delegatee was successfully added
-        if (!as_.appIdToApp[appId].delegatees.add(delegatee)) {
-            revert FailedToAddDelegatee(appId, delegatee);
-        }
+        as_.appIdToApp[appId].delegatees.add(delegatee);
 
         as_.delegateeAddressToAppId[delegatee] = appId;
 
@@ -471,10 +446,7 @@ contract VincentAppFacet is VincentBase {
                 revert DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
             }
 
-            // Check that the delegatee was successfully added
-            if (!app.delegatees.add(delegatees[i])) {
-                revert FailedToAddDelegatee(newAppId, delegatees[i]);
-            }
+            app.delegatees.add(delegatees[i]);
 
             as_.delegateeAddressToAppId[delegatees[i]] = newAppId;
         }
@@ -544,20 +516,13 @@ contract VincentAppFacet is VincentBase {
 
             // Step 5.1: Register the tool IPFS CID globally if it hasn't been added already.
             if (!toolIpfsCidHashes.contains(hashedToolCid)) {
-                if (!toolIpfsCidHashes.add(hashedToolCid)) {
-                    revert FailedToAddTool(appId, newAppVersion, toolIpfsCid);
-                }
+                toolIpfsCidHashes.add(hashedToolCid);
 
                 // First check if the tool is already registered in global storage
                 // before trying to register it again
                 if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
-                    // Note: We're registering tools one by one rather than batching them
-                    // for simplicity and explicit error handling. While batching would be
-                    // more gas-efficient, it adds complexity for handling already registered
-                    // tools since registerTools reverts if any tool is already registered.
-                    string[] memory singleToolArray = new string[](1);
-                    singleToolArray[0] = toolIpfsCid;
-                    IVincentToolFacet(address(this)).registerTools(singleToolArray);
+                    ts.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
+                    emit NewToolRegistered(hashedToolCid);
                 }
                 // If tool is already registered globally, just continue
                 // without trying to register it again

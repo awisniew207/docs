@@ -6,15 +6,50 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "../LibVincentDiamondStorage.sol";
 import "../VincentBase.sol";
 
+/**
+ * @title VincentUserFacet
+ * @notice Handles user management for Vincent, allowing users to register PKP tokens as agents and manage app permissions
+ * @dev Part of Vincent Diamond contract, providing user-facing functionality for permitting app versions
+ *      and configuring tool policy parameters. This facet gives users granular control over which applications
+ *      their agent PKPs can interact with and how those applications are configured.
+ */
 contract VincentUserFacet is VincentBase {
     using VincentUserStorage for VincentUserStorage.UserStorage;
     using VincentAppStorage for VincentAppStorage.AppStorage;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    /**
+     * @notice Emitted when a new user agent PKP is registered
+     * @param userAddress The user's address who registered the PKP
+     * @param pkpTokenId The token ID of the registered PKP
+     */
     event NewUserAgentPkpRegistered(address indexed userAddress, uint256 indexed pkpTokenId);
+
+    /**
+     * @notice Emitted when an app version is permitted for a PKP
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app being permitted
+     * @param appVersion The version number of the app being permitted
+     */
     event AppVersionPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
+
+    /**
+     * @notice Emitted when an app version permission is removed from a PKP
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app being unpermitted
+     * @param appVersion The version of the app being unpermitted
+     */
     event AppVersionUnPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
+
+    /**
+     * @notice Emitted when a tool policy parameter is set
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     * @param hashedToolIpfsCid The keccak256 hash of the tool's IPFS CID
+     * @param hashedPolicyParameterName The keccak256 hash of the policy parameter name
+     */
     event ToolPolicyParameterSet(
         uint256 indexed pkpTokenId,
         uint256 indexed appId,
@@ -22,6 +57,15 @@ contract VincentUserFacet is VincentBase {
         bytes32 hashedToolIpfsCid,
         bytes32 hashedPolicyParameterName
     );
+
+    /**
+     * @notice Emitted when a tool policy parameter is removed
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     * @param hashedToolIpfsCid The keccak256 hash of the tool's IPFS CID
+     * @param hashedPolicyParameterName The keccak256 hash of the policy parameter name being removed
+     */
     event ToolPolicyParameterRemoved(
         uint256 indexed pkpTokenId,
         uint256 indexed appId,
@@ -30,26 +74,113 @@ contract VincentUserFacet is VincentBase {
         bytes32 hashedPolicyParameterName
     );
 
+    /**
+     * @notice Error thrown when caller is not the owner of the specified PKP
+     * @param pkpTokenId The token ID of the PKP
+     * @param msgSender The address of the caller
+     */
     error NotPkpOwner(uint256 pkpTokenId, address msgSender);
+
+    /**
+     * @notice Error thrown when an app version is already permitted for a PKP
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     */
     error AppVersionAlreadyPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+
+    /**
+     * @notice Error thrown when an app version is not permitted for a PKP
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     */
     error AppVersionNotPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+
+    /**
+     * @notice Error thrown when an app version is not enabled
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     */
     error AppVersionNotEnabled(uint256 appId, uint256 appVersion);
+
+    /**
+     * @notice Error thrown when tool and policy array lengths do not match
+     */
     error ToolsAndPoliciesLengthMismatch();
+
+    /**
+     * @notice Error thrown when a tool is not registered for an app version
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     * @param toolIpfsCid The IPFS CID of the tool
+     */
     error ToolNotRegisteredForAppVersion(uint256 appId, uint256 appVersion, string toolIpfsCid);
+
+    /**
+     * @notice Error thrown when a tool policy is not registered for an app version
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     * @param toolIpfsCid The IPFS CID of the tool
+     * @param toolPolicyIpfsCid The IPFS CID of the tool policy
+     */
     error ToolPolicyNotRegisteredForAppVersion(
         uint256 appId, uint256 appVersion, string toolIpfsCid, string toolPolicyIpfsCid
     );
+
+    /**
+     * @notice Error thrown when a policy parameter name is not registered for an app version
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     * @param toolIpfsCid The IPFS CID of the tool
+     * @param toolPolicyIpfsCid The IPFS CID of the tool policy
+     * @param policyParameterName The name of the policy parameter
+     */
     error PolicyParameterNameNotRegisteredForAppVersion(
         uint256 appId, uint256 appVersion, string toolIpfsCid, string toolPolicyIpfsCid, string policyParameterName
     );
+
+    /**
+     * @notice Error thrown when invalid input is provided
+     */
     error InvalidInput();
+
+    /**
+     * @notice Error thrown when a policy parameter value is empty
+     * @param parameterName The name of the parameter with an empty value
+     */
     error EmptyParameterValue(string parameterName);
+
+    /**
+     * @notice Error thrown when a zero PKP token ID is provided
+     */
     error ZeroPkpTokenId();
+
+    /**
+     * @notice Error thrown when a PKP token ID does not exist
+     * @param pkpTokenId The token ID of the non-existent PKP
+     */
     error PkpTokenDoesNotExist(uint256 pkpTokenId);
+
+    /**
+     * @notice Error thrown when an empty tool IPFS CID is provided
+     */
     error EmptyToolIpfsCid();
+
+    /**
+     * @notice Error thrown when an empty policy IPFS CID is provided
+     */
     error EmptyPolicyIpfsCid();
+
+    /**
+     * @notice Error thrown when an empty parameter name is provided
+     */
     error EmptyParameterName();
 
+    /**
+     * @notice Modifier to verify that the caller is the owner of the specified PKP
+     * @param pkpTokenId The token ID of the PKP
+     */
     modifier onlyPkpOwner(uint256 pkpTokenId) {
         if (pkpTokenId == 0) {
             revert ZeroPkpTokenId();
@@ -66,6 +197,20 @@ contract VincentUserFacet is VincentBase {
         _;
     }
 
+    /**
+     * @notice Permits an app version for a PKP token and optionally sets tool policy parameters
+     * @dev This function allows a PKP owner to authorize a specific app version to use their PKP.
+     *      If the PKP was previously authorized for a different version of the same app, that
+     *      permission is revoked and replaced with the new version.
+     *
+     * @param pkpTokenId The token ID of the PKP to permit the app version for
+     * @param appId The ID of the app to permit
+     * @param appVersion The version of the app to permit
+     * @param toolIpfsCids Array of IPFS CIDs for tools to configure
+     * @param policyIpfsCids 2D array mapping tools to their policies
+     * @param policyParameterNames 3D array mapping policies to their parameter names
+     * @param policyParameterValues 3D array mapping parameter names to their values
+     */
     function permitAppVersion(
         uint256 pkpTokenId,
         uint256 appId,
@@ -140,6 +285,16 @@ contract VincentUserFacet is VincentBase {
         }
     }
 
+    /**
+     * @notice Revokes permission for a PKP to use a specific app version
+     * @dev This function removes authorization for a PKP to interact with an app version.
+     *      The PKP is removed from the app version's delegated agent PKPs list and the
+     *      app is removed from the PKP's permitted apps set.
+     *
+     * @param pkpTokenId The token ID of the PKP to revoke permission for
+     * @param appId The ID of the app to unpermit
+     * @param appVersion The version of the app to unpermit
+     */
     function unPermitAppVersion(uint256 pkpTokenId, uint256 appId, uint256 appVersion)
         external
         onlyPkpOwner(pkpTokenId)
@@ -166,6 +321,21 @@ contract VincentUserFacet is VincentBase {
         emit AppVersionUnPermitted(pkpTokenId, appId, appVersion);
     }
 
+    /**
+     * @notice Sets tool policy parameters for a specific app version
+     * @dev This function allows configuring policy parameters for tools associated with an app.
+     *      It validates that the tools, policies, and parameters exist in the app version before
+     *      storing parameter values. This is the public entry point for setting parameters without
+     *      changing app version permissions.
+     *
+     * @param pkpTokenId The token ID of the PKP to set parameters for
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     * @param toolIpfsCids Array of IPFS CIDs for tools to configure
+     * @param policyIpfsCids 2D array mapping tools to their policies
+     * @param policyParameterNames 3D array mapping policies to their parameter names
+     * @param policyParameterValues 3D array mapping parameter names to their values
+     */
     function setToolPolicyParameters(
         uint256 pkpTokenId,
         uint256 appId,
@@ -185,18 +355,17 @@ contract VincentUserFacet is VincentBase {
     }
 
     /**
-     * @dev Removes policy parameters associated with tools for a given app version.
-     * This function verifies that the tools and policies exist before removing their parameters
-     * from user storage.
+     * @notice Removes policy parameters associated with tools for a given app version
+     * @dev This function verifies that the tools and policies exist before removing their parameters
+     *      from user storage. It removes the specified parameter names from policies and cleans up
+     *      policy references if all parameters are removed.
      *
-     * @notice This function is used to remove policy parameters from a tool associated with an app version.
-     *
-     * @param appId The ID of the app from which policy parameters are being removed.
-     * @param pkpTokenId The PKP token ID for the Agent's PKP (Programmable Key Pair).
-     * @param appVersion The version of the app where the policies were applied.
-     * @param toolIpfsCids An array of IPFS CIDs representing the tools from which policies should be removed.
-     * @param policyIpfsCids A 2D array mapping each tool to a list of policy IPFS CIDs to be removed.
-     * @param policyParameterNames A 3D array mapping each policy to a list of associated parameter names to be removed.
+     * @param appId The ID of the app from which policy parameters are being removed
+     * @param pkpTokenId The PKP token ID for the Agent's PKP (Programmable Key Pair)
+     * @param appVersion The version of the app where the policies were applied
+     * @param toolIpfsCids An array of IPFS CIDs representing the tools from which policies should be removed
+     * @param policyIpfsCids A 2D array mapping each tool to a list of policy IPFS CIDs to be removed
+     * @param policyParameterNames A 3D array mapping each policy to a list of associated parameter names to be removed
      */
     function removeToolPolicyParameters(
         uint256 appId,
@@ -301,19 +470,18 @@ contract VincentUserFacet is VincentBase {
     }
 
     /**
-     * @dev Associates policy parameters with tools for a given app version.
-     * This function ensures that the provided tools, policies, and parameters are valid,
-     * then stores their corresponding values in user storage.
+     * @notice Associates policy parameters with tools for a given app version
+     * @dev This internal function ensures that the provided tools, policies, and parameters are valid,
+     *      then stores their corresponding values in user storage. It's called by permitAppVersion and
+     *      setToolPolicyParameters to avoid code duplication.
      *
-     * @notice This function is called internally to set policy parameters for a user's tool.
-     *
-     * @param appId The ID of the app for which policies are being set.
-     * @param pkpTokenId The PKP token ID for the Agent's PKP (Programmable Key Pair).
-     * @param appVersion The version of the app where the Tools and Policies are registered.
-     * @param toolIpfsCids Array of IPFS CIDs representing the tools being configured.
-     * @param policyIpfsCids 2D array where each tool maps to a list of policies stored on IPFS.
-     * @param policyParameterNames 3D array where each policy maps to a list of parameter names.
-     * @param policyParameterValues 3D array of parameter values matching each parameter name for a policy.
+     * @param appId The ID of the app for which policies are being set
+     * @param pkpTokenId The PKP token ID for the Agent's PKP (Programmable Key Pair)
+     * @param appVersion The version of the app where the Tools and Policies are registered
+     * @param toolIpfsCids Array of IPFS CIDs representing the tools being configured
+     * @param policyIpfsCids 2D array where each tool maps to a list of policies stored on IPFS
+     * @param policyParameterNames 3D array where each policy maps to a list of parameter names
+     * @param policyParameterValues 3D array of parameter values matching each parameter name for a policy
      */
     function _setToolPolicyParameters(
         uint256 appId,
