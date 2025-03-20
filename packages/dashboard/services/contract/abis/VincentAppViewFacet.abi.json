@@ -210,14 +210,14 @@
                     "internalType": "string"
                   },
                   {
-                    "name": "policySchemaIpfsCid",
-                    "type": "string",
-                    "internalType": "string"
-                  },
-                  {
                     "name": "parameterNames",
                     "type": "string[]",
                     "internalType": "string[]"
+                  },
+                  {
+                    "name": "parameterTypes",
+                    "type": "uint8[]",
+                    "internalType": "enum VincentAppStorage.ParameterType[]"
                   }
                 ]
               }
@@ -327,14 +327,14 @@
                         "internalType": "string"
                       },
                       {
-                        "name": "policySchemaIpfsCid",
-                        "type": "string",
-                        "internalType": "string"
-                      },
-                      {
                         "name": "parameterNames",
                         "type": "string[]",
                         "internalType": "string[]"
+                      },
+                      {
+                        "name": "parameterTypes",
+                        "type": "uint8[]",
+                        "internalType": "enum VincentAppStorage.ParameterType[]"
                       }
                     ]
                   }
@@ -411,7 +411,7 @@
   },
   {
     "type": "error",
-    "name": "InvalidAppVersion",
+    "name": "AppVersionNotRegistered",
     "inputs": [
       {
         "name": "appId",
@@ -424,5 +424,54 @@
         "internalType": "uint256"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "DelegateeNotRegistered",
+    "inputs": [
+      {
+        "name": "delegatee",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoAppsFoundForManager",
+    "inputs": [
+      {
+        "name": "manager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoAuthorizedRedirectUrisFoundForApp",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "RedirectUriNotFound",
+    "inputs": [
+      {
+        "name": "redirectUriHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressNotAllowed",
+    "inputs": []
   }
 ]

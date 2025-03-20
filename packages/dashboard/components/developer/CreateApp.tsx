@@ -19,13 +19,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import * as z from 'zod';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import { VincentContracts } from '@/services';
 import { Network } from '@/services';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Info, Plus, Trash2 } from 'lucide-react';
+import { ParameterType, mapTypeToEnum } from '@/services/types';
 
 // URL normalization helpers
 const normalizeURL = (url: string): string => {
@@ -52,6 +53,18 @@ const normalizeGitHubURL = (url: string): string => {
   return normalizeURL(url);
 };
 
+// Tool schema
+const toolSchema = z.object({
+  toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
+  policies: z.array(z.object({
+    policyIpfsCid: z.string().min(1, "Policy IPFS CID is required"),
+    parameters: z.array(z.object({
+      name: z.string().min(1, "Parameter name is required"),
+      type: z.string().default("string")
+    })).min(1, "At least one parameter is required")
+  })).min(1, "At least one policy is required")
+});
+
 const formSchema = z.object({
   appName: z
     .string()
@@ -64,10 +77,8 @@ const formSchema = z.object({
     .max(500, 'Description cannot exceed 500 characters'),
 
   authorizedRedirectUris: z.string(),
-  toolIpfsCids: z.string().default(''),
-  toolPolicies: z.string().default(''),
-  toolPolicySchemaIpfsCids: z.string().default(''),
-  toolPolicyParameterNames: z.string().default(''),
+  
+  tools: z.array(toolSchema).min(1, "At least one tool is required"),
 
   logo: z.string().optional(),
 
@@ -132,24 +143,121 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       appName: '',
       description: '',
       authorizedRedirectUris: '',
-      toolIpfsCids: '',
-      toolPolicies: '',
-      toolPolicySchemaIpfsCids: '',
-      toolPolicyParameterNames: '',
+      tools: [
+        {
+          toolIpfsCid: '',
+          policies: [
+            {
+              policyIpfsCid: '',
+              parameters: [
+                {
+                  name: '',
+                  type: 'string'
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     mode: 'onBlur',
   });
 
+  // Using a single field array for tools
+  const { fields: toolFields, append: appendTool, remove: removeTool } = useFieldArray({
+    control: form.control,
+    name: "tools",
+  });
+
+  // Using a simplified approach to manage nested arrays
+  // This avoids creating multiple field arrays upfront
+  const appendPolicy = (toolIndex: number) => {
+    const currentTools = form.getValues().tools;
+    if (toolIndex >= 0 && toolIndex < currentTools.length) {
+      const updatedTools = [...currentTools];
+      updatedTools[toolIndex] = {
+        ...updatedTools[toolIndex],
+        policies: [
+          ...updatedTools[toolIndex].policies,
+          {
+            policyIpfsCid: '',
+            parameters: [{ name: '', type: 'string' }]
+          }
+        ]
+      };
+      form.setValue('tools', updatedTools);
+    }
+  };
+
+  const removePolicy = (toolIndex: number, policyIndex: number) => {
+    const currentTools = form.getValues().tools;
+    if (toolIndex >= 0 && toolIndex < currentTools.length) {
+      const updatedTools = [...currentTools];
+      const policies = [...updatedTools[toolIndex].policies];
+      policies.splice(policyIndex, 1);
+      updatedTools[toolIndex] = {
+        ...updatedTools[toolIndex],
+        policies
+      };
+      form.setValue('tools', updatedTools);
+    }
+  };
+
+  const appendParameter = (toolIndex: number, policyIndex: number) => {
+    const currentTools = form.getValues().tools;
+    if (toolIndex >= 0 && toolIndex < currentTools.length &&
+        policyIndex >= 0 && policyIndex < currentTools[toolIndex].policies.length) {
+      const updatedTools = [...currentTools];
+      const updatedPolicies = [...updatedTools[toolIndex].policies];
+      const updatedParameters = [...updatedPolicies[policyIndex].parameters];
+      
+      updatedParameters.push({ name: '', type: 'string' });
+      updatedPolicies[policyIndex] = {
+        ...updatedPolicies[policyIndex],
+        parameters: updatedParameters
+      };
+      updatedTools[toolIndex] = {
+        ...updatedTools[toolIndex],
+        policies: updatedPolicies
+      };
+      
+      form.setValue('tools', updatedTools);
+    }
+  };
+
+  const removeParameter = (toolIndex: number, policyIndex: number, paramIndex: number) => {
+    const currentTools = form.getValues().tools;
+    if (toolIndex >= 0 && toolIndex < currentTools.length &&
+        policyIndex >= 0 && policyIndex < currentTools[toolIndex].policies.length &&
+        paramIndex >= 0 && paramIndex < currentTools[toolIndex].policies[policyIndex].parameters.length) {
+      
+      const updatedTools = [...currentTools];
+      const updatedPolicies = [...updatedTools[toolIndex].policies];
+      const updatedParameters = [...updatedPolicies[policyIndex].parameters];
+      
+      updatedParameters.splice(paramIndex, 1);
+      updatedPolicies[policyIndex] = {
+        ...updatedPolicies[policyIndex],
+        parameters: updatedParameters
+      };
+      updatedTools[toolIndex] = {
+        ...updatedTools[toolIndex],
+        policies: updatedPolicies
+      };
+      
+      form.setValue('tools', updatedTools);
+    }
+  };
+
+  // Force a re-render when form values change
+  const watchTools = useWatch({
+    control: form.control,
+    name: 'tools'
+  });
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const values = form.getValues();
-    const validationResult = formSchema.safeParse(values);
-    if (!validationResult.success) {
-      const firstError = validationResult.error.errors[0];
-      setError(`${firstError.path.join('.')}: ${firstError.message}`);
-      return;
-    }
-    await onSubmit(validationResult.data);
+    form.handleSubmit(onSubmit)(e);
   };
 
   async function onSubmit(values: FormValues) {
@@ -168,17 +276,33 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           .map((uri) => normalizeURL(uri.trim()))
           .filter(Boolean);
 
-      const toolIpfsCids = !values.toolIpfsCids ? [] :
-        values.toolIpfsCids.split(',').map(cid => cid.trim()).filter(Boolean);
+      // Build arrays for contract parameters from the form values
+      const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
+      
+      // Each tool has an array of policies
+      const toolPolicies = values.tools.map(tool => 
+        tool.policies.map(policy => policy.policyIpfsCid)
+      );
 
-      const toolPolicies = !values.toolPolicies ? [[""]]:
-        [values.toolPolicies.split(',').map(policy => policy.trim())];
+      // Each policy has parameter types
+      const toolPolicyParameterTypes = values.tools.map(tool => 
+        tool.policies.map(policy => 
+          policy.parameters.map(param => mapTypeToEnum(param.type))
+        )
+      );
 
-      const toolPolicySchemaIpfsCids = !values.toolPolicySchemaIpfsCids ? [[""]]:
-        [values.toolPolicySchemaIpfsCids.split(',').map(cid => cid.trim())];
+      // Each policy has parameter names
+      const toolPolicyParameterNames = values.tools.map(tool => 
+        tool.policies.map(policy => 
+          policy.parameters.map(param => param.name)
+        )
+      );
 
-      const toolPolicyParameterNames = !values.toolPolicyParameterNames ? [[["param1"]]]:
-        [values.toolPolicyParameterNames.split(',').map(param => [param.trim()])];
+      console.log("Submitting to contract:");
+      console.log("Tools:", toolIpfsCids);
+      console.log("Policies:", toolPolicies);
+      console.log("Parameter Types:", toolPolicyParameterTypes);
+      console.log("Parameter Names:", toolPolicyParameterNames);
 
       const contracts = new VincentContracts('datil' as Network);
       const receipt = await contracts.registerApp(
@@ -188,7 +312,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         [],
         toolIpfsCids,
         toolPolicies,
-        toolPolicySchemaIpfsCids,
+        toolPolicyParameterTypes,
         toolPolicyParameterNames
       );
       console.log('receipt', receipt);
@@ -232,7 +356,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-6">
                   <FormField
                     control={form.control}
@@ -241,7 +365,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       <FormItem>
                         <FormLabel className="text-black">Application Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="My DCA App" {...field} className="text-black" />
+                          <Input placeholder="My Vincent App" {...field} className="text-black" />
                         </FormControl>
                         <FormMessage className="text-black" />
                       </FormItem>
@@ -266,9 +390,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="space-y-6">
                   <FormField
                     control={form.control}
                     name="authorizedRedirectUris"
@@ -287,77 +409,183 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="toolIpfsCids"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-black">Tool IPFS CIDs</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY, QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE"
-                            {...field}
-                            className="text-black"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-black" />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="border p-4 rounded-md space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-medium text-black">Tools</h3>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => appendTool({ 
+                          toolIpfsCid: '',
+                          policies: [{ policyIpfsCid: '', parameters: [{ name: '', type: 'string' }] }]
+                        })}
+                      >
+                        <Plus className="h-4 w-4 mr-2" /> Add Tool
+                      </Button>
+                    </div>
 
-                  <FormField
-                    control={form.control}
-                    name="toolPolicies"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-black">Tool Policies</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="policy1, policy2"
-                            {...field}
-                            className="text-black"
+                    {toolFields.map((toolField, toolIndex) => {
+                      const tool = watchTools?.[toolIndex];
+                      const policies = tool?.policies || [];
+                      
+                      return (
+                        <div key={toolField.id} className="border p-4 rounded-md space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium text-black">Tool {toolIndex + 1}</h4>
+                            {toolIndex > 0 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeTool(toolIndex)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                          
+                          <FormField
+                            control={form.control}
+                            name={`tools.${toolIndex}.toolIpfsCid`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-black">Tool IPFS CID</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY" {...field} className="text-black" />
+                                </FormControl>
+                                <FormMessage className="text-black" />
+                              </FormItem>
+                            )}
                           />
-                        </FormControl>
-                        <FormMessage className="text-black" />
-                      </FormItem>
-                    )}
-                  />
 
-                  <FormField
-                    control={form.control}
-                    name="toolPolicySchemaIpfsCids"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-black">Tool Policy Schema IPFS CIDs</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="schemaCid1, schemaCid2"
-                            {...field}
-                            className="text-black"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-black" />
-                      </FormItem>
-                    )}
-                  />
+                          <div className="border-t pt-4 mt-4">
+                            <div className="flex justify-between items-center mb-4">
+                              <h5 className="font-medium text-black">Policies</h5>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => appendPolicy(toolIndex)}
+                              >
+                                <Plus className="h-4 w-4 mr-2" /> Add Policy
+                              </Button>
+                            </div>
 
-                  <FormField
-                    control={form.control}
-                    name="toolPolicyParameterNames"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-black">Tool Policy Parameter Names</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="param1, param2"
-                            {...field}
-                            className="text-black"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-black" />
-                      </FormItem>
-                    )}
-                  />
+                            {policies.map((policy: any, policyIndex: number) => {
+                              const parameters = policy?.parameters || [];
+                              
+                              return (
+                                <div key={`policy-${toolIndex}-${policyIndex}`} className="border p-3 rounded-md mb-4 space-y-3">
+                                  <div className="flex justify-between items-center">
+                                    <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
+                                    {policyIndex > 0 && (
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removePolicy(toolIndex, policyIndex)}
+                                        className="text-red-500 hover:text-red-700"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                  
+                                  <FormField
+                                    control={form.control}
+                                    name={`tools.${toolIndex}.policies.${policyIndex}.policyIpfsCid`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel className="text-black">Policy IPFS CID</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="policy1" {...field} className="text-black" />
+                                        </FormControl>
+                                        <FormMessage className="text-black" />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <div className="border-t pt-3 mt-3">
+                                    <div className="flex justify-between items-center mb-3">
+                                      <h6 className="font-medium text-black">Parameters</h6>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => appendParameter(toolIndex, policyIndex)}
+                                      >
+                                        <Plus className="h-4 w-4 mr-2" /> Add Parameter
+                                      </Button>
+                                    </div>
+
+                                    {parameters.map((param: any, paramIndex: number) => (
+                                      <div key={`param-${toolIndex}-${policyIndex}-${paramIndex}`} className="flex items-center gap-2 mb-2">
+                                        <FormField
+                                          control={form.control}
+                                          name={`tools.${toolIndex}.policies.${policyIndex}.parameters.${paramIndex}.name`}
+                                          render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                              <FormControl>
+                                                <Input placeholder="Parameter name" {...field} className="text-black" />
+                                              </FormControl>
+                                              <FormMessage className="text-black" />
+                                            </FormItem>
+                                          )}
+                                        />
+                                        
+                                        <FormField
+                                          control={form.control}
+                                          name={`tools.${toolIndex}.policies.${policyIndex}.parameters.${paramIndex}.type`}
+                                          render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                              <FormControl>
+                                                <select 
+                                                  {...field} 
+                                                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                >
+                                                  <option value="string">string</option>
+                                                  <option value="string[]">string[]</option>
+                                                  <option value="bool">bool</option>
+                                                  <option value="bool[]">bool[]</option>
+                                                  <option value="uint256">uint256</option>
+                                                  <option value="uint256[]">uint256[]</option>
+                                                  <option value="int256">int256</option>
+                                                  <option value="int256[]">int256[]</option>
+                                                  <option value="address">address</option>
+                                                  <option value="address[]">address[]</option>
+                                                  <option value="bytes">bytes</option>
+                                                  <option value="bytes[]">bytes[]</option>
+                                                </select>
+                                              </FormControl>
+                                              <FormMessage className="text-black" />
+                                            </FormItem>
+                                          )}
+                                        />
+                                        
+                                        {paramIndex > 0 && (
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
+                                            className="text-red-500 hover:text-red-700"
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 

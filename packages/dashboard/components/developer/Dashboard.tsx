@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
+import { mapEnumToTypeName } from '@/services/types';
 
 export default function DashboardScreen({
   vincentApp,
@@ -257,22 +258,50 @@ export default function DashboardScreen({
                                       const policyData = Array.isArray(policy)
                                         ? { 
                                             policyIpfsCid: policy[0] || '', 
-                                            policySchemaIpfsCid: policy[1] || '', 
-                                            parameterNames: policy[2] || [] 
+                                            parameterNames: Array.isArray(policy[1]) ? policy[1] : [],
+                                            parameterTypes: Array.isArray(policy[2]) ? policy[2] : []
                                           }
                                         : policy || {};
+
+                                      // Debug data structure
+                                      console.log('Policy Data:', {
+                                        raw: policy,
+                                        processed: policyData,
+                                        hasParameterNames: policyData.parameterNames && policyData.parameterNames.length > 0,
+                                        hasParameterTypes: policyData.parameterTypes && policyData.parameterTypes.length > 0,
+                                        parameterNames: policyData.parameterNames,
+                                        parameterTypes: policyData.parameterTypes
+                                      });
 
                                       return (
                                         <div key={k} className="mb-1">
                                           <div className="text-xs">
                                             <span className="font-medium">Policy CID:</span> {policyData.policyIpfsCid || 'No policy CID'}<br/>
-                                            <span className="font-medium">Schema CID:</span> {policyData.policySchemaIpfsCid || 'No schema'}<br/>
-                                            {policyData.parameterNames && policyData.parameterNames.length > 0 ? (
-                                              <span>
-                                                <span className="font-medium">Parameters:</span> {policyData.parameterNames.join(', ')}
-                                              </span>
+                                            
+                                            {/* Display parameter types and names together */}
+                                            {policyData.parameterTypes && policyData.parameterTypes.length > 0 && 
+                                             policyData.parameterNames && policyData.parameterNames.length > 0 ? (
+                                              <div>
+                                                <span className="font-medium">Parameters:</span>
+                                                <ul className="ml-2 mt-1">
+                                                  {policyData.parameterNames.map((name: string, paramIndex: number) => (
+                                                    <li key={paramIndex}>
+                                                      {name}: {paramIndex < policyData.parameterTypes.length ? 
+                                                        mapEnumToTypeName(Number(policyData.parameterTypes[paramIndex])) : 
+                                                        'unknown type'}
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              </div>
                                             ) : (
-                                              <span className="text-xs italic">(No parameters)</span>
+                                              <>
+                                                <span className="text-xs italic">(No parameters)</span>
+                                                <br/>
+                                                <span className="text-xs font-mono bg-gray-100 p-1 block mt-1 overflow-x-auto">
+                                                  Debug: Names={JSON.stringify(policyData.parameterNames)}, 
+                                                  Types={JSON.stringify(policyData.parameterTypes)}
+                                                </span>
+                                              </>
                                             )}
                                           </div>
                                         </div>

@@ -1,11 +1,9 @@
 import { ethers } from 'ethers';
 
-export type Network = 'datil-dev' | 'datil-test' | 'datil';
+export type Network = 'datil';
 
 export const VINCENT_DIAMOND_ADDRESS: Record<Network, string> = {
-  'datil-dev': '0x9397B2fB3F5bb83382cEb2c17C798Bb3e655EEaf',
-  'datil-test': '0x2C94F3975af4B7e13C29701EFB8E800b4b786E3a',
-  datil: '0x0B8dd48530dACb295188714d56B30cEE9230cC8a',
+  datil: '0x87cD7840425Fe836ea5fEc2b8Dea40149042AdCe',
 };
 
 import APP_VIEW_FACET_ABI from './abis/VincentAppViewFacet.abi.json';

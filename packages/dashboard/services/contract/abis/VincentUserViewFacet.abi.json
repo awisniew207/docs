@@ -84,9 +84,14 @@
                     "internalType": "string"
                   },
                   {
+                    "name": "paramType",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.ParameterType"
+                  },
+                  {
                     "name": "value",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   }
                 ]
               }
@@ -183,9 +188,14 @@
                     "internalType": "string"
                   },
                   {
+                    "name": "paramType",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.ParameterType"
+                  },
+                  {
                     "name": "value",
-                    "type": "string",
-                    "internalType": "string"
+                    "type": "bytes",
+                    "internalType": "bytes"
                   }
                 ]
               }
@@ -229,6 +239,32 @@
     "inputs": [
       {
         "name": "delegatee",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyToolIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidAppId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidPkpTokenId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoRegisteredPkpsFound",
+    "inputs": [
+      {
+        "name": "userAddress",
         "type": "address",
         "internalType": "address"
       }
@@ -285,5 +321,10 @@
         "internalType": "string"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressNotAllowed",
+    "inputs": []
   }
 ]

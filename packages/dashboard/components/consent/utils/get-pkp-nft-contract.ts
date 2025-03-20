@@ -2,9 +2,7 @@ import { ethers } from 'ethers';
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { LIT_RPC } from '@lit-protocol/constants';
 import {
-  datil,
-  datilDev,
-  datilTest,
+  datil
 } from "@lit-protocol/contracts";
 
 function getContractFromJsSdk(
@@ -14,12 +12,6 @@ function getContractFromJsSdk(
 ) {
   let contractsDataRes;
   switch (network) {
-    case "datil-dev":
-      contractsDataRes = datilDev;
-      break;
-    case "datil-test":
-      contractsDataRes = datilTest;
-      break;
     case "datil":
       contractsDataRes = datil;
       break;

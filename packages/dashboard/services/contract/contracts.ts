@@ -25,21 +25,12 @@ export class VincentContracts {
     delegatees: string[],
     toolIpfsCids: string[],
     toolPolicies: string[][],
-    toolPolicySchemaIpfsCids: string[][],
+    toolPolicyParameterTypes: number[][][],
     toolPolicyParameterNames: string[][][]
   ) {
-    const contract = await getContract(this.network, 'App', true, this.signer); 
-    /*
-    const tx = await contract.registerApp(
-      "RedirectUriTesting",
-      "Test Description",
-      ["http://localhost:3000", "http://localhost:3000/test", "http://localhost:5173", "http://localhost:5173/", "https://my-react-app-liard-beta.vercel.app/", "https://my-react-app-liard-beta.vercel.app"],
-      ["0xa723407AdB396a55aCd843D276daEa0d787F8db5"],
-      ["QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY", "QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE"],
-      [[""], [""]],
-      [[""], [""]],
-      [[["param1"]], [["param2"]]],
-      {gasLimit: 5000000})*/
+    const contract = await getContract(this.network, 'App', true, this.signer);
+    console.log("toolpolicyparametertypes", toolPolicyParameterTypes);
+    console.log("formatted toolpolicyparametertypes", JSON.stringify(toolPolicyParameterTypes));
     const tx = await contract.registerApp(
       appName,
       appDescription,
@@ -47,8 +38,8 @@ export class VincentContracts {
       delegatees,
       toolIpfsCids,
       toolPolicies,
-      toolPolicySchemaIpfsCids,
       toolPolicyParameterNames,
+      toolPolicyParameterTypes,
       {gasLimit: 5000000});
     console.log('tx', tx);
       

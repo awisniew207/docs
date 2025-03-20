@@ -3,21 +3,31 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AppView } from "@/services/types";
 import { VincentContracts } from "@/services";
+import { mapTypeToEnum, mapEnumToTypeName, ParameterType } from "@/services/types";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 // Define the types explicitly since they're not exported from services/types
 interface ToolPolicy {
     toolIpfsCid?: string;
     policyVarsSchema?: Array<PolicyParamSchema>;
+    policies?: any[];
     [key: string]: any; // To allow other properties
 }
 
 interface PolicyParamSchema {
     paramName?: string;
     defaultValue?: string;
+    valueType?: string;
     [key: string]: any; // To allow other properties
 }
 
@@ -39,34 +49,87 @@ export default function ManageToolPoliciesScreen({
     onBack,
     dashboard,
 }: ToolPolicyManagerProps) {
-    const [toolPolicies, setToolPolicies] = useState<ToolPolicyWithId[]>(
-        (dashboard.toolPolicies || []).map((policy: any) => ({
-            ...policy,
-            _id: crypto.randomUUID(),
-            policyVarsSchema: policy.policyVarsSchema 
-                ? policy.policyVarsSchema.map((schema: any) => ({
-                    ...schema,
-                    _id: crypto.randomUUID()
-                })) 
-                : []
-        }))
-    );
+    const [toolPolicies, setToolPolicies] = useState<ToolPolicyWithId[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [existingTools, setExistingTools] = useState<any[]>([]);
 
+    // Fetch existing tools and policies on component mount
     useEffect(() => {
-        if (dashboard && dashboard.toolPolicies) {
-            setToolPolicies((dashboard.toolPolicies || []).map(policy => ({
-                ...policy,
-                _id: crypto.randomUUID(),
-                policyVarsSchema: policy.policyVarsSchema 
-                    ? policy.policyVarsSchema.map((schema: any) => ({
-                        ...schema,
-                        _id: crypto.randomUUID()
-                    }))
-                    : []
-            })));
+        async function fetchAppVersion() {
+            if (dashboard?.appId) {
+                try {
+                    setIsLoading(true);
+                    const contracts = new VincentContracts('datil');
+                    // Get the latest version
+                    const appVersion = await contracts.getAppVersion(dashboard.appId, dashboard.currentVersion);
+                    console.log("Fetched app version:", appVersion);
+                    
+                    // Extract tools from the version data
+                    const tools = appVersion?.tools || appVersion?.[3] || [];
+                    setExistingTools(tools);
+                    
+                    // Convert the fetched tools into our ToolPolicyWithId format
+                    const formattedTools = tools.map((tool: any) => {
+                        // Extract tool data
+                        const toolData = Array.isArray(tool) 
+                            ? { 
+                                toolIpfsCid: tool[0], 
+                                policies: Array.isArray(tool[1]) ? tool[1] : [] 
+                              } 
+                            : tool;
+                        
+                        // Format the tool with an ID and extract its policies
+                        const formattedTool: ToolPolicyWithId = {
+                            _id: crypto.randomUUID(),
+                            toolIpfsCid: toolData.toolIpfsCid || "",
+                            description: toolData.description || "",
+                            policyVarsSchema: []
+                        };
+                        
+                        // Process policies into parameter schemas
+                        if (toolData.policies && toolData.policies.length > 0) {
+                            // Convert each policy's parameters to our schema format
+                            toolData.policies.forEach((policy: any) => {
+                                const policyData = Array.isArray(policy)
+                                    ? { 
+                                        policyIpfsCid: policy[0] || '', 
+                                        parameterNames: Array.isArray(policy[1]) ? policy[1] : [],
+                                        parameterTypes: Array.isArray(policy[2]) ? policy[2] : []
+                                      }
+                                    : policy || {};
+                                
+                                // Add each parameter as a schema item
+                                if (policyData.parameterNames && policyData.parameterNames.length) {
+                                    policyData.parameterNames.forEach((name: string, index: number) => {
+                                        const typeValue = policyData.parameterTypes[index];
+                                        const typeName = mapEnumToTypeName(Number(typeValue)) || "string";
+                                        
+                                        formattedTool.policyVarsSchema.push({
+                                            _id: crypto.randomUUID(),
+                                            paramName: name,
+                                            valueType: typeName,
+                                            defaultValue: ""
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                        
+                        return formattedTool;
+                    });
+                    
+                    setToolPolicies(formattedTools);
+                } catch (error) {
+                    console.error("Error fetching app version:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
         }
-    }, [dashboard, dashboard.toolPolicies]);
+        
+        fetchAppVersion();
+    }, [dashboard]);
 
     const handleAddTool = () => {
         const newTool: ToolPolicyWithId = {
@@ -76,7 +139,7 @@ export default function ManageToolPoliciesScreen({
             policyVarsSchema: [{
                 _id: crypto.randomUUID(),
                 paramName: "",
-                valueType: "",
+                valueType: "string",
                 defaultValue: ""
             } as PolicyParamSchemaWithId]
         };
@@ -98,6 +161,7 @@ export default function ManageToolPoliciesScreen({
                             {
                                 _id: crypto.randomUUID(),
                                 paramName: "",
+                                valueType: "string",
                                 defaultValue: ""
                             }
                         ]
@@ -158,6 +222,7 @@ export default function ManageToolPoliciesScreen({
             policyVarsSchema: [{
                 _id: crypto.randomUUID(),
                 paramName: "",
+                valueType: "string",
                 defaultValue: ""
             }]
         };
@@ -172,23 +237,35 @@ export default function ManageToolPoliciesScreen({
             const contract = await getContract('datil', 'App', true);
             
             const toolIpfsCids = toolPolicies.map(policy => policy.toolIpfsCid || "");
-            const paramNames = toolPolicies.map(policy => 
-                policy.policyVarsSchema.map(schema => [(schema.paramName || "")])
+            
+            // Create parameter arrays needed for the contract
+            const toolPolicyPolicies = toolPolicies.map(policy => 
+                [policy.policyVarsSchema.map(schema => schema.defaultValue || "")]
             );
-            const defaultValues = toolPolicies.map(policy => 
-                policy.policyVarsSchema.map(schema => (schema.defaultValue || ""))
+            
+            // Map parameter names 
+            const toolPolicyParameterNames = toolPolicies.map(policy => 
+                [policy.policyVarsSchema.map(schema => schema.paramName || "")]
             );
-            // Add the missing parameter - schema IPFS CIDs (empty arrays if not present)
-            const toolPolicySchemaIpfsCids = toolPolicies.map(policy => 
-                policy.policyVarsSchema.map(() => "")  // Empty string for each schema
+            
+            // Map parameter types from strings (e.g., "string", "bool") to their enum values
+            const toolPolicyParameterTypes = toolPolicies.map(policy => 
+                [policy.policyVarsSchema.map(schema => mapTypeToEnum(schema.valueType || "string"))]
             );
+            
+            console.log("Saving with data:", {
+                toolIpfsCids,
+                toolPolicyPolicies,
+                toolPolicyParameterNames,
+                toolPolicyParameterTypes
+            });
             
             const tx = await contract.registerNextAppVersion(
                 dashboard.appId,
-                toolIpfsCids.filter(cid => typeof cid === 'string'),
-                defaultValues,
-                toolPolicySchemaIpfsCids,
-                paramNames,
+                toolIpfsCids,
+                toolPolicyPolicies,
+                toolPolicyParameterNames,
+                toolPolicyParameterTypes,
                 {gasLimit: 5000000} // Add gas limit to avoid transaction failures
             );
             
@@ -208,7 +285,7 @@ export default function ManageToolPoliciesScreen({
             
             if (error.message) {
                 // Format error message for better readability
-                errorMessage += error.message.split('(')[0].trim();
+                errorMessage += error.message
             } else {
                 errorMessage += "Unknown error";
             }
@@ -269,11 +346,28 @@ export default function ManageToolPoliciesScreen({
                                         value={pVar.paramName || ""}
                                         onChange={(e) => handleSchemaChange(tool._id!, pVar._id!, "paramName", e.target.value)}
                                     />
-                                    <Input
-                                        placeholder="Value Type"
-                                        value={pVar.valueType || ""}
-                                        onChange={(e) => handleSchemaChange(tool._id!, pVar._id!, "valueType", e.target.value)}
-                                    />
+                                    <Select
+                                        value={pVar.valueType || "string"}
+                                        onValueChange={(value) => handleSchemaChange(tool._id!, pVar._id!, "valueType", value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="string">string</SelectItem>
+                                            <SelectItem value="string[]">string[]</SelectItem>
+                                            <SelectItem value="bool">bool</SelectItem>
+                                            <SelectItem value="bool[]">bool[]</SelectItem>
+                                            <SelectItem value="uint256">uint256</SelectItem>
+                                            <SelectItem value="uint256[]">uint256[]</SelectItem>
+                                            <SelectItem value="int256">int256</SelectItem>
+                                            <SelectItem value="int256[]">int256[]</SelectItem>
+                                            <SelectItem value="address">address</SelectItem>
+                                            <SelectItem value="address[]">address[]</SelectItem>
+                                            <SelectItem value="bytes">bytes</SelectItem>
+                                            <SelectItem value="bytes[]">bytes[]</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <Input
                                         placeholder="Default Value"
                                         value={pVar.defaultValue || ""}
@@ -289,11 +383,28 @@ export default function ManageToolPoliciesScreen({
                                 </Button>
                             </div>
                         ))}
+                        
+                        {policyVarsSchema.length === 0 && (
+                            <div className="text-center text-sm text-gray-500 py-2">
+                                No parameters defined. Click &quot;Add Parameter&quot; to create one.
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         );
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-[50vh]">
+                <div className="space-y-4 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="text-sm text-gray-600">Loading tool policies...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
@@ -313,7 +424,12 @@ export default function ManageToolPoliciesScreen({
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Tool Policies</CardTitle>
+                    <CardTitle className="flex items-center">
+                        Tool Policies
+                        <Button variant="ghost" size="sm" className="ml-2 px-2 py-0" title="Define tools and their parameters. Each tool can have multiple parameters with different types.">
+                            <Info className="h-4 w-4" />
+                        </Button>
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-6">

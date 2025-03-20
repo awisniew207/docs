@@ -32,8 +32,18 @@ export default function Developer() {
                     setApp(appData);
                 }
             } catch (error) {
-                console.error("Error fetching app:", error);
-                setHasApp(false);
+                // Check if this is the NoAppsFoundForManager error
+                if (error instanceof Error && 
+                    (error.message.includes("NoAppsFoundForManager") || 
+                     error.message.includes("call revert exception"))) {
+                    // This is expected when the user hasn't created any apps yet
+                    console.log("No apps found for this address");
+                    setHasApp(false);
+                } else {
+                    // Log other unexpected errors
+                    console.error("Error fetching app:", error);
+                    setHasApp(false);
+                }
             } finally {
                 setIsLoading(false);
             }
