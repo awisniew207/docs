@@ -63,15 +63,11 @@ const formSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description cannot exceed 500 characters'),
 
-  authorizedRedirectUris: z
-    .string()
-    .transform((val) => {
-      if (!val) return [];
-      return val
-        .split(',')
-        .map((uri) => normalizeURL(uri.trim()))
-        .filter(Boolean);
-    }),
+  authorizedRedirectUris: z.string(),
+  toolIpfsCids: z.string().default(''),
+  toolPolicies: z.string().default(''),
+  toolPolicySchemaIpfsCids: z.string().default(''),
+  toolPolicyParameterNames: z.string().default(''),
 
   logo: z.string().optional(),
 
@@ -135,7 +131,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     defaultValues: {
       appName: '',
       description: '',
-      authorizedRedirectUris: [],
+      authorizedRedirectUris: '',
+      toolIpfsCids: '',
+      toolPolicies: '',
+      toolPolicySchemaIpfsCids: '',
+      toolPolicyParameterNames: '',
     },
     mode: 'onBlur',
   });
@@ -153,9 +153,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
   };
 
   async function onSubmit(values: FormValues) {
-    console.log('Form submitted with values:', values);
-    console.log('address', address);
-    console.log('chainId', chainId);
     if (!address || !chainId) {
       console.log('Missing address or chainId:', { address, chainId });
       return;
@@ -164,12 +161,35 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(true);
       setError(null);
 
+      // Parse string inputs into array structures expected by the contract
+      const authorizedRedirectUris = !values.authorizedRedirectUris ? [] : 
+        values.authorizedRedirectUris
+          .split(',')
+          .map((uri) => normalizeURL(uri.trim()))
+          .filter(Boolean);
+
+      const toolIpfsCids = !values.toolIpfsCids ? [] :
+        values.toolIpfsCids.split(',').map(cid => cid.trim()).filter(Boolean);
+
+      const toolPolicies = !values.toolPolicies ? [[""]]:
+        [values.toolPolicies.split(',').map(policy => policy.trim())];
+
+      const toolPolicySchemaIpfsCids = !values.toolPolicySchemaIpfsCids ? [[""]]:
+        [values.toolPolicySchemaIpfsCids.split(',').map(cid => cid.trim())];
+
+      const toolPolicyParameterNames = !values.toolPolicyParameterNames ? [[["param1"]]]:
+        [values.toolPolicyParameterNames.split(',').map(param => [param.trim()])];
+
       const contracts = new VincentContracts('datil' as Network);
       const receipt = await contracts.registerApp(
         values.appName,
         values.description,
-        values.authorizedRedirectUris,
-        [address]
+        authorizedRedirectUris,
+        [address],
+        toolIpfsCids,
+        toolPolicies,
+        toolPolicySchemaIpfsCids,
+        toolPolicyParameterNames
       );
       console.log('receipt', receipt);
       onSuccess?.();
@@ -191,15 +211,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
             Back
           </Button>
         )}
-        <h1 className="text-3xl font-bold">Create New App</h1>
+        <h1 className="text-3xl font-bold text-black">Create New App</h1>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Register New Vincent App</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-black">Register New Vincent App</CardTitle>
+          <CardDescription className="text-black">
             Submit your application to the Vincent registry
-            <div className="mt-2 text-sm">
-              App Manager Address: <code>{address}</code>
+            <div className="mt-2 text-sm text-black">
+              App Manager Address: <code className="text-black">{address}</code>
             </div>
           </CardDescription>
         </CardHeader>
@@ -219,11 +239,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     name="appName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Application Name</FormLabel>
+                        <FormLabel className="text-black">Application Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="My DCA App" {...field} />
+                          <Input placeholder="My DCA App" {...field} className="text-black" />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-black" />
                       </FormItem>
                     )}
                   />
@@ -233,15 +253,16 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel className="text-black">Description</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Describe your application..."
                             rows={6}
                             {...field}
+                            className="text-black"
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-black" />
                       </FormItem>
                     )}
                   />
@@ -253,14 +274,87 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     name="authorizedRedirectUris"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Authorized Redirect URIs</FormLabel>
+                        <FormLabel className="text-black">Authorized Redirect URIs</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="https://example.com/callback, https://app.example.com/callback"
                             {...field}
+                            className="text-black"
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-black" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="toolIpfsCids"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black">Tool IPFS CIDs</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY, QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE"
+                            {...field}
+                            className="text-black"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-black" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="toolPolicies"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black">Tool Policies</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="policy1, policy2"
+                            {...field}
+                            className="text-black"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-black" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="toolPolicySchemaIpfsCids"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black">Tool Policy Schema IPFS CIDs</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="schemaCid1, schemaCid2"
+                            {...field}
+                            className="text-black"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-black" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="toolPolicyParameterNames"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black">Tool Policy Parameter Names</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="param1, param2"
+                            {...field}
+                            className="text-black"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-black" />
                       </FormItem>
                     )}
                   />

@@ -22,12 +22,14 @@ export class VincentContracts {
     appName: string,
     appDescription: string,
     authorizedRedirectUris: any,
-    delegatees: string[]
+    delegatees: string[],
+    toolIpfsCids: string[],
+    toolPolicies: string[][],
+    toolPolicySchemaIpfsCids: string[][],
+    toolPolicyParameterNames: string[][][]
   ) {
-    const contract = await getContract(this.network, 'App', true, this.signer);
-    console.log(contract);
-    console.log(appName, appDescription, authorizedRedirectUris, delegatees);
-    
+    const contract = await getContract(this.network, 'App', true, this.signer); 
+    /*
     const tx = await contract.registerApp(
       "RedirectUriTesting",
       "Test Description",
@@ -37,14 +39,27 @@ export class VincentContracts {
       [[""], [""]],
       [[""], [""]],
       [[["param1"]], [["param2"]]],
-      {gasLimit: 5000000})
+      {gasLimit: 5000000})*/
+    const tx = await contract.registerApp(
+      appName,
+      appDescription,
+      authorizedRedirectUris,
+      delegatees,
+      toolIpfsCids,
+      toolPolicies,
+      toolPolicySchemaIpfsCids,
+      toolPolicyParameterNames,
+      {gasLimit: 5000000});
+    console.log('tx', tx);
+      
     await tx.wait();
     return tx;
   }
 
   async addDelegatee(appId: number, delegatee: string) {
     const contract = await getContract(this.network, 'App', true, this.signer);
-    const tx = await contract.addDelegatee(appId, delegatee);
+    console.log("Trying to add delegatee", appId, delegatee);
+    const tx = await contract.addDelegatee(appId, delegatee, {gasLimit: 5000000});
     await tx.wait();
     return tx;
   }
@@ -69,16 +84,6 @@ export class VincentContracts {
       toolPolicies,
       toolPolicyParameterNames
     );
-    await tx.wait();
-    return tx;
-  }
-
-  async enableAppVersion(appId: number, version: number, isEnabled: boolean) {
-    const contract = await getContract(this.network, 'App', true, this.signer);
-    console.log('appId', appId);
-    console.log('version', version);
-    console.log('isEnabled', isEnabled);
-    const tx = await contract.enableAppVersion(appId, version, isEnabled);
     await tx.wait();
     return tx;
   }

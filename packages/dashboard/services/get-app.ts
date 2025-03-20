@@ -18,9 +18,6 @@ export async function formCompleteVincentAppForDev(address: string): Promise<App
             authorizedRedirectUris
         ] = app;
 
-        const latestVersionData = versions[versions.length - 1]
-        const isEnabled = latestVersionData ? latestVersionData.enabled : false;
-
         return {
             appId: BigNumber.from(id).toNumber(),
             appName: name,
@@ -29,7 +26,6 @@ export async function formCompleteVincentAppForDev(address: string): Promise<App
             delegatees: delegatees,
             toolPolicies: versions,
             managementWallet: manager,
-            isEnabled: isEnabled,
             appMetadata: {
                 email: "", // Not fetching off-chain data for now
             },

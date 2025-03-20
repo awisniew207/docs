@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
 import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
+import ManageAdvancedFunctionsScreen from './dashboard/ManageAdvancedFunctions';
 import CreateAppScreen from './CreateApp';
-import { ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, Plus, Settings } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import {
   Card,
   CardContent,
@@ -28,10 +28,10 @@ export default function DashboardScreen({
   const [showManageApp, setShowManageApp] = useState(false);
   const [showDelegateeManager, setShowDelegateeManager] = useState(false);
   const [showToolPolicies, setShowToolPolicies] = useState(false);
+  const [showAdvancedFunctions, setShowAdvancedFunctions] = useState(false);
   const [showCreateApp, setShowCreateApp] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppView | null>(null);
-  const [isToggling, setIsToggling] = useState(false);
   const { address } = useAccount();
 
   useEffect(() => {
@@ -45,21 +45,6 @@ export default function DashboardScreen({
     setIsRefetching(true);
     await onRefetch();
   };
-
-  async function handleToggleEnabled() {
-    if (!address || !selectedApp) return;
-    
-    try {
-      setIsToggling(true);
-      const contracts = new VincentContracts('datil');
-      await contracts.enableAppVersion(selectedApp.appId, selectedApp.currentVersion, !selectedApp.isEnabled);
-      await handleRefetch();
-    } catch (error) {
-      console.error('Error toggling app status:', error);
-    } finally {
-      setIsToggling(false);
-    }
-  }
 
   if (!dashboard || isRefetching) {
     return (
@@ -109,10 +94,21 @@ export default function DashboardScreen({
   }
 
   if (showToolPolicies && selectedApp) {
+    console.log(selectedApp);
     return (
       <ManageToolPoliciesScreen
         onBack={() => setShowToolPolicies(false)}
         dashboard={selectedApp}
+      />
+    );
+  }
+  
+  if (showAdvancedFunctions && selectedApp) {
+    return (
+      <ManageAdvancedFunctionsScreen
+        onBack={() => setShowAdvancedFunctions(false)}
+        dashboard={selectedApp}
+        onSuccess={handleRefetch}
       />
     );
   }
@@ -125,38 +121,36 @@ export default function DashboardScreen({
             <Button
               variant="ghost"
               onClick={() => setSelectedApp(null)}
-              className="p-0"
+              className="p-0 text-black"
             >
               <ArrowRight className="h-4 w-4 rotate-180" />
             </Button>
-            <h1 className="text-3xl font-bold">{selectedApp.appName}</h1>
+            <h1 className="text-3xl font-bold text-black">{selectedApp.appName}</h1>
           </div>
           <div className="flex gap-2 items-center">
-            <Button 
-              variant="default"
-              className="bg-black text-white"
-              onClick={handleToggleEnabled}
-              disabled={isToggling}
-            >
-              {isToggling ? 'Updating...' : selectedApp.isEnabled ? 'Disable App' : 'Enable App'}
-            </Button>
-            {/* <Button variant="default" onClick={() => setShowManageApp(true)}>
-              <Settings className="h-4 w-4 mr-2" />
-              Manage App
-            </Button> */}
             <Button
               variant="default"
               onClick={() => setShowDelegateeManager(true)}
+              className="text-black"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2 font-bold text-black" />
               Manage Delegatees
             </Button>
             <Button
               variant="default"
               onClick={() => setShowToolPolicies(true)}
+              className="text-black"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2 font-bold text-black" />
               Manage Tool Policies
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => setShowAdvancedFunctions(true)}
+              className="text-black"
+            >
+              <Settings className="h-4 w-4 mr-2 font-bold text-black" />
+              Advanced Functions
             </Button>
           </div>
         </div>
@@ -164,23 +158,17 @@ export default function DashboardScreen({
         <div className="grid grid-cols-1 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>App Details</CardTitle>
-              <CardDescription>{selectedApp.description}</CardDescription>
+              <CardTitle className="text-black">App Details</CardTitle>
+              <CardDescription className="text-black">{selectedApp.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="text-sm">
+                <div className="text-sm text-black">
                   <span className="font-medium">App ID:</span> {selectedApp.appId}
                 </div>
-                <div className="text-sm">
+                <div className="text-sm text-black">
                   <span className="font-medium">Management Wallet:</span>{' '}
                   {selectedApp.managementWallet}
-                </div>
-                <div className="text-sm">
-                  <span className="font-medium">Status:</span>{' '}
-                  <Badge variant={selectedApp.isEnabled ? 'default' : 'secondary'}>
-                    {selectedApp.isEnabled ? 'Enabled' : 'Disabled'}
-                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -188,8 +176,8 @@ export default function DashboardScreen({
 
           <Card>
             <CardHeader>
-              <CardTitle>Tool Policies</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-black">Tool Policies</CardTitle>
+              <CardDescription className="text-black">
                 {selectedApp.toolPolicies.length === 0
                   ? 'No tool policies configured yet.'
                   : `${selectedApp.toolPolicies.length} tool policies configured`}
@@ -198,13 +186,44 @@ export default function DashboardScreen({
             <CardContent>
               {selectedApp.toolPolicies.length === 0 ? (
                 <div className="text-center py-4">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black">
                     No Tool Policies Yet
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-
+                  {selectedApp.toolPolicies.map((tool, i) => (
+                    <div key={i} className="border-b border-gray-100 pb-2 mb-2 text-black">
+                      <div className="font-medium mb-1">Tool CID:</div>
+                      <div className="text-sm truncate">
+                        {tool && tool.toolIpfsCid ? 
+                          tool.toolIpfsCid : 
+                          'No CID available'}
+                      </div>
+                      
+                      {tool && tool.policies && tool.policies.length > 0 ? (
+                        <div className="mt-2">
+                          <div className="font-medium mb-1">Policies:</div>
+                          <div className="pl-2 text-sm">
+                            {tool.policies.map((policy: any, j: number) => (
+                              <div key={j} className="mb-1">
+                                <div className="text-xs">
+                                  {policy && policy.policyIpfsCid ? policy.policyIpfsCid : 'No policy CID'}{' '}
+                                  {policy && policy.parameterNames ? 
+                                    `(${policy.parameterNames.join(', ')})` : 
+                                    '(No parameters)'}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-2">
+                          <div className="text-xs italic">No policies defined for this tool</div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -212,8 +231,8 @@ export default function DashboardScreen({
 
           <Card>
             <CardHeader>
-              <CardTitle>Delegatees</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-black">Delegatees</CardTitle>
+              <CardDescription className="text-black">
                 {selectedApp.delegatees.length === 0
                   ? 'No delegatees configured yet.'
                   : `${selectedApp.delegatees.length} delegatees configured`}
@@ -222,13 +241,17 @@ export default function DashboardScreen({
             <CardContent>
               {selectedApp.delegatees.length === 0 ? (
                 <div className="text-center py-4">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black">
                     Add delegatees to allow other wallets to manage your app
                   </p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  
+                  {selectedApp.delegatees.map((delegatee, i) => (
+                    <div key={i} className="text-sm text-black">
+                      <code className="bg-gray-50 px-1 py-0.5 rounded text-xs">{delegatee}</code>
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -241,33 +264,63 @@ export default function DashboardScreen({
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Your Apps</h1>
-        <Button variant="default" onClick={() => setShowCreateApp(true)}>
+        <h1 className="text-3xl font-bold text-black">Your Apps</h1>
+        <Button variant="default" onClick={() => setShowCreateApp(true)} className="text-black">
           <Plus className="h-4 w-4 mr-2" />
           Create New App
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {dashboard.map((app, index) => (
-          <Card key={`${index}`} className="cursor-pointer hover:bg-gray-50" onClick={() => setSelectedApp(app)}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle>{app.appName}</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {dashboard.map((app, i) => (
+          <Card
+            key={i}
+            onClick={() => setSelectedApp(app)}
+            className="cursor-pointer hover:shadow-md transition-shadow duration-200"
+          >
+            <CardContent className="p-6">
+              <div className="space-y-3">
+                <div className="font-bold text-lg text-black truncate">
+                  {app.appName}
                 </div>
-                <Badge variant={app.isEnabled ? 'default' : 'secondary'}>
-                  {app.isEnabled ? 'Enabled' : 'Disabled'}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>{app.toolPolicies.length} Tool Policies</span>
-                  <span>{app.delegatees?.length} Delegatees</span>
+                <div className="text-sm text-black line-clamp-2 h-10">
+                  {app.description || 'No description'}
                 </div>
-                <div className="text-sm text-center">
+                <div className="mt-4 pt-3 border-t text-xs text-black">
+                  <div className="mb-2">
+                    <div className="font-medium mb-1">App ID: {app.appId}</div>
+                    <div className="font-medium mb-1">Version: {app.currentVersion}</div>
+                  </div>
+                  <div>
+                    <div className="font-medium mb-1">Tools:</div>
+                    {app.toolPolicies?.length > 0 ? (
+                      <div className="max-h-20 overflow-y-auto">
+                        {app.toolPolicies.map((tool: any, j: number) => (
+                          <div key={j} className="mb-1 truncate">
+                            {tool.toolIpfsCid?.slice(0, 8)}...{tool.toolIpfsCid?.slice(-6) || 'Unknown'}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs">No policies configured</div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-medium mb-1">Delegatees:</div>
+                    {app.delegatees?.length > 0 ? (
+                      <div className="max-h-20 overflow-y-auto text-xs">
+                        {app.delegatees.map((delegatee, i) => (
+                          <div key={i} className="mb-1 truncate">
+                            {delegatee.slice(0, 8)}...{delegatee.slice(-6)}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs">No delegatees added</div>
+                    )}
+                  </div>
+                </div>
+                <div className="text-sm text-center text-black mt-2">
                   Manage App
                 </div>
               </div>

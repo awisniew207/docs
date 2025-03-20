@@ -6,14 +6,14 @@ import { useAccount } from "wagmi";
 import DashboardScreen from "@/components/developer/Dashboard";
 import { formCompleteVincentAppForDev } from "@/services";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import { VincentApp } from "@/services/types";
+import { AppView } from "@/services/types";
 import CreateAppScreen from "@/components/developer/CreateApp";
 import ConnectWalletScreen from "@/components/developer/ConnectWallet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Developer() {
     const [hasApp, setHasApp] = useState<Boolean>(false);
-    const [app, setApp] = useState<VincentApp[] | null>(null);
+    const [app, setApp] = useState<AppView[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const isMounted = useIsMounted();
     const [refetchApp, setRefetchApp] = useState(0);
@@ -26,7 +26,6 @@ export default function Developer() {
 
             try {
                 const appData = await formCompleteVincentAppForDev(address);
-                console.log("dashboard appData", appData);
                 const exists = appData && appData.length > 0;
                 setHasApp(exists);
                 if (exists) {
