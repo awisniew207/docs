@@ -53,7 +53,8 @@ export default function AuthenticatedConsentForm ({
   userPKP,
 }: AuthenticatedConsentFormProps) {
   const { appId, error: urlError } = useUrlAppId();
-  const { redirectUri, error: redirectError } = useUrlRedirectUri();
+  const { redirectUri: encodedRedirectUri, error: redirectError } = useUrlRedirectUri();
+  const redirectUri = encodedRedirectUri ? decodeURIComponent(encodedRedirectUri) : null;
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showDisapproval, setShowDisapproval] = useState<boolean>(false);

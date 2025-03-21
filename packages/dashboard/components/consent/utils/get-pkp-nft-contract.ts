@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import * as ethers from 'ethers';
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { LIT_RPC } from '@lit-protocol/constants';
 import {
