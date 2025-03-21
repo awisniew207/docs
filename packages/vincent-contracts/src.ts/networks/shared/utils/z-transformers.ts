@@ -37,6 +37,17 @@ export const toHexStringArray = z
     return [hexPrefixed(val)];
   });
 
+// Validate and transform an Ethereum address
+// Ensures it's a valid 0x-prefixed 42-character hex string
+// eg. "0x1234..." -> "0x1234..."
+// eg. "1234..." -> "0x1234..."
+export const toEthAddress = z.string()
+  .refine(
+    (val) => /^(0x)?[a-fA-F0-9]{40}$/.test(val),
+    { message: 'Invalid Ethereum address format' }
+  )
+  .transform((val) => hexPrefixed(val));
+
 // Transform arrays of numbers/strings to arrays of arrays of BigInts
 // eg. undefined -> [[]]
 // eg. [[1, "2"], ["3", 4]] -> [[1n, 2n], [3n, 4n]]

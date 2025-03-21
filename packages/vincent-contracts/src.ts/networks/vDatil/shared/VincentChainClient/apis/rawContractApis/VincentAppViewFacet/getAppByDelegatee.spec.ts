@@ -1,8 +1,8 @@
 import { vincentNetworkContext } from '../../../_vincentConfig';
 import { getTestContext } from '../testContext';
-import { getAppById } from './getAppById';
+import { getAppByDelegatee } from './getAppByDelegatee';
 
-describe('getAppById', () => {
+describe('getAppByDelegatee', () => {
 
   let testContext: Awaited<ReturnType<typeof getTestContext>>;
 
@@ -12,16 +12,15 @@ describe('getAppById', () => {
     });
   });
   
-  it('should fetch app details', async () => {
+  it('should fetch app details by delegatee address', async () => {
     const { appId } = testContext.registerAppRes;
 
-    // Now test getAppById
-    const result = await getAppById({ 
-      appId
+    // Now test getAppByDelegatee
+    const result = await getAppByDelegatee({ 
+      delegatee: testContext.DELEGATEES[0]
     }, vincentNetworkContext);
 
-    console.log("result:", result);
-
+    console.log("Result:", result);
 
     // Verify app details
     expect(Number(result.id)).toBe(appId);
@@ -33,9 +32,11 @@ describe('getAppById', () => {
     expect(Number(result.latestVersion)).toBe(1);
   });
 
-  it('should handle non-existent app', async () => {
-    await expect(getAppById({ 
-      appId: testContext.failCase.nonExistentAppId
+  it('should handle non-existent delegatee', async () => {
+    const nonExistentAddress = testContext.failCase.nonExistentAddress;
+    
+    await expect(getAppByDelegatee({ 
+      delegatee: nonExistentAddress
     }, vincentNetworkContext)).rejects.toThrow();
   });
 }); 

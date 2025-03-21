@@ -1,30 +1,20 @@
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { enableAppVersion } from './enableAppVersion';
 import { vincentNetworkContext } from '../../../_vincentConfig';
-import { registerApp } from './registerApp';
+import { getTestContext } from '../testContext';
+import { enableAppVersion } from './enableAppVersion';
 import { registerNextAppVersion } from './registerNextAppVersion';
 
 describe('enableAppVersion', () => {
+
+  let testContext: Awaited<ReturnType<typeof getTestContext>>;
+
+  beforeAll(async () => {
+    testContext = await getTestContext({
+      registerApp: true,
+    });
+  });
+
   it('should enable and disable an app version', async () => {
-    // First register an app
-    const account = privateKeyToAccount(generatePrivateKey());
-
-    const registerRes = await registerApp(
-      {
-        appName: 'Test App',
-        appDescription: 'Test Description',
-        authorizedRedirectUris: ['http://localhost:3000'],
-        delegatees: [account.address],
-        toolIpfsCids: ['QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY'],
-        toolPolicies: [['QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE']],
-        toolPolicyParameterNames: [[['param1']]],
-        toolPolicyParameterTypes: [[['BYTES']]],
-      },
-      vincentNetworkContext
-    );
-
-    const appId = registerRes.decodedLogs.find((log) => log.eventName === 'NewAppVersionRegistered')?.args.appId;
-    console.log("Initial App ID: ", appId);
+    const { appId } = testContext.registerAppRes;
 
     // Register a new version
     const nextVersionRes = await registerNextAppVersion(

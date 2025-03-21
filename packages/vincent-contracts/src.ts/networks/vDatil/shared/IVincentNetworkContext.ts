@@ -4,7 +4,6 @@ import { Chain, WalletClient } from 'viem';
 export interface IVincentNetworkContext<T> {
   network: string;
   rpcUrl: string;
-  privateKey: string;
   chainConfig: {
     chain: Chain;
     contractData: T;
