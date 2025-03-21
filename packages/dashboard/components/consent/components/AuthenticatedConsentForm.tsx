@@ -125,9 +125,7 @@ export default function AuthenticatedConsentForm ({
       try {
         // Ensure redirectUri has a protocol
         let fullRedirectUri = redirectUri;
-        if (!fullRedirectUri.startsWith('http://') && !fullRedirectUri.startsWith('https://')) {
-          fullRedirectUri = 'https://' + fullRedirectUri;
-        }
+        fullRedirectUri = fullRedirectUri;
         
         console.log('Using full redirect URI:', fullRedirectUri);
         
@@ -149,9 +147,7 @@ export default function AuthenticatedConsentForm ({
       console.log('No JWT available, redirecting without JWT');
       // Ensure redirectUri has a protocol for the fallback
       let fallbackRedirectUri = redirectUri;
-      if (!fallbackRedirectUri.startsWith('http://') && !fallbackRedirectUri.startsWith('https://')) {
-        fallbackRedirectUri = 'https://' + fallbackRedirectUri;
-      }
+      fallbackRedirectUri = fallbackRedirectUri;
       window.location.href = fallbackRedirectUri;
     }
   }, [redirectUri, generatedJwt]);
@@ -916,15 +912,10 @@ export default function AuthenticatedConsentForm ({
       try {
         // Normalize redirectUri by ensuring it has a protocol
         let normalizedRedirectUri = redirectUri;
-        if (!normalizedRedirectUri.startsWith('http://') && !normalizedRedirectUri.startsWith('https://')) {
-          normalizedRedirectUri = 'https://' + normalizedRedirectUri;
-        }
+        normalizedRedirectUri = normalizedRedirectUri;
         
         const isAuthorized = appInfo?.authorizedRedirectUris?.some(uri => {
           let normalizedUri = uri;
-          if (!normalizedUri.startsWith('http://') && !normalizedUri.startsWith('https://')) {
-            normalizedUri = 'https://' + normalizedUri;
-          }
           return normalizedUri === normalizedRedirectUri;
         }) || false;
         
