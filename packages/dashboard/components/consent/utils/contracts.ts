@@ -49,4 +49,4 @@ export const connectWalletToContract = (
   wallet: ethers.Signer
 ): ethers.Contract => {
   return contract.connect(wallet);
-}; 
+};

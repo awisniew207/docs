@@ -417,7 +417,7 @@ export default function ManageToolPoliciesScreen({
         
         try {
             // Get the contract directly instead of using the wrapper
-            const { getContract } = await import('@/services/contract/config');
+            const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
             const contract = await getContract('datil', 'App', true);
             
             // Ensure we're working with valid tools only
@@ -459,13 +459,25 @@ export default function ManageToolPoliciesScreen({
             });
             
             try {
-                const tx = await contract.registerNextAppVersion(
+                // Create args array for the transaction
+                const args = [
                     dashboard.appId,
                     toolIpfsCids,
                     toolPolicyPolicies,
                     toolPolicyParameterNames,
-                    toolPolicyParameterTypes,
-                    {gasLimit: 5000000} // Add gas limit to avoid transaction failures
+                    toolPolicyParameterTypes
+                ];
+                
+                // Estimate gas with buffer
+                const gasLimit = await estimateGasWithBuffer(
+                    contract,
+                    'registerNextAppVersion',
+                    args
+                );
+                
+                const tx = await contract.registerNextAppVersion(
+                    ...args,
+                    {gasLimit}
                 );
                 
                 console.log("Transaction sent:", tx.hash);

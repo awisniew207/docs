@@ -3,6 +3,8 @@
 import React from 'react';
 import { StytchProvider } from '@stytch/nextjs';
 import { createStytchUIClient } from '@stytch/nextjs/ui';
+// Import the utility that automatically disables logs in production
+import '@/utils/disableLogsInProduction';
 import './page.css';  // Importing the global CSS file
 import SessionValidator from '../../components/consent/components/SessionValidator';
 // Create Stytch client only on the client side

@@ -65,11 +65,22 @@ export default function ManageAdvancedFunctionsScreen({
     
     try {
       setIsProcessing(true);
+      const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
+      
+      // Create args array for gas estimation
+      const args = [dashboard.appId, redirectUri.trim()];
+      
+      // Estimate gas with buffer
+      const gasLimit = await estimateGasWithBuffer(
+        contract,
+        'addAuthorizedRedirectUri',
+        args
+      );
+      
       const tx = await contract.addAuthorizedRedirectUri(
-        dashboard.appId, 
-        redirectUri.trim(),
-        {gasLimit: 5000000}
+        ...args,
+        {gasLimit}
       );
       await tx.wait();
       
@@ -93,10 +104,22 @@ export default function ManageAdvancedFunctionsScreen({
     
     try {
       setIsProcessing(true);
+      const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
+      
+      // Create args array for gas estimation
+      const args = [dashboard.appId, redirectUri.trim()];
+      
+      // Estimate gas with buffer
+      const gasLimit = await estimateGasWithBuffer(
+        contract,
+        'removeAuthorizedRedirectUri',
+        args
+      );
+      
       const tx = await contract.removeAuthorizedRedirectUri(
-        dashboard.appId, 
-        redirectUri.trim()
+        ...args,
+        {gasLimit}
       );
       await tx.wait();
       
@@ -116,17 +139,30 @@ export default function ManageAdvancedFunctionsScreen({
   async function handleToggleVersion() {
     try {
       setIsProcessing(true);
+      const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
       
       // Enable or disable the selected version
       console.log(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}`);
       
-      // Toggle the version status (enable if disabled, disable if enabled)
-      const toggleTx = await contract.enableAppVersion(
+      // Create args array for gas estimation
+      const args = [
         dashboard.appId,
         versionNumber,
-        !isVersionEnabled, // Toggle the current status
-        {gasLimit: 5000000}
+        !isVersionEnabled // Toggle the current status
+      ];
+      
+      // Estimate gas with buffer
+      const gasLimit = await estimateGasWithBuffer(
+        contract,
+        'enableAppVersion',
+        args
+      );
+      
+      // Toggle the version status (enable if disabled, disable if enabled)
+      const toggleTx = await contract.enableAppVersion(
+        ...args,
+        {gasLimit}
       );
       await toggleTx.wait();
       

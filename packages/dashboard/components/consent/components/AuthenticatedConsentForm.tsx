@@ -15,6 +15,7 @@ import {
   getUserViewRegistryContract,
   getUserRegistryContract,
 } from '../utils/contracts';
+import { estimateGasWithBuffer } from '@/services/contract/config';
 import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
@@ -255,11 +256,23 @@ export default function AuthenticatedConsentForm ({
           if (currentVersion !== newVersion) {
             console.log(`UNPERMITTING: Will unpermit version ${currentVersion} before permitting version ${newVersion}`);
             
-            const unpermitTx = await connectedContract.unPermitAppVersion(
+            // Create args array for unpermit
+            const unpermitArgs = [
               agentPKP.tokenId,
               appId,
-              currentVersion,
-              { gasLimit: 1000000 }
+              currentVersion
+            ];
+            
+            // Estimate gas with buffer
+            const gasLimit = await estimateGasWithBuffer(
+              connectedContract,
+              'unPermitAppVersion',
+              unpermitArgs
+            );
+            
+            const unpermitTx = await connectedContract.unPermitAppVersion(
+              ...unpermitArgs,
+              { gasLimit }
             );
             
             console.log('UNPERMIT TRANSACTION SENT:', unpermitTx.hash);
@@ -486,16 +499,28 @@ export default function AuthenticatedConsentForm ({
         )
       });
       
-      const txResponse = await connectedContract.permitAppVersion(
+      // Create the args array for the permitAppVersion method
+      const permitArgs = [
         agentPKP.tokenId,
         appId,
         Number(appInfo.latestVersion),
         toolIpfsCids,
         toolPolicies,
         toolPolicyParameterNames,
-        policyParameterValues,
+        policyParameterValues
+      ];
+      
+      // Estimate gas with buffer
+      const gasLimit = await estimateGasWithBuffer(
+        connectedContract,
+        'permitAppVersion',
+        permitArgs
+      );
+      
+      const txResponse = await connectedContract.permitAppVersion(
+        ...permitArgs,
         {
-          gasLimit: 1000000,
+          gasLimit,
         }
       );
       
@@ -675,11 +700,23 @@ export default function AuthenticatedConsentForm ({
       });
       
       try {
-        const txResponse = await connectedContract.unPermitAppVersion(
+        // Create args array for gas estimation
+        const unpermitArgs = [
           agentPKP.tokenId,
-          appIdNum,
+          appIdNum
+        ];
+        
+        // Estimate gas with buffer for unpermit
+        const gasLimit = await estimateGasWithBuffer(
+          connectedContract,
+          'unPermitAppVersion',
+          unpermitArgs
+        );
+        
+        const txResponse = await connectedContract.unPermitAppVersion(
+          ...unpermitArgs,
           {
-            gasLimit: 1000000,
+            gasLimit,
           }
         );
         
@@ -941,7 +978,7 @@ export default function AuthenticatedConsentForm ({
         if (isPermitted && redirectUri) {
           // Check which version is permitted
           try {
-            const permittedAppVersion = await userViewRegistryContract.getPermittedAppVersionForPkp(
+            const permittedAppVersion = await getUserViewRegistryContract().getPermittedAppVersionForPkp(
               agentPKP.tokenId,
               appIdNum
             );

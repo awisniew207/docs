@@ -55,3 +55,39 @@ export async function getContract(
     return new ethers.Contract(VINCENT_DIAMOND_ADDRESS[network], abi, provider);
   }
 }
+
+/**
+ * Utility function to estimate gas for a transaction and add a 20% buffer
+ * @param contract The contract instance to use for estimation
+ * @param method The method name to call
+ * @param args The arguments to pass to the method
+ * @returns A Promise resolving to the estimated gas limit with buffer
+ */
+export async function estimateGasWithBuffer(
+  contract: ethers.Contract,
+  method: string,
+  args: any[]
+): Promise<ethers.BigNumber> {
+  try {
+    // Estimate the gas required for the transaction
+    const estimatedGas = await contract.estimateGas[method](...args);
+    
+    // Add 20% buffer to the estimated gas
+    const buffer = estimatedGas.div(5); // 20% = divide by 5
+    const gasLimitWithBuffer = estimatedGas.add(buffer);
+    
+    console.log(`Gas estimation for ${method}:`, {
+      estimated: estimatedGas.toString(),
+      withBuffer: gasLimitWithBuffer.toString()
+    });
+    
+    return gasLimitWithBuffer;
+  } catch (error) {
+    console.error(`Error estimating gas for ${method}:`, error);
+    
+    // Return a default gas limit if estimation fails
+    // This is still better than an arbitrary hardcoded value
+    const defaultGasLimit = ethers.BigNumber.from("3000000");
+    return defaultGasLimit;
+  }
+}
