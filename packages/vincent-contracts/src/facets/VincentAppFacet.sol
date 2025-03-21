@@ -195,6 +195,15 @@ contract VincentAppFacet is VincentBase {
     error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
 
     /**
+     * @notice Error thrown when duplicate tool IPFS CIDs are detected in the same app version
+     * @param appId ID of the app
+     * @param toolIpfsCid The duplicate tool IPFS CID
+     * @param firstIndex Index of the first occurrence of the tool
+     * @param duplicateIndex Index of the duplicate occurrence of the tool
+     */
+    error DuplicateToolIpfsCidNotAllowed(uint256 appId, string toolIpfsCid, uint256 firstIndex, uint256 duplicateIndex);
+
+    /**
      * @notice Modifier to restrict function access to the app manager only
      * @param appId ID of the app
      */
@@ -488,6 +497,30 @@ contract VincentAppFacet is VincentBase {
             revert ToolsAndPoliciesLengthMismatch();
         }
 
+        // Step 2.1: Check for duplicate tool IPFS CIDs
+        // This double loop approach is more gas efficient than using storage operations because:
+        // 1. Memory operations are much cheaper than storage operations (reads/writes)
+        // 2. The alternative would involve storing each tool in a set and checking membership,
+        //    which would require a storage read for every tool and a storage write if not present
+        // 3. While this has O(n²) complexity vs O(n) for a storage-based approach, the difference
+        //    in gas cost between memory and storage operations makes this approach more efficient
+        //    for realistic numbers of tools
+        for (uint256 i = 0; i < toolCount; i++) {
+            string memory toolIpfsCid = toolIpfsCids[i];
+
+            // Validate tool IPFS CID is not empty
+            if (bytes(toolIpfsCid).length == 0) {
+                revert EmptyToolIpfsCidNotAllowed(appId, i);
+            }
+
+            // Check for duplicates against all subsequent tools
+            for (uint256 j = i + 1; j < toolCount; j++) {
+                if (keccak256(abi.encodePacked(toolIpfsCid)) == keccak256(abi.encodePacked(toolIpfsCids[j]))) {
+                    revert DuplicateToolIpfsCidNotAllowed(appId, toolIpfsCid, i, j);
+                }
+            }
+        }
+
         // Step 3: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
@@ -507,26 +540,20 @@ contract VincentAppFacet is VincentBase {
         for (uint256 i = 0; i < toolCount; i++) {
             string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
 
-            // Validate tool IPFS CID is not empty
-            if (bytes(toolIpfsCid).length == 0) {
-                revert EmptyToolIpfsCidNotAllowed(appId, i);
-            }
-
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 5.1: Register the tool IPFS CID globally if it hasn't been added already.
-            if (!toolIpfsCidHashes.contains(hashedToolCid)) {
-                toolIpfsCidHashes.add(hashedToolCid);
+            // Since we already checked for duplicates, each tool is unique within this version
+            toolIpfsCidHashes.add(hashedToolCid);
 
-                // First check if the tool is already registered in global storage
-                // before trying to register it again
-                if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
-                    ts.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
-                    emit NewToolRegistered(hashedToolCid);
-                }
-                // If tool is already registered globally, just continue
-                // without trying to register it again
+            // First check if the tool is already registered in global storage
+            // before trying to register it again
+            if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
+                ts.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
+                emit NewToolRegistered(hashedToolCid);
             }
+            // If tool is already registered globally, just continue
+            // without trying to register it again
 
             // Step 5.2: Fetch the tool policies storage for this tool.
             VincentAppStorage.ToolPolicies storage toolPoliciesStorage =

@@ -6,11 +6,11 @@ import "../../../src/VincentBase.sol";
 import "../../../src/LibVincentDiamondStorage.sol";
 
 /**
- * @title VincentAppFacetTest
+ * @title VincentAppFacetTestRegisterApp
  * @notice Test contract for VincentAppFacet
  * @dev Tests functions related to app registration and management
  */
-contract VincentAppFacetTest is VincentTestHelper {
+contract VincentAppFacetTestRegisterApp is VincentTestHelper {
     function setUp() public override {
         // Call parent setUp to deploy the diamond and initialize standard test data
         super.setUp();
@@ -1069,6 +1069,125 @@ contract VincentAppFacetTest is VincentTestHelper {
             parameterNames,
             parameterTypes
         );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with duplicate tool IPFS CIDs
+     * @dev Verifies that app registration fails when duplicate tool IPFS CIDs are provided
+     */
+    function testRegisterAppWithDuplicateToolIpfsCids() public {
+        vm.startPrank(deployer);
+
+        // Create tool array with duplicate IPFS CIDs
+        string[] memory duplicateToolIpfsCids = new string[](2);
+        duplicateToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+        duplicateToolIpfsCids[1] = TEST_TOOL_IPFS_CID_1; // Same as the first one
+
+        // Create matching policy arrays
+        string[][] memory policies = new string[][](2);
+        policies[0] = new string[](1);
+        policies[0][0] = TEST_POLICY_1;
+        policies[1] = new string[](1);
+        policies[1][0] = TEST_POLICY_2;
+
+        // Create matching parameter arrays
+        string[][][] memory parameterNames = new string[][][](2);
+        parameterNames[0] = new string[][](1);
+        parameterNames[0][0] = new string[](1);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[1] = new string[][](1);
+        parameterNames[1][0] = new string[](1);
+        parameterNames[1][0][0] = TEST_POLICY_PARAM_2;
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](2);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        parameterTypes[1] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[1][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[1][0][0] = VincentAppStorage.ParameterType.BOOL;
+
+        // Expect the call to revert with DuplicateToolIpfsCidNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "DuplicateToolIpfsCidNotAllowed(uint256,string,uint256,uint256)", 1, TEST_TOOL_IPFS_CID_1, 0, 1
+            )
+        );
+
+        // Call registerApp with duplicate tool IPFS CIDs
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            duplicateToolIpfsCids,
+            policies,
+            parameterNames,
+            parameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with duplicate tool IPFS CIDs
+     * @dev Verifies that app version registration fails when duplicate tool IPFS CIDs are provided
+     */
+    function testRegisterNextAppVersionWithDuplicateToolIpfsCids() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create tool array with duplicate IPFS CIDs
+        string[] memory duplicateToolIpfsCids = new string[](3);
+        duplicateToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+        duplicateToolIpfsCids[1] = TEST_TOOL_IPFS_CID_2;
+        duplicateToolIpfsCids[2] = TEST_TOOL_IPFS_CID_1; // Duplicate of first tool
+
+        // Create matching policy arrays
+        string[][] memory policies = new string[][](3);
+        policies[0] = new string[](1);
+        policies[0][0] = TEST_POLICY_1;
+        policies[1] = new string[](1);
+        policies[1][0] = TEST_POLICY_2;
+        policies[2] = new string[](1);
+        policies[2][0] = TEST_POLICY_1; // Can reuse the same policy for the duplicate tool
+
+        // Create matching parameter arrays
+        string[][][] memory parameterNames = new string[][][](3);
+        parameterNames[0] = new string[][](1);
+        parameterNames[0][0] = new string[](1);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[1] = new string[][](1);
+        parameterNames[1][0] = new string[](1);
+        parameterNames[1][0][0] = TEST_POLICY_PARAM_2;
+        parameterNames[2] = new string[][](1);
+        parameterNames[2][0] = new string[](1);
+        parameterNames[2][0][0] = TEST_POLICY_PARAM_1;
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](3);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        parameterTypes[1] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[1][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[1][0][0] = VincentAppStorage.ParameterType.BOOL;
+        parameterTypes[2] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[2][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[2][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Expect the call to revert with DuplicateToolIpfsCidNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "DuplicateToolIpfsCidNotAllowed(uint256,string,uint256,uint256)", appId, TEST_TOOL_IPFS_CID_1, 0, 2
+            )
+        );
+
+        // Attempt to register a new version with duplicate tool IPFS CIDs
+        wrappedAppFacet.registerNextAppVersion(appId, duplicateToolIpfsCids, policies, parameterNames, parameterTypes);
 
         vm.stopPrank();
     }
