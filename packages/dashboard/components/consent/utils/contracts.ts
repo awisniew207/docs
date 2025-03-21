@@ -3,7 +3,6 @@ import { LIT_RPC } from '@lit-protocol/constants';
 import APP_VIEW_FACET_ABI from '@/services/contract/abis/VincentAppViewFacet.abi.json';
 import USER_VIEW_FACET_ABI from '@/services/contract/abis/VincentUserViewFacet.abi.json';
 import USER_FACET_ABI from '@/services/contract/abis/VincentUserFacet.abi.json';
-import APP_FACET_ABI from '@/services/contract/abis/VincentAppFacet.abi.json';
 
 // Define contract address and provider
 export const VINCENT_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT!;

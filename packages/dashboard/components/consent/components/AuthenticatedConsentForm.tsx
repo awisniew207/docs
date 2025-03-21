@@ -18,6 +18,7 @@ import {
 import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
+import { ParameterType, PARAMETER_TYPE_NAMES } from '@/services/types/parameterTypes';
 
 interface AuthenticatedConsentFormProps {
   userPKP: IRelayPKP;
@@ -66,9 +67,11 @@ export default function AuthenticatedConsentForm ({
   const [showingAuthorizedMessage, setShowingAuthorizedMessage] = useState<boolean>(false);
   const [isUriUntrusted, setIsUriUntrusted] = useState<boolean>(false);
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
+  const [permittedVersion, setPermittedVersion] = useState<number | null>(null);
+  const [showVersionUpgradePrompt, setShowVersionUpgradePrompt] = useState<boolean>(false);
+  
   // ===== JWT and Redirect Functions =====
   
-  // getPermittedAppVersionForPkp
 
   // Generate JWT for redirection
   const generateJWT = useCallback(async (appInfo: AppView): Promise<string | null> => {
@@ -118,16 +121,36 @@ export default function AuthenticatedConsentForm ({
     if (jwtToUse) {
       console.log('Redirecting with JWT:', jwtToUse);
       try {
-        const redirectUrl = new URL(redirectUri);
+        // Ensure redirectUri has a protocol
+        let fullRedirectUri = redirectUri;
+        if (!fullRedirectUri.startsWith('http://') && !fullRedirectUri.startsWith('https://')) {
+          fullRedirectUri = 'https://' + fullRedirectUri;
+        }
+        
+        console.log('Using full redirect URI:', fullRedirectUri);
+        
+        // Construct the URL properly
+        const redirectUrl = new URL(fullRedirectUri);
         redirectUrl.searchParams.set('jwt', jwtToUse);
-        window.location.href = redirectUrl.toString();
+        
+        // Use the absolute URL for redirect
+        const finalUrl = redirectUrl.toString();
+        console.log('Final redirect URL:', finalUrl);
+        
+        window.location.href = finalUrl;
       } catch (error) {
         console.error('Error creating redirect URL:', error);
+        // Fallback to simple redirect
         window.location.href = redirectUri;
       }
     } else {
       console.log('No JWT available, redirecting without JWT');
-      window.location.href = redirectUri;
+      // Ensure redirectUri has a protocol for the fallback
+      let fallbackRedirectUri = redirectUri;
+      if (!fallbackRedirectUri.startsWith('http://') && !fallbackRedirectUri.startsWith('https://')) {
+        fallbackRedirectUri = 'https://' + fallbackRedirectUri;
+      }
+      window.location.href = fallbackRedirectUri;
     }
   }, [redirectUri, generatedJwt]);
 
@@ -146,7 +169,6 @@ export default function AuthenticatedConsentForm ({
       litNodeClient: litNodeClient,
     });
     await userPkpWallet.init();
-    userRegistryContract.connect(userPkpWallet);
     const connectedContract = userRegistryContract.connect(userPkpWallet);
     
     const toolIpfsCids: string[] = [];
@@ -207,18 +229,341 @@ export default function AuthenticatedConsentForm ({
       toolPolicyParameterTypes
     });
     
-    const txResponse = await connectedContract.permitAppVersion(
-      agentPKP.tokenId,
-      appId,
-      Number(appInfo.latestVersion),
-      toolIpfsCids,
-      toolPolicies,
-      toolPolicyParameterNames,
-      toolPolicyParameterTypes,
-      {
-        gasLimit: 1000000,
+    // Check if there's an existing version permitted that needs to be unpermitted first
+    console.log("CHECKING FOR EXISTING PERMITTED VERSION...");
+    try {
+      const userViewContract = getUserViewRegistryContract();
+      const permittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKP.tokenId);
+      
+      const appIdNum = Number(appId);
+      const isAppPermitted = permittedAppIds.some(
+        (id: ethers.BigNumber) => id.toNumber() === appIdNum
+      );
+      
+      if (isAppPermitted) {
+        try {
+          const currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
+            agentPKP.tokenId,
+            appIdNum
+          );
+          
+          const currentVersion = currentPermittedVersion.toNumber();
+          const newVersion = Number(appInfo.latestVersion);
+          
+          console.log(`FOUND PERMITTED VERSION: Current is v${currentVersion}, attempting to permit v${newVersion}`);
+          
+          if (currentVersion !== newVersion) {
+            console.log(`UNPERMITTING: Will unpermit version ${currentVersion} before permitting version ${newVersion}`);
+            
+            const unpermitTx = await connectedContract.unPermitAppVersion(
+              agentPKP.tokenId,
+              appId,
+              currentVersion,
+              { gasLimit: 1000000 }
+            );
+            
+            console.log('UNPERMIT TRANSACTION SENT:', unpermitTx.hash);
+            const unpermitReceipt = await unpermitTx.wait();
+            console.log('UNPERMIT TRANSACTION CONFIRMED:', unpermitReceipt);
+          }
+        } catch (e) {
+          console.error("Error checking permitted version:", e);
+        }
+      } else {
+        console.log("No currently permitted version found for this app");
       }
+    } catch (e) {
+      console.error("Error checking for permitted apps:", e);
+    }
+    
+    // Now proceed with permitting the new version
+    console.log(`PERMITTING: Now permitting version ${Number(appInfo.latestVersion)}`);
+    
+    // Create parameter values with proper encoding
+    const policyParameterValues = toolPolicyParameterNames.map((toolParams, toolIndex) => 
+      toolParams.map((policyParams, policyIndex) => 
+        policyParams.map((paramName, paramIndex) => {
+          // Find the matching parameter from the user input
+          const param = parameters.find(p => 
+            p.toolIndex === toolIndex && 
+            p.policyIndex === policyIndex && 
+            p.paramIndex === paramIndex
+          );
+          
+          // If a parameter was provided by the user, encode it based on its type
+          if (param && param.value !== undefined) {
+            try {
+              // Get the parameter type
+              const paramType = param.type;
+              console.log(`Encoding parameter ${paramName} with type ${paramType} (${PARAMETER_TYPE_NAMES[paramType] || 'unknown'})`, param.value);
+              
+              // Handle each type according to the ParameterType enum
+              switch(paramType) {
+                case ParameterType.INT256: // int256
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256"], [param.value]));
+                
+                case ParameterType.INT256_ARRAY: { // int256[]
+                  let arrayValue = [];
+                  
+                  if (typeof param.value === 'string' && param.value.includes(',')) {
+                    arrayValue = param.value.split(',').map(item => parseInt(item.trim()));
+                  } else if (Array.isArray(param.value)) {
+                    arrayValue = param.value;
+                  } else if (param.value !== '') {
+                    arrayValue = [parseInt(param.value)];
+                  }
+                  
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256[]"], [arrayValue]));
+                }
+                
+                case ParameterType.UINT256: // uint256
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256"], [param.value]));
+                
+                case ParameterType.UINT256_ARRAY: { // uint256[]
+                  let arrayValue = [];
+                  
+                  if (typeof param.value === 'string' && param.value.includes(',')) {
+                    arrayValue = param.value.split(',').map(item => parseInt(item.trim()));
+                  } else if (Array.isArray(param.value)) {
+                    arrayValue = param.value;
+                  } else if (param.value !== '') {
+                    arrayValue = [parseInt(param.value)];
+                  }
+                  
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256[]"], [arrayValue]));
+                }
+                
+                case ParameterType.BOOL: // bool
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bool"], [
+                    param.value === true || param.value === 'true' || param.value === '1' || param.value === 1
+                  ]));
+                
+                case ParameterType.BOOL_ARRAY: { // bool[]
+                  let arrayValue = [];
+                  
+                  if (typeof param.value === 'string' && param.value.includes(',')) {
+                    arrayValue = param.value.split(',').map(item => {
+                      const trimmed = item.trim();
+                      return trimmed === 'true' || trimmed === '1';
+                    });
+                  } else if (Array.isArray(param.value)) {
+                    arrayValue = param.value;
+                  } else if (param.value !== '') {
+                    const val = param.value === true || param.value === 'true' || param.value === '1' || param.value === 1;
+                    arrayValue = [val];
+                  }
+                  
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bool[]"], [arrayValue]));
+                }
+                
+                case ParameterType.ADDRESS: // address
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["address"], [param.value]));
+                
+                case ParameterType.ADDRESS_ARRAY: { // address[]
+                  let arrayValue = [];
+                  
+                  if (typeof param.value === 'string' && param.value.includes(',')) {
+                    arrayValue = param.value.split(',').map(item => item.trim());
+                  } else if (Array.isArray(param.value)) {
+                    arrayValue = param.value;
+                  } else if (param.value !== '') {
+                    arrayValue = [param.value];
+                  }
+                  
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["address[]"], [arrayValue]));
+                }
+                
+                case ParameterType.STRING: // string
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(param.value)]));
+                
+                case ParameterType.STRING_ARRAY: { // string[]
+                  let arrayValue = [];
+                  
+                  if (typeof param.value === 'string' && param.value.includes(',')) {
+                    arrayValue = param.value.split(',').map(item => item.trim());
+                  } else if (Array.isArray(param.value)) {
+                    arrayValue = param.value;
+                  } else if (param.value !== '') {
+                    arrayValue = [String(param.value)];
+                  }
+                  
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string[]"], [arrayValue]));
+                }
+                
+                case ParameterType.BYTES: // bytes
+                  try {
+                    // If it's a hex string, convert it to bytes
+                    if (typeof param.value === 'string' && param.value.startsWith('0x')) {
+                      return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.arrayify(param.value)]));
+                    } else {
+                      // Otherwise encode the string as bytes
+                      return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.toUtf8Bytes(String(param.value))]));
+                    }
+                  } catch (e) {
+                    console.error("Error encoding bytes:", e);
+                    return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.toUtf8Bytes("")]));
+                  }
+                
+                case ParameterType.BYTES_ARRAY: { // bytes[]
+                  let arrayValue: Uint8Array[] = [];
+                  
+                  try {
+                    if (typeof param.value === 'string' && param.value.includes(',')) {
+                      arrayValue = param.value.split(',').map(item => {
+                        const trimmed = item.trim();
+                        if (trimmed.startsWith('0x')) {
+                          return ethers.utils.arrayify(trimmed);
+                        } else {
+                          return ethers.utils.toUtf8Bytes(trimmed);
+                        }
+                      });
+                    } else if (Array.isArray(param.value)) {
+                      arrayValue = param.value.map(v => {
+                        if (typeof v === 'string' && v.startsWith('0x')) {
+                          return ethers.utils.arrayify(v);
+                        } else {
+                          return ethers.utils.toUtf8Bytes(String(v));
+                        }
+                      });
+                    } else if (param.value !== '') {
+                      if (typeof param.value === 'string' && param.value.startsWith('0x')) {
+                        arrayValue = [ethers.utils.arrayify(param.value)];
+                      } else {
+                        arrayValue = [ethers.utils.toUtf8Bytes(String(param.value))];
+                      }
+                    }
+                    
+                    return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes[]"], [arrayValue]));
+                  } catch (e) {
+                    console.error("Error encoding bytes array:", e);
+                    return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes[]"], [[]]));
+                  }
+                }
+                
+                default:
+                  // Default to string encoding for unknown types
+                  console.warn(`Unknown parameter type ${paramType}, defaulting to string encoding`);
+                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(param.value)]));
+              }
+            } catch (encodeError) {
+              console.error(`Error encoding parameter ${paramName}:`, encodeError, {
+                paramValue: param.value,
+                paramType: param.type
+              });
+              // Provide a fallback encoding to prevent the entire transaction from failing
+              return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [""]));
+            }
+          }
+          
+          // Fallback to empty string if no parameter value was provided
+          return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [""]));
+        })
+      )
     );
+    
+    console.log('PERMIT: Transaction with ABI parameters', {
+      pkpTokenId: agentPKP.tokenId,
+      appId: appId,
+      appVersion: Number(appInfo.latestVersion),
+      toolsCount: toolIpfsCids.length,
+      policiesStructure: toolPolicies.map(p => p.length),
+      parameters
+    });
+    
+    try {
+      // Log all the data we're sending to the contract for debugging
+      console.log('DEBUG: Full parameter data', {
+        pkpTokenId: agentPKP.tokenId,
+        appId,
+        appVersion: Number(appInfo.latestVersion),
+        toolIpfsCids,
+        toolPolicies,
+        toolPolicyParameterNames,
+        policyParameterValues: policyParameterValues.map(tool => 
+          tool.map(policy => 
+            policy.map(param => ethers.utils.hexlify(param))
+          )
+        )
+      });
+      
+      const txResponse = await connectedContract.permitAppVersion(
+        agentPKP.tokenId,
+        appId,
+        Number(appInfo.latestVersion),
+        toolIpfsCids,
+        toolPolicies,
+        toolPolicyParameterNames,
+        policyParameterValues,
+        {
+          gasLimit: 1000000,
+        }
+      );
+      
+      console.log('PERMIT TRANSACTION SENT:', txResponse.hash);
+      
+      // Wait for transaction confirmation with adequate confirmations
+      console.log('PERMIT: Waiting for transaction confirmation...');
+      const txReceipt = await txResponse.wait(2); // Wait for 2 confirmations to ensure it's properly mined
+      console.log('PERMIT TRANSACTION CONFIRMED:', txReceipt);
+    } catch (error) {
+      console.error('TRANSACTION FAILED:', error);
+      
+      // Try to extract more specific error information
+      const errorMessage = (error as any).message || '';
+      const errorData = (error as any).data || '';
+      const errorReason = (error as any).reason || '';
+      
+      console.error('Error details:', {
+        message: errorMessage,
+        data: errorData,
+        reason: errorReason
+      });
+      
+      // Check for common contract errors
+      if (errorMessage.includes('AppNotRegistered')) {
+        throw new Error(`App ID ${appId} is not registered in the contract`);
+      } else if (errorMessage.includes('AppVersionNotRegistered') || errorMessage.includes('AppVersionNotEnabled')) {
+        throw new Error(`App version ${appInfo.latestVersion} is not registered or not enabled`);
+      } else if (errorMessage.includes('EmptyToolIpfsCid') || errorMessage.includes('EmptyPolicyIpfsCid')) {
+        throw new Error('One of the tool or policy IPFS CIDs is empty');
+      } else if (errorMessage.includes('EmptyParameterName') || errorMessage.includes('EmptyParameterValue')) {
+        throw new Error('Parameter name or value cannot be empty');
+      } else if (errorMessage.includes('PolicyParameterNameNotRegistered') || 
+                errorMessage.includes('ToolNotRegistered') || 
+                errorMessage.includes('ToolPolicyNotRegistered')) {
+        throw new Error('Tool, policy, or parameter is not properly registered for this app version');
+      } else if (errorMessage.includes('NotPkpOwner')) {
+        throw new Error('You are not the owner of this PKP');
+      } else {
+        // Rethrow the original error
+        throw error;
+      }
+    }
+    
+    // Verify the permitted version after the transaction
+    try {
+      console.log('VERIFYING PERMIT: Checking if new version was properly registered...');
+      // Small delay to ensure the blockchain state has been updated
+      await new Promise(resolve => setTimeout(resolve, 2000)); 
+      
+      const userViewContract = getUserViewRegistryContract();
+      const verifiedVersion = await userViewContract.getPermittedAppVersionForPkp(
+        agentPKP.tokenId,
+        Number(appId)
+      );
+      
+      const verifiedVersionNum = verifiedVersion.toNumber();
+      console.log(`VERIFICATION RESULT: Current permitted version is now ${verifiedVersionNum}`);
+      
+      if (verifiedVersionNum !== Number(appInfo.latestVersion)) {
+        console.error(`VERSION MISMATCH: Expected version ${Number(appInfo.latestVersion)} but found ${verifiedVersionNum}`);
+        // Consider adding error handling here - the transaction succeeded but didn't update the state as expected
+      } else {
+        console.log('PERMIT SUCCESS: Version was successfully updated');
+      }
+    } catch (verifyError) {
+      console.error('Error verifying permitted version after update:', verifyError);
+    }
 
     // Initialize Lit Contracts
     const litContracts = new LitContracts({
@@ -244,6 +589,7 @@ export default function AuthenticatedConsentForm ({
               pkpTokenId: agentPKP.tokenId, // Use hex format tokenId
               authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
             });
+            
 
             console.log(`Transaction hash: ${tx}`);
             console.log(`Successfully added permitted action for IPFS CID: ${properlyCidEncoded}`);
@@ -262,6 +608,159 @@ export default function AuthenticatedConsentForm ({
 
     return receipt;
   }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo]);
+
+  // Disapprove and revoke permissions
+  const disapproveConsent = useCallback(async () => {
+    console.log('=== STARTING UNPERMIT PROCESS ===');
+    
+    if (!agentPKP || !appId) {
+      const error = 'Missing required data for disapproval';
+      console.error('UNPERMIT ERROR:', error);
+      throw new Error(error);
+    }
+
+    console.log('UNPERMIT: Agent PKP token ID:', agentPKP.tokenId);
+    console.log('UNPERMIT: App ID:', appId);
+    
+    try {
+      // First check if app is permitted and which version
+      const userViewContract = getUserViewRegistryContract();
+      const permittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKP.tokenId);
+      console.log('UNPERMIT: All permitted app IDs:', permittedAppIds.map((id: ethers.BigNumber) => id.toString()));
+      
+      const appIdNum = Number(appId);
+      console.log('UNPERMIT: Current app ID:', appIdNum);
+      
+      try {
+        const currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
+          agentPKP.tokenId,
+          appIdNum
+        );
+        console.log(`UNPERMIT: Current permitted version before unpermit: ${currentPermittedVersion.toNumber()}`);
+      } catch (e) {
+        console.log('UNPERMIT: Could not get currently permitted version - app may not be permitted');
+      }
+      
+      const isPermitted = permittedAppIds.some(
+        (id: ethers.BigNumber) => id.toNumber() === appIdNum
+      );
+      
+      console.log('UNPERMIT: Is app currently permitted?', isPermitted);
+      
+      if (!isPermitted) {
+        console.log('UNPERMIT: App is not permitted, nothing to unpermit');
+        return { success: true, alreadyUnpermitted: true };
+      }
+      
+      // Initialize wallet
+      console.log('UNPERMIT: Initializing wallet...');
+      const userRegistryContract = getUserRegistryContract();
+      const userPkpWallet = new PKPEthersWallet({
+        controllerSessionSigs: sessionSigs,
+        pkpPubKey: userPKP.publicKey,
+        litNodeClient: litNodeClient,
+      });
+      await userPkpWallet.init();
+      console.log('UNPERMIT: Wallet initialized successfully');
+      
+      // Connect to contract
+      const connectedContract = userRegistryContract.connect(userPkpWallet);
+      console.log('UNPERMIT: Connected to user registry contract');
+      
+      // Call unPermitAppVersion
+      console.log('UNPERMIT: Sending unpermit transaction...');
+      console.log('UNPERMIT PARAMS:', {
+        agentPKPTokenId: agentPKP.tokenId,
+        appId: appIdNum
+      });
+      
+      try {
+        const txResponse = await connectedContract.unPermitAppVersion(
+          agentPKP.tokenId,
+          appIdNum,
+          {
+            gasLimit: 1000000,
+          }
+        );
+        
+        console.log('UNPERMIT TRANSACTION SENT:', txResponse.hash);
+        
+        // Wait for confirmation
+        console.log('UNPERMIT: Waiting for transaction confirmation...');
+        const receipt = await txResponse.wait();
+        console.log('UNPERMIT TRANSACTION CONFIRMED:', receipt);
+        
+        // Verify unpermit worked
+        try {
+          console.log('UNPERMIT: Verifying app is no longer permitted...');
+          const newPermittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKP.tokenId);
+          const stillPermitted = newPermittedAppIds.some(
+            (id: ethers.BigNumber) => id.toNumber() === appIdNum
+          );
+          
+          if (stillPermitted) {
+            console.warn('WARNING: App still appears to be permitted after unpermit');
+          } else {
+            console.log('UNPERMIT: App successfully unpermitted');
+          }
+        } catch (e) {
+          console.error('Error verifying unpermit result:', e);
+        }
+        
+        return { success: true, receipt };
+      } catch (txError) {
+        console.error('UNPERMIT TRANSACTION FAILED:', txError);
+        throw txError;
+      }
+    } catch (error) {
+      console.error('UNPERMIT PROCESS FAILED:', error);
+      throw error;
+    }
+  }, [agentPKP, appId, sessionSigs, userPKP]);
+
+  // Disapprove button handler
+  const handleDisapprove = useCallback(async () => {
+    console.log('handleDisapprove called');
+    setSubmitting(true);
+    try {
+      // Always try to unpermit regardless of isAppAlreadyPermitted flag
+      // This ensures we attempt to unpermit even if our state tracking is wrong
+      console.log('Attempting to revoke permissions unconditionally');
+      try {
+        const result = await disapproveConsent();
+        console.log('Revocation result:', result);
+      } catch (unpermitError) {
+        console.error('Error in unpermit process:', unpermitError);
+        // Continue with the disapproval flow even if unpermit fails
+      }
+      
+      setShowDisapproval(true);
+      
+      // Short delay before redirect
+      setTimeout(() => {
+        if (redirectUri) {
+          console.log('Redirecting to:', redirectUri);
+          // Ensure redirectUri has a protocol for the redirect
+          let fullRedirectUri = redirectUri;
+          if (!fullRedirectUri.startsWith('http://') && !fullRedirectUri.startsWith('https://')) {
+            fullRedirectUri = 'https://' + fullRedirectUri;
+          }
+          
+          console.log('Redirecting to (with protocol):', fullRedirectUri);
+          // Redirect without JWT
+          window.location.href = fullRedirectUri;
+        } else {
+          console.log('No redirect URI available');
+        }
+      }, 2000);
+    } catch (err) {
+      console.error('Error disapproving consent:', err);
+      setError('Failed to disapprove. Please try again.');
+      setShowDisapproval(false);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [redirectUri, disapproveConsent, setError]);
 
   // ===== Event Handler Functions =====
   
@@ -327,21 +826,43 @@ export default function AuthenticatedConsentForm ({
     }
   }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo]);
 
-  const handleDisapprove = useCallback(async () => {
-    setShowDisapproval(true);
-
-    setTimeout(() => {
-      setTimeout(() => {
-        if (redirectUri) {
-          window.location.href = redirectUri;
-        }
-      }, 100);
-    }, 2000);
-  }, [redirectUri]);
-
   const handleParametersChange = (newParameters: VersionParameter[]) => {
     setParameters(newParameters);
   };
+
+  // Function to continue with existing permission
+  const handleContinueWithExistingPermission = useCallback(async () => {
+    if (!appInfo) {
+      console.error('Cannot continue with existing permission: Missing app info');
+      return;
+    }
+    
+    if (!redirectUri) {
+      console.error('Cannot continue with existing permission: Missing redirect URI');
+      return;
+    }
+    
+    try {
+      setShowingAuthorizedMessage(true);
+      
+      // Generate the JWT using the app info
+      console.log('Generating JWT for existing permission...');
+      const jwt = await generateJWT(appInfo);
+      
+      setTimeout(() => {
+        setShowSuccess(true);
+        
+        setTimeout(() => {
+          // Use the existing redirectWithJWT function that's already working
+          redirectWithJWT(jwt);
+        }, 1000);
+      }, 2000);
+    } catch (error) {
+      console.error('Error in continue with existing permission flow:', error);
+      setError('An error occurred while processing your request. Please try again.');
+      setShowingAuthorizedMessage(false);
+    }
+  }, [appInfo, redirectUri, generateJWT, redirectWithJWT, setError]);
 
   // ===== Data Loading Effects =====
 
@@ -418,8 +939,36 @@ export default function AuthenticatedConsentForm ({
         setIsAppAlreadyPermitted(isPermitted);
 
         if (isPermitted && redirectUri) {
+          // Check which version is permitted
+          try {
+            const permittedAppVersion = await userViewRegistryContract.getPermittedAppVersionForPkp(
+              agentPKP.tokenId,
+              appIdNum
+            );
+            
+            const permittedVersionNum = permittedAppVersion.toNumber();
+            const latestVersionNum = Number(appRawInfo.latestVersion);
+            
+            setPermittedVersion(permittedVersionNum);
+            
+            console.log(`PERMISSION CHECK: PKP ${agentPKP.tokenId} has permission for app ${appIdNum} version ${permittedVersionNum}`);
+            console.log(`PERMISSION CHECK: Latest available version for app ${appIdNum} is ${latestVersionNum}`);
+            
+            if (permittedVersionNum < latestVersionNum) {
+              console.log(`UPGRADE NEEDED: Current permission (v${permittedVersionNum}) needs upgrade to v${latestVersionNum}`);
+              setShowVersionUpgradePrompt(true);
+              setIsLoading(false);
+              setCheckingPermissions(false);
+              return;
+            }
+          } catch (versionError) {
+            console.error('Error checking permitted version:', versionError);
+            // Continue with normal flow if we can't check the version
+          }
+          
+          // Only reach here if version check passed or failed
           console.log(
-            'App is already permitted. Generating JWT and redirecting...'
+            'App is already permitted with latest version. Generating JWT and redirecting...'
           );
           setShowingAuthorizedMessage(true);
           const jwt = await generateJWT(appRawInfo);
@@ -519,7 +1068,62 @@ export default function AuthenticatedConsentForm ({
     );
   }
   
+  // Change the rendering order to check for version upgrade prompt before checking for already permitted
   // If the app is already permitted, show a brief loading spinner or success animation
+  if (showVersionUpgradePrompt && appInfo && permittedVersion !== null) {
+    return (
+      <div className="consent-form-container">
+        <h1>Version Upgrade Available</h1>
+        
+        <div className="alert alert--warning" style={{display: "block"}}>
+          <p style={{display: "block"}}>
+            You already have permission for version {permittedVersion} of this application, 
+            but version {appInfo.latestVersion.toString()} is now available.
+          </p>
+        </div>
+        
+        <div className="app-info">
+          <h2>App Information</h2>
+          <div className="app-info-details">
+            <p>
+              <strong>Name:</strong> {appInfo.name}
+            </p>
+            <p>
+              <strong>Description:</strong> {appInfo.description}
+            </p>
+            {agentPKP && (
+              <p>
+                <strong>PKP Address:</strong> {agentPKP.ethAddress}
+              </p>
+            )}
+          </div>
+          
+          <div className="consent-actions" style={{marginTop: "20px"}}>
+            <button
+              className="btn btn--primary"
+              onClick={() => {
+                setShowVersionUpgradePrompt(false);
+                setIsAppAlreadyPermitted(false);
+                // Continue to load the latest version info and display the full consent form
+                setIsLoading(true);
+                setCheckingPermissions(false);
+              }}
+            >
+              Update to Latest Version
+            </button>
+            <button
+              className="btn btn--outline"
+              onClick={handleContinueWithExistingPermission}
+            >
+              Continue with Existing Permission
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Only check this after we've checked for the version upgrade prompt
   if (isAppAlreadyPermitted || (showSuccess && checkingPermissions) || showingAuthorizedMessage) {
     return (
       <div className='container'>
@@ -575,6 +1179,16 @@ export default function AuthenticatedConsentForm ({
       <div className='consent-form-container'>
         <div className='alert alert--error'>
           <p>{urlError}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (redirectError) {
+    return (
+      <div className='consent-form-container'>
+        <div className='alert alert--error'>
+          <p>{redirectError}</p>
         </div>
       </div>
     );

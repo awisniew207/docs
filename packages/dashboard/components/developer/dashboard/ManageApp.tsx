@@ -24,7 +24,6 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
 import { useAccount } from 'wagmi';
-import { VincentContracts } from '@/services/contract/contracts';
 import { AppView } from '@/services/types';
 
 const formSchema = z.object({
@@ -73,22 +72,12 @@ export default function ManageAppScreen({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit() {
     try {
       setIsSubmitting(true);
 
       if (!address) return;
-      
-      // Update app info through the contract
-      const contracts = new VincentContracts('datil');
-      // Since there's no direct updateApp method in the contract,
-      // we'll just notify on success as this appears to be a mock/placeholder
-      console.log('Updating app with values:', {
-        appId: dashboard.appId,
-        contactEmail: values.email,
-        description: values.appDescription,
-      });
-      
+  
       onSuccess();
     } catch (error) {
       console.error('Error updating app:', error);

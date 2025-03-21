@@ -59,7 +59,6 @@ export default function ManageToolPoliciesScreen({
     const [toolPolicies, setToolPolicies] = useState<ToolPolicyWithId[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [existingTools, setExistingTools] = useState<any[]>([]);
 
     // Fetch existing tools and policies on component mount
     useEffect(() => {
@@ -87,9 +86,6 @@ export default function ManageToolPoliciesScreen({
                             toolsData = appVersionArr[3];
                         }
                     }
-                    
-                    console.log("Extracted tools data:", toolsData);
-                    setExistingTools(toolsData);
                     
                     // Convert the fetched tools into our ToolPolicyWithId format
                     const formattedTools = toolsData.map((tool: any) => {
@@ -148,7 +144,7 @@ export default function ManageToolPoliciesScreen({
                             console.log("Processing rawPolicies:", rawPolicies);
                             
                             // Convert each policy to our new format
-                            rawPolicies.forEach((policyData: any, policyIndex: number) => {
+                            rawPolicies.forEach((policyData: any) => {
                                 let policyIpfsCid = "";
                                 let policyParamNames: string[] = [];
                                 let policyParamTypes: number[] = [];
@@ -599,7 +595,7 @@ export default function ManageToolPoliciesScreen({
                         
                         {policy.parameters.length === 0 && (
                             <div className="text-center text-sm text-gray-500 py-2">
-                                No parameters defined. Click "Add Parameter" to create one.
+                                No parameters defined. Click &quot;Add Parameter&quot; to create one.
                             </div>
                         )}
                     </div>
@@ -649,7 +645,7 @@ export default function ManageToolPoliciesScreen({
                         
                         {tool.policies.length === 0 && (
                             <div className="text-center text-sm text-gray-500 py-2">
-                                No policies defined. Click "Add Policy" to create one.
+                                No policies defined. Click &quot;Add Policy&quot; to create one.
                             </div>
                         )}
                     </div>

@@ -36,7 +36,6 @@ export default function VersionParametersForm({
       toolsData.forEach((tool, toolIndex) => {
         if (!tool || !Array.isArray(tool)) return;
         
-        const toolIpfsCid = tool[0];
         const policies = tool[1];
         
         // Loop through policies for each tool
@@ -44,7 +43,6 @@ export default function VersionParametersForm({
           policies.forEach((policy, policyIndex) => {
             if (!policy || !Array.isArray(policy)) return;
             
-            const policyIpfsCid = policy[0];
             const paramNames = policy[1];
             const paramTypes = policy[2];
             

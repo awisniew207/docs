@@ -21,12 +21,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import * as z from 'zod';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import { VincentContracts } from '@/services';
 import { Network } from '@/services';
-import { ArrowLeft, Info, Plus, Trash2 } from 'lucide-react';
-import { ParameterType, mapTypeToEnum } from '@/services/types';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { mapTypeToEnum } from '@/services/types';
 
 // URL normalization helpers
 const normalizeURL = (url: string): string => {
