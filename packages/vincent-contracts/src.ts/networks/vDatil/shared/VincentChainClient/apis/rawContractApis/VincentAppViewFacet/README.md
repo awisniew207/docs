@@ -4,9 +4,9 @@ packages/dashboard/services/contract/contracts.ts
 ToDo:
 - [x] getAppById
 - [x] getAppVersion
-- [ ] getAppByDelegatee
-- [ ] getAppsByManager
-- [ ] getAuthorizedRedirectUriByHash
+- [x] getAppByDelegatee
+- [x] getAppsByManager
+- [x] getAuthorizedRedirectUriByHash
 - [ ] getAuthorizedRedirectUrisByAppId
 - [ ] getTotalAppCount
 
