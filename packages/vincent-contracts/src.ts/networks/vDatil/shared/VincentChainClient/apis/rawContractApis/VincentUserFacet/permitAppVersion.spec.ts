@@ -1,8 +1,7 @@
 import { getTestContext } from '../testContext';
 import { getAppVersion } from '../VincentAppViewFacet/getAppVersion';
-import { permitAppVersion } from './permitAppVersion';
 import { getAllRegisteredAgentPkps } from '../VincentUserViewFacet/getAllRegisteredAgentPkps';
-import { getPermittedAppVersionForPkp } from '../VincentUserViewFacet/getPermittedAppVersionForPkp';
+import { permitAppVersion } from './permitAppVersion';
 
 /**
  * Test for the permitAppVersion function

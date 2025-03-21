@@ -1,10 +1,10 @@
+import { toHex } from 'viem';
 import { z } from 'zod';
 import { logger } from '../../../../../../shared/logger';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
-import { toHex } from 'viem';
 
 const PermitAppVersionRequest = z.object({
   pkpTokenId: z.coerce.bigint(),
