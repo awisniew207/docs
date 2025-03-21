@@ -69,11 +69,6 @@ contract VincentToolFacet {
         _;
     }
 
-    modifier onlyContractOwner() {
-        LibDiamond.enforceIsContractOwner();
-        _;
-    }
-
     function registerTools(string[] calldata toolIpfsCids) external {
         // Validate that the array is not empty
         if (toolIpfsCids.length == 0) {
@@ -177,10 +172,11 @@ contract VincentToolFacet {
 
     /**
      * @notice Update the approved tools manager address
-     * @dev Only callable by the contract owner
+     * @dev Only callable by the contract owner if no manager is set yet,
+     *      otherwise only callable by the current tools manager
      * @param newManager The new approved tools manager address
      */
-    function updateApprovedToolsManager(address newManager) external onlyContractOwner {
+    function updateApprovedToolsManager(address newManager) external {
         if (newManager == address(0)) {
             revert InvalidApprovedToolsManager(newManager);
         }
@@ -191,6 +187,18 @@ contract VincentToolFacet {
         // Check if the new manager is the same as the current manager
         if (newManager == previousManager) {
             revert InvalidApprovedToolsManager(newManager);
+        }
+
+        // If a manager is already set, only they can update it
+        // If no manager is set yet (address(0)), only the contract owner can set the initial manager
+        if (previousManager != address(0)) {
+            // Existing manager case - only the current manager can update
+            if (msg.sender != previousManager) {
+                revert NotApprovedToolsManager(msg.sender);
+            }
+        } else {
+            // Initial setup case - only the contract owner can set the first manager
+            LibDiamond.enforceIsContractOwner();
         }
 
         ts_.approvedToolsManager = newManager;

@@ -503,20 +503,21 @@ contract VincentToolFacetTest is VincentTestHelper {
 
     /**
      * @notice Test updating the approved tools manager
-     * @dev Verifies that the contract owner can update the approved tools manager
+     * @dev Since the test environment initializes with the manager as deployer, we test that case
      */
     function testUpdateApprovedToolsManager() public {
         vm.startPrank(deployer);
 
-        // Get current manager
+        // Get current manager (which is already set to deployer)
         address currentManager = wrappedToolViewFacet.getApprovedToolsManager();
+        assertEq(currentManager, deployer, "Manager should initially be the deployer");
 
         // Create a new manager address
         address newManager = makeAddr("new-tools-manager");
 
-        // Expect the ApprovedToolsManagerUpdated event
+        // Expect the ApprovedToolsManagerUpdated event with actual values
         vm.expectEmit(true, true, false, false);
-        emit ApprovedToolsManagerUpdated(currentManager, newManager);
+        emit ApprovedToolsManagerUpdated(deployer, newManager);
 
         // Update the approved tools manager
         wrappedToolFacet.updateApprovedToolsManager(newManager);
@@ -525,26 +526,102 @@ contract VincentToolFacetTest is VincentTestHelper {
         address updatedManager = wrappedToolViewFacet.getApprovedToolsManager();
         assertEq(updatedManager, newManager, "Approved tools manager should be updated");
 
+        // Reset back to deployer for other tests
+        vm.stopPrank();
+
+        vm.startPrank(newManager);
+        wrappedToolFacet.updateApprovedToolsManager(deployer);
         vm.stopPrank();
     }
 
     /**
-     * @notice Test updating the approved tools manager by a non-owner
-     * @dev Verifies that only the contract owner can update the approved tools manager
+     * @notice Test non-manager attempting to update the approved tools manager
+     * @dev This test accounts for the fact that the manager is already set to deployer
      */
-    function testUpdateApprovedToolsManagerNotOwner() public {
-        // Start as non-owner
-        vm.startPrank(nonOwner);
+    function testUpdateApprovedToolsManagerNotManager() public {
+        // Get current manager (which is already set to deployer)
+        address currentManager = wrappedToolViewFacet.getApprovedToolsManager();
+        assertEq(currentManager, deployer, "Manager should initially be the deployer");
+
+        // Start as a different account (not the manager)
+        address randomUser = makeAddr("random-user");
+        vm.startPrank(randomUser);
 
         // Create a new manager address
-        address newManager = makeAddr("new-tools-manager-from-non-owner");
+        address attemptedManager = makeAddr("attempted-new-manager");
 
-        // Expect the call to revert with LibDiamond's owner check
-        vm.expectRevert("LibDiamond: Must be contract owner");
+        // Expect the call to revert with NotApprovedToolsManager error
+        vm.expectRevert(abi.encodeWithSignature("NotApprovedToolsManager(address)", randomUser));
 
-        // Try to update the approved tools manager as non-owner
-        wrappedToolFacet.updateApprovedToolsManager(newManager);
+        // Try to update the approved tools manager as non-manager
+        wrappedToolFacet.updateApprovedToolsManager(attemptedManager);
 
+        vm.stopPrank();
+
+        // Also verify contract owner cannot update if not the current manager
+        // First set a different manager
+        vm.startPrank(deployer);
+        address firstManager = makeAddr("first-manager");
+        wrappedToolFacet.updateApprovedToolsManager(firstManager);
+        vm.stopPrank();
+
+        // Now try as deployer (who is owner but no longer manager)
+        vm.startPrank(deployer);
+        vm.expectRevert(abi.encodeWithSignature("NotApprovedToolsManager(address)", deployer));
+        wrappedToolFacet.updateApprovedToolsManager(attemptedManager);
+        vm.stopPrank();
+
+        // Reset to original state
+        vm.startPrank(firstManager);
+        wrappedToolFacet.updateApprovedToolsManager(deployer);
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test updating the approved tools manager by the current manager
+     * @dev Tests that a manager can pass control to another manager
+     */
+    function testUpdateApprovedToolsManagerByManager() public {
+        vm.startPrank(deployer);
+
+        // First get the current manager
+        address currentManager = wrappedToolViewFacet.getApprovedToolsManager();
+        assertEq(currentManager, deployer, "Manager should initially be the deployer");
+
+        // Create a manager address to use
+        address firstManager = makeAddr("first-tools-manager");
+
+        // Set the first manager
+        wrappedToolFacet.updateApprovedToolsManager(firstManager);
+
+        // Verify the manager was updated
+        address updatedManager = wrappedToolViewFacet.getApprovedToolsManager();
+        assertEq(updatedManager, firstManager, "Tools manager should be set to first manager");
+
+        vm.stopPrank();
+
+        // Now use the current manager to update to a new manager
+        vm.startPrank(firstManager);
+
+        // Create another new manager address
+        address secondManager = makeAddr("second-tools-manager");
+
+        // Expect the ApprovedToolsManagerUpdated event
+        vm.expectEmit(true, true, false, false);
+        emit ApprovedToolsManagerUpdated(firstManager, secondManager);
+
+        // Update the approved tools manager as the current manager
+        wrappedToolFacet.updateApprovedToolsManager(secondManager);
+
+        // Verify the manager was updated
+        updatedManager = wrappedToolViewFacet.getApprovedToolsManager();
+        assertEq(updatedManager, secondManager, "Tools manager should be updated to second manager");
+
+        vm.stopPrank();
+
+        // Restore the original state back to deployer
+        vm.startPrank(secondManager);
+        wrappedToolFacet.updateApprovedToolsManager(deployer);
         vm.stopPrank();
     }
 
