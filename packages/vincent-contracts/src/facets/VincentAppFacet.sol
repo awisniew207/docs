@@ -204,6 +204,18 @@ contract VincentAppFacet is VincentBase {
     error DuplicateToolIpfsCidNotAllowed(uint256 appId, string toolIpfsCid, uint256 firstIndex, uint256 duplicateIndex);
 
     /**
+     * @notice Error thrown when duplicate policy IPFS CIDs are detected for a single tool
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     * @param policyIpfsCid The duplicate policy IPFS CID
+     * @param firstIndex Index of the first occurrence of the policy
+     * @param duplicateIndex Index of the duplicate occurrence of the policy
+     */
+    error DuplicatePolicyIpfsCidNotAllowed(
+        uint256 appId, uint256 toolIndex, string policyIpfsCid, uint256 firstIndex, uint256 duplicateIndex
+    );
+
+    /**
      * @notice Error thrown when the top-level tool arrays have mismatched lengths
      * @param toolsLength Length of the tools array
      * @param policiesLength Length of the policies array
@@ -557,6 +569,20 @@ contract VincentAppFacet is VincentBase {
                         i, j, toolPolicyParameterNames[i][j].length, toolPolicyParameterTypes[i][j].length
                     );
                 }
+
+                string memory policyIpfsCid = toolPolicies[i][j];
+
+                // Validate non-empty policy IPFS CID
+                if (bytes(policyIpfsCid).length == 0) {
+                    revert EmptyPolicyIpfsCidNotAllowed(appId, i);
+                }
+
+                // Check for duplicate policies within the same tool
+                for (uint256 k = j + 1; k < policyCount; k++) {
+                    if (keccak256(abi.encodePacked(policyIpfsCid)) == keccak256(abi.encodePacked(toolPolicies[i][k]))) {
+                        revert DuplicatePolicyIpfsCidNotAllowed(appId, i, policyIpfsCid, j, k);
+                    }
+                }
             }
 
             // Check for duplicates against all subsequent tools
@@ -610,11 +636,6 @@ contract VincentAppFacet is VincentBase {
 
             for (uint256 j = 0; j < policyCount; j++) {
                 string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
-
-                // Validate non-empty policy IPFS CID
-                if (bytes(policyIpfsCid).length == 0) {
-                    revert EmptyPolicyIpfsCidNotAllowed(appId, i);
-                }
 
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 

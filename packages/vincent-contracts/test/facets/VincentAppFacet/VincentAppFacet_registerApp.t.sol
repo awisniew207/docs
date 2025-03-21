@@ -1379,4 +1379,111 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test registering a new app version with duplicate policy IPFS CIDs
+     * @dev Verifies that app version registration fails when duplicate policy IPFS CIDs are provided for a tool
+     */
+    function testRegisterAppWithDuplicatePolicyIpfsCids() public {
+        vm.startPrank(deployer);
+
+        // Create tool array with one tool
+        string[] memory toolsArray = new string[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policies array with duplicate policies
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](2);
+        policies[0][0] = TEST_POLICY_1;
+        policies[0][1] = TEST_POLICY_1; // Same as the first one
+
+        // Create matching parameter arrays
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](2);
+        parameterNames[0][0] = new string[](1);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[0][1] = new string[](1);
+        parameterNames[0][1][0] = TEST_POLICY_PARAM_2;
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](2);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        parameterTypes[0][1] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][1][0] = VincentAppStorage.ParameterType.BOOL;
+
+        // Expect the call to revert with DuplicatePolicyIpfsCidNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "DuplicatePolicyIpfsCidNotAllowed(uint256,uint256,string,uint256,uint256)", 1, 0, TEST_POLICY_1, 0, 1
+            )
+        );
+
+        // Call registerApp with duplicate policy IPFS CIDs
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policies,
+            parameterNames,
+            parameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with duplicate policy IPFS CIDs
+     * @dev Verifies that app version registration fails when duplicate policy IPFS CIDs are provided for a tool
+     */
+    function testRegisterNextAppVersionWithDuplicatePolicyIpfsCids() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create tool array with one tool
+        string[] memory toolsArray = new string[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_2;
+
+        // Create policies array with duplicate policies
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](2);
+        policies[0][0] = TEST_POLICY_1;
+        policies[0][1] = TEST_POLICY_1; // Same as the first one
+
+        // Create matching parameter arrays
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](2);
+        parameterNames[0][0] = new string[](1);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[0][1] = new string[](1);
+        parameterNames[0][1][0] = TEST_POLICY_PARAM_2;
+
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](2);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        parameterTypes[0][1] = new VincentAppStorage.ParameterType[](1);
+        parameterTypes[0][1][0] = VincentAppStorage.ParameterType.BOOL;
+
+        // Expect the call to revert with DuplicatePolicyIpfsCidNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "DuplicatePolicyIpfsCidNotAllowed(uint256,uint256,string,uint256,uint256)",
+                appId,
+                0,
+                TEST_POLICY_1,
+                0,
+                1
+            )
+        );
+
+        // Attempt to register a new version with duplicate policy IPFS CIDs
+        wrappedAppFacet.registerNextAppVersion(appId, toolsArray, policies, parameterNames, parameterTypes);
+
+        vm.stopPrank();
+    }
 }
