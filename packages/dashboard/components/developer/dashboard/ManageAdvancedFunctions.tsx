@@ -14,6 +14,13 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { getContract, Network, ContractFacet } from '@/services/contract/config';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface AdvancedFunctionsProps {
   onBack: () => void;
@@ -34,9 +41,19 @@ export default function ManageAdvancedFunctionsScreen({
   const [versionNumber, setVersionNumber] = useState<number>(dashboard.currentVersion || 1);
   const [isVersionEnabled, setIsVersionEnabled] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [availableVersions, setAvailableVersions] = useState<{version: number, enabled: boolean}[]>([]);
   
   useEffect(() => {
     setVersionNumber(dashboard.currentVersion || 1);
+    
+    // Extract available versions
+    const versions = (dashboard.toolPolicies || []).map(versionData => {
+      const version = versionData.version || versionData[0];
+      const enabled = versionData.enabled !== undefined ? versionData.enabled : versionData[1];
+      return { version: parseInt(version.toString()), enabled };
+    });
+    
+    setAvailableVersions(versions);
   }, [dashboard]);
   
   // Redirect URI management functions
@@ -96,23 +113,30 @@ export default function ManageAdvancedFunctionsScreen({
   }
   
   // Version management
-  async function handleEnableVersion() {
+  async function handleToggleVersion() {
     try {
       setIsProcessing(true);
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
-      const tx = await contract.enableAppVersion(
-        dashboard.appId, 
-        versionNumber,
-        isVersionEnabled
-      );
-      await tx.wait();
       
-      alert(`App version ${versionNumber} ${isVersionEnabled ? 'enabled' : 'disabled'} successfully`);
+      // Enable or disable the selected version
+      console.log(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}`);
+      
+      // Toggle the version status (enable if disabled, disable if enabled)
+      const toggleTx = await contract.enableAppVersion(
+        dashboard.appId,
+        versionNumber,
+        !isVersionEnabled, // Toggle the current status
+        {gasLimit: 5000000}
+      );
+      await toggleTx.wait();
+      
+      alert(`App version ${versionNumber} ${isVersionEnabled ? 'disabled' : 'enabled'} successfully.`);
+      
       setShowEnableVersionDialog(false);
       onSuccess?.(); // Refresh app data
     } catch (error: any) {
       console.error("Error toggling app version:", error);
-      alert(`Failed to update app version: ${error.message || "Unknown error"}`);
+      alert(`Failed to ${isVersionEnabled ? 'disable' : 'enable'} version ${versionNumber}: ${error.message || "Unknown error"}`);
     } finally {
       setIsProcessing(false);
     }
@@ -184,10 +208,16 @@ export default function ManageAdvancedFunctionsScreen({
           <CardContent className="space-y-4">
             <Button 
               className="text-black w-full"
-              onClick={() => setShowEnableVersionDialog(true)}
+              onClick={() => {
+                if ((dashboard.toolPolicies || []).length === 0) {
+                  alert("No app versions available. Create an app version first.");
+                  return;
+                }
+                setShowEnableVersionDialog(true);
+              }}
             >
               <Settings className="h-4 w-4 mr-2" />
-              Enable/Disable Version
+              Manage Versions
             </Button>
             
             <div className="p-2 border rounded-md">
@@ -298,9 +328,11 @@ export default function ManageAdvancedFunctionsScreen({
       <Dialog open={showEnableVersionDialog} onOpenChange={setShowEnableVersionDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Enable/Disable App Version</DialogTitle>
+            <DialogTitle>{isVersionEnabled ? "Disable" : "Enable"} App Version</DialogTitle>
             <DialogDescription>
-              Specify the version number and whether to enable or disable it.
+              {isVersionEnabled 
+                ? "Disable this version. This will prevent it from being used."
+                : "Enable this version. This will allow it to be used."}
             </DialogDescription>
           </DialogHeader>
 
@@ -309,26 +341,34 @@ export default function ManageAdvancedFunctionsScreen({
               <label htmlFor="versionNumber" className="text-sm font-medium">
                 Version Number
               </label>
-              <Input
-                id="versionNumber"
-                type="number"
-                min="1"
-                value={versionNumber}
-                onChange={(e) => setVersionNumber(parseInt(e.target.value) || 1)}
-              />
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <input 
-                type="checkbox" 
-                id="versionEnabled" 
-                checked={isVersionEnabled}
-                onChange={(e) => setIsVersionEnabled(e.target.checked)}
-                className="h-4 w-4"
-              />
-              <label htmlFor="versionEnabled" className="text-sm font-medium">
-                Enable Version
-              </label>
+              <Select 
+                value={versionNumber.toString()} 
+                onValueChange={(value) => {
+                  const versionNum = parseInt(value);
+                  setVersionNumber(versionNum);
+                  // Update isVersionEnabled based on the selected version
+                  const selectedVersion = availableVersions.find(v => v.version === versionNum);
+                  setIsVersionEnabled(selectedVersion?.enabled || false);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={availableVersions.length > 0 ? "Select version" : "No versions available"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableVersions.length > 0 ? (
+                    availableVersions.map((versionData, index) => (
+                      <SelectItem key={index} value={versionData.version.toString()}>
+                        Version {versionData.version.toString()} {versionData.enabled ? "(Currently Enabled)" : ""}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled>No versions available</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">
+                Multiple versions can be enabled simultaneously. Enable the versions you want to use.
+              </p>
             </div>
 
             <div className="flex justify-end gap-2">
@@ -342,11 +382,11 @@ export default function ManageAdvancedFunctionsScreen({
                 Cancel
               </Button>
               <Button 
-                onClick={handleEnableVersion}
+                onClick={handleToggleVersion}
                 disabled={isProcessing}
                 className="text-black"
               >
-                {isProcessing ? "Processing..." : "Update Version"}
+                {isProcessing ? "Updating..." : isVersionEnabled ? "Disable Version" : "Enable Version"}
               </Button>
             </div>
           </div>
