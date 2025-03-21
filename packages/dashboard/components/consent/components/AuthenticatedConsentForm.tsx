@@ -68,6 +68,8 @@ export default function AuthenticatedConsentForm ({
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
   // ===== JWT and Redirect Functions =====
   
+  // getPermittedAppVersionForPkp
+
   // Generate JWT for redirection
   const generateJWT = useCallback(async (appInfo: AppView): Promise<string | null> => {
     if (!agentPKP || !redirectUri) {

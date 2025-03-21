@@ -236,9 +236,29 @@ export default function DashboardScreen({
                           const toolData = Array.isArray(tool) 
                             ? { 
                                 toolIpfsCid: tool[0], 
-                                policies: Array.isArray(tool[1]) ? tool[1] : [] 
+                                policies: Array.isArray(tool[1]) ? tool[1] : [],
+                                // Check if we have direct parameter data at the tool level (new format)
+                                parameterNames: Array.isArray(tool[2]) ? tool[2] : [],
+                                parameterTypes: Array.isArray(tool[3]) ? tool[3] : []
                               } 
                             : tool;
+
+                          // Check if there are parameter names/types directly on the tool (new format)
+                          const hasDirectParameters = toolData.parameterNames && 
+                                                    toolData.parameterNames.length > 0 &&
+                                                    toolData.parameterTypes && 
+                                                    toolData.parameterTypes.length > 0;
+
+                          // For debugging
+                          console.log('Tool Data:', {
+                            toolCID: toolData.toolIpfsCid,
+                            policies: toolData.policies,
+                            directParams: {
+                              names: toolData.parameterNames,
+                              types: toolData.parameterTypes
+                            },
+                            hasDirectParameters
+                          });
 
                           return (
                             <div key={j} className="border-b border-gray-100 pb-2 mb-2 ml-4 text-black">
@@ -249,11 +269,33 @@ export default function DashboardScreen({
                                   'No CID available'}
                               </div>
                               
-                              {toolData.policies && toolData.policies.length > 0 ? (
+                              {/* Check for either policies array or direct parameters */}
+                              {(toolData.policies && toolData.policies.length > 0) || hasDirectParameters ? (
                                 <div className="mt-2">
                                   <div className="font-medium mb-1">Policies:</div>
                                   <div className="pl-2 text-sm">
-                                    {toolData.policies.map((policy: any, k: number) => {
+                                    {/* Show direct parameters if they exist (new format) */}
+                                    {hasDirectParameters && (
+                                      <div className="mb-1">
+                                        <div className="text-xs">
+                                          <div>
+                                            <span className="font-medium">Parameters:</span>
+                                            <ul className="ml-2 mt-1">
+                                              {toolData.parameterNames.map((name: string, paramIndex: number) => (
+                                                <li key={paramIndex}>
+                                                  {name}: {paramIndex < toolData.parameterTypes.length ? 
+                                                    mapEnumToTypeName(Number(toolData.parameterTypes[paramIndex])) : 
+                                                    'unknown type'}
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Show policies if they exist (old format) */}
+                                    {toolData.policies && toolData.policies.length > 0 && toolData.policies.map((policy: any, k: number) => {
                                       // Extract policy data (supports both array and object format)
                                       const policyData = Array.isArray(policy)
                                         ? { 
