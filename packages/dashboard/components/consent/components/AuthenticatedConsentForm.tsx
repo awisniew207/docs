@@ -3,6 +3,7 @@ import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { VincentSDK } from '@lit-protocol/vincent-sdk';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+import { encodeParameterValue } from '../../../utils/parameterEncoding';
 
 import { useUrlAppId } from '../hooks/useUrlAppId';
 import { useUrlRedirectUri } from '../hooks/useUrlRedirectUri';
@@ -199,13 +200,29 @@ export default function AuthenticatedConsentForm ({
               toolPolicyParameterNames[toolIndex][policyIndex] = [];
               toolPolicyParameterTypes[toolIndex][policyIndex] = [];
               
+              // Extract the actual parameter names and types from the policy
               const paramNames = policy[1];
               const paramTypes = policy[2];
               
               if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
-                paramNames.forEach((_, paramIndex) => {
-                  toolPolicyParameterNames[toolIndex][policyIndex][paramIndex] = '';
-                  toolPolicyParameterTypes[toolIndex][policyIndex][paramIndex] = 0;
+                // Use the actual parameter names from the version info
+                paramNames.forEach((name, paramIndex) => {
+                  // Ensure parameter name is never empty by using a default if it's empty
+                  const paramName = typeof name === 'string' && name.trim() !== '' 
+                    ? name.trim() 
+                    : `param_${paramIndex}`;
+                    
+                  toolPolicyParameterNames[toolIndex][policyIndex][paramIndex] = paramName;
+                  
+                  // Set the parameter type if available
+                  if (paramTypes[paramIndex] !== undefined) {
+                    toolPolicyParameterTypes[toolIndex][policyIndex][paramIndex] = 
+                      typeof paramTypes[paramIndex] === 'number' 
+                        ? paramTypes[paramIndex] 
+                        : 0;
+                  } else {
+                    toolPolicyParameterTypes[toolIndex][policyIndex][paramIndex] = 0;
+                  }
                 });
               }
             });
@@ -214,13 +231,13 @@ export default function AuthenticatedConsentForm ({
       }
     }
     
+    // Don't override parameter names with user input - only update parameter values
     if (parameters.length > 0) {
       parameters.forEach(param => {
         if (
-          toolPolicyParameterNames[param.toolIndex] && 
-          toolPolicyParameterNames[param.toolIndex][param.policyIndex]
+          toolPolicyParameterTypes[param.toolIndex] && 
+          toolPolicyParameterTypes[param.toolIndex][param.policyIndex]
         ) {
-          toolPolicyParameterNames[param.toolIndex][param.policyIndex][param.paramIndex] = param.name;
           toolPolicyParameterTypes[param.toolIndex][param.policyIndex][param.paramIndex] = param.type;
         }
       });
@@ -281,171 +298,11 @@ export default function AuthenticatedConsentForm ({
           
           // If a parameter was provided by the user, encode it based on its type
           if (param && param.value !== undefined) {
-            try {
-              // Get the parameter type
-              const paramType = param.type;
-              console.log(`Encoding parameter ${paramName} with type ${paramType} (${PARAMETER_TYPE_NAMES[paramType] || 'unknown'})`, param.value);
-              
-              // Handle each type according to the ParameterType enum
-              switch(paramType) {
-                case ParameterType.INT256: // int256
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256"], [param.value]));
-                
-                case ParameterType.INT256_ARRAY: { // int256[]
-                  let arrayValue = [];
-                  
-                  if (typeof param.value === 'string' && param.value.includes(',')) {
-                    arrayValue = param.value.split(',').map(item => parseInt(item.trim()));
-                  } else if (Array.isArray(param.value)) {
-                    arrayValue = param.value;
-                  } else if (param.value !== '') {
-                    arrayValue = [parseInt(param.value)];
-                  }
-                  
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256[]"], [arrayValue]));
-                }
-                
-                case ParameterType.UINT256: // uint256
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256"], [param.value]));
-                
-                case ParameterType.UINT256_ARRAY: { // uint256[]
-                  let arrayValue = [];
-                  
-                  if (typeof param.value === 'string' && param.value.includes(',')) {
-                    arrayValue = param.value.split(',').map(item => parseInt(item.trim()));
-                  } else if (Array.isArray(param.value)) {
-                    arrayValue = param.value;
-                  } else if (param.value !== '') {
-                    arrayValue = [parseInt(param.value)];
-                  }
-                  
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256[]"], [arrayValue]));
-                }
-                
-                case ParameterType.BOOL: // bool
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bool"], [
-                    param.value === true || param.value === 'true' || param.value === '1' || param.value === 1
-                  ]));
-                
-                case ParameterType.BOOL_ARRAY: { // bool[]
-                  let arrayValue = [];
-                  
-                  if (typeof param.value === 'string' && param.value.includes(',')) {
-                    arrayValue = param.value.split(',').map(item => {
-                      const trimmed = item.trim();
-                      return trimmed === 'true' || trimmed === '1';
-                    });
-                  } else if (Array.isArray(param.value)) {
-                    arrayValue = param.value;
-                  } else if (param.value !== '') {
-                    const val = param.value === true || param.value === 'true' || param.value === '1' || param.value === 1;
-                    arrayValue = [val];
-                  }
-                  
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bool[]"], [arrayValue]));
-                }
-                
-                case ParameterType.ADDRESS: // address
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["address"], [param.value]));
-                
-                case ParameterType.ADDRESS_ARRAY: { // address[]
-                  let arrayValue = [];
-                  
-                  if (typeof param.value === 'string' && param.value.includes(',')) {
-                    arrayValue = param.value.split(',').map(item => item.trim());
-                  } else if (Array.isArray(param.value)) {
-                    arrayValue = param.value;
-                  } else if (param.value !== '') {
-                    arrayValue = [param.value];
-                  }
-                  
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["address[]"], [arrayValue]));
-                }
-                
-                case ParameterType.STRING: // string
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(param.value)]));
-                
-                case ParameterType.STRING_ARRAY: { // string[]
-                  let arrayValue = [];
-                  
-                  if (typeof param.value === 'string' && param.value.includes(',')) {
-                    arrayValue = param.value.split(',').map(item => item.trim());
-                  } else if (Array.isArray(param.value)) {
-                    arrayValue = param.value;
-                  } else if (param.value !== '') {
-                    arrayValue = [String(param.value)];
-                  }
-                  
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string[]"], [arrayValue]));
-                }
-                
-                case ParameterType.BYTES: // bytes
-                  try {
-                    // If it's a hex string, convert it to bytes
-                    if (typeof param.value === 'string' && param.value.startsWith('0x')) {
-                      return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.arrayify(param.value)]));
-                    } else {
-                      // Otherwise encode the string as bytes
-                      return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.toUtf8Bytes(String(param.value))]));
-                    }
-                  } catch (e) {
-                    console.error("Error encoding bytes:", e);
-                    return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.toUtf8Bytes("")]));
-                  }
-                
-                case ParameterType.BYTES_ARRAY: { // bytes[]
-                  let arrayValue: Uint8Array[] = [];
-                  
-                  try {
-                    if (typeof param.value === 'string' && param.value.includes(',')) {
-                      arrayValue = param.value.split(',').map(item => {
-                        const trimmed = item.trim();
-                        if (trimmed.startsWith('0x')) {
-                          return ethers.utils.arrayify(trimmed);
-                        } else {
-                          return ethers.utils.toUtf8Bytes(trimmed);
-                        }
-                      });
-                    } else if (Array.isArray(param.value)) {
-                      arrayValue = param.value.map(v => {
-                        if (typeof v === 'string' && v.startsWith('0x')) {
-                          return ethers.utils.arrayify(v);
-                        } else {
-                          return ethers.utils.toUtf8Bytes(String(v));
-                        }
-                      });
-                    } else if (param.value !== '') {
-                      if (typeof param.value === 'string' && param.value.startsWith('0x')) {
-                        arrayValue = [ethers.utils.arrayify(param.value)];
-                      } else {
-                        arrayValue = [ethers.utils.toUtf8Bytes(String(param.value))];
-                      }
-                    }
-                    
-                    return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes[]"], [arrayValue]));
-                  } catch (e) {
-                    console.error("Error encoding bytes array:", e);
-                    return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes[]"], [[]]));
-                  }
-                }
-                
-                default:
-                  // Default to string encoding for unknown types
-                  console.warn(`Unknown parameter type ${paramType}, defaulting to string encoding`);
-                  return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(param.value)]));
-              }
-            } catch (encodeError) {
-              console.error(`Error encoding parameter ${paramName}:`, encodeError, {
-                paramValue: param.value,
-                paramType: param.type
-              });
-              // Provide a fallback encoding to prevent the entire transaction from failing
-              return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [""]));
-            }
+            return encodeParameterValue(param.type, param.value, paramName);
           }
           
           // Fallback to empty string if no parameter value was provided
-          return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [""]));
+          return encodeParameterValue(ParameterType.STRING, "");
         })
       )
     );
