@@ -23,7 +23,7 @@ describe('getAppByDelegatee', () => {
     console.log("Result:", result);
 
     // Verify app details
-    expect(Number(result.id)).toBe(appId);
+    expect(result.id).toBe(appId);
     expect(result.name).toBe(testContext.APP_NAME);
     expect(result.description).toBe(testContext.APP_DESCRIPTION);
     expect(result.manager).toBeDefined();

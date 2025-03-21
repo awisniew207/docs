@@ -28,8 +28,6 @@ describe('enableAppVersion', () => {
       vincentNetworkContext
     );
 
-    console.log("nextVersionRes:", nextVersionRes);
-
     const appVersion = nextVersionRes.decodedLogs.find((log) => log.eventName === 'NewAppVersionRegistered')?.args.appVersion;
     console.log("App Version: ", appVersion);
 

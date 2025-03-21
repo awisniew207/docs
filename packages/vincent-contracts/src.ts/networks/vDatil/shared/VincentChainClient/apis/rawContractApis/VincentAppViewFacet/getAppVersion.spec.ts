@@ -26,7 +26,7 @@ describe('getAppVersion', () => {
     expect(result[1]).toBeDefined(); // version details
     
     // Verify app details
-    expect(Number(result[0].id)).toBe(appId);
+    expect(result[0].id).toBe(appId);
     expect(result[0].name).toBe(testContext.APP_NAME);
     expect(result[0].description).toBe(testContext.APP_DESCRIPTION);
     expect(result[0].manager).toBeDefined();
