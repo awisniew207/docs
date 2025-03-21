@@ -233,7 +233,6 @@ export default function AuthenticatedConsentForm ({
       toolPolicyParameterTypes
     });
     
-    // Check if there's an existing version permitted that needs to be unpermitted first
     console.log("CHECKING FOR EXISTING PERMITTED VERSION...");
     try {
       const userViewContract = getUserViewRegistryContract();
@@ -256,32 +255,6 @@ export default function AuthenticatedConsentForm ({
           
           console.log(`FOUND PERMITTED VERSION: Current is v${currentVersion}, attempting to permit v${newVersion}`);
           
-          if (currentVersion !== newVersion) {
-            console.log(`UNPERMITTING: Will unpermit version ${currentVersion} before permitting version ${newVersion}`);
-            
-            // Create args array for unpermit
-            const unpermitArgs = [
-              agentPKP.tokenId,
-              appId,
-              currentVersion
-            ];
-            
-            // Estimate gas with buffer
-            const gasLimit = await estimateGasWithBuffer(
-              connectedContract,
-              'unPermitAppVersion',
-              unpermitArgs
-            );
-            
-            const unpermitTx = await connectedContract.unPermitAppVersion(
-              ...unpermitArgs,
-              { gasLimit }
-            );
-            
-            console.log('UNPERMIT TRANSACTION SENT:', unpermitTx.hash);
-            const unpermitReceipt = await unpermitTx.wait();
-            console.log('UNPERMIT TRANSACTION CONFIRMED:', unpermitReceipt);
-          }
         } catch (e) {
           console.error("Error checking permitted version:", e);
         }
@@ -531,10 +504,6 @@ export default function AuthenticatedConsentForm ({
       
       console.log('PERMIT TRANSACTION SENT:', txResponse.hash);
       
-      // Wait for transaction confirmation with adequate confirmations
-      console.log('PERMIT: Waiting for transaction confirmation...');
-      const txReceipt = await txResponse.wait(2); // Wait for 2 confirmations to ensure it's properly mined
-      console.log('PERMIT TRANSACTION CONFIRMED:', txReceipt);
     } catch (error) {
       console.error('TRANSACTION FAILED:', error);
       
@@ -668,141 +637,12 @@ export default function AuthenticatedConsentForm ({
   }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo]);
 
   // Disapprove and revoke permissions
-  const disapproveConsent = useCallback(async () => {
-    console.log('=== STARTING UNPERMIT PROCESS ===');
-    
-    if (!agentPKP || !appId) {
-      const error = 'Missing required data for disapproval';
-      console.error('UNPERMIT ERROR:', error);
-      throw new Error(error);
-    }
-
-    console.log('UNPERMIT: Agent PKP token ID:', agentPKP.tokenId);
-    console.log('UNPERMIT: App ID:', appId);
-    
-    try {
-      // First check if app is permitted and which version
-      const userViewContract = getUserViewRegistryContract();
-      const permittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKP.tokenId);
-      console.log('UNPERMIT: All permitted app IDs:', permittedAppIds.map((id: ethers.BigNumber) => id.toString()));
-      
-      const appIdNum = Number(appId);
-      console.log('UNPERMIT: Current app ID:', appIdNum);
-      
-      try {
-        const currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
-          agentPKP.tokenId,
-          appIdNum
-        );
-        console.log(`UNPERMIT: Current permitted version before unpermit: ${currentPermittedVersion.toNumber()}`);
-      } catch (e) {
-        console.log('UNPERMIT: Could not get currently permitted version - app may not be permitted');
-      }
-      
-      const isPermitted = permittedAppIds.some(
-        (id: ethers.BigNumber) => id.toNumber() === appIdNum
-      );
-      
-      console.log('UNPERMIT: Is app currently permitted?', isPermitted);
-      
-      if (!isPermitted) {
-        console.log('UNPERMIT: App is not permitted, nothing to unpermit');
-        return { success: true, alreadyUnpermitted: true };
-      }
-      
-      // Initialize wallet
-      console.log('UNPERMIT: Initializing wallet...');
-      const userRegistryContract = getUserRegistryContract();
-      const userPkpWallet = new PKPEthersWallet({
-        controllerSessionSigs: sessionSigs,
-        pkpPubKey: userPKP.publicKey,
-        litNodeClient: litNodeClient,
-      });
-      await userPkpWallet.init();
-      console.log('UNPERMIT: Wallet initialized successfully');
-      
-      // Connect to contract
-      const connectedContract = userRegistryContract.connect(userPkpWallet);
-      console.log('UNPERMIT: Connected to user registry contract');
-      
-      // Call unPermitAppVersion
-      console.log('UNPERMIT: Sending unpermit transaction...');
-      console.log('UNPERMIT PARAMS:', {
-        agentPKPTokenId: agentPKP.tokenId,
-        appId: appIdNum
-      });
-      
-      try {
-        // Create args array for gas estimation
-        const unpermitArgs = [
-          agentPKP.tokenId,
-          appIdNum
-        ];
-        
-        // Estimate gas with buffer for unpermit
-        const gasLimit = await estimateGasWithBuffer(
-          connectedContract,
-          'unPermitAppVersion',
-          unpermitArgs
-        );
-        
-        const txResponse = await connectedContract.unPermitAppVersion(
-          ...unpermitArgs,
-          {
-            gasLimit,
-          }
-        );
-        
-        console.log('UNPERMIT TRANSACTION SENT:', txResponse.hash);
-        
-        // Wait for confirmation
-        console.log('UNPERMIT: Waiting for transaction confirmation...');
-        const receipt = await txResponse.wait();
-        console.log('UNPERMIT TRANSACTION CONFIRMED:', receipt);
-        
-        // Verify unpermit worked
-        try {
-          console.log('UNPERMIT: Verifying app is no longer permitted...');
-          const newPermittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKP.tokenId);
-          const stillPermitted = newPermittedAppIds.some(
-            (id: ethers.BigNumber) => id.toNumber() === appIdNum
-          );
-          
-          if (stillPermitted) {
-            console.warn('WARNING: App still appears to be permitted after unpermit');
-          } else {
-            console.log('UNPERMIT: App successfully unpermitted');
-          }
-        } catch (e) {
-          console.error('Error verifying unpermit result:', e);
-        }
-        
-        return { success: true, receipt };
-      } catch (txError) {
-        console.error('UNPERMIT TRANSACTION FAILED:', txError);
-        throw txError;
-      }
-    } catch (error) {
-      console.error('UNPERMIT PROCESS FAILED:', error);
-      throw error;
-    }
-  }, [agentPKP, appId, sessionSigs, userPKP]);
 
   // Disapprove button handler
   const handleDisapprove = useCallback(async () => {
     console.log('handleDisapprove called');
     setSubmitting(true);
     try {
-      // Always try to unpermit regardless of isAppAlreadyPermitted flag
-      // This ensures we attempt to unpermit even if our state tracking is wrong
-      console.log('Attempting to revoke permissions unconditionally');
-      try {
-        const result = await disapproveConsent();
-        console.log('Revocation result:', result);
-      } catch (unpermitError) {
-        console.error('Error in unpermit process:', unpermitError);
-        // Continue with the disapproval flow even if unpermit fails
-      }
       
       setShowDisapproval(true);
       
@@ -827,7 +667,7 @@ export default function AuthenticatedConsentForm ({
     } finally {
       setSubmitting(false);
     }
-  }, [redirectUri, disapproveConsent, setError]);
+  }, [redirectUri, setError]);
 
   // ===== Event Handler Functions =====
   
