@@ -7,7 +7,7 @@ packages/dashboard/services/contract/contracts.ts:
 - [x] registerApp
 - [x] registerNextAppVersion
 - [x] enableAppVersion
-- [] addAuthorizedRedirectUri
+- [x] addAuthorizedRedirectUri
 - [] removeAuthorizedRedirectUri
 - [] addDelegatee
 - [] removeDelegatee
