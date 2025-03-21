@@ -538,7 +538,7 @@ export default function ManageToolPoliciesScreen({
                             tool._id, policy._id, parameter._id, "type", value
                         )}
                     >
-                        <SelectTrigger>
+                        <SelectTrigger className="text-black">
                             <SelectValue placeholder="Type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -561,6 +561,7 @@ export default function ManageToolPoliciesScreen({
                     variant="destructive"
                     size="sm"
                     onClick={() => handleRemoveParameter(tool._id, policy._id, parameter._id)}
+                    className="text-white"
                 >
                     <Trash2 className="h-4 w-4" />
                 </Button>
@@ -583,6 +584,7 @@ export default function ManageToolPoliciesScreen({
                         variant="destructive"
                         size="sm"
                         onClick={() => handleRemovePolicy(tool._id, policy._id)}
+                        className="text-white"
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>
@@ -590,11 +592,12 @@ export default function ManageToolPoliciesScreen({
 
                 <div className="space-y-4">
                     <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-sm font-semibold">Parameters</h4>
+                        <h4 className="text-sm font-semibold text-black">Parameters</h4>
                         <Button 
-                            variant="outline" 
+                            variant="default" 
                             size="sm" 
                             onClick={() => handleAddParameter(tool._id, policy._id)}
+                            className="text-black"
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Add Parameter
@@ -633,6 +636,7 @@ export default function ManageToolPoliciesScreen({
                         variant="destructive"
                         size="sm"
                         onClick={() => handleRemoveTool(tool._id)}
+                        className="text-white"
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>
@@ -640,11 +644,12 @@ export default function ManageToolPoliciesScreen({
 
                 <div className="space-y-4">
                     <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-sm font-semibold">Policies</h4>
+                        <h4 className="text-sm font-semibold text-black">Policies</h4>
                         <Button 
-                            variant="outline" 
+                            variant="default" 
                             size="sm" 
                             onClick={() => handleAddPolicy(tool._id)}
+                            className="text-black"
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Add Policy
@@ -681,7 +686,7 @@ export default function ManageToolPoliciesScreen({
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" size="sm" onClick={onBack}>
+                    <Button variant="default" size="sm" onClick={onBack} className="text-black">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back
                     </Button>

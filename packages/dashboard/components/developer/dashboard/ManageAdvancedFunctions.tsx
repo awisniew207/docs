@@ -182,7 +182,7 @@ export default function ManageAdvancedFunctionsScreen({
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack} className="text-black">
+          <Button variant="default" size="sm" onClick={onBack} className="text-black">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>

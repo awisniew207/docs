@@ -414,7 +414,7 @@ export default function DashboardScreen({
           <Card
             key={i}
             onClick={() => setSelectedApp(app)}
-            className="cursor-pointer hover:shadow-md transition-shadow duration-200"
+            className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
           >
             <CardContent className="p-6">
               <div className="space-y-3">

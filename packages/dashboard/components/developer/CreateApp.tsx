@@ -289,7 +289,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     <div className="space-y-8">
       <div className="flex items-center gap-4 mb-4">
         {onBack && (
-          <Button variant="outline" size="sm" onClick={onBack}>
+          <Button variant="default" size="sm" onClick={onBack} className="text-black">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
@@ -373,12 +373,13 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       <h3 className="text-lg font-medium text-black">Tools</h3>
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="default"
                         size="sm"
                         onClick={() => appendTool({ 
                           toolIpfsCid: '',
                           policies: [{ policyIpfsCid: '', parameters: [{ name: '', type: 'string' }] }]
                         })}
+                        className="text-black"
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
                       </Button>
@@ -424,9 +425,10 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                               <h5 className="font-medium text-black">Policies</h5>
                               <Button
                                 type="button"
-                                variant="outline"
+                                variant="default"
                                 size="sm"
                                 onClick={() => appendPolicy(toolIndex)}
+                                className="text-black"
                               >
                                 <Plus className="h-4 w-4 mr-2" /> Add Policy
                               </Button>
@@ -471,9 +473,10 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                       <h6 className="font-medium text-black">Parameters</h6>
                                       <Button
                                         type="button"
-                                        variant="outline"
+                                        variant="default"
                                         size="sm"
                                         onClick={() => appendParameter(toolIndex, policyIndex)}
+                                        className="text-black"
                                       >
                                         <Plus className="h-4 w-4 mr-2" /> Add Parameter
                                       </Button>
@@ -502,7 +505,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                               <FormControl>
                                                 <select 
                                                   {...field} 
-                                                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-black ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                 >
                                                   <option value="string">string</option>
                                                   <option value="string[]">string[]</option>
@@ -551,8 +554,8 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
               <div className="mt-6">
                 <Button
                   type="submit"
-                  className="w-full"
-                  variant="secondary"
+                  className="w-full text-black"
+                  variant="default"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
