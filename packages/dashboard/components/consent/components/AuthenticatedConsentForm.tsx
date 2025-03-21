@@ -780,9 +780,6 @@ export default function AuthenticatedConsentForm ({
           console.log('Redirecting to:', redirectUri);
           // Ensure redirectUri has a protocol for the redirect
           let fullRedirectUri = redirectUri;
-          if (!fullRedirectUri.startsWith('http://') && !fullRedirectUri.startsWith('https://')) {
-            fullRedirectUri = 'https://' + fullRedirectUri;
-          }
           
           console.log('Redirecting to (with protocol):', fullRedirectUri);
           // Redirect without JWT
