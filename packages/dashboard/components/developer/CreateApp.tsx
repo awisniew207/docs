@@ -28,31 +28,6 @@ import { Network } from '@/services';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { mapTypeToEnum } from '@/services/types';
 
-// URL normalization helpers
-const normalizeURL = (url: string): string => {
-  if (!url) return url;
-  url = url.trim();
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url;
-  }
-  if (url.startsWith('http://')) {
-    url = 'https://' + url.slice(7);
-  }
-  return url;
-};
-
-const normalizeGitHubURL = (url: string): string => {
-  if (!url) return url;
-  url = url.trim();
-  if (!url.includes('github.com') && url.includes('/')) {
-    url = 'https://github.com/' + url;
-  }
-  if (!url.includes('github.com') && !url.includes('/')) {
-    url = 'https://github.com/' + url;
-  }
-  return normalizeURL(url);
-};
-
 // Tool schema
 const toolSchema = z.object({
   toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
@@ -87,38 +62,22 @@ const formSchema = z.object({
     .optional()
     .transform((val) => {
       if (!val) return undefined;
-      return normalizeGitHubURL(val);
+      return val.trim();
     })
     .pipe(
       z
         .string()
         .url('Please enter a valid GitHub URL')
-        .refine((url) => {
-          try {
-            const parsed = new URL(url);
-            return parsed.hostname === 'github.com';
-          } catch {
-            return false;
-          }
-        }, 'Must be a GitHub URL (e.g., github.com/username/repo)')
         .optional()
     ),
 
   websiteUrl: z
     .string()
-    .transform(normalizeURL)
+    .transform((val) => val?.trim())
     .pipe(
       z
         .string()
         .url('Please enter a valid website URL')
-        .refine((url) => {
-          try {
-            const parsed = new URL(url);
-            return parsed.protocol === 'https:';
-          } catch {
-            return false;
-          }
-        }, 'Website URL must use HTTPS')
     )
     .optional()
     .transform((val) => val || undefined),
@@ -273,7 +232,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       const authorizedRedirectUris = !values.authorizedRedirectUris ? [] : 
         values.authorizedRedirectUris
           .split(',')
-          .map((uri) => normalizeURL(uri.trim()))
+          .map((uri) => uri.trim())
           .filter(Boolean);
 
       // Build arrays for contract parameters from the form values

@@ -40,9 +40,6 @@ const formSchema = z.object({
     .string()
     .transform((val) => {
       if (!val) return val;
-      if (!val.startsWith('http://') && !val.startsWith('https://')) {
-        return `https://${val}`;
-      }
       return val;
     })
     .pipe(z.string().url('Must be a valid URL'))
