@@ -1,6 +1,6 @@
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { addDelegatee } from './addDelegatee';
-import { vincentNetworkContext } from '../../../_vincentConfig';
+import { vincentNetworkContext } from '../../../vincentNetworkContext';
 import { getTestContext } from '../testContext';
 import { getAppById } from '../VincentAppViewFacet/getAppById';
 

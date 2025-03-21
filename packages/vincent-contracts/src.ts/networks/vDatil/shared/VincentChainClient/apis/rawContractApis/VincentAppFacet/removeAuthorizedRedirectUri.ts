@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { logger } from '../../../../../../shared/logger';
-import { VincentNetworkContext } from '../../../_vincentConfig';
+import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';

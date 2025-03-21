@@ -1,4 +1,4 @@
-import { vincentNetworkContext } from '../../../_vincentConfig';
+import { vincentNetworkContext } from '../../../vincentNetworkContext';
 import { getTestContext } from '../testContext';
 import { getAuthorizedRedirectUriByHash } from './getAuthorizedRedirectUriByHash';
 import { keccak256, stringToBytes } from 'viem';

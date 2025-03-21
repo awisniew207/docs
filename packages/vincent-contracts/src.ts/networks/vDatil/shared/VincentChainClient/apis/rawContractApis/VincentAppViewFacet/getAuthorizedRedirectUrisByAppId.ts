@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { VincentNetworkContext } from '../../../_vincentConfig';
+import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
 type RawContractMethod = ReturnType<typeof createVincentContracts>['vincentAppViewFacetContract']['read']['getAuthorizedRedirectUrisByAppId'];

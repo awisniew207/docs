@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { VincentNetworkContext } from '../../../_vincentConfig';
+import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 import { toHexString } from '../../../../../../shared/utils/z-transformers';
 

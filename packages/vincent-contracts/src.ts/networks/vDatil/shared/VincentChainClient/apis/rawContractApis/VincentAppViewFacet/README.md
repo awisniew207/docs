@@ -7,8 +7,5 @@ ToDo:
 - [x] getAppByDelegatee
 - [x] getAppsByManager
 - [x] getAuthorizedRedirectUriByHash
-- [ ] getAuthorizedRedirectUrisByAppId
-- [ ] getTotalAppCount
-
-Prompt:
-- Use @getAppById and @getAppById.spec.ts as references. Complete __, see <lines in vincent-signatures.ts>
+- [x] getAuthorizedRedirectUrisByAppId
+- [x] getTotalAppCount

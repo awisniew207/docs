@@ -1,4 +1,4 @@
 - [] approveTools
-- [] registerTools
+- [-] registerTools (this is now decided that is internalised, don't include this)
 - [] removeToolApprovals
 - [] updateApprovedToolsManager

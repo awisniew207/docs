@@ -1,5 +1,5 @@
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { createVincentNetworkContext } from '../../_vincentConfig';
+import { createVincentNetworkContext } from '../../vincentNetworkContext';
 import { registerApp } from "./VincentAppFacet/registerApp";
 import { vincentMainnetNetworkContext } from "../../../../datil-mainnet/vincentContext";
 import { Account, createWalletClient, http, parseEther } from "viem";

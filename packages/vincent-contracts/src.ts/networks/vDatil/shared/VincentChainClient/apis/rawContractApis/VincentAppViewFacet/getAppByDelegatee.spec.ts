@@ -1,4 +1,4 @@
-import { vincentNetworkContext } from '../../../_vincentConfig';
+import { vincentNetworkContext } from '../../../vincentNetworkContext';
 import { getTestContext } from '../testContext';
 import { getAppByDelegatee } from './getAppByDelegatee';
 

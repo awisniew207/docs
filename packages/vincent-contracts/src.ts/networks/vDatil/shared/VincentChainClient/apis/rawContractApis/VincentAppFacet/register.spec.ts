@@ -1,6 +1,6 @@
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { registerApp } from './registerApp';
-import { vincentNetworkContext } from '../../../_vincentConfig';
+import { vincentNetworkContext } from '../../../vincentNetworkContext';
 
 describe('registerApp', () => {
   it('should register a new app with test parameters', async () => {
