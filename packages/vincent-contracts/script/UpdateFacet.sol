@@ -162,8 +162,8 @@ contract UpdateFacet is Script {
                 isTargetFacet = isSameFacetType(facetAddress, getAppSelector);
             } else if (compareStrings(facetName, "VincentToolFacet")) {
                 // Check for a common selector in VincentToolFacet - using a selector from the library
-                bytes4 registerToolsSelector = VincentToolFacet.registerTools.selector;
-                isTargetFacet = isSameFacetType(facetAddress, registerToolsSelector);
+                bytes4 approveToolsSelector = VincentToolFacet.approveTools.selector;
+                isTargetFacet = isSameFacetType(facetAddress, approveToolsSelector);
             } else if (compareStrings(facetName, "VincentToolViewFacet")) {
                 // Check for a common selector in VincentToolViewFacet - using a selector from the library
                 bytes4 getToolSelector = VincentToolViewFacet.getToolIpfsCidByHash.selector;
@@ -257,11 +257,10 @@ contract UpdateFacet is Script {
 
     /// @dev Get VincentToolFacet selectors
     function getVincentToolFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](4);
-        selectors[0] = VincentToolFacet.registerTools.selector;
-        selectors[1] = VincentToolFacet.approveTools.selector;
-        selectors[2] = VincentToolFacet.removeToolApprovals.selector;
-        selectors[3] = VincentToolFacet.updateApprovedToolsManager.selector;
+        bytes4[] memory selectors = new bytes4[](3);
+        selectors[0] = VincentToolFacet.approveTools.selector;
+        selectors[1] = VincentToolFacet.removeToolApprovals.selector;
+        selectors[2] = VincentToolFacet.updateApprovedToolsManager.selector;
         return selectors;
     }
 

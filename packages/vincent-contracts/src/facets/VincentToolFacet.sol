@@ -69,37 +69,9 @@ contract VincentToolFacet {
         _;
     }
 
-    function registerTools(string[] calldata toolIpfsCids) external {
-        // Validate that the array is not empty
-        if (toolIpfsCids.length == 0) {
-            revert EmptyToolIpfsCidsArray();
-        }
-
-        uint256 toolCount = toolIpfsCids.length;
-        for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i];
-
-            // Validate that tool IPFS CID is not empty
-            if (bytes(toolIpfsCid).length == 0) {
-                revert EmptyToolIpfsCid();
-            }
-
-            VincentToolStorage.ToolStorage storage ts_ = VincentToolStorage.toolStorage();
-
-            bytes32 hashedIpfsCid = keccak256(abi.encodePacked(toolIpfsCid));
-
-            if (bytes(ts_.ipfsCidHashToIpfsCid[hashedIpfsCid]).length == 0) {
-                ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
-                emit NewToolRegistered(hashedIpfsCid);
-            } else {
-                revert ToolAlreadyRegistered(hashedIpfsCid);
-            }
-        }
-    }
-
     /**
      * @notice Add one or more tools to the approved list
-     * @dev Only callable by the approved tools manager
+     * @dev Only callable by the approved tools manager. If the tool is not registered yet, it will be registered automatically.
      * @param toolIpfsCids Array of IPFS CIDs of the tools to approve (can be a single tool)
      */
     function approveTools(string[] calldata toolIpfsCids) external onlyApprovedToolsManager {
@@ -125,9 +97,10 @@ contract VincentToolFacet {
                 revert ToolAlreadyApproved(hashedIpfsCid);
             }
 
-            // Ensure the tool is registered
+            // Register the tool if it's not already registered
             if (bytes(ts_.ipfsCidHashToIpfsCid[hashedIpfsCid]).length == 0) {
-                revert ToolNotRegistered(hashedIpfsCid);
+                ts_.ipfsCidHashToIpfsCid[hashedIpfsCid] = toolIpfsCid;
+                emit NewToolRegistered(hashedIpfsCid);
             }
 
             // Add the tool to the approved list
