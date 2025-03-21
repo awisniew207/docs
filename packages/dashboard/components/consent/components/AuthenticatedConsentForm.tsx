@@ -174,14 +174,18 @@ export default function AuthenticatedConsentForm ({
     const toolPolicyParameterNames: string[][][] = [];
     const toolPolicyParameterTypes: number[][][] = [];
     
-    if (parameters.length > 0 && versionInfo) {
-      const toolsData = versionInfo[1]?.[3];
+    if (versionInfo) {
+      const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
       
       if (toolsData && Array.isArray(toolsData)) {
         toolsData.forEach((tool, toolIndex) => {
           if (!tool || !Array.isArray(tool)) return;
           
-          toolIpfsCids[toolIndex] = tool[0];
+          const toolIpfsCid = tool[0];
+          if (toolIpfsCid) {
+            toolIpfsCids[toolIndex] = toolIpfsCid;
+          }
+          
           toolPolicies[toolIndex] = [];
           toolPolicyParameterNames[toolIndex] = [];
           toolPolicyParameterTypes[toolIndex] = [];
@@ -207,17 +211,19 @@ export default function AuthenticatedConsentForm ({
             });
           }
         });
-        
-        parameters.forEach(param => {
-          if (
-            toolPolicyParameterNames[param.toolIndex] && 
-            toolPolicyParameterNames[param.toolIndex][param.policyIndex]
-          ) {
-            toolPolicyParameterNames[param.toolIndex][param.policyIndex][param.paramIndex] = param.name;
-            toolPolicyParameterTypes[param.toolIndex][param.policyIndex][param.paramIndex] = param.type;
-          }
-        });
       }
+    }
+    
+    if (parameters.length > 0) {
+      parameters.forEach(param => {
+        if (
+          toolPolicyParameterNames[param.toolIndex] && 
+          toolPolicyParameterNames[param.toolIndex][param.policyIndex]
+        ) {
+          toolPolicyParameterNames[param.toolIndex][param.policyIndex][param.paramIndex] = param.name;
+          toolPolicyParameterTypes[param.toolIndex][param.policyIndex][param.paramIndex] = param.type;
+        }
+      });
     }
 
     console.log('Sending transaction with parameters:', {
@@ -506,6 +512,8 @@ export default function AuthenticatedConsentForm ({
         toolPolicyParameterNames,
         policyParameterValues
       ];
+
+      console.log('PERMIT ARGS:', permitArgs);
       
       // Estimate gas with buffer
       const gasLimit = await estimateGasWithBuffer(
@@ -595,34 +603,62 @@ export default function AuthenticatedConsentForm ({
     await litContracts.connect();
 
 
+
     if (toolIpfsCids.length > 0) {
       console.log(`Adding permitted actions for ${toolIpfsCids.length} tools`);
       
+      // Wait a bit for blockchain state to update before adding permitted actions
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      
       for (const ipfsCid of toolIpfsCids) {
-        if (ipfsCid) {
+        try {
           const properlyCidEncoded = extractIpfsCid(ipfsCid);
           
           console.log(`Adding permitted action for IPFS CID: ${ipfsCid}`);
           console.log(`Properly encoded CID: ${properlyCidEncoded}`);
           
-          try {
-            const tx = await litContracts.addPermittedAction({
-              ipfsId: properlyCidEncoded,
-              pkpTokenId: agentPKP.tokenId, // Use hex format tokenId
-              authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-            });
-            
+          const tx = await litContracts.addPermittedAction({
+            ipfsId: ipfsCid,
+            pkpTokenId: agentPKP.tokenId, // Use hex format tokenId
+            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+          });
+          
 
-            console.log(`Transaction hash: ${tx}`);
-            console.log(`Successfully added permitted action for IPFS CID: ${properlyCidEncoded}`);
-          } catch (error) {
-            console.error(`Error adding permitted action for IPFS CID ${properlyCidEncoded}:`, error);
-            // Continue with the next IPFS CID even if one fails
-          }
+          console.log(`Transaction hash: ${tx}`);
+          console.log(`Successfully added permitted action for IPFS CID: ${properlyCidEncoded}`);
+        } catch (error) {
+          console.error(`Error adding permitted action for IPFS CID ${ipfsCid}:`, error);
+          // Continue with the next IPFS CID even if one fails
         }
       }
     } else {
-      console.warn('No tool IPFS CIDs found to add permitted actions for');
+      console.warn('No valid tool IPFS CIDs found to add permitted actions for');
+      
+      // Fallback: Try to extract IPFS CIDs directly from versionInfo for debug purposes
+      console.log("FALLBACK: Attempting to extract IPFS CIDs directly from versionInfo");
+      const toolsData = versionInfo?.appVersion?.tools || versionInfo?.[1]?.[3];
+      
+      if (toolsData && Array.isArray(toolsData)) {
+        console.log("- Found toolsData:", toolsData);
+        
+        const extractedCids: string[] = [];
+        toolsData.forEach((tool, index) => {
+          if (tool && Array.isArray(tool) && tool[0]) {
+            const cid = tool[0];
+            console.log(`- Tool ${index} CID:`, cid);
+            extractedCids.push(cid);
+          }
+        });
+        
+        if (extractedCids.length > 0) {
+          console.log("- Extracted CIDs:", extractedCids);
+          // Don't actually add them in the fallback, just log for debugging
+        } else {
+          console.log("- Failed to extract any CIDs in fallback");
+        }
+      } else {
+        console.log("- Could not find valid toolsData in versionInfo", toolsData);
+      }
     }
 
     const receipt = { status: 1, transactionHash: "0x" + Math.random().toString(16).substring(2) };
@@ -1302,6 +1338,57 @@ export default function AuthenticatedConsentForm ({
                     <strong>Version:</strong>{' '}
                     {appInfo.latestVersion ? appInfo.latestVersion.toString() : '1'}
                   </p>
+                  {versionInfo && (
+                    <div className="ipfs-cids-container" style={{ marginTop: '10px' }}>
+                      <strong>IPFS CIDs:</strong>
+                      <div style={{ marginTop: '8px' }}>
+                        {(() => {
+                          const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+                          
+                          if (!toolsData || !Array.isArray(toolsData) || toolsData.length === 0) {
+                            return <p style={{ fontStyle: 'italic' }}>No tools configured</p>;
+                          }
+                          
+                          return toolsData.map((tool, toolIndex) => {
+                            if (!tool || !Array.isArray(tool) || !tool[0]) return null;
+                            
+                            const toolIpfsCid = tool[0];
+                            const policies = tool[1];
+                            
+                            return (
+                              <div key={`tool-${toolIndex}`} style={{ marginBottom: '10px' }}>
+                                <div>
+                                  <strong>Tool:</strong>{' '}
+                                  <span style={{ wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '14px', backgroundColor: '#f5f5f5', padding: '3px 6px', borderRadius: '2px' }}>
+                                    {toolIpfsCid}
+                                  </span>
+                                </div>
+                                
+                                {Array.isArray(policies) && policies.length > 0 && (
+                                  <div style={{ marginTop: '5px', paddingLeft: '20px' }}>
+                                    {policies.map((policy, policyIndex) => {
+                                      if (!policy || !Array.isArray(policy) || !policy[0]) return null;
+                                      
+                                      const policyIpfsCid = policy[0];
+                                      
+                                      return (
+                                        <div key={`policy-${toolIndex}-${policyIndex}`} style={{ marginTop: '5px' }}>
+                                          <strong>Policy:</strong>{' '}
+                                          <span style={{ wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '14px', backgroundColor: '#f5f5f5', padding: '3px 6px', borderRadius: '2px' }}>
+                                            {policyIpfsCid}
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
