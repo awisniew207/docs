@@ -31,6 +31,7 @@ describe('getAppById', () => {
 
     console.log("result:", result);
 
+
     // Verify app details
     expect(Number(result.id)).toBe(appId);
     expect(result.name).toBe('Test App');
