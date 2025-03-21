@@ -9,7 +9,10 @@ describe('registerTools', () => {
   });
 
   it('should register tools on the Vincent network', async () => {
-    const randomIpfsCid = [`Qm${Math.random().toString(36).substring(2, 15)}`];
+    const randomIpfsCid = [
+      `Qm${Math.random().toString(36).substring(2, 15)}`,
+      // `Qm${Math.random().toString(36).substring(2, 15)}`,
+    ];
 
     // Call the registerTools function with the original array structure
     const res = await registerTools(

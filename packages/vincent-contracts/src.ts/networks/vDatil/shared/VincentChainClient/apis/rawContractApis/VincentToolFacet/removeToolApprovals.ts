@@ -6,7 +6,7 @@ import { createVincentContracts } from '../../utils/createVincentContracts';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
 
 const RemoveToolApprovalsRequest = z.object({
-  toolIpfsCids: z.array(z.string())
+  toolIpfsCids: z.array(z.string()),
 });
 
 type RemoveToolApprovalsRequest = z.input<typeof RemoveToolApprovalsRequest>;
@@ -17,21 +17,20 @@ type RemoveToolApprovalsRequest = z.input<typeof RemoveToolApprovalsRequest>;
  * @param ctx The Vincent network context
  * @returns Object containing transaction hash, receipt, and decoded logs
  */
-export async function removeToolApprovals(request: RemoveToolApprovalsRequest, ctx: VincentNetworkContext) {
+export async function removeToolApprovals(
+  request: RemoveToolApprovalsRequest,
+  ctx: VincentNetworkContext,
+) {
   const validatedRequest = RemoveToolApprovalsRequest.parse(request);
   logger.debug({ validatedRequest });
 
-  const {
-    vincentToolFacetContract,
-    publicClient,
-  } = createVincentContracts(ctx);
+  const { vincentToolFacetContract, publicClient } =
+    createVincentContracts(ctx);
 
   const hash = await callWithAdjustedOverrides(
     vincentToolFacetContract,
-    "removeToolApprovals",
-    [
-      [validatedRequest.toolIpfsCids]
-    ] as const
+    'removeToolApprovals',
+    [validatedRequest.toolIpfsCids],
   );
 
   logger.info({ hash });
@@ -41,4 +40,4 @@ export async function removeToolApprovals(request: RemoveToolApprovalsRequest, c
   const decodedLogs = await decodeVincentLogs(receipt.logs, ctx);
 
   return { hash, receipt, decodedLogs };
-} 
+}

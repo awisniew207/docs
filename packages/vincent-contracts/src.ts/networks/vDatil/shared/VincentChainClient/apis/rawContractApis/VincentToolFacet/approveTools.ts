@@ -30,9 +30,7 @@ export async function approveTools(
   const hash = await callWithAdjustedOverrides(
     vincentToolFacetContract,
     'approveTools',
-
-    // TypeScript is complaining because it thinks you're passing a string[][] to something that expects a string[], but at runtime, the helper function's unwrapping behavior makes it work correctly.
-    [[validatedRequest.toolIpfsCids] as unknown as string[]],
+    [validatedRequest.toolIpfsCids],
   );
 
   logger.info({ hash });
