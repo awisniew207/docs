@@ -1,8 +1,15 @@
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { DelegateeSigs, fetchDelegatedAgentPKPs, setDelegateeWallet, updateDelegateeWallet } from '../pkp';
-import { createPKPSigner, createPKPSignedJWT, verifyJWTSignature, createJWTConfig } from '../auth';
+import { DelegateeSigs } from '../pkp';
+import {
+  createPKPSigner,
+  createPKPSignedJWT,
+  verifyJWTSignature,
+  createJWTConfig,
+  decodeJWT,
+  DecodedJWT,
+} from '../auth';
 import { IStorage, Storage } from '../auth';
 
 export interface VincentSDKConfig {
@@ -23,7 +30,9 @@ export class VincentSDK {
   }
 
   // JWT Management
-  async createSigner(pkpWallet: PKPEthersWallet): Promise<any> {
+  async createSigner(
+    pkpWallet: PKPEthersWallet
+  ): Promise<(data: string | Uint8Array) => Promise<string>> {
     return createPKPSigner(pkpWallet);
   }
 
@@ -32,6 +41,14 @@ export class VincentSDK {
     const jwt = await createPKPSignedJWT(config);
     this.storeJWT(jwt);
     return jwt;
+  }
+
+  async decodeJWT(): Promise<DecodedJWT> {
+    const jwt = await this.getJWT();
+    if (!jwt) {
+      throw new Error('No JWT found');
+    }
+    return decodeJWT(jwt);
   }
 
   async verifyJWT(expectedAudience: string): Promise<boolean> {
@@ -60,25 +77,13 @@ export class VincentSDK {
   }
 
   // Lit Action Invocation for App Owner through Delegatee Wallet
-  async invokeLitAction(signer: ethers.Signer, litActionCID: string, params: any) {
+  async invokeLitAction(
+    signer: ethers.Signer,
+    litActionCID: string,
+    params: Record<string, unknown>
+  ) {
     const sessionSigs = new DelegateeSigs(this.network);
     return sessionSigs.invokeLitAction(signer, litActionCID, params);
-  }
-
-  // Agent PKP Management
-  async getDelegatedAgentPKPs(): Promise<void> {
-    const pkps = await fetchDelegatedAgentPKPs();
-    return pkps;
-  }
-
-  async setDelegatee(walletAddress: string): Promise<void> {
-    const txn = await setDelegateeWallet();
-    return txn;
-  }
-
-  async updateDelegatee(walletAddress: string): Promise<void> {
-    const txn = await updateDelegateeWallet();
-    return txn;
   }
 
   // Consent Page Management

@@ -11,7 +11,7 @@ import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 
 declare global {
   interface Window {
-    ethereum: any;
+    ethereum: ethers.providers.ExternalProvider;
   }
 }
 
@@ -25,7 +25,6 @@ export class DelegateeSigs {
   }
 
   async generateSessionSigs(signer: ethers.Signer) {
-
     await this.litNodeClient.connect();
 
     const sessionSigs = await this.litNodeClient.getSessionSigs({
@@ -60,16 +59,19 @@ export class DelegateeSigs {
     return sessionSigs;
   }
 
-  async invokeLitAction(signer: ethers.Signer, litActionCID: string, params: any) {
-
+  async invokeLitAction(
+    signer: ethers.Signer,
+    litActionCID: string,
+    params: Record<string, unknown>
+  ) {
     await this.litNodeClient.connect();
 
     const sessionSigs = await this.generateSessionSigs(signer);
 
     const results = await this.litNodeClient.executeJs({
       ipfsId: litActionCID,
-        sessionSigs: sessionSigs,
-        jsParams: params
+      sessionSigs: sessionSigs,
+      jsParams: params,
     });
 
     return results;
