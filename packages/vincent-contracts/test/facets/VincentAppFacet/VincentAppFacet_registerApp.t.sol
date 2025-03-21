@@ -1486,4 +1486,114 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test registering an app with duplicate parameter names
+     * @dev Verifies that app registration fails when duplicate parameter names are provided for a policy
+     */
+    function testRegisterAppWithDuplicateParameterNames() public {
+        vm.startPrank(deployer);
+
+        // Create tool array with one tool
+        string[] memory toolsArray = new string[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policies array with one policy
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        // Create parameter names with duplicate names
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](1);
+        parameterNames[0][0] = new string[](2);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[0][0][1] = TEST_POLICY_PARAM_1; // Same as the first one
+
+        // Create matching parameter types
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](2);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        parameterTypes[0][0][1] = VincentAppStorage.ParameterType.STRING;
+
+        // Expect the call to revert with DuplicateParameterNameNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "DuplicateParameterNameNotAllowed(uint256,uint256,uint256,string,uint256,uint256)",
+                1,
+                0,
+                0,
+                TEST_POLICY_PARAM_1,
+                0,
+                1
+            )
+        );
+
+        // Call registerApp with duplicate parameter names
+        wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policies,
+            parameterNames,
+            parameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering a new app version with duplicate parameter names
+     * @dev Verifies that app version registration fails when duplicate parameter names are provided for a policy
+     */
+    function testRegisterNextAppVersionWithDuplicateParameterNames() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Create tool array with one tool
+        string[] memory toolsArray = new string[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_2;
+
+        // Create policies array with one policy
+        string[][] memory policies = new string[][](1);
+        policies[0] = new string[](1);
+        policies[0][0] = TEST_POLICY_1;
+
+        // Create parameter names with duplicate names
+        string[][][] memory parameterNames = new string[][][](1);
+        parameterNames[0] = new string[][](1);
+        parameterNames[0][0] = new string[](2);
+        parameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        parameterNames[0][0][1] = TEST_POLICY_PARAM_1; // Same as the first one
+
+        // Create matching parameter types
+        VincentAppStorage.ParameterType[][][] memory parameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        parameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        parameterTypes[0][0] = new VincentAppStorage.ParameterType[](2);
+        parameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        parameterTypes[0][0][1] = VincentAppStorage.ParameterType.STRING;
+
+        // Expect the call to revert with DuplicateParameterNameNotAllowed error
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "DuplicateParameterNameNotAllowed(uint256,uint256,uint256,string,uint256,uint256)",
+                appId,
+                0,
+                0,
+                TEST_POLICY_PARAM_1,
+                0,
+                1
+            )
+        );
+
+        // Attempt to register a new version with duplicate parameter names
+        wrappedAppFacet.registerNextAppVersion(appId, toolsArray, policies, parameterNames, parameterTypes);
+
+        vm.stopPrank();
+    }
 }

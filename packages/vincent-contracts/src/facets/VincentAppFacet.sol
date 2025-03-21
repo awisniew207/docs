@@ -216,6 +216,24 @@ contract VincentAppFacet is VincentBase {
     );
 
     /**
+     * @notice Error thrown when duplicate parameter names are detected for a single policy
+     * @param appId ID of the app
+     * @param toolIndex Index of the tool in the tools array
+     * @param policyIndex Index of the policy in the policies array
+     * @param paramName The duplicate parameter name
+     * @param firstIndex Index of the first occurrence of the parameter
+     * @param duplicateIndex Index of the duplicate occurrence of the parameter
+     */
+    error DuplicateParameterNameNotAllowed(
+        uint256 appId,
+        uint256 toolIndex,
+        uint256 policyIndex,
+        string paramName,
+        uint256 firstIndex,
+        uint256 duplicateIndex
+    );
+
+    /**
      * @notice Error thrown when the top-level tool arrays have mismatched lengths
      * @param toolsLength Length of the tools array
      * @param policiesLength Length of the policies array
@@ -583,6 +601,27 @@ contract VincentAppFacet is VincentBase {
                         revert DuplicatePolicyIpfsCidNotAllowed(appId, i, policyIpfsCid, j, k);
                     }
                 }
+
+                // Check for duplicate parameter names within this policy
+                uint256 paramCount = toolPolicyParameterNames[i][j].length;
+                for (uint256 k = 0; k < paramCount; k++) {
+                    string memory paramName = toolPolicyParameterNames[i][j][k];
+
+                    // Check for empty parameter name
+                    if (bytes(paramName).length == 0) {
+                        revert EmptyParameterNameNotAllowed(appId, i, j, k);
+                    }
+
+                    // Check for duplicate parameter names within the same policy
+                    for (uint256 l = k + 1; l < paramCount; l++) {
+                        if (
+                            keccak256(abi.encodePacked(paramName))
+                                == keccak256(abi.encodePacked(toolPolicyParameterNames[i][j][l]))
+                        ) {
+                            revert DuplicateParameterNameNotAllowed(appId, i, j, paramName, k, l);
+                        }
+                    }
+                }
             }
 
             // Check for duplicates against all subsequent tools
@@ -659,11 +698,6 @@ contract VincentAppFacet is VincentBase {
 
                 for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
-
-                    // Check for empty parameter name
-                    if (bytes(paramName).length == 0) {
-                        revert EmptyParameterNameNotAllowed(appId, i, j, k);
-                    }
 
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
