@@ -1,27 +1,30 @@
 import { z } from 'zod';
 import { logger } from '../../../../../../shared/logger';
+import { toEthAddress } from '../../../../../../shared/utils/z-transformers';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
 
-const RegisterToolsRequest = z.object({
-  toolIpfsCids: z.array(z.string()),
+const UpdateApprovedToolsManagerRequest = z.object({
+  newManager: toEthAddress,
 });
 
-type RegisterToolsRequest = z.input<typeof RegisterToolsRequest>;
+type UpdateApprovedToolsManagerRequest = z.input<
+  typeof UpdateApprovedToolsManagerRequest
+>;
 
 /**
- * Registers tools on the Vincent network
- * @param request The request containing an array of tool IPFS CIDs to register
+ * Updates the approved tools manager on the Vincent network
+ * @param request The request containing the new manager address
  * @param ctx The Vincent network context
  * @returns Object containing transaction hash, receipt, and decoded logs
  */
-export async function registerTools(
-  request: RegisterToolsRequest,
+export async function updateApprovedToolsManager(
+  request: UpdateApprovedToolsManagerRequest,
   ctx: VincentNetworkContext,
 ) {
-  const validatedRequest = RegisterToolsRequest.parse(request);
+  const validatedRequest = UpdateApprovedToolsManagerRequest.parse(request);
   logger.debug({ validatedRequest });
 
   const { vincentToolFacetContract, publicClient } =
@@ -29,10 +32,8 @@ export async function registerTools(
 
   const hash = await callWithAdjustedOverrides(
     vincentToolFacetContract,
-    'registerTools',
-
-    // TypeScript is complaining because it thinks you're passing a string[][] to something that expects a string[], but at runtime, the helper function's unwrapping behavior makes it work correctly.
-    [[validatedRequest.toolIpfsCids] as unknown as string[]],
+    'updateApprovedToolsManager',
+    [validatedRequest.newManager],
   );
 
   logger.info({ hash });
