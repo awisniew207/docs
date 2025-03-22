@@ -218,6 +218,13 @@ contract VincentUserFacet is VincentBase {
     );
 
     /**
+     * @notice Error thrown when not all registered tools for an app version are provided
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     */
+    error NotAllRegisteredToolsProvided(uint256 appId, uint256 appVersion);
+
+    /**
      * @notice Modifier to verify that the caller is the owner of the specified PKP
      * @param pkpTokenId The token ID of the PKP
      */
@@ -284,6 +291,41 @@ contract VincentUserFacet is VincentBase {
 
         // Check if the App Manager has disabled the App
         if (!newVersionedApp.enabled) revert AppVersionNotEnabled(appId, appVersion);
+
+        // Check if all registered tools for this app version are provided
+        if (
+            newVersionedApp.toolIpfsCidHashes.length() > 0
+                && toolIpfsCids.length != newVersionedApp.toolIpfsCidHashes.length()
+        ) {
+            revert NotAllRegisteredToolsProvided(appId, appVersion);
+        }
+
+        // Verify that every tool provided is registered and every registered tool is provided
+        if (toolIpfsCids.length > 0) {
+            bytes32[] memory providedToolHashes = new bytes32[](toolIpfsCids.length);
+            for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+                providedToolHashes[i] = keccak256(abi.encodePacked(toolIpfsCids[i]));
+                if (!newVersionedApp.toolIpfsCidHashes.contains(providedToolHashes[i])) {
+                    revert ToolNotRegisteredForAppVersion(appId, appVersion, toolIpfsCids[i]);
+                }
+            }
+
+            // Ensure all registered tools are in the provided tools array
+            uint256 registeredToolCount = newVersionedApp.toolIpfsCidHashes.length();
+            for (uint256 i = 0; i < registeredToolCount; i++) {
+                bytes32 registeredToolHash = newVersionedApp.toolIpfsCidHashes.at(i);
+                bool found = false;
+                for (uint256 j = 0; j < providedToolHashes.length; j++) {
+                    if (registeredToolHash == providedToolHashes[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    revert NotAllRegisteredToolsProvided(appId, appVersion);
+                }
+            }
+        }
 
         // Check if User has permitted a previous app version,
         // if so, remove the PKP Token ID from the previous VersionedApp's delegated agent PKPs
@@ -387,6 +429,47 @@ contract VincentUserFacet is VincentBase {
     ) public onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         if (toolIpfsCids.length == 0) {
             revert InvalidInput();
+        }
+
+        // Check for empty tool IPFS CIDs first
+        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+            if (bytes(toolIpfsCids[i]).length == 0) {
+                revert EmptyToolIpfsCid();
+            }
+        }
+
+        // Get the app version to check registered tools
+        VincentAppStorage.VersionedApp storage versionedApp =
+            VincentAppStorage.appStorage().appIdToApp[appId].versionedApps[getVersionedAppIndex(appVersion)];
+
+        // Check if all registered tools for this app version are provided
+        if (versionedApp.toolIpfsCidHashes.length() != toolIpfsCids.length) {
+            revert NotAllRegisteredToolsProvided(appId, appVersion);
+        }
+
+        // Verify that every tool provided is registered and every registered tool is provided
+        bytes32[] memory providedToolHashes = new bytes32[](toolIpfsCids.length);
+        for (uint256 i = 0; i < toolIpfsCids.length; i++) {
+            providedToolHashes[i] = keccak256(abi.encodePacked(toolIpfsCids[i]));
+            if (!versionedApp.toolIpfsCidHashes.contains(providedToolHashes[i])) {
+                revert ToolNotRegisteredForAppVersion(appId, appVersion, toolIpfsCids[i]);
+            }
+        }
+
+        // Ensure all registered tools are in the provided tools array
+        uint256 registeredToolCount = versionedApp.toolIpfsCidHashes.length();
+        for (uint256 i = 0; i < registeredToolCount; i++) {
+            bytes32 registeredToolHash = versionedApp.toolIpfsCidHashes.at(i);
+            bool found = false;
+            for (uint256 j = 0; j < providedToolHashes.length; j++) {
+                if (registeredToolHash == providedToolHashes[j]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                revert NotAllRegisteredToolsProvided(appId, appVersion);
+            }
         }
 
         _setToolPolicyParameters(
