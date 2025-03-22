@@ -10,4 +10,4 @@ export const vincentContractData = {
   },
 } as const;
 
-export { createDatilChainManager } from './LitChainManager/createChainManager';
+export { createDatilChainManager, getChain } from './LitChainManager/createChainManager';
