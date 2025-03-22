@@ -121,6 +121,84 @@ export const vincentSignatures = {
         ],
         "anonymous": false
       }
+    ],
+    "errors": [
+      {
+        "type": "error",
+        "name": "EmptyToolIpfsCid",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "EmptyToolIpfsCidsArray",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "InvalidApprovedToolsManager",
+        "inputs": [
+          {
+            "name": "manager",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NotApprovedToolsManager",
+        "inputs": [
+          {
+            "name": "caller",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolAlreadyApproved",
+        "inputs": [
+          {
+            "name": "toolIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolAlreadyRegistered",
+        "inputs": [
+          {
+            "name": "toolIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolNotApproved",
+        "inputs": [
+          {
+            "name": "toolIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolNotRegistered",
+        "inputs": [
+          {
+            "name": "toolIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
     ]
   },
   "VincentToolViewFacet": {
@@ -191,7 +269,35 @@ export const vincentSignatures = {
         "stateMutability": "view"
       }
     },
-    "events": []
+    "events": [],
+    "errors": [
+      {
+        "type": "error",
+        "name": "EmptyToolIpfsCid",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "NoToolsApproved",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "NoToolsRegistered",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "ToolHashNotFound",
+        "inputs": [
+          {
+            "name": "toolIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ]
   },
   "VincentAppViewFacet": {
     "address": "0xb208465a1de6eae8fdfd922ab738fd9ec82ba653",
@@ -596,7 +702,85 @@ export const vincentSignatures = {
         "stateMutability": "view"
       }
     },
-    "events": []
+    "events": [],
+    "errors": [
+      {
+        "type": "error",
+        "name": "AppNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "DelegateeNotRegistered",
+        "inputs": [
+          {
+            "name": "delegatee",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NoAppsFoundForManager",
+        "inputs": [
+          {
+            "name": "manager",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NoAuthorizedRedirectUrisFoundForApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "RedirectUriNotFound",
+        "inputs": [
+          {
+            "name": "redirectUriHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ZeroAddressNotAllowed",
+        "inputs": []
+      }
+    ]
   },
   "VincentUserViewFacet": {
     "address": "0x7e3f021e2c22afdf0e660b611113b3a7e098948c",
@@ -809,7 +993,130 @@ export const vincentSignatures = {
         "stateMutability": "view"
       }
     },
-    "events": []
+    "events": [],
+    "errors": [
+      {
+        "type": "error",
+        "name": "AppNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "DelegateeNotAssociatedWithApp",
+        "inputs": [
+          {
+            "name": "delegatee",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "EmptyToolIpfsCid",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "InvalidAppId",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "InvalidPkpTokenId",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "NoRegisteredPkpsFound",
+        "inputs": [
+          {
+            "name": "userAddress",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "PkpNotPermittedForAppVersion",
+        "inputs": [
+          {
+            "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "PolicyParameterNotSetForPkp",
+        "inputs": [
+          {
+            "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policyIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "parameterName",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ZeroAddressNotAllowed",
+        "inputs": []
+      }
+    ]
   },
   "VincentAppFacet": {
     "address": "0x7a65adf3ccb1c985357b96410e8524ce0c204e66",
@@ -1167,6 +1474,262 @@ export const vincentSignatures = {
         ],
         "anonymous": false
       }
+    ],
+    "errors": [
+      {
+        "type": "error",
+        "name": "AppNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionAlreadyInRequestedState",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "CannotRemoveLastRedirectUri",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "DelegateeAlreadyRegisteredToApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "delegatee",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "DelegateeNotRegisteredToApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "delegatee",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "EmptyAppDescriptionNotAllowed",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "EmptyAppNameNotAllowed",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "EmptyParameterNameNotAllowed",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policyIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "EmptyPolicyIpfsCidNotAllowed",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "EmptyRedirectUriNotAllowed",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "EmptyToolIpfsCidNotAllowed",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NoPoliciesProvidedForTool",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NoRedirectUrisProvided",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "NoToolsProvided",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NotAppManager",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "msgSender",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "RedirectUriAlreadyAuthorizedForApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "redirectUri",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "RedirectUriNotRegisteredToApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "redirectUri",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolsAndPoliciesLengthMismatch",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "ZeroAddressDelegateeNotAllowed",
+        "inputs": []
+      }
     ]
   },
   "VincentUserFacet": {
@@ -1463,6 +2026,239 @@ export const vincentSignatures = {
           }
         ],
         "anonymous": false
+      }
+    ],
+    "errors": [
+      {
+        "type": "error",
+        "name": "AppNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionAlreadyPermitted",
+        "inputs": [
+          {
+            "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionNotEnabled",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionNotPermitted",
+        "inputs": [
+          {
+            "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionNotRegistered",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "EmptyParameterName",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "EmptyParameterValue",
+        "inputs": [
+          {
+            "name": "parameterName",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "EmptyPolicyIpfsCid",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "EmptyToolIpfsCid",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "InvalidInput",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "NotPkpOwner",
+        "inputs": [
+          {
+            "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "msgSender",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "PkpTokenDoesNotExist",
+        "inputs": [
+          {
+            "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "PolicyParameterNameNotRegisteredForAppVersion",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "toolPolicyIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "policyParameterName",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolNotRegisteredForAppVersion",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolPolicyNotRegisteredForAppVersion",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "toolIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "toolPolicyIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ToolsAndPoliciesLengthMismatch",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "ZeroPkpTokenId",
+        "inputs": []
       }
     ]
   }
