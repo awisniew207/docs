@@ -4,15 +4,17 @@ import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
 // Define raw types from the contract
-type RawContractMethod = ReturnType<typeof createVincentContracts>['vincentToolViewFacetContract']['read']['isToolApproved'];
+type RawContractMethod = ReturnType<
+  typeof createVincentContracts
+>['vincentToolViewFacetContract']['read']['isToolApproved'];
 type RawContractParams = Parameters<RawContractMethod>[0];
 type RawContractResponse = Awaited<ReturnType<RawContractMethod>>;
 
-const ExpectedParams = z.object({
-  toolIpfsCid: z.string().min(1, 'toolIpfsCid cannot be empty'),
-}).transform((params): RawContractParams => [
-  params.toolIpfsCid,
-]);
+const ExpectedParams = z
+  .object({
+    toolIpfsCid: z.string().min(1, 'toolIpfsCid cannot be empty'),
+  })
+  .transform((params): RawContractParams => [params.toolIpfsCid]);
 
 type ExpectedParams = z.input<typeof ExpectedParams>;
 
@@ -31,9 +33,8 @@ export async function isToolApproved(
 
   const { vincentToolViewFacetContract } = createVincentContracts(ctx);
 
-  const isApproved = await vincentToolViewFacetContract.read.isToolApproved(
-    validatedRequest,
-  );
+  const isApproved =
+    await vincentToolViewFacetContract.read.isToolApproved(validatedRequest);
 
   logger.debug({ isApproved });
 
