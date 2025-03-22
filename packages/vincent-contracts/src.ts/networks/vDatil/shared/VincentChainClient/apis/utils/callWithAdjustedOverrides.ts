@@ -27,7 +27,7 @@ export async function callWithAdjustedOverrides<
   args: TArgs,
   overrides?: Parameters<TFunction>[1],
 ): Promise<Hash> {
-  logger.info({ args });
+  // logger.info({ args });
 
   // Get the write function from the contract
   const writeFunction = contract.write[methodName];
