@@ -1,3 +1,4 @@
+import { GetWalletClientReturnType } from '@wagmi/core';
 import { Account, createWalletClient, http, WalletClient } from 'viem';
 import { vincentMainnetNetworkContext } from '../../datil-mainnet/vincentContext';
 
@@ -7,6 +8,12 @@ export const vincentNetworkContext = vincentMainnetNetworkContext;
 // vincentDevNetworkContext;
 
 export type VincentNetworkContext = typeof vincentNetworkContext;
+
+export type ExpectedAccountOrWalletClient =
+  | Account
+  | WalletClient
+  | GetWalletClientReturnType
+  | any;
 
 /**
  * Creates a Vincent network context for interacting with the Vincent blockchain
@@ -21,7 +28,7 @@ export const createVincentNetworkContext = ({
   accountOrWalletClient,
   network,
 }: {
-  accountOrWalletClient: Account | WalletClient;
+  accountOrWalletClient: ExpectedAccountOrWalletClient;
   network: 'datil' | 'datil-test' | 'datil-dev';
 }) => {
   let networkContext = {} as VincentNetworkContext;
@@ -35,6 +42,7 @@ export const createVincentNetworkContext = ({
     // networkContext = vincentDevnetNetworkContext;
     throw new Error('datil-dev network not implemented');
   }
+
   // If a wallet client is already provided, use it directly
   if (accountOrWalletClient.type === 'local') {
     // If an account is provided, create a wallet client with it
@@ -44,10 +52,8 @@ export const createVincentNetworkContext = ({
       transport: http(networkContext.rpcUrl),
     });
     networkContext.walletClient = walletClient;
-  } else if (accountOrWalletClient.type === 'walletClient') {
-    networkContext.walletClient = accountOrWalletClient as WalletClient;
   } else {
-    throw new Error('Unsupported account type: ' + accountOrWalletClient.type);
+    networkContext.walletClient = accountOrWalletClient as WalletClient;
   }
 
   return networkContext;

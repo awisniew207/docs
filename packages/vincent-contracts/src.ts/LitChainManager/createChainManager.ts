@@ -1,14 +1,17 @@
-import { Account, WalletClient } from 'viem';
-import { createVincentNetworkContext } from '../networks/vDatil/shared/VincentChainClient/vincentNetworkContext';
+import {
+  createVincentNetworkContext,
+  ExpectedAccountOrWalletClient,
+} from '../networks/vDatil/shared/VincentChainClient/vincentNetworkContext';
 
 // Import all the APIs
+import { Anvil } from '../networks/shared/chains/Anvil';
+import { ChrnoicleYellowstone } from '../networks/shared/chains/ChrnoicleYellowstone';
 import * as VincentAppFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentAppFacet';
 import * as VincentAppViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentAppViewFacet';
 import * as VincentToolFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentToolFacet';
 import * as VincentToolViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentToolViewFacet';
 import * as VincentUserFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentUserFacet';
 import * as VincentUserViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentUserViewFacet';
-import { privateKeyToAccount } from 'viem/accounts';
 
 /**
  * Configuration for creating a Datil Chain Manager
@@ -17,7 +20,7 @@ export interface DatilChainManagerConfig {
   /**
    * The account or wallet client to use for transactions
    */
-  account: Account | WalletClient;
+  account: ExpectedAccountOrWalletClient;
 
   /**
    * The network to connect to
@@ -48,7 +51,7 @@ export function createDatilChainManager(config: DatilChainManagerConfig) {
 
   // Helper to bind the network context to an API function
   const bindContext = <T extends (req: any, ctx: any) => any>(fn: T) => {
-    return (req: Parameters<T>[0]) => fn(req, networkContext);
+    return (req: Parameters<T>[0]): ReturnType<T> => fn(req, networkContext);
   };
 
   switch (config.network) {
@@ -153,6 +156,21 @@ export function createDatilChainManager(config: DatilChainManagerConfig) {
       };
     default:
       throw new Error(`Unsupported network: ${config.network}`);
+  }
+}
+
+// export function createNagaChainManager(config: NagaChainManagerConfig) {
+
+// }
+
+export function getChain(chain: 'chronicle-yellowstone' | 'anvil') {
+  switch (chain) {
+    case 'chronicle-yellowstone':
+      return ChrnoicleYellowstone;
+    case 'anvil':
+      return Anvil;
+    default:
+      throw new Error(`Unsupported chain: ${chain}`);
   }
 }
 

@@ -1,11 +1,15 @@
-import { Chain, http, webSocket } from 'viem';
+import { http } from 'viem';
 import { createConfig } from 'wagmi';
 
 export class ChrnoicleYellowstone {
   public static rpcUrls: string[] = ['https://yellowstone-rpc.litprotocol.com/'];
   public static explorerUrl: string = 'https://yellowstone-explorer.litprotocol.com/';
 
-  public static chainConfig() : Chain{
+  /**
+   * You'll likely need to cast this to Viem's Chain type for type safety.
+   * We don't do it here to avoid version conflicts with your Viem package.
+   */
+  public static chainConfig() {
     return {
       id: 175188,
       name: 'Chronicle Yellowstone - Lit Protocol Testnet',
@@ -34,47 +38,13 @@ export class ChrnoicleYellowstone {
   }
 
   /**
-   * Here's how your use it:
-   * <WagmiProvider config={config}>
-   *   <ExampleComponent />
-   * </WagmiProvider>
-   *
-   * import React, { useEffect } from "react";
-   * import { usePublicClient, useWalletClient } from "wagmi";
-   * import { createLitContracts } from "../createLitContracts";
-   *
-   * export function ExampleComponent() {
-   *   const publicClient = usePublicClient();
-   *   const { data: walletClient } = useWalletClient();
-   *
-   *   useEffect(() => {
-   *     if (publicClient && walletClient) {
-   *       // Pass wagmi's clients into your Lit function
-   *       const { pkpNftContract, pkpHelperContract } = createLitContracts(
-   *         "datil-dev",
-   *         {
-   *           publicClient,
-   *           walletClient,
-   *         }
-   *       );
-   *
-   *       // Now you can do contract reads/writes with the user's wallet
-   *       (async () => {
-   *         const cost = await pkpNftContract.read.mintCost();
-   *         console.log("mintCost =", cost);
-   *       })();
-   *     }
-   *   }, [publicClient, walletClient]);
-   *
-   *   return <div>My wagmi + Lit example</div>;
-   * }
+   * Please refer to the README.md file for usage examples
    */
-  public static wagmiConfig() {
-    return createConfig({
-      chains: [ChrnoicleYellowstone.chainConfig()],
-      transports: {
-        [ChrnoicleYellowstone.chainConfig().id]: http(),
-      },
-    });
-  }
+  public static wagmiConfig = createConfig({
+    chains: [ChrnoicleYellowstone.chainConfig()],
+
+    transports: {
+      [ChrnoicleYellowstone.chainConfig().id]: http(),
+    },
+  });
 }
