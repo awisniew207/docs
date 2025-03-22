@@ -97,12 +97,9 @@ export function createDatilChainManager(config: DatilChainManagerConfig) {
           },
           litManager: {
             approveTools: bindContext(VincentToolFacet.approveTools),
-            getAllApprovedTools: bindContext(
-              VincentToolViewFacet.getAllApprovedTools,
-            ),
-            getApprovedToolsManager: bindContext(
+            getAllApprovedTools: VincentToolViewFacet.getAllApprovedTools,
+            getApprovedToolsManager:
               VincentToolViewFacet.getApprovedToolsManager,
-            ),
             registerTools: bindContext(VincentToolFacet.registerTools),
             removeToolApprovals: bindContext(
               VincentToolFacet.removeToolApprovals,
