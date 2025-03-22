@@ -3,13 +3,27 @@ import { logger } from '../../../../../../shared/logger';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
-const GetToolIpfsCidByHashRequest = z.object({
-  toolIpfsCidHash: z.string().refine(val => /^0x[a-fA-F0-9]{64}$/.test(val), {
-    message: 'toolIpfsCidHash must be a valid 32-byte hex string starting with 0x',
-  }),
-});
+// Define raw types from the contract
+type RawContractMethod = ReturnType<
+  typeof createVincentContracts
+>['vincentToolViewFacetContract']['read']['getToolIpfsCidByHash'];
+type RawContractParams = Parameters<RawContractMethod>[0];
+type RawContractResponse = Awaited<ReturnType<RawContractMethod>>;
 
-type GetToolIpfsCidByHashRequest = z.input<typeof GetToolIpfsCidByHashRequest>;
+const ExpectedParams = z
+  .object({
+    toolIpfsCidHash: z
+      .string()
+      .refine((val) => /^0x[a-fA-F0-9]{64}$/.test(val), {
+        message:
+          'toolIpfsCidHash must be a valid 32-byte hex string starting with 0x',
+      }),
+  })
+  .transform(
+    (params): RawContractParams => [params.toolIpfsCidHash as `0x${string}`],
+  );
+
+type ExpectedParams = z.input<typeof ExpectedParams>;
 
 /**
  * Retrieves a tool's IPFS CID by its hash
@@ -18,19 +32,20 @@ type GetToolIpfsCidByHashRequest = z.input<typeof GetToolIpfsCidByHashRequest>;
  * @returns The tool's IPFS CID
  */
 export async function getToolIpfsCidByHash(
-  request: GetToolIpfsCidByHashRequest,
+  request: ExpectedParams,
   ctx: VincentNetworkContext,
-) {
-  const validatedRequest = GetToolIpfsCidByHashRequest.parse(request);
+): Promise<{ toolIpfsCid: RawContractResponse }> {
+  const validatedRequest = ExpectedParams.parse(request);
   logger.debug({ validatedRequest });
 
   const { vincentToolViewFacetContract } = createVincentContracts(ctx);
 
-  const toolIpfsCid = await vincentToolViewFacetContract.read.getToolIpfsCidByHash([
-    validatedRequest.toolIpfsCidHash as `0x${string}`,
-  ]);
-  
+  const toolIpfsCid =
+    await vincentToolViewFacetContract.read.getToolIpfsCidByHash(
+      validatedRequest,
+    );
+
   logger.debug({ toolIpfsCid });
-  
+
   return { toolIpfsCid };
-} 
+}

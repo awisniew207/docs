@@ -3,13 +3,20 @@ import { logger } from '../../../../../../shared/logger';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
-const GetAllPermittedAppIdsForPkpRequest = z.object({
-  pkpTokenId: z.coerce.bigint(),
-});
+// Define raw types from the contract
+type RawContractMethod = ReturnType<
+  typeof createVincentContracts
+>['vincentUserViewFacetContract']['read']['getAllPermittedAppIdsForPkp'];
+type RawContractParams = Parameters<RawContractMethod>[0];
+type RawContractResponse = Awaited<ReturnType<RawContractMethod>>;
 
-type GetAllPermittedAppIdsForPkpRequest = z.input<
-  typeof GetAllPermittedAppIdsForPkpRequest
->;
+const ExpectedParams = z
+  .object({
+    pkpTokenId: z.coerce.bigint(),
+  })
+  .transform((params): RawContractParams => [params.pkpTokenId]);
+
+type ExpectedParams = z.input<typeof ExpectedParams>;
 
 /**
  * Retrieves all permitted application IDs for a specific PKP token
@@ -18,17 +25,18 @@ type GetAllPermittedAppIdsForPkpRequest = z.input<
  * @returns Array of application IDs that the PKP token is permitted to use
  */
 export async function getAllPermittedAppIdsForPkp(
-  request: GetAllPermittedAppIdsForPkpRequest,
+  request: ExpectedParams,
   ctx: VincentNetworkContext,
-) {
-  const validatedRequest = GetAllPermittedAppIdsForPkpRequest.parse(request);
+): Promise<RawContractResponse> {
+  const validatedRequest = ExpectedParams.parse(request);
   logger.debug({ validatedRequest });
 
   const { vincentUserViewFacetContract } = createVincentContracts(ctx);
 
-  const appIds = await vincentUserViewFacetContract.read.getAllPermittedAppIdsForPkp([
-    validatedRequest.pkpTokenId,
-  ]);
+  const appIds =
+    await vincentUserViewFacetContract.read.getAllPermittedAppIdsForPkp(
+      validatedRequest,
+    );
 
   return appIds;
-} 
+}

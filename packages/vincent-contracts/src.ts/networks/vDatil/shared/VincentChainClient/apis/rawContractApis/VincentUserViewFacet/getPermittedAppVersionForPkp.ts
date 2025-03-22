@@ -3,14 +3,21 @@ import { logger } from '../../../../../../shared/logger';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
-const GetPermittedAppVersionForPkpRequest = z.object({
-  pkpTokenId: z.coerce.bigint(),
-  appId: z.coerce.bigint(),
-});
+// Define raw types from the contract
+type RawContractMethod = ReturnType<
+  typeof createVincentContracts
+>['vincentUserViewFacetContract']['read']['getPermittedAppVersionForPkp'];
+type RawContractParams = Parameters<RawContractMethod>[0];
+type RawContractResponse = Awaited<ReturnType<RawContractMethod>>;
 
-type GetPermittedAppVersionForPkpRequest = z.input<
-  typeof GetPermittedAppVersionForPkpRequest
->;
+const ExpectedParams = z
+  .object({
+    pkpTokenId: z.coerce.bigint(),
+    appId: z.coerce.bigint(),
+  })
+  .transform((params): RawContractParams => [params.pkpTokenId, params.appId]);
+
+type ExpectedParams = z.input<typeof ExpectedParams>;
 
 /**
  * Retrieves the permitted application version for a specific PKP token and application
@@ -19,18 +26,18 @@ type GetPermittedAppVersionForPkpRequest = z.input<
  * @returns The permitted application version for the specified PKP and application
  */
 export async function getPermittedAppVersionForPkp(
-  request: GetPermittedAppVersionForPkpRequest,
+  request: ExpectedParams,
   ctx: VincentNetworkContext,
-) {
-  const validatedRequest = GetPermittedAppVersionForPkpRequest.parse(request);
+): Promise<RawContractResponse> {
+  const validatedRequest = ExpectedParams.parse(request);
   logger.debug({ validatedRequest });
 
   const { vincentUserViewFacetContract } = createVincentContracts(ctx);
 
-  const appVersion = await vincentUserViewFacetContract.read.getPermittedAppVersionForPkp([
-    validatedRequest.pkpTokenId,
-    validatedRequest.appId,
-  ]);
+  const appVersion =
+    await vincentUserViewFacetContract.read.getPermittedAppVersionForPkp(
+      validatedRequest,
+    );
 
   return appVersion;
-} 
+}

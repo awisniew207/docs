@@ -4,13 +4,20 @@ import { toEthAddress } from '../../../../../../shared/utils/z-transformers';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
-const GetAllRegisteredAgentPkpsRequest = z.object({
-  userAddress: toEthAddress,
-});
+// Define raw types from the contract
+type RawContractMethod = ReturnType<
+  typeof createVincentContracts
+>['vincentUserViewFacetContract']['read']['getAllRegisteredAgentPkps'];
+type RawContractParams = Parameters<RawContractMethod>[0];
+type RawContractResponse = Awaited<ReturnType<RawContractMethod>>;
 
-type GetAllRegisteredAgentPkpsRequest = z.input<
-  typeof GetAllRegisteredAgentPkpsRequest
->;
+const ExpectedParams = z
+  .object({
+    userAddress: toEthAddress,
+  })
+  .transform((params): RawContractParams => [params.userAddress]);
+
+type ExpectedParams = z.input<typeof ExpectedParams>;
 
 /**
  * Retrieves all registered agent PKP token IDs for a specific user address
@@ -19,18 +26,18 @@ type GetAllRegisteredAgentPkpsRequest = z.input<
  * @returns Array of PKP token IDs registered by the user address
  */
 export async function getAllRegisteredAgentPkps(
-  request: GetAllRegisteredAgentPkpsRequest,
+  request: ExpectedParams,
   ctx: VincentNetworkContext,
-) {
-  const validatedRequest = GetAllRegisteredAgentPkpsRequest.parse(request);
+): Promise<RawContractResponse> {
+  const validatedRequest = ExpectedParams.parse(request);
   logger.debug({ validatedRequest });
 
   const { vincentUserViewFacetContract } = createVincentContracts(ctx);
 
   const pkpTokenIds =
-    await vincentUserViewFacetContract.read.getAllRegisteredAgentPkps([
-      validatedRequest.userAddress,
-    ]);
+    await vincentUserViewFacetContract.read.getAllRegisteredAgentPkps(
+      validatedRequest,
+    );
 
   return pkpTokenIds;
 }

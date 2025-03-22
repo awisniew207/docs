@@ -3,14 +3,21 @@ import { logger } from '../../../../../../shared/logger';
 import { VincentNetworkContext } from '../../../vincentNetworkContext';
 import { createVincentContracts } from '../../utils/createVincentContracts';
 
-const GetAllToolsAndPoliciesForAppRequest = z.object({
-  pkpTokenId: z.coerce.bigint(),
-  appId: z.coerce.bigint(),
-});
+// Define raw types from the contract
+type RawContractMethod = ReturnType<
+  typeof createVincentContracts
+>['vincentUserViewFacetContract']['read']['getAllToolsAndPoliciesForApp'];
+type RawContractParams = Parameters<RawContractMethod>[0];
+type RawContractResponse = Awaited<ReturnType<RawContractMethod>>;
 
-type GetAllToolsAndPoliciesForAppRequest = z.input<
-  typeof GetAllToolsAndPoliciesForAppRequest
->;
+const ExpectedParams = z
+  .object({
+    pkpTokenId: z.coerce.bigint(),
+    appId: z.coerce.bigint(),
+  })
+  .transform((params): RawContractParams => [params.pkpTokenId, params.appId]);
+
+type ExpectedParams = z.input<typeof ExpectedParams>;
 
 /**
  * Retrieves all tools and their associated policies for a specific PKP token and application
@@ -19,18 +26,18 @@ type GetAllToolsAndPoliciesForAppRequest = z.input<
  * @returns Array of tools with their associated policies for the specified PKP and application
  */
 export async function getAllToolsAndPoliciesForApp(
-  request: GetAllToolsAndPoliciesForAppRequest,
+  request: ExpectedParams,
   ctx: VincentNetworkContext,
-) {
-  const validatedRequest = GetAllToolsAndPoliciesForAppRequest.parse(request);
+): Promise<RawContractResponse> {
+  const validatedRequest = ExpectedParams.parse(request);
   logger.debug({ validatedRequest });
 
   const { vincentUserViewFacetContract } = createVincentContracts(ctx);
 
-  const tools = await vincentUserViewFacetContract.read.getAllToolsAndPoliciesForApp([
-    validatedRequest.pkpTokenId,
-    validatedRequest.appId,
-  ]);
+  const tools =
+    await vincentUserViewFacetContract.read.getAllToolsAndPoliciesForApp(
+      validatedRequest,
+    );
 
   return tools;
-} 
+}
