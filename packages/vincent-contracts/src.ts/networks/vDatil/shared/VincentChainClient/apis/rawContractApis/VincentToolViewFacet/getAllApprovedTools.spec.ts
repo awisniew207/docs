@@ -16,11 +16,11 @@ describe('getAllApprovedTools', () => {
 
     // Verify structure of the response
     expect(result).toHaveProperty('toolIpfsCids');
-    
+
     // Verify that toolIpfsCids is an array
     expect(Array.isArray(result.toolIpfsCids)).toBe(true);
-    
+
     // Since we're using a mocked context in tests, we can't verify exact content,
     // but we can verify the structure is correct
   });
-}); 
+});
