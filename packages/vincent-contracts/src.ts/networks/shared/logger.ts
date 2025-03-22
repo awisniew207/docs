@@ -5,11 +5,10 @@
  */
 
 import { LogManager, Logger } from '@lit-protocol/logger';
-
 // Environment detection
 const isBrowser = typeof window !== 'undefined';
 
-const DEFAULT_CATEGORY = 'vincent-contracts';
+const DEFAULT_CATEGORY = '[Vincent Contracts]';
 
 let logger: {
   info: (message: any, ...args: any[]) => void;
@@ -24,43 +23,24 @@ let logger: {
 // For browser environments, use the Lit Logger
 // ================================================
 if (isBrowser) {
-  const browserLogger = LogManager.Instance.get(DEFAULT_CATEGORY);
-  
-  interface ExtendedBrowserLogger extends Logger {
-    child: (bindings: object) => Logger;
-  }
-  
-  logger = browserLogger as ExtendedBrowserLogger;
-  
-  // create a child logger with the same interface
-  const createChildLogger = (bindings: object, category = DEFAULT_CATEGORY) => {
-    // Use the object's properties to create a string ID for the child logger
-    const id = Object.entries(bindings)
-      .map(([key, value]) => `${key}:${value}`)
-      .join('|');
-    
-    return LogManager.Instance.get(category, id);
-  };
-  
-  // Add the child method to the browser logger
-  logger.child = function(bindings: object) {
-    return createChildLogger(bindings);
-  };
-} 
+  LogManager.Instance.setPrefix(DEFAULT_CATEGORY);
+
+  // @ts-ignore - child method is not present in the Logger type
+  logger = LogManager.Instance.get();
+}
 // ================================================
 // For Node.js environments, use Pino
 // ================================================
 else {
   const pino = require('pino');
-    
+
   logger = pino({
     transport: {
       target: 'pino-pretty',
       options: { colorize: true, translateTime: true },
     },
-    base: { app: DEFAULT_CATEGORY }
+    base: { app: DEFAULT_CATEGORY },
   });
-  
 }
 
 export { logger };

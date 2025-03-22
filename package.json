@@ -31,6 +31,7 @@
     "@lit-protocol/contracts": "^0.0.90",
     "@lit-protocol/contracts-sdk": "^7.0.6",
     "@lit-protocol/lit-auth-client": "^7.0.6",
+    "@lit-protocol/logger": "custom-logger",
     "@lit-protocol/misc": "^7.0.8",
     "@lit-protocol/pkp-ethers": "^7.0.8",
     "@lit-protocol/vincent-sdk": "0.1.1-1",
