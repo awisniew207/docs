@@ -38,12 +38,12 @@ export const getTestContext = async (opts?: {
 
     console.log('🔥 [getTestContext > JIT] Hash:', hash);
     networkContext = createVincentNetworkContext({
-      account: jitTestAccount,
+      accountOrWalletClient: jitTestAccount,
       network: 'datil',
     });
   } else {
     networkContext = createVincentNetworkContext({
-      account: masterTestAccount,
+      accountOrWalletClient: masterTestAccount,
       network: 'datil',
     });
   }
