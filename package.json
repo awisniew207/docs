@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "clean": "node tools/clean.js",
+    "deploy:tools": "npx nx deploy vincent-tool-uniswap-swap",
     "dev": "nx serve dashboard",
     "build": "nx run-many --target=build --all",
     "start": "nx serve dashboard --prod",
@@ -13,6 +15,9 @@
   "private": false,
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9.8.0",
+    "@nx/eslint": "19.8.4",
+    "@nx/eslint-plugin": "19.8.4",
     "@nx/jest": "^20.5.0",
     "@nx/js": "20.4.6",
     "@nx/linter": "^19.8.4",
@@ -37,7 +42,9 @@
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.2.6",
     "tslib": "^2.3.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.0.0",
+    "verdaccio": "^5.0.4"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
@@ -102,5 +109,18 @@
   "bugs": {
     "url": "https://github.com/LIT-Protocol/Vincent/issues"
   },
-  "homepage": "https://github.com/LIT-Protocol/Vincent#readme"
+  "homepage": "https://github.com/LIT-Protocol/Vincent#readme",
+  "nx": {
+    "includedScripts": [],
+    "targets": {
+      "local-registry": {
+        "executor": "@nx/js:verdaccio",
+        "options": {
+          "port": 4873,
+          "config": ".verdaccio/config.yml",
+          "storage": "tmp/local-registry/storage"
+        }
+      }
+    }
+  }
 }
