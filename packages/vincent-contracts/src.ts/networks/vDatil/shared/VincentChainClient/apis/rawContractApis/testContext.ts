@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { createVincentNetworkContext } from '../../vincentNetworkContext';
 import { registerApp } from './VincentAppFacet/registerApp';
