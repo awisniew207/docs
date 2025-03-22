@@ -1,4 +1,4 @@
-import { Account, createWalletClient, http } from 'viem';
+import { Account, createWalletClient, http, WalletClient } from 'viem';
 import { vincentMainnetNetworkContext } from '../../datil-mainnet/vincentContext';
 
 // TODO: We need to add more networks here
@@ -18,10 +18,10 @@ export type VincentNetworkContext = typeof vincentNetworkContext;
  * @throws {Error} If an unsupported network is specified
  */
 export const createVincentNetworkContext = ({
-  account,
+  accountOrWalletClient,
   network,
 }: {
-  account: Account;
+  accountOrWalletClient: Account | WalletClient;
   network: 'datil' | 'datil-test' | 'datil-dev';
 }) => {
   let networkContext = {} as VincentNetworkContext;
@@ -35,14 +35,20 @@ export const createVincentNetworkContext = ({
     // networkContext = vincentDevnetNetworkContext;
     throw new Error('datil-dev network not implemented');
   }
-
-  const walletClient = createWalletClient({
-    account,
-    chain: networkContext.chainConfig.chain,
-    transport: http(networkContext.rpcUrl),
-  });
-
-  networkContext.walletClient = walletClient;
+  // If a wallet client is already provided, use it directly
+  if (accountOrWalletClient.type === 'local') {
+    // If an account is provided, create a wallet client with it
+    const walletClient = createWalletClient({
+      account: accountOrWalletClient as Account,
+      chain: networkContext.chainConfig.chain,
+      transport: http(networkContext.rpcUrl),
+    });
+    networkContext.walletClient = walletClient;
+  } else if (accountOrWalletClient.type === 'walletClient') {
+    networkContext.walletClient = accountOrWalletClient as WalletClient;
+  } else {
+    throw new Error('Unsupported account type: ' + accountOrWalletClient.type);
+  }
 
   return networkContext;
 };
