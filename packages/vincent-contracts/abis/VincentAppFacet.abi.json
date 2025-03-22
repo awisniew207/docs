@@ -339,10 +339,10 @@
   },
   {
     "type": "event",
-    "name": "NewToolRegistered",
+    "name": "NewLitActionRegistered",
     "inputs": [
       {
-        "name": "toolIpfsCidHash",
+        "name": "litActionIpfsCidHash",
         "type": "bytes32",
         "indexed": true,
         "internalType": "bytes32"
@@ -438,6 +438,99 @@
         "name": "delegatee",
         "type": "address",
         "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "DuplicateParameterNameNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramName",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "firstIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "duplicateIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "DuplicatePolicyIpfsCidNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIpfsCid",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "firstIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "duplicateIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "DuplicateToolIpfsCidNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIpfsCid",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "firstIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "duplicateIndex",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ]
   },
@@ -564,6 +657,58 @@
   },
   {
     "type": "error",
+    "name": "ParameterArrayLengthMismatch",
+    "inputs": [
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramNamesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramTypesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PolicyArrayLengthMismatch",
+    "inputs": [
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policiesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramNamesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramTypesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "RedirectUriAlreadyAuthorizedForApp",
     "inputs": [
       {
@@ -591,6 +736,32 @@
         "name": "redirectUri",
         "type": "string",
         "internalType": "string"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ToolArrayDimensionMismatch",
+    "inputs": [
+      {
+        "name": "toolsLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policiesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramNamesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramTypesLength",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ]
   },

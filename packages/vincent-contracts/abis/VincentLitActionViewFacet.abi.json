@@ -1,11 +1,11 @@
 [
   {
     "type": "function",
-    "name": "getAllApprovedTools",
+    "name": "getAllApprovedLitActions",
     "inputs": [],
     "outputs": [
       {
-        "name": "toolIpfsCids",
+        "name": "litActionIpfsCids",
         "type": "string[]",
         "internalType": "string[]"
       }
@@ -14,7 +14,7 @@
   },
   {
     "type": "function",
-    "name": "getApprovedToolsManager",
+    "name": "getApprovedLitActionsManager",
     "inputs": [],
     "outputs": [
       {
@@ -27,10 +27,10 @@
   },
   {
     "type": "function",
-    "name": "getToolIpfsCidByHash",
+    "name": "getLitActionIpfsCidByHash",
     "inputs": [
       {
-        "name": "toolIpfsCidHash",
+        "name": "litActionIpfsCidHash",
         "type": "bytes32",
         "internalType": "bytes32"
       }
@@ -46,10 +46,10 @@
   },
   {
     "type": "function",
-    "name": "isToolApproved",
+    "name": "isLitActionApproved",
     "inputs": [
       {
-        "name": "toolIpfsCid",
+        "name": "litActionIpfsCid",
         "type": "string",
         "internalType": "string"
       }
@@ -65,28 +65,28 @@
   },
   {
     "type": "error",
-    "name": "EmptyToolIpfsCid",
+    "name": "EmptyLitActionIpfsCid",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "NoToolsApproved",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "NoToolsRegistered",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "ToolHashNotFound",
+    "name": "LitActionHashNotFound",
     "inputs": [
       {
-        "name": "toolIpfsCidHash",
+        "name": "litActionIpfsCidHash",
         "type": "bytes32",
         "internalType": "bytes32"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "NoLitActionsApproved",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoLitActionsRegistered",
+    "inputs": []
   }
 ]

@@ -71,10 +71,10 @@ contract VincentAppFacet is VincentBase {
     event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
 
     /**
-     * @notice Emitted when a new tool is registered
-     * @param toolIpfsCidHash The keccak256 hash of the tool's IPFS CID that was registered
+     * @notice Emitted when a new lit action is registered
+     * @param litActionIpfsCidHash The keccak256 hash of the lit action's IPFS CID that was registered
      */
-    event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
+    event NewLitActionRegistered(bytes32 indexed litActionIpfsCidHash);
 
     /**
      * @notice Error thrown when a non-manager attempts to modify an app
@@ -635,7 +635,7 @@ contract VincentAppFacet is VincentBase {
         // Step 4: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
-        VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
+        VincentLitActionStorage.LitActionStorage storage ls = VincentLitActionStorage.litActionStorage();
 
         // Step 5: Create a new app version.
         app.versionedApps.push();
@@ -659,9 +659,9 @@ contract VincentAppFacet is VincentBase {
 
             // First check if the tool is already registered in global storage
             // before trying to register it again
-            if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
-                ts.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
-                emit NewToolRegistered(hashedToolCid);
+            if (bytes(ls.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
+                ls.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
+                emit NewLitActionRegistered(hashedToolCid);
             }
             // If tool is already registered globally, just continue
             // without trying to register it again
@@ -682,8 +682,8 @@ contract VincentAppFacet is VincentBase {
                 toolPoliciesStorage.policyIpfsCidHashes.add(hashedToolPolicy);
 
                 // Step 7.2: Store the policy IPFS CID globally if it's not already stored.
-                if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
-                    ts.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
+                if (bytes(ls.ipfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
+                    ls.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
                 // Create a new Policy storage structure for this policy in the current app version
@@ -705,8 +705,8 @@ contract VincentAppFacet is VincentBase {
                     policyParameterNameHashes.add(hashedPolicyParameterName);
 
                     // Step 9.2: Store the parameter name if not already stored.
-                    if (bytes(ts.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
-                        ts.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
+                    if (bytes(ls.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
+                        ls.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
 
                     // Step 9.3: Store the parameter type

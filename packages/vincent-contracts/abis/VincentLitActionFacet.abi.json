@@ -1,10 +1,10 @@
 [
   {
     "type": "function",
-    "name": "approveTools",
+    "name": "approveLitActions",
     "inputs": [
       {
-        "name": "toolIpfsCids",
+        "name": "litActionIpfsCids",
         "type": "string[]",
         "internalType": "string[]"
       }
@@ -14,10 +14,10 @@
   },
   {
     "type": "function",
-    "name": "registerTools",
+    "name": "removeLitActionApprovals",
     "inputs": [
       {
-        "name": "toolIpfsCids",
+        "name": "litActionIpfsCids",
         "type": "string[]",
         "internalType": "string[]"
       }
@@ -27,20 +27,7 @@
   },
   {
     "type": "function",
-    "name": "removeToolApprovals",
-    "inputs": [
-      {
-        "name": "toolIpfsCids",
-        "type": "string[]",
-        "internalType": "string[]"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "updateApprovedToolsManager",
+    "name": "updateApprovedLitActionsManager",
     "inputs": [
       {
         "name": "newManager",
@@ -53,7 +40,7 @@
   },
   {
     "type": "event",
-    "name": "ApprovedToolsManagerUpdated",
+    "name": "ApprovedLitActionsManagerUpdated",
     "inputs": [
       {
         "name": "previousManager",
@@ -72,10 +59,10 @@
   },
   {
     "type": "event",
-    "name": "NewToolRegistered",
+    "name": "LitActionApprovalRemoved",
     "inputs": [
       {
-        "name": "toolIpfsCidHash",
+        "name": "litActionIpfsCidHash",
         "type": "bytes32",
         "indexed": true,
         "internalType": "bytes32"
@@ -85,10 +72,10 @@
   },
   {
     "type": "event",
-    "name": "ToolApprovalRemoved",
+    "name": "LitActionApproved",
     "inputs": [
       {
-        "name": "toolIpfsCidHash",
+        "name": "litActionIpfsCidHash",
         "type": "bytes32",
         "indexed": true,
         "internalType": "bytes32"
@@ -98,10 +85,10 @@
   },
   {
     "type": "event",
-    "name": "ToolApproved",
+    "name": "NewLitActionRegistered",
     "inputs": [
       {
-        "name": "toolIpfsCidHash",
+        "name": "litActionIpfsCidHash",
         "type": "bytes32",
         "indexed": true,
         "internalType": "bytes32"
@@ -111,17 +98,17 @@
   },
   {
     "type": "error",
-    "name": "EmptyToolIpfsCid",
+    "name": "EmptyLitActionIpfsCid",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "EmptyToolIpfsCidsArray",
+    "name": "EmptyLitActionIpfsCidsArray",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "InvalidApprovedToolsManager",
+    "name": "InvalidApprovedLitActionsManager",
     "inputs": [
       {
         "name": "manager",
@@ -132,56 +119,56 @@
   },
   {
     "type": "error",
-    "name": "NotApprovedToolsManager",
+    "name": "LitActionAlreadyApproved",
+    "inputs": [
+      {
+        "name": "litActionIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "LitActionAlreadyRegistered",
+    "inputs": [
+      {
+        "name": "litActionIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "LitActionNotApproved",
+    "inputs": [
+      {
+        "name": "litActionIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "LitActionNotRegistered",
+    "inputs": [
+      {
+        "name": "litActionIpfsCidHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NotApprovedLitActionsManager",
     "inputs": [
       {
         "name": "caller",
         "type": "address",
         "internalType": "address"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "ToolAlreadyApproved",
-    "inputs": [
-      {
-        "name": "toolIpfsCidHash",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "ToolAlreadyRegistered",
-    "inputs": [
-      {
-        "name": "toolIpfsCidHash",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "ToolNotApproved",
-    "inputs": [
-      {
-        "name": "toolIpfsCidHash",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "ToolNotRegistered",
-    "inputs": [
-      {
-        "name": "toolIpfsCidHash",
-        "type": "bytes32",
-        "internalType": "bytes32"
       }
     ]
   }
