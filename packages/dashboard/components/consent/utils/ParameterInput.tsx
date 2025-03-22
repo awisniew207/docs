@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ParameterType, mapEnumToTypeName } from '../../../services/types/parameterTypes';
 
 interface ParameterInputProps {
@@ -12,13 +12,15 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const [inputValue, setInputValue] = useState<any>(value || '');
   const typeName = mapEnumToTypeName(type);
   
+  // Update local state when prop value changes
   useEffect(() => {
-    if (value !== undefined) {
+    if (value !== undefined && value !== inputValue) {
       setInputValue(value);
     }
   }, [value]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  // Memoize handlers to prevent recreating on each render
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     
@@ -91,7 +93,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     }
     
     onChange(parsedValue);
-  };
+  }, [type, onChange]);
 
   // Special handler for number array inputs to prevent NaN values
   const handleNumberArrayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

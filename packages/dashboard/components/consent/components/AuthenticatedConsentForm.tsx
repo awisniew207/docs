@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { VincentSDK } from '@lit-protocol/vincent-sdk';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
@@ -21,6 +21,45 @@ import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { ParameterType, PARAMETER_TYPE_NAMES } from '@/services/types/parameterTypes';
+
+// New interface for the parameter update modal
+interface ParameterUpdateModalProps {
+  isOpen: boolean;
+  onContinue: () => void;
+  onUpdate: () => void;
+  appName: string;
+}
+
+// Modal component for parameter update choice
+const ParameterUpdateModal = ({ isOpen, onContinue, onUpdate, appName }: ParameterUpdateModalProps) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 m-4">
+        <h3 className="text-lg font-bold mb-4">Update Parameters?</h3>
+        <p className="mb-4">
+          You've already granted permission to <strong>{appName}</strong>. 
+          Would you like to continue with your existing parameters or update them?
+        </p>
+        <div className="flex justify-end space-x-3">
+          <button 
+            className="btn btn--outline"
+            onClick={onContinue}
+          >
+            Continue with Existing
+          </button>
+          <button 
+            className="btn btn--primary"
+            onClick={onUpdate}
+          >
+            Update Parameters
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface AuthenticatedConsentFormProps {
   userPKP: IRelayPKP;
@@ -45,6 +84,23 @@ interface VersionParameter {
   name: string;
   type: number;
   value: any;
+}
+
+// Interface to match the contract data structure
+interface PolicyParameter {
+  name: string;
+  paramType: number;
+  value: string;
+}
+
+interface PolicyWithParameters {
+  policyIpfsCid: string;
+  parameters: PolicyParameter[];
+}
+
+interface ToolWithPolicies {
+  toolIpfsCid: string;
+  policies: PolicyWithParameters[];
 }
 
 export default function AuthenticatedConsentForm ({
@@ -72,6 +128,14 @@ export default function AuthenticatedConsentForm ({
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
   const [permittedVersion, setPermittedVersion] = useState<number | null>(null);
   const [showVersionUpgradePrompt, setShowVersionUpgradePrompt] = useState<boolean>(false);
+  // New state for parameter update modal
+  const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
+  const [existingParameters, setExistingParameters] = useState<VersionParameter[]>([]);
+  const [isLoadingParameters, setIsLoadingParameters] = useState<boolean>(false);
+  
+  // Add refs to track initialization
+  const permissionCheckedRef = useRef(false);
+  const versionFetchedRef = useRef(false);
   
   // ===== JWT and Redirect Functions =====
   
@@ -153,6 +217,281 @@ export default function AuthenticatedConsentForm ({
     }
   }, [redirectUri, generatedJwt]);
 
+  // ===== Parameter Management Functions =====
+  
+  // Function to decode parameter values based on their types
+  const decodeParameterValue = useCallback((encodedValue: string, paramType: number) => {
+    try {
+      // Handle different parameter types
+      switch (paramType) {
+        case ParameterType.INT256:
+          return ethers.utils.defaultAbiCoder.decode(['int256'], encodedValue)[0].toString();
+        
+        case ParameterType.UINT256:
+          return ethers.utils.defaultAbiCoder.decode(['uint256'], encodedValue)[0].toString();
+        
+        case ParameterType.BOOL:
+          return ethers.utils.defaultAbiCoder.decode(['bool'], encodedValue)[0];
+        
+        case ParameterType.ADDRESS:
+          return ethers.utils.defaultAbiCoder.decode(['address'], encodedValue)[0];
+        
+        case ParameterType.STRING:
+          return ethers.utils.defaultAbiCoder.decode(['string'], encodedValue)[0];
+        
+        // Handle array types
+        case ParameterType.INT256_ARRAY:
+          return ethers.utils.defaultAbiCoder.decode(['int256[]'], encodedValue)[0].join(',');
+        
+        case ParameterType.UINT256_ARRAY:
+          return ethers.utils.defaultAbiCoder.decode(['uint256[]'], encodedValue)[0].join(',');
+        
+        case ParameterType.BOOL_ARRAY:
+          return ethers.utils.defaultAbiCoder.decode(['bool[]'], encodedValue)[0].join(',');
+        
+        case ParameterType.ADDRESS_ARRAY:
+          return ethers.utils.defaultAbiCoder.decode(['address[]'], encodedValue)[0].join(',');
+        
+        case ParameterType.STRING_ARRAY:
+          return ethers.utils.defaultAbiCoder.decode(['string[]'], encodedValue)[0].join(',');
+        
+        // Fallback for bytes and other types
+        default:
+          return ethers.utils.hexlify(encodedValue);
+      }
+    } catch (error) {
+      console.error('Error decoding parameter value:', error, { encodedValue, paramType });
+      return '';
+    }
+  }, []);
+  
+  // Fetch existing parameters from the contract
+  const fetchExistingParameters = useCallback(async () => {
+    if (!appId || !agentPKP) {
+      console.error('Missing appId or agentPKP in fetchExistingParameters');
+      return;
+    }
+    
+    // Don't fetch if we're already loading or have data
+    if (isLoadingParameters || existingParameters.length > 0) {
+      return;
+    }
+    
+    setIsLoadingParameters(true);
+    
+    try {
+      const userViewContract = getUserViewRegistryContract();
+      const appIdNum = Number(appId);
+      
+      // Call the contract to get existing tools and policies with parameters
+      const toolsAndPolicies = await userViewContract.getAllToolsAndPoliciesForApp(
+        agentPKP.tokenId,
+        appIdNum
+      );
+      
+      console.log('Existing tools and policies:', toolsAndPolicies);
+      
+      // Transform the contract data into the VersionParameter format
+      const existingParams: VersionParameter[] = [];
+      
+      // Process each tool
+      toolsAndPolicies.forEach((tool: ToolWithPolicies, toolIndex: number) => {
+        // Process each policy in the tool
+        tool.policies.forEach((policy: PolicyWithParameters, policyIndex: number) => {
+          // Process each parameter in the policy
+          policy.parameters.forEach((param: PolicyParameter, paramIndex: number) => {
+            // Decode the parameter value based on its type
+            const decodedValue = decodeParameterValue(param.value, param.paramType);
+            
+            existingParams.push({
+              toolIndex,
+              policyIndex,
+              paramIndex,
+              name: param.name,
+              type: param.paramType,
+              value: decodedValue
+            });
+          });
+        });
+      });
+      
+      console.log('Transformed parameters with decoded values:', existingParams);
+      setExistingParameters(existingParams);
+      
+      // Also try to fetch version info to match parameter names if not already loaded
+      if (!versionInfo && appInfo) {
+        try {
+          const contract = getAppViewRegistryContract();
+          const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
+          console.log('Fetched version info for parameter matching:', versionData);
+          setVersionInfo(versionData);
+        } catch (err) {
+          console.error('Error fetching version info for parameter matching:', err);
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error fetching existing parameters:', error);
+    } finally {
+      setIsLoadingParameters(false);
+    }
+  }, [appId, agentPKP, decodeParameterValue, versionInfo, appInfo, isLoadingParameters, existingParameters]);
+  
+  // Handler for updating parameters
+  const handleUpdateParameters = useCallback(() => {
+    setShowUpdateModal(false);
+    
+    // Reset any existing "already authorized" flags
+    setShowingAuthorizedMessage(false);
+    setShowSuccess(false);
+    
+    // Populate the form with existing parameter values
+    if (existingParameters.length > 0) {
+      console.log('Setting form fields with existing parameter values:', existingParameters);
+      setParameters(existingParameters);
+    }
+    
+    setIsAppAlreadyPermitted(false);
+    setShowVersionUpgradePrompt(false);
+    setIsLoading(false);
+    setCheckingPermissions(false);
+  }, [existingParameters]);
+
+  // Function to update only the parameters of existing permitted app
+  const updateParameters = useCallback(async () => {
+    if (!agentPKP || !appId || !appInfo) {
+      console.error('Missing required data for parameter update');
+      throw new Error('Missing required data for parameter update');
+    }
+
+    const userRegistryContract = getUserRegistryContract();
+    const userPkpWallet = new PKPEthersWallet({
+      controllerSessionSigs: sessionSigs,
+      pkpPubKey: userPKP.publicKey,
+      litNodeClient: litNodeClient,
+    });
+    await userPkpWallet.init();
+    const connectedContract = userRegistryContract.connect(userPkpWallet);
+    
+    // Prepare data structures for the contract call
+    const toolIpfsCids: string[] = [];
+    const policyIpfsCids: string[][] = [];
+    const policyParameterNames: string[][][] = [];
+    const policyParameterValues: Uint8Array[][][] = [];
+    
+    if (versionInfo) {
+      const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+      
+      if (toolsData && Array.isArray(toolsData)) {
+        toolsData.forEach((tool, toolIndex) => {
+          if (!tool || !Array.isArray(tool)) return;
+          
+          const toolIpfsCid = tool[0];
+          if (toolIpfsCid) {
+            toolIpfsCids[toolIndex] = toolIpfsCid;
+            policyIpfsCids[toolIndex] = [];
+            policyParameterNames[toolIndex] = [];
+            policyParameterValues[toolIndex] = [];
+            
+            const policies = tool[1];
+            if (Array.isArray(policies)) {
+              policies.forEach((policy, policyIndex) => {
+                if (!policy || !Array.isArray(policy)) return;
+                
+                const policyIpfsCid = policy[0];
+                policyIpfsCids[toolIndex][policyIndex] = policyIpfsCid;
+                policyParameterNames[toolIndex][policyIndex] = [];
+                policyParameterValues[toolIndex][policyIndex] = [];
+                
+                // Extract parameter names and types from the policy
+                const paramNames = policy[1];
+                
+                if (Array.isArray(paramNames)) {
+                  paramNames.forEach((name, paramIndex) => {
+                    // Ensure parameter name is never empty
+                    const paramName = typeof name === 'string' && name.trim() !== '' 
+                      ? name.trim() 
+                      : `param_${paramIndex}`;
+                    
+                    policyParameterNames[toolIndex][policyIndex][paramIndex] = paramName;
+                    
+                    // Find matching parameter value from user input
+                    const param = parameters.find(p => 
+                      p.toolIndex === toolIndex && 
+                      p.policyIndex === policyIndex && 
+                      p.paramIndex === paramIndex
+                    );
+                    
+                    // Encode the parameter value
+                    if (param && param.value !== undefined) {
+                      policyParameterValues[toolIndex][policyIndex][paramIndex] = 
+                        encodeParameterValue(param.type, param.value, paramName);
+                    } else {
+                      // Default value if not provided by user
+                      policyParameterValues[toolIndex][policyIndex][paramIndex] = 
+                        encodeParameterValue(ParameterType.STRING, "");
+                    }
+                  });
+                }
+              });
+            }
+          }
+        });
+      }
+    }
+    
+    console.log('UPDATE PARAMETERS: Preparing contract call with:', {
+      pkpTokenId: agentPKP.tokenId,
+      appId,
+      appVersion: Number(appInfo.latestVersion),
+      toolIpfsCids,
+      policyIpfsCids,
+      policyParameterNames,
+      policyParameterValues: policyParameterValues.map(tools => 
+        tools.map(policies => 
+          policies.map(param => ethers.utils.hexlify(param))
+        )
+      )
+    });
+    
+    try {
+      // Create the args array for the setToolPolicyParameters method
+      const updateArgs = [
+        agentPKP.tokenId,
+        appId,
+        Number(appInfo.latestVersion),
+        toolIpfsCids,
+        policyIpfsCids,
+        policyParameterNames,
+        policyParameterValues
+      ];
+      
+      // Estimate gas with buffer
+      const gasLimit = await estimateGasWithBuffer(
+        connectedContract,
+        'setToolPolicyParameters',
+        updateArgs
+      );
+      
+      const txResponse = await connectedContract.setToolPolicyParameters(
+        ...updateArgs,
+        {
+          gasLimit,
+        }
+      );
+      
+      console.log('PARAMETER UPDATE TRANSACTION SENT:', txResponse.hash);
+      
+      // Small delay to ensure the blockchain state has been updated
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      return txResponse;
+    } catch (error) {
+      console.error('PARAMETER UPDATE FAILED:', error);
+      throw error;
+    }
+  }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo]);
+
   // ===== Consent Approval Functions =====
 
   const approveConsent = useCallback(async () => {
@@ -160,6 +499,50 @@ export default function AuthenticatedConsentForm ({
       console.error('Missing required data for consent approval');
       throw new Error('Missing required data for consent approval');
     }
+
+    // First, check if this app+version is already permitted to avoid errors
+    console.log("CHECKING IF APP VERSION IS ALREADY PERMITTED...");
+    try {
+      const userViewContract = getUserViewRegistryContract();
+      const permittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKP.tokenId);
+      
+      const appIdNum = Number(appId);
+      const isAppPermitted = permittedAppIds.some(
+        (id: ethers.BigNumber) => id.toNumber() === appIdNum
+      );
+      
+      if (isAppPermitted) {
+        try {
+          const currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
+            agentPKP.tokenId,
+            appIdNum
+          );
+          
+          const currentVersion = currentPermittedVersion.toNumber();
+          const newVersion = Number(appInfo.latestVersion);
+          
+          console.log(`FOUND PERMITTED VERSION: Current is v${currentVersion}, checking against v${newVersion}`);
+          
+          // If trying to permit the same version, use updateParameters instead
+          if (currentVersion === newVersion) {
+            console.log(`VERSION MATCH: Using setToolPolicyParameters for version ${currentVersion} instead of permitAppVersion`);
+            return await updateParameters();
+          }
+          
+          console.log(`VERSION UPGRADE: Attempting to permit v${newVersion} as upgrade from v${currentVersion}`);
+          
+        } catch (e) {
+          console.error("Error checking permitted version:", e);
+        }
+      } else {
+        console.log("No currently permitted version found for this app");
+      }
+    } catch (e) {
+      console.error("Error checking for permitted apps:", e);
+    }
+    
+    // Now proceed with permitting the new version
+    console.log(`PERMITTING: Now permitting version ${Number(appInfo.latestVersion)}`);
 
     const userRegistryContract = getUserRegistryContract();
     const userPkpWallet = new PKPEthersWallet({
@@ -556,6 +939,9 @@ export default function AuthenticatedConsentForm ({
             return { success: false };
           }
 
+          // The approveConsent function now handles checking if 
+          // a version is already permitted and redirects to updateParameters
+          // so we can simplify this logic
           await approveConsent();
 
           const jwt = await generateJWT(appInfo);
@@ -588,11 +974,18 @@ export default function AuthenticatedConsentForm ({
     } finally {
       setSubmitting(false);
     }
-  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo]);
+  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, isAppAlreadyPermitted, permittedVersion]);
 
-  const handleParametersChange = (newParameters: VersionParameter[]) => {
-    setParameters(newParameters);
-  };
+  const handleParametersChange = useCallback((newParameters: VersionParameter[]) => {
+    // Check if the parameters actually changed to avoid unnecessary state updates
+    if (
+      parameters.length !== newParameters.length ||
+      JSON.stringify(parameters) !== JSON.stringify(newParameters)
+    ) {
+      console.log('Parameters updated:', newParameters);
+      setParameters(newParameters);
+    }
+  }, [parameters]);
 
   // Function to continue with existing permission
   const handleContinueWithExistingPermission = useCallback(async () => {
@@ -627,44 +1020,53 @@ export default function AuthenticatedConsentForm ({
       setShowingAuthorizedMessage(false);
     }
   }, [appInfo, redirectUri, generateJWT, redirectWithJWT, setError]);
+  
+  // Handler for continuing with existing parameters
+  const handleContinueWithExisting = useCallback(() => {
+    setShowUpdateModal(false);
+    handleContinueWithExistingPermission();
+  }, [handleContinueWithExistingPermission]);
 
   // ===== Data Loading Effects =====
 
   useEffect(() => {
     async function checkAppPermissionAndFetchData () {
-      if (!appId || !agentPKP) {
+      if (!appId || !agentPKP || permissionCheckedRef.current) {
         setCheckingPermissions(false);
         return;
       }
 
-    async function verifyUri (appInfo: AppView) {
-      if (!redirectUri) {
-        return false;
+      // Mark as checked to prevent multiple checks
+      permissionCheckedRef.current = true;
+
+      async function verifyUri (appInfo: AppView) {
+        if (!redirectUri) {
+          return false;
+        }
+        
+        try {
+          // Normalize redirectUri by ensuring it has a protocol
+          let normalizedRedirectUri = redirectUri;
+          normalizedRedirectUri = normalizedRedirectUri;
+          
+          const isAuthorized = appInfo?.authorizedRedirectUris?.some(uri => {
+            let normalizedUri = uri;
+            return normalizedUri === normalizedRedirectUri;
+          }) || false;
+          
+          console.log('Redirect URI check:', { 
+            redirectUri, 
+            normalizedRedirectUri,
+            authorizedUris: appInfo?.authorizedRedirectUris,
+            isAuthorized 
+          });
+          
+          return isAuthorized;
+        } catch (e) {
+          console.error('Error verifying redirect URI:', e);
+          return false;
+        }
       }
-      
-      try {
-        // Normalize redirectUri by ensuring it has a protocol
-        let normalizedRedirectUri = redirectUri;
-        normalizedRedirectUri = normalizedRedirectUri;
-        
-        const isAuthorized = appInfo?.authorizedRedirectUris?.some(uri => {
-          let normalizedUri = uri;
-          return normalizedUri === normalizedRedirectUri;
-        }) || false;
-        
-        console.log('Redirect URI check:', { 
-          redirectUri, 
-          normalizedRedirectUri,
-          authorizedUris: appInfo?.authorizedRedirectUris,
-          isAuthorized 
-        });
-        
-        return isAuthorized;
-      } catch (e) {
-        console.error('Error verifying redirect URI:', e);
-        return false;
-      }
-    }
 
       try {
         // Get all permitted app IDs for this PKP
@@ -720,25 +1122,38 @@ export default function AuthenticatedConsentForm ({
               setCheckingPermissions(false);
               return;
             }
+            
+            // Fetch existing parameters
+            await fetchExistingParameters();
+            
+            // Show the update modal instead of auto-redirecting
+            setShowUpdateModal(true);
+            setIsLoading(false);
+            setCheckingPermissions(false);
+            return;
           } catch (versionError) {
             console.error('Error checking permitted version:', versionError);
             // Continue with normal flow if we can't check the version
           }
           
-          // Only reach here if version check passed or failed
+          // Only reach here if version check failed
           console.log(
             'App is already permitted with latest version. Generating JWT and redirecting...'
           );
-          setShowingAuthorizedMessage(true);
-          const jwt = await generateJWT(appRawInfo);
           
-          setTimeout(() => {
-            setShowSuccess(true);
+          // Only show "already authorized" message if we're not showing the update modal
+          if (!showUpdateModal) {
+            setShowingAuthorizedMessage(true);
+            const jwt = await generateJWT(appRawInfo);
             
             setTimeout(() => {
-              redirectWithJWT(jwt);
-            }, 1000);
-          }, 2000);
+              setShowSuccess(true);
+              
+              setTimeout(() => {
+                redirectWithJWT(jwt);
+              }, 1000);
+            }, 2000);
+          }
         }
       } catch (err) {
         console.error(
@@ -752,26 +1167,29 @@ export default function AuthenticatedConsentForm ({
     }
 
     checkAppPermissionAndFetchData();
-  }, [appId, agentPKP, redirectUri]);
+  }, [appId, agentPKP, redirectUri, fetchExistingParameters, showUpdateModal]);
 
   useEffect(() => {
     let mounted = true;
 
     async function fetchAppInfo () {
-      if (!appId || !mounted || isAppAlreadyPermitted) return;
+      if (!appId || !mounted || isAppAlreadyPermitted || versionFetchedRef.current) return;
 
       if (checkingPermissions) return;
 
       try {
         if (appInfo && mounted) {
           console.log('App info retrieved');
+          versionFetchedRef.current = true;
+          
           const contract = getAppViewRegistryContract();
           const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
           console.log('Version info:', versionData);
           
-          setVersionInfo(versionData);
-
-          setIsLoading(false);
+          if (mounted) {
+            setVersionInfo(versionData);
+            setIsLoading(false);
+          }
         }
       } catch (err) {
         console.error('Error in fetchAppInfo:', err);
@@ -789,7 +1207,36 @@ export default function AuthenticatedConsentForm ({
     };
   }, [appId, agentPKP, isAppAlreadyPermitted, appInfo, checkingPermissions]);
 
+  // Reset any redirection flags when update modal is shown
+  useEffect(() => {
+    if (showUpdateModal) {
+      // If we're showing the update modal, ensure redirection messages are not shown
+      setShowingAuthorizedMessage(false);
+      setShowSuccess(false);
+    }
+  }, [showUpdateModal]);
+
   // ===== Render Logic =====
+  
+  // Show the parameter update modal - this should take precedence over all other views
+  if (showUpdateModal && appInfo) {
+    // Ensure modal is only shown after loading is complete
+    return (
+      <div className='container'>
+        <div className='consent-form-container'>
+          <ParameterUpdateModal 
+            isOpen={showUpdateModal && !isLoadingParameters}
+            onContinue={handleContinueWithExisting}
+            onUpdate={handleUpdateParameters}
+            appName={appInfo.name}
+          />
+          {isLoadingParameters && (
+            <p className="text-center mt-4">Loading your existing parameters...</p>
+          )}
+        </div>
+      </div>
+    );
+  }
   
   // If URL is untrusted, show an error message
   if (isUriUntrusted) {
@@ -883,7 +1330,7 @@ export default function AuthenticatedConsentForm ({
   }
   
   // Only check this after we've checked for the version upgrade prompt
-  if (isAppAlreadyPermitted || (showSuccess && checkingPermissions) || showingAuthorizedMessage) {
+  if ((isAppAlreadyPermitted && !showUpdateModal) || (showSuccess && !showUpdateModal) || (showingAuthorizedMessage && !showUpdateModal)) {
     return (
       <div className='container'>
         <div className='consent-form-container'>
@@ -1094,6 +1541,7 @@ export default function AuthenticatedConsentForm ({
               <VersionParametersForm 
                 versionData={versionInfo}
                 onChange={handleParametersChange}
+                existingParameters={existingParameters}
               />
             )}
 
