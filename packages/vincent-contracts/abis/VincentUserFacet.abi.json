@@ -376,6 +376,42 @@
   },
   {
     "type": "error",
+    "name": "DuplicateParameterNameNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramName",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "firstIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "duplicateIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "EmptyParameterName",
     "inputs": []
   },
@@ -407,6 +443,22 @@
   },
   {
     "type": "error",
+    "name": "NotAllRegisteredToolsProvided",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "appVersion",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "NotPkpOwner",
     "inputs": [
       {
@@ -423,10 +475,62 @@
   },
   {
     "type": "error",
+    "name": "ParameterArrayLengthMismatch",
+    "inputs": [
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramNamesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramValuesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "PkpTokenDoesNotExist",
     "inputs": [
       {
         "name": "pkpTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PolicyArrayLengthMismatch",
+    "inputs": [
+      {
+        "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policiesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramNamesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paramValuesLength",
         "type": "uint256",
         "internalType": "uint256"
       }
