@@ -5,8 +5,8 @@
   "author": "Lit Protocol",
   "license": "ISC",
   "type": "commonjs",
-  "main": "./dist/src.ts/index.js",
-  "typings": "./dist/src.ts/index.d.ts",
+  "main": "./src.ts/index.js",
+  "typings": "./src.ts/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist"
