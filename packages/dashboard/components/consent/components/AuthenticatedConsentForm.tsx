@@ -20,7 +20,7 @@ import { estimateGasWithBuffer } from '@/services/contract/config';
 import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
-import { ParameterType, PARAMETER_TYPE_NAMES } from '@/services/types/parameterTypes';
+import { ParameterType } from '@/services/types/parameterTypes';
 
 // New interface for the parameter update modal
 interface ParameterUpdateModalProps {
@@ -39,7 +39,7 @@ const ParameterUpdateModal = ({ isOpen, onContinue, onUpdate, appName }: Paramet
       <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 m-4">
         <h3 className="text-lg font-bold mb-4">Update Parameters?</h3>
         <p className="mb-4">
-          You've already granted permission to <strong>{appName}</strong>. 
+          You&quot;ve already granted permission to <strong>{appName}</strong>. 
           Would you like to continue with your existing parameters or update them?
         </p>
         <div className="flex justify-end space-x-3">
