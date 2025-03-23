@@ -83,6 +83,7 @@ async function main() {
         ...acc,
         [network]: {
           tool: files.find((f) => !f.file.includes('policy'))?.ipfsCid,
+          defaultPolicy: files.find((f) => f.file.includes('policy'))?.ipfsCid,
         },
       }),
       {}

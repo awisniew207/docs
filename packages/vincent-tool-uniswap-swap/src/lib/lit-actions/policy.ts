@@ -1,68 +1,49 @@
-import {
-  checkLitAuthAddressIsDelegatee,
-  getPkpToolRegistryContract,
-  getPolicyParameters,
-} from '@lit-protocol/vincent-tool';
+export { };
 
 declare global {
   // Required Inputs
   const parentToolIpfsCid: string;
-  const pkpToolRegistryContractAddress: string;
+  const vincentContractAddress: string;
   const pkpTokenId: string;
   const delegateeAddress: string;
   const toolParameters: {
-    amountIn: string;
+    pkpEthAddress: string;
+    rpcUrl: string;
+    chainId: string;
     tokenIn: string;
     tokenOut: string;
+    amountIn: string;
+  };
+  const policyObject: {
+    policyIpfsCid: string;
+    parameters: {
+      name: string;
+      paramType: number;
+      value: string;
+    }[];
   };
 }
 
 (async () => {
-  const pkpToolRegistryContract = await getPkpToolRegistryContract(
-    pkpToolRegistryContractAddress
-  );
-
-  const isDelegatee = await checkLitAuthAddressIsDelegatee(
-    pkpToolRegistryContract,
-    pkpTokenId
-  );
-  if (!isDelegatee) {
-    throw new Error(
-      `Session signer ${ethers.utils.getAddress(
-        LitAuth.authSigAddress
-      )} is not a delegatee for PKP ${pkpTokenId}`
-    );
-  }
-
-  const policyParameters = await getPolicyParameters(
-    pkpToolRegistryContract,
-    pkpTokenId,
-    parentToolIpfsCid,
-    delegateeAddress,
-    ['maxAmount', 'allowedTokens']
-  );
+  console.log(`Executing policy ${policyObject.policyIpfsCid}`);
+  console.log(`Policy parameters: ${JSON.stringify(policyObject.parameters, null, 2)}`);
 
   let maxAmount: any;
   let allowedTokens: string[] = [];
 
-  console.log(
-    `Retrieved policy parameters: ${JSON.stringify(policyParameters)}`
-  );
-
-  for (const parameter of policyParameters) {
-    const value = ethers.utils.toUtf8String(parameter.value);
-
+  for (const parameter of policyObject.parameters) {
+    console.log(`Policy Parameter: ${JSON.stringify(parameter, null, 2)}`);
     switch (parameter.name) {
       case 'maxAmount':
-        maxAmount = ethers.BigNumber.from(value);
-        console.log(`Formatted maxAmount: ${maxAmount.toString()}`);
+        maxAmount = ethers.utils.defaultAbiCoder.decode(['uint256'], parameter.value);
+        console.log(`Max amount: ${maxAmount.toString()}`);
         break;
       case 'allowedTokens':
-        allowedTokens = JSON.parse(value);
+        allowedTokens = ethers.utils.defaultAbiCoder.decode(['address[]'], parameter.value);
         allowedTokens = allowedTokens.map((addr: string) =>
           ethers.utils.getAddress(addr)
         );
-        console.log(`Formatted allowedTokens: ${allowedTokens.join(', ')}`);
+        console.log(`Allowed tokens: ${allowedTokens.join(', ')}`);
         break;
     }
   }
@@ -87,8 +68,7 @@ declare global {
       !allowedTokens.includes(ethers.utils.getAddress(toolParameters.tokenIn))
     ) {
       throw new Error(
-        `Token ${
-          toolParameters.tokenIn
+        `Token ${toolParameters.tokenIn
         } not allowed. Allowed tokens: ${allowedTokens.join(', ')}`
       );
     }
@@ -100,8 +80,7 @@ declare global {
       !allowedTokens.includes(ethers.utils.getAddress(toolParameters.tokenOut))
     ) {
       throw new Error(
-        `Token ${
-          toolParameters.tokenOut
+        `Token ${toolParameters.tokenOut
         } not allowed. Allowed tokens: ${allowedTokens.join(', ')}`
       );
     }

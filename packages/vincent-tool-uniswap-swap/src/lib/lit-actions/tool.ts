@@ -1,18 +1,23 @@
 import {
-  fetchToolPolicyFromRegistry,
   getPkpInfo,
-  getPkpToolRegistryContract,
+  getVincentContract,
   NETWORK_CONFIG,
 } from '@lit-protocol/vincent-tool';
 
 import {
   getUniswapQuoterRouter,
   getTokenInfo,
+  // @ts-ignore
   getBestQuote,
+  // @ts-ignore
   getGasData,
+  // @ts-ignore
   estimateGasLimit,
+  // @ts-ignore
   createTransaction,
+  // @ts-ignore
   signTx,
+  // @ts-ignore
   broadcastTransaction,
 } from './utils';
 
@@ -32,15 +37,15 @@ declare global {
   try {
     console.log(`Using Lit Network: ${LIT_NETWORK}`);
     console.log(
-      `Using PKP Tool Registry Address: ${PKP_TOOL_REGISTRY_ADDRESS}`
+      `Using Vincent Contract Address: ${VINCENT_ADDRESS}`
     );
     console.log(
-      `Using Pubkey Router Address: ${
-        NETWORK_CONFIG[LIT_NETWORK as keyof typeof NETWORK_CONFIG]
-          .pubkeyRouterAddress
+      `Using Pubkey Router Address: ${NETWORK_CONFIG[LIT_NETWORK as keyof typeof NETWORK_CONFIG]
+        .pubkeyRouterAddress
       }`
     );
 
+    // @ts-ignore
     const { UNISWAP_V3_QUOTER, UNISWAP_V3_ROUTER } = getUniswapQuoterRouter(
       params.chainId
     );
@@ -48,8 +53,8 @@ declare global {
     const delegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
     const toolIpfsCid = LitAuth.actionIpfsIds[0];
     const provider = new ethers.providers.JsonRpcProvider(params.rpcUrl);
-    const pkpToolRegistryContract = await getPkpToolRegistryContract(
-      PKP_TOOL_REGISTRY_ADDRESS
+    const vincentContract = await getVincentContract(
+      VINCENT_ADDRESS
     );
     const pkp = await getPkpInfo(params.pkpEthAddress);
     const tokenInfo = await getTokenInfo(
@@ -60,39 +65,41 @@ declare global {
       pkp
     );
 
-    const toolPolicy = await fetchToolPolicyFromRegistry(
-      pkpToolRegistryContract,
-      pkp.tokenId,
+    const vincentToolExecutionObject = await vincentContract.validateToolExecutionAndGetPolicies(
       delegateeAddress,
+      pkp.tokenId,
       toolIpfsCid
     );
 
-    if (
-      toolPolicy.enabled &&
-      toolPolicy.policyIpfsCid !== undefined &&
-      toolPolicy.policyIpfsCid !== '0x' &&
-      toolPolicy.policyIpfsCid !== ''
-    ) {
-      console.log(`Executing policy ${toolPolicy.policyIpfsCid}`);
+    console.log(`Tool execution object: ${JSON.stringify(vincentToolExecutionObject)}`);
 
-      await Lit.Actions.call({
-        ipfsId: toolPolicy.policyIpfsCid,
-        params: {
-          parentToolIpfsCid: toolIpfsCid,
-          pkpToolRegistryContractAddress: PKP_TOOL_REGISTRY_ADDRESS,
-          pkpTokenId: pkp.tokenId,
-          delegateeAddress,
-          toolParameters: {
-            amountIn: tokenInfo.tokenIn.amount.toString(),
-            tokenIn: params.tokenIn,
-            tokenOut: params.tokenOut,
-          },
-        },
-      });
-    } else {
+    if (!vincentToolExecutionObject.isPermitted) {
+      throw new Error('Tool execution not permitted');
+    }
+
+    if (vincentToolExecutionObject.policies.length === 0) {
       console.log(
         `No policy found for tool ${toolIpfsCid} on PKP ${pkp.tokenId} for delegatee ${delegateeAddress}`
       );
+    } else {
+      for (const policyObject of vincentToolExecutionObject.policies) {
+        console.log(`Executing Policy: ${policyObject.policyIpfsCid}`);
+
+        await Lit.Actions.call({
+          ipfsId: policyObject.policyIpfsCid,
+          params: {
+            parentToolIpfsCid: toolIpfsCid,
+            vincentContractAddress: VINCENT_ADDRESS,
+            pkpTokenId: pkp.tokenId,
+            delegateeAddress,
+            toolParameters: {
+              ...params,
+              amountIn: tokenInfo.tokenIn.amount.toString(),
+            },
+            policyObject,
+          },
+        });
+      }
     }
 
     // Get best quote and calculate minimum output

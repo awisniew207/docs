@@ -11,9 +11,15 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.31.3",
+    "@dotenvx/dotenvx": "^1.39.0",
+    "@lit-protocol/auth-helpers": "^7.0.8",
+    "@lit-protocol/constants": "^7.0.8",
+    "@lit-protocol/contracts-sdk": "^7.0.6",
+    "@lit-protocol/lit-auth-client": "^7.0.6",
+    "@lit-protocol/lit-node-client": "^7.0.8",
     "esbuild": "^0.19.11",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "ts-node": "^10.9.2"
   },
   "type": "commonjs",
   "main": "./dist/src/index.js",
@@ -23,6 +29,9 @@
     "dist",
     "!**/*.tsbuildinfo"
   ],
+  "scripts": {
+    "test:contract-caller": "npx ts-node tools/vincent-contract-caller.ts"
+  },
   "nx": {
     "sourceRoot": "packages/vincent-tool-uniswap-swap/src",
     "projectType": "library",

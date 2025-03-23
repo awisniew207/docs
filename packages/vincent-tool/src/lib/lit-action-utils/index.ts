@@ -5,7 +5,7 @@ declare global {
 
   // Injected by build script
   const LIT_NETWORK: string;
-  const PKP_TOOL_REGISTRY_ADDRESS: string;
+  const VINCENT_ADDRESS: string;
 
   const ethers: {
     providers: {
@@ -31,10 +31,6 @@ declare global {
   };
 }
 
-export * from './check-lit-auth-address-is-delegatee';
-export * from './fetch-tool-policy-from-registry';
 export * from './get-pkp-info';
-export * from './get-pkp-tool-registry-contract';
-export * from './get-policy-parameters';
+export * from './get-vincent-contract';
 export * from './network-config';
-export * from './access-control-conditions';

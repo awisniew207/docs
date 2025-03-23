@@ -3,7 +3,7 @@
  */
 module.exports = {
   datil: {
-    pkpToolRegistryAddress: '0xBDEd44A02b64416C831A0D82a630488A854ab4b1',
+    vincentAddress: '0x463f798049d300566686b5623bb6b46c24e0faa9',
     litNetwork: 'datil',
     outputFiles: [
       'deployed-lit-action-datil.js',

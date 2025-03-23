@@ -33,15 +33,25 @@ async function buildAction(network) {
     __dirname,
     '../../src/lib/lit-actions/tool.ts'
   );
+  const policyEntryPoint = path.resolve(
+    __dirname,
+    '../../src/lib/lit-actions/policy.ts'
+  );
 
   const mainOutfile = path.resolve(
     __dirname,
     '../../dist',
     `deployed-lit-action-${network}.js`
   );
+  const policyOutfile = path.resolve(
+    __dirname,
+    '../../dist',
+    `deployed-lit-action-policy-${network}.js`
+  );
 
   await Promise.all([
     buildFile(mainEntryPoint, mainOutfile, network, config),
+    buildFile(policyEntryPoint, policyOutfile, network, config),
   ]);
 }
 
