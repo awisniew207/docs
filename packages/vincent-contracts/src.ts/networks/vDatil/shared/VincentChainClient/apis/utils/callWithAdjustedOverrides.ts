@@ -1,6 +1,5 @@
 import { Hash } from 'viem';
 import { GAS_LIMIT_ADJUSTMENT } from '../../_config';
-import { logger } from '../../../../../shared/logger';
 
 /**
  * Strongly-typed wrapper around viem's `writeContract` that adjusts gas overrides for Arbitrum Stylus contracts

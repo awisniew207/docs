@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-contracts",
-  "version": "0.1.1-1",
+  "version": "0.1.1-3",
   "description": "Lit Protocol Vincent Contracts",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -9,6 +9,10 @@
   "typings": "./src.ts/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist"
-  ]
+    "dist",
+    "src.ts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
