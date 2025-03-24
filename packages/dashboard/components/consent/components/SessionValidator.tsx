@@ -4,7 +4,6 @@ import { LitPKPResource } from '@lit-protocol/auth-helpers';
 import { LIT_ABILITY } from '@lit-protocol/constants';
 import { validateSessionSigs } from '@lit-protocol/misc';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
-import * as ethers from 'ethers';
 
 import { cleanupSession, litNodeClient } from '../utils/lit';
 import AuthenticatedConsentForm from './AuthenticatedConsentForm';

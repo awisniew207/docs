@@ -35,8 +35,8 @@
       },
       {
         "name": "policyParameterValues",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       }
     ],
     "outputs": [],
@@ -116,8 +116,8 @@
       },
       {
         "name": "policyParameterValues",
-        "type": "string[][][]",
-        "internalType": "string[][][]"
+        "type": "bytes[][][]",
+        "internalType": "bytes[][][]"
       }
     ],
     "outputs": [],
@@ -376,6 +376,37 @@
   },
   {
     "type": "error",
+    "name": "EmptyParameterName",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyParameterValue",
+    "inputs": [
+      {
+        "name": "parameterName",
+        "type": "string",
+        "internalType": "string"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyPolicyIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyToolIpfsCid",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInput",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotPkpOwner",
     "inputs": [
       {
@@ -387,6 +418,17 @@
         "name": "msgSender",
         "type": "address",
         "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PkpTokenDoesNotExist",
+    "inputs": [
+      {
+        "name": "pkpTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ]
   },
@@ -405,14 +447,19 @@
         "internalType": "uint256"
       },
       {
-        "name": "hashedToolIpfsCid",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "name": "toolIpfsCid",
+        "type": "string",
+        "internalType": "string"
       },
       {
-        "name": "hashedPolicyParameterName",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "name": "toolPolicyIpfsCid",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "policyParameterName",
+        "type": "string",
+        "internalType": "string"
       }
     ]
   },
@@ -431,9 +478,9 @@
         "internalType": "uint256"
       },
       {
-        "name": "hashedToolIpfsCid",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "name": "toolIpfsCid",
+        "type": "string",
+        "internalType": "string"
       }
     ]
   },
@@ -452,20 +499,25 @@
         "internalType": "uint256"
       },
       {
-        "name": "hashedToolIpfsCid",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "name": "toolIpfsCid",
+        "type": "string",
+        "internalType": "string"
       },
       {
-        "name": "hashedToolPolicy",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "name": "toolPolicyIpfsCid",
+        "type": "string",
+        "internalType": "string"
       }
     ]
   },
   {
     "type": "error",
     "name": "ToolsAndPoliciesLengthMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroPkpTokenId",
     "inputs": []
   }
 ]

@@ -22,29 +22,35 @@ export class VincentContracts {
     appName: string,
     appDescription: string,
     authorizedRedirectUris: any,
-    delegatees: string[]
+    delegatees: string[],
+    toolIpfsCids: string[],
+    toolPolicies: string[][],
+    toolPolicyParameterTypes: number[][][],
+    toolPolicyParameterNames: string[][][]
   ) {
     const contract = await getContract(this.network, 'App', true, this.signer);
-    console.log(contract);
-    console.log(appName, appDescription, authorizedRedirectUris, delegatees);
-    
+    console.log("toolpolicyparametertypes", toolPolicyParameterTypes);
+    console.log("formatted toolpolicyparametertypes", JSON.stringify(toolPolicyParameterTypes));
     const tx = await contract.registerApp(
-      "RedirectUriTesting",
-      "Test Description",
-      ["http://localhost:3000", "http://localhost:3000/test", "http://localhost:5173", "http://localhost:5173/", "https://my-react-app-liard-beta.vercel.app/", "https://my-react-app-liard-beta.vercel.app"],
-      ["0xa723407AdB396a55aCd843D276daEa0d787F8db5"],
-      ["QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY", "QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE"],
-      [[""], [""]],
-      [[""], [""]],
-      [[["param1"]], [["param2"]]],
-      {gasLimit: 5000000})
+      appName,
+      appDescription,
+      authorizedRedirectUris,
+      delegatees,
+      toolIpfsCids,
+      toolPolicies,
+      toolPolicyParameterNames,
+      toolPolicyParameterTypes,
+      {gasLimit: 5000000});
+    console.log('tx', tx);
+      
     await tx.wait();
     return tx;
   }
 
   async addDelegatee(appId: number, delegatee: string) {
     const contract = await getContract(this.network, 'App', true, this.signer);
-    const tx = await contract.addDelegatee(appId, delegatee);
+    console.log("Trying to add delegatee", appId, delegatee);
+    const tx = await contract.addDelegatee(appId, delegatee, {gasLimit: 5000000});
     await tx.wait();
     return tx;
   }
@@ -69,16 +75,6 @@ export class VincentContracts {
       toolPolicies,
       toolPolicyParameterNames
     );
-    await tx.wait();
-    return tx;
-  }
-
-  async enableAppVersion(appId: number, version: number, isEnabled: boolean) {
-    const contract = await getContract(this.network, 'App', true, this.signer);
-    console.log('appId', appId);
-    console.log('version', version);
-    console.log('isEnabled', isEnabled);
-    const tx = await contract.enableAppVersion(appId, version, isEnabled);
     await tx.wait();
     return tx;
   }

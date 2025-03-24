@@ -18,15 +18,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
 import { useAccount } from 'wagmi';
-import { VincentContracts } from '@/services/contract/contracts';
 import { AppView } from '@/services/types';
+
 const formSchema = z.object({
   appName: z
     .string()
@@ -52,7 +51,7 @@ const formSchema = z.object({
 
 interface AppManagerProps {
   onBack: () => void;
-  dashboard: VincentApp;
+  dashboard: AppView;
   onSuccess: () => void;
 }
 
@@ -62,7 +61,6 @@ export default function ManageAppScreen({
   onSuccess,
 }: AppManagerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isToggling, setIsToggling] = useState(false);
   const { address } = useAccount();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,37 +72,17 @@ export default function ManageAppScreen({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit() {
     try {
       setIsSubmitting(true);
 
       if (!address) return;
-      
-      await updateApp(address, {
-        appId: dashboard.appId,
-        contactEmail: values.email,
-        description: values.appDescription,
-      });
+  
       onSuccess();
     } catch (error) {
       console.error('Error updating app:', error);
     } finally {
       setIsSubmitting(false);
-    }
-  }
-
-  async function handleToggleEnabled() {
-    if (!address) return;
-    
-    try {
-      setIsToggling(true);
-      const contracts = new VincentContracts('datil');
-      await contracts.enableAppVersion(dashboard.appId, dashboard.currentVersion, !dashboard.isEnabled);
-      onSuccess();
-    } catch (error) {
-      console.error('Error toggling app status:', error);
-    } finally {
-      setIsToggling(false);
     }
   }
 
@@ -115,14 +93,14 @@ export default function ManageAppScreen({
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold">Manage Application</h1>
+        <h1 className="text-3xl font-bold text-black">Manage Application</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Update Application Info</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-black">Update Application Info</CardTitle>
+            <CardDescription className="text-black">
               Update your application&apos;s off-chain information
             </CardDescription>
           </CardHeader>
@@ -137,11 +115,11 @@ export default function ManageAppScreen({
                   name="appName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Application Name</FormLabel>
+                      <FormLabel className="text-black">Application Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} className="text-black" />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-black" />
                     </FormItem>
                   )}
                 />
@@ -151,11 +129,11 @@ export default function ManageAppScreen({
                   name="appDescription"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel className="text-black">Description</FormLabel>
                       <FormControl>
-                        <Textarea rows={4} {...field} />
+                        <Textarea rows={4} {...field} className="text-black" />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-black" />
                     </FormItem>
                   )}
                 />
@@ -165,18 +143,18 @@ export default function ManageAppScreen({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Contact Email</FormLabel>
+                      <FormLabel className="text-black">Contact Email</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input type="email" {...field} className="text-black" />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-black" />
                     </FormItem>
                   )}
                 />
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full text-black"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Updating...' : 'Update Application'}
@@ -189,28 +167,15 @@ export default function ManageAppScreen({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Application Status</CardTitle>
+              <CardTitle className="text-black">Application Details</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Badge variant={dashboard.isEnabled ? 'default' : 'secondary'}>
-                    {dashboard.isEnabled ? 'Enabled' : 'Disabled'}
-                  </Badge>
-                  <Button 
-                    variant="default"
-                    className="bg-black text-white"
-                    onClick={handleToggleEnabled}
-                    disabled={isToggling}
-                  >
-                    {isToggling ? 'Updating...' : dashboard.isEnabled ? 'Disable App' : 'Enable App'}
-                  </Button>
-                </div>
-                <div className="text-sm">
+                <div className="text-sm text-black">
                   <div className="font-medium">App Name</div>
                   <div className="mt-1">{dashboard.appName}</div>
                 </div>
-                <div className="text-sm">
+                <div className="text-sm text-black">
                   <div className="font-medium">Manager Address</div>
                   <div className="mt-1 break-all">
                     {dashboard.managementWallet}
@@ -222,12 +187,12 @@ export default function ManageAppScreen({
 
           <Card>
             <CardHeader>
-              <CardTitle>Allowed Delegatees</CardTitle>
+              <CardTitle className="text-black">Allowed Delegatees</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 {dashboard.delegatees.map((delegatee: string) => (
-                  <div key={delegatee} className="text-sm break-all">
+                  <div key={delegatee} className="text-sm break-all text-black">
                     {delegatee}
                   </div>
                 ))}

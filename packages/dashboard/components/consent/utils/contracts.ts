@@ -1,8 +1,8 @@
 import * as ethers from 'ethers';
 import { LIT_RPC } from '@lit-protocol/constants';
-import APP_FACET_ABI from './abis/VincentAppViewFacet.abi.json';
-import USER_VIEW_FACET_ABI from './abis/VincentUserViewFacet.abi.json';
-import USER_FACET_ABI from './abis/VincentUserFacet.abi.json';
+import APP_VIEW_FACET_ABI from '@/services/contract/abis/VincentAppViewFacet.abi.json';
+import USER_VIEW_FACET_ABI from '@/services/contract/abis/VincentUserViewFacet.abi.json';
+import USER_FACET_ABI from '@/services/contract/abis/VincentUserFacet.abi.json';
 
 // Define contract address and provider
 export const VINCENT_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT!;
@@ -12,9 +12,9 @@ export const PROVIDER = new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_Y
  * Returns an instance of the App Registry contract
  * Used for reading app information and versions
  */
-export const getAppRegistryContract = () => new ethers.Contract(
+export const getAppViewRegistryContract = () => new ethers.Contract(
   VINCENT_CONTRACT_ADDRESS,
-  APP_FACET_ABI,
+  APP_VIEW_FACET_ABI,
   PROVIDER
 );
 
@@ -49,4 +49,4 @@ export const connectWalletToContract = (
   wallet: ethers.Signer
 ): ethers.Contract => {
   return contract.connect(wallet);
-}; 
+};

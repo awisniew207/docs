@@ -1,11 +1,9 @@
 import { ethers } from 'ethers';
 
-export type Network = 'datil-dev' | 'datil-test' | 'datil';
+export type Network = 'datil';
 
 export const VINCENT_DIAMOND_ADDRESS: Record<Network, string> = {
-  'datil-dev': '0x9397B2fB3F5bb83382cEb2c17C798Bb3e655EEaf',
-  'datil-test': '0x2C94F3975af4B7e13C29701EFB8E800b4b786E3a',
-  datil: '0x0B8dd48530dACb295188714d56B30cEE9230cC8a',
+  datil: '0x87cD7840425Fe836ea5fEc2b8Dea40149042AdCe',
 };
 
 import APP_VIEW_FACET_ABI from './abis/VincentAppViewFacet.abi.json';
@@ -55,5 +53,41 @@ export async function getContract(
   } else {
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     return new ethers.Contract(VINCENT_DIAMOND_ADDRESS[network], abi, provider);
+  }
+}
+
+/**
+ * Utility function to estimate gas for a transaction and add a 20% buffer
+ * @param contract The contract instance to use for estimation
+ * @param method The method name to call
+ * @param args The arguments to pass to the method
+ * @returns A Promise resolving to the estimated gas limit with buffer
+ */
+export async function estimateGasWithBuffer(
+  contract: ethers.Contract,
+  method: string,
+  args: any[]
+): Promise<ethers.BigNumber> {
+  try {
+    // Estimate the gas required for the transaction
+    const estimatedGas = await contract.estimateGas[method](...args);
+    
+    // Add 20% buffer to the estimated gas
+    const buffer = estimatedGas.div(5); // 20% = divide by 5
+    const gasLimitWithBuffer = estimatedGas.add(buffer);
+    
+    console.log(`Gas estimation for ${method}:`, {
+      estimated: estimatedGas.toString(),
+      withBuffer: gasLimitWithBuffer.toString()
+    });
+    
+    return gasLimitWithBuffer;
+  } catch (error) {
+    console.error(`Error estimating gas for ${method}:`, error);
+    
+    // Return a default gas limit if estimation fails
+    // This is still better than an arbitrary hardcoded value
+    const defaultGasLimit = ethers.BigNumber.from("3000000");
+    return defaultGasLimit;
   }
 }
