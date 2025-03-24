@@ -21,6 +21,7 @@ import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { ParameterType } from '@/services/types/parameterTypes';
+import { useErrorPopup } from '@/components/ui/error-popup';
 
 // New interface for the parameter update modal
 interface ParameterUpdateModalProps {
@@ -136,6 +137,19 @@ export default function AuthenticatedConsentForm ({
   // Add refs to track initialization
   const permissionCheckedRef = useRef(false);
   const versionFetchedRef = useRef(false);
+  
+  // Add the error popup hook
+  const { showError } = useErrorPopup();
+  
+  // Use error popup for URL errors
+  useEffect(() => {
+    if (urlError) {
+      showError(urlError, 'URL Error');
+    }
+    if (redirectError) {
+      showError(redirectError, 'Redirect Error');
+    }
+  }, [urlError, redirectError, showError]);
   
   // ===== JWT and Redirect Functions =====
   
@@ -748,9 +762,10 @@ export default function AuthenticatedConsentForm ({
       console.error('TRANSACTION FAILED:', error);
       
       // Try to extract more specific error information
-      const errorMessage = (error as any).message || '';
-      const errorData = (error as any).data || '';
-      const errorReason = (error as any).reason || '';
+      const errorObj = error as any;
+      const errorMessage = errorObj.message || '';
+      const errorData = errorObj.data || '';
+      const errorReason = errorObj.reason || '';
       
       console.error('Error details:', {
         message: errorMessage,
@@ -758,25 +773,49 @@ export default function AuthenticatedConsentForm ({
         reason: errorReason
       });
       
+      // Get the raw error message for display in details
+      let rawErrorDetails = '';
+      if (typeof errorMessage === 'string') {
+        rawErrorDetails = errorMessage.substring(0, 500); // Get first 500 chars
+      }
+      
+      // Format the raw error details for better readability
+      if (rawErrorDetails.includes('execution reverted')) {
+        const parts = rawErrorDetails.split('execution reverted');
+        if (parts.length > 1) {
+          rawErrorDetails = 'Execution reverted: ' + parts[1].trim();
+        }
+      }
+      
       // Check for common contract errors
+      let userFriendlyError: string;
+      
       if (errorMessage.includes('AppNotRegistered')) {
-        throw new Error(`App ID ${appId} is not registered in the contract`);
+        userFriendlyError = `App ID ${appId} is not registered in the contract`;
       } else if (errorMessage.includes('AppVersionNotRegistered') || errorMessage.includes('AppVersionNotEnabled')) {
-        throw new Error(`App version ${appInfo.latestVersion} is not registered or not enabled`);
+        userFriendlyError = `App version ${appInfo.latestVersion} is not registered or not enabled`;
       } else if (errorMessage.includes('EmptyToolIpfsCid') || errorMessage.includes('EmptyPolicyIpfsCid')) {
-        throw new Error('One of the tool or policy IPFS CIDs is empty');
+        userFriendlyError = 'One of the tool or policy IPFS CIDs is empty';
       } else if (errorMessage.includes('EmptyParameterName') || errorMessage.includes('EmptyParameterValue')) {
-        throw new Error('Parameter name or value cannot be empty');
+        userFriendlyError = 'Parameter name or value cannot be empty';
       } else if (errorMessage.includes('PolicyParameterNameNotRegistered') || 
                 errorMessage.includes('ToolNotRegistered') || 
                 errorMessage.includes('ToolPolicyNotRegistered')) {
-        throw new Error('Tool, policy, or parameter is not properly registered for this app version');
+        userFriendlyError = 'Tool, policy, or parameter is not properly registered for this app version';
       } else if (errorMessage.includes('NotPkpOwner')) {
-        throw new Error('You are not the owner of this PKP');
+        userFriendlyError = 'You are not the owner of this PKP';
+      } else if (errorMessage.includes('cannot estimate gas')) {
+        userFriendlyError = 'Transaction cannot be completed - the contract rejected it';
       } else {
-        // Rethrow the original error
-        throw error;
+        // Default error message
+        userFriendlyError = `Transaction failed`;
       }
+      
+      // Show the error in the popup with detailed information
+      showError(userFriendlyError, 'Contract Error', rawErrorDetails);
+      
+      // Rethrow the error with the user-friendly message
+      throw new Error(userFriendlyError);
     }
     
     // Verify the permitted version after the transaction
@@ -902,19 +941,23 @@ export default function AuthenticatedConsentForm ({
       }, 2000);
     } catch (err) {
       console.error('Error disapproving consent:', err);
-      setError('Failed to disapprove. Please try again.');
+      const errorMessage = 'Failed to disapprove. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage, 'Disapproval Failed');
       setShowDisapproval(false);
     } finally {
       setSubmitting(false);
     }
-  }, [redirectUri, setError]);
+  }, [redirectUri, setError, showError]);
 
   // ===== Event Handler Functions =====
   
   const handleApprove = useCallback(async () => {
     if (!appInfo) {
       console.error('Missing version data in handleApprove');
-      setError('Missing version data. Please refresh the page and try again.');
+      const errorMessage = 'Missing version data. Please refresh the page and try again.';
+      setError(errorMessage);
+      showError(errorMessage, 'Missing Data');
       setSubmitting(false);
       return;
     }
@@ -927,7 +970,9 @@ export default function AuthenticatedConsentForm ({
             console.error(
               'Missing version data or tool IPFS CID hashes in handleFormSubmission'
             );
-            setError('Missing version data. Please try again.');
+            const errorMessage = 'Missing version data. Please try again.';
+            setError(errorMessage);
+            showError(errorMessage, 'Missing Data');
             return { success: false };
           }
 
@@ -935,7 +980,9 @@ export default function AuthenticatedConsentForm ({
             console.error(
               'Missing required data for consent approval in handleFormSubmission'
             );
-            setError('Missing required data. Please try again.');
+            const errorMessage = 'Missing required data. Please try again.';
+            setError(errorMessage);
+            showError(errorMessage, 'Missing Data');
             return { success: false };
           }
 
@@ -955,6 +1002,8 @@ export default function AuthenticatedConsentForm ({
             success: true,
           };
         } catch (error) {
+          // Error details are already handled by approveConsent()
+          // Just log the error here for tracing purposes
           console.error('Error processing transaction:', {
             error,
             errorCode: (error as any).code,
@@ -962,7 +1011,17 @@ export default function AuthenticatedConsentForm ({
             errorReason: (error as any).reason,
             errorData: (error as any).data,
           });
-          setError('An error occurred while processing your request');
+          
+          // If the error wasn't logged by approveConsent, show it here
+          if (!(error as any).message?.includes('Transaction failed') && 
+              !(error as any).message?.includes('cannot estimate gas')) {
+            const errorObj = error as any;
+            const errorMessage = errorObj.message || 'An error occurred while processing your request';
+            const rawErrorDetails = typeof errorMessage === 'string' ? errorMessage.substring(0, 500) : '';
+            setError(errorMessage);
+            showError(errorMessage, 'Transaction Failed', rawErrorDetails);
+          }
+          
           throw error;
         }
       };
@@ -970,11 +1029,20 @@ export default function AuthenticatedConsentForm ({
       await handleFormSubmission();
     } catch (err) {
       console.error('Error submitting form:', err);
-      setError('Failed to submit approval');
+      
+      // If this error hasn't already been shown by the inner handlers
+      if (!(err as any).message?.includes('Transaction failed') && 
+          !(err as any).message?.includes('cannot estimate gas')) {
+        const errorObj = err as any;
+        const errorMessage = (errorObj.message || 'Failed to submit approval').substring(0, 100);
+        const rawErrorDetails = typeof errorObj.message === 'string' ? errorObj.message.substring(0, 500) : '';
+        setError(errorMessage);
+        showError(errorMessage, 'Submission Failed', rawErrorDetails);
+      }
     } finally {
       setSubmitting(false);
     }
-  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, isAppAlreadyPermitted, permittedVersion]);
+  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, isAppAlreadyPermitted, permittedVersion, showError]);
 
   const handleParametersChange = useCallback((newParameters: VersionParameter[]) => {
     // Check if the parameters actually changed to avoid unnecessary state updates
@@ -1016,10 +1084,12 @@ export default function AuthenticatedConsentForm ({
       }, 2000);
     } catch (error) {
       console.error('Error in continue with existing permission flow:', error);
-      setError('An error occurred while processing your request. Please try again.');
+      const errorMessage = 'An error occurred while processing your request. Please try again.';
+      setError(errorMessage);
+      showError(errorMessage, 'Permission Error');
       setShowingAuthorizedMessage(false);
     }
-  }, [appInfo, redirectUri, generateJWT, redirectWithJWT, setError]);
+  }, [appInfo, redirectUri, generateJWT, redirectWithJWT, setError, showError]);
   
   // Handler for continuing with existing parameters
   const handleContinueWithExisting = useCallback(() => {
@@ -1216,6 +1286,25 @@ export default function AuthenticatedConsentForm ({
     }
   }, [showUpdateModal]);
 
+  // Add this effect to ensure any existing errors are shown immediately
+  useEffect(() => {
+    // If an error is set, make sure it appears in the popup
+    if (error) {
+      showError(error, 'Error');
+    }
+  }, [error, showError]);
+
+  // Add a direct effect to show contract errors from URL params or when the component first loads
+  useEffect(() => {
+    // Check for error in URL query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get('error');
+    
+    if (errorParam) {
+      showError(decodeURIComponent(errorParam), 'Contract Error');
+    }
+  }, [showError]);
+
   // ===== Render Logic =====
   
   // Show the parameter update modal - this should take precedence over all other views
@@ -1371,31 +1460,28 @@ export default function AuthenticatedConsentForm ({
 
   // Show error message if there's no appId or if there's an error
   if (!appId) {
+    showError('Missing appId parameter', 'Invalid Request');
     return (
       <div className='consent-form-container'>
-        <div className='alert alert--error'>
-          <p>Missing appId parameter</p>
-        </div>
+        <p>Invalid request. Missing app ID.</p>
       </div>
     );
   }
 
   if (urlError) {
+    // Use the error popup instead of inline display
     return (
       <div className='consent-form-container'>
-        <div className='alert alert--error'>
-          <p>{urlError}</p>
-        </div>
+        <p>Invalid request. Please check your URL parameters.</p>
       </div>
     );
   }
 
   if (redirectError) {
+    // Use the error popup instead of inline display
     return (
       <div className='consent-form-container'>
-        <div className='alert alert--error'>
-          <p>{redirectError}</p>
-        </div>
+        <p>Invalid redirect URI. Please check your URL parameters.</p>
       </div>
     );
   }
@@ -1455,11 +1541,6 @@ export default function AuthenticatedConsentForm ({
         )}
 
         <h1>Agent Consent Notice</h1>
-        {error && (
-          <div className='alert alert--error'>
-            <p>{error}</p>
-          </div>
-        )}
 
         {appInfo && (
           <div className='app-info'>

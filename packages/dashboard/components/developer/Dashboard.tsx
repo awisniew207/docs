@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '../ui/card';
 import { mapEnumToTypeName } from '@/services/types';
+import { useErrorPopup } from '@/components/ui/error-popup';
 
 export default function DashboardScreen({
   vincentApp,
@@ -32,22 +33,27 @@ export default function DashboardScreen({
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppView | null>(null);
   const selectedAppIdRef = useRef<number | null>(null);
+  const { showError } = useErrorPopup();
 
   useEffect(() => {
     if (vincentApp) {
-      setDashboard(vincentApp);
-      
-      // Update selectedApp if it exists and matches one of the refreshed apps
-      if (selectedApp && selectedAppIdRef.current === selectedApp.appId) {
-        const refreshedApp = vincentApp.find(app => app.appId === selectedApp.appId);
-        if (refreshedApp) {
-          setSelectedApp(refreshedApp);
+      try {
+        setDashboard(vincentApp);
+        
+        // Update selectedApp if it exists and matches one of the refreshed apps
+        if (selectedApp && selectedAppIdRef.current === selectedApp.appId) {
+          const refreshedApp = vincentApp.find(app => app.appId === selectedApp.appId);
+          if (refreshedApp) {
+            setSelectedApp(refreshedApp);
+          }
         }
+      } catch (error) {
+        showError(error as Error, 'Dashboard Error');
+      } finally {
+        setIsRefetching(false);
       }
-      
-      setIsRefetching(false);
     }
-  }, [vincentApp]);
+  }, [vincentApp, selectedApp, showError]);
 
   // Update the ref whenever selectedApp changes
   useEffect(() => {
@@ -60,7 +66,12 @@ export default function DashboardScreen({
 
   const handleRefetch = async () => {
     setIsRefetching(true);
-    await onRefetch();
+    try {
+      await onRefetch();
+    } catch (error) {
+      showError(error as Error, 'Failed to refresh dashboard');
+      setIsRefetching(false);
+    }
   };
 
   if (!dashboard || isRefetching) {

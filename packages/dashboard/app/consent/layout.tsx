@@ -7,6 +7,7 @@ import { createStytchUIClient } from '@stytch/nextjs/ui';
 import '@/utils/disableLogsInProduction';
 import './page.css';  // Importing the global CSS file
 import SessionValidator from '../../components/consent/components/SessionValidator';
+import { ErrorPopupProvider } from '@/components/ui/error-popup';
 // Create Stytch client only on the client side
 let stytchClient: any = null;
 if (typeof window !== 'undefined') {
@@ -33,18 +34,20 @@ export default function ConsentLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="consent-body">
-        {stytchClient ? (
-          <StytchProvider stytch={stytchClient}>
+        <ErrorPopupProvider>
+          {stytchClient ? (
+            <StytchProvider stytch={stytchClient}>
+              <div className="consent-container">
+                {children}
+                <SessionValidator />
+              </div>
+            </StytchProvider>
+          ) : (
             <div className="consent-container">
               {children}
-              <SessionValidator />
             </div>
-          </StytchProvider>
-        ) : (
-          <div className="consent-container">
-            {children}
-          </div>
-        )}
+          )}
+        </ErrorPopupProvider>
       </body>
     </html>
   );
