@@ -1,20 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Plus, Trash2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AppView } from "@/services/types";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Plus, Trash2, Info } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VincentContracts } from "@/services";
-import { mapTypeToEnum, mapEnumToTypeName, ParameterType } from "@/services/types";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { estimateGasWithBuffer } from "@/services/contract/config";
+import { useErrorPopup } from "@/components/ui/error-popup";
+import { mapTypeToEnum } from "@/services/types";
+import { mapEnumToTypeName, ParameterType } from "@/services/types";
 
 // Define the types explicitly since they're not exported from services/types
 interface PolicyParameter {
@@ -52,6 +49,27 @@ interface ToolPolicyManagerProps {
     dashboard: AppView;
 }
 
+// Status message component
+const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
+  if (!message) return null;
+  
+  const getStatusClass = () => {
+    switch (type) {
+      case 'warning': return 'status-message--warning';
+      case 'success': return 'status-message--success';
+      case 'error': return 'status-message--error';
+      default: return 'status-message--info';
+    }
+  };
+  
+  return (
+    <div className={`status-message ${getStatusClass()}`}>
+      {type === 'info' && <div className="spinner"></div>}
+      <span>{message}</span>
+    </div>
+  );
+};
+
 export default function ManageToolPoliciesScreen({
     onBack,
     dashboard,
@@ -59,6 +77,8 @@ export default function ManageToolPoliciesScreen({
     const [toolPolicies, setToolPolicies] = useState<ToolPolicyWithId[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [statusMessage, setStatusMessage] = useState<{ message: string; type: 'info' | 'warning' | 'success' | 'error' } | null>(null);
+    const { showError } = useErrorPopup();
 
     // Fetch existing tools and policies on component mount
     useEffect(() => {
@@ -459,6 +479,7 @@ export default function ManageToolPoliciesScreen({
             });
             
             try {
+                setStatusMessage({ message: "Preparing transaction...", type: "info" });
                 // Create args array for the transaction
                 const args = [
                     dashboard.appId,
@@ -468,56 +489,82 @@ export default function ManageToolPoliciesScreen({
                     toolPolicyParameterTypes
                 ];
                 
-                // Estimate gas with buffer
-                const gasLimit = await estimateGasWithBuffer(
-                    contract,
-                    'registerNextAppVersion',
-                    args
-                );
-                
-                const tx = await contract.registerNextAppVersion(
-                    ...args,
-                    {gasLimit}
-                );
-                
-                console.log("Transaction sent:", tx.hash);
-                
-                // Wait for transaction confirmation
-                const receipt = await tx.wait();
-                console.log("Transaction confirmed:", receipt);
-                
-                alert("New version published successfully!");
-                
-                // Return to the dashboard view automatically
-                onBack();
-            } catch (txError: any) {
-                console.error("Transaction failed:", txError);
-                
-                if (txError.code === -32603 && txError.message?.includes("429")) {
-                    alert("Transaction failed due to RPC rate limiting. Please wait a moment and try again.");
-                } else {
-                    let errorMsg = txError.message || "Unknown transaction error";
-                    // Clean up common error messages to be more readable
-                    if (errorMsg.includes("transaction failed")) {
-                        errorMsg = "Transaction failed. Please check your MetaMask and try again.";
+                try {
+                    // Estimate gas with buffer
+                    setStatusMessage({ message: "Estimating gas...", type: "info" });
+                    const gasLimit = await estimateGasWithBuffer(
+                        contract,
+                        'registerNextAppVersion',
+                        args
+                    );
+                    
+                    setStatusMessage({ message: "Sending transaction...", type: "info" });
+                    const tx = await contract.registerNextAppVersion(
+                        ...args,
+                        {gasLimit}
+                    );
+                    
+                    console.log("Transaction sent:", tx.hash);
+                    
+                    // Wait for transaction confirmation
+                    setStatusMessage({ message: "Waiting for confirmation...", type: "info" });
+                    const receipt = await tx.wait();
+                    console.log("Transaction confirmed:", receipt);
+                    
+                    setStatusMessage({ message: "New version published successfully!", type: "success" });
+                    setTimeout(() => {
+                        setStatusMessage(null);
+                        // Return to the dashboard view automatically
+                        onBack();
+                    }, 2000);
+                } catch (txError: any) {
+                    console.error("Transaction failed:", txError);
+                    setStatusMessage(null);
+                    
+                    if (txError.code === -32603 && txError.message?.includes("429")) {
+                        showError("Transaction failed due to RPC rate limiting. Please wait a moment and try again.");
+                    } else {
+                        let errorMsg = txError.message || "Unknown transaction error";
+                        // Clean up common error messages to be more readable
+                        if (errorMsg.includes("transaction failed")) {
+                            errorMsg = "Transaction failed. Please check your MetaMask and try again.";
+                        } else if (errorMsg.includes("Cannot estimate gas")) {
+                            // Handle specific gas estimation errors
+                            const matches = errorMsg.match(/Cannot estimate gas for .+?: (.+)/);
+                            errorMsg = matches && matches[1] ? matches[1] : "Gas estimation failed. The transaction would likely fail.";
+                        }
+                        showError(`Transaction failed: ${errorMsg}`);
                     }
-                    alert(`Transaction failed: ${errorMsg}`);
                 }
+            } catch (error: any) {
+                console.error("Error saving tool policies:", error);
+                setStatusMessage(null);
+                let errorMessage = "Failed to save tool policies: ";
+                
+                if (error.message) {
+                    // Format error message for better readability
+                    errorMessage += error.message;
+                } else {
+                    errorMessage += "Unknown error";
+                }
+                
+                showError(errorMessage);
+            } finally {
+                setIsSubmitting(false);
             }
         } catch (error: any) {
             console.error("Error saving tool policies:", error);
+            setStatusMessage(null);
             let errorMessage = "Failed to save tool policies: ";
             
             if (error.message) {
                 // Format error message for better readability
-                errorMessage += error.message
+                errorMessage += error.message;
             } else {
                 errorMessage += "Unknown error";
             }
             
-            alert(errorMessage);
-        } finally {
-            setIsSubmitting(false);
+            showError(errorMessage);
         }
     }
 
@@ -725,6 +772,8 @@ export default function ManageToolPoliciesScreen({
                     {isSubmitting ? "Publishing..." : "Publish New Version"}
                 </Button>
             </div>
+
+            {statusMessage && <StatusMessage message={statusMessage.message} type={statusMessage.type} />}
         </div>
     );
 }

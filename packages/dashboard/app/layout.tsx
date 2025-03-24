@@ -11,6 +11,7 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { yellowstone } from './config/chains';
 import { usePathname } from 'next/navigation';
+import { ErrorPopupProvider } from '@/components/ui/error-popup';
 
 const wagmiConfig = createConfig({
   chains: [yellowstone],
@@ -48,8 +49,10 @@ export default function RootLayout({
                 initialChain={yellowstone}
                 appInfo={demoAppInfo}
               >
-                <Header />
-                <main className="max-w-screen-xl mx-auto p-6">{children}</main>
+                <ErrorPopupProvider>
+                  <Header />
+                  <main className="max-w-screen-xl mx-auto p-6">{children}</main>
+                </ErrorPopupProvider>
               </RainbowKitProvider>
             </body>
           </html>

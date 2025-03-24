@@ -1,5 +1,5 @@
 import { AppView } from '@/services/types';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
 import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
@@ -15,6 +15,29 @@ import {
   CardTitle,
 } from '../ui/card';
 import { mapEnumToTypeName } from '@/services/types';
+import { useErrorPopup } from '@/components/ui/error-popup';
+// The styles are now included in the main dashboard.css imported in layout.tsx
+
+// Status message component
+const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
+  if (!message) return null;
+  
+  const getStatusClass = () => {
+    switch (type) {
+      case 'warning': return 'status-message--warning';
+      case 'success': return 'status-message--success';
+      case 'error': return 'status-message--error';
+      default: return 'status-message--info';
+    }
+  };
+  
+  return (
+    <div className={`status-message ${getStatusClass()}`}>
+      {type === 'info' && <div className="spinner"></div>}
+      <span>{message}</span>
+    </div>
+  );
+};
 
 export default function DashboardScreen({
   vincentApp,
@@ -32,6 +55,32 @@ export default function DashboardScreen({
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppView | null>(null);
   const selectedAppIdRef = useRef<number | null>(null);
+  
+  // Add status message state
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+  
+  // Add the error popup hook
+  const { showError } = useErrorPopup();
+  
+  // Helper function to set status messages
+  const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
+    setStatusMessage(message);
+    setStatusType(type);
+  }, []);
+  
+  // Clear status message
+  const clearStatus = useCallback(() => {
+    setStatusMessage('');
+  }, []);
+  
+  // Create enhanced error function that shows both popup and status error
+  const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
+    // Show error in popup
+    showError(errorMessage, title || 'Error', details);
+    // Also show in status message
+    showStatus(errorMessage, 'error');
+  }, [showError, showStatus]);
 
   useEffect(() => {
     if (vincentApp) {
@@ -47,11 +96,12 @@ export default function DashboardScreen({
         }
       } catch (error) {
         console.error('Dashboard Error:', error);
+        showErrorWithStatus(error instanceof Error ? error.message : 'Error loading dashboard', 'Dashboard Error');
       } finally {
         setIsRefetching(false);
       }
     }
-  }, [vincentApp, selectedApp]);
+  }, [vincentApp, selectedApp, showErrorWithStatus]);
 
   // Update the ref whenever selectedApp changes
   useEffect(() => {
@@ -64,10 +114,13 @@ export default function DashboardScreen({
 
   const handleRefetch = async () => {
     setIsRefetching(true);
+    showStatus('Refreshing dashboard...', 'info');
     try {
       await onRefetch();
+      clearStatus();
     } catch (error) {
       console.error('Failed to refresh dashboard:', error);
+      showErrorWithStatus(error instanceof Error ? error.message : 'Failed to refresh dashboard', 'Refresh Error');
       setIsRefetching(false);
     }
   };
@@ -91,6 +144,7 @@ export default function DashboardScreen({
         onBack={() => setShowCreateApp(false)}
         onSuccess={() => {
           setShowCreateApp(false);
+          showStatus('App created successfully', 'success');
           handleRefetch();
         }}
       />
@@ -104,6 +158,7 @@ export default function DashboardScreen({
         dashboard={selectedApp || dashboard[0]}
         onSuccess={() => {
           setShowManageApp(false);
+          showStatus('App updated successfully', 'success');
           handleRefetch();
         }}
       />
@@ -115,6 +170,7 @@ export default function DashboardScreen({
       <DelegateeManagerScreen
         onBack={() => {
           setShowDelegateeManager(false);
+          showStatus('Returning to dashboard...', 'info');
           handleRefetch();
         }}
         dashboard={selectedApp}
@@ -127,6 +183,7 @@ export default function DashboardScreen({
       <ManageToolPoliciesScreen
         onBack={() => {
           setShowToolPolicies(false);
+          showStatus('Returning to dashboard...', 'info');
           handleRefetch();
         }}
         dashboard={selectedApp}
@@ -139,10 +196,14 @@ export default function DashboardScreen({
       <ManageAdvancedFunctionsScreen
         onBack={() => {
           setShowAdvancedFunctions(false);
+          showStatus('Returning to dashboard...', 'info');
           handleRefetch();
         }}
         dashboard={selectedApp}
-        onSuccess={handleRefetch}
+        onSuccess={() => {
+          showStatus('Operation completed successfully', 'success');
+          handleRefetch();
+        }}
       />
     );
   }
@@ -150,6 +211,9 @@ export default function DashboardScreen({
   if (selectedApp) {
     return (
       <div className="space-y-8">
+        {/* Show status message at the top of the dashboard */}
+        {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
+        
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Button
@@ -408,73 +472,75 @@ export default function DashboardScreen({
     );
   }
 
+  // Main dashboard view when no app is selected
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Show status message at the top of the dashboard */}
+      {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
+      
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-black">Your Apps</h1>
-        <Button variant="default" onClick={() => setShowCreateApp(true)} className="text-black">
-          <Plus className="h-4 w-4 mr-2" />
-          Create New App
+        <h1 className="text-3xl font-bold text-black">Dashboard</h1>
+        <Button
+          variant="default"
+          className="text-black"
+          onClick={() => setShowCreateApp(true)}
+        >
+          <Plus className="h-4 w-4 mr-2 font-bold text-black" />
+          Create App
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {dashboard.map((app, i) => (
-          <Card
-            key={i}
-            onClick={() => setSelectedApp(app)}
-            className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      {dashboard.length === 0 ? (
+        <div className="border rounded-lg p-8 text-center">
+          <h2 className="text-xl font-semibold mb-4 text-black">No Apps Yet</h2>
+          <p className="text-gray-600 mb-6">
+            Create your first app to get started with Lit Protocol.
+          </p>
+          <Button
+            variant="default"
+            className="text-black"
+            onClick={() => setShowCreateApp(true)}
           >
-            <CardContent className="p-6">
-              <div className="space-y-3">
-                <div className="font-bold text-lg text-black truncate">
-                  {app.appName}
-                </div>
-                <div className="text-sm text-black line-clamp-2 h-10">
-                  {app.description || 'No description'}
-                </div>
-                <div className="mt-4 pt-3 border-t text-xs text-black">
+            <Plus className="h-4 w-4 mr-2 font-bold text-black" />
+            Create App
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboard.map((app, index) => (
+            <Card
+              key={index}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setSelectedApp(app)}
+            >
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center text-black">
+                  <span>{app.appName}</span>
+                </CardTitle>
+                <CardDescription className="text-black">
+                  {app.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-black">
                   <div className="mb-2">
-                    <div className="font-medium mb-1">App ID: {app.appId}</div>
-                    <div className="font-medium mb-1">Version: {app.currentVersion}</div>
+                    <span className="font-medium">App ID:</span> {app.appId}
+                  </div>
+                  <div className="mb-2">
+                    <span className="font-medium">Management Wallet:</span>{' '}
+                    {app.managementWallet?.substring(0, 8)}...
+                    {app.managementWallet?.substring(app.managementWallet.length - 6)}
                   </div>
                   <div>
-                    <div className="font-medium mb-1">Tools:</div>
-                    {app.toolPolicies?.length > 0 ? (
-                      <div className="max-h-20 overflow-y-auto">
-                        {app.toolPolicies.map((tool: any, j: number) => (
-                          <div key={j} className="mb-1 truncate">
-                            {tool.toolIpfsCid?.slice(0, 8)}...{tool.toolIpfsCid?.slice(-6) || 'Unknown'}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs">No policies configured</div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="font-medium mb-1">Delegatees:</div>
-                    {app.delegatees?.length > 0 ? (
-                      <div className="max-h-20 overflow-y-auto text-xs">
-                        {app.delegatees.map((delegatee, i) => (
-                          <div key={i} className="mb-1 truncate">
-                            {delegatee.slice(0, 8)}...{delegatee.slice(-6)}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs">No delegatees added</div>
-                    )}
+                    <span className="font-medium">Tool Policies:</span>{' '}
+                    {app.toolPolicies?.length || 0}
                   </div>
                 </div>
-                <div className="text-sm text-center text-black mt-2">
-                  Manage App
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
