@@ -151,4 +151,63 @@
   color: #666;
   font-style: italic;
   margin-top: 2px;
+}
+
+/* Status message styles */
+.status-message {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 100%;
+}
+
+.status-message--info {
+  background-color: #e8f4fd;
+  color: #0969da;
+  border: 1px solid #c6e1f7;
+}
+
+.status-message--warning {
+  background-color: #fff8e6;
+  color: #9a6700;
+  border: 1px solid #f9e4a0;
+}
+
+.status-message--success {
+  background-color: #dafbe1;
+  color: #1a7f37;
+  border: 1px solid #b4e6c4;
+}
+
+.status-message--error {
+  background-color: #ffebe9;
+  color: #cf222e;
+  border: 1px solid #f7d4d6;
+}
+
+.status-message span {
+  margin-left: 8px;
+}
+
+/* Spinner animation for loading states */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #0969da;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 } 

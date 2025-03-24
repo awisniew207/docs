@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from '../ui/card';
 import { mapEnumToTypeName } from '@/services/types';
-import { useErrorPopup } from '@/components/ui/error-popup';
 
 export default function DashboardScreen({
   vincentApp,
@@ -33,7 +32,6 @@ export default function DashboardScreen({
   const [isRefetching, setIsRefetching] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppView | null>(null);
   const selectedAppIdRef = useRef<number | null>(null);
-  const { showError } = useErrorPopup();
 
   useEffect(() => {
     if (vincentApp) {
@@ -48,12 +46,12 @@ export default function DashboardScreen({
           }
         }
       } catch (error) {
-        showError(error as Error, 'Dashboard Error');
+        console.error('Dashboard Error:', error);
       } finally {
         setIsRefetching(false);
       }
     }
-  }, [vincentApp, selectedApp, showError]);
+  }, [vincentApp, selectedApp]);
 
   // Update the ref whenever selectedApp changes
   useEffect(() => {
@@ -69,7 +67,7 @@ export default function DashboardScreen({
     try {
       await onRefetch();
     } catch (error) {
-      showError(error as Error, 'Failed to refresh dashboard');
+      console.error('Failed to refresh dashboard:', error);
       setIsRefetching(false);
     }
   };

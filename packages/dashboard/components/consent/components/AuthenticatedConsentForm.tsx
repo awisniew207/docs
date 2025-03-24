@@ -23,6 +23,27 @@ import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { ParameterType } from '@/services/types/parameterTypes';
 import { useErrorPopup } from '@/components/ui/error-popup';
 
+// New status message component
+const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
+  if (!message) return null;
+  
+  const getStatusClass = () => {
+    switch (type) {
+      case 'warning': return 'status-message--warning';
+      case 'success': return 'status-message--success';
+      case 'error': return 'status-message--error';
+      default: return 'status-message--info';
+    }
+  };
+  
+  return (
+    <div className={`status-message ${getStatusClass()}`}>
+      {type === 'info' && <div className="spinner"></div>}
+      <span>{message}</span>
+    </div>
+  );
+};
+
 // New interface for the parameter update modal
 interface ParameterUpdateModalProps {
   isOpen: boolean;
@@ -134,6 +155,10 @@ export default function AuthenticatedConsentForm ({
   const [existingParameters, setExistingParameters] = useState<VersionParameter[]>([]);
   const [isLoadingParameters, setIsLoadingParameters] = useState<boolean>(false);
   
+  // Add status message state
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+  
   // Add refs to track initialization
   const permissionCheckedRef = useRef(false);
   const versionFetchedRef = useRef(false);
@@ -141,15 +166,34 @@ export default function AuthenticatedConsentForm ({
   // Add the error popup hook
   const { showError } = useErrorPopup();
   
+  // Helper function to set status messages
+  const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
+    setStatusMessage(message);
+    setStatusType(type);
+  }, []);
+  
+  // Clear status message
+  const clearStatus = useCallback(() => {
+    setStatusMessage('');
+  }, []);
+  
+  // Create enhanced error function that shows both popup and status error
+  const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
+    // Show error in popup
+    showError(errorMessage, title || 'Error', details);
+    // Also show in status message
+    showStatus(errorMessage, 'error');
+  }, [showError, showStatus]);
+  
   // Use error popup for URL errors
   useEffect(() => {
     if (urlError) {
-      showError(urlError, 'URL Error');
+      showErrorWithStatus(urlError, 'URL Error');
     }
     if (redirectError) {
-      showError(redirectError, 'Redirect Error');
+      showErrorWithStatus(redirectError, 'Redirect Error');
     }
-  }, [urlError, redirectError, showError]);
+  }, [urlError, redirectError, showErrorWithStatus]);
   
   // ===== JWT and Redirect Functions =====
   
@@ -162,6 +206,7 @@ export default function AuthenticatedConsentForm ({
     }
 
     try {
+      showStatus('Initializing agent PKP wallet for JWT creation...');
       console.log('Initializing agent PKP wallet for JWT creation...');
       const agentPkpWallet = new PKPEthersWallet({
         controllerSessionSigs: sessionSigs,
@@ -170,6 +215,7 @@ export default function AuthenticatedConsentForm ({
       });
       await agentPkpWallet.init();
 
+      showStatus('Creating signed JWT...');
       const vincent = new VincentSDK();
       const jwt = await vincent.createSignedJWT({
         pkpWallet: agentPkpWallet as any,
@@ -182,14 +228,16 @@ export default function AuthenticatedConsentForm ({
       if (jwt) {
         console.log('JWT created successfully:', jwt);
         setGeneratedJwt(jwt);
+        showStatus('JWT created successfully!', 'success');
         return jwt;
       }
     } catch (error) {
       console.error('Error creating JWT:', error);
+      showStatus('Failed to create JWT', 'error');
     }
 
     return null;
-  }, [agentPKP, redirectUri, sessionSigs]);
+  }, [agentPKP, redirectUri, sessionSigs, showStatus]);
 
   const redirectWithJWT = useCallback(async (jwt: string | null) => {
     if (!redirectUri) {
@@ -200,6 +248,7 @@ export default function AuthenticatedConsentForm ({
     const jwtToUse = jwt || generatedJwt;
 
     if (jwtToUse) {
+      showStatus('Redirecting with authentication token...', 'info');
       console.log('Redirecting with JWT:', jwtToUse);
       try {
         // Ensure redirectUri has a protocol
@@ -223,13 +272,14 @@ export default function AuthenticatedConsentForm ({
         window.location.href = redirectUri;
       }
     } else {
+      showStatus('Redirecting without authentication token...', 'info');
       console.log('No JWT available, redirecting without JWT');
       // Ensure redirectUri has a protocol for the fallback
       let fallbackRedirectUri = redirectUri;
       fallbackRedirectUri = fallbackRedirectUri;
       window.location.href = fallbackRedirectUri;
     }
-  }, [redirectUri, generatedJwt]);
+  }, [redirectUri, generatedJwt, showStatus]);
 
   // ===== Parameter Management Functions =====
   
@@ -292,6 +342,7 @@ export default function AuthenticatedConsentForm ({
     }
     
     setIsLoadingParameters(true);
+    showStatus('Loading your existing app parameters...');
     
     try {
       const userViewContract = getUserViewRegistryContract();
@@ -331,6 +382,7 @@ export default function AuthenticatedConsentForm ({
       
       console.log('Transformed parameters with decoded values:', existingParams);
       setExistingParameters(existingParams);
+      showStatus('Successfully loaded your existing parameters', 'success');
       
       // Also try to fetch version info to match parameter names if not already loaded
       if (!versionInfo && appInfo) {
@@ -346,10 +398,11 @@ export default function AuthenticatedConsentForm ({
       
     } catch (error) {
       console.error('Error fetching existing parameters:', error);
+      showStatus('Failed to load your existing parameters', 'error');
     } finally {
       setIsLoadingParameters(false);
     }
-  }, [appId, agentPKP, decodeParameterValue, versionInfo, appInfo, isLoadingParameters, existingParameters]);
+  }, [appId, agentPKP, decodeParameterValue, versionInfo, appInfo, isLoadingParameters, existingParameters, showStatus]);
   
   // Handler for updating parameters
   const handleUpdateParameters = useCallback(() => {
@@ -378,7 +431,11 @@ export default function AuthenticatedConsentForm ({
       throw new Error('Missing required data for parameter update');
     }
 
+    showStatus('Preparing to update parameters...');
+    
     const userRegistryContract = getUserRegistryContract();
+    
+    showStatus('Initializing your PKP wallet...');
     const userPkpWallet = new PKPEthersWallet({
       controllerSessionSigs: sessionSigs,
       pkpPubKey: userPKP.publicKey,
@@ -388,6 +445,7 @@ export default function AuthenticatedConsentForm ({
     const connectedContract = userRegistryContract.connect(userPkpWallet);
     
     // Prepare data structures for the contract call
+    showStatus('Preparing parameter data for contract...');
     const toolIpfsCids: string[] = [];
     const policyIpfsCids: string[][] = [];
     const policyParameterNames: string[][][] = [];
@@ -481,12 +539,14 @@ export default function AuthenticatedConsentForm ({
       ];
       
       // Estimate gas with buffer
+      showStatus('Estimating transaction gas fees...');
       const gasLimit = await estimateGasWithBuffer(
         connectedContract,
         'setToolPolicyParameters',
         updateArgs
       );
       
+      showStatus('Sending transaction to update parameters...');
       const txResponse = await connectedContract.setToolPolicyParameters(
         ...updateArgs,
         {
@@ -495,16 +555,20 @@ export default function AuthenticatedConsentForm ({
       );
       
       console.log('PARAMETER UPDATE TRANSACTION SENT:', txResponse.hash);
+      showStatus(`Transaction submitted! Hash: ${txResponse.hash.substring(0, 10)}...`, 'info');
       
+      showStatus('Waiting for transaction confirmation...', 'info');
       // Small delay to ensure the blockchain state has been updated
       await new Promise(resolve => setTimeout(resolve, 2000));
       
+      showStatus('Parameters successfully updated!', 'success');
       return txResponse;
     } catch (error) {
       console.error('PARAMETER UPDATE FAILED:', error);
+      showStatus('Parameter update failed', 'error');
       throw error;
     }
-  }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo]);
+  }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo, showStatus]);
 
   // ===== Consent Approval Functions =====
 
@@ -515,6 +579,7 @@ export default function AuthenticatedConsentForm ({
     }
 
     // First, check if this app+version is already permitted to avoid errors
+    showStatus("Checking if app version is already permitted...");
     console.log("CHECKING IF APP VERSION IS ALREADY PERMITTED...");
     try {
       const userViewContract = getUserViewRegistryContract();
@@ -556,9 +621,11 @@ export default function AuthenticatedConsentForm ({
     }
     
     // Now proceed with permitting the new version
+    showStatus(`Permitting version ${Number(appInfo.latestVersion)}...`);
     console.log(`PERMITTING: Now permitting version ${Number(appInfo.latestVersion)}`);
 
     const userRegistryContract = getUserRegistryContract();
+    showStatus('Initializing your PKP wallet...');
     const userPkpWallet = new PKPEthersWallet({
       controllerSessionSigs: sessionSigs,
       pkpPubKey: userPKP.publicKey,
@@ -743,12 +810,14 @@ export default function AuthenticatedConsentForm ({
       console.log('PERMIT ARGS:', permitArgs);
       
       // Estimate gas with buffer
+      showStatus('Estimating transaction gas fees...');
       const gasLimit = await estimateGasWithBuffer(
         connectedContract,
         'permitAppVersion',
         permitArgs
       );
       
+      showStatus('Sending permission transaction...');
       const txResponse = await connectedContract.permitAppVersion(
         ...permitArgs,
         {
@@ -757,6 +826,7 @@ export default function AuthenticatedConsentForm ({
       );
       
       console.log('PERMIT TRANSACTION SENT:', txResponse.hash);
+      showStatus(`Transaction submitted! Hash: ${txResponse.hash.substring(0, 10)}...`, 'info');
       
     } catch (error) {
       console.error('TRANSACTION FAILED:', error);
@@ -812,7 +882,7 @@ export default function AuthenticatedConsentForm ({
       }
       
       // Show the error in the popup with detailed information
-      showError(userFriendlyError, 'Contract Error', rawErrorDetails);
+      showErrorWithStatus(userFriendlyError, 'Contract Error', rawErrorDetails);
       
       // Rethrow the error with the user-friendly message
       throw new Error(userFriendlyError);
@@ -820,6 +890,7 @@ export default function AuthenticatedConsentForm ({
     
     // Verify the permitted version after the transaction
     try {
+      showStatus('Verifying permission grant...', 'info');
       console.log('VERIFYING PERMIT: Checking if new version was properly registered...');
       // Small delay to ensure the blockchain state has been updated
       await new Promise(resolve => setTimeout(resolve, 2000)); 
@@ -841,19 +912,20 @@ export default function AuthenticatedConsentForm ({
       }
     } catch (verifyError) {
       console.error('Error verifying permitted version after update:', verifyError);
+      showStatus('Could not verify permission grant', 'warning');
     }
 
     // Initialize Lit Contracts
+    showStatus('Setting up action permissions...', 'info');
     const litContracts = new LitContracts({
       network: SELECTED_LIT_NETWORK,
       signer: userPkpWallet,
     });
     await litContracts.connect();
 
-
-
     if (toolIpfsCids.length > 0) {
       console.log(`Adding permitted actions for ${toolIpfsCids.length} tools`);
+      showStatus(`Adding permissions for ${toolIpfsCids.length} action(s)...`, 'info');
       
       // Wait a bit for blockchain state to update before adding permitted actions
       await new Promise(resolve => setTimeout(resolve, 10000));
@@ -865,55 +937,33 @@ export default function AuthenticatedConsentForm ({
           console.log(`Adding permitted action for IPFS CID: ${ipfsCid}`);
           console.log(`Properly encoded CID: ${properlyCidEncoded}`);
           
+          showStatus(`Adding permission for IPFS CID: ${ipfsCid.substring(0, 8)}...`, 'info');
           const tx = await litContracts.addPermittedAction({
             ipfsId: ipfsCid,
             pkpTokenId: agentPKP.tokenId, // Use hex format tokenId
             authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
           });
           
-
           console.log(`Transaction hash: ${tx}`);
           console.log(`Successfully added permitted action for IPFS CID: ${properlyCidEncoded}`);
         } catch (error) {
           console.error(`Error adding permitted action for IPFS CID ${ipfsCid}:`, error);
+          showStatus(`Failed to add permission for an action`, 'warning');
           // Continue with the next IPFS CID even if one fails
         }
       }
+      showStatus('All action permissions added!', 'success');
     } else {
       console.warn('No valid tool IPFS CIDs found to add permitted actions for');
-      
-      // Fallback: Try to extract IPFS CIDs directly from versionInfo for debug purposes
-      console.log("FALLBACK: Attempting to extract IPFS CIDs directly from versionInfo");
-      const toolsData = versionInfo?.appVersion?.tools || versionInfo?.[1]?.[3];
-      
-      if (toolsData && Array.isArray(toolsData)) {
-        console.log("- Found toolsData:", toolsData);
-        
-        const extractedCids: string[] = [];
-        toolsData.forEach((tool, index) => {
-          if (tool && Array.isArray(tool) && tool[0]) {
-            const cid = tool[0];
-            console.log(`- Tool ${index} CID:`, cid);
-            extractedCids.push(cid);
-          }
-        });
-        
-        if (extractedCids.length > 0) {
-          console.log("- Extracted CIDs:", extractedCids);
-          // Don't actually add them in the fallback, just log for debugging
-        } else {
-          console.log("- Failed to extract any CIDs in fallback");
-        }
-      } else {
-        console.log("- Could not find valid toolsData in versionInfo", toolsData);
-      }
+      showStatus('No actions to add permissions for', 'warning');
     }
 
     const receipt = { status: 1, transactionHash: "0x" + Math.random().toString(16).substring(2) };
     console.log('Transaction receipt:', receipt);
+    showStatus('Permission grant successful!', 'success');
 
     return receipt;
-  }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo]);
+  }, [agentPKP, appId, appInfo, sessionSigs, userPKP, parameters, versionInfo, showStatus]);
 
   // Disapprove and revoke permissions
 
@@ -922,12 +972,13 @@ export default function AuthenticatedConsentForm ({
     console.log('handleDisapprove called');
     setSubmitting(true);
     try {
-      
+      showStatus('Processing disapproval...', 'info');
       setShowDisapproval(true);
       
       // Short delay before redirect
       setTimeout(() => {
         if (redirectUri) {
+          showStatus('Redirecting back to app...', 'info');
           console.log('Redirecting to:', redirectUri);
           // Ensure redirectUri has a protocol for the redirect
           let fullRedirectUri = redirectUri;
@@ -937,18 +988,20 @@ export default function AuthenticatedConsentForm ({
           window.location.href = fullRedirectUri;
         } else {
           console.log('No redirect URI available');
+          showStatus('No redirect URI available', 'error');
         }
       }, 2000);
     } catch (err) {
       console.error('Error disapproving consent:', err);
       const errorMessage = 'Failed to disapprove. Please try again.';
       setError(errorMessage);
-      showError(errorMessage, 'Disapproval Failed');
+      showErrorWithStatus(errorMessage, 'Disapproval Failed');
+      // The status message is now set by showErrorWithStatus
       setShowDisapproval(false);
     } finally {
       setSubmitting(false);
     }
-  }, [redirectUri, setError, showError]);
+  }, [redirectUri, setError, showErrorWithStatus, showStatus]);
 
   // ===== Event Handler Functions =====
   
@@ -957,12 +1010,13 @@ export default function AuthenticatedConsentForm ({
       console.error('Missing version data in handleApprove');
       const errorMessage = 'Missing version data. Please refresh the page and try again.';
       setError(errorMessage);
-      showError(errorMessage, 'Missing Data');
+      showErrorWithStatus(errorMessage, 'Missing Data');
       setSubmitting(false);
       return;
     }
 
     setSubmitting(true);
+    showStatus('Processing approval...', 'info');
     try {
       const handleFormSubmission = async (): Promise<{ success: boolean }> => {
         try {
@@ -972,7 +1026,8 @@ export default function AuthenticatedConsentForm ({
             );
             const errorMessage = 'Missing version data. Please try again.';
             setError(errorMessage);
-            showError(errorMessage, 'Missing Data');
+            showErrorWithStatus(errorMessage, 'Missing Data');
+            // The status message is now set by showErrorWithStatus
             return { success: false };
           }
 
@@ -982,7 +1037,8 @@ export default function AuthenticatedConsentForm ({
             );
             const errorMessage = 'Missing required data. Please try again.';
             setError(errorMessage);
-            showError(errorMessage, 'Missing Data');
+            showErrorWithStatus(errorMessage, 'Missing Data');
+            // The status message is now set by showErrorWithStatus
             return { success: false };
           }
 
@@ -991,9 +1047,11 @@ export default function AuthenticatedConsentForm ({
           // so we can simplify this logic
           await approveConsent();
 
+          showStatus('Generating authentication token...', 'info');
           const jwt = await generateJWT(appInfo);
           setShowSuccess(true);
 
+          showStatus('Approval successful! Redirecting...', 'success');
           setTimeout(() => {
             redirectWithJWT(jwt);
           }, 2000);
@@ -1019,7 +1077,8 @@ export default function AuthenticatedConsentForm ({
             const errorMessage = errorObj.message || 'An error occurred while processing your request';
             const rawErrorDetails = typeof errorMessage === 'string' ? errorMessage.substring(0, 500) : '';
             setError(errorMessage);
-            showError(errorMessage, 'Transaction Failed', rawErrorDetails);
+            showErrorWithStatus(errorMessage, 'Transaction Failed', rawErrorDetails);
+            // The status message is now set by showErrorWithStatus
           }
           
           throw error;
@@ -1037,12 +1096,13 @@ export default function AuthenticatedConsentForm ({
         const errorMessage = (errorObj.message || 'Failed to submit approval').substring(0, 100);
         const rawErrorDetails = typeof errorObj.message === 'string' ? errorObj.message.substring(0, 500) : '';
         setError(errorMessage);
-        showError(errorMessage, 'Submission Failed', rawErrorDetails);
+        showErrorWithStatus(errorMessage, 'Submission Failed', rawErrorDetails);
+        // The status message is now set by showErrorWithStatus
       }
     } finally {
       setSubmitting(false);
     }
-  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, isAppAlreadyPermitted, permittedVersion, showError]);
+  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, showErrorWithStatus, showStatus]);
 
   const handleParametersChange = useCallback((newParameters: VersionParameter[]) => {
     // Check if the parameters actually changed to avoid unnecessary state updates
@@ -1069,13 +1129,16 @@ export default function AuthenticatedConsentForm ({
     
     try {
       setShowingAuthorizedMessage(true);
+      showStatus('Continuing with existing permission...', 'info');
       
       // Generate the JWT using the app info
       console.log('Generating JWT for existing permission...');
+      showStatus('Generating authentication token...', 'info');
       const jwt = await generateJWT(appInfo);
       
       setTimeout(() => {
         setShowSuccess(true);
+        showStatus('Permission verified! Redirecting...', 'success');
         
         setTimeout(() => {
           // Use the existing redirectWithJWT function that's already working
@@ -1086,10 +1149,11 @@ export default function AuthenticatedConsentForm ({
       console.error('Error in continue with existing permission flow:', error);
       const errorMessage = 'An error occurred while processing your request. Please try again.';
       setError(errorMessage);
-      showError(errorMessage, 'Permission Error');
+      showErrorWithStatus(errorMessage, 'Permission Error');
+      // The status message is now set by showErrorWithStatus
       setShowingAuthorizedMessage(false);
     }
-  }, [appInfo, redirectUri, generateJWT, redirectWithJWT, setError, showError]);
+  }, [appInfo, redirectUri, generateJWT, redirectWithJWT, setError, showErrorWithStatus, showStatus]);
   
   // Handler for continuing with existing parameters
   const handleContinueWithExisting = useCallback(() => {
@@ -1108,6 +1172,7 @@ export default function AuthenticatedConsentForm ({
 
       // Mark as checked to prevent multiple checks
       permissionCheckedRef.current = true;
+      showStatus('Checking app permissions...', 'info');
 
       async function verifyUri (appInfo: AppView) {
         if (!redirectUri) {
@@ -1237,7 +1302,7 @@ export default function AuthenticatedConsentForm ({
     }
 
     checkAppPermissionAndFetchData();
-  }, [appId, agentPKP, redirectUri, fetchExistingParameters, showUpdateModal]);
+  }, [appId, agentPKP, redirectUri, fetchExistingParameters, showUpdateModal, showStatus]);
 
   useEffect(() => {
     let mounted = true;
@@ -1252,6 +1317,7 @@ export default function AuthenticatedConsentForm ({
           console.log('App info retrieved');
           versionFetchedRef.current = true;
           
+          showStatus('Loading app version information...', 'info');
           const contract = getAppViewRegistryContract();
           const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
           console.log('Version info:', versionData);
@@ -1259,12 +1325,15 @@ export default function AuthenticatedConsentForm ({
           if (mounted) {
             setVersionInfo(versionData);
             setIsLoading(false);
+            // Clear the loading status without showing a success message
+            clearStatus();
           }
         }
       } catch (err) {
         console.error('Error in fetchAppInfo:', err);
         if (mounted) {
           setError('Failed to load app information');
+          showStatus('Failed to load app information', 'error');
           setIsLoading(false);
         }
       }
@@ -1275,7 +1344,7 @@ export default function AuthenticatedConsentForm ({
     return () => {
       mounted = false;
     };
-  }, [appId, agentPKP, isAppAlreadyPermitted, appInfo, checkingPermissions]);
+  }, [appId, agentPKP, isAppAlreadyPermitted, appInfo, checkingPermissions, showStatus, clearStatus]);
 
   // Reset any redirection flags when update modal is shown
   useEffect(() => {
@@ -1290,9 +1359,9 @@ export default function AuthenticatedConsentForm ({
   useEffect(() => {
     // If an error is set, make sure it appears in the popup
     if (error) {
-      showError(error, 'Error');
+      showErrorWithStatus(error, 'Error');
     }
-  }, [error, showError]);
+  }, [error, showErrorWithStatus]);
 
   // Add a direct effect to show contract errors from URL params or when the component first loads
   useEffect(() => {
@@ -1301,9 +1370,9 @@ export default function AuthenticatedConsentForm ({
     const errorParam = urlParams.get('error');
     
     if (errorParam) {
-      showError(decodeURIComponent(errorParam), 'Contract Error');
+      showErrorWithStatus(decodeURIComponent(errorParam), 'Contract Error');
     }
-  }, [showError]);
+  }, [showErrorWithStatus]);
 
   // ===== Render Logic =====
   
@@ -1313,6 +1382,7 @@ export default function AuthenticatedConsentForm ({
     return (
       <div className='container'>
         <div className='consent-form-container'>
+          <StatusMessage message={statusMessage} type={statusType} />
           <ParameterUpdateModal 
             isOpen={showUpdateModal && !isLoadingParameters}
             onContinue={handleContinueWithExisting}
@@ -1332,6 +1402,7 @@ export default function AuthenticatedConsentForm ({
     return (
       <div className="consent-form-container">
         <h1>Untrusted URI</h1>
+        <StatusMessage message={statusMessage} type={statusType} />
         
         <div className="alert alert--error" style={{display: "block"}}>
           <p style={{display: "block"}}>This application is trying to redirect to a URI that is not on its list of authorized redirect URIs. For your security, this request has been blocked.</p>
@@ -1369,6 +1440,7 @@ export default function AuthenticatedConsentForm ({
     return (
       <div className="consent-form-container">
         <h1>Version Upgrade Available</h1>
+        <StatusMessage message={statusMessage} type={statusType} />
         
         <div className="alert alert--warning" style={{display: "block"}}>
           <p style={{display: "block"}}>
@@ -1423,6 +1495,7 @@ export default function AuthenticatedConsentForm ({
     return (
       <div className='container'>
         <div className='consent-form-container'>
+          <StatusMessage message={statusMessage} type={statusType} />
           {showSuccess && (
             <div className='animation-overlay'>
               <svg className='success-checkmark' viewBox='0 0 52 52'>
@@ -1453,16 +1526,17 @@ export default function AuthenticatedConsentForm ({
   if (checkingPermissions || isLoading) {
     return (
       <div className='consent-form-container'>
-        <p>Loading app information...</p>
+        <StatusMessage message={statusMessage || 'Loading app information...'} type="info" />
       </div>
     );
   }
 
   // Show error message if there's no appId or if there's an error
   if (!appId) {
-    showError('Missing appId parameter', 'Invalid Request');
+    showErrorWithStatus('Missing appId parameter', 'Invalid Request');
     return (
       <div className='consent-form-container'>
+        <StatusMessage message="Missing app ID" type="error" />
         <p>Invalid request. Missing app ID.</p>
       </div>
     );
@@ -1493,6 +1567,8 @@ export default function AuthenticatedConsentForm ({
       }
     >
       <div className='consent-form-container'>
+        <StatusMessage message={statusMessage} type={statusType} />
+        
         {showSuccess && (
           <div className='animation-overlay'>
             <svg className='success-checkmark' viewBox='0 0 52 52'>
