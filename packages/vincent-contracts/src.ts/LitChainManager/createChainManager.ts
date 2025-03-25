@@ -25,7 +25,7 @@ export interface DatilChainManagerConfig {
   /**
    * The network to connect to
    */
-  network: 'datil-dev' | 'datil-test' | 'datil-mainnet';
+  network: 'datil' | 'datil-test' | 'datil-dev';
 }
 
 /**
@@ -35,18 +35,9 @@ export interface DatilChainManagerConfig {
  */
 export function createDatilChainManager(config: DatilChainManagerConfig) {
   // Create network context based on the provided account and network
-  const networkType = config.network.replace('datil-', '') as
-    | 'dev'
-    | 'test'
-    | 'mainnet';
   const networkContext = createVincentNetworkContext({
     accountOrWalletClient: config.account,
-    network:
-      networkType === 'mainnet'
-        ? 'datil'
-        : networkType === 'test'
-          ? 'datil-test'
-          : 'datil-dev',
+    network: config.network,
   });
 
   // Helper to bind the network context to an API function
@@ -55,7 +46,7 @@ export function createDatilChainManager(config: DatilChainManagerConfig) {
   };
 
   switch (config.network) {
-    case 'datil-mainnet':
+    case 'datil':
     case 'datil-test':
     case 'datil-dev':
       return {

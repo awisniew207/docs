@@ -12,7 +12,7 @@ const account = privateKeyToAccount(privateKey);
 // Option 1: Using an account directly
 const chainManager = createDatilChainManager({
   account,
-  network: 'datil-mainnet'
+  network: 'datil'
 });
 
 // Option 2: Using a wallet client
@@ -24,7 +24,7 @@ const walletClient = createWalletClient({
 
 const chainManagerWithWallet = createDatilChainManager({
   account: walletClient,
-  network: 'datil-mainnet'
+  network: 'datil'
 });
 
 // Now you can call methods directly without passing the network context
