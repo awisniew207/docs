@@ -14,4 +14,3 @@ export {
   createDatilChainManager,
   getChain,
 } from './LitChainManager/createChainManager';
-export { createPKPViemAccount } from './AccountProvider/createPKPViemAccount';
