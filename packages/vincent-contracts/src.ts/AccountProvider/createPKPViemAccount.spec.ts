@@ -1,7 +1,7 @@
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
-import { createViemAccount } from './createViemAccount';
+import { createPKPViemAccount } from './createPKPViemAccount';
 
-describe('createViemAccount', () => {
+describe('createPKPViemAccount', () => {
   let pkpPubKey: string;
   let litNodeClient: LitNodeClient;
   let controllerSessionSigs = {
@@ -75,7 +75,7 @@ describe('createViemAccount', () => {
   });
 
   it('should create a viem account', async () => {
-    const account = await createViemAccount({
+    const account = await createPKPViemAccount({
       litNodeClient,
       pkpPubKey,
       controllerSessionSigs,

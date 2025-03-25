@@ -12,7 +12,7 @@ import {
 } from 'viem';
 import { publicKeyToAddress, toAccount } from 'viem/accounts';
 
-export async function createViemAccount(params: PKPBaseProp) {
+export async function createPKPViemAccount(params: PKPBaseProp) {
   const pkpBase = PKPBase.createInstance(params);
 
   const publicKey = `0x${pkpBase.uncompressedPubKey}` as `0x${string}`;
