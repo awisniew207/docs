@@ -12,7 +12,6 @@ import { estimateGasWithBuffer } from '@/services/contract/config';
 import { AppView, VersionParameter } from '../types';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { litNodeClient, SELECTED_LIT_NETWORK } from '../utils/lit';
-import { extractIpfsCid } from '../utils/ipfs';
 import { ParameterType } from '@/services/types/parameterTypes';
 
 interface UseConsentApprovalProps {
@@ -466,12 +465,7 @@ export const useConsentApproval = ({
       await new Promise(resolve => setTimeout(resolve, 10000));
       
       for (const ipfsCid of toolIpfsCids) {
-        try {
-          const properlyCidEncoded = extractIpfsCid(ipfsCid);
-          
-          console.log(`Adding permitted action for IPFS CID: ${ipfsCid}`);
-          console.log(`Properly encoded CID: ${properlyCidEncoded}`);
-          
+        try { 
           onStatusChange?.(`Adding permission for IPFS CID: ${ipfsCid.substring(0, 8)}...`, 'info');
           const tx = await litContracts.addPermittedAction({
             ipfsId: ipfsCid,
@@ -480,7 +474,7 @@ export const useConsentApproval = ({
           });
           
           console.log(`Transaction hash: ${tx}`);
-          console.log(`Successfully added permitted action for IPFS CID: ${properlyCidEncoded}`);
+          console.log(`Successfully added permitted action for IPFS CID: ${ipfsCid}`);
         } catch (error) {
           console.error(`Error adding permitted action for IPFS CID ${ipfsCid}:`, error);
           onStatusChange?.(`Failed to add permission for an action`, 'warning');
