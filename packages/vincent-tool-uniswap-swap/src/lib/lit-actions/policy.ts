@@ -38,7 +38,7 @@ declare global {
       case 'maxAmount':
         // Parameter type 2 = UINT256
         if (parameter.paramType === 2) {
-          maxAmount = ethers.utils.defaultAbiCoder.decode(['uint256'], parameter.value);
+          maxAmount = decodeDoubleEncodedHex(parameter.value);
           console.log(`Parsed maxAmount: ${maxAmount.toString()}`);
         } else {
           console.warn(`Unexpected parameter type for maxAmount: ${parameter.paramType}`);
@@ -47,7 +47,7 @@ declare global {
       case 'maxSpendingLimit':
         const spendingLimitDuration = policy.parameters.find(p => p.name === 'spendingLimitDuration');
         if (spendingLimitDuration) {
-          const spendingLimitDurationValue = ethers.utils.defaultAbiCoder.decode(['uint256'], spendingLimitDuration.value);
+          const spendingLimitDurationValue = decodeDoubleEncodedHex(spendingLimitDuration.value);
           console.log(`Parsed spendingLimitDuration: ${spendingLimitDurationValue.toString()}`);
         } else {
           throw new Error(`spendingLimitDuration not found in policy parameters`);
@@ -57,7 +57,7 @@ declare global {
         // Parameter type 7 = ADDRESS_ARRAY
         if (parameter.paramType === 7) {
           // Decode the bytes value to an array of addresses
-          const decodedValue = ethers.utils.defaultAbiCoder.decode(['address[]'], parameter.value)[0];
+          const decodedValue = decodeDoubleEncodedHexArray(parameter.value);
           allowedTokens = decodedValue.map((addr: string) => ethers.utils.getAddress(addr));
           console.log(`Parsed allowedTokens: ${allowedTokens.join(', ')}`);
         } else {
@@ -67,7 +67,7 @@ declare global {
     }
   }
 
-  const amountInBN = ethers.BigNumber.from(policyParams.amountIn);
+  const amountInBN = decodeDoubleEncodedHex(policyParams.amountIn);
   const tokenIn = ethers.utils.getAddress(policyParams.tokenIn);
   const tokenOut = ethers.utils.getAddress(policyParams.tokenOut);
 
@@ -104,3 +104,66 @@ declare global {
 
   console.log('All policy checks passed');
 })();
+
+/**
+ * Decodes a potentially double-encoded hex string
+ * @param value The potentially double-encoded hex value
+ * @returns A BigNumber representing the actual value
+ */
+// @ts-ignore
+function decodeDoubleEncodedHex(value: string): ethers.BigNumber {
+  if (value.startsWith('0x')) {
+    // Check if it's double-encoded (hex representation of "0x" is "3078")
+    if (value.startsWith('0x3078')) {
+      // This is a double-encoded hex value
+      // First, decode the outer hex to get the string
+      const hexString = value.slice(2); // Remove 0x prefix
+      const bytes = new Uint8Array(hexString.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) ?? []);
+      const stringValue = new TextDecoder().decode(bytes);
+
+      // Now we have the inner hex string (like "0x0000..."), convert to BigNumber
+      return ethers.BigNumber.from(stringValue);
+    } else {
+      // Regular hex value
+      return ethers.BigNumber.from(value);
+    }
+  } else {
+    // Direct value
+    return ethers.BigNumber.from(value);
+  }
+}
+
+// For arrays (like address arrays)
+function decodeDoubleEncodedHexArray(value: string): string[] {
+  if (value.startsWith('0x')) {
+    // Check if it's double-encoded hex of a JSON string
+    if (value.startsWith('0x5b') || value.startsWith('0x3078')) { // '[' in hex is 5b, '0x' is 3078
+      // Decode the outer hex
+      const hexString = value.slice(2);
+      const bytes = new Uint8Array(hexString.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) ?? []);
+      const stringValue = new TextDecoder().decode(bytes);
+
+      try {
+        // If it starts with '[', it's a JSON array
+        if (stringValue.startsWith('[')) {
+          return JSON.parse(stringValue);
+        }
+        // If it starts with '0x', it might be a hex-encoded array in ethers format
+        else if (stringValue.startsWith('0x')) {
+          return ethers.utils.defaultAbiCoder.decode(['address[]'], stringValue)[0];
+        }
+      } catch (error) {
+        console.error('Failed to parse decoded value', error);
+        throw new Error('Invalid format after decoding hex');
+      }
+    } else {
+      // Direct ABI-encoded array
+      return ethers.utils.defaultAbiCoder.decode(['address[]'], value)[0];
+    }
+  } else if (value.startsWith('[')) {
+    // Direct JSON string
+    return JSON.parse(value);
+  }
+
+  throw new Error(`Cannot decode value: ${value}`);
+}

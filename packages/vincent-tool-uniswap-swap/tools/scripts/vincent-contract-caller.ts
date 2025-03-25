@@ -78,7 +78,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
     const TOOL_IPFS_IDS = ['QmXE39Sd9MQXZyoBYHy5cwh6WhwszjJLj9dCKUBEEPFQdh'];
-    const TOOL_POLICY_IPFS_IDS = ['QmQkeXL41daHWyk9NhgZngUSUBidu8kdWRnWdExDBs5hDS'];
+    const TOOL_POLICY_IPFS_IDS = ['QmQN4FVUt5yjssbEKN7JkGtndpLu6JRUomJ5NnUvbbvob7'];
 
     // Use proper structure for policy-related parameters
     const TOOL_POLICIES = [
@@ -96,12 +96,12 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
                 ethers.utils.defaultAbiCoder.encode(['uint256'], [1000000000000000000n]),
                 ethers.utils.defaultAbiCoder.encode(['uint256'], [10000n]),
                 ethers.utils.defaultAbiCoder.encode(['uint256'], [86400n]),
-                ethers.utils.defaultAbiCoder.encode(['address[]'], [["0x0000000000000000000000000000000000000001"]])
+                ethers.utils.defaultAbiCoder.encode(['address[]'], [["0x4200000000000000000000000000000000000006", "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"]])
             ]
         ]
     ];
 
-    let APP_ID = 8n;
+    let APP_ID = 12n;
     let APP_VERSION = 1n;
 
     const chainManagerAppManager = createDatilChainManager({
