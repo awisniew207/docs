@@ -52,7 +52,7 @@ function App() {
     console.log(walletClient);
     const chainManager = createDatilChainManager({
       account: walletClient,
-      network: "datil-mainnet",
+      network: "datil",
     });
 
     console.log(chainManager);
