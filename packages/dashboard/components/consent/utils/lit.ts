@@ -188,10 +188,11 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
   console.log('newUserPKP', newUserPKP);
 
   // Mint a new PKP to be controlled by the new user PKP
-  const newUserPKP2 = await mintPKPToExistingPKP(newUserPKP);
-  console.log('newUserPKP2', newUserPKP2);
+  // We'll still mint this, but we won't return it
+  const agentPKP = await mintPKPToExistingPKP(newUserPKP);
+  console.log('agentPKP ', agentPKP);
 
-  return newUserPKP2;
+  return newUserPKP;
 }
 
 /**
@@ -228,6 +229,8 @@ export async function getSessionSigs({
   authMethod: AuthMethod;
 }): Promise<SessionSigs> {
   await litNodeClient.connect();
+
+  console.log('pkpPublicKey', pkpPublicKey);
 
   const sessionSigs = await litNodeClient.getPkpSessionSigs({
     chain: 'ethereum',
