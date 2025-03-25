@@ -1,4 +1,4 @@
-import { getContract, Network } from './config';
+import { getContract, Network, estimateGasWithBuffer } from './config';
 import { ethers } from 'ethers';
 
 export interface VincentContractsConfig {
@@ -31,7 +31,7 @@ export class VincentContracts {
     const contract = await getContract(this.network, 'App', true, this.signer);
     console.log("toolpolicyparametertypes", toolPolicyParameterTypes);
     console.log("formatted toolpolicyparametertypes", JSON.stringify(toolPolicyParameterTypes));
-    const tx = await contract.registerApp(
+    const args = [
       appName,
       appDescription,
       authorizedRedirectUris,
@@ -39,9 +39,18 @@ export class VincentContracts {
       toolIpfsCids,
       toolPolicies,
       toolPolicyParameterNames,
-      toolPolicyParameterTypes,
-      {gasLimit: 5000000});
-    console.log('tx', tx);
+      toolPolicyParameterTypes]
+
+    const gasLimit = await estimateGasWithBuffer(
+      contract,
+      'registerApp',
+      args
+    );
+
+    const tx = await contract.registerApp(
+      ...args,
+      {gasLimit}
+    );
       
     await tx.wait();
     return tx;
@@ -50,7 +59,7 @@ export class VincentContracts {
   async addDelegatee(appId: number, delegatee: string) {
     const contract = await getContract(this.network, 'App', true, this.signer);
     console.log("Trying to add delegatee", appId, delegatee);
-    const tx = await contract.addDelegatee(appId, delegatee, {gasLimit: 5000000});
+    const tx = await contract.addDelegatee(appId, delegatee);
     await tx.wait();
     return tx;
   }
@@ -69,12 +78,23 @@ export class VincentContracts {
     toolPolicyParameterNames: string[][][]
   ) {
     const contract = await getContract(this.network, 'App', true, this.signer);
-    const tx = await contract.registerNextAppVersion(
-      appId,
+    const args = [
+    appId,
       toolIpfsCids,
       toolPolicies,
-      toolPolicyParameterNames
+      toolPolicyParameterNames];
+
+    const gasLimit = await estimateGasWithBuffer(
+      contract,
+      'registerNextAppVersion',
+      args
     );
+
+    const tx = await contract.registerNextAppVersion(
+      ...args,
+      {gasLimit}
+    );
+      
     await tx.wait();
     return tx;
   }

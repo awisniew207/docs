@@ -1,43 +1,28 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 
 interface UrlParamsResult {
   appId: string | null;
-  version: string | null;
   error: string | null;
 }
 
 export function useUrlAppId(): UrlParamsResult {
+  const params = useParams();
   const [appId, setAppId] = useState<string | null>(null);
-  const [version, setVersion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    
-    const urlAppId = params.get('appId');
-    const urlVersion = params.get('version');
+    const routeAppId = params.appId as string;
 
-
-    if (!urlAppId) {
+    if (!routeAppId) {
       setError('No appId provided');
       setAppId(null);
       return;
     }
 
-    // Set the parsed appId 
-    setAppId(urlAppId);
-    
-    if (!urlVersion) {
-      // Default to version "0" if not provided
-      setVersion("0");
-    } else {
-      setVersion(urlVersion);
-    }
-
-    // Clear any previous errors
+    setAppId(routeAppId);
     setError(null);
-  }, []);
+  }, [params]);
 
-  return { appId, version, error };
+  return { appId, error };
 } 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ParameterType, mapEnumToTypeName } from '../../../services/types/parameterTypes';
 
 interface ParameterInputProps {
@@ -12,13 +12,15 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const [inputValue, setInputValue] = useState<any>(value || '');
   const typeName = mapEnumToTypeName(type);
   
+  // Update local state when prop value changes
   useEffect(() => {
-    if (value !== undefined) {
+    if (value !== undefined && value !== inputValue) {
       setInputValue(value);
     }
   }, [value]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  // Memoize handlers to prevent recreating on each render
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     
@@ -82,6 +84,8 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           : [];
         break;
       case ParameterType.STRING_ARRAY:
+        parsedValue = newValue ? newValue.split(',') : [];
+        break;
       case ParameterType.ADDRESS_ARRAY:
       case ParameterType.BYTES_ARRAY:
         parsedValue = newValue ? newValue.split(',').map(v => v.trim()) : [];
@@ -91,7 +95,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     }
     
     onChange(parsedValue);
-  };
+  }, [type, onChange]);
 
   // Special handler for number array inputs to prevent NaN values
   const handleNumberArrayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -273,7 +277,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
               value={inputValue}
               onChange={handleChange}
               className="parameter-input parameter-input--array"
-              placeholder={`Enter comma-separated ${typeName} values (true, false)`}
+              placeholder={`Enter comma-separated ${typeName} values (true, false; delete by highlighting and backspacing)`}
               rows={3}
             />
             <div className="bool-array-items">
@@ -307,7 +311,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
               value={inputValue}
               onChange={handleNumberArrayChange}
               className="parameter-input parameter-input--array"
-              placeholder="Enter comma-separated int256 values (e.g. -42, 0, 123)"
+              placeholder={`Enter comma-separated int256 values (e.g. -42, 0, 123; delete by highlighting and backspacing)`}
               rows={3}
             />
             <div className="number-array-help">
@@ -323,7 +327,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
               value={inputValue}
               onChange={handleNumberArrayChange}
               className="parameter-input parameter-input--array"
-              placeholder="Enter comma-separated uint256 values (e.g. 42, 123, 456)"
+              placeholder={`Enter comma-separated uint256 values (e.g. 42, 123, 456; delete by highlighting and backspacing)`}
               rows={3}
             />
             <div className="number-array-help">
@@ -362,13 +366,23 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         );
       
       case ParameterType.STRING_ARRAY:
+        return (
+          <textarea
+            value={inputValue}
+            onChange={handleChange}
+            className="parameter-input parameter-input--array"
+            placeholder={`Enter comma-separated ${typeName} values (spaces will be preserved; delete by highlighting and backspacing)`}
+            rows={3}
+          />
+        );
+      
       case ParameterType.ADDRESS_ARRAY:
         return (
           <textarea
             value={inputValue}
             onChange={handleChange}
             className="parameter-input parameter-input--array"
-            placeholder={`Enter comma-separated ${typeName} values`}
+            placeholder={`Enter comma-separated ${typeName} values (delete by highlighting and backspacing)`}
             rows={3}
           />
         );
@@ -380,7 +394,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
               value={inputValue}
               onChange={handleChange}
               className="parameter-input parameter-input--array"
-              placeholder="Enter comma-separated bytes values (0x1234... or plain text)"
+              placeholder={`Enter comma-separated bytes values (0x1234... or plain text; delete by highlighting and backspacing)`}
               rows={3}
             />
             <div className="bytes-array-help">

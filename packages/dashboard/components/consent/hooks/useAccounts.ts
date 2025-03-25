@@ -17,11 +17,8 @@ export default function useAccounts() {
       setLoading(true);
       setError(undefined);
       try {
-        // Fetch PKPs tied to given auth method
         const myPKPs = await getOrMintPKPs(authMethod);
-        // console.log('fetchAccounts pkps: ', myPKPs);
         setAccounts(myPKPs);
-        // If only one PKP, set as current account
         if (myPKPs.length === 1) {
           setuserPKP(myPKPs[0]);
         }
@@ -43,8 +40,6 @@ export default function useAccounts() {
       setError(undefined);
       try {
         const newPKP = await mintPKP(authMethod);
-
-        // console.log('createAccount pkp: ', newPKP);
         setAccounts(prev => [...prev, newPKP]);
         setuserPKP(newPKP);
       } catch (err) {

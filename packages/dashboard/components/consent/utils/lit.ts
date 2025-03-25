@@ -177,6 +177,7 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
     ethAddress: userResponse.pkpEthAddress,
   };
 
+  
   try {
     await addPayee(newUserPKP.ethAddress);
     console.log('Added payee', newUserPKP.ethAddress);
@@ -411,13 +412,6 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
     publicKey,
     ethAddress,
   };
-
-  try {
-    await addPayee(agentPKP.ethAddress);
-    console.log('Added payee', agentPKP.ethAddress);
-  } catch (err) {
-    console.warn('Failed to add payee', err);
-  }
 
   return agentPKP;
 }

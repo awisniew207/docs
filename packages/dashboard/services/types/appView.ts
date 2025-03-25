@@ -10,8 +10,4 @@ export interface AppView {
   toolPolicies: any[]; // Array of version data
   managementWallet: string;
   currentVersion: number;
-  appMetadata: {
-    email: string;
-    // Add any other metadata fields here
-  };
 } 

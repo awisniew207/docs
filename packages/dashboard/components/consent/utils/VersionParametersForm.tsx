@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ParameterInput from './ParameterInput';
 
 interface VersionParameter {
@@ -13,16 +13,22 @@ interface VersionParameter {
 interface VersionParametersFormProps {
   versionData: any;
   onChange: (parameters: VersionParameter[]) => void;
+  existingParameters?: VersionParameter[];
 }
 
 export default function VersionParametersForm({
   versionData,
-  onChange
+  onChange,
+  existingParameters = []
 }: VersionParametersFormProps) {
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
+  const initializedRef = useRef(false);
   
   useEffect(() => {
     if (!versionData) return;
+    
+    // Prevent unnecessary re-processing if we've already initialized with these params
+    if (initializedRef.current && parameters.length > 0) return;
     
     try {
       // Extract parameters from version data - this matches the structure shown in the example
@@ -50,13 +56,23 @@ export default function VersionParametersForm({
             if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
               paramNames.forEach((name, paramIndex) => {
                 if (paramIndex < paramTypes.length) {
+                  // Look for existing parameter value by location (toolIndex, policyIndex, paramIndex)
+                  const existingParam = existingParameters.find(p => 
+                    p.toolIndex === toolIndex && 
+                    p.policyIndex === policyIndex && 
+                    p.paramIndex === paramIndex
+                  );
+                  
+                  // Use existing value if found, otherwise use empty string
+                  const value = existingParam ? existingParam.value : '';
+                  
                   extractedParams.push({
                     toolIndex,
                     policyIndex,
                     paramIndex,
                     name,
                     type: paramTypes[paramIndex],
-                    value: '' // Default empty value
+                    value 
                   });
                 }
               });
@@ -65,11 +81,23 @@ export default function VersionParametersForm({
         }
       });
       
+      // Only log once to avoid console spam
+      if (!initializedRef.current) {
+        console.log('Form initialized with parameters:', extractedParams);
+      }
+      
+      // Set the parameters state without calling onChange directly
       setParameters(extractedParams);
+      
+      // Only after first initialization, set initial values via onChange
+      if (!initializedRef.current && extractedParams.length > 0) {
+        onChange(extractedParams);
+        initializedRef.current = true;
+      }
     } catch (error) {
       console.error('Error parsing version data:', error);
     }
-  }, [versionData]);
+  }, [versionData, existingParameters]);
   
   const handleParameterChange = (index: number, value: any) => {
     const updatedParams = [...parameters];
