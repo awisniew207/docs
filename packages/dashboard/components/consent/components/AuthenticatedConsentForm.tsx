@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
-import { useErrorPopup } from '@/components/ui/error-popup';
+import { useErrorPopup } from '@/providers/error-popup';
 
 import StatusMessage from './authForm/StatusMessage';
 import StatusAnimation from './authForm/StatusAnimation';

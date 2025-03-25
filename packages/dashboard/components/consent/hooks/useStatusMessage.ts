@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useErrorPopup } from '@/components/ui/error-popup';
+import { useErrorPopup } from '@/providers/error-popup';
 
 export type StatusType = 'info' | 'warning' | 'success' | 'error';
 

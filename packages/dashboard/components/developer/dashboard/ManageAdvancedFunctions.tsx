@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useErrorPopup } from '@/components/ui/error-popup';
+import { useErrorPopup } from '@/providers/error-popup';
 
 interface AdvancedFunctionsProps {
   onBack: () => void;

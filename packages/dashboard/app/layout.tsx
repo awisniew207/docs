@@ -11,7 +11,7 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { yellowstone } from './config/chains';
 import { usePathname } from 'next/navigation';
-import { ErrorPopupProvider } from '@/components/ui/error-popup';
+import { ErrorPopupProvider } from '@/providers/error-popup';
 
 const wagmiConfig = createConfig({
   chains: [yellowstone],

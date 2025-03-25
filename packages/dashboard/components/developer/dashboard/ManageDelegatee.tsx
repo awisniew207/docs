@@ -15,7 +15,7 @@ import {
 import { AppView } from "@/services/types";
 import { VincentContracts } from "@/services";
 import { Input } from "@/components/ui/input";
-import { useErrorPopup } from "@/components/ui/error-popup";
+import { useErrorPopup } from "@/providers/error-popup";
 
 interface DelegateeManagerProps {
     onBack: () => void;

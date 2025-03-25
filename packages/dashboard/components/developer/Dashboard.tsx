@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from '../ui/card';
 import { mapEnumToTypeName } from '@/services/types';
-import { useErrorPopup } from '@/components/ui/error-popup';
+import { useErrorPopup } from '@/providers/error-popup';
 // The styles are now included in the main dashboard.css imported in layout.tsx
 
 // Status message component

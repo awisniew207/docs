@@ -69,4 +69,4 @@ const VersionUpgradePrompt = ({
   );
 };
 
-export default VersionUpgradePrompt; 
+export default VersionUpgradePrompt;
