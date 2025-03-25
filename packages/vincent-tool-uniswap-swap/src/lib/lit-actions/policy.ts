@@ -1,12 +1,11 @@
-export { };
+import { getSpendingLimitContract } from "./utils/get-spending-limit-contract";
 
 declare global {
   // Required Inputs
-  const parentToolIpfsCid: string;
-  const vincentContractAddress: string;
-  const pkpTokenId: string;
-  const delegateeAddress: string;
-  const policyParams: {
+  const vincentAppId: string;
+  const vincentAppVersion: string;
+  const SPENDING_LIMIT_ADDRESS: string;
+  const userParams: {
     pkpEthAddress: string;
     rpcUrl: string;
     chainId: string;
@@ -28,37 +27,48 @@ declare global {
   console.log(`Executing policy ${policy.policyIpfsCid}`);
   console.log(`Policy parameters: ${JSON.stringify(policy.parameters, null, 2)}`);
 
-  let maxAmount: any;
+  const spendingLimitContract = await getSpendingLimitContract(SPENDING_LIMIT_ADDRESS);
+
+  let maxAmountPerTx: any;
+  let maxSpendingLimit: any;
+  let spendingLimitDuration: any;
   let allowedTokens: string[] = [];
 
   for (const parameter of policy.parameters) {
     console.log(`Policy Parameter: ${JSON.stringify(parameter, null, 2)}`);
 
     switch (parameter.name) {
-      case 'maxAmount':
+      case 'maxAmountPerTx':
         // Parameter type 2 = UINT256
         if (parameter.paramType === 2) {
-          maxAmount = decodeDoubleEncodedHex(parameter.value);
-          console.log(`Parsed maxAmount: ${maxAmount.toString()}`);
+          maxAmountPerTx = ethers.utils.defaultAbiCoder.decode(['uint256'], parameter.value)[0];
+          console.log(`Parsed maxAmountPerTx: ${maxAmountPerTx.toString()}`);
         } else {
-          console.warn(`Unexpected parameter type for maxAmount: ${parameter.paramType}`);
+          console.warn(`Unexpected parameter type for maxAmountPerTx: ${parameter.paramType}`);
         }
         break;
       case 'maxSpendingLimit':
-        const spendingLimitDuration = policy.parameters.find(p => p.name === 'spendingLimitDuration');
-        if (spendingLimitDuration) {
-          const spendingLimitDurationValue = decodeDoubleEncodedHex(spendingLimitDuration.value);
-          console.log(`Parsed spendingLimitDuration: ${spendingLimitDurationValue.toString()}`);
+        // Parameter type 2 = UINT256
+        if (parameter.paramType === 2) {
+          maxSpendingLimit = ethers.utils.defaultAbiCoder.decode(['uint256'], parameter.value)[0];
+          console.log(`Parsed maxSpendingLimit: ${maxSpendingLimit.toString()}`);
+
+          // Find the corresponding duration parameter
+          spendingLimitDuration = policy.parameters.find(p => p.name === 'spendingLimitDuration');
+          if (!spendingLimitDuration) {
+            throw new Error('spendingLimitDuration not found in policy parameters');
+          }
+
+          spendingLimitDuration = ethers.utils.defaultAbiCoder.decode(['uint256'], spendingLimitDuration.value)[0];
+          console.log(`Parsed spendingLimitDuration: ${spendingLimitDuration.toString()}`);
         } else {
-          throw new Error(`spendingLimitDuration not found in policy parameters`);
+          console.warn(`Unexpected parameter type for maxSpendingLimit: ${parameter.paramType}`);
         }
         break;
       case 'allowedTokens':
         // Parameter type 7 = ADDRESS_ARRAY
         if (parameter.paramType === 7) {
-          // Decode the bytes value to an array of addresses
-          const decodedValue = decodeDoubleEncodedHexArray(parameter.value);
-          allowedTokens = decodedValue.map((addr: string) => ethers.utils.getAddress(addr));
+          allowedTokens = ethers.utils.defaultAbiCoder.decode(['address[]'], parameter.value)[0];
           console.log(`Parsed allowedTokens: ${allowedTokens.join(', ')}`);
         } else {
           console.warn(`Unexpected parameter type for allowedTokens: ${parameter.paramType}`);
@@ -67,25 +77,41 @@ declare global {
     }
   }
 
-  const amountInBN = decodeDoubleEncodedHex(policyParams.amountIn);
-  const tokenIn = ethers.utils.getAddress(policyParams.tokenIn);
-  const tokenOut = ethers.utils.getAddress(policyParams.tokenOut);
+  const amountInBN = ethers.BigNumber.from(userParams.amountIn);
+  const tokenIn = ethers.utils.getAddress(userParams.tokenIn);
+  const tokenOut = ethers.utils.getAddress(userParams.tokenOut);
 
   // Convert string amount to BigNumber and compare
   console.log(
-    `Checking if amount ${amountInBN.toString()} exceeds maxAmount ${maxAmount.toString()}...`
+    `Checking if amount ${amountInBN.toString()} exceeds maxAmountPerTx ${maxAmountPerTx.toString()}...`
   );
 
   // 1. Check amount limit
-  if (amountInBN.gt(maxAmount)) {
+  if (amountInBN.gt(maxAmountPerTx)) {
     throw new Error(
       `Amount ${ethers.utils.formatUnits(
         amountInBN
-      )} exceeds the maximum amount ${ethers.utils.formatUnits(maxAmount)}`
+      )} exceeds the maximum amount ${ethers.utils.formatUnits(maxAmountPerTx)}`
     );
   }
 
-  // 2. Check allowed tokens
+  // 2. Check spending limit
+  console.log(`Checking spending limit for PKP: ${userParams.pkpEthAddress} for App ID ${vincentAppId} with request spend amount ${amountInBN.toString()} and max spending limit ${maxSpendingLimit.toString()} and spending limit duration ${spendingLimitDuration.toString()}`);
+
+  // checkLimit returns false if the limit is exceeded
+  const isWithinLimit = await spendingLimitContract.checkLimit(
+    userParams.pkpEthAddress,
+    vincentAppId,
+    amountInBN,
+    maxSpendingLimit,
+    spendingLimitDuration
+  );
+
+  if (!isWithinLimit) {
+    throw new Error(`${amountInBN.toString()} would exceed App ID: ${vincentAppId} spending limit: ${maxSpendingLimit} for duration: ${spendingLimitDuration}`);
+  }
+
+  // 3. Check allowed tokens
   if (allowedTokens.length > 0) {
     // Check if tokenIn is allowed
     if (!allowedTokens.includes(tokenIn)) {
@@ -104,66 +130,3 @@ declare global {
 
   console.log('All policy checks passed');
 })();
-
-/**
- * Decodes a potentially double-encoded hex string
- * @param value The potentially double-encoded hex value
- * @returns A BigNumber representing the actual value
- */
-// @ts-ignore
-function decodeDoubleEncodedHex(value: string): ethers.BigNumber {
-  if (value.startsWith('0x')) {
-    // Check if it's double-encoded (hex representation of "0x" is "3078")
-    if (value.startsWith('0x3078')) {
-      // This is a double-encoded hex value
-      // First, decode the outer hex to get the string
-      const hexString = value.slice(2); // Remove 0x prefix
-      const bytes = new Uint8Array(hexString.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) ?? []);
-      const stringValue = new TextDecoder().decode(bytes);
-
-      // Now we have the inner hex string (like "0x0000..."), convert to BigNumber
-      return ethers.BigNumber.from(stringValue);
-    } else {
-      // Regular hex value
-      return ethers.BigNumber.from(value);
-    }
-  } else {
-    // Direct value
-    return ethers.BigNumber.from(value);
-  }
-}
-
-// For arrays (like address arrays)
-function decodeDoubleEncodedHexArray(value: string): string[] {
-  if (value.startsWith('0x')) {
-    // Check if it's double-encoded hex of a JSON string
-    if (value.startsWith('0x5b') || value.startsWith('0x3078')) { // '[' in hex is 5b, '0x' is 3078
-      // Decode the outer hex
-      const hexString = value.slice(2);
-      const bytes = new Uint8Array(hexString.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) ?? []);
-      const stringValue = new TextDecoder().decode(bytes);
-
-      try {
-        // If it starts with '[', it's a JSON array
-        if (stringValue.startsWith('[')) {
-          return JSON.parse(stringValue);
-        }
-        // If it starts with '0x', it might be a hex-encoded array in ethers format
-        else if (stringValue.startsWith('0x')) {
-          return ethers.utils.defaultAbiCoder.decode(['address[]'], stringValue)[0];
-        }
-      } catch (error) {
-        console.error('Failed to parse decoded value', error);
-        throw new Error('Invalid format after decoding hex');
-      }
-    } else {
-      // Direct ABI-encoded array
-      return ethers.utils.defaultAbiCoder.decode(['address[]'], value)[0];
-    }
-  } else if (value.startsWith('[')) {
-    // Direct JSON string
-    return JSON.parse(value);
-  }
-
-  throw new Error(`Cannot decode value: ${value}`);
-}

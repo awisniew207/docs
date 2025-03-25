@@ -31,7 +31,7 @@ const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 const datilChain = defineChain({
     id: 175188,
     name: 'Datil Mainnet',
-    network: 'datil-mainnet',
+    network: 'datil',
     nativeCurrency: {
         decimals: 18,
         name: 'Ether',
@@ -77,15 +77,15 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmXE39Sd9MQXZyoBYHy5cwh6WhwszjJLj9dCKUBEEPFQdh'];
-    const TOOL_POLICY_IPFS_IDS = ['QmQN4FVUt5yjssbEKN7JkGtndpLu6JRUomJ5NnUvbbvob7'];
+    const TOOL_IPFS_IDS = ['QmXApiWuhCu58m7XVFmrGvEtorvBW6xi155D8gh26YZHTP'];
+    const TOOL_POLICY_IPFS_IDS = ['QmPF6XZBFm7mfHxcAW2nzdewPDjMDVRxrTak3Tg398Y7F1'];
 
     // Use proper structure for policy-related parameters
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS
     ];
     const TOOL_POLICY_PARAMETER_NAMES = [
-        [['maxAmount', 'spendingLimit', 'spendingLimitDuration', 'allowedTokens']]
+        [['maxAmountPerTx', 'maxSpendingLimit', 'spendingLimitDuration', 'allowedTokens']]
     ];
     const TOOL_POLICY_PARAMETER_TYPES = [
         [['UINT256', 'UINT256', 'UINT256', 'ADDRESS_ARRAY']]
@@ -93,20 +93,20 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     const TOOL_POLICY_PARAMETER_VALUES = [
         [
             [
-                ethers.utils.defaultAbiCoder.encode(['uint256'], [1000000000000000000n]),
-                ethers.utils.defaultAbiCoder.encode(['uint256'], [10000n]),
-                ethers.utils.defaultAbiCoder.encode(['uint256'], [86400n]),
-                ethers.utils.defaultAbiCoder.encode(['address[]'], [["0x4200000000000000000000000000000000000006", "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"]])
+                { type: 'uint256', value: '1000000000000000000' },
+                { type: 'uint256', value: '10000' },
+                { type: 'uint256', value: '86400' },
+                { type: 'address[]', value: '0x4200000000000000000000000000000000000006,0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }
             ]
         ]
     ];
 
-    let APP_ID = 12n;
+    let APP_ID = 23n;
     let APP_VERSION = 1n;
 
     const chainManagerAppManager = createDatilChainManager({
         account: APP_MANAGER_VIEM_WALLET_CLIENT,
-        network: 'datil-mainnet'
+        network: 'datil'
     });
 
     const removeDelegateeResult = await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
@@ -135,7 +135,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     // Create a chain manager using the PKP owner's wallet (not the PKP itself)
     const chainManagerAgentWalletPKPOwner = createDatilChainManager({
         account: AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT,
-        network: 'datil-mainnet'
+        network: 'datil'
     });
 
     // Permit the app version for the PKP using the PKP owner's wallet

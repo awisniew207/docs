@@ -280,8 +280,8 @@ importers:
   packages/vincent-tool-uniswap-swap:
     dependencies:
       '@lit-protocol/vincent-contracts':
-        specifier: 0.1.1-3
-        version: 0.1.1-3
+        specifier: 0.1.1-4
+        version: 0.1.1-4
       '@lit-protocol/vincent-tool':
         specifier: workspace:*
         version: link:../vincent-tool
@@ -1709,8 +1709,8 @@ packages:
   '@lit-protocol/uint8arrays@7.0.8':
     resolution: {integrity: sha512-e5D3kw+BuaKwreD3Wgn7Cvke67m3IR8qVMW5bhf4UqpjxF1nHjfoZsjdJu1R6FMxSw0vzxkcMOjm8CwVdMULuQ==}
 
-  '@lit-protocol/vincent-contracts@0.1.1-3':
-    resolution: {integrity: sha512-CGd9bnERvOGwxids/fIPQKeXT5sO/KKqV5QArhGXCR68xiTaYWK6/wL3BnntGhse8Rg+j7BzTTHWIWZgsUMhAw==}
+  '@lit-protocol/vincent-contracts@0.1.1-4':
+    resolution: {integrity: sha512-rAEH26hbDfAKOOkZ9qP1gFtJKIiIznE+oc5ivbh1CS41qzCdF2aA+qJx9CaEUF3LfKJRikBfH+vryx9PRo9D0g==}
 
   '@lit-protocol/vincent-sdk@0.1.1-1':
     resolution: {integrity: sha512-CepFBng9quJ6A9ROiaE+wlA8Zi4hk8M5PM2yLn8RMV51YbIUZBRb9/xWjNkhr9aLPG3hnwI3tb67GPCP8KmW8A==}
@@ -10388,7 +10388,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@lit-protocol/vincent-contracts@0.1.1-3': {}
+  '@lit-protocol/vincent-contracts@0.1.1-4': {}
 
   '@lit-protocol/vincent-sdk@0.1.1-1':
     dependencies:

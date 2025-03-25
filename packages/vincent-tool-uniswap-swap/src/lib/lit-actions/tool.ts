@@ -98,11 +98,9 @@ declare global {
         await Lit.Actions.call({
           ipfsId: policy.policyIpfsCid,
           params: {
-            parentToolIpfsCid: toolIpfsCid,
-            vincentContractAddress: VINCENT_ADDRESS,
-            pkpTokenId: pkp.tokenId,
-            delegateeAddress,
-            policyParams: {
+            vincentAppId: vincentToolExecutionObject.appId.toString(),
+            vincentAppVersion: vincentToolExecutionObject.appVersion.toString(),
+            userParams: {
               ...toolParams,
               amountIn: tokenInfo.tokenIn.amount.toString(),
             },

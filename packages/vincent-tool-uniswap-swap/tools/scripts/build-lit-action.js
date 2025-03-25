@@ -15,6 +15,7 @@ async function buildFile(entryPoint, outfile, network, config) {
         'process.env.NETWORK': `"${network}"`,
         LIT_NETWORK: `"${network}"`,
         VINCENT_ADDRESS: `"${config.vincentAddress}"`,
+        SPENDING_LIMIT_ADDRESS: `"${config.spendingLimitAddress}"`,
       },
       target: ['es2020'],
     });
