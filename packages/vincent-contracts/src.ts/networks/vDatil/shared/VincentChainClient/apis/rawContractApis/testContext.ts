@@ -1,9 +1,9 @@
-// @ts-nocheck
+import { Account, createWalletClient, http, parseEther } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { vincentMainnetNetworkContext } from '../../../../datil-mainnet/vincentContext';
 import { createVincentNetworkContext } from '../../vincentNetworkContext';
 import { registerApp } from './VincentAppFacet/registerApp';
-import { vincentMainnetNetworkContext } from '../../../../datil-mainnet/vincentContext';
-import { Account, createWalletClient, http, parseEther } from 'viem';
+import { ParameterTypeInput } from './VincentAppFacet/schemas/ParameterType';
 
 export const getTestContext = async (opts?: {
   registerApp?: boolean;
@@ -59,9 +59,63 @@ export const getTestContext = async (opts?: {
     DELEGATEES: [randomDelegateeAccount.address],
     TOOL_IPFS_CIDS: ['QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY'],
     TOOL_POLICIES: [['QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE']],
-    TOOL_POLICY_PARAMETER_NAMES: [[['param1']]],
-    TOOL_POLICY_PARAMETER_TYPES: [[['BYTES']]] as any, // This is an enum type in the contract, so we need to cast it to any
-    TOOL_POLICY_PARAMETER_VALUES: [[['test']]],
+    TOOL_POLICY_PARAMETER_NAMES: [
+      [
+        ['param1'],
+        ['param2'],
+        ['param3'],
+        ['param4'],
+        ['param5'],
+        ['param6'],
+        ['param7'],
+        ['param8'],
+        ['param9'],
+        ['param10'],
+        ['param11'],
+        ['param12'],
+      ],
+    ],
+    TOOL_POLICY_PARAMETER_TYPES: [
+      [
+        [
+          'INT256',
+          'INT256_ARRAY',
+          'UINT256',
+          'UINT256_ARRAY',
+          'BOOL',
+          'BOOL_ARRAY',
+          'ADDRESS',
+          'ADDRESS_ARRAY',
+          'STRING',
+          'STRING_ARRAY',
+          'BYTES',
+          'BYTES_ARRAY',
+        ],
+      ],
+    ] as ParameterTypeInput[][][],
+    TOOL_POLICY_PARAMETER_VALUES: [
+      [
+        [-1000000000000000000n], // INT256
+        [-1000000000000000000n, 2000000000000000000n], // INT256_ARRAY
+        [1000000000000000000n], // UINT256
+        [1000000000000000000n, 2000000000000000000n], // UINT256_ARRAY
+        [true], // BOOL
+        [true, false, true], // BOOL_ARRAY
+        ['0x1234567890123456789012345678901234567890'], // ADDRESS
+        [
+          '0x1234567890123456789012345678901234567890',
+          '0x0987654321098765432109876543210987654321',
+        ], // ADDRESS_ARRAY
+        [
+          '0x1234567890123456789012345678901234567890',
+          '0x0987654321098765432109876543210987654321',
+        ],
+        ['Hello World'], // STRING
+        ['Hello', 'World'], // STRING_ARRAY
+        ['0x1234'], // BYTES
+        ['0x1234', '0x5678'], // BYTES_ARRAY
+      ],
+    ],
     // approving (random ipfs cids)
     TOOL_IPFS_CIDS_TO_APPROVE: [
       'QmWxywr4ASXzr68NapmoHteaTCparjnBT7Y3u9PrYajxAA',
