@@ -29,7 +29,11 @@ export const encodeParameterValue = (
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256"], [paramValue]));
       
       case ParameterType.INT256_ARRAY: { // int256[]
-        let arrayValue = parseArrayValue(paramValue, parseInt);
+        let arrayValue = parseArrayValue(paramValue, (value) => {
+          if (String(value).trim() === '-') return 0;
+          const num = parseInt(String(value).trim(), 10);
+          return isNaN(num) ? 0 : num;
+        });
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256[]"], [arrayValue]));
       }
       
@@ -40,7 +44,10 @@ export const encodeParameterValue = (
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256"], [paramValue]));
       
       case ParameterType.UINT256_ARRAY: { // uint256[]
-        let arrayValue = parseArrayValue(paramValue, parseInt);
+        let arrayValue = parseArrayValue(paramValue, (value) => {
+          const num = parseInt(String(value).trim(), 10);
+          return isNaN(num) || num < 0 ? 0 : num;
+        });
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256[]"], [arrayValue]));
       }
       
@@ -73,7 +80,7 @@ export const encodeParameterValue = (
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(paramValue)]));
       
       case ParameterType.STRING_ARRAY: { // string[]
-        let arrayValue = parseArrayValue(paramValue, value => String(value).trim());
+        let arrayValue = parseArrayValue(paramValue, value => String(value), ParameterType.STRING_ARRAY);
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string[]"], [arrayValue]));
       }
       
@@ -127,10 +134,14 @@ export const encodeParameterValue = (
  * Parses a value into an array based on the conversion function
  * @param value - The value to parse (string, array, or primitive)
  * @param converter - Function to convert each item
+ * @param paramType - Optional parameter type to handle special cases
  * @returns Array of converted values
  */
-function parseArrayValue<T>(value: any, converter: (item: any) => T): T[] {
+function parseArrayValue<T>(value: any, converter: (item: any) => T, paramType?: number): T[] {
   if (typeof value === 'string' && value.includes(',')) {
+    if (paramType === ParameterType.STRING_ARRAY) {
+      return value.split(',').map(item => converter(item));
+    }
     return value.split(',').map(item => converter(item.trim()));
   } else if (Array.isArray(value)) {
     return value.map(converter);

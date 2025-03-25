@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function ConsentRedirectPage() {
+function ConsentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -29,5 +29,18 @@ export default function ConsentRedirectPage() {
       <div className="loading-spinner"></div>
       <p>Redirecting...</p>
     </div>
+  );
+}
+
+export default function ConsentRedirectPage() {
+  return (
+    <Suspense fallback={
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    }>
+      <ConsentContent />
+    </Suspense>
   );
 } 
