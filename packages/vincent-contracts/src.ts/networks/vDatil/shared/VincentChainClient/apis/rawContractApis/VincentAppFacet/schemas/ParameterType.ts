@@ -47,6 +47,14 @@ export const policySchema = z.object({
   value: z.string(),
 });
 
+export const createPolicyParameterValue = (
+  type: PolicyParameterValue['type'],
+  value: string,
+): PolicyParameterValue => ({
+  type,
+  value,
+});
+
 export type PolicyParameterValue = z.infer<typeof policySchema>;
 export type PolicyParameterValues = PolicyParameterValue[][][];
 
