@@ -339,7 +339,7 @@ export default function AuthenticatedConsentForm({
    * 3. Permission checking takes too long
    */
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
 
     if ((checkingPermissions || isLoading) && appInfo) {
       timer = setTimeout(() => {
@@ -349,7 +349,6 @@ export default function AuthenticatedConsentForm({
         });
       }, 3000); // 3 seconds timeout with appInfo
     } else if (checkingPermissions || isLoading) {
-      // Longer timeout if we don't even have appInfo
       timer = setTimeout(() => {
         updateState({
           checkingPermissions: false,
