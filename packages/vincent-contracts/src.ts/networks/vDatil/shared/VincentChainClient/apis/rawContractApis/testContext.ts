@@ -3,7 +3,7 @@ import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { vincentMainnetNetworkContext } from '../../../../datil-mainnet/vincentContext';
 import { createVincentNetworkContext } from '../../vincentNetworkContext';
 import { registerApp } from './VincentAppFacet/registerApp';
-import { ParameterTypeInput } from './VincentAppFacet/schemas/ParameterType';
+import { ParameterTypeInput, PolicyParameterValues } from './VincentAppFacet/schemas/ParameterType';
 
 export const getTestContext = async (opts?: {
   registerApp?: boolean;
@@ -95,27 +95,20 @@ export const getTestContext = async (opts?: {
     ] as ParameterTypeInput[][][],
     TOOL_POLICY_PARAMETER_VALUES: [
       [
-        [-1000000000000000000n], // INT256
-        [-1000000000000000000n, 2000000000000000000n], // INT256_ARRAY
-        [1000000000000000000n], // UINT256
-        [1000000000000000000n, 2000000000000000000n], // UINT256_ARRAY
-        [true], // BOOL
-        [true, false, true], // BOOL_ARRAY
-        ['0x1234567890123456789012345678901234567890'], // ADDRESS
-        [
-          '0x1234567890123456789012345678901234567890',
-          '0x0987654321098765432109876543210987654321',
-        ], // ADDRESS_ARRAY
-        [
-          '0x1234567890123456789012345678901234567890',
-          '0x0987654321098765432109876543210987654321',
-        ],
-        ['Hello World'], // STRING
-        ['Hello', 'World'], // STRING_ARRAY
-        ['0x1234'], // BYTES
-        ['0x1234', '0x5678'], // BYTES_ARRAY
+        [{ type: 'int256', value: '-1000000000000000000' }], // INT256
+        [{ type: 'int256[]', value: '-1000000000000000000,2000000000000000000' }], // INT256_ARRAY
+        [{ type: 'uint256', value: '1000000000000000000' }], // UINT256
+        [{ type: 'uint256[]', value: '1000000000000000000,2000000000000000000' }], // UINT256_ARRAY
+        [{ type: 'bool', value: 'true' }], // BOOL
+        [{ type: 'bool[]', value: 'true,false,true' }], // BOOL_ARRAY
+        [{ type: 'address', value: '0x1234567890123456789012345678901234567890' }], // ADDRESS
+        [{ type: 'address[]', value: '0x1234567890123456789012345678901234567890,0x0987654321098765432109876543210987654321' }], // ADDRESS_ARRAY
+        [{ type: 'string', value: 'Hello World' }], // STRING
+        [{ type: 'string[]', value: 'Hello,World' }], // STRING_ARRAY
+        [{ type: 'bytes', value: '0x1234' }], // BYTES
+        [{ type: 'bytes[]', value: '0x1234,0x5678' }], // BYTES_ARRAY
       ],
-    ],
+    ] as PolicyParameterValues,
     // approving (random ipfs cids)
     TOOL_IPFS_CIDS_TO_APPROVE: [
       'QmWxywr4ASXzr68NapmoHteaTCparjnBT7Y3u9PrYajxAA',
