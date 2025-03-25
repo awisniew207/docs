@@ -34,8 +34,6 @@ export async function permitAppVersion(
   const validatedRequest = PermitAppVersionRequest.parse(request);
   logger.debug({ validatedRequest });
 
-  console.log('validatedRequest:', validatedRequest);
-
   const { vincentUserFacetContract, publicClient } =
     createVincentContracts(ctx);
 
@@ -43,8 +41,6 @@ export async function permitAppVersion(
   const policyParameterValues = hexEncodedParameterValueSchema.parse(
     validatedRequest.policyParameterValues,
   );
-
-  console.log('policyParameterValues:', policyParameterValues);
 
   logger.debug({ policyParameterValues });
 
