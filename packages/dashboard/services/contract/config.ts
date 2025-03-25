@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 export type Network = 'datil';
 
 export const VINCENT_DIAMOND_ADDRESS: Record<Network, string> = {
-  datil: '0x87cD7840425Fe836ea5fEc2b8Dea40149042AdCe',
+  datil: '0x456DFB72AAe179E219FEbf3f339dF412dF30313D',
 };
 
 import APP_VIEW_FACET_ABI from './abis/VincentAppViewFacet.abi.json';
@@ -71,20 +71,20 @@ export async function estimateGasWithBuffer(
   try {
     // Estimate the gas required for the transaction
     const estimatedGas = await contract.estimateGas[method](...args);
-    
+
     // Add 20% buffer to the estimated gas
     const buffer = estimatedGas.div(5); // 20% = divide by 5
     const gasLimitWithBuffer = estimatedGas.add(buffer);
-    
+
     console.log(`Gas estimation for ${method}:`, {
       estimated: estimatedGas.toString(),
       withBuffer: gasLimitWithBuffer.toString()
     });
-    
+
     return gasLimitWithBuffer;
   } catch (error) {
     console.error(`Error estimating gas for ${method}:`, error);
-    
+
     // Return a default gas limit if estimation fails
     // This is still better than an arbitrary hardcoded value
     const defaultGasLimit = ethers.BigNumber.from("3000000");

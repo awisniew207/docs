@@ -23,7 +23,7 @@ import {
 
 declare global {
   // Required Inputs
-  const params: {
+  const toolParams: {
     pkpEthAddress: string;
     rpcUrl: string;
     chainId: string;
@@ -47,24 +47,25 @@ declare global {
 
     // @ts-ignore
     const { UNISWAP_V3_QUOTER, UNISWAP_V3_ROUTER } = getUniswapQuoterRouter(
-      params.chainId
+      toolParams.chainId
     );
 
     const delegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
     const toolIpfsCid = LitAuth.actionIpfsIds[0];
-    const provider = new ethers.providers.JsonRpcProvider(params.rpcUrl);
+    const provider = new ethers.providers.JsonRpcProvider(toolParams.rpcUrl);
     const vincentContract = await getVincentContract(
       VINCENT_ADDRESS
     );
-    const pkp = await getPkpInfo(params.pkpEthAddress);
+    const pkp = await getPkpInfo(toolParams.pkpEthAddress);
     const tokenInfo = await getTokenInfo(
       provider,
-      params.tokenIn,
-      params.amountIn,
-      params.tokenOut,
+      toolParams.tokenIn,
+      toolParams.amountIn,
+      toolParams.tokenOut,
       pkp
     );
 
+    console.log(`Checking if Delegatee ${delegateeAddress} has permission to execute tool ${toolIpfsCid} with PKP ${pkp.tokenId}`);
     const vincentToolExecutionObject = await vincentContract.validateToolExecutionAndGetPolicies(
       delegateeAddress,
       pkp.tokenId,
@@ -82,106 +83,115 @@ declare global {
         `No policy found for tool ${toolIpfsCid} on PKP ${pkp.tokenId} for delegatee ${delegateeAddress}`
       );
     } else {
-      for (const policyObject of vincentToolExecutionObject.policies) {
-        console.log(`Executing Policy: ${policyObject.policyIpfsCid}`);
+      const policies = vincentToolExecutionObject.policies.map((policy: any) => ({
+        policyIpfsCid: policy.policyIpfsCid,
+        parameters: policy.parameters.map((param: any) => ({
+          name: param.name,
+          paramType: param.paramType,
+          value: param.value
+        }))
+      }))
+
+      for (const policy of policies) {
+        console.log(`Executing Policy: ${policy.policyIpfsCid} with parameters: ${JSON.stringify(policy.parameters, null, 2)}`);
 
         await Lit.Actions.call({
-          ipfsId: policyObject.policyIpfsCid,
+          ipfsId: policy.policyIpfsCid,
           params: {
             parentToolIpfsCid: toolIpfsCid,
             vincentContractAddress: VINCENT_ADDRESS,
             pkpTokenId: pkp.tokenId,
             delegateeAddress,
-            toolParameters: {
-              ...params,
+            policyParams: {
+              ...toolParams,
               amountIn: tokenInfo.tokenIn.amount.toString(),
             },
-            policyObject,
+            policy,
           },
         });
       }
     }
 
-    // Get best quote and calculate minimum output
-    const { bestFee, amountOutMin } = await getBestQuote(
-      provider,
-      UNISWAP_V3_QUOTER,
-      tokenInfo.tokenIn.amount,
-      tokenInfo.tokenOut.decimals
-    );
+    // // Get best quote and calculate minimum output
+    // const { bestFee, amountOutMin } = await getBestQuote(
+    //   provider,
+    //   UNISWAP_V3_QUOTER,
+    //   tokenInfo.tokenIn.amount,
+    //   tokenInfo.tokenOut.decimals
+    // );
 
-    // Get gas data for transactions
-    const gasData = await getGasData(provider, pkp.ethAddress);
+    // // Get gas data for transactions
+    // const gasData = await getGasData(provider, pkp.ethAddress);
 
-    // Approval Transaction
-    const approvalGasLimit = await estimateGasLimit(
-      provider,
-      pkp.ethAddress,
-      UNISWAP_V3_ROUTER,
-      tokenInfo.tokenIn.contract,
-      tokenInfo.tokenIn.amount,
-      true
-    );
+    // // Approval Transaction
+    // const approvalGasLimit = await estimateGasLimit(
+    //   provider,
+    //   pkp.ethAddress,
+    //   UNISWAP_V3_ROUTER,
+    //   tokenInfo.tokenIn.contract,
+    //   tokenInfo.tokenIn.amount,
+    //   true
+    // );
 
-    const approvalTx = await createTransaction(
-      UNISWAP_V3_ROUTER,
-      pkp.ethAddress,
-      approvalGasLimit,
-      tokenInfo.tokenIn.amount,
-      gasData,
-      true
-    );
+    // const approvalTx = await createTransaction(
+    //   UNISWAP_V3_ROUTER,
+    //   pkp.ethAddress,
+    //   approvalGasLimit,
+    //   tokenInfo.tokenIn.amount,
+    //   gasData,
+    //   true
+    // );
 
-    const signedApprovalTx = await signTx(
-      pkp.publicKey,
-      approvalTx,
-      'erc20ApprovalSig'
-    );
-    const approvalHash = await broadcastTransaction(provider, signedApprovalTx);
-    console.log('Approval transaction hash:', approvalHash);
+    // const signedApprovalTx = await signTx(
+    //   pkp.publicKey,
+    //   approvalTx,
+    //   'erc20ApprovalSig'
+    // );
+    // const approvalHash = await broadcastTransaction(provider, signedApprovalTx);
+    // console.log('Approval transaction hash:', approvalHash);
 
-    // Wait for approval confirmation
-    console.log('Waiting for approval confirmation...');
-    const approvalConfirmation = await provider.waitForTransaction(
-      approvalHash,
-      1
-    );
-    if (approvalConfirmation.status === 0) {
-      throw new Error('Approval transaction failed');
-    }
+    // // Wait for approval confirmation
+    // console.log('Waiting for approval confirmation...');
+    // const approvalConfirmation = await provider.waitForTransaction(
+    //   approvalHash,
+    //   1
+    // );
+    // if (approvalConfirmation.status === 0) {
+    //   throw new Error('Approval transaction failed');
+    // }
 
-    // Swap Transaction
-    const swapGasLimit = await estimateGasLimit(
-      provider,
-      pkp.ethAddress,
-      UNISWAP_V3_ROUTER,
-      tokenInfo.tokenIn.contract,
-      tokenInfo.tokenIn.amount,
-      false,
-      { fee: bestFee, amountOutMin }
-    );
+    // // Swap Transaction
+    // const swapGasLimit = await estimateGasLimit(
+    //   provider,
+    //   pkp.ethAddress,
+    //   UNISWAP_V3_ROUTER,
+    //   tokenInfo.tokenIn.contract,
+    //   tokenInfo.tokenIn.amount,
+    //   false,
+    //   { fee: bestFee, amountOutMin }
+    // );
 
-    const swapTx = await createTransaction(
-      UNISWAP_V3_ROUTER,
-      pkp.ethAddress,
-      swapGasLimit,
-      tokenInfo.tokenIn.amount,
-      { ...gasData, nonce: gasData.nonce + 1 },
-      false,
-      { fee: bestFee, amountOutMin }
-    );
+    // const swapTx = await createTransaction(
+    //   UNISWAP_V3_ROUTER,
+    //   pkp.ethAddress,
+    //   swapGasLimit,
+    //   tokenInfo.tokenIn.amount,
+    //   { ...gasData, nonce: gasData.nonce + 1 },
+    //   false,
+    //   { fee: bestFee, amountOutMin }
+    // );
 
-    const signedSwapTx = await signTx(pkp.publicKey, swapTx, 'erc20SwapSig');
-    const swapHash = await broadcastTransaction(provider, signedSwapTx);
-    console.log('Swap transaction hash:', swapHash);
+    // const signedSwapTx = await signTx(pkp.publicKey, swapTx, 'erc20SwapSig');
+    // const swapHash = await broadcastTransaction(provider, signedSwapTx);
+    // console.log('Swap transaction hash:', swapHash);
 
-    Lit.Actions.setResponse({
-      response: JSON.stringify({
-        status: 'success',
-        approvalHash,
-        swapHash,
-      }),
-    });
+    // Lit.Actions.setResponse({
+    //   response: JSON.stringify({
+    //     status: 'success',
+    //     approvalHash,
+    //     swapHash,
+    //   }),
+    // });
   } catch (err: any) {
     console.error('Error:', err);
 

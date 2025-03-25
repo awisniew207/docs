@@ -4,7 +4,7 @@
  * @param {any} amount - The amount of tokens to swap.
  * @param {any} gasData - Gas data (maxFeePerGas, maxPriorityFeePerGas, nonce).
  * @param {boolean} isApproval - Whether the transaction is an approval or a swap.
- * @param {Object} [swapParams] - Swap parameters (fee and amountOutMin).
+ * @param {Object} [swaptoolParams] - Swap parameters (fee and amountOutMin).
  * @returns {any} The transaction object.
  */
 export const createTransaction = async (
@@ -14,7 +14,7 @@ export const createTransaction = async (
   amount: any,
   gasData: any,
   isApproval: boolean,
-  swapParams?: {
+  swaptoolParams?: {
     fee: number;
     amountOutMin: any;
   }
@@ -30,18 +30,18 @@ export const createTransaction = async (
       uniswapV3Router,
       amount,
     ]);
-  } else if (swapParams) {
+  } else if (swaptoolParams) {
     const routerInterface = new ethers.utils.Interface([
       'function exactInputSingle((address,address,uint24,address,uint256,uint256,uint160)) external payable returns (uint256)',
     ]);
     txData = routerInterface.encodeFunctionData('exactInputSingle', [
       [
-        params.tokenIn,
-        params.tokenOut,
-        swapParams.fee,
+        toolParams.tokenIn,
+        toolParams.tokenOut,
+        swaptoolParams.fee,
         pkpEthAddress,
         amount,
-        swapParams.amountOutMin,
+        swaptoolParams.amountOutMin,
         0,
       ],
     ]);
@@ -50,14 +50,14 @@ export const createTransaction = async (
   }
 
   return {
-    to: isApproval ? params.tokenIn : uniswapV3Router,
+    to: isApproval ? toolParams.tokenIn : uniswapV3Router,
     data: txData,
     value: '0x0',
     gasLimit: gasLimit.toHexString(),
     maxFeePerGas: gasData.maxFeePerGas,
     maxPriorityFeePerGas: gasData.maxPriorityFeePerGas,
     nonce: gasData.nonce,
-    chainId: params.chainId,
+    chainId: toolParams.chainId,
     type: 2,
   };
 };

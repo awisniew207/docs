@@ -22,9 +22,9 @@ export const getBestQuote = async (
 
   for (const fee of FEE_TIERS) {
     try {
-      const quoteParams = {
-        tokenIn: params.tokenIn,
-        tokenOut: params.tokenOut,
+      const quotetoolParams = {
+        tokenIn: toolParams.tokenIn,
+        tokenOut: toolParams.tokenOut,
         amountIn: amount,
         fee: fee,
         sqrtPriceLimitX96: 0,
@@ -34,7 +34,7 @@ export const getBestQuote = async (
       const quote = await provider.call({
         to: uniswapV3Quoter,
         data: quoterInterface.encodeFunctionData('quoteExactInputSingle', [
-          quoteParams,
+          quotetoolParams,
         ]),
       });
 
@@ -48,8 +48,7 @@ export const getBestQuote = async (
         bestQuote = currentQuote;
         bestFee = fee;
         console.log(
-          `New best quote found with fee tier ${
-            fee / 10000
+          `New best quote found with fee tier ${fee / 10000
           }%: ${ethers.utils.formatUnits(currentQuote, decimalsOut)}`
         );
       }

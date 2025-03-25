@@ -15,13 +15,13 @@ export async function getTokenInfo(
   ethers.utils.getAddress(tokenOut);
 
   // Check code
-  const codeIn = await provider.getCode(params.tokenIn);
+  const codeIn = await provider.getCode(toolParams.tokenIn);
   if (codeIn === '0x') {
-    throw new Error(`No contract found at ${params.tokenIn}`);
+    throw new Error(`No contract found at ${toolParams.tokenIn}`);
   }
-  const codeOut = await provider.getCode(params.tokenOut);
+  const codeOut = await provider.getCode(toolParams.tokenOut);
   if (codeOut === '0x') {
-    throw new Error(`No contract found at ${params.tokenOut}`);
+    throw new Error(`No contract found at ${toolParams.tokenOut}`);
   }
 
   const tokenInterface = new ethers.utils.Interface([
@@ -30,12 +30,12 @@ export async function getTokenInfo(
     'function approve(address,uint256) external returns (bool)',
   ]);
   const tokenInContract = new ethers.Contract(
-    params.tokenIn,
+    toolParams.tokenIn,
     tokenInterface,
     provider
   );
   const tokenOutContract = new ethers.Contract(
-    params.tokenOut,
+    toolParams.tokenOut,
     tokenInterface,
     provider
   );
@@ -58,9 +58,9 @@ export async function getTokenInfo(
   );
 
   const _amountIn = ethers.utils.parseUnits(amountIn, decimalsIn);
-  if (_amountIn.gt(balanceIn)) {
-    throw new Error('Insufficient tokenIn balance');
-  }
+  // if (_amountIn.gt(balanceIn)) {
+  //   throw new Error('Insufficient tokenIn balance');
+  // }
   return {
     tokenIn: {
       decimals: decimalsIn,

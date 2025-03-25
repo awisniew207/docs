@@ -14,7 +14,7 @@ async function buildFile(entryPoint, outfile, network, config) {
       define: {
         'process.env.NETWORK': `"${network}"`,
         LIT_NETWORK: `"${network}"`,
-        PKP_TOOL_REGISTRY_ADDRESS: `"${config.pkpToolRegistryAddress}"`,
+        VINCENT_ADDRESS: `"${config.vincentAddress}"`,
       },
       target: ['es2020'],
     });

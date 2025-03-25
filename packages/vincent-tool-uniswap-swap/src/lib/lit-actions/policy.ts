@@ -6,7 +6,7 @@ declare global {
   const vincentContractAddress: string;
   const pkpTokenId: string;
   const delegateeAddress: string;
-  const toolParameters: {
+  const policyParams: {
     pkpEthAddress: string;
     rpcUrl: string;
     chainId: string;
@@ -14,7 +14,7 @@ declare global {
     tokenOut: string;
     amountIn: string;
   };
-  const policyObject: {
+  const policy: {
     policyIpfsCid: string;
     parameters: {
       name: string;
@@ -25,13 +25,13 @@ declare global {
 }
 
 (async () => {
-  console.log(`Executing policy ${policyObject.policyIpfsCid}`);
-  console.log(`Policy parameters: ${JSON.stringify(policyObject.parameters, null, 2)}`);
+  console.log(`Executing policy ${policy.policyIpfsCid}`);
+  console.log(`Policy parameters: ${JSON.stringify(policy.parameters, null, 2)}`);
 
   let maxAmount: any;
   let allowedTokens: string[] = [];
 
-  for (const parameter of policyObject.parameters) {
+  for (const parameter of policy.parameters) {
     console.log(`Policy Parameter: ${JSON.stringify(parameter, null, 2)}`);
 
     switch (parameter.name) {
@@ -42,6 +42,15 @@ declare global {
           console.log(`Parsed maxAmount: ${maxAmount.toString()}`);
         } else {
           console.warn(`Unexpected parameter type for maxAmount: ${parameter.paramType}`);
+        }
+        break;
+      case 'maxSpendingLimit':
+        const spendingLimitDuration = policy.parameters.find(p => p.name === 'spendingLimitDuration');
+        if (spendingLimitDuration) {
+          const spendingLimitDurationValue = ethers.utils.defaultAbiCoder.decode(['uint256'], spendingLimitDuration.value);
+          console.log(`Parsed spendingLimitDuration: ${spendingLimitDurationValue.toString()}`);
+        } else {
+          throw new Error(`spendingLimitDuration not found in policy parameters`);
         }
         break;
       case 'allowedTokens':
@@ -58,9 +67,9 @@ declare global {
     }
   }
 
-  const amountInBN = ethers.BigNumber.from(toolParameters.amountIn);
-  const tokenIn = ethers.utils.getAddress(toolParameters.tokenIn);
-  const tokenOut = ethers.utils.getAddress(toolParameters.tokenOut);
+  const amountInBN = ethers.BigNumber.from(policyParams.amountIn);
+  const tokenIn = ethers.utils.getAddress(policyParams.tokenIn);
+  const tokenOut = ethers.utils.getAddress(policyParams.tokenOut);
 
   // Convert string amount to BigNumber and compare
   console.log(

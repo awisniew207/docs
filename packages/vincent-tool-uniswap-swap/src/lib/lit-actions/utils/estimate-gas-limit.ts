@@ -4,7 +4,7 @@
  * @param {any} tokenInContract - The token contract instance.
  * @param {any} amount - The amount of tokens to swap.
  * @param {boolean} isApproval - Whether the transaction is an approval or a swap.
- * @param {Object} [swapParams] - Swap parameters (fee and amountOutMin).
+ * @param {Object} [swaptoolParams] - Swap parameters (fee and amountOutMin).
  * @returns {Promise<any>} The estimated gas limit.
  */
 export const estimateGasLimit = async (
@@ -14,7 +14,7 @@ export const estimateGasLimit = async (
   tokenInContract: any,
   amount: any,
   isApproval: boolean,
-  swapParams?: {
+  swaptoolParams?: {
     fee: number;
     amountOutMin: any;
   }
@@ -29,7 +29,7 @@ export const estimateGasLimit = async (
         amount,
         { from: pkpEthAddress }
       );
-    } else if (swapParams) {
+    } else if (swaptoolParams) {
       const routerInterface = new ethers.utils.Interface([
         'function exactInputSingle((address,address,uint24,address,uint256,uint256,uint160)) external payable returns (uint256)',
       ]);
@@ -42,12 +42,12 @@ export const estimateGasLimit = async (
 
       estimatedGas = await routerContract.estimateGas.exactInputSingle(
         [
-          params.tokenIn,
-          params.tokenOut,
-          swapParams.fee,
+          toolParams.tokenIn,
+          toolParams.tokenOut,
+          swaptoolParams.fee,
           pkpEthAddress,
           amount,
-          swapParams.amountOutMin,
+          swaptoolParams.amountOutMin,
           0
         ],
         { from: pkpEthAddress }
