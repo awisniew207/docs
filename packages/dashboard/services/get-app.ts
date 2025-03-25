@@ -26,9 +26,6 @@ export async function formCompleteVincentAppForDev(address: string): Promise<App
             delegatees: delegatees,
             toolPolicies: versions,
             managementWallet: manager,
-            appMetadata: {
-                email: "", // Not fetching off-chain data for now
-            },
             currentVersion: BigNumber.from(latestVersion).toNumber(),
         };
     });

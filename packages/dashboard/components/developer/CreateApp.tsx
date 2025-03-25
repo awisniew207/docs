@@ -51,36 +51,9 @@ const formSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description cannot exceed 500 characters'),
 
-  authorizedRedirectUris: z.string(),
+  authorizedRedirectUris: z.array(z.string()),
   
   tools: z.array(toolSchema).min(1, "At least one tool is required"),
-
-  logo: z.string().optional(),
-
-  githubLink: z
-    .string()
-    .optional()
-    .transform((val) => {
-      if (!val) return undefined;
-      return val.trim();
-    })
-    .pipe(
-      z
-        .string()
-        .url('Please enter a valid GitHub URL')
-        .optional()
-    ),
-
-  websiteUrl: z
-    .string()
-    .transform((val) => val?.trim())
-    .pipe(
-      z
-        .string()
-        .url('Please enter a valid website URL')
-    )
-    .optional()
-    .transform((val) => val || undefined),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -101,7 +74,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     defaultValues: {
       appName: '',
       description: '',
-      authorizedRedirectUris: '',
+      authorizedRedirectUris: [],
       tools: [
         {
           toolIpfsCid: '',
@@ -122,14 +95,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     mode: 'onBlur',
   });
 
-  // Using a single field array for tools
   const { fields: toolFields, append: appendTool, remove: removeTool } = useFieldArray({
     control: form.control,
     name: "tools",
   });
 
-  // Using a simplified approach to manage nested arrays
-  // This avoids creating multiple field arrays upfront
   const appendPolicy = (toolIndex: number) => {
     const currentTools = form.getValues().tools;
     if (toolIndex >= 0 && toolIndex < currentTools.length) {
@@ -208,7 +178,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     }
   };
 
-  // Force a re-render when form values change
   const watchTools = useWatch({
     control: form.control,
     name: 'tools'
@@ -228,46 +197,26 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(true);
       setError(null);
 
-      // Parse string inputs into array structures expected by the contract
-      const authorizedRedirectUris = !values.authorizedRedirectUris ? [] : 
-        values.authorizedRedirectUris
-          .split(',')
-          .map((uri) => uri.trim())
-          .filter(Boolean);
-
-      // Build arrays for contract parameters from the form values
       const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
-      
-      // Each tool has an array of policies
       const toolPolicies = values.tools.map(tool => 
         tool.policies.map(policy => policy.policyIpfsCid)
       );
-
-      // Each policy has parameter types
       const toolPolicyParameterTypes = values.tools.map(tool => 
         tool.policies.map(policy => 
           policy.parameters.map(param => mapTypeToEnum(param.type))
         )
       );
-
-      // Each policy has parameter names
       const toolPolicyParameterNames = values.tools.map(tool => 
         tool.policies.map(policy => 
           policy.parameters.map(param => param.name)
         )
       );
 
-      console.log("Submitting to contract:");
-      console.log("Tools:", toolIpfsCids);
-      console.log("Policies:", toolPolicies);
-      console.log("Parameter Types:", toolPolicyParameterTypes);
-      console.log("Parameter Names:", toolPolicyParameterNames);
-
       const contracts = new VincentContracts('datil' as Network);
       const receipt = await contracts.registerApp(
         values.appName,
         values.description,
-        authorizedRedirectUris,
+        values.authorizedRedirectUris,
         [],
         toolIpfsCids,
         toolPolicies,
@@ -357,11 +306,46 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       <FormItem>
                         <FormLabel className="text-black">Authorized Redirect URIs</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="https://example.com/callback, https://app.example.com/callback"
-                            {...field}
-                            className="text-black"
-                          />
+                          <div className="space-y-2">
+                            {field.value.map((uri: string, index: number) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <Input
+                                  placeholder="https://example.com/callback"
+                                  value={uri}
+                                  onChange={(e) => {
+                                    const newValues = [...field.value];
+                                    newValues[index] = e.target.value;
+                                    field.onChange(newValues);
+                                  }}
+                                  className="text-black flex-1"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newValues = [...field.value];
+                                    newValues.splice(index, 1);
+                                    field.onChange(newValues);
+                                  }}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              type="button"
+                              variant="default"
+                              size="sm"
+                              onClick={() => {
+                                field.onChange([...field.value, '']);
+                              }}
+                              className="text-black"
+                            >
+                              <Plus className="h-4 w-4 mr-2" /> Add Redirect URI
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage className="text-black" />
                       </FormItem>

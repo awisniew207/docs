@@ -13,7 +13,6 @@ export const encodeParameterValue = (
   paramValue: any,
   paramName: string = 'unnamed'
 ): Uint8Array => {
-  // If parameter value is undefined or null, use default
   if (paramValue === undefined || paramValue === null) {
     return encodeDefaultValue(paramType, paramName);
   }
@@ -22,10 +21,8 @@ export const encodeParameterValue = (
     const typeName = PARAMETER_TYPE_NAMES[paramType] || `unknown(${paramType})`;
     console.log(`Encoding parameter ${paramName} with type ${paramType} (${typeName})`, paramValue);
     
-    // Handle each type according to the ParameterType enum
     switch(paramType) {
       case ParameterType.INT256: // int256
-        // Check for empty string and use default value if empty
         if (paramValue === '') {
           return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["int256"], [0]));
         }
@@ -37,7 +34,6 @@ export const encodeParameterValue = (
       }
       
       case ParameterType.UINT256: // uint256
-        // Check for empty string and use default value if empty
         if (paramValue === '') {
           return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["uint256"], [0]));
         }
@@ -62,7 +58,6 @@ export const encodeParameterValue = (
       }
       
       case ParameterType.ADDRESS: // address
-        // Check for empty string and use default zero address if empty
         if (paramValue === '') {
           return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["address"], ["0x0000000000000000000000000000000000000000"]));
         }
@@ -70,13 +65,11 @@ export const encodeParameterValue = (
       
       case ParameterType.ADDRESS_ARRAY: { // address[]
         let arrayValue = parseArrayValue(paramValue, value => value.trim());
-        // Filter out any empty addresses
         arrayValue = arrayValue.filter(addr => addr !== '');
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["address[]"], [arrayValue]));
       }
       
       case ParameterType.STRING: // string
-        // Empty strings are valid for string type
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(paramValue)]));
       
       case ParameterType.STRING_ARRAY: { // string[]
@@ -86,11 +79,9 @@ export const encodeParameterValue = (
       
       case ParameterType.BYTES: // bytes
         try {
-          // If it's a hex string, convert it to bytes
           if (typeof paramValue === 'string' && paramValue.startsWith('0x')) {
             return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.arrayify(paramValue)]));
           } else {
-            // Otherwise encode the string as bytes
             return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["bytes"], [ethers.utils.toUtf8Bytes(String(paramValue))]));
           }
         } catch (e) {
@@ -119,7 +110,6 @@ export const encodeParameterValue = (
       }
       
       default:
-        // Default to string encoding for unknown types
         console.warn(`Unknown parameter type ${paramType}, defaulting to string encoding`);
         return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [String(paramValue)]));
     }
@@ -129,7 +119,6 @@ export const encodeParameterValue = (
       paramType
     });
     
-    // Return a fallback value on error
     return getFallbackValue(paramType);
   }
 };
@@ -184,7 +173,6 @@ function getFallbackValue(paramType: number): Uint8Array {
     }
   } catch (fallbackError) {
     console.error("Fallback encoding also failed:", fallbackError);
-    // Last resort fallback - this should always work
     return ethers.utils.arrayify("0x");
   }
 }
@@ -242,7 +230,6 @@ export const encodeDefaultValue = (paramType: number, paramName: string = 'unnam
     }
   } catch (defaultEncodeError) {
     console.error(`Error encoding default parameter ${paramName}:`, defaultEncodeError);
-    // Fallback to empty string if encoding fails
     return ethers.utils.arrayify(ethers.utils.defaultAbiCoder.encode(["string"], [""]));
   }
 }; 

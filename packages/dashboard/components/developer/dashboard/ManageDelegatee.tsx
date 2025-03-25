@@ -22,7 +22,6 @@ interface DelegateeManagerProps {
     dashboard: AppView;
 }
 
-// Status message component
 const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
   if (!message) return null;
   
@@ -59,29 +58,22 @@ export default function DelegateeManagerScreen({
     const [isAdding, setIsAdding] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     
-    // Add status message state
     const [statusMessage, setStatusMessage] = useState<string>('');
     const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
     
-    // Add the error popup hook
     const { showError } = useErrorPopup();
     
-    // Helper function to set status messages
     const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
         setStatusMessage(message);
         setStatusType(type);
     }, []);
     
-    // Clear status message
     const clearStatus = useCallback(() => {
         setStatusMessage('');
     }, []);
     
-    // Create enhanced error function that shows both popup and status error
     const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
-        // Show error in popup
         showError(errorMessage, title || 'Error', details);
-        // Also show in status message
         showStatus(errorMessage, 'error');
     }, [showError, showStatus]);
     
@@ -114,10 +106,8 @@ export default function DelegateeManagerScreen({
             const contracts = new VincentContracts('datil');
             
             try {
-                // Check if the delegatee is already added
                 if (delegatees.includes(newAddress)) {
                     showErrorWithStatus("This address is already a delegatee for this app", "Duplicate Address");
-                    // Keep the dialog open so user can copy the private key even if adding fails
                     setIsSaving(false);
                     return;
                 }
@@ -129,12 +119,10 @@ export default function DelegateeManagerScreen({
                 const receipt = await tx.wait();
                 console.log("Transaction confirmed:", receipt);
                 
-                // Update UI
                 setDelegatees((prev) => [...prev, newAddress]);
                 setShowKeyDialog(false);
                 showStatus("Delegatee added successfully!", "success");
                 
-                // Notify parent to refresh after a short delay
                 setTimeout(() => {
                     clearStatus();
                     onBack();
@@ -143,9 +131,7 @@ export default function DelegateeManagerScreen({
                 console.error("Detailed error:", innerError);
                 let errorMessage = "Failed to add delegatee. ";
                 
-                // Extract the most useful part of the error message
                 if (innerError.message) {
-                    // Check for common error patterns
                     if (innerError.message.includes("CALL_EXCEPTION")) {
                         errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
                     } else if (innerError.message.includes("user rejected")) {
@@ -156,12 +142,10 @@ export default function DelegateeManagerScreen({
                 }
                 
                 showErrorWithStatus(errorMessage, "Transaction Error");
-                // Keep the dialog open so user can copy the private key even if adding fails
             }
         } catch (error: any) {
             console.error("Error adding delegatee:", error);
             showErrorWithStatus(`Failed to add delegatee: ${error.message || "Unknown error"}`, "Error");
-            // Keep the dialog open so user can copy the private key even if adding fails
         } finally {
             setIsSaving(false);
         }
@@ -179,19 +163,16 @@ export default function DelegateeManagerScreen({
             const contracts = new VincentContracts('datil');
             
             try {
-                // Check if the delegatee is already added
                 if (delegatees.includes(manualAddress)) {
                     showErrorWithStatus("This address is already a delegatee for this app", "Duplicate Address");
                     setIsAdding(false);
                     return;
                 }
                 
-                // First verify that we can access the app data
                 try {
                     const appData = await contracts.getAppById(dashboard.appId);
                     console.log("App data fetched:", appData);
                     
-                    // Ensure the app exists and we have the correct ID
                     if (!appData || !appData.id) {
                         showErrorWithStatus(`App ID ${dashboard.appId} not found or not accessible`, "App Not Found");
                         setIsAdding(false);
@@ -208,23 +189,18 @@ export default function DelegateeManagerScreen({
                 console.log("Delegatee address:", manualAddress);
                 
                 showStatus("Sending transaction...", "info");
-                // Attempt to add the delegatee with explicit gas settings
-                // Use the app manager's wallet or ensure we're connected with the right wallet
                 const tx = await contracts.addDelegatee(dashboard.appId, manualAddress);
                 console.log("Transaction sent:", tx.hash);
                 
                 showStatus("Waiting for confirmation...", "info");
-                // Wait for the transaction
                 const receipt = await tx.wait();
                 console.log("Transaction confirmed:", receipt);
                 
-                // Update UI
                 setDelegatees((prev) => [...prev, manualAddress]);
                 setShowAddDialog(false);
                 setManualAddress("");
                 showStatus("Delegatee added successfully!", "success");
                 
-                // Notify parent to refresh
                 setTimeout(() => {
                     clearStatus();
                     onBack();
@@ -233,9 +209,7 @@ export default function DelegateeManagerScreen({
                 console.error("Detailed error:", innerError);
                 let errorMessage = "Failed to add delegatee. ";
                 
-                // Extract the most useful part of the error message
                 if (innerError.message) {
-                    // Check for common error patterns
                     if (innerError.message.includes("CALL_EXCEPTION")) {
                         errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
                     } else if (innerError.message.includes("user rejected")) {
@@ -255,7 +229,6 @@ export default function DelegateeManagerScreen({
         }
     }
 
-    // Function to remove a delegatee
     async function handleRemoveDelegatee(delegateeAddress: string) {
         if (!confirm(`Are you sure you want to remove ${delegateeAddress} from delegatees?`)) {
             return;
@@ -269,11 +242,9 @@ export default function DelegateeManagerScreen({
             showStatus("Waiting for confirmation...", "info");
             await tx.wait();
             
-            // Filter out the removed delegatee
             setDelegatees(current => current.filter(d => d !== delegateeAddress));
             showStatus("Delegatee removed successfully!", "success");
             
-            // Clear status after a short delay
             setTimeout(() => clearStatus(), 2000);
         } catch (error: any) {
             console.error("Error removing delegatee:", error);
@@ -283,7 +254,6 @@ export default function DelegateeManagerScreen({
 
     return (
         <div className="space-y-8">
-            {/* Display status message */}
             {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
             
             <div className="flex justify-between items-center">

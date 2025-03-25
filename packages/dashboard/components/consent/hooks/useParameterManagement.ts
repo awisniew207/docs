@@ -206,6 +206,7 @@ export const useParameterManagement = ({
       console.log('Version info:', versionData);
       
       setVersionInfo(versionData);
+      onStatusChange?.('Successfully loaded app version information', 'success');
       return versionData;
     } catch (err) {
       console.error('Error fetching version info:', err);

@@ -21,9 +21,6 @@ const RedirectMessage = ({
         <StatusMessage message={statusMessage} type={statusType} />
         {showSuccess && <StatusAnimation type="success" />}
         {showDisapproval && <StatusAnimation type="disapproval" />}
-        <p className='auto-redirect-message'>
-          This app is already authorized. Redirecting...
-        </p>
       </div>
     </div>
   );

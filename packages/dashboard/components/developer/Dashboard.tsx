@@ -1,6 +1,5 @@
 import { AppView } from '@/services/types';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import ManageAppScreen from './dashboard/ManageApp';
 import DelegateeManagerScreen from './dashboard/ManageDelegatee';
 import ManageToolPoliciesScreen from './dashboard/ManageToolPolicies';
 import ManageAdvancedFunctionsScreen from './dashboard/ManageAdvancedFunctions';
@@ -145,20 +144,6 @@ export default function DashboardScreen({
         onSuccess={() => {
           setShowCreateApp(false);
           showStatus('App created successfully', 'success');
-          handleRefetch();
-        }}
-      />
-    );
-  }
-
-  if (showManageApp) {
-    return (
-      <ManageAppScreen
-        onBack={() => setShowManageApp(false)}
-        dashboard={selectedApp || dashboard[0]}
-        onSuccess={() => {
-          setShowManageApp(false);
-          showStatus('App updated successfully', 'success');
           handleRefetch();
         }}
       />

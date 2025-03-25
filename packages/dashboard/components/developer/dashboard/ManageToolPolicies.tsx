@@ -3,17 +3,16 @@
 import { useState, useEffect } from "react";
 import { AppView } from "@/services/types";
 import { Input } from "@/components/ui/input";
+import { getContract, estimateGasWithBuffer } from "@/services/contract/config";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Plus, Trash2, Info } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VincentContracts } from "@/services";
-import { estimateGasWithBuffer } from "@/services/contract/config";
 import { useErrorPopup } from "@/components/ui/error-popup";
 import { mapTypeToEnum } from "@/services/types";
 import { mapEnumToTypeName, ParameterType } from "@/services/types";
 
-// Define the types explicitly since they're not exported from services/types
 interface PolicyParameter {
     name: string;
     type: string;
@@ -27,20 +26,20 @@ interface Policy {
 interface ToolPolicy {
     toolIpfsCid?: string;
     policies?: Policy[];
-    [key: string]: any; // To allow other properties
+    [key: string]: any;
 }
 
 interface PolicyParameterWithId extends PolicyParameter {
-    _id: string; // Frontend-only ID for mapping
+    _id: string;
 }
 
 interface PolicyWithId extends Policy {
-    _id: string; // Frontend-only ID for mapping
+    _id: string;
     parameters: PolicyParameterWithId[];
 }
 
 interface ToolPolicyWithId extends ToolPolicy {
-    _id: string; // Frontend-only ID for mapping
+    _id: string;
     policies: PolicyWithId[];
 }
 
@@ -49,7 +48,6 @@ interface ToolPolicyManagerProps {
     dashboard: AppView;
 }
 
-// Status message component
 const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
   if (!message) return null;
   
@@ -80,36 +78,29 @@ export default function ManageToolPoliciesScreen({
     const [statusMessage, setStatusMessage] = useState<{ message: string; type: 'info' | 'warning' | 'success' | 'error' } | null>(null);
     const { showError } = useErrorPopup();
 
-    // Fetch existing tools and policies on component mount
     useEffect(() => {
         async function fetchAppVersion() {
             if (dashboard?.appId) {
                 try {
                     setIsLoading(true);
                     const contracts = new VincentContracts('datil');
-                    // Get the latest version
                     const appVersion = await contracts.getAppVersion(dashboard.appId, dashboard.currentVersion);
                     console.log("Fetched app version:", appVersion);
                     
-                    // Extract tools from the version data - handle both raw and processed formats
                     let toolsData = [];
                     
-                    // Different possible structures for the app version data
                     if (appVersion?.appVersion?.tools) {
                         toolsData = appVersion.appVersion.tools;
                     } else if (appVersion?.[1]?.[3]) {
                         toolsData = appVersion[1][3];
                     } else if (Array.isArray(appVersion) && appVersion.length >= 2 && appVersion[1] && Array.isArray(appVersion[1])) {
-                        // Direct array access - the structure we see in terminal logs
                         const appVersionArr = appVersion[1];
                         if (appVersionArr.length >= 4 && Array.isArray(appVersionArr[3])) {
                             toolsData = appVersionArr[3];
                         }
                     }
                     
-                    // Convert the fetched tools into our ToolPolicyWithId format
                     const formattedTools = toolsData.map((tool: any) => {
-                        // Extract tool data - handle array format or object format
                         let toolIpfsCid = "";
                         let rawPolicies = [];
                         let parameterNames = [];
@@ -117,14 +108,11 @@ export default function ManageToolPoliciesScreen({
                         
                         if (Array.isArray(tool)) {
                             toolIpfsCid = tool[0] || "";
-                            // Tool structure could be [ipfsCid, [policies], [paramNames], [paramTypes]]
-                            // Or just [ipfsCid]
                             
                             if (tool.length > 1 && Array.isArray(tool[1])) {
                                 rawPolicies = tool[1] || [];
                             }
                             
-                            // Newer format might have direct parameter arrays
                             if (tool.length > 2 && Array.isArray(tool[2])) {
                                 parameterNames = tool[2];
                             }
@@ -152,24 +140,20 @@ export default function ManageToolPoliciesScreen({
                             });
                         }
                         
-                        // Format the tool with an ID
                         const formattedTool: ToolPolicyWithId = {
                             _id: crypto.randomUUID(),
                             toolIpfsCid: toolIpfsCid,
                             policies: []
                         };
                         
-                        // Process policies from old format (if available)
                         if (rawPolicies && rawPolicies.length > 0) {
                             console.log("Processing rawPolicies:", rawPolicies);
                             
-                            // Convert each policy to our new format
                             rawPolicies.forEach((policyData: any) => {
                                 let policyIpfsCid = "";
                                 let policyParamNames: string[] = [];
                                 let policyParamTypes: number[] = [];
                                 
-                                // Handle different policy data formats
                                 if (Array.isArray(policyData)) {
                                     policyIpfsCid = policyData[0] || '';
                                     policyParamNames = Array.isArray(policyData[1]) ? policyData[1] : [];
@@ -180,14 +164,12 @@ export default function ManageToolPoliciesScreen({
                                     policyParamTypes = policyData.parameterTypes || [];
                                 }
                                 
-                                // Create a policy with its parameters
                                 const policy: PolicyWithId = {
                                     _id: crypto.randomUUID(),
                                     policyIpfsCid: policyIpfsCid,
                                     parameters: []
                                 };
                                 
-                                // Add each parameter from the legacy format
                                 if (policyParamNames && policyParamNames.length > 0) {
                                     policyParamNames.forEach((name: string, index: number) => {
                                         const typeValue = policyParamTypes[index] !== undefined ? 
@@ -207,18 +189,15 @@ export default function ManageToolPoliciesScreen({
                                 formattedTool.policies.push(policy);
                             });
                         } 
-                        // Process direct parameters (new format)
                         else if (parameterNames && parameterNames.length > 0 && parameterTypes && parameterTypes.length > 0) {
                             console.log("Processing direct parameters:", { parameterNames, parameterTypes });
                             
-                            // Create a single policy for the new format parameters
                             const policy: PolicyWithId = {
                                 _id: crypto.randomUUID(),
-                                policyIpfsCid: "",  // No specific policy CID
+                                policyIpfsCid: "",
                                 parameters: []
                             };
                             
-                            // Add parameters from direct lists
                             parameterNames.forEach((name: string, index: number) => {
                                 const typeValue = parameterTypes[index] !== undefined ? 
                                     parameterTypes[index] : 
@@ -236,7 +215,6 @@ export default function ManageToolPoliciesScreen({
                             formattedTool.policies.push(policy);
                         }
                         
-                        // If tool has a CID but no policies, add a default empty policy
                         if (toolIpfsCid && formattedTool.policies.length === 0) {
                             formattedTool.policies.push({
                                 _id: crypto.randomUUID(),
@@ -252,11 +230,9 @@ export default function ManageToolPoliciesScreen({
                         return formattedTool;
                     });
                     
-                    // Filter out any tools with empty CIDs
                     const validTools = formattedTools.filter((tool: ToolPolicyWithId) => !!tool.toolIpfsCid);
                     console.log("Formatted tools:", validTools);
                     
-                    // If no valid tools, add an empty one to start with
                     if (validTools.length === 0) {
                         validTools.push(createEmptyToolPolicy());
                     }
@@ -436,24 +412,15 @@ export default function ManageToolPoliciesScreen({
         setIsSubmitting(true);
         
         try {
-            // Get the contract directly instead of using the wrapper
-            const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
             const contract = await getContract('datil', 'App', true);
             
-            // Ensure we're working with valid tools only
             const validToolPolicies = toolPolicies.filter(tool => !!tool.toolIpfsCid);
-            
-            // Format CIDs array - string[]
             const toolIpfsCids = validToolPolicies.map(tool => tool.toolIpfsCid || "");
-            
-            // Format tool policies - string[][] - array of policy CIDs for each tool
             const toolPolicyPolicies = validToolPolicies.map(tool => 
                 tool.policies
                     .filter(policy => !!policy.policyIpfsCid)
                     .map(policy => policy.policyIpfsCid)
-            );
-            
-            // Format parameter names - string[][][] - [tools][policies][paramNames]
+            ); 
             const toolPolicyParameterNames = validToolPolicies.map(tool => 
                 tool.policies.map(policy => 
                     policy.parameters
@@ -461,8 +428,6 @@ export default function ManageToolPoliciesScreen({
                         .map(param => param.name.trim())
                 )
             );
-            
-            // Format parameter types - uint8[][][] - [tools][policies][paramTypes]
             const toolPolicyParameterTypes = validToolPolicies.map(tool => 
                 tool.policies.map(policy => 
                     policy.parameters
@@ -471,16 +436,8 @@ export default function ManageToolPoliciesScreen({
                 )
             );
             
-            console.log("Saving with data:", {
-                toolIpfsCids,
-                toolPolicyPolicies,
-                toolPolicyParameterNames,
-                toolPolicyParameterTypes
-            });
-            
             try {
                 setStatusMessage({ message: "Preparing transaction...", type: "info" });
-                // Create args array for the transaction
                 const args = [
                     dashboard.appId,
                     toolIpfsCids,
@@ -490,7 +447,6 @@ export default function ManageToolPoliciesScreen({
                 ];
                 
                 try {
-                    // Estimate gas with buffer
                     setStatusMessage({ message: "Estimating gas...", type: "info" });
                     const gasLimit = await estimateGasWithBuffer(
                         contract,
@@ -506,7 +462,6 @@ export default function ManageToolPoliciesScreen({
                     
                     console.log("Transaction sent:", tx.hash);
                     
-                    // Wait for transaction confirmation
                     setStatusMessage({ message: "Waiting for confirmation...", type: "info" });
                     const receipt = await tx.wait();
                     console.log("Transaction confirmed:", receipt);
@@ -514,7 +469,6 @@ export default function ManageToolPoliciesScreen({
                     setStatusMessage({ message: "New version published successfully!", type: "success" });
                     setTimeout(() => {
                         setStatusMessage(null);
-                        // Return to the dashboard view automatically
                         onBack();
                     }, 2000);
                 } catch (txError: any) {
@@ -525,11 +479,9 @@ export default function ManageToolPoliciesScreen({
                         showError("Transaction failed due to RPC rate limiting. Please wait a moment and try again.");
                     } else {
                         let errorMsg = txError.message || "Unknown transaction error";
-                        // Clean up common error messages to be more readable
                         if (errorMsg.includes("transaction failed")) {
                             errorMsg = "Transaction failed. Please check your MetaMask and try again.";
                         } else if (errorMsg.includes("Cannot estimate gas")) {
-                            // Handle specific gas estimation errors
                             const matches = errorMsg.match(/Cannot estimate gas for .+?: (.+)/);
                             errorMsg = matches && matches[1] ? matches[1] : "Gas estimation failed. The transaction would likely fail.";
                         }
@@ -542,7 +494,6 @@ export default function ManageToolPoliciesScreen({
                 let errorMessage = "Failed to save tool policies: ";
                 
                 if (error.message) {
-                    // Format error message for better readability
                     errorMessage += error.message;
                 } else {
                     errorMessage += "Unknown error";
@@ -558,7 +509,6 @@ export default function ManageToolPoliciesScreen({
             let errorMessage = "Failed to save tool policies: ";
             
             if (error.message) {
-                // Format error message for better readability
                 errorMessage += error.message;
             } else {
                 errorMessage += "Unknown error";

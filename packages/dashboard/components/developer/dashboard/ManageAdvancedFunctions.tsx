@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { getContract, Network, ContractFacet } from '@/services/contract/config';
+import { Network, ContractFacet } from '@/services/contract/config';
 import {
   Select,
   SelectContent,
