@@ -7,7 +7,7 @@ import {
   PublicClient,
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { VincentNetworkContext } from '../../vincentNetworkContext';
+import { VincentNetworkContext } from './NetworkContextManager';
 
 interface CreateVincentContractsOptions {
   publicClient?: PublicClient;

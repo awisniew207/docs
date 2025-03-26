@@ -1,6 +1,6 @@
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { registerApp } from './registerApp';
-import { vincentNetworkContext } from '../../../vincentNetworkContext';
+import { vincentNetworkContext } from '../../../NetworkContextManager';
 import { getTestContext } from '../testContext';
 
 describe('registerApp', () => {

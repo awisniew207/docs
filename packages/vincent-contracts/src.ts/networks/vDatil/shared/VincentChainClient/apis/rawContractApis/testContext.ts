@@ -1,7 +1,7 @@
 import { Account, createWalletClient, http, parseEther } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { vincentMainnetNetworkContext } from '../../../../datil-mainnet/vincentContext';
-import { createVincentNetworkContext } from '../../vincentNetworkContext';
+import { createVincentNetworkContext } from '../../NetworkContextManager';
 import { registerApp } from './VincentAppFacet/registerApp';
 import { ParameterTypeInput, PolicyParameterValues } from './VincentAppFacet/schemas/ParameterType';
 
