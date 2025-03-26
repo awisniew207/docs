@@ -488,7 +488,7 @@ export default function AuthenticatedConsentForm({
         {showSuccess && <StatusAnimation type="success" />}
         {showDisapproval && <StatusAnimation type="disapproval" />}
 
-        <h1>Agent Consent Notice</h1>
+        <h1>Vincent Consent Notice</h1>
 
         {appInfo && (
           <>

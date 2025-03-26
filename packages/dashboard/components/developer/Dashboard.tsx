@@ -275,7 +275,14 @@ export default function DashboardScreen({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {selectedApp.toolPolicies.map((versionData, i) => {
+                  {[...selectedApp.toolPolicies]
+                    .sort((a, b) => {
+                      // Extract version numbers for comparison
+                      const versionA = Array.isArray(a) ? a[0] : a.version;
+                      const versionB = Array.isArray(b) ? b[0] : b.version;
+                      return Number(versionB) - Number(versionA); // Sort in descending order
+                    })
+                    .map((versionData, i) => {
                     // Extract values from the array and named properties
                     const version = versionData.version || versionData[0];
                     const enabled = versionData.enabled !== undefined ? versionData.enabled : versionData[1];
@@ -284,9 +291,10 @@ export default function DashboardScreen({
                     if (!tools || tools.length === 0) return null;
 
                     return (
-                      <div key={i} className="mb-4">
+                      <div key={i} className={`mb-4 ${i === 0 ? 'bg-green-50 p-4 rounded-lg' : ''}`}>
                         <div className="font-medium mb-2 text-black">
                           Version: {version.toString()} {enabled ? "(Enabled)" : "(Disabled)"}
+                          {i === 0 && <span className="ml-2 text-xs text-green-600">(Latest)</span>}
                         </div>
                         
                         {tools.map((tool: any, j: number) => {
@@ -438,7 +446,7 @@ export default function DashboardScreen({
               {selectedApp.delegatees.length === 0 ? (
                 <div className="text-center py-4">
                   <p className="text-sm text-black">
-                    Add delegatees to allow other wallets to manage your app
+                    Add delegatees to execute your application
                   </p>
                 </div>
               ) : (

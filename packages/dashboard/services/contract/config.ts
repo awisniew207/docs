@@ -71,7 +71,7 @@ export async function estimateGasWithBuffer(
   try {
     // Estimate the gas required for the transaction
     const estimatedGas = await contract.estimateGas[method](...args);
-    
+
     // Add 20% buffer to the estimated gas
     const buffer = estimatedGas.div(5); // 20% = divide by 5
     const gasLimitWithBuffer = estimatedGas.add(buffer);

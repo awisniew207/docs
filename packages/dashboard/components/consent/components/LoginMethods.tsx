@@ -27,7 +27,7 @@ export default function LoginMethods({
       <div className="wrapper">
         {view === 'default' && (
           <>
-            <h1>Lit Agent Wallet Management</h1>
+            <h1>Vincent Agent Wallet Management</h1>
             <p>Access or create your Lit Agent Wallet.</p>
             <AuthMethods setView={setView as Dispatch<SetStateAction<string>>} />
           </>
