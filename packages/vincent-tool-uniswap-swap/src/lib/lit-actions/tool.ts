@@ -8,17 +8,9 @@ import {
 import {
   getUniswapQuoterRouter,
   getTokenInfo,
-  // @ts-ignore
   getBestQuote,
-  // @ts-ignore
-  getGasData,
-  // @ts-ignore
-  estimateGasLimit,
-  // @ts-ignore
   createUniswapSwapTx,
-  // @ts-ignore
   signTx,
-  // @ts-ignore
   broadcastTransaction,
 } from './utils';
 
@@ -112,86 +104,77 @@ declare global {
       }
     }
 
-    // // Get best quote and calculate minimum output
-    // const { bestFee, amountOutMin } = await getBestQuote(
-    //   provider,
-    //   UNISWAP_V3_QUOTER,
-    //   tokenInfo.tokenIn.amount,
-    //   tokenInfo.tokenOut.decimals
-    // );
+    // Get best quote and calculate minimum output
+    const { bestFee, amountOutMin } = await getBestQuote(
+      provider,
+      toolParams.chainId,
+      toolParams.tokenIn,
+      toolParams.tokenOut,
+      tokenInfo.tokenIn.amount,
+      tokenInfo.tokenOut.decimals
+    );
 
-    // // Get gas data for transactions
-    // const gasData = await getGasData(provider, pkp.ethAddress);
+    // Approval Transaction
+    const approvalTx = await createUniswapSwapTx(
+      provider,
+      pkp.ethAddress,
+      UNISWAP_V3_ROUTER,
+      tokenInfo.tokenIn.contract,
+      tokenInfo.tokenIn.amount,
+      toolParams.chainId,
+      true
+    );
 
-    // // Approval Transaction
-    // const approvalGasLimit = await estimateGasLimit(
-    //   provider,
-    //   pkp.ethAddress,
-    //   UNISWAP_V3_ROUTER,
-    //   tokenInfo.tokenIn.contract,
-    //   tokenInfo.tokenIn.amount,
-    //   true
-    // );
+    console.log('Unsigned approval transaction:', approvalTx);
 
-    // const approvalTx = await createUniswapSwapTx(
-    //   UNISWAP_V3_ROUTER,
-    //   pkp.ethAddress,
-    //   approvalGasLimit,
-    //   tokenInfo.tokenIn.amount,
-    //   gasData,
-    //   true
-    // );
+    const signedApprovalTx = await signTx(
+      pkp.publicKey,
+      approvalTx,
+      'erc20ApprovalSig'
+    );
+    const approvalHash = await broadcastTransaction(provider, signedApprovalTx);
+    console.log('Approval transaction hash:', approvalHash);
 
-    // const signedApprovalTx = await signTx(
-    //   pkp.publicKey,
-    //   approvalTx,
-    //   'erc20ApprovalSig'
-    // );
-    // const approvalHash = await broadcastTransaction(provider, signedApprovalTx);
-    // console.log('Approval transaction hash:', approvalHash);
+    // Wait for approval confirmation
+    console.log('Waiting for approval confirmation...');
+    const approvalConfirmation = await provider.waitForTransaction(
+      approvalHash,
+      1
+    );
+    if (approvalConfirmation.status === 0) {
+      throw new Error('Approval transaction failed');
+    }
 
-    // // Wait for approval confirmation
-    // console.log('Waiting for approval confirmation...');
-    // const approvalConfirmation = await provider.waitForTransaction(
-    //   approvalHash,
-    //   1
-    // );
-    // if (approvalConfirmation.status === 0) {
-    //   throw new Error('Approval transaction failed');
-    // }
+    // Swap Transaction
+    const swapTx = await createUniswapSwapTx(
+      provider,
+      pkp.ethAddress,
+      UNISWAP_V3_ROUTER,
+      tokenInfo.tokenIn.contract,
+      tokenInfo.tokenIn.amount,
+      toolParams.chainId,
+      false,
+      {
+        fee: bestFee,
+        amountOutMin,
+        tokenOut: toolParams.tokenOut
+      }
+    );
 
-    // // Swap Transaction
-    // const swapGasLimit = await estimateGasLimit(
-    //   provider,
-    //   pkp.ethAddress,
-    //   UNISWAP_V3_ROUTER,
-    //   tokenInfo.tokenIn.contract,
-    //   tokenInfo.tokenIn.amount,
-    //   false,
-    //   { fee: bestFee, amountOutMin }
-    // );
+    const signedSwapTx = await signTx(pkp.publicKey, swapTx, 'erc20SwapSig');
 
-    // const swapTx = await createUniswapSwapTx(
-    //   UNISWAP_V3_ROUTER,
-    //   pkp.ethAddress,
-    //   swapGasLimit,
-    //   tokenInfo.tokenIn.amount,
-    //   { ...gasData, nonce: gasData.nonce + 1 },
-    //   false,
-    //   { fee: bestFee, amountOutMin }
-    // );
+    console.log('Swap transaction:', signedSwapTx);
 
-    // const signedSwapTx = await signTx(pkp.publicKey, swapTx, 'erc20SwapSig');
-    // const swapHash = await broadcastTransaction(provider, signedSwapTx);
-    // console.log('Swap transaction hash:', swapHash);
+    const swapHash = await broadcastTransaction(provider, signedSwapTx);
+    console.log('Swap transaction hash:', swapHash);
 
-    // Lit.Actions.setResponse({
-    //   response: JSON.stringify({
-    //     status: 'success',
-    //     approvalHash,
-    //     swapHash,
-    //   }),
-    // });
+    Lit.Actions.setResponse({
+      response: JSON.stringify({
+        status: 'success',
+        approvalHash,
+        swapHash,
+      }),
+    });
   } catch (err: any) {
     console.error('Error:', err);
 

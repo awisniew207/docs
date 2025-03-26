@@ -16,7 +16,7 @@ export const getBestQuote = async (
   chainId: string,
   tokenIn: string,
   tokenOut: string,
-  amount: ethers.BigNumber,
+  amountIn: ethers.BigNumber,
   decimalsOut: number
 ) => {
   console.log('Getting best quote for swap...');
@@ -34,7 +34,7 @@ export const getBestQuote = async (
       const quoteParams = {
         tokenIn,
         tokenOut,
-        amountIn: amount,
+        amountIn,
         fee: fee,
         sqrtPriceLimitX96: 0,
       };

@@ -10,6 +10,17 @@ export const signTx = async (
   sigName: string
 ) => {
   console.log(`Signing tx: ${sigName}`);
+
+  console.log("signTx inputs", {
+    pkpPublicKey,
+    tx,
+    sigName
+  })
+
+  console.log("toSign", ethers.utils.arrayify(
+    ethers.utils.keccak256(ethers.utils.serializeTransaction(tx))
+  ))
+
   const pkForLit = pkpPublicKey.startsWith('0x')
     ? pkpPublicKey.slice(2)
     : pkpPublicKey;

@@ -68,8 +68,8 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['Qmeu4rYD3UB1XwHoUEvfyu3N8CDEz76Q9nx2BrXrfnPb33'];
-    const TOOL_POLICY_IPFS_IDS = ['QmTJywYZ73hdVeuiYCqXFsoiwZUxjnBWDjJ57SUJoNyiyR'];
+    const TOOL_IPFS_IDS = ['QmPfvNeVRGAFMHvJc6yXKiZkF47ctc7PvLxqYGFAPYL6FD'];
+    const TOOL_POLICY_IPFS_IDS = ['QmeipUAcWVbT2JPa3M8egay5dpw5NudYo4xDQWcSznzcqe'];
 
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS
@@ -84,7 +84,7 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         [
             [
                 { type: 'uint256', value: "10000000000" }, // maxAmountPerTx $100 USD (8 decimals)
-                { type: 'uint256', value: "100000000000" }, // maxSpendingLimit $1,000 USD (8 decimals)
+                { type: 'uint256', value: "10000000000000" }, // maxSpendingLimit $100,000 USD (8 decimals)
                 { type: 'uint256', value: "86400" }, // spendingLimitDuration 1 day
                 { type: 'address[]', value: '0x4200000000000000000000000000000000000006,0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913,0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed' }
             ]
