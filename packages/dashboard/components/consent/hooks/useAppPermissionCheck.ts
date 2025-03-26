@@ -139,6 +139,8 @@ export const useAppPermissionCheck = ({
   /**
    * Handles the case when a user wants to upgrade to a newer version of the app.
    * Resets the version upgrade prompt and sets up state for the permission process.
+   * If fetchExistingParameters is provided, it will fetch existing parameters
+   * to preserve values when upgrading to a new version.
    */
   const handleUpgrade = useCallback(() => {
     updateState({
@@ -147,7 +149,18 @@ export const useAppPermissionCheck = ({
       isLoading: true,
       checkingPermissions: false
     });
-  }, [updateState]);
+
+    if (fetchExistingParameters) {
+      try {
+        console.log('Fetching existing parameters for version upgrade');
+        fetchExistingParameters().catch(error => {
+          console.error('Error fetching parameters for version upgrade:', error);
+        });
+      } catch (error) {
+        console.error('Error calling fetchExistingParameters:', error);
+      }
+    }
+  }, [updateState, fetchExistingParameters]);
   
   /**
    * The main function that checks if a PKP has permission for an app.

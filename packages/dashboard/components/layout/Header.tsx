@@ -9,7 +9,7 @@ export default function Header() {
       <div className="max-w-screen-xl mx-auto p-6">
         <div className="flex justify-between items-center">
           <Link href="/" className="text-xl font-bold">
-            Vincent Dashboard
+            Vincent App Dashboard
           </Link>
           <ConnectButton.Custom>
             {({

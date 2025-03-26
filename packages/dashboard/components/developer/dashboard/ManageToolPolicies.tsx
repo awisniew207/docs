@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Plus, Trash2, Info } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VincentContracts } from "@/services";
-import { useErrorPopup } from "@/components/ui/error-popup";
+import { useErrorPopup } from "@/providers/error-popup";
 import { mapTypeToEnum } from "@/services/types";
 import { mapEnumToTypeName, ParameterType } from "@/services/types";
 

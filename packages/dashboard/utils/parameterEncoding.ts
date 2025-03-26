@@ -194,7 +194,7 @@ function getFallbackValue(paramType: number): Uint8Array {
  * @param paramName - Optional name for logging purposes
  * @returns Default encoded value as Uint8Array
  */
-export const encodeDefaultValue = (paramType: number, paramName: string = 'unnamed'): Uint8Array => {
+const encodeDefaultValue = (paramType: number, paramName: string = 'unnamed'): Uint8Array => {
   try {
     const typeName = PARAMETER_TYPE_NAMES[paramType] || `unknown(${paramType})`;
     console.log(`Using default value for parameter ${paramName} with type ${paramType} (${typeName})`);

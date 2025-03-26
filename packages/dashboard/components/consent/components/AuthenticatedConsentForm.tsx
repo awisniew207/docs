@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 import '../styles/parameter-fields.css';
 import VersionParametersForm from '../utils/VersionParametersForm';
-import { useErrorPopup } from '@/components/ui/error-popup';
+import { useErrorPopup } from '@/providers/error-popup';
 
 import StatusMessage from './authForm/StatusMessage';
 import StatusAnimation from './authForm/StatusAnimation';
@@ -487,7 +487,7 @@ export default function AuthenticatedConsentForm({
         {showSuccess && <StatusAnimation type="success" />}
         {showDisapproval && <StatusAnimation type="disapproval" />}
 
-        <h1>Agent Consent Notice</h1>
+        <h1>Vincent Consent Notice</h1>
 
         {appInfo && (
           <>

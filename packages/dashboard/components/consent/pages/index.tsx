@@ -11,7 +11,7 @@ import AuthenticatedConsentForm from '../components/AuthenticatedConsentForm';
 import Loading from '../components/Loading';
 import LoginMethods from '../components/LoginMethods';
 import { getAgentPKP } from '../utils/getAgentPKP';
-import { useErrorPopup } from '@/components/ui/error-popup';
+import { useErrorPopup } from '@/providers/error-popup';
 
 export default function IndexView() {
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();

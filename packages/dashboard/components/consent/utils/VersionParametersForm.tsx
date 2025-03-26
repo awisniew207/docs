@@ -1,14 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ParameterInput from './ParameterInput';
-
-interface VersionParameter {
-  toolIndex: number;
-  policyIndex: number;
-  paramIndex: number;
-  name: string;
-  type: number;
-  value: any;
-}
+import { VersionParameter } from '../types';
+import { ParameterType } from '@/services/types/parameterTypes';
 
 interface VersionParametersFormProps {
   versionData: any;
@@ -37,6 +30,7 @@ export default function VersionParametersForm({
       if (!toolsData || !Array.isArray(toolsData)) return;
       
       const extractedParams: VersionParameter[] = [];
+      console.log('Initializing version parameters form with existing parameters:', existingParameters);
       
       // Loop through tools
       toolsData.forEach((tool, toolIndex) => {
@@ -56,15 +50,43 @@ export default function VersionParametersForm({
             if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
               paramNames.forEach((name, paramIndex) => {
                 if (paramIndex < paramTypes.length) {
-                  // Look for existing parameter value by location (toolIndex, policyIndex, paramIndex)
-                  const existingParam = existingParameters.find(p => 
+                  // First: try to find a matching parameter by exact position (most reliable match)
+                  let existingParam = existingParameters.find(p => 
                     p.toolIndex === toolIndex && 
                     p.policyIndex === policyIndex && 
                     p.paramIndex === paramIndex
                   );
                   
-                  // Use existing value if found, otherwise use empty string
-                  const value = existingParam ? existingParam.value : '';
+                  // If not found by position but name exists, try to find by name match
+                  if (!existingParam && name) {
+                    // Convert name to lowercase for case-insensitive matching
+                    const paramName = typeof name === 'string' ? name.toLowerCase() : '';
+                    
+                    if (paramName) {
+                      // Look for a parameter with the same name anywhere in existing parameters
+                      existingParam = existingParameters.find(p => 
+                        typeof p.name === 'string' && 
+                        p.name.toLowerCase() === paramName
+                      );
+                      
+                      if (existingParam) {
+                        console.log(`Found parameter match by name: "${name}" (preserving value "${existingParam.value}")`);
+                      }
+                    }
+                  }
+                  
+                  // Use existing value if found, otherwise use empty string based on type
+                  let defaultValue: any = '';
+                  const paramType = paramTypes[paramIndex];
+                  
+                  // Set appropriate default empty values based on parameter type
+                  if (paramType === ParameterType.BOOL) {
+                    defaultValue = false;
+                  } else if (paramType === ParameterType.INT256 || paramType === ParameterType.UINT256) {
+                    defaultValue = '0';
+                  }
+                  
+                  const value = existingParam ? existingParam.value : defaultValue;
                   
                   extractedParams.push({
                     toolIndex,
@@ -81,9 +103,31 @@ export default function VersionParametersForm({
         }
       });
       
-      // Only log once to avoid console spam
+      // Log parameter initialization info - showing which parameters are new vs preserved
       if (!initializedRef.current) {
         console.log('Form initialized with parameters:', extractedParams);
+        
+        // Log which parameters had values preserved from previous version
+        const preservedParams = extractedParams.filter(p => 
+          p.value !== '' && p.value !== false && p.value !== '0'
+        );
+        
+        if (preservedParams.length > 0) {
+          console.log(`Preserved ${preservedParams.length} parameter values from previous version:`, 
+            preservedParams.map(p => ({ name: p.name, value: p.value }))
+          );
+        }
+        
+        // Log which parameters are new and will start with empty values
+        const newParams = extractedParams.filter(p => 
+          p.value === '' || p.value === false || p.value === '0'
+        );
+        
+        if (newParams.length > 0) {
+          console.log(`${newParams.length} new parameters with empty values:`, 
+            newParams.map(p => p.name)
+          );
+        }
       }
       
       // Set the parameters state without calling onChange directly
@@ -97,7 +141,7 @@ export default function VersionParametersForm({
     } catch (error) {
       console.error('Error parsing version data:', error);
     }
-  }, [versionData, existingParameters]);
+  }, [versionData, existingParameters, onChange]);
   
   const handleParameterChange = (index: number, value: any) => {
     const updatedParams = [...parameters];

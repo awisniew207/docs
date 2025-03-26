@@ -7,7 +7,7 @@ import { createStytchUIClient } from '@stytch/nextjs/ui';
 import '@/utils/disableLogsInProduction';
 import './page.css';  // Importing the global CSS file
 import SessionValidator from '../../components/consent/components/SessionValidator';
-import { ErrorPopupProvider } from '@/components/ui/error-popup';
+import { ErrorPopupProvider } from '@/providers/error-popup';
 // Create Stytch client only on the client side
 let stytchClient: any = null;
 if (typeof window !== 'undefined') {
