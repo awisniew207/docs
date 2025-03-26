@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { checkAllowedTokens, parsePolicyParameters, calculateUsdValue, checkSpendingLimits, sendSpendTransaction } from "./utils";
 
 declare global {

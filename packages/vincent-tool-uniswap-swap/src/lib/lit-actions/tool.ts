@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 import {
   getPkpInfo,
@@ -104,77 +105,85 @@ declare global {
       }
     }
 
-    // Get best quote and calculate minimum output
-    const { bestFee, amountOutMin } = await getBestQuote(
-      provider,
-      toolParams.chainId,
-      toolParams.tokenIn,
-      toolParams.tokenOut,
-      tokenInfo.tokenIn.amount,
-      tokenInfo.tokenOut.decimals
-    );
+    // // Get best quote and calculate minimum output
+    // const { bestFee, amountOutMin } = await getBestQuote(
+    //   provider,
+    //   toolParams.chainId,
+    //   toolParams.tokenIn,
+    //   toolParams.tokenOut,
+    //   tokenInfo.tokenIn.amount,
+    //   tokenInfo.tokenOut.decimals
+    // );
 
-    // Approval Transaction
-    const approvalTx = await createUniswapSwapTx(
-      provider,
-      pkp.ethAddress,
-      UNISWAP_V3_ROUTER,
-      tokenInfo.tokenIn.contract,
-      tokenInfo.tokenIn.amount,
-      toolParams.chainId,
-      true
-    );
+    // // Approval Transaction
+    // const approvalTx = await createUniswapSwapTx(
+    //   provider,
+    //   pkp.ethAddress,
+    //   UNISWAP_V3_ROUTER,
+    //   tokenInfo.tokenIn.contract,
+    //   tokenInfo.tokenIn.amount,
+    //   toolParams.chainId,
+    //   true
+    // );
 
-    console.log('Unsigned approval transaction:', approvalTx);
+    // console.log('Unsigned approval transaction:', approvalTx);
 
-    const signedApprovalTx = await signTx(
-      pkp.publicKey,
-      approvalTx,
-      'erc20ApprovalSig'
-    );
-    const approvalHash = await broadcastTransaction(provider, signedApprovalTx);
-    console.log('Approval transaction hash:', approvalHash);
+    // const signedApprovalTx = await signTx(
+    //   pkp.publicKey,
+    //   approvalTx,
+    //   'erc20ApprovalSig'
+    // );
+    // const approvalHash = await broadcastTransaction(provider, signedApprovalTx);
+    // console.log('Approval transaction hash:', approvalHash);
 
-    // Wait for approval confirmation
-    console.log('Waiting for approval confirmation...');
-    const approvalConfirmation = await provider.waitForTransaction(
-      approvalHash,
-      1
-    );
-    if (approvalConfirmation.status === 0) {
-      throw new Error('Approval transaction failed');
-    }
+    // // Wait for approval confirmation
+    // console.log('Waiting for approval confirmation...');
+    // const approvalConfirmation = await provider.waitForTransaction(
+    //   approvalHash,
+    //   1
+    // );
+    // if (approvalConfirmation.status === 0) {
+    //   throw new Error('Approval transaction failed');
+    // }
 
-    // Swap Transaction
-    const swapTx = await createUniswapSwapTx(
-      provider,
-      pkp.ethAddress,
-      UNISWAP_V3_ROUTER,
-      tokenInfo.tokenIn.contract,
-      tokenInfo.tokenIn.amount,
-      toolParams.chainId,
-      false,
-      {
-        fee: bestFee,
-        amountOutMin,
-        tokenOut: toolParams.tokenOut
-      }
-    );
+    // // Swap Transaction
+    // const swapTx = await createUniswapSwapTx(
+    //   provider,
+    //   pkp.ethAddress,
+    //   UNISWAP_V3_ROUTER,
+    //   tokenInfo.tokenIn.contract,
+    //   tokenInfo.tokenIn.amount,
+    //   toolParams.chainId,
+    //   false,
+    //   {
+    //     fee: bestFee,
+    //     amountOutMin,
+    //     tokenOut: toolParams.tokenOut
+    //   }
+    // );
 
-    const signedSwapTx = await signTx(pkp.publicKey, swapTx, 'erc20SwapSig');
+    // const signedSwapTx = await signTx(pkp.publicKey, swapTx, 'erc20SwapSig');
 
-    console.log('Swap transaction:', signedSwapTx);
+    // console.log('Swap transaction:', signedSwapTx);
 
-    const swapHash = await broadcastTransaction(provider, signedSwapTx);
-    console.log('Swap transaction hash:', swapHash);
+    // const swapHash = await broadcastTransaction(provider, signedSwapTx);
+    // console.log('Swap transaction hash:', swapHash);
 
-    Lit.Actions.setResponse({
-      response: JSON.stringify({
-        status: 'success',
-        approvalHash,
-        swapHash,
-      }),
-    });
+    // Lit.Actions.setResponse({
+    //   response: JSON.stringify({
+    //     status: 'success',
+    //     approvalHash,
+    //     swapHash,
+    //   }),
+    // });
+
+    // Lit.Actions.setResponse({
+    //   response: JSON.stringify({
+    //     status: 'success',
+    //     approvalHash: '0x0',
+    //     swapHash: '0x0',
+    //   }),
+    // });
   } catch (err: any) {
     console.error('Error:', err);
 
