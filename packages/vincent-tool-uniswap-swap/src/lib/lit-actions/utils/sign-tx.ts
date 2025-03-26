@@ -9,7 +9,7 @@ export const signTx = async (
   tx: any,
   sigName: string
 ) => {
-  console.log(`Signing TX: ${sigName}`);
+  console.log(`Signing tx: ${sigName}`);
   const pkForLit = pkpPublicKey.startsWith('0x')
     ? pkpPublicKey.slice(2)
     : pkpPublicKey;

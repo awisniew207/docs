@@ -1,29 +1,20 @@
-// @ts-nocheck
+/* eslint-disable */
 import { config } from '@dotenvx/dotenvx';
 
 // Load environment variables
 config();
 
-import { ethers } from 'ethers';
 import fs from 'fs';
 import path from 'path';
-import { LitNodeClient } from "@lit-protocol/lit-node-client";
-import { LIT_NETWORK, LIT_ABILITY, LIT_RPC, AUTH_METHOD_TYPE, AUTH_METHOD_SCOPE } from "@lit-protocol/constants";
-import { LitActionResource, LitPKPResource } from "@lit-protocol/auth-helpers";
-import { EthWalletProvider } from "@lit-protocol/lit-auth-client";
-import { LitContracts } from "@lit-protocol/contracts-sdk";
 import {
     createWalletClient,
     http,
-    parseEther,
     defineChain,
-    hexToBytes
 } from 'viem';
-import { privateKeyToAccount, type Account, createAccount, serializeTransaction as serializeViemTransaction } from 'viem/accounts';
+import { privateKeyToAccount } from 'viem/accounts';
 import { createDatilChainManager } from '@lit-protocol/vincent-contracts';
 
 import { mintNewPkp } from './utils/mint-pkp';
-import { createPkpViemAccount } from './utils/create-pkp-viem-account';
 import { executeTool } from './utils/execute-tool';
 
 const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
@@ -53,7 +44,7 @@ const BASE_RPC_URL = process.env.BASE_RPC_URL;
 
 // Create Viem account and wallet client for App Manager
 const APP_MANAGER_PRIVATE_KEY = process.env.APP_MANAGER_PRIVATE_KEY;
-const APP_MANAGER_VIEM_ACCOUNT = privateKeyToAccount(APP_MANAGER_PRIVATE_KEY);
+const APP_MANAGER_VIEM_ACCOUNT = privateKeyToAccount(APP_MANAGER_PRIVATE_KEY as `0x${string}`);
 const APP_MANAGER_VIEM_WALLET_CLIENT = createWalletClient({
     account: APP_MANAGER_VIEM_ACCOUNT,
     chain: datilChain,
@@ -62,7 +53,7 @@ const APP_MANAGER_VIEM_WALLET_CLIENT = createWalletClient({
 
 // Create Viem account and wallet client for PKP owner
 const AGENT_WALLET_PKP_OWNER_PRIVATE_KEY = process.env.AGENT_WALLET_PKP_OWNER_PRIVATE_KEY;
-const AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT = privateKeyToAccount(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY);
+const AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT = privateKeyToAccount(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`);
 const AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT = createWalletClient({
     account: AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT,
     chain: datilChain,
@@ -70,19 +61,16 @@ const AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT = createWalletClient({
 });
 
 const APP_DELEGATEE_PRIVATE_KEY = process.env.APP_DELEGATEE_PRIVATE_KEY;
-const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY).address;
-
-const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
+const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `0x${string}`).address;
 
 (async () => {
     const APP_NAME = 'Vincent Test App';
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmacFefcVGxhC9sD94hgSyvsVHZaxyLewx5KL3eyqmkwQB'];
-    const TOOL_POLICY_IPFS_IDS = ['QmTjjxBwdj3i82GGoULdfeXHKLfkqpRqDFoZW7QL9GtJC1'];
+    const TOOL_IPFS_IDS = ['QmYM83wGMLWvPAPQp7J8ezvirAc4P4uAqjT1qsoGJBMZG1'];
+    const TOOL_POLICY_IPFS_IDS = ['QmezSo54SegfU1P6bX5jL61NdBGSM4MYHXvJRYkhQYMFJb'];
 
-    // Use proper structure for policy-related parameters
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS
     ];
@@ -103,7 +91,6 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
         ]
     ];
 
-    // Read existing APP_ID from config file if it exists
     let APP_ID: bigint;
     let APP_VERSION = 1n;
 
@@ -127,7 +114,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     });
 
     if (APP_ID !== 0n) {
-        const removeDelegateeResult = await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
+        await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
             appId: APP_ID,
             delegatee: DELEGATEES[0]
         });
@@ -142,7 +129,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
         toolIpfsCids: TOOL_IPFS_IDS,
         toolPolicies: TOOL_POLICIES,
         toolPolicyParameterNames: TOOL_POLICY_PARAMETER_NAMES,
-        toolPolicyParameterTypes: TOOL_POLICY_PARAMETER_TYPES
+        toolPolicyParameterTypes: TOOL_POLICY_PARAMETER_TYPES as any
     });
     APP_ID = appRegistrationResult.decodedLogs[0].args.appId;
     console.log(`ℹ️  App registration result: ${APP_ID}`);
@@ -157,7 +144,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     fs.writeFileSync(APP_CONFIG_PATH, JSON.stringify({ appId: APP_ID.toString() }, null, 2));
     console.log(`ℹ️  Saved App ID to config file: ${APP_CONFIG_PATH}`);
 
-    const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
+    const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
     console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
     console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
 
@@ -175,7 +162,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
         toolIpfsCids: TOOL_IPFS_IDS,
         policyIpfsCids: TOOL_POLICIES,
         policyParameterNames: TOOL_POLICY_PARAMETER_NAMES,
-        policyParameterValues: TOOL_POLICY_PARAMETER_VALUES
+        policyParameterValues: TOOL_POLICY_PARAMETER_VALUES as any
     });
     console.log('ℹ️  App permitted for Agent Wallet');
 
@@ -189,9 +176,9 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
         isPermitted: toolExecutionPermittedForDelegatee.isPermitted,
         appId: toolExecutionPermittedForDelegatee.appId.toString(),
         appVersion: toolExecutionPermittedForDelegatee.appVersion.toString(),
-        policies: toolExecutionPermittedForDelegatee.policies.map(policy => ({
+        policies: toolExecutionPermittedForDelegatee.policies.map((policy: any) => ({
             policyIpfsCid: policy.policyIpfsCid,
-            parameters: policy.parameters.map(param => ({
+            parameters: policy.parameters.map((param: any) => ({
                 name: param.name,
                 paramType: param.paramType,
                 value: param.value
@@ -208,7 +195,7 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
             tokenOut: '0x4200000000000000000000000000000000000006', // WETH
             amountIn: '10',
         },
-        delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY,
+        delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
         pkpEthAddress: pkpInfo.ethAddress,
         debug: true,
     });

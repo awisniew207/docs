@@ -1,22 +1,26 @@
+import { ethers } from 'ethers';
+import { getUniswapQuoterRouter } from './get-uniswap-quoter-router';
+
 /**
  * Retrieves the best quote for a Uniswap V3 swap.
  * @param {JsonRpcProvider} provider - The Ethereum provider.
- * @param {string} uniswapV3Quoter - The Uniswap V3 Quoter contract address.
+ * @param {string} chainId - The chain ID.
  * @param {string} tokenIn - The input token address.
  * @param {string} tokenOut - The output token address.
- * @param {any} amount - The amount of tokens to swap.
+ * @param {ethers.BigNumber} amount - The amount of tokens to swap.
  * @param {number} decimalsOut - The decimals of the output token.
  * @returns {Promise<{ bestQuote: any, bestFee: number, amountOutMin: any }>} The best quote and fee tier.
  */
 export const getBestQuote = async (
-  provider: any,
-  uniswapV3Quoter: string,
+  provider: ethers.providers.JsonRpcProvider,
+  chainId: string,
   tokenIn: string,
   tokenOut: string,
-  amount: any,
+  amount: ethers.BigNumber,
   decimalsOut: number
 ) => {
   console.log('Getting best quote for swap...');
+  const { UNISWAP_V3_QUOTER } = getUniswapQuoterRouter(chainId);
   const quoterInterface = new ethers.utils.Interface([
     'function quoteExactInputSingle((address tokenIn, address tokenOut, uint256 amountIn, uint24 fee, uint160 sqrtPriceLimitX96)) external returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)',
   ]);
@@ -37,7 +41,7 @@ export const getBestQuote = async (
 
       console.log(`Trying fee tier ${fee / 10000}%...`);
       const quote = await provider.call({
-        to: uniswapV3Quoter,
+        to: UNISWAP_V3_QUOTER,
         data: quoterInterface.encodeFunctionData('quoteExactInputSingle', [
           quoteParams,
         ]),
