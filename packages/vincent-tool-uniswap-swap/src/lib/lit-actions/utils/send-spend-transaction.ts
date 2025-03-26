@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ethers } from 'ethers';
 
 import { getSpendingLimitContract, estimateSpendGasLimit, signTx, broadcastTransaction } from '.';
@@ -13,16 +14,9 @@ export const sendSpendTransaction = async (
 ): Promise<string> => {
     const spendingLimitContract = await getSpendingLimitContract(spendingLimitAddress);
 
-    const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas, nonce } = await Lit.Actions.runOnce(
-        { waitForResponse: true, name: 'gasEstimation' },
+    const gasData = await Lit.Actions.runOnce(
+        { waitForResponse: true, name: 'send spend tx gas estimation' },
         async () => {
-            console.log('GAS ESTIMATION INPUTS', spendingLimitAddress,
-                pkpEthAddress,
-                appId,
-                amountInUsd,
-                maxSpendingLimit,
-                spendingLimitDuration)
-
             const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas, nonce } = await estimateSpendGasLimit(
                 spendingLimitAddress,
                 pkpEthAddress,
@@ -36,14 +30,20 @@ export const sendSpendTransaction = async (
                     })
                 )
             )
-            return { estimatedGas, maxFeePerGas, maxPriorityFeePerGas, nonce }
+            return JSON.stringify({
+                estimatedGas: estimatedGas.toString(),
+                maxFeePerGas: maxFeePerGas.toString(),
+                maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
+                nonce
+            });
         }
     );
 
-    console.log(`Estimated gas: ${estimatedGas.toString()}`);
-    console.log(`Max fee per gas: ${maxFeePerGas.toString()}`);
-    console.log(`Max priority fee per gas: ${maxPriorityFeePerGas.toString()}`);
-    console.log(`Nonce: ${nonce.toString()}`);
+    const parsedData = JSON.parse(gasData);
+    const estimatedGas = ethers.BigNumber.from(parsedData.estimatedGas);
+    const maxFeePerGas = ethers.BigNumber.from(parsedData.maxFeePerGas);
+    const maxPriorityFeePerGas = ethers.BigNumber.from(parsedData.maxPriorityFeePerGas);
+    const nonce = parsedData.nonce;
 
     const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
         appId,
@@ -64,7 +64,7 @@ export const sendSpendTransaction = async (
         type: 2,
     };
 
-    console.log(`Unsigned spend transaction: ${spendTx}`);
+    console.log(`Unsigned spend transaction: ${JSON.stringify(spendTx)}`);
 
     const signedSpendTx = await signTx(pkpPubKey, spendTx, 'spendingLimitSig');
     const spendHash = await broadcastTransaction(new ethers.providers.JsonRpcProvider(
@@ -72,7 +72,6 @@ export const sendSpendTransaction = async (
             chain: 'yellowstone',
         })
     ), signedSpendTx);
-    console.log('Spend transaction hash:', spendHash);
 
     return spendHash;
 }; 

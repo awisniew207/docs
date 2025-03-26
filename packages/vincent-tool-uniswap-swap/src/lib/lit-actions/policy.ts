@@ -1,4 +1,4 @@
-import { checkAllowedTokens, parsePolicyParameters, calculateUsdValue, checkSpendingLimits } from "./utils";
+import { checkAllowedTokens, parsePolicyParameters, calculateUsdValue, checkSpendingLimits, sendSpendTransaction } from "./utils";
 
 declare global {
   // Required Inputs
@@ -51,15 +51,15 @@ declare global {
 
   console.log('Updating the Spending Limit Contract...');
 
-  // await sendSpendTransaction(
-  //   SPENDING_LIMIT_ADDRESS,
-  //   userParams.pkpEthAddress,
-  //   userParams.pkpPubKey,
-  //   vincentAppId,
-  //   amountInUsd,
-  //   maxSpendingLimit!,
-  //   spendingLimitDuration!,
-  // );
+  const spendTxHash = await sendSpendTransaction(
+    SPENDING_LIMIT_ADDRESS,
+    userParams.pkpEthAddress,
+    userParams.pkpPubKey,
+    vincentAppId,
+    amountInUsd,
+    maxSpendingLimit!,
+    spendingLimitDuration!,
+  );
 
-  console.log('Spending Limit Contract updated');
+  console.log(`Spending Limit Contract updated transaction hash: ${spendTxHash}`);
 })();

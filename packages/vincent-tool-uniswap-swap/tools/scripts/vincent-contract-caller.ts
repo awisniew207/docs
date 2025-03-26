@@ -68,8 +68,8 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmYM83wGMLWvPAPQp7J8ezvirAc4P4uAqjT1qsoGJBMZG1'];
-    const TOOL_POLICY_IPFS_IDS = ['QmezSo54SegfU1P6bX5jL61NdBGSM4MYHXvJRYkhQYMFJb'];
+    const TOOL_IPFS_IDS = ['Qmeu4rYD3UB1XwHoUEvfyu3N8CDEz76Q9nx2BrXrfnPb33'];
+    const TOOL_POLICY_IPFS_IDS = ['QmTJywYZ73hdVeuiYCqXFsoiwZUxjnBWDjJ57SUJoNyiyR'];
 
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS
@@ -147,6 +147,13 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
     console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
     console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
+
+    console.log(`ℹ️  Funding PKP: ${pkpInfo.ethAddress} with 0.01 ETH...`);
+    await APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
+        to: pkpInfo.ethAddress as `0x${string}`,
+        value: BigInt(10000000000000000) // 0.01 ETH in wei
+    });
+    console.log('ℹ️  Funded PKP with 0.01 ETH');
 
     // Create a chain manager using the PKP owner's wallet (not the PKP itself)
     const chainManagerAgentWalletPKPOwner = createDatilChainManager({

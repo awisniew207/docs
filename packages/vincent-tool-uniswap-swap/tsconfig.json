@@ -4,6 +4,9 @@
   "include": [],
   "references": [
     {
+      "path": "../vincent-tool"
+    },
+    {
       "path": "./tsconfig.lib.json"
     }
   ]

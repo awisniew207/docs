@@ -21,13 +21,6 @@ export const estimateSpendGasLimit = async (
     // Estimate gas
     console.log(`Estimating gas limit for spend function...`);
 
-    console.log('estimateSpendGasLimit INPUTS', spendingLimitAddress,
-        pkpEthAddress,
-        appId,
-        amountInUsd,
-        maxSpendingLimit,
-        spendingLimitDuration)
-
     let estimatedGas = await spendingLimitContract.estimateGas.spend(
         appId,
         amountInUsd,
@@ -35,15 +28,30 @@ export const estimateSpendGasLimit = async (
         spendingLimitDuration,
         { from: pkpEthAddress }
     );
-    // Add 20% buffer to estimated gas
-    estimatedGas = estimatedGas.mul(120).div(100);
+    // Add 10% buffer to estimated gas (reduced from 20%)
+    estimatedGas = estimatedGas.mul(110).div(100);
 
     // Get current gas data
-    const [maxFeePerGas, maxPriorityFeePerGas] = await Promise.all([
-        provider.getBlock('latest').then((block) => ethers.BigNumber.from(block.baseFeePerGas || 0).mul(2)),
-        provider.getGasPrice().then((price: ethers.BigNumber) => ethers.BigNumber.from(price).div(4))
+    const [block, gasPrice] = await Promise.all([
+        provider.getBlock('latest'),
+        provider.getGasPrice()
     ]);
+
+    // Use a more conservative max fee per gas calculation
+    const baseFeePerGas = block.baseFeePerGas || gasPrice;
+    const maxFeePerGas = baseFeePerGas.mul(150).div(100); // 1.5x base fee
+    const maxPriorityFeePerGas = gasPrice.div(10); // 0.1x gas price
+
     const nonce = await provider.getTransactionCount(pkpEthAddress);
+
+    console.log('Gas estimation details:', {
+        estimatedGas: estimatedGas.toString(),
+        maxFeePerGas: maxFeePerGas.toString(),
+        maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
+        nonce,
+        baseFeePerGas: baseFeePerGas.toString(),
+        gasPrice: gasPrice.toString()
+    });
 
     return {
         estimatedGas,
