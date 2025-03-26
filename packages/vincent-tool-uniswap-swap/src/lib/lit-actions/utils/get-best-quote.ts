@@ -1,13 +1,18 @@
 /**
  * Retrieves the best quote for a Uniswap V3 swap.
  * @param {JsonRpcProvider} provider - The Ethereum provider.
+ * @param {string} uniswapV3Quoter - The Uniswap V3 Quoter contract address.
+ * @param {string} tokenIn - The input token address.
+ * @param {string} tokenOut - The output token address.
  * @param {any} amount - The amount of tokens to swap.
  * @param {number} decimalsOut - The decimals of the output token.
  * @returns {Promise<{ bestQuote: any, bestFee: number, amountOutMin: any }>} The best quote and fee tier.
  */
 export const getBestQuote = async (
   provider: any,
-  uniswapV3Quoter: any,
+  uniswapV3Quoter: string,
+  tokenIn: string,
+  tokenOut: string,
   amount: any,
   decimalsOut: number
 ) => {
@@ -22,9 +27,9 @@ export const getBestQuote = async (
 
   for (const fee of FEE_TIERS) {
     try {
-      const quotetoolParams = {
-        tokenIn: toolParams.tokenIn,
-        tokenOut: toolParams.tokenOut,
+      const quoteParams = {
+        tokenIn,
+        tokenOut,
         amountIn: amount,
         fee: fee,
         sqrtPriceLimitX96: 0,
@@ -34,7 +39,7 @@ export const getBestQuote = async (
       const quote = await provider.call({
         to: uniswapV3Quoter,
         data: quoterInterface.encodeFunctionData('quoteExactInputSingle', [
-          quotetoolParams,
+          quoteParams,
         ]),
       });
 

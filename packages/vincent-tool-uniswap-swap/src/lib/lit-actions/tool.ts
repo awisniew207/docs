@@ -14,7 +14,7 @@ import {
   // @ts-ignore
   estimateGasLimit,
   // @ts-ignore
-  createTransaction,
+  createUniswapSwapTx,
   // @ts-ignore
   signTx,
   // @ts-ignore
@@ -102,6 +102,7 @@ declare global {
             vincentAppVersion: vincentToolExecutionObject.appVersion.toString(),
             userParams: {
               ...toolParams,
+              pkpPubKey: pkp.publicKey,
               amountIn: tokenInfo.tokenIn.amount.toString(),
             },
             policy,
@@ -131,7 +132,7 @@ declare global {
     //   true
     // );
 
-    // const approvalTx = await createTransaction(
+    // const approvalTx = await createUniswapSwapTx(
     //   UNISWAP_V3_ROUTER,
     //   pkp.ethAddress,
     //   approvalGasLimit,
@@ -169,7 +170,7 @@ declare global {
     //   { fee: bestFee, amountOutMin }
     // );
 
-    // const swapTx = await createTransaction(
+    // const swapTx = await createUniswapSwapTx(
     //   UNISWAP_V3_ROUTER,
     //   pkp.ethAddress,
     //   swapGasLimit,

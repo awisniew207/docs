@@ -7,7 +7,7 @@
  * @param {Object} [swaptoolParams] - Swap parameters (fee and amountOutMin).
  * @returns {any} The transaction object.
  */
-export const createTransaction = async (
+export const createUniswapSwapTx = async (
   uniswapV3Router: any,
   pkpEthAddress: string,
   gasLimit: any,

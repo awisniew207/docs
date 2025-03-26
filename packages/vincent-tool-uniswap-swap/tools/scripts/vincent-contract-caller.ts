@@ -1,11 +1,12 @@
 // @ts-nocheck
-
 import { config } from '@dotenvx/dotenvx';
 
 // Load environment variables
 config();
 
 import { ethers } from 'ethers';
+import fs from 'fs';
+import path from 'path';
 import { LitNodeClient } from "@lit-protocol/lit-node-client";
 import { LIT_NETWORK, LIT_ABILITY, LIT_RPC, AUTH_METHOD_TYPE, AUTH_METHOD_SCOPE } from "@lit-protocol/constants";
 import { LitActionResource, LitPKPResource } from "@lit-protocol/auth-helpers";
@@ -26,6 +27,7 @@ import { createPkpViemAccount } from './utils/create-pkp-viem-account';
 import { executeTool } from './utils/execute-tool';
 
 const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
+const APP_CONFIG_PATH = path.join(__dirname, '../config/vincent-contract-caller-config.json');
 
 // Define Datil chain for Viem
 const datilChain = defineChain({
@@ -77,8 +79,8 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmXApiWuhCu58m7XVFmrGvEtorvBW6xi155D8gh26YZHTP'];
-    const TOOL_POLICY_IPFS_IDS = ['QmPF6XZBFm7mfHxcAW2nzdewPDjMDVRxrTak3Tg398Y7F1'];
+    const TOOL_IPFS_IDS = ['QmacFefcVGxhC9sD94hgSyvsVHZaxyLewx5KL3eyqmkwQB'];
+    const TOOL_POLICY_IPFS_IDS = ['QmTjjxBwdj3i82GGoULdfeXHKLfkqpRqDFoZW7QL9GtJC1'];
 
     // Use proper structure for policy-related parameters
     const TOOL_POLICIES = [
@@ -93,27 +95,44 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     const TOOL_POLICY_PARAMETER_VALUES = [
         [
             [
-                { type: 'uint256', value: '1000000000000000000' },
-                { type: 'uint256', value: '10000' },
-                { type: 'uint256', value: '86400' },
-                { type: 'address[]', value: '0x4200000000000000000000000000000000000006,0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }
+                { type: 'uint256', value: "10000000000" }, // maxAmountPerTx $100 USD (8 decimals)
+                { type: 'uint256', value: "100000000000" }, // maxSpendingLimit $1,000 USD (8 decimals)
+                { type: 'uint256', value: "86400" }, // spendingLimitDuration 1 day
+                { type: 'address[]', value: '0x4200000000000000000000000000000000000006,0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913,0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed' }
             ]
         ]
     ];
 
-    let APP_ID = 23n;
+    // Read existing APP_ID from config file if it exists
+    let APP_ID: bigint;
     let APP_VERSION = 1n;
+
+    try {
+        if (fs.existsSync(APP_CONFIG_PATH)) {
+            const config = JSON.parse(fs.readFileSync(APP_CONFIG_PATH, 'utf8'));
+            APP_ID = BigInt(config.appId);
+            console.log(`ℹ️  Loaded existing App ID: ${APP_ID}`);
+        } else {
+            console.log('ℹ️  No existing App ID found');
+            APP_ID = 0n;
+        }
+    } catch (error) {
+        console.log('ℹ️  Error reading App ID, starting fresh');
+        APP_ID = 0n;
+    }
 
     const chainManagerAppManager = createDatilChainManager({
         account: APP_MANAGER_VIEM_WALLET_CLIENT,
         network: 'datil'
     });
 
-    const removeDelegateeResult = await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
-        appId: APP_ID,
-        delegatee: DELEGATEES[0]
-    })
-    console.log(`ℹ️  Remove delegatee from App: ${APP_ID}`);
+    if (APP_ID !== 0n) {
+        const removeDelegateeResult = await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
+            appId: APP_ID,
+            delegatee: DELEGATEES[0]
+        });
+        console.log(`ℹ️  Remove delegatee from App: ${APP_ID}`);
+    }
 
     const appRegistrationResult = await chainManagerAppManager.vincentApi.appManagerDashboard.registerApp({
         appName: APP_NAME,
@@ -128,7 +147,17 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
     APP_ID = appRegistrationResult.decodedLogs[0].args.appId;
     console.log(`ℹ️  App registration result: ${APP_ID}`);
 
-    const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY, TOOL_IPFS_IDS[0]);
+    // Ensure config directory exists
+    const configDir = path.dirname(APP_CONFIG_PATH);
+    if (!fs.existsSync(configDir)) {
+        fs.mkdirSync(configDir, { recursive: true });
+    }
+
+    // Write new APP_ID to config file
+    fs.writeFileSync(APP_CONFIG_PATH, JSON.stringify({ appId: APP_ID.toString() }, null, 2));
+    console.log(`ℹ️  Saved App ID to config file: ${APP_CONFIG_PATH}`);
+
+    const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
     console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
     console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
 
@@ -175,9 +204,9 @@ const VINCENT_ADDRESS = '0x456DFB72AAe179E219FEbf3f339dF412dF30313D';
         toolParameters: {
             rpcUrl: BASE_RPC_URL,
             chainId: '8453',
-            tokenIn: '0x4200000000000000000000000000000000000006', // Wrapped ETH
-            tokenOut: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
-            amountIn: '1',
+            tokenIn: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', // DEGEN
+            tokenOut: '0x4200000000000000000000000000000000000006', // WETH
+            amountIn: '10',
         },
         delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY,
         pkpEthAddress: pkpInfo.ethAddress,

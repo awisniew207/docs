@@ -19,6 +19,7 @@ export interface PKPInfo {
 export const mintNewPkp = async (
     pkpOwnerPrivateKey: string,
     vincentToolIpfsCid: string,
+    vincentPolicyIpfsCid: string,
     litNetwork: string = 'datil'
 ): Promise<PKPInfo> => {
     // Create ethers provider and owner wallet
@@ -33,7 +34,7 @@ export const mintNewPkp = async (
 
     const mintPkpTx = await litContractClient.pkpHelperContract.write.mintNextAndAddAuthMethods(
         AUTH_METHOD_TYPE.EthWallet,
-        [AUTH_METHOD_TYPE.EthWallet, AUTH_METHOD_TYPE.LitAction],
+        [AUTH_METHOD_TYPE.EthWallet, AUTH_METHOD_TYPE.LitAction, AUTH_METHOD_TYPE.LitAction],
         [
             pkpOwnerWallet.address,
             `0x${Buffer.from(
@@ -41,9 +42,14 @@ export const mintNewPkp = async (
                     vincentToolIpfsCid
                 )
             ).toString("hex")}`,
+            `0x${Buffer.from(
+                ethers.utils.base58.decode(
+                    vincentPolicyIpfsCid
+                )
+            ).toString("hex")}`
         ],
-        ["0x", "0x"],
-        [[AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything]],
+        ["0x", "0x", "0x"],
+        [[AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything]],
         true, // addPkpEthAddressAsPermittedAddress
         false, // sendPkpToItself
         { value: await litContractClient.pkpNftContract.read.mintCost() }
