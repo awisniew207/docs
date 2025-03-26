@@ -272,7 +272,7 @@ Response: Array of Role objects (see GET /api/v1/role response)
 1. **Button Setup**:
    - Add a "Sign with Vincent" or "Create Vincent Agent Wallet" button in your App
    - On click, open a new tab with the Consent Page URL:
-     `https://consent.vincent.xyz/{appId}?roleIds={roleId1},{roleId2}`
+     `https://consent.vincent.xyz/{appId}/consent?roleIds={roleId1},{roleId2}`
    - Legacy URL format (still supported): 
      `https://consent.vincent.xyz/?appId={appId}&roleIds={roleId1},{roleId2}`
 
