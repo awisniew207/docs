@@ -1,18 +1,23 @@
-import { ethers } from 'ethers';
-
 import { getSpendingLimitContract } from '.';
 
 export const estimateSpendGasLimit = async (
     spendingLimitAddress: string,
     pkpEthAddress: string,
     appId: string,
+    // @ts-expect-error ethers is not defined in the global scope
     amountInUsd: ethers.BigNumber,
+    // @ts-expect-error ethers is not defined in the global scope
     maxSpendingLimit: ethers.BigNumber,
+    // @ts-expect-error ethers is not defined in the global scope
     spendingLimitDuration: ethers.BigNumber,
+    // @ts-expect-error ethers is not defined in the global scope
     provider: ethers.providers.JsonRpcProvider
 ): Promise<{
+    // @ts-expect-error ethers is not defined in the global scope
     estimatedGas: ethers.BigNumber;
+    // @ts-expect-error ethers is not defined in the global scope
     maxFeePerGas: ethers.BigNumber;
+    // @ts-expect-error ethers is not defined in the global scope
     maxPriorityFeePerGas: ethers.BigNumber;
     nonce: number;
 }> => {

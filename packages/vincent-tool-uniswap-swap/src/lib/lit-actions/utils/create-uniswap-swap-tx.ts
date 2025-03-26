@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import { estimateUniswapGasLimit } from './estimate-uniswap-gas-limit';
 
 /**
@@ -13,15 +12,19 @@ import { estimateUniswapGasLimit } from './estimate-uniswap-gas-limit';
  * @param {Object} [swaptoolParams] - Swap parameters (fee and amountOutMin).
  */
 export const createUniswapSwapTx = async (
+  // @ts-expect-error ethers is not defined in the global scope
   provider: ethers.providers.JsonRpcProvider,
   pkpEthAddress: string,
   uniswapV3Router: string,
+  // @ts-expect-error ethers is not defined in the global scope
   tokenInContract: ethers.Contract,
+  // @ts-expect-error ethers is not defined in the global scope
   amount: ethers.BigNumber,
   chainId: string,
   isApproval: boolean,
   swaptoolParams?: {
     fee: number;
+    // @ts-expect-error ethers is not defined in the global scope
     amountOutMin: ethers.BigNumber;
     tokenOut: string;
   }

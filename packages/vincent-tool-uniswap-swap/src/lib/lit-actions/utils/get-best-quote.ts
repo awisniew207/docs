@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import { getUniswapQuoterRouter } from './get-uniswap-quoter-router';
 
 /**
@@ -12,10 +11,12 @@ import { getUniswapQuoterRouter } from './get-uniswap-quoter-router';
  * @returns {Promise<{ bestQuote: any, bestFee: number, amountOutMin: any }>} The best quote and fee tier.
  */
 export const getBestQuote = async (
+  // @ts-expect-error ethers is not defined in the global scope
   provider: ethers.providers.JsonRpcProvider,
   chainId: string,
   tokenIn: string,
   tokenOut: string,
+  // @ts-expect-error ethers is not defined in the global scope
   amountIn: ethers.BigNumber,
   decimalsOut: number
 ) => {

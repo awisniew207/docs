@@ -1,20 +1,25 @@
-import { ethers } from 'ethers';
-
 export const estimateUniswapGasLimit = async (
+    // @ts-expect-error ethers is not defined in the global scope
     provider: ethers.providers.JsonRpcProvider,
     pkpEthAddress: string,
     uniswapV3Router: string,
+    // @ts-expect-error ethers is not defined in the global scope
     tokenInContract: ethers.Contract,
+    // @ts-expect-error ethers is not defined in the global scope
     amount: ethers.BigNumber,
     isApproval: boolean,
     swaptoolParams?: {
         fee: number;
+        // @ts-expect-error ethers is not defined in the global scope
         amountOutMin: ethers.BigNumber;
         tokenOut: string;
     }
 ): Promise<{
+    // @ts-expect-error ethers is not defined in the global scope
     estimatedGas: ethers.BigNumber;
+    // @ts-expect-error ethers is not defined in the global scope
     maxFeePerGas: ethers.BigNumber;
+    // @ts-expect-error ethers is not defined in the global scope
     maxPriorityFeePerGas: ethers.BigNumber;
     nonce: number;
 }> => {

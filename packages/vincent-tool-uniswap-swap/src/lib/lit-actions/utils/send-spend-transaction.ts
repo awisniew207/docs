@@ -1,6 +1,3 @@
-// @ts-nocheck
-import { ethers } from 'ethers';
-
 import { getSpendingLimitContract, estimateSpendGasLimit, signTx, broadcastTransaction } from '.';
 
 export const sendSpendTransaction = async (
@@ -8,8 +5,11 @@ export const sendSpendTransaction = async (
     pkpEthAddress: string,
     pkpPubKey: string,
     appId: string,
+    // @ts-expect-error ethers is not defined in the global scope
     amountInUsd: ethers.BigNumber,
+    // @ts-expect-error ethers is not defined in the global scope
     maxSpendingLimit: ethers.BigNumber,
+    // @ts-expect-error ethers is not defined in the global scope
     spendingLimitDuration: ethers.BigNumber,
 ): Promise<string> => {
     const spendingLimitContract = await getSpendingLimitContract(spendingLimitAddress);

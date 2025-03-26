@@ -68,8 +68,8 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmPfvNeVRGAFMHvJc6yXKiZkF47ctc7PvLxqYGFAPYL6FD'];
-    const TOOL_POLICY_IPFS_IDS = ['QmeipUAcWVbT2JPa3M8egay5dpw5NudYo4xDQWcSznzcqe'];
+    const TOOL_IPFS_IDS = ['QmZEkCX5SeiDquQPBsHP9w27iy9R9PcPY9unjoD7L6j2zw'];
+    const TOOL_POLICY_IPFS_IDS = ['QmPoyz2Fjh8ws6YX8bzt9AVLSWSjdFZUbxtFenm9CybMbU'];
 
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS

@@ -1,15 +1,19 @@
-import { ethers } from 'ethers';
-
 export interface PolicyParameters {
+    // @ts-expect-error ethers is not defined in the global scope
     maxAmountPerTx: ethers.BigNumber | null;
+    // @ts-expect-error ethers is not defined in the global scope
     maxSpendingLimit: ethers.BigNumber | null;
+    // @ts-expect-error ethers is not defined in the global scope
     spendingLimitDuration: ethers.BigNumber | null;
     allowedTokens: string[];
 }
 
 export const parsePolicyParameters = (parameters: { name: string; paramType: number; value: string; }[]): PolicyParameters => {
+    // @ts-expect-error ethers is not defined in the global scope
     let maxAmountPerTx: ethers.BigNumber | null = null;
+    // @ts-expect-error ethers is not defined in the global scope
     let maxSpendingLimit: ethers.BigNumber | null = null;
+    // @ts-expect-error ethers is not defined in the global scope
     let spendingLimitDuration: ethers.BigNumber | null = null;
     let allowedTokens: string[] = [];
 
