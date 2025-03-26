@@ -15,7 +15,7 @@ const ParameterUpdateModal = ({ isOpen, onContinue, onUpdate, appName }: Paramet
       <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 m-4">
         <h3 className="text-lg font-bold mb-4">Update Parameters?</h3>
         <p className="mb-4">
-          You&quot;ve already granted permission to <strong>{appName}</strong>. 
+          You&apos;ve already granted permission to App: <strong>{appName}</strong>. 
           Would you like to continue with your existing parameters or update them?
         </p>
         <div className="flex justify-end space-x-3">
