@@ -9,7 +9,6 @@ import { useIsMounted } from "@/hooks/useIsMounted";
 import { AppView } from "@/services/types";
 import CreateAppScreen from "@/components/developer/CreateApp";
 import ConnectWalletScreen from "@/components/developer/ConnectWallet";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Developer() {
     const [hasApp, setHasApp] = useState<Boolean>(false);
@@ -76,14 +75,11 @@ export default function Developer() {
 
     return (
         <div className="min-h-screen">
-             <ScrollArea className="h-[calc(123vh-20rem)]">
-
             {hasApp ? (
                 <DashboardScreen onRefetch={() => setRefetchApp(refetchApp + 1)} vincentApp={app!} />
             ) : (
                 <CreateAppScreen />
             )}
-            </ScrollArea>
         </div>
     );
 }

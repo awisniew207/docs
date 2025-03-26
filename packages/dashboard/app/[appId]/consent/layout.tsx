@@ -5,8 +5,8 @@ import { StytchProvider } from '@stytch/nextjs';
 import { createStytchUIClient } from '@stytch/nextjs/ui';
 // Import the utility that automatically disables logs in production
 import '@/utils/disableLogsInProduction';
-import './page.css';  // Importing the global CSS file
-import SessionValidator from '../../components/consent/components/SessionValidator';
+import './page.css';  // Updated path to the CSS file
+import SessionValidator from '../../../components/consent/components/SessionValidator';
 import { ErrorPopupProvider } from '@/providers/error-popup';
 // Create Stytch client only on the client side
 let stytchClient: any = null;
@@ -26,11 +26,10 @@ export default function ConsentLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // This layout is completely separate from the root layout
   return (
     <html lang="en">
       <head>
-        <title>Consent Page</title>
+        <title>Vincent | App Consent</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="consent-body">

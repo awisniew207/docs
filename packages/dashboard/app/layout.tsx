@@ -35,7 +35,7 @@ export default function RootLayout({
   const pathname = usePathname();
   
   // Don't apply this layout to consent pages - let them use their own layout
-  if (pathname?.startsWith('/consent')) {
+  if (/^\/[^\/]+\/consent/.test(pathname || '')) {
     return <>{children}</>;
   }
   
