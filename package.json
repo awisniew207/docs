@@ -109,18 +109,5 @@
   "bugs": {
     "url": "https://github.com/LIT-Protocol/Vincent/issues"
   },
-  "homepage": "https://github.com/LIT-Protocol/Vincent#readme",
-  "nx": {
-    "includedScripts": [],
-    "targets": {
-      "local-registry": {
-        "executor": "@nx/js:verdaccio",
-        "options": {
-          "port": 4873,
-          "config": ".verdaccio/config.yml",
-          "storage": "tmp/local-registry/storage"
-        }
-      }
-    }
-  }
+  "homepage": "https://github.com/LIT-Protocol/Vincent#readme"
 }
