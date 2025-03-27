@@ -192,17 +192,19 @@ export const useParameterManagement = ({
    * Fetches version information for the specified app.
    * This provides details about the latest version of the app, including
    * tools, policies, and parameters that can be configured.
+   * @param versionNumber Optional specific version to fetch. If not provided, uses the latest version.
    */
-  const fetchVersionInfo = useCallback(async () => {
+  const fetchVersionInfo = useCallback(async (versionNumber?: number) => {
     if (!appId || !appInfo) {
       console.error('Missing appId or appInfo in fetchVersionInfo');
       return null;
     }
 
     try {
-      onStatusChange?.('Loading app version information...', 'info');
+      const versionToFetch = versionNumber !== undefined ? versionNumber : Number(appInfo.latestVersion);
+      onStatusChange?.(`Loading app version information for v${versionToFetch}...`, 'info');
       const contract = getAppViewRegistryContract();
-      const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
+      const versionData = await contract.getAppVersion(Number(appId), versionToFetch);
       console.log('Version info:', versionData);
       
       setVersionInfo(versionData);
