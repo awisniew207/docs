@@ -68,8 +68,8 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmQ1FzWYoV2HDNhSNswAP6xUcW9odSPDvjqEuwkhFjhBB4'];
-    const TOOL_POLICY_IPFS_IDS = ['QmYxpPHXyVUsy1BXCHbwgLLUrdrKJ3TNDoZKn1DUNJA4bp'];
+    const TOOL_IPFS_IDS = ['QmYJyemMcTuowXLcyNmm5HSsN6fHYpAdyQR4GhtLFCFzSV'];
+    const TOOL_POLICY_IPFS_IDS = ['QmXbdHoCZrbksawU6nPUViAKmSTjVApZtBSK3vLbaRqLQo'];
 
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS
@@ -92,20 +92,31 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     ];
 
     let APP_ID: bigint;
-    let APP_VERSION = 1n;
+    let APP_VERSION: bigint;
+    let USER_PKP: {
+        tokenId: string;
+        ethAddress: string;
+        pkpPubKey: string;
+    } | undefined;
 
     try {
         if (fs.existsSync(APP_CONFIG_PATH)) {
             const config = JSON.parse(fs.readFileSync(APP_CONFIG_PATH, 'utf8'));
             APP_ID = BigInt(config.appId);
-            console.log(`ℹ️  Loaded existing App ID: ${APP_ID}`);
+            APP_VERSION = BigInt(config.appVersion);
+            USER_PKP = config.userPkP;
+            console.log(`ℹ️  Loaded existing App ID: ${APP_ID}, App Version: ${APP_VERSION}, User PKP: ${JSON.stringify(USER_PKP, null, 2)}`);
         } else {
             console.log('ℹ️  No existing App ID found');
             APP_ID = 0n;
+            APP_VERSION = 1n;
+            USER_PKP = undefined;
         }
     } catch (error) {
         console.log('ℹ️  Error reading App ID, starting fresh');
         APP_ID = 0n;
+        APP_VERSION = 1n;
+        USER_PKP = undefined;
     }
 
     const chainManagerAppManager = createDatilChainManager({
@@ -113,26 +124,58 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         network: 'datil'
     });
 
-    if (APP_ID !== 0n) {
-        await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
-            appId: APP_ID,
-            delegatee: DELEGATEES[0]
+    // if (APP_ID !== 0n) {
+    //     await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
+    //         appId: APP_ID,
+    //         delegatee: DELEGATEES[0]
+    //     });
+    //     console.log(`ℹ️  Remove delegatee from App: ${APP_ID}`);
+    // }
+
+    if (APP_ID === 0n) {
+        const appRegistrationResult = await chainManagerAppManager.vincentApi.appManagerDashboard.registerApp({
+            appName: APP_NAME,
+            appDescription: APP_DESCRIPTION,
+            authorizedRedirectUris: AUTHORIZED_REDIRECT_URIS,
+            delegatees: DELEGATEES,
+            toolIpfsCids: TOOL_IPFS_IDS,
+            toolPolicies: TOOL_POLICIES,
+            toolPolicyParameterNames: TOOL_POLICY_PARAMETER_NAMES,
+            toolPolicyParameterTypes: TOOL_POLICY_PARAMETER_TYPES as any
         });
-        console.log(`ℹ️  Remove delegatee from App: ${APP_ID}`);
+        APP_ID = appRegistrationResult.decodedLogs[0].args.appId;
+        console.log(`ℹ️  App registration result: ${APP_ID}`);
+    } else {
+        const appVersionRegistrationResult = await chainManagerAppManager.vincentApi.appManagerDashboard.registerNextAppVersion({
+            appId: APP_ID,
+            toolIpfsCids: TOOL_IPFS_IDS,
+            toolPolicies: TOOL_POLICIES,
+            toolPolicyParameterNames: TOOL_POLICY_PARAMETER_NAMES,
+            toolPolicyParameterTypes: TOOL_POLICY_PARAMETER_TYPES as any
+        });
+        console.log(appVersionRegistrationResult);
+        APP_VERSION = appVersionRegistrationResult.decodedLogs[0].args.appVersion;
+        console.log(`ℹ️  App version registration result: ${APP_VERSION}`);
     }
 
-    const appRegistrationResult = await chainManagerAppManager.vincentApi.appManagerDashboard.registerApp({
-        appName: APP_NAME,
-        appDescription: APP_DESCRIPTION,
-        authorizedRedirectUris: AUTHORIZED_REDIRECT_URIS,
-        delegatees: DELEGATEES,
-        toolIpfsCids: TOOL_IPFS_IDS,
-        toolPolicies: TOOL_POLICIES,
-        toolPolicyParameterNames: TOOL_POLICY_PARAMETER_NAMES,
-        toolPolicyParameterTypes: TOOL_POLICY_PARAMETER_TYPES as any
-    });
-    APP_ID = appRegistrationResult.decodedLogs[0].args.appId;
-    console.log(`ℹ️  App registration result: ${APP_ID}`);
+    if (USER_PKP === undefined) {
+        const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
+        console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
+        console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
+
+        USER_PKP = {
+            tokenId: pkpInfo.tokenId,
+            ethAddress: pkpInfo.ethAddress,
+            pkpPubKey: pkpInfo.publicKey
+        };
+
+        console.log(`ℹ️  Funding PKP: ${USER_PKP.ethAddress} with 0.01 ETH...`);
+        await APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
+            to: USER_PKP.ethAddress as `0x${string}`,
+            value: BigInt(10000000000000000) // 0.01 ETH in wei
+        });
+        console.log('ℹ️  Funded PKP with 0.01 ETH');
+    }
 
     // Ensure config directory exists
     const configDir = path.dirname(APP_CONFIG_PATH);
@@ -140,20 +183,15 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         fs.mkdirSync(configDir, { recursive: true });
     }
 
-    // Write new APP_ID to config file
-    fs.writeFileSync(APP_CONFIG_PATH, JSON.stringify({ appId: APP_ID.toString() }, null, 2));
+    // Write config to file
+    fs.writeFileSync(
+        APP_CONFIG_PATH,
+        JSON.stringify({
+            appId: APP_ID.toString(),
+            appVersion: APP_VERSION.toString(),
+            userPkP: USER_PKP
+        }, null, 2));
     console.log(`ℹ️  Saved App ID to config file: ${APP_CONFIG_PATH}`);
-
-    const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
-    console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
-    console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
-
-    console.log(`ℹ️  Funding PKP: ${pkpInfo.ethAddress} with 0.01 ETH...`);
-    await APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
-        to: pkpInfo.ethAddress as `0x${string}`,
-        value: BigInt(10000000000000000) // 0.01 ETH in wei
-    });
-    console.log('ℹ️  Funded PKP with 0.01 ETH');
 
     // Create a chain manager using the PKP owner's wallet (not the PKP itself)
     const chainManagerAgentWalletPKPOwner = createDatilChainManager({
@@ -163,7 +201,7 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
 
     // Permit the app version for the PKP using the PKP owner's wallet
     await chainManagerAgentWalletPKPOwner.vincentApi.userDashboard.permitAppVersion({
-        pkpTokenId: BigInt(pkpInfo.tokenId),
+        pkpTokenId: BigInt(USER_PKP.tokenId),
         appId: APP_ID,
         appVersion: APP_VERSION,
         toolIpfsCids: TOOL_IPFS_IDS,
@@ -173,10 +211,10 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     });
     console.log('ℹ️  App permitted for Agent Wallet');
 
-    console.log(`ℹ️  Validating tool execution and getting policies for delegatee: ${APP_DELEGATEE_ADDRESS} with PKP ${pkpInfo.tokenId} and tool ${TOOL_IPFS_IDS[0]}`);
+    console.log(`ℹ️  Validating tool execution and getting policies for delegatee: ${APP_DELEGATEE_ADDRESS} with PKP ${USER_PKP.tokenId} and tool ${TOOL_IPFS_IDS[0]}`);
     const toolExecutionPermittedForDelegatee = await chainManagerAgentWalletPKPOwner.vincentApi.toolLitActions.validateToolExecutionAndGetPolicies({
         delegatee: APP_DELEGATEE_ADDRESS,
-        pkpTokenId: BigInt(pkpInfo.tokenId),
+        pkpTokenId: BigInt(USER_PKP.tokenId),
         toolIpfsCid: TOOL_IPFS_IDS[0],
     });
     console.log(`ℹ️  Tool execution permitted for delegatee: ${JSON.stringify({
@@ -203,7 +241,7 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
             amountIn: '10',
         },
         delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-        pkpEthAddress: pkpInfo.ethAddress,
+        pkpEthAddress: USER_PKP.ethAddress,
         debug: true,
     });
 

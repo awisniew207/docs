@@ -1,7 +1,8 @@
 /* eslint-disable */
 import { NETWORK_CONFIG, validateUserToolPolicies, getPkpInfo } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
-import { getErc20Info } from './utils';
+
+import { getErc20Info, sendUniswapTx } from './utils';
 
 declare global {
   const LIT_NETWORK: string;
@@ -65,4 +66,18 @@ declare global {
       tokenOutDecimals: tokenOutInfo.decimals.toString(),
     }
   );
+
+  const { approvalTxHash } = await sendUniswapTx(
+    userRpcProvider,
+    toolParams.chainId,
+    toolParams.tokenIn,
+    toolParams.tokenOut,
+    toolParams.amountIn,
+    tokenInInfo.decimals.toString(),
+    tokenOutInfo.decimals.toString(),
+    toolParams.pkpEthAddress,
+    pkpInfo.publicKey,
+  );
+
+  console.log(`Approval transaction hash: ${JSON.stringify(approvalTxHash)}`);
 })();

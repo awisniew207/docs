@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-import { broadcastTx, getAddressesByChainId, signTx } from '.';
+import { getAddressesByChainId, signTx } from '.';
 
 const estimateGas = async (
     spendingLimitContract: ethers.Contract,
@@ -135,7 +135,17 @@ export const sendSpendTx = async (
 
     console.log(`Unsigned spend transaction: ${JSON.stringify(spendTx)}`);
 
-    console.log(`Signing transaction...`);
+    console.log(`Signing spend transaction...`);
     const signedSpendTx = await signTx(pkpPubKey, spendTx, 'spendingLimitSig');
-    return broadcastTx(yellowstoneProvider, signedSpendTx);
+
+    const spendTxHash = Lit.Actions.runOnce(
+        { waitForResponse: true, name: 'spendTxSender' },
+        async () => {
+            console.log(`Broadcasting spend transaction...`);
+            const receipt = await yellowstoneProvider.sendTransaction(signedSpendTx);
+            return receipt.hash;
+        }
+    );
+
+    return spendTxHash;
 }

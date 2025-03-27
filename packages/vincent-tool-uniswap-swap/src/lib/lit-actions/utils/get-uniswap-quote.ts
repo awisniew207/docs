@@ -12,15 +12,6 @@ export const getUniswapQuote = async (
     tokenOutDecimals: string,
 ) => {
     console.log('Starting Uniswap quote calculation...');
-    console.log('Input parameters:', {
-        chainId: userChainId,
-        tokenIn: tokenInAddress,
-        tokenOut: tokenOutAddress,
-        amountIn,
-        tokenInDecimals,
-        tokenOutDecimals
-    });
-
     const { UNISWAP_V3_QUOTER } = getAddressesByChainId(userChainId);
     console.log('Using Uniswap V3 Quoter address:', UNISWAP_V3_QUOTER);
 

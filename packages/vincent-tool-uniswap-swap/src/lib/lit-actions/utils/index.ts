@@ -7,5 +7,5 @@ export * from './validate-tokens-are-allowed';
 export * from './validate-spending-limits';
 export * from './send-spend-tx';
 export * from './sign-tx';
-export * from './broadcast-tx';
 export * from './get-erc20-info';
+export * from './send-uniswap-tx';
