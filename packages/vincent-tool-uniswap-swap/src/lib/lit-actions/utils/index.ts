@@ -9,3 +9,4 @@ export * from './send-spend-tx';
 export * from './sign-tx';
 export * from './get-erc20-info';
 export * from './send-uniswap-tx';
+export * from './send-erc20-approval';

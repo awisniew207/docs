@@ -7,8 +7,9 @@ module.exports = {
     spendingLimitAddress: '0x2d043f8c6b80ea6396a51dc6333027fbdb8343a3',
     litNetwork: 'datil',
     outputFiles: [
-      'deployed-lit-action-datil.js',
+      'deployed-lit-action-tool-datil.js',
       'deployed-lit-action-policy-datil.js',
+      'deployed-lit-action-erc20-approval-datil.js',
     ],
   },
 };

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 import { config } from '@dotenvx/dotenvx';
 
@@ -69,19 +70,28 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmcWjgzsDKnqPX7DSKd9bA4EYWPW5QrdrCiyLNPVMi748P'];
-    const TOOL_POLICY_IPFS_IDS = ['QmV84RWrqBuCDr48V3FpQyzJrQak9NhSsr7oszVS6VVZtZ'];
+
+    const ERC20_APPROVAL_TOOL_IPFS_ID = 'QmQ9uR55wqLE6GKhtW8mGf4QR7QHmF2YmJVGu5GWgHTeBh';
+    const UNISWAP_SWAP_TOOL_IPFS_ID = 'QmPE59KPsNTCofyWLStMB4dKKSPDmsPkwLnS1nk5yFJZYt';
+    const UNISWAP_SWAP_POLICY_IPFS_ID = 'QmUpfDmAwA8mtkCTSqU9SxCcwNcqxjkQP61t6PW51Vpuph';
+
+    const TOOL_IPFS_IDS = [ERC20_APPROVAL_TOOL_IPFS_ID, UNISWAP_SWAP_TOOL_IPFS_ID];
+    const TOOL_POLICY_IPFS_IDS = [UNISWAP_SWAP_POLICY_IPFS_ID];
 
     const TOOL_POLICIES = [
-        TOOL_POLICY_IPFS_IDS
+        [], // No policies for ERC20_APPROVAL_TOOL
+        [UNISWAP_SWAP_POLICY_IPFS_ID] // Policy for UNISWAP_SWAP_TOOL
     ];
     const TOOL_POLICY_PARAMETER_NAMES = [
-        [['maxAmountPerTx', 'maxSpendingLimit', 'spendingLimitDuration', 'allowedTokens']]
+        [], // No parameters for ERC20_APPROVAL_TOOL
+        [['maxAmountPerTx', 'maxSpendingLimit', 'spendingLimitDuration', 'allowedTokens']] // Parameters for UNISWAP_SWAP_TOOL
     ];
     const TOOL_POLICY_PARAMETER_TYPES = [
-        [['UINT256', 'UINT256', 'UINT256', 'ADDRESS_ARRAY']]
+        [], // No parameter types for ERC20_APPROVAL_TOOL
+        [['UINT256', 'UINT256', 'UINT256', 'ADDRESS_ARRAY']] // Parameter types for UNISWAP_SWAP_TOOL
     ];
     const TOOL_POLICY_PARAMETER_VALUES = [
+        [], // No parameter values for ERC20_APPROVAL_TOOL
         [
             [
                 { type: 'uint256', value: "10000000000" }, // maxAmountPerTx $100 USD (8 decimals)
@@ -163,7 +173,12 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     }
 
     if (USER_PKP === undefined) {
-        const pkpInfo = await mintNewPkp(AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`, TOOL_IPFS_IDS[0], TOOL_POLICY_IPFS_IDS[0]);
+        const pkpInfo = await mintNewPkp(
+            AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
+            ERC20_APPROVAL_TOOL_IPFS_ID,
+            UNISWAP_SWAP_TOOL_IPFS_ID,
+            UNISWAP_SWAP_POLICY_IPFS_ID
+        );
         console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
         console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
 
@@ -183,8 +198,9 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         await permitAuthMethod(
             AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
             USER_PKP.tokenId,
-            TOOL_IPFS_IDS[0],
-            TOOL_POLICY_IPFS_IDS[0]
+            ERC20_APPROVAL_TOOL_IPFS_ID,
+            UNISWAP_SWAP_TOOL_IPFS_ID,
+            UNISWAP_SWAP_POLICY_IPFS_ID
         );
         console.log('ℹ️  Permitted auth methods for PKP');
     }
@@ -223,11 +239,11 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     });
     console.log('ℹ️  App permitted for Agent Wallet');
 
-    console.log(`ℹ️  Validating tool execution and getting policies for delegatee: ${APP_DELEGATEE_ADDRESS} with PKP ${USER_PKP.tokenId} and tool ${TOOL_IPFS_IDS[0]}`);
-    const toolExecutionPermittedForDelegatee = await chainManagerAgentWalletPKPOwner.vincentApi.toolLitActions.validateToolExecutionAndGetPolicies({
+    console.log(`ℹ️  Validating tool execution and getting policies for delegatee: ${APP_DELEGATEE_ADDRESS} with PKP ${USER_PKP.tokenId} and tool ${ERC20_APPROVAL_TOOL_IPFS_ID}`);
+    let toolExecutionPermittedForDelegatee = await chainManagerAgentWalletPKPOwner.vincentApi.toolLitActions.validateToolExecutionAndGetPolicies({
         delegatee: APP_DELEGATEE_ADDRESS,
         pkpTokenId: BigInt(USER_PKP.tokenId),
-        toolIpfsCid: TOOL_IPFS_IDS[0],
+        toolIpfsCid: ERC20_APPROVAL_TOOL_IPFS_ID,
     });
     console.log(`ℹ️  Tool execution permitted for delegatee: ${JSON.stringify({
         isPermitted: toolExecutionPermittedForDelegatee.isPermitted,
@@ -243,8 +259,43 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         }))
     }, null, 2)}`);
 
-    const toolExecutionResult = await executeTool({
-        toolIpfsCid: TOOL_IPFS_IDS[0],
+    console.log(`ℹ️  Validating tool execution and getting policies for delegatee: ${APP_DELEGATEE_ADDRESS} with PKP ${USER_PKP.tokenId} and tool ${UNISWAP_SWAP_TOOL_IPFS_ID}`);
+    toolExecutionPermittedForDelegatee = await chainManagerAgentWalletPKPOwner.vincentApi.toolLitActions.validateToolExecutionAndGetPolicies({
+        delegatee: APP_DELEGATEE_ADDRESS,
+        pkpTokenId: BigInt(USER_PKP.tokenId),
+        toolIpfsCid: UNISWAP_SWAP_TOOL_IPFS_ID,
+    });
+    console.log(`ℹ️  Tool execution permitted for delegatee: ${JSON.stringify({
+        isPermitted: toolExecutionPermittedForDelegatee.isPermitted,
+        appId: toolExecutionPermittedForDelegatee.appId.toString(),
+        appVersion: toolExecutionPermittedForDelegatee.appVersion.toString(),
+        policies: toolExecutionPermittedForDelegatee.policies.map((policy: any) => ({
+            policyIpfsCid: policy.policyIpfsCid,
+            parameters: policy.parameters.map((param: any) => ({
+                name: param.name,
+                paramType: param.paramType,
+                value: param.value
+            }))
+        }))
+    }, null, 2)}`);
+
+    const erc20ApprovalExecutionResult = await executeTool({
+        toolIpfsCid: ERC20_APPROVAL_TOOL_IPFS_ID,
+        toolParameters: {
+            rpcUrl: BASE_RPC_URL,
+            chainId: '8453',
+            tokenIn: '0x4200000000000000000000000000000000000006', // WETH
+            amountIn: '0.00001',
+        },
+        delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
+        pkpEthAddress: USER_PKP.ethAddress,
+        debug: true,
+    });
+
+    console.log(`ℹ️  ERC20 approval tool execution result: ${erc20ApprovalExecutionResult}`);
+
+    const uniswapSwapExecutionResult = await executeTool({
+        toolIpfsCid: UNISWAP_SWAP_TOOL_IPFS_ID,
         toolParameters: {
             rpcUrl: BASE_RPC_URL,
             chainId: '8453',
@@ -257,5 +308,5 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         debug: true,
     });
 
-    console.log(`ℹ️  Tool execution result: ${toolExecutionResult}`);
+    console.log(`ℹ️  Uniswap swap tool execution result: ${uniswapSwapExecutionResult}`);
 })();
