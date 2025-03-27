@@ -88,7 +88,8 @@ export default function AuthenticatedConsentForm({
     checkingPermissions,
     continueWithExistingPermission,
     handleUpgrade,
-    updateState
+    updateState,
+    useCurrentVersionOnly
   } = useAppPermissionCheck({
     appId,
     agentPKP,
@@ -147,7 +148,7 @@ export default function AuthenticatedConsentForm({
   }, [appInfo, fetchVersionInfo, versionInfo]);
 
   // Use the consent approval hook
-  const { approveConsent } = useConsentApproval({
+  const { approveConsent, updateParameters } = useConsentApproval({
     appId,
     appInfo,
     versionInfo,
@@ -165,6 +166,50 @@ export default function AuthenticatedConsentForm({
     onStatusChange: showStatus,
     onError: showErrorWithStatus
   });
+
+  // Add an effect to fetch the correct version info when useCurrentVersionOnly changes
+  // Add a ref to track if we've already fetched for this version
+  const permittedVersionFetchedRef = useRef<number | null>(null);
+  
+  useEffect(() => {
+    if (useCurrentVersionOnly && permittedVersion !== null && appId && 
+        permittedVersionFetchedRef.current !== permittedVersion) {
+      console.log(`Fetching version data for permitted version ${permittedVersion}`);
+      // Set the ref to mark this version as fetched
+      permittedVersionFetchedRef.current = permittedVersion;
+      
+      // Clear version info first to ensure we don't show the wrong version while loading
+      updateState({ isLoading: true });
+      
+      // Fetch version info for the permitted version number
+      fetchVersionInfo(permittedVersion)
+        .then(() => {
+          console.log(`Successfully fetched data for version ${permittedVersion}`);
+          updateState({ isLoading: false });
+          
+          // Also fetch existing parameters if not already loaded
+          if (existingParameters.length === 0 && !isLoadingParameters) {
+            fetchExistingParameters();
+          }
+        })
+        .catch(error => {
+          console.error(`Error fetching version ${permittedVersion} data:`, error);
+          updateState({ isLoading: false });
+          showErrorWithStatus('Failed to load version data', 'Error');
+        });
+    } else if (!useCurrentVersionOnly) {
+      // Reset the ref when we switch back to latest version mode
+      permittedVersionFetchedRef.current = null;
+      
+      // If we previously used a specific version, we should reload the latest version
+      if (permittedVersionFetchedRef.current !== null) {
+        updateState({ isLoading: true });
+        fetchVersionInfo()
+          .then(() => updateState({ isLoading: false }))
+          .catch(() => updateState({ isLoading: false }));
+      }
+    }
+  }, [useCurrentVersionOnly, permittedVersion, appId, fetchVersionInfo, fetchExistingParameters, existingParameters, isLoadingParameters, updateState, showErrorWithStatus]);
 
   // Use error popup for URL errors
   useEffect(() => {
@@ -222,7 +267,13 @@ export default function AuthenticatedConsentForm({
             return { success: false };
           }
 
-          await approveConsent();
+          // If we're specifically updating parameters for the current version,
+          // use updateParameters instead of full consent approval
+          if (useCurrentVersionOnly) {
+            await updateParameters();
+          } else {
+            await approveConsent();
+          }
 
           showStatus('Generating authentication token...', 'info');
           const jwt = await generateJWT(appInfo);
@@ -256,7 +307,7 @@ export default function AuthenticatedConsentForm({
     } finally {
       setSubmitting(false);
     }
-  }, [approveConsent, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, showErrorWithStatus, showStatus, updateState]);
+  }, [approveConsent, updateParameters, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, showErrorWithStatus, showStatus, updateState, useCurrentVersionOnly]);
 
   /**
    * Handles the disapproval action when the user denies permission to the app.
@@ -307,14 +358,18 @@ export default function AuthenticatedConsentForm({
    * 2. Sets the parameters form with existing parameter values
    */
   const handleUpdateParameters = useCallback(() => {
+    // Reset the ref to ensure we'll fetch the correct version info
+    permittedVersionFetchedRef.current = null;
+    
     updateState({
       showUpdateModal: false,
       showingAuthorizedMessage: false,
       showSuccess: false,
       isAppAlreadyPermitted: false,
       showVersionUpgradePrompt: false,
-      isLoading: false,
-      checkingPermissions: false
+      isLoading: true, // Set to true to show loading indicator
+      checkingPermissions: false,
+      useCurrentVersionOnly: true
     });
 
     // Populate the form with existing parameter values
@@ -322,7 +377,22 @@ export default function AuthenticatedConsentForm({
       console.log('Setting form fields with existing parameter values:', existingParameters);
       setParameters(existingParameters);
     }
-  }, [existingParameters, setParameters, updateState]);
+    
+    // Explicitly force a version refresh if we have permittedVersion
+    if (permittedVersion !== null && appId) {
+      console.log(`Explicitly fetching version ${permittedVersion} data for parameter update`);
+      fetchVersionInfo(permittedVersion)
+        .then(() => {
+          updateState({ isLoading: false });
+          console.log(`Successfully loaded version ${permittedVersion} data`);
+        })
+        .catch(error => {
+          console.error('Error fetching permitted version data:', error);
+          updateState({ isLoading: false });
+          showErrorWithStatus('Failed to load version data', 'Error');
+        });
+    }
+  }, [existingParameters, setParameters, updateState, permittedVersion, appId, fetchVersionInfo, showErrorWithStatus]);
 
 
   useEffect(() => {
@@ -407,6 +477,7 @@ export default function AuthenticatedConsentForm({
         agentPKP={agentPKP}
         onUpgrade={handleUpgrade}
         onContinue={continueWithExistingPermission}
+        onUpdateParameters={handleUpdateParameters}
         statusMessage={statusMessage}
         statusType={statusType}
       />
@@ -493,7 +564,13 @@ export default function AuthenticatedConsentForm({
         {appInfo && (
           <>
             <AppInfo
-              appInfo={appInfo}
+              appInfo={{
+                ...appInfo,
+                // Override the displayed version if we're updating parameters only
+                latestVersion: useCurrentVersionOnly && permittedVersion !== null ? 
+                  permittedVersion : 
+                  appInfo.latestVersion
+              }}
               agentPKP={agentPKP}
               versionInfo={versionInfo}
               showIPFSDetails={true}
@@ -504,6 +581,7 @@ export default function AuthenticatedConsentForm({
                 versionData={versionInfo}
                 onChange={handleParametersChange}
                 existingParameters={existingParameters}
+                key={`params-form-${useCurrentVersionOnly ? `v${permittedVersion}` : 'latest'}`}
               />
             )}
 
