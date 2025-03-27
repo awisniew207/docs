@@ -16,11 +16,12 @@ async function buildFile(entryPoint, outfile, network, config) {
         LIT_NETWORK: `"${network}"`,
         VINCENT_ADDRESS: `"${config.vincentAddress}"`,
         SPENDING_LIMIT_ADDRESS: `"${config.spendingLimitAddress}"`,
+        // ethers: '{}',
       },
       target: ['es2020'],
     });
     console.log(
-      `Successfully built ${path.basename(entryPoint)} for network: ${network}`
+      `Successfully built ${path.basename(entryPoint)} for network: ${network}`,
     );
   } catch (error) {
     console.error(`Error building ${path.basename(entryPoint)}:`, error);
@@ -32,22 +33,22 @@ async function buildAction(network) {
   const config = networks[network];
   const mainEntryPoint = path.resolve(
     __dirname,
-    '../../src/lib/lit-actions/tool.ts'
+    '../../src/lib/lit-actions/tool.ts',
   );
   const policyEntryPoint = path.resolve(
     __dirname,
-    '../../src/lib/lit-actions/policy.ts'
+    '../../src/lib/lit-actions/policy.ts',
   );
 
   const mainOutfile = path.resolve(
     __dirname,
     '../../dist',
-    `deployed-lit-action-${network}.js`
+    `deployed-lit-action-${network}.js`,
   );
   const policyOutfile = path.resolve(
     __dirname,
     '../../dist',
-    `deployed-lit-action-policy-${network}.js`
+    `deployed-lit-action-policy-${network}.js`,
   );
 
   await Promise.all([
@@ -57,6 +58,4 @@ async function buildAction(network) {
 }
 
 // Build for each network
-Promise.all([
-  buildAction('datil'),
-]).catch(() => process.exit(1));
+Promise.all([buildAction('datil')]).catch(() => process.exit(1));

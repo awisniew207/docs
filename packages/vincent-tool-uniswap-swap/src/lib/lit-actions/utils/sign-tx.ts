@@ -1,35 +1,21 @@
-/**
- * Signs a transaction using the PKP's public key.
- * @param {any} tx - The transaction to sign.
- * @param {string} sigName - The name of the signature.
- * @returns {Promise<string>} The signed transaction.
- */
+import { ethers } from "ethers";
+
 export const signTx = async (
   pkpPublicKey: string,
-  tx: any,
+  tx: ethers.Transaction,
   sigName: string
 ) => {
   console.log(`Signing tx: ${sigName}`);
 
-  console.log("signTx inputs", {
-    pkpPublicKey,
-    tx,
-    sigName
-  })
-
-  console.log("toSign", ethers.utils.arrayify(
-    ethers.utils.keccak256(ethers.utils.serializeTransaction(tx))
-  ))
-
-  const pkForLit = pkpPublicKey.startsWith('0x')
-    ? pkpPublicKey.slice(2)
-    : pkpPublicKey;
+  // Remove 0x prefix if it exists, Lit expects a hex string without 0x prefix
+  const publicKeyForLit = pkpPublicKey.replace(/^0x/, '');
+  console.log(`Signing using PKP Public Key: ${publicKeyForLit}...`);
 
   const sig = await Lit.Actions.signAndCombineEcdsa({
     toSign: ethers.utils.arrayify(
       ethers.utils.keccak256(ethers.utils.serializeTransaction(tx))
     ),
-    publicKey: pkForLit,
+    publicKey: publicKeyForLit,
     sigName,
   });
 

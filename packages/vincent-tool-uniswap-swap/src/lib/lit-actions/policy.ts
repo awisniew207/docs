@@ -1,66 +1,82 @@
-// @ts-nocheck
-import { checkAllowedTokens, parsePolicyParameters, calculateUsdValue, checkSpendingLimits, sendSpendTransaction } from "./utils";
+/* eslint-disable */
+import { ethers } from 'ethers';
+import { type Policy } from '@lit-protocol/vincent-tool';
+
+import { getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx, validateSpendingLimits, validateTokenAreAllowed } from './utils';
 
 declare global {
   // Required Inputs
+  const userRpcUrl: string;
   const vincentAppId: string;
   const vincentAppVersion: string;
-  const SPENDING_LIMIT_ADDRESS: string;
-  const userParams: {
-    pkpEthAddress: string;
-    pkpPubKey: string;
-    rpcUrl: string;
-    chainId: string;
-    tokenIn: string;
-    tokenOut: string;
-    amountIn: string;
-  };
-  const policy: {
-    policyIpfsCid: string;
-    parameters: {
-      name: string;
-      paramType: number;
-      value: string;
-    }[];
-  };
+  const userPkpInfo: { tokenId: string, ethAddress: string, publicKey: string };
+  const policy: Policy;
+
+  // This is being passed as a parameter and is the
+  // Lit jsParams given to the Tool Lit Action
+  // const toolParams: {
+  //   pkpEthAddress: string;
+  //   rpcUrl: string;
+  //   chainId: string;
+  //   tokenIn: string;
+  //   tokenOut: string;
+  //   amountIn: string;
+  //   tokenInDecimals: string;
+  //   tokenOutDecimals: string;
+  // };
 }
 
 (async () => {
-  console.log(`Executing policy ${policy.policyIpfsCid}`);
-  console.log(`Policy parameters: ${JSON.stringify(policy.parameters, null, 2)}`);
+  const {
+    maxAmountPerTx,
+    maxSpendingLimit,
+    spendingLimitDuration,
+    allowedTokens
+  } = getOnChainPolicyParams(policy.parameters);
 
-  const provider = new ethers.providers.JsonRpcProvider(userParams.rpcUrl);
-  const tokenIn = ethers.utils.getAddress(userParams.tokenIn);
+  console.log(`Retrieved maxAmountPerTx: ${maxAmountPerTx?.toString()}`);
+  console.log(`Retrieved maxSpendingLimit: ${maxSpendingLimit?.toString()}`);
+  console.log(`Retrieved spendingLimitDuration: ${spendingLimitDuration?.toString()}`);
+  console.log(`Retrieved allowedTokens: ${allowedTokens}`);
 
-  const { maxAmountPerTx, maxSpendingLimit, spendingLimitDuration, allowedTokens } = parsePolicyParameters(policy.parameters);
+  if (allowedTokens && allowedTokens.length > 0) {
+    validateTokenAreAllowed(toolParams.tokenIn, toolParams.tokenOut, allowedTokens);
+  }
 
-  const amountInUsd = await calculateUsdValue(provider, tokenIn, ethers.BigNumber.from(userParams.amountIn), userParams.chainId);
-
-  checkAllowedTokens(tokenIn, ethers.utils.getAddress(userParams.tokenOut), allowedTokens);
-
-  await checkSpendingLimits(
-    SPENDING_LIMIT_ADDRESS,
-    userParams.pkpEthAddress,
-    vincentAppId,
-    amountInUsd,
-    maxAmountPerTx!,
-    maxSpendingLimit!,
-    spendingLimitDuration!
+  const yellowstoneProvider = new ethers.providers.JsonRpcProvider(
+    await Lit.Actions.getRpcUrl({
+      chain: 'yellowstone',
+    })
   );
+  const userRpcProvider = new ethers.providers.JsonRpcProvider(userRpcUrl);
 
-  console.log('All policy checks passed');
+  const tokenAmountInUsd = await getTokenAmountInUsd(
+    userRpcProvider,
+    toolParams.chainId,
+    toolParams.amountIn,
+    toolParams.tokenIn,
+    toolParams.tokenInDecimals
+  )
 
-  console.log('Updating the Spending Limit Contract...');
+  if (maxAmountPerTx) {
+    validateSpendingLimits(
+      vincentAppId,
+      tokenAmountInUsd,
+      maxAmountPerTx);
+  }
 
-  const spendTxHash = await sendSpendTransaction(
-    SPENDING_LIMIT_ADDRESS,
-    userParams.pkpEthAddress,
-    userParams.pkpPubKey,
-    vincentAppId,
-    amountInUsd,
-    maxSpendingLimit!,
-    spendingLimitDuration!,
-  );
+  if (maxSpendingLimit && spendingLimitDuration) {
+    const spendTxHash = await sendSpendTx(
+      yellowstoneProvider,
+      vincentAppId,
+      tokenAmountInUsd,
+      maxSpendingLimit,
+      spendingLimitDuration,
+      userPkpInfo.ethAddress,
+      userPkpInfo.publicKey
+    );
+    console.log(`Spend transaction hash: ${spendTxHash}`);
+  }
 
-  console.log(`Spending Limit Contract updated transaction hash: ${spendTxHash}`);
+  console.log(`Policy ${policy.policyIpfsCid} executed successfully`);
 })();

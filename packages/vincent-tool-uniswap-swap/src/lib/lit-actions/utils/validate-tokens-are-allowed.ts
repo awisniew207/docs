@@ -1,4 +1,4 @@
-export const checkAllowedTokens = (
+export const validateTokenAreAllowed = (
     tokenIn: string,
     tokenOut: string,
     allowedTokens: string[]
