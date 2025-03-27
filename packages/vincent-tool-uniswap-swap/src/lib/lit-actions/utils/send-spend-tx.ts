@@ -65,52 +65,31 @@ export const sendSpendTx = async (
         yellowstoneProvider
     );
 
-    console.log(`Estimating gas for transaction...`);
-    // const gasDataStringified = await Lit.Actions.runOnce(
-    //     { waitForResponse: true, name: 'send spend tx gas estimation' },
-    //     async () => {
-    //         try {
-    //             const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
-    //                 yellowstoneProvider,
-    //                 spendingLimitContract,
-    //                 appId,
-    //                 amountInUsd,
-    //                 maxSpendingLimit,
-    //                 spendingLimitDuration,
-    //                 pkpEthAddress
-    //             );
+    console.log(`Estimating gas for spending limit transaction...`);
+    const estimatedGasStringified = await Lit.Actions.runOnce(
+        { waitForResponse: true, name: 'send spend tx gas estimation' },
+        async () => {
+            const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
+                spendingLimitContract,
+                appId,
+                amountInUsd,
+                maxSpendingLimit,
+                spendingLimitDuration,
+                pkpEthAddress
+            );
 
-    //             const gasData = {
-    //                 estimatedGas: estimatedGas.toString(),
-    //                 maxFeePerGas: maxFeePerGas.toString(),
-    //                 maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
-    //             };
-
-    //             console.log('Gas estimation result:', gasData);
-    //             return JSON.stringify(gasData);
-    //         } catch (error) {
-    //             console.error('Error during gas estimation:', error);
-    //             throw error;
-    //         }
-    //     }
-    // );
-
-    // console.log('Parsing gas data...');
-    // const gasData = JSON.parse(gasDataStringified);
-    // console.log('Parsed gas data:', gasData);
-
-    // const estimatedGas = ethers.BigNumber.from(gasData.estimatedGas);
-    // const maxFeePerGas = ethers.BigNumber.from(gasData.maxFeePerGas);
-    // const maxPriorityFeePerGas = ethers.BigNumber.from(gasData.maxPriorityFeePerGas);
-
-    const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
-        spendingLimitContract,
-        appId,
-        amountInUsd,
-        maxSpendingLimit,
-        spendingLimitDuration,
-        pkpEthAddress
+            return JSON.stringify({
+                estimatedGas: estimatedGas.toString(),
+                maxFeePerGas: maxFeePerGas.toString(),
+                maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
+            });
+        }
     );
+
+    const estimatedGasObject = JSON.parse(estimatedGasStringified);
+    const estimatedGas = ethers.BigNumber.from(estimatedGasObject.estimatedGas);
+    const maxFeePerGas = ethers.BigNumber.from(estimatedGasObject.maxFeePerGas);
+    const maxPriorityFeePerGas = ethers.BigNumber.from(estimatedGasObject.maxPriorityFeePerGas);
 
     console.log(`Encoding transaction data...`);
     const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
@@ -138,7 +117,7 @@ export const sendSpendTx = async (
     console.log(`Signing spend transaction...`);
     const signedSpendTx = await signTx(pkpPubKey, spendTx, 'spendingLimitSig');
 
-    const spendTxHash = Lit.Actions.runOnce(
+    const spendTxHash = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'spendTxSender' },
         async () => {
             console.log(`Broadcasting spend transaction...`);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable */
 import { NETWORK_CONFIG, validateUserToolPolicies, getPkpInfo } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
@@ -52,8 +51,22 @@ declare global {
   const pkpInfo = await getPkpInfo(networkConfig.pubkeyRouterAddress, yellowstoneRpcProvider, toolParams.pkpEthAddress);
   console.log(`Retrieved PKP info for PKP ETH Address: ${toolParams.pkpEthAddress}: ${JSON.stringify(pkpInfo)}`);
 
-  const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
-  const tokenOutInfo = await getErc20Info(userRpcProvider, toolParams.tokenOut);
+  const tokenInfoStringified = await Lit.Actions.runOnce(
+    { waitForResponse: true, name: 'get token info' },
+    async () => {
+      const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
+      const tokenOutInfo = await getErc20Info(userRpcProvider, toolParams.tokenOut);
+
+      return JSON.stringify({
+        tokenInDecimals: tokenInInfo.decimals.toString(),
+        tokenOutDecimals: tokenOutInfo.decimals.toString(),
+      });
+    }
+  );
+
+  const tokenInfoObject = JSON.parse(tokenInfoStringified);
+  const tokenInDecimals = tokenInfoObject.tokenInDecimals;
+  const tokenOutDecimals = tokenInfoObject.tokenOutDecimals;
 
   await validateUserToolPolicies(
     yellowstoneRpcProvider,
@@ -63,31 +76,27 @@ declare global {
     toolIpfsCid,
     {
       ...toolParams,
-      tokenInDecimals: tokenInInfo.decimals.toString(),
-      tokenOutDecimals: tokenOutInfo.decimals.toString(),
+      tokenInDecimals,
+      tokenOutDecimals,
     }
   );
 
-  // const { approvalTxHash, swapTxHash } = await sendUniswapTx(
-  //   userRpcProvider,
-  //   toolParams.chainId,
-  //   toolParams.tokenIn,
-  //   toolParams.tokenOut,
-  //   toolParams.amountIn,
-  //   tokenInInfo.decimals.toString(),
-  //   tokenOutInfo.decimals.toString(),
-  //   toolParams.pkpEthAddress,
-  //   pkpInfo.publicKey,
-  // );
-
-  // console.log(`Approval transaction hash: ${JSON.stringify(approvalTxHash)}`);
-  // console.log(`Swap transaction hash: ${JSON.stringify(swapTxHash)}`);
+  const swapTxHash = await sendUniswapTx(
+    userRpcProvider,
+    toolParams.chainId,
+    toolParams.tokenIn,
+    toolParams.tokenOut,
+    toolParams.amountIn,
+    tokenInDecimals,
+    tokenOutDecimals,
+    toolParams.pkpEthAddress,
+    pkpInfo.publicKey,
+  );
 
   Lit.Actions.setResponse({
     response: JSON.stringify({
       status: 'success',
-      approvalTxHash: '0x0',
-      swapTxHash: '0x0',
+      swapTxHash,
     }),
   });
 })();
