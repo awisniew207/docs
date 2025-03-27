@@ -16,6 +16,7 @@ import { createDatilChainManager } from '@lit-protocol/vincent-contracts';
 
 import { mintNewPkp } from './utils/mint-pkp';
 import { executeTool } from './utils/execute-tool';
+import { permitAuthMethod } from './utils/permit-auth-method';
 
 const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 const APP_CONFIG_PATH = path.join(__dirname, '../config/vincent-contract-caller-config.json');
@@ -68,8 +69,8 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const APP_DESCRIPTION = 'A test app for the Vincent protocol';
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
-    const TOOL_IPFS_IDS = ['QmYJyemMcTuowXLcyNmm5HSsN6fHYpAdyQR4GhtLFCFzSV'];
-    const TOOL_POLICY_IPFS_IDS = ['QmXbdHoCZrbksawU6nPUViAKmSTjVApZtBSK3vLbaRqLQo'];
+    const TOOL_IPFS_IDS = ['QmYxvdKZZdBLg9Zh8aoNGmKGe9axMEiN8uQPgUSSPH3Xfj'];
+    const TOOL_POLICY_IPFS_IDS = ['QmdqhTzZBVXkWFJfjMSeCX4WbNijU7Sn4gm34iP7ebJYMK'];
 
     const TOOL_POLICIES = [
         TOOL_POLICY_IPFS_IDS
@@ -124,13 +125,16 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         network: 'datil'
     });
 
-    // if (APP_ID !== 0n) {
-    //     await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
-    //         appId: APP_ID,
-    //         delegatee: DELEGATEES[0]
-    //     });
-    //     console.log(`ℹ️  Remove delegatee from App: ${APP_ID}`);
-    // }
+    if (APP_ID !== 0n) {
+        await chainManagerAppManager.vincentApi.appManagerDashboard.removeDelegatee({
+            appId: APP_ID,
+            delegatee: DELEGATEES[0]
+        });
+        console.log(`ℹ️  Remove delegatee from App: ${APP_ID}`);
+
+        APP_ID = 0n;
+        APP_VERSION = 1n;
+    }
 
     if (APP_ID === 0n) {
         const appRegistrationResult = await chainManagerAppManager.vincentApi.appManagerDashboard.registerApp({
@@ -147,8 +151,8 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         console.log(`ℹ️  App registration result: ${APP_ID}`);
     } else {
         const appVersionRegistrationResult = await chainManagerAppManager.vincentApi.appManagerDashboard.registerNextAppVersion({
-            appId: APP_ID,
             toolIpfsCids: TOOL_IPFS_IDS,
+            appId: APP_ID,
             toolPolicies: TOOL_POLICIES,
             toolPolicyParameterNames: TOOL_POLICY_PARAMETER_NAMES,
             toolPolicyParameterTypes: TOOL_POLICY_PARAMETER_TYPES as any
@@ -175,6 +179,14 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
             value: BigInt(10000000000000000) // 0.01 ETH in wei
         });
         console.log('ℹ️  Funded PKP with 0.01 ETH');
+    } else {
+        await permitAuthMethod(
+            AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
+            USER_PKP.tokenId,
+            TOOL_IPFS_IDS[0],
+            TOOL_POLICY_IPFS_IDS[0]
+        );
+        console.log('ℹ️  Permitted auth methods for PKP');
     }
 
     // Ensure config directory exists
@@ -236,9 +248,9 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         toolParameters: {
             rpcUrl: BASE_RPC_URL,
             chainId: '8453',
-            tokenIn: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', // DEGEN
-            tokenOut: '0x4200000000000000000000000000000000000006', // WETH
-            amountIn: '10',
+            tokenIn: '0x4200000000000000000000000000000000000006', // WETH
+            tokenOut: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed', // DEGEN
+            amountIn: '0.00001',
         },
         delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
         pkpEthAddress: USER_PKP.ethAddress,
