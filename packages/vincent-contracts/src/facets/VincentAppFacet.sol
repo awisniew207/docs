@@ -595,14 +595,7 @@ contract VincentAppFacet is VincentBase {
                     revert EmptyPolicyIpfsCidNotAllowed(appId, i);
                 }
 
-                // Check for duplicate policies within the same tool
-                for (uint256 k = j + 1; k < policyCount; k++) {
-                    if (keccak256(abi.encodePacked(policyIpfsCid)) == keccak256(abi.encodePacked(toolPolicies[i][k]))) {
-                        revert DuplicatePolicyIpfsCidNotAllowed(appId, i, policyIpfsCid, j, k);
-                    }
-                }
-
-                // Check for duplicate parameter names within this policy
+                // Check for empty parameter names
                 uint256 paramCount = toolPolicyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
                     string memory paramName = toolPolicyParameterNames[i][j][k];
@@ -611,23 +604,6 @@ contract VincentAppFacet is VincentBase {
                     if (bytes(paramName).length == 0) {
                         revert EmptyParameterNameNotAllowed(appId, i, j, k);
                     }
-
-                    // Check for duplicate parameter names within the same policy
-                    for (uint256 l = k + 1; l < paramCount; l++) {
-                        if (
-                            keccak256(abi.encodePacked(paramName))
-                                == keccak256(abi.encodePacked(toolPolicyParameterNames[i][j][l]))
-                        ) {
-                            revert DuplicateParameterNameNotAllowed(appId, i, j, paramName, k, l);
-                        }
-                    }
-                }
-            }
-
-            // Check for duplicates against all subsequent tools
-            for (uint256 j = i + 1; j < toolCount; j++) {
-                if (keccak256(abi.encodePacked(toolIpfsCid)) == keccak256(abi.encodePacked(toolIpfsCids[j]))) {
-                    revert DuplicateToolIpfsCidNotAllowed(appId, toolIpfsCid, i, j);
                 }
             }
         }
@@ -654,7 +630,6 @@ contract VincentAppFacet is VincentBase {
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
             // Step 6.1: Register the tool IPFS CID globally if it hasn't been added already.
-            // Since we already checked for duplicates, each tool is unique within this version
             toolIpfsCidHashes.add(hashedToolCid);
 
             // First check if the tool is already registered in global storage
@@ -663,8 +638,6 @@ contract VincentAppFacet is VincentBase {
                 ls.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
                 emit NewLitActionRegistered(hashedToolCid);
             }
-            // If tool is already registered globally, just continue
-            // without trying to register it again
 
             // Step 6.2: Fetch the tool policies storage for this tool.
             VincentAppStorage.ToolPolicies storage toolPoliciesStorage =
