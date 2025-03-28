@@ -52,7 +52,8 @@ const formSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description cannot exceed 500 characters'),
 
-  authorizedRedirectUris: z.array(z.string()),
+  authorizedRedirectUris: z.array(z.string().min(1, "Redirect URI cannot be empty"))
+    .min(1, 'At least one redirect URI is required'),
   
   tools: z.array(toolSchema).min(1, "At least one tool is required"),
 });
@@ -76,7 +77,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     defaultValues: {
       appName: '',
       description: '',
-      authorizedRedirectUris: [],
+      authorizedRedirectUris: [''],
       tools: [
         {
           toolIpfsCid: '',
@@ -280,7 +281,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                         <FormControl>
                           <Input placeholder="My Vincent App" {...field} className="text-black" />
                         </FormControl>
-                        <FormMessage className="text-black" />
+                        <FormMessage className="text-destructive" />
                       </FormItem>
                     )}
                   />
@@ -299,7 +300,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                             className="text-black"
                           />
                         </FormControl>
-                        <FormMessage className="text-black" />
+                        <FormMessage className="text-destructive" />
                       </FormItem>
                     )}
                   />
@@ -313,30 +314,37 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                         <FormControl>
                           <div className="space-y-2">
                             {field.value.map((uri: string, index: number) => (
-                              <div key={index} className="flex items-center gap-2">
-                                <Input
-                                  placeholder="https://example.com/callback"
-                                  value={uri}
-                                  onChange={(e) => {
-                                    const newValues = [...field.value];
-                                    newValues[index] = e.target.value;
-                                    field.onChange(newValues);
-                                  }}
-                                  className="text-black flex-1"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newValues = [...field.value];
-                                    newValues.splice(index, 1);
-                                    field.onChange(newValues);
-                                  }}
-                                  className="text-red-500 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                              <div key={index} className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    placeholder="https://example.com/callback"
+                                    value={uri}
+                                    onChange={(e) => {
+                                      const newValues = [...field.value];
+                                      newValues[index] = e.target.value;
+                                      field.onChange(newValues);
+                                    }}
+                                    className="text-black flex-1"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newValues = [...field.value];
+                                      newValues.splice(index, 1);
+                                      field.onChange(newValues);
+                                    }}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                {!uri && form.formState.errors.authorizedRedirectUris && (
+                                  <span className="text-sm font-medium text-destructive">
+                                    Redirect URI cannot be empty
+                                  </span>
+                                )}
                               </div>
                             ))}
                             <Button
@@ -352,7 +360,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                             </Button>
                           </div>
                         </FormControl>
-                        <FormMessage className="text-black" />
+                        {form.formState.errors.authorizedRedirectUris?.message && (
+                          <p className="text-sm font-medium text-destructive mt-2">
+                            {form.formState.errors.authorizedRedirectUris.message}
+                          </p>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -404,7 +416,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                 <FormControl>
                                   <Input placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY" {...field} className="text-black" />
                                 </FormControl>
-                                <FormMessage className="text-black" />
+                                <FormMessage className="text-destructive" />
                               </FormItem>
                             )}
                           />
@@ -452,7 +464,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                         <FormControl>
                                           <Input placeholder="policy1" {...field} className="text-black" />
                                         </FormControl>
-                                        <FormMessage className="text-black" />
+                                        <FormMessage className="text-destructive" />
                                       </FormItem>
                                     )}
                                   />
@@ -481,7 +493,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                               <FormControl>
                                                 <Input placeholder="Parameter name" {...field} className="text-black" />
                                               </FormControl>
-                                              <FormMessage className="text-black" />
+                                              <FormMessage className="text-destructive" />
                                             </FormItem>
                                           )}
                                         />
@@ -510,7 +522,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                                   <option value="bytes[]">bytes[]</option>
                                                 </select>
                                               </FormControl>
-                                              <FormMessage className="text-black" />
+                                              <FormMessage className="text-destructive" />
                                             </FormItem>
                                           )}
                                         />
