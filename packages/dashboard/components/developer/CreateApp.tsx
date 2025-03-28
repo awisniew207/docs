@@ -27,6 +27,7 @@ import { VincentContracts } from '@/services';
 import { Network } from '@/services';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { mapTypeToEnum } from '@/services/types';
+import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
@@ -68,6 +69,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
   const chainId = useChainId();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -224,8 +226,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         toolPolicyParameterNames
       );
       console.log('receipt', receipt);
-      onSuccess?.();
-      window.location.reload();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/'); // Navigate to root path on success
+      }
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
