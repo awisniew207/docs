@@ -23,7 +23,6 @@ export const executeTool = async (options: ExecuteToolOptions) => {
         toolIpfsCid,
         toolParameters,
         delegateePrivateKey,
-        pkpEthAddress,
         requestsPerKilosecond = 80,
         daysUntilUTCMidnightExpiration = 1,
         sessionDurationMinutes = 10,
@@ -96,7 +95,6 @@ export const executeTool = async (options: ExecuteToolOptions) => {
             ipfsId: toolIpfsCid,
             jsParams: {
                 toolParams: {
-                    pkpEthAddress,
                     ...toolParameters,
                 },
             },

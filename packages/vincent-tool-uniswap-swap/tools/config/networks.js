@@ -10,6 +10,7 @@ module.exports = {
       'deployed-lit-action-tool-datil.js',
       'deployed-lit-action-policy-datil.js',
       'deployed-lit-action-erc20-approval-datil.js',
+      'deployed-lit-action-erc20-approval-policy-datil.js',
     ],
   },
 };

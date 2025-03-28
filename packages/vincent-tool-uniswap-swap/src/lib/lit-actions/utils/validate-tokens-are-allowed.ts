@@ -1,21 +1,17 @@
+/* eslint-disable */
+import { ethers } from 'ethers';
+
 export const validateTokenAreAllowed = (
-    tokenIn: string,
-    tokenOut: string,
+    tokens: string[],
     allowedTokens: string[]
 ): void => {
     if (allowedTokens.length > 0) {
-        // Check if tokenIn is allowed
-        if (!allowedTokens.includes(tokenIn)) {
-            throw new Error(
-                `Token ${tokenIn} is not allowed for input. Allowed tokens: ${allowedTokens.join(', ')}`
-            );
-        }
-
-        // Check if tokenOut is allowed
-        if (!allowedTokens.includes(tokenOut)) {
-            throw new Error(
-                `Token ${tokenOut} is not allowed for output. Allowed tokens: ${allowedTokens.join(', ')}`
-            );
+        for (const token of tokens) {
+            if (!allowedTokens.includes(ethers.utils.getAddress(token))) {
+                throw new Error(
+                    `Token ${ethers.utils.getAddress(token)} is not allowed for input. Allowed tokens: ${allowedTokens.join(', ')}`
+                );
+            }
         }
     }
 }; 

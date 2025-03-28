@@ -71,29 +71,37 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const AUTHORIZED_REDIRECT_URIS = ['https://testing.vincent.com'];
     const DELEGATEES = [APP_DELEGATEE_ADDRESS];
 
-    const ERC20_APPROVAL_TOOL_IPFS_ID = 'QmTo2vK5CF5b87kyzW87pb6zapUK2QP7fNneCKA5SQ6yZy';
+    const ERC20_APPROVAL_TOOL_IPFS_ID = 'QmVTKfmPMLynn9dtVUWM1kbZeJvbj4vG2uRRDKAsof1ABu';
+    const ERC20_APPROVAL_POLICY_IPFS_ID = 'QmcLdetbn6EV5fUu9z4fFxp6U8jcq2B5rrJxW6tkkGeznL';
+
     const UNISWAP_SWAP_TOOL_IPFS_ID = 'QmR4LTwE6GaUynnShBVnkAEvRx1WwVcTYA8kJHR7oUQUWu';
-    const UNISWAP_SWAP_POLICY_IPFS_ID = 'QmXg1YavVrNYbUkJadvZrVGqrsYSVmkQi8niCgXduojYbG';
+    const UNISWAP_SWAP_POLICY_IPFS_ID = 'QmY4Jd2EBXi5XDgrBUigh7Yi817Dy4znxJynqW87c9SNNf';
 
     const TOOL_IPFS_IDS = [ERC20_APPROVAL_TOOL_IPFS_ID, UNISWAP_SWAP_TOOL_IPFS_ID];
-    const TOOL_POLICY_IPFS_IDS = [UNISWAP_SWAP_POLICY_IPFS_ID];
+    const TOOL_POLICY_IPFS_IDS = [ERC20_APPROVAL_POLICY_IPFS_ID, UNISWAP_SWAP_POLICY_IPFS_ID];
 
     const TOOL_POLICIES = [
-        [], // No policies for ERC20_APPROVAL_TOOL
-        [UNISWAP_SWAP_POLICY_IPFS_ID] // Policy for UNISWAP_SWAP_TOOL
+        [ERC20_APPROVAL_POLICY_IPFS_ID],
+        [UNISWAP_SWAP_POLICY_IPFS_ID]
     ];
     const TOOL_POLICY_PARAMETER_NAMES = [
-        [], // No parameters for ERC20_APPROVAL_TOOL
+        [['allowedTokens']], // Parameters for ERC20_APPROVAL_TOOL
         [['maxAmountPerTx', 'maxSpendingLimit', 'spendingLimitDuration', 'allowedTokens']] // Parameters for UNISWAP_SWAP_TOOL
     ];
     const TOOL_POLICY_PARAMETER_TYPES = [
-        [], // No parameter types for ERC20_APPROVAL_TOOL
+        [['ADDRESS_ARRAY']], // Parameter types for ERC20_APPROVAL_TOOL
         [['UINT256', 'UINT256', 'UINT256', 'ADDRESS_ARRAY']] // Parameter types for UNISWAP_SWAP_TOOL
     ];
     const TOOL_POLICY_PARAMETER_VALUES = [
-        [], // No parameter values for ERC20_APPROVAL_TOOL
         [
             [
+                // Parameter values for ERC20_APPROVAL_TOOL
+                { type: 'address[]', value: '0x4200000000000000000000000000000000000006' }
+            ],
+        ],
+        [
+            [
+                // Parameter values for UNISWAP_SWAP_TOOL
                 { type: 'uint256', value: "10000000000" }, // maxAmountPerTx $100 USD (8 decimals)
                 { type: 'uint256', value: "10000000000000" }, // maxSpendingLimit $100,000 USD (8 decimals)
                 { type: 'uint256', value: "86400" }, // spendingLimitDuration 1 day
@@ -282,13 +290,13 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const erc20ApprovalExecutionResult = await executeTool({
         toolIpfsCid: ERC20_APPROVAL_TOOL_IPFS_ID,
         toolParameters: {
+            pkpEthAddress: USER_PKP.ethAddress,
             rpcUrl: BASE_RPC_URL,
             chainId: '8453',
             tokenIn: '0x4200000000000000000000000000000000000006', // WETH
             amountIn: '0.00001',
         },
         delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-        pkpEthAddress: USER_PKP.ethAddress,
         debug: true,
     });
 
@@ -297,6 +305,7 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     const uniswapSwapExecutionResult = await executeTool({
         toolIpfsCid: UNISWAP_SWAP_TOOL_IPFS_ID,
         toolParameters: {
+            pkpEthAddress: USER_PKP.ethAddress,
             rpcUrl: BASE_RPC_URL,
             chainId: '8453',
             tokenIn: '0x4200000000000000000000000000000000000006', // WETH
@@ -304,7 +313,6 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
             amountIn: '0.00001',
         },
         delegateePrivateKey: APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-        pkpEthAddress: USER_PKP.ethAddress,
         debug: true,
     });
 

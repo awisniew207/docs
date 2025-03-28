@@ -43,6 +43,10 @@ async function buildAction(network) {
     __dirname,
     '../../src/lib/lit-actions/erc20-approval.ts',
   );
+  const erc20ApprovalPolicyEntryPoint = path.resolve(
+    __dirname,
+    '../../src/lib/lit-actions/erc20-approval-policy.ts',
+  );
 
   const toolOutfile = path.resolve(
     __dirname,
@@ -59,11 +63,22 @@ async function buildAction(network) {
     '../../dist',
     `deployed-lit-action-erc20-approval-${network}.js`,
   );
+  const erc20ApprovalPolicyOutfile = path.resolve(
+    __dirname,
+    '../../dist',
+    `deployed-lit-action-erc20-approval-policy-${network}.js`,
+  );
 
   await Promise.all([
     buildFile(toolEntryPoint, toolOutfile, network, config),
     buildFile(policyEntryPoint, policyOutfile, network, config),
     buildFile(erc20ApprovalEntryPoint, erc20ApprovalOutfile, network, config),
+    buildFile(
+      erc20ApprovalPolicyEntryPoint,
+      erc20ApprovalPolicyOutfile,
+      network,
+      config,
+    ),
   ]);
 }
 

@@ -1,9 +1,8 @@
 /* eslint-disable */
-import { NETWORK_CONFIG, getPkpInfo } from '@lit-protocol/vincent-tool';
+import { NETWORK_CONFIG, getPkpInfo, validateUserToolPolicies } from '@lit-protocol/vincent-tool';
 import { ethers } from "ethers";
 
 import { getErc20Info, sendErc20ApprovalTx } from "./utils";
-
 
 (async () => {
     console.log(`Using Lit Network: ${LIT_NETWORK}`);
@@ -16,6 +15,9 @@ import { getErc20Info, sendErc20ApprovalTx } from "./utils";
         `Using Pubkey Router Address: ${networkConfig.pubkeyRouterAddress}`
     );
 
+
+    const delegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
+    const toolIpfsCid = LitAuth.actionIpfsIds[0];
     const userRpcProvider = new ethers.providers.JsonRpcProvider(toolParams.rpcUrl);
     const yellowstoneRpcProvider = new ethers.providers.JsonRpcProvider(
         await Lit.Actions.getRpcUrl({
@@ -25,6 +27,17 @@ import { getErc20Info, sendErc20ApprovalTx } from "./utils";
 
     const pkpInfo = await getPkpInfo(networkConfig.pubkeyRouterAddress, yellowstoneRpcProvider, toolParams.pkpEthAddress);
     console.log(`Retrieved PKP info for PKP ETH Address: ${toolParams.pkpEthAddress}: ${JSON.stringify(pkpInfo)}`);
+
+    await validateUserToolPolicies(
+        yellowstoneRpcProvider,
+        toolParams.rpcUrl,
+        delegateeAddress,
+        pkpInfo,
+        toolIpfsCid,
+        {
+            ...toolParams,
+        }
+    );
 
     const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
 

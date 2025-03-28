@@ -40,7 +40,7 @@ declare global {
   console.log(`Retrieved allowedTokens: ${allowedTokens}`);
 
   if (allowedTokens && allowedTokens.length > 0) {
-    validateTokenAreAllowed(toolParams.tokenIn, toolParams.tokenOut, allowedTokens);
+    validateTokenAreAllowed([toolParams.tokenIn, toolParams.tokenOut], allowedTokens);
   }
 
   const yellowstoneProvider = new ethers.providers.JsonRpcProvider(
