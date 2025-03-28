@@ -1431,6 +1431,7 @@ p.message-card__prompt {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden; /* Prevent outer container from scrolling */
 }
 
 .consent-form-modal {
@@ -1440,10 +1441,44 @@ p.message-card__prompt {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   max-width: 48rem;
   max-height: calc(100vh - 2rem);
-  overflow-y: auto;
   width: 100%;
   padding: 1.5rem;
   position: relative;
+  overflow-y: auto; /* Keep outer scrolling visible */
+  
+  /* Remove scrollbar hiding for the outer container */
+  scrollbar-width: thin;
+  scrollbar-color: #000000 transparent;
+}
+
+/* Show scrollbar for Chrome, Safari and Opera for the outer container */
+.consent-form-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.consent-form-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.consent-form-modal::-webkit-scrollbar-thumb {
+  background-color: #000000;
+  border-radius: 3px;
+}
+
+/* Hide scrollbars for inner containers */
+.consent-form-modal > div,
+.consent-container,
+.consent-form-modal .consent-container {
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.consent-form-modal > div::-webkit-scrollbar,
+.consent-container::-webkit-scrollbar,
+.consent-form-modal .consent-container::-webkit-scrollbar {
+  display: none;
 }
 
 /* Close Button Styles - from SessionValidator.tsx */
@@ -1507,7 +1542,6 @@ p.message-card__prompt {
 
 /* Session Validator Consent Styles */
 .session-validator-consent {
-  /* This should match consent-form-overlay exactly */
   position: fixed;
   top: 0;
   left: 0;
@@ -1518,6 +1552,7 @@ p.message-card__prompt {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden; /* Prevent outer container from scrolling */
 }
 
 .session-validator-consent .consent-form-container {
@@ -1527,10 +1562,40 @@ p.message-card__prompt {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   max-width: 48rem;
   max-height: calc(100vh - 2rem);
-  overflow-y: auto;
   width: 100%;
   padding: 1.5rem;
   position: relative;
+  overflow-y: auto; /* Keep outer scrolling visible */
+  
+  /* Remove scrollbar hiding for the outer container */
+  scrollbar-width: thin;
+  scrollbar-color: #000000 transparent;
+}
+
+/* Show scrollbar for Chrome, Safari and Opera for the outer container */
+.session-validator-consent .consent-form-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.session-validator-consent .consent-form-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.session-validator-consent .consent-form-container::-webkit-scrollbar-thumb {
+  background-color: #000000;
+  border-radius: 3px;
+}
+
+/* Hide scrollbars for inner containers */
+.session-validator-consent .consent-form-container > div {
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.session-validator-consent .consent-form-container > div::-webkit-scrollbar {
+  display: none;
 }
 
 /* Tool Hash Styles - from AuthenticatedConsentForm.tsx */
