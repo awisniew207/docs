@@ -343,4 +343,125 @@ contract VincentUserFacetBenchmark is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Benchmark permitting an app version with one tool, one policy, and all array parameter types
+     * @dev Measures gas costs for app version permitting with array parameter types
+     */
+    function testBenchmarkPermitAppVersionSingleToolArrayParams() public {
+        vm.startPrank(deployer);
+
+        // First register the app with array parameters
+        string[] memory singleToolIpfsCids = new string[](1);
+        singleToolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory singleToolPolicies = new string[][](1);
+        singleToolPolicies[0] = new string[](1);
+        singleToolPolicies[0][0] = TEST_POLICY_1;
+
+        string[][][] memory singleToolParamNames = new string[][][](1);
+        singleToolParamNames[0] = new string[][](1);
+        singleToolParamNames[0][0] = new string[](6); // 6 array parameter types
+        singleToolParamNames[0][0][0] = "int256Array";
+        singleToolParamNames[0][0][1] = "uint256Array";
+        singleToolParamNames[0][0][2] = "boolArray";
+        singleToolParamNames[0][0][3] = "addressArray";
+        singleToolParamNames[0][0][4] = "stringArray";
+        singleToolParamNames[0][0][5] = "bytesArray";
+
+        VincentAppStorage.ParameterType[][][] memory singleToolParamTypes = new VincentAppStorage.ParameterType[][][](1);
+        singleToolParamTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        singleToolParamTypes[0][0] = new VincentAppStorage.ParameterType[](6);
+        singleToolParamTypes[0][0][0] = VincentAppStorage.ParameterType.INT256_ARRAY;
+        singleToolParamTypes[0][0][1] = VincentAppStorage.ParameterType.UINT256_ARRAY;
+        singleToolParamTypes[0][0][2] = VincentAppStorage.ParameterType.BOOL_ARRAY;
+        singleToolParamTypes[0][0][3] = VincentAppStorage.ParameterType.ADDRESS_ARRAY;
+        singleToolParamTypes[0][0][4] = VincentAppStorage.ParameterType.STRING_ARRAY;
+        singleToolParamTypes[0][0][5] = VincentAppStorage.ParameterType.BYTES_ARRAY;
+
+        (appId, appVersion) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            singleToolIpfsCids,
+            singleToolPolicies,
+            singleToolParamNames,
+            singleToolParamTypes
+        );
+
+        // Create parameter values for array types
+        bytes[][][] memory singleToolParamValues = new bytes[][][](1);
+        singleToolParamValues[0] = new bytes[][](1);
+        singleToolParamValues[0][0] = new bytes[](6);
+        singleToolParamValues[0][0][0] = abi.encode(TEST_POLICY_PARAM_INT256_ARRAY_VALUE);
+        singleToolParamValues[0][0][1] = abi.encode(TEST_POLICY_PARAM_UINT256_ARRAY_VALUE);
+        singleToolParamValues[0][0][2] = abi.encode(TEST_POLICY_PARAM_BOOL_ARRAY_VALUE);
+        singleToolParamValues[0][0][3] = abi.encode(TEST_POLICY_PARAM_ADDRESS_ARRAY_VALUE);
+        singleToolParamValues[0][0][4] = abi.encode(TEST_POLICY_PARAM_STRING_ARRAY_VALUE);
+        singleToolParamValues[0][0][5] = abi.encode(TEST_POLICY_PARAM_BYTES_ARRAY_VALUE);
+
+        // Measure gas for app version permitting
+        uint256 gasStart = gasleft();
+
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            singleToolIpfsCids,
+            singleToolPolicies,
+            singleToolParamNames,
+            singleToolParamValues
+        );
+
+        uint256 gasUsed = gasStart - gasleft();
+
+        // Log the results
+        console.log("Gas used for permitting app version with single tool and array parameters:", gasUsed);
+
+        // Verify the app version was permitted
+        uint256 permittedVersion = wrappedUserViewFacet.getPermittedAppVersionForPkp(TEST_PKP_TOKEN_ID_1, appId);
+        assertEq(permittedVersion, appVersion, "App version should be permitted");
+
+        // Verify the tools and their policies were correctly set
+        VincentUserViewFacet.ToolWithPolicies[] memory toolsAndPolicies =
+            wrappedUserViewFacet.getAllToolsAndPoliciesForApp(TEST_PKP_TOKEN_ID_1, appId);
+        assertEq(toolsAndPolicies.length, 1, "Should have 1 tool");
+        assertEq(toolsAndPolicies[0].policies.length, 1, "Should have 1 policy");
+        assertEq(toolsAndPolicies[0].policies[0].parameters.length, 6, "Should have 6 parameters");
+
+        // Verify each parameter value is correct
+        assertEq(
+            abi.decode(toolsAndPolicies[0].policies[0].parameters[0].value, (int256[])),
+            TEST_POLICY_PARAM_INT256_ARRAY_VALUE,
+            "First parameter should be INT256_ARRAY"
+        );
+        assertEq(
+            abi.decode(toolsAndPolicies[0].policies[0].parameters[1].value, (uint256[])),
+            TEST_POLICY_PARAM_UINT256_ARRAY_VALUE,
+            "Second parameter should be UINT256_ARRAY"
+        );
+        assertEq(
+            abi.decode(toolsAndPolicies[0].policies[0].parameters[2].value, (bool[])),
+            TEST_POLICY_PARAM_BOOL_ARRAY_VALUE,
+            "Third parameter should be BOOL_ARRAY"
+        );
+        assertEq(
+            abi.decode(toolsAndPolicies[0].policies[0].parameters[3].value, (address[])),
+            TEST_POLICY_PARAM_ADDRESS_ARRAY_VALUE,
+            "Fourth parameter should be ADDRESS_ARRAY"
+        );
+        assertEq(
+            abi.decode(toolsAndPolicies[0].policies[0].parameters[4].value, (string[])),
+            TEST_POLICY_PARAM_STRING_ARRAY_VALUE,
+            "Fifth parameter should be STRING_ARRAY"
+        );
+        assertEq(
+            abi.decode(toolsAndPolicies[0].policies[0].parameters[5].value, (bytes[])),
+            TEST_POLICY_PARAM_BYTES_ARRAY_VALUE,
+            "Sixth parameter should be BYTES_ARRAY"
+        );
+
+        vm.stopPrank();
+    }
 }
