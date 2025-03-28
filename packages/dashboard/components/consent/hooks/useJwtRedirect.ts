@@ -47,7 +47,7 @@ export const useJwtRedirect = ({
         pkpWallet: agentPkpWallet as any,
         pkp: agentPKP,
         payload: {},
-        expiresInMinutes: 30,
+        expiresInMinutes: 2160,
         audience: appInfo.authorizedRedirectUris,
       });
 

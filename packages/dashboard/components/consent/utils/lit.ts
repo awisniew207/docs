@@ -235,8 +235,8 @@ export async function getSessionSigs({
   const sessionSigs = await litNodeClient.getPkpSessionSigs({
     chain: 'ethereum',
     expiration: new Date(
-      Date.now() + 1000 * 60 * 15
-    ).toISOString(), // 15 minutes
+      Date.now() + 1000 * 60 * 60 * 24
+    ).toISOString(), // 1 day
     pkpPublicKey,
     authMethods: [authMethod],
     resourceAbilityRequests: [

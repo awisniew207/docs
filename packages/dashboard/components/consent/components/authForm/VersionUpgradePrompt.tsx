@@ -47,7 +47,7 @@ const VersionUpgradePrompt = ({
           </p>
           {agentPKP && (
             <p>
-              <strong>PKP Address:</strong> {agentPKP.ethAddress}
+              <strong>Account Address:</strong> {agentPKP.ethAddress}
             </p>
           )}
         </div>
