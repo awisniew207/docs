@@ -574,16 +574,6 @@ contract VincentUserFacet is VincentBase {
                         revert EmptyParameterName();
                     }
 
-                    // Check for duplicate parameter names within the same policy
-                    for (uint256 l = k + 1; l < paramCount; l++) {
-                        if (
-                            keccak256(abi.encodePacked(paramName))
-                                == keccak256(abi.encodePacked(policyParameterNames[i][j][l]))
-                        ) {
-                            revert DuplicateParameterNameNotAllowed(appId, i, j, paramName, k, l);
-                        }
-                    }
-
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
                     // Step 5.1: Only remove the parameter if it exists.
@@ -711,16 +701,6 @@ contract VincentUserFacet is VincentBase {
                     // Validate parameter name is not empty
                     if (bytes(paramName).length == 0) {
                         revert EmptyParameterName();
-                    }
-
-                    // Check for duplicate parameter names within the same policy
-                    for (uint256 l = k + 1; l < paramCount; l++) {
-                        if (
-                            keccak256(abi.encodePacked(paramName))
-                                == keccak256(abi.encodePacked(policyParameterNames[i][j][l]))
-                        ) {
-                            revert DuplicateParameterNameNotAllowed(appId, i, j, paramName, k, l);
-                        }
                     }
 
                     // Validate parameter value is not empty
