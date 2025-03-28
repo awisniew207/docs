@@ -1,79 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ParameterType, mapEnumToTypeName } from '../../../services/types/parameterTypes';
+import { ParameterType, mapEnumToTypeName } from '../../../../services/types/parameterTypes';
 import { z } from 'zod';
-
-// Define styles for the array inputs
-const arrayInputStyles = `
-  .array-inputs {
-    margin-bottom: 10px;
-  }
-  
-  .array-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  
-  .array-item-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-right: 8px;
-    font-size: 14px;
-  }
-  
-  .array-item input[type="checkbox"] {
-    height: 16px;
-    width: 16px;
-  }
-  
-  .array-item-remove-btn {
-    background-color: transparent;
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .bool-array-item {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    font-size: 14px;
-  }
-  
-  .bool-array-item input[type="checkbox"] {
-    margin-right: 8px;
-  }
-  
-  .bool-array-item-label {
-    flex: 1;
-  }
-  
-  .empty-array-message {
-    color: #888;
-    font-style: italic;
-    margin-bottom: 10px;
-    font-size: 14px;
-  }
-  
-  .array-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  
-  .array-actions button {
-    font-size: 14px;
-  }
-`;
 
 // Define Zod schemas for different parameter types
 const zodSchemas: Record<number, z.ZodTypeAny> = {
@@ -188,10 +115,9 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const [error, setError] = useState<string | null>(null);
   const typeName = mapEnumToTypeName(type);
   
-  // Get the appropriate Zod schema for this parameter type
+
   const schema = zodSchemas[type] || z.any();
   
-  // Update local state when prop value changes
   useEffect(() => {
     if (value !== undefined && value !== inputValue) {
       setInputValue(value);
@@ -199,7 +125,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     }
   }, [value]);
 
-  // Validate value against the Zod schema
   const validateValue = useCallback((val: any) => {
     try {
       schema.parse(val);
@@ -215,7 +140,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     }
   }, [schema]);
 
-  // Memoize handlers to prevent recreating on each render
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
@@ -228,9 +152,9 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         case ParameterType.INT256:
           // Special case for just typing a minus sign
           if (newValue === '-') {
-            parsedValue = newValue; // Keep as-is for now
+            parsedValue = newValue;
           } else if (newValue === '') {
-            parsedValue = ''; // Keep empty string
+            parsedValue = '';
           } else {
             try {
               // Keep as string but validate by parsing (don't assign the parsed number)
@@ -247,7 +171,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           } else {
             try {
               parsedValue = parseInt(newValue, 10);
-              // Ensure non-negative for uint256
               parsedValue = isNaN(parsedValue) ? '' : Math.max(0, parsedValue);
             } catch (e) {
               parsedValue = '';
@@ -263,9 +186,8 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           break;
         case ParameterType.INT256_ARRAY:
           if (newValue === '') {
-            parsedValue = ''; // Keep empty string for empty array
+            parsedValue = '';
           } else {
-            // Get cleaned array of integers or empty strings
             parsedValue = newValue.split(',').map(v => {
               const trimmed = v.trim();
               if (trimmed === '' || trimmed === '-') return trimmed;
@@ -279,7 +201,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           if (newValue === '') {
             parsedValue = ''; // Keep empty string for empty array
           } else {
-            // Get cleaned array of non-negative integers or empty strings
             parsedValue = newValue.split(',').map(v => {
               const trimmed = v.trim();
               if (trimmed === '') return trimmed;
@@ -293,7 +214,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           if (newValue === '') {
             parsedValue = ''; // Keep empty string for empty array
           } else {
-            // Get cleaned array of booleans or empty strings
             parsedValue = newValue.split(',').map(v => {
               const trimmed = v.trim().toLowerCase();
               if (trimmed === '') return '';
@@ -305,8 +225,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         case ParameterType.STRING_ARRAY:
           if (newValue === '') {
             parsedValue = ''; // Keep empty string for empty array
-          } else {
-            // Get cleaned array of strings (respecting spaces in each item)
             parsedValue = newValue.split(',').map(v => v.trim());
           }
           break;
@@ -342,7 +260,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
                           inputValue.split(',').map(v => v.trim()) : 
                           [];
     
-    // Make sure defaultValue is appropriate for the type
     if (type === ParameterType.INT256_ARRAY || type === ParameterType.UINT256_ARRAY) {
       defaultValue = ''; // Use empty string instead of 0 for numeric arrays
     }
@@ -371,18 +288,14 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     if (index >= 0 && index < currentArray.length) {
       currentArray.splice(index, 1);
       
-      // Update state
       const stringValue = currentArray.length > 0 ? currentArray.join(', ') : '';
       setInputValue(stringValue);
       
-      // Pass to parent
+
       if (validateValue(currentArray)) {
-        // Remove empty/default values from end of array
+        // Remove only empty values from end of array
         let trimmedArray = [...currentArray];
-        while (trimmedArray.length > 0 && 
-              (trimmedArray[trimmedArray.length - 1] === '' || 
-               trimmedArray[trimmedArray.length - 1] === 0 ||
-               trimmedArray[trimmedArray.length - 1] === '0')) {
+        while (trimmedArray.length > 0 && trimmedArray[trimmedArray.length - 1] === '') {
           trimmedArray.pop();
         }
         
@@ -405,14 +318,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     
     // Update the value at the specified index
     if (index >= 0 && index < currentArray.length) {
-      // For numeric arrays, empty or 0 values should be preserved as empty strings 
-      // rather than converted to 0
-      if ((type === ParameterType.INT256_ARRAY || type === ParameterType.UINT256_ARRAY) &&
-          (value === '' || value === '0')) {
-        currentArray[index] = '';
-      } else {
-        currentArray[index] = value;
-      }
+      currentArray[index] = value;
       
       // Update state
       const stringValue = currentArray.join(', ');
@@ -420,12 +326,9 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
       
       // Pass to parent
       if (validateValue(currentArray)) {
-        // Remove empty/default values from end of array
+        // Remove only empty values from end of array
         let trimmedArray = [...currentArray];
-        while (trimmedArray.length > 0 && 
-              (trimmedArray[trimmedArray.length - 1] === '' || 
-               trimmedArray[trimmedArray.length - 1] === 0 ||
-               trimmedArray[trimmedArray.length - 1] === '0')) {
+        while (trimmedArray.length > 0 && trimmedArray[trimmedArray.length - 1] === '') {
           trimmedArray.pop();
         }
         
@@ -620,7 +523,6 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
 
   return (
     <div className="parameter-input-container">
-      <style>{arrayInputStyles}</style>
       <label className="parameter-label">
         {name} <span className="parameter-type">({typeName})</span>
       </label>

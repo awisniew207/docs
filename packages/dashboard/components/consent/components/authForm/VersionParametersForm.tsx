@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import ParameterInput from './ParameterInput';
-import { VersionParameter } from '../types';
+import { VersionParameter } from '../../types';
 import { ParameterType } from '@/services/types/parameterTypes';
+import { decodeParameterValue } from '../../utils/parameterDecoding';
 
 interface VersionParametersFormProps {
   versionData: any;
@@ -21,23 +22,16 @@ export default function VersionParametersForm({
   useEffect(() => {
     if (!versionData) return;
     
-    // Create a version key to detect changes in version data
     const versionKey = `${versionData[1]?.[0]}:${versionData[1]?.[1]}`;
-    
-    // When existingParameters change, we should re-initialize
     const shouldInitialize = !initializedRef.current || 
-                             // Re-initialize when existing parameters are updated
                              (existingParameters && existingParameters.length > 0) ||
-                             // Re-initialize when version data changes
                              (versionKey !== processedVersionRef.current);
     
     if (!shouldInitialize && parameters.length > 0) return;
     
-    // Record the current version we're processing
     processedVersionRef.current = versionKey;
     
     try {
-      // Extract parameters from version data - this matches the structure shown in the example
       const toolsData = versionData[1]?.[3];
       
       if (!toolsData || !Array.isArray(toolsData)) return;
@@ -46,7 +40,6 @@ export default function VersionParametersForm({
       const extractedParams: VersionParameter[] = [];
       console.log('Initializing version parameters form with existing parameters:', existingParameters);
       
-      // Debug information to help track parameter resolution
       if (existingParameters.length > 0) {
         console.log('Existing parameter details:');
         existingParameters.forEach(param => {
@@ -54,13 +47,11 @@ export default function VersionParametersForm({
         });
       }
       
-      // Loop through tools
       toolsData.forEach((tool, toolIndex) => {
         if (!tool || !Array.isArray(tool)) return;
         
         const policies = tool[1];
         
-        // Loop through policies for each tool
         if (Array.isArray(policies)) {
           policies.forEach((policy, policyIndex) => {
             if (!policy || !Array.isArray(policy)) return;
@@ -68,7 +59,6 @@ export default function VersionParametersForm({
             const paramNames = policy[1];
             const paramTypes = policy[2];
             
-            // Loop through parameters for each policy
             if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
               paramNames.forEach((name, paramIndex) => {
                 if (paramIndex < paramTypes.length) {
@@ -77,10 +67,9 @@ export default function VersionParametersForm({
                     ? name.trim() 
                     : `param_${paramIndex}`;
                   
-                  // Find existing parameter with matching criteria - using multiple strategies
                   let existingParam = null;
                   
-                  // Strategy 1: Match by name AND type (most accurate)
+                  // Match by name AND type (most accurate)
                   existingParam = existingParameters.find(p => 
                     typeof p.name === 'string' && 
                     p.name.toLowerCase() === paramName.toLowerCase() &&
@@ -91,30 +80,6 @@ export default function VersionParametersForm({
                     console.log(`Found parameter by name AND type: "${paramName}" (type: ${paramType})`);
                   }
                   
-                  // Strategy 2: If not found, try matching by name only, but ONLY if types are compatible
-                  if (!existingParam) {
-                    const nameMatch = existingParameters.find(p => 
-                      typeof p.name === 'string' && 
-                      p.name.toLowerCase() === paramName.toLowerCase()
-                    );
-                    
-                    // Only use name match if types are compatible
-                    if (nameMatch) {
-                      const isCompatible = areTypesCompatible(nameMatch.type, paramType);
-                      
-                      if (isCompatible) {
-                        existingParam = nameMatch;
-                        console.log(`Found parameter by name with compatible type: "${paramName}" (stored: ${nameMatch.type}, required: ${paramType})`);
-                      } else {
-                        console.log(`Found parameter by name but types incompatible: "${paramName}" (stored: ${nameMatch.type}, required: ${paramType})`);
-                        // Don't use the value if types are incompatible
-                      }
-                    }
-                  }
-                  
-                  // We explicitly DON'T fall back to position-based match anymore as this causes type issues
-                  
-                  // Use existing value if found, otherwise use empty string based on type
                   let defaultValue: any = '';
                   
                   // Set appropriate default empty values based on parameter type
@@ -132,68 +97,40 @@ export default function VersionParametersForm({
                     defaultValue = '';  // Empty string for string/address arrays
                   }
                   
-                  // After finding a match, process the value appropriately based on type
                   const processExistingValue = (existingValue: any, paramType: number) => {
                     // If no existing value, return appropriate default
                     if (existingValue === undefined || existingValue === null) {
                       return getDefaultForType(paramType);
                     }
                     
-                    // For hex-encoded array values (often from contract), try to decode them
-                    if (typeof existingValue === 'string' && 
-                        existingValue.startsWith('0x') && 
-                        existingValue.length > 42 && // Longer than a typical address
-                        [ParameterType.INT256_ARRAY, 
-                         ParameterType.UINT256_ARRAY, 
-                         ParameterType.BOOL_ARRAY,
-                         ParameterType.ADDRESS_ARRAY, 
-                         ParameterType.STRING_ARRAY].includes(paramType)) {
-                      
-                      console.log(`Found hex-encoded array value for type ${paramType}: ${existingValue.substring(0, 20)}...`);
-                      
-                      // For hex-encoded arrays, convert to a more readable form if possible
+                    // For hex-encoded values, use the decoder
+                    if (typeof existingValue === 'string' && existingValue.startsWith('0x')) {
                       try {
-                        switch(paramType) {
-                          case ParameterType.INT256_ARRAY:
-                          case ParameterType.UINT256_ARRAY:
-                            // For numeric arrays, try to extract values
-                            // This is a simplified approach - a real decoder would be more robust
-                            return existingValue; // Return as is for now, prevent empty value
-                          case ParameterType.ADDRESS_ARRAY:
-                            return existingValue; // Return as is for now, prevent empty value
-                          case ParameterType.STRING_ARRAY:
-                            return existingValue; // Return as is for now, prevent empty value
-                          case ParameterType.BOOL_ARRAY:
-                            return existingValue; // Return as is for now, prevent empty value
-                          default:
-                            return existingValue;
-                        }
+                        return decodeParameterValue(existingValue, paramType);
                       } catch (err) {
-                        console.error(`Error processing encoded array value: ${err}`);
+                        console.error(`Error decoding value for type ${paramType}:`, err);
                         return existingValue; // Return as is to prevent data loss
                       }
                     }
                     
                     // Return value as is for other types
                     return existingValue;
-                  }
+                  };
                   
                   // Helper function to get default empty value for a type
                   const getDefaultForType = (paramType: number): any => {
                     switch(paramType) {
                       case ParameterType.BOOL:
-                        return ''; // Use empty string as "not set" for booleans
                       case ParameterType.INT256:
                       case ParameterType.UINT256:
-                        return '';  // Empty string for numbers
                       case ParameterType.ADDRESS:
-                        return '';  // Empty string for addresses
-                      case ParameterType.BOOL_ARRAY:
+                      case ParameterType.STRING:
                       case ParameterType.INT256_ARRAY:
                       case ParameterType.UINT256_ARRAY:
-                      case ParameterType.STRING_ARRAY:
+                      case ParameterType.BOOL_ARRAY:
                       case ParameterType.ADDRESS_ARRAY:
-                        return '';  // Empty string for arrays
+                      case ParameterType.STRING_ARRAY:
+                        return '';
                       default:
                         return '';
                     }
@@ -227,18 +164,8 @@ export default function VersionParametersForm({
         
         // Log which parameters had values preserved from previous version
         const preservedParams = extractedParams.filter(p => {
-          // Empty string, false, and '0' are considered empty
-          if (p.value === '' || p.value === false || p.value === '0') return false;
-          
-          // Address-specific checks
-          if (p.type === ParameterType.ADDRESS) {
-            // Check for default/empty addresses
-            if (p.value === '0x0000000000000000000000000000000000000000' || 
-                p.value === '0x...' ||
-                p.value.startsWith('0x00000000000000000000000000000000000000')) {
-              return false;
-            }
-          }
+          // Empty string is considered empty
+          if (p.value === '') return false;
           
           // Array-specific checks
           if (p.type === ParameterType.ADDRESS_ARRAY || 
@@ -254,8 +181,7 @@ export default function VersionParametersForm({
             // If it's a comma-separated string, check if all values are empty
             if (typeof p.value === 'string') {
               const values = p.value.split(',').map(v => v.trim());
-              if (values.every(v => v === '' || v === '0' || v === '0x...' || 
-                              v.startsWith('0x00000000000000000000000000000000000000'))) {
+              if (values.every(v => v === '')) {
                 return false;
               }
             }
@@ -295,8 +221,6 @@ export default function VersionParametersForm({
     }
   }, [versionData, existingParameters]);
   
-  // Separate useEffect to handle notifying parent component about parameter changes
-  // This ensures we don't trigger state updates during render
   useEffect(() => {
     if (initializedRef.current && parameters.length > 0) {
       // Use setTimeout to defer the update to the next tick
@@ -402,132 +326,3 @@ export default function VersionParametersForm({
     </div>
   );
 }
-
-/**
- * Helper function to check if two parameter types are compatible
- * This prevents issues like using a number as a boolean array
- */
-function areTypesCompatible(storedType: number, requiredType: number): boolean {
-  // If types are exactly the same, they're compatible
-  if (storedType === requiredType) return true;
-  
-  // Check basic type compatibility
-  const numericTypes = [ParameterType.INT256, ParameterType.UINT256];
-  const stringTypes = [ParameterType.STRING, ParameterType.ADDRESS];
-  const booleanTypes = [ParameterType.BOOL];
-  
-  // Numeric array types
-  const numericArrayTypes = [ParameterType.INT256_ARRAY, ParameterType.UINT256_ARRAY];
-  
-  // String array types
-  const stringArrayTypes = [ParameterType.STRING_ARRAY, ParameterType.ADDRESS_ARRAY];
-  
-  // Boolean array types
-  const booleanArrayTypes = [ParameterType.BOOL_ARRAY];
-  
-  // Check within groups - numbers can be compatible with other numbers
-  if (numericTypes.includes(storedType) && numericTypes.includes(requiredType)) return true;
-  
-  // Strings can be compatible with other strings
-  if (stringTypes.includes(storedType) && stringTypes.includes(requiredType)) return true;
-  
-  // Numeric arrays can be compatible with other numeric arrays
-  if (numericArrayTypes.includes(storedType) && numericArrayTypes.includes(requiredType)) return true;
-  
-  // String arrays can be compatible with other string arrays
-  if (stringArrayTypes.includes(storedType) && stringArrayTypes.includes(requiredType)) return true;
-  
-  // For all other cases, types are not compatible
-  return false;
-}
-
-// Function to process an existing value based on parameter type
-function processExistingValue(type: ParameterType, value: any): any {
-  console.log(`Processing existing value for type ${type}:`, value);
-  
-  // Return default for undefined or null values
-  if (value === undefined || value === null) {
-    return getDefaultForType(type);
-  }
-
-  // Handle hex-encoded values for arrays (they need special processing)
-  if (typeof value === 'string' && value.startsWith('0x') && value.length > 42) {
-    console.log(`Found hex-encoded value for ${type}:`, value.substring(0, 20) + '...');
-    
-    // Return empty string for hex-encoded arrays - they'll be handled by contract directly
-    if ([
-      ParameterType.INT256_ARRAY,
-      ParameterType.UINT256_ARRAY,
-      ParameterType.BOOL_ARRAY,
-      ParameterType.ADDRESS_ARRAY,
-      ParameterType.STRING_ARRAY
-    ].includes(type)) {
-      return '';
-    }
-  }
-  
-  return value;
-}
-
-// Helper to get default values by type
-function getDefaultForType(type: ParameterType): any {
-  switch (type) {
-    case ParameterType.BOOL:
-      return '';
-    case ParameterType.INT256:
-    case ParameterType.UINT256:
-      return '';
-    case ParameterType.ADDRESS:
-      return '0x...';
-    case ParameterType.STRING:
-      return '';
-    case ParameterType.INT256_ARRAY:
-    case ParameterType.UINT256_ARRAY:
-    case ParameterType.BOOL_ARRAY:
-    case ParameterType.ADDRESS_ARRAY:
-    case ParameterType.STRING_ARRAY:
-      return '';
-    default:
-      return '';
-  }
-}
-
-function preserveExistingValues(
-  parameterNames: string[],
-  parameterTypes: ParameterType[],
-  existingParameters: VersionParameter[]
-): Record<string, any> {
-  const initialValues: Record<string, any> = {};
-  console.log('Preserving values from existing parameters:', existingParameters);
-
-  // Create lookup map for existing parameters by name & type for faster access
-  const existingParamsMap = new Map<string, VersionParameter>();
-  existingParameters.forEach(param => {
-    const key = `${param.name}:${param.type}`;
-    existingParamsMap.set(key, param);
-  });
-
-  for (let i = 0; i < parameterNames.length; i++) {
-    const name = parameterNames[i];
-    const type = parameterTypes[i];
-    const key = `${name}:${type}`;
-    
-    // First try exact match by name and type
-    const existingParam = existingParamsMap.get(key);
-    
-    if (existingParam) {
-      console.log(`Found existing parameter for ${name} (${type}):`, 
-        typeof existingParam.value === 'string' && existingParam.value.length > 30 
-          ? existingParam.value.substring(0, 30) + '...' 
-          : existingParam.value);
-      
-      initialValues[name] = processExistingValue(type, existingParam.value);
-    } else {
-      console.log(`No existing parameter found for ${name} (${type}), using default`);
-      initialValues[name] = getDefaultForType(type);
-    }
-  }
-  
-  console.log('Initial values for form:', initialValues);
-  return initialValues;
-} 

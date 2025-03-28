@@ -51,6 +51,77 @@
   font-size: 14px;
 }
 
+/* Array input styles */
+.array-inputs {
+  margin-bottom: 10px;
+}
+
+.array-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.array-item-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.array-item input[type="checkbox"] {
+  height: 16px;
+  width: 16px;
+}
+
+.array-item-remove-btn {
+  background-color: transparent;
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bool-array-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-size: 14px;
+}
+
+.bool-array-item input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.bool-array-item-label {
+  flex: 1;
+}
+
+.empty-array-message {
+  color: #888;
+  font-style: italic;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.array-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.array-actions button {
+  font-size: 14px;
+}
+
 /* Add styles for the boolean array input */
 .bool-array-input {
   display: flex;

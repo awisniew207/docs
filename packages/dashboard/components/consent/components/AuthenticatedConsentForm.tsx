@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import '../styles/parameter-fields.css';
-import VersionParametersForm from '../utils/VersionParametersForm';
+import VersionParametersForm from './authForm/VersionParametersForm';
 import { useErrorPopup } from '@/providers/error-popup';
 
 import StatusMessage from './authForm/StatusMessage';
@@ -167,27 +167,21 @@ export default function AuthenticatedConsentForm({
     onError: showErrorWithStatus
   });
 
-  // Add an effect to fetch the correct version info when useCurrentVersionOnly changes
-  // Add a ref to track if we've already fetched for this version
   const permittedVersionFetchedRef = useRef<number | null>(null);
   
   useEffect(() => {
     if (useCurrentVersionOnly && permittedVersion !== null && appId && 
         permittedVersionFetchedRef.current !== permittedVersion) {
       console.log(`Fetching version data for permitted version ${permittedVersion}`);
-      // Set the ref to mark this version as fetched
       permittedVersionFetchedRef.current = permittedVersion;
       
-      // Clear version info first to ensure we don't show the wrong version while loading
       updateState({ isLoading: true });
       
-      // Fetch version info for the permitted version number
       fetchVersionInfo(permittedVersion)
         .then(() => {
           console.log(`Successfully fetched data for version ${permittedVersion}`);
           updateState({ isLoading: false });
-          
-          // Also fetch existing parameters if not already loaded
+
           if (existingParameters.length === 0 && !isLoadingParameters) {
             fetchExistingParameters();
           }
@@ -198,7 +192,6 @@ export default function AuthenticatedConsentForm({
           showErrorWithStatus('Failed to load version data', 'Error');
         });
     } else if (!useCurrentVersionOnly) {
-      // Reset the ref when we switch back to latest version mode
       permittedVersionFetchedRef.current = null;
       
       // If we previously used a specific version, we should reload the latest version
