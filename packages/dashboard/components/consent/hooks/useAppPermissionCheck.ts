@@ -29,6 +29,7 @@ interface AppPermissionState {
   showDisapproval: boolean;
   isLoading: boolean;
   checkingPermissions: boolean;
+  useCurrentVersionOnly?: boolean;
 }
 
 /**
@@ -57,7 +58,8 @@ export const useAppPermissionCheck = ({
     showSuccess: false,
     showDisapproval: false,
     isLoading: true,
-    checkingPermissions: true
+    checkingPermissions: true,
+    useCurrentVersionOnly: false
   });
   
   // Ref to track if permission check has been done, track if we've previously seen a null appId

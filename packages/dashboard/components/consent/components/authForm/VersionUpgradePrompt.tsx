@@ -9,6 +9,7 @@ interface VersionUpgradePromptProps {
   agentPKP?: IRelayPKP;
   onUpgrade: () => void;
   onContinue: () => void;
+  onUpdateParameters: () => void;
   statusMessage: string;
   statusType: 'info' | 'warning' | 'success' | 'error';
 }
@@ -19,6 +20,7 @@ const VersionUpgradePrompt = ({
   agentPKP,
   onUpgrade,
   onContinue,
+  onUpdateParameters,
   statusMessage,
   statusType
 }: VersionUpgradePromptProps) => {
@@ -45,7 +47,7 @@ const VersionUpgradePrompt = ({
           </p>
           {agentPKP && (
             <p>
-              <strong>PKP Address:</strong> {agentPKP.ethAddress}
+              <strong>Account Address:</strong> {agentPKP.ethAddress}
             </p>
           )}
         </div>
@@ -58,10 +60,16 @@ const VersionUpgradePrompt = ({
             Update to Latest Version
           </button>
           <button
+            className="btn btn--secondary"
+            onClick={onUpdateParameters}
+          >
+            Update Parameters Only
+          </button>
+          <button
             className="btn btn--outline"
             onClick={onContinue}
           >
-            Continue with Existing Permission
+            Continue Without Changes
           </button>
         </div>
       </div>

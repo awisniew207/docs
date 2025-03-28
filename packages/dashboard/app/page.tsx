@@ -7,8 +7,14 @@ import DashboardScreen from "@/components/developer/Dashboard";
 import { formCompleteVincentAppForDev } from "@/services";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { AppView } from "@/services/types";
-import CreateAppScreen from "@/components/developer/CreateApp";
+import dynamic from 'next/dynamic';
 import ConnectWalletScreen from "@/components/developer/ConnectWallet";
+
+// Use dynamic import for CreateAppScreen to prevent SSR hydration issues
+const CreateAppScreen = dynamic(
+  () => import("@/components/developer/CreateApp"),
+  { ssr: false }
+);
 
 export default function Developer() {
     const [hasApp, setHasApp] = useState<Boolean>(false);
@@ -50,9 +56,13 @@ export default function Developer() {
 
         if (isMounted && isConnected) {
             checkAndFetchApp();
+        } else if (isMounted) {
+            // If mounted but not connected, stop loading state
+            setIsLoading(false);
         }
     }, [address, isMounted, isConnected, refetchApp]);
 
+    // Return null while client-side is initializing to prevent hydration mismatch
     if (!isMounted) return null;
 
     if (!isConnected) {
@@ -78,6 +88,7 @@ export default function Developer() {
             {hasApp ? (
                 <DashboardScreen onRefetch={() => setRefetchApp(refetchApp + 1)} vincentApp={app!} />
             ) : (
+                // Only render the CreateAppScreen once we're client-side 
                 <CreateAppScreen />
             )}
         </div>

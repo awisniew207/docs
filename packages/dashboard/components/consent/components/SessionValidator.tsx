@@ -87,7 +87,7 @@ const SessionValidator: React.FC = () => {
           // Get wallet signature
           const walletSig = await litNodeClient.getWalletSig({
             chain: 'ethereum',
-            expiration: new Date(Date.now() + 1000 * 60 * 15).toISOString(),
+            expiration: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
             sessionKey,
             sessionKeyUri: `lit:session:${sessionKey.publicKey}`,
             sessionCapabilityObject,

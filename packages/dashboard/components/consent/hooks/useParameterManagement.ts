@@ -14,6 +14,7 @@ import {
   PolicyWithParameters, 
   ToolWithPolicies 
 } from '../types';
+import { decodeParameterValue } from '../utils/parameterDecoding';
 
 interface UseParameterManagementProps {
   appId: string | null;
@@ -40,53 +41,6 @@ export const useParameterManagement = ({
 
   // Ref to track if we've already fetched parameters
   const parametersFetchedRef = useRef(false);
-  
-  /**
-   * Decodes parameter values from their encoded form based on their type.
-   * Handles different parameter types like INT256, UINT256, BOOL, ADDRESS, STRING, and their array versions.
-   */
-  const decodeParameterValue = useCallback((encodedValue: string, paramType: number) => {
-    try {
-      switch (paramType) {
-        case ParameterType.INT256:
-          return ethers.utils.defaultAbiCoder.decode(['int256'], encodedValue)[0].toString();
-        
-        case ParameterType.UINT256:
-          return ethers.utils.defaultAbiCoder.decode(['uint256'], encodedValue)[0].toString();
-        
-        case ParameterType.BOOL:
-          return ethers.utils.defaultAbiCoder.decode(['bool'], encodedValue)[0];
-        
-        case ParameterType.ADDRESS:
-          return ethers.utils.defaultAbiCoder.decode(['address'], encodedValue)[0];
-        
-        case ParameterType.STRING:
-          return ethers.utils.defaultAbiCoder.decode(['string'], encodedValue)[0];
-        
-        case ParameterType.INT256_ARRAY:
-          return ethers.utils.defaultAbiCoder.decode(['int256[]'], encodedValue)[0].join(',');
-        
-        case ParameterType.UINT256_ARRAY:
-          return ethers.utils.defaultAbiCoder.decode(['uint256[]'], encodedValue)[0].join(',');
-        
-        case ParameterType.BOOL_ARRAY:
-          return ethers.utils.defaultAbiCoder.decode(['bool[]'], encodedValue)[0].join(',');
-        
-        case ParameterType.ADDRESS_ARRAY:
-          return ethers.utils.defaultAbiCoder.decode(['address[]'], encodedValue)[0].join(',');
-        
-        case ParameterType.STRING_ARRAY:
-          return ethers.utils.defaultAbiCoder.decode(['string[]'], encodedValue)[0].join(',');
-        
-        // Fallback for bytes and other types
-        default:
-          return ethers.utils.hexlify(encodedValue);
-      }
-    } catch (error) {
-      console.error('Error decoding parameter value:', error, { encodedValue, paramType });
-      return '';
-    }
-  }, []);
   
   /**
    * Fetches existing parameters for the app from the smart contract.
@@ -134,7 +88,7 @@ export const useParameterManagement = ({
         tool.policies.forEach((policy: PolicyWithParameters, policyIndex: number) => {
           // Process each parameter in the policy
           policy.parameters.forEach((param: PolicyParameter, paramIndex: number) => {
-            // Decode the parameter value based on its type
+            // Use the shared utility to decode the parameter value
             const decodedValue = decodeParameterValue(param.value, param.paramType);
             
             existingParams.push({
@@ -171,7 +125,7 @@ export const useParameterManagement = ({
     } finally {
       setIsLoadingParameters(false);
     }
-  }, [appId, agentPKP, decodeParameterValue, versionInfo, appInfo, isLoadingParameters, existingParameters, onStatusChange]);
+  }, [appId, agentPKP, versionInfo, appInfo, isLoadingParameters, existingParameters, onStatusChange]);
   
   /**
    * Handles changes to the parameters in the form.
@@ -192,17 +146,19 @@ export const useParameterManagement = ({
    * Fetches version information for the specified app.
    * This provides details about the latest version of the app, including
    * tools, policies, and parameters that can be configured.
+   * @param versionNumber Optional specific version to fetch. If not provided, uses the latest version.
    */
-  const fetchVersionInfo = useCallback(async () => {
+  const fetchVersionInfo = useCallback(async (versionNumber?: number) => {
     if (!appId || !appInfo) {
       console.error('Missing appId or appInfo in fetchVersionInfo');
       return null;
     }
 
     try {
-      onStatusChange?.('Loading app version information...', 'info');
+      const versionToFetch = versionNumber !== undefined ? versionNumber : Number(appInfo.latestVersion);
+      onStatusChange?.(`Loading app version information for v${versionToFetch}...`, 'info');
       const contract = getAppViewRegistryContract();
-      const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
+      const versionData = await contract.getAppVersion(Number(appId), versionToFetch);
       console.log('Version info:', versionData);
       
       setVersionInfo(versionData);
