@@ -26,21 +26,14 @@ import { getErc20Info, sendErc20ApprovalTx } from "./utils";
     const pkpInfo = await getPkpInfo(networkConfig.pubkeyRouterAddress, yellowstoneRpcProvider, toolParams.pkpEthAddress);
     console.log(`Retrieved PKP info for PKP ETH Address: ${toolParams.pkpEthAddress}: ${JSON.stringify(pkpInfo)}`);
 
-    const tokenInDecimals = await Lit.Actions.runOnce(
-        { waitForResponse: true, name: 'get token info' },
-        async () => {
-            const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
-
-            return tokenInInfo.decimals.toString();
-        }
-    );
+    const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
 
     const approvalTxHash = await sendErc20ApprovalTx(
         userRpcProvider,
         toolParams.chainId,
         toolParams.tokenIn,
         toolParams.amountIn,
-        tokenInDecimals,
+        tokenInInfo.decimals.toString(),
         toolParams.pkpEthAddress,
         pkpInfo.publicKey,
     );

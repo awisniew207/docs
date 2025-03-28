@@ -49,26 +49,27 @@ export const sendSpendTx = async (
     pkpPubKey: string,
 ) => {
     const { SPENDING_LIMIT_ADDRESS } = getAddressesByChainId('175188'); // Yellowstone
-    const SPENDING_LIMIT_ABI = [
-        `function checkLimit(address user, uint256 appId, uint256 amountToSpend, uint256 userMaxSpendLimit, uint256 duration) view returns (bool)`,
-        `function spend(uint256 appId, uint256 amount, uint256 userMaxSpendLimit, uint256 duration)`,
-        `error SpendLimitExceeded(address user, uint256 appId, uint256 amount, uint256 limit)`,
-        `error ZeroAppIdNotAllowed(address user)`,
-        `error ZeroDurationQuery(address user)`
-    ];
 
-    console.log(`Preparing transaction to send to Spending Limit Contract: ${SPENDING_LIMIT_ADDRESS}`);
-
-    const spendingLimitContract = new ethers.Contract(
-        SPENDING_LIMIT_ADDRESS!,
-        SPENDING_LIMIT_ABI,
-        yellowstoneProvider
-    );
-
-    console.log(`Estimating gas for spending limit transaction...`);
-    const estimatedGasStringified = await Lit.Actions.runOnce(
+    const partialSpendTxStringified = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send spend tx gas estimation' },
         async () => {
+            const SPENDING_LIMIT_ABI = [
+                `function checkLimit(address user, uint256 appId, uint256 amountToSpend, uint256 userMaxSpendLimit, uint256 duration) view returns (bool)`,
+                `function spend(uint256 appId, uint256 amount, uint256 userMaxSpendLimit, uint256 duration)`,
+                `error SpendLimitExceeded(address user, uint256 appId, uint256 amount, uint256 limit)`,
+                `error ZeroAppIdNotAllowed(address user)`,
+                `error ZeroDurationQuery(address user)`
+            ];
+
+            console.log(`Preparing transaction to send to Spending Limit Contract: ${SPENDING_LIMIT_ADDRESS}`);
+
+            const spendingLimitContract = new ethers.Contract(
+                SPENDING_LIMIT_ADDRESS!,
+                SPENDING_LIMIT_ABI,
+                yellowstoneProvider
+            );
+
+            console.log(`Estimating gas for spending limit transaction...`);
             const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
                 spendingLimitContract,
                 appId,
@@ -78,53 +79,53 @@ export const sendSpendTx = async (
                 pkpEthAddress
             );
 
-            return JSON.stringify({
-                estimatedGas: estimatedGas.toString(),
-                maxFeePerGas: maxFeePerGas.toString(),
-                maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
-            });
+            console.log(`Encoding transaction data...`);
+            const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
+                appId,
+                amountInUsd,
+                maxSpendingLimit,
+                spendingLimitDuration,
+            ]);
+
+            console.log(`Creating transaction object...`);
+            const partialSpendTx = {
+                data: txData,
+                gasLimit: estimatedGas,
+                maxFeePerGas,
+                maxPriorityFeePerGas,
+                nonce: await yellowstoneProvider.getTransactionCount(pkpEthAddress),
+            };
+
+            return JSON.stringify(partialSpendTx);
         }
     );
 
-    const estimatedGasObject = JSON.parse(estimatedGasStringified);
-    const estimatedGas = ethers.BigNumber.from(estimatedGasObject.estimatedGas);
-    const maxFeePerGas = ethers.BigNumber.from(estimatedGasObject.maxFeePerGas);
-    const maxPriorityFeePerGas = ethers.BigNumber.from(estimatedGasObject.maxPriorityFeePerGas);
-
-    console.log(`Encoding transaction data...`);
-    const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
-        appId,
-        amountInUsd,
-        maxSpendingLimit,
-        spendingLimitDuration,
-    ]);
-
-    console.log(`Creating transaction object...`);
-    const spendTx = {
+    const partialSpendTxObject = JSON.parse(partialSpendTxStringified);
+    const unsignedSpendTx = {
         to: SPENDING_LIMIT_ADDRESS as string,
-        data: txData,
+        data: partialSpendTxObject.data,
         value: ethers.BigNumber.from(0),
-        gasLimit: estimatedGas,
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-        nonce: await yellowstoneProvider.getTransactionCount(pkpEthAddress),
-        chainId: 175188, // Yellowstone
+        gasLimit: ethers.BigNumber.from(partialSpendTxObject.gasLimit),
+        maxFeePerGas: ethers.BigNumber.from(partialSpendTxObject.maxFeePerGas),
+        maxPriorityFeePerGas: ethers.BigNumber.from(partialSpendTxObject.maxPriorityFeePerGas),
+        nonce: parseInt(partialSpendTxObject.nonce),
+        chainId: ethers.BigNumber.from(175188).toNumber(),
         type: 2,
     };
 
-    console.log(`Unsigned spend transaction: ${JSON.stringify(spendTx)}`);
-
     console.log(`Signing spend transaction...`);
-    const signedSpendTx = await signTx(pkpPubKey, spendTx, 'spendingLimitSig');
+    const signedSpendTx = await signTx(pkpPubKey, unsignedSpendTx, 'spendingLimitSig');
 
+    console.log(`Broadcasting spend transaction...`);
     const spendTxHash = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'spendTxSender' },
         async () => {
-            console.log(`Broadcasting spend transaction...`);
             const receipt = await yellowstoneProvider.sendTransaction(signedSpendTx);
             return receipt.hash;
         }
     );
+
+    console.log(`Spend transaction hash: ${spendTxHash}`);
 
     return spendTxHash;
 }

@@ -44,21 +44,21 @@ export const sendErc20ApprovalTx = async (
     pkpEthAddress: string,
     pkpPubKey: string,
 ) => {
-    const { UNISWAP_V3_ROUTER } = getAddressesByChainId(userChainId);
-
-    const tokenInContract = new ethers.Contract(
-        tokenInAddress,
-        ['function approve(address,uint256) external returns (bool)'],
-        userRpcProvider
-    );
-
-    // Convert amountIn to token's smallest unit using input token's decimals
-    const amountInSmallestUnit = ethers.utils.parseUnits(amountIn, tokenInDecimals);
-
-    console.log(`Estimating gas for approval transaction...`);
-    const estimatedGasApprovalStringified = await Lit.Actions.runOnce(
+    const partialApprovalTxStringified = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send approval tx gas estimation' },
         async () => {
+            const { UNISWAP_V3_ROUTER } = getAddressesByChainId(userChainId);
+
+            const tokenInContract = new ethers.Contract(
+                tokenInAddress,
+                ['function approve(address,uint256) external returns (bool)'],
+                userRpcProvider
+            );
+
+            // Convert amountIn to token's smallest unit using input token's decimals
+            const amountInSmallestUnit = ethers.utils.parseUnits(amountIn, tokenInDecimals);
+
+            console.log(`Estimating gas for approval transaction...`);
             const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGasForApproval(
                 tokenInContract,
                 UNISWAP_V3_ROUTER!,
@@ -66,49 +66,40 @@ export const sendErc20ApprovalTx = async (
                 pkpEthAddress
             );
 
-            return JSON.stringify({
-                estimatedGas: estimatedGas.toString(),
-                maxFeePerGas: maxFeePerGas.toString(),
-                maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
-            });
+            console.log(`Encoding approval transaction data...`);
+            const approvalTxData = tokenInContract.interface.encodeFunctionData('approve', [
+                UNISWAP_V3_ROUTER!,
+                amountInSmallestUnit,
+            ]);
+
+            console.log(`Creating approval transaction object...`);
+            const partialApprovalTx = {
+                data: approvalTxData,
+                gasLimit: estimatedGas,
+                maxFeePerGas: maxFeePerGas,
+                maxPriorityFeePerGas: maxPriorityFeePerGas,
+                nonce: await userRpcProvider.getTransactionCount(pkpEthAddress),
+            };
+
+            return JSON.stringify(partialApprovalTx);
         }
     );
 
-    const estimatedGasApprovalObject = JSON.parse(estimatedGasApprovalStringified);
-    const estimatedGasApproval = ethers.BigNumber.from(estimatedGasApprovalObject.estimatedGas);
-    const maxFeePerGasApproval = ethers.BigNumber.from(estimatedGasApprovalObject.maxFeePerGas);
-    const maxPriorityFeePerGasApproval = ethers.BigNumber.from(estimatedGasApprovalObject.maxPriorityFeePerGas);
-
-    console.log(`Encoding approval transaction data...`);
-    const approvalTxData = tokenInContract.interface.encodeFunctionData('approve', [
-        UNISWAP_V3_ROUTER!,
-        amountInSmallestUnit,
-    ]);
-
-    console.log(`Getting nonce for approval transaction...`);
-    const nonceForApprovalTxString = await Lit.Actions.runOnce(
-        { waitForResponse: true, name: 'get nonce for approval tx' },
-        async () => {
-            return (await userRpcProvider.getTransactionCount(pkpEthAddress)).toString();
-        }
-    );
-    const nonceForApprovalTx = ethers.BigNumber.from(nonceForApprovalTxString);
-
-    console.log(`Creating approval transaction object...`);
-    const approvalTx = {
+    const partialApprovalTxObject = JSON.parse(partialApprovalTxStringified);
+    const unsignedApprovalTx = {
         to: tokenInAddress,
-        data: approvalTxData,
+        data: partialApprovalTxObject.data,
         value: ethers.BigNumber.from(0),
-        gasLimit: estimatedGasApproval,
-        maxFeePerGas: maxFeePerGasApproval,
-        maxPriorityFeePerGas: maxPriorityFeePerGasApproval,
-        nonce: nonceForApprovalTx.toNumber(),
+        gasLimit: ethers.BigNumber.from(partialApprovalTxObject.gasLimit),
+        maxFeePerGas: ethers.BigNumber.from(partialApprovalTxObject.maxFeePerGas),
+        maxPriorityFeePerGas: ethers.BigNumber.from(partialApprovalTxObject.maxPriorityFeePerGas),
+        nonce: parseInt(partialApprovalTxObject.nonce),
         chainId: ethers.BigNumber.from(userChainId).toNumber(),
         type: 2,
     };
 
     console.log(`Signing approval transaction...`);
-    const signedSpendTx = await signTx(pkpPubKey, approvalTx, 'spendingLimitSig');
+    const signedSpendTx = await signTx(pkpPubKey, unsignedApprovalTx, 'spendingLimitSig');
 
     console.log(`Broadcasting approval transaction...`);
     const approvalTxHash = await Lit.Actions.runOnce(
