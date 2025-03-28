@@ -664,4 +664,126 @@ contract VincentUserFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test to demonstrate bug where policy parameters from previous app versions are incorrectly included
+     * @dev This test shows that when a user permits a new app version, policy parameters from previous versions
+     *      are incorrectly included in the validateToolExecutionAndGetPolicies response
+     */
+    function testBugPolicyParametersFromPreviousVersions() public {
+        vm.startPrank(deployer);
+
+        // Create test data for first app version
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = TEST_POLICY_1;
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0][0][0] = "param1";
+
+        VincentAppStorage.ParameterType[][][] memory toolPolicyParameterTypes =
+            new VincentAppStorage.ParameterType[][][](1);
+        toolPolicyParameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        toolPolicyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        toolPolicyParameterTypes[0][0][0] = VincentAppStorage.ParameterType.UINT256;
+
+        // Create array with a different delegatee for the new app
+        address[] memory newAppDelegatees = new address[](1);
+        newAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        // Register first app version
+        (uint256 testAppId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            newAppDelegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames,
+            toolPolicyParameterTypes
+        );
+
+        // Set policy parameters for first version
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
+        policyParameterValues[0][0][0] = abi.encode(uint256(100));
+
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            testAppId,
+            versionNumber,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames,
+            policyParameterValues
+        );
+
+        // Create test data for second app version with different policy
+        string[] memory toolIpfsCids2 = new string[](1);
+        toolIpfsCids2[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory toolPolicies2 = new string[][](1);
+        toolPolicies2[0] = new string[](1);
+        toolPolicies2[0][0] = TEST_POLICY_2;
+
+        string[][][] memory toolPolicyParameterNames2 = new string[][][](1);
+        toolPolicyParameterNames2[0] = new string[][](1);
+        toolPolicyParameterNames2[0][0] = new string[](1);
+        toolPolicyParameterNames2[0][0][0] = "param2";
+
+        VincentAppStorage.ParameterType[][][] memory toolPolicyParameterTypes2 =
+            new VincentAppStorage.ParameterType[][][](1);
+        toolPolicyParameterTypes2[0] = new VincentAppStorage.ParameterType[][](1);
+        toolPolicyParameterTypes2[0][0] = new VincentAppStorage.ParameterType[](1);
+        toolPolicyParameterTypes2[0][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Register second app version
+        uint256 versionNumber2 = wrappedAppFacet.registerNextAppVersion(
+            testAppId, toolIpfsCids2, toolPolicies2, toolPolicyParameterNames2, toolPolicyParameterTypes2
+        );
+
+        // Set policy parameters for second version
+        bytes[][][] memory policyParameterValues2 = new bytes[][][](1);
+        policyParameterValues2[0] = new bytes[][](1);
+        policyParameterValues2[0][0] = new bytes[](1);
+        policyParameterValues2[0][0][0] = abi.encode("test");
+
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            testAppId,
+            versionNumber2,
+            toolIpfsCids2,
+            toolPolicies2,
+            toolPolicyParameterNames2,
+            policyParameterValues2
+        );
+
+        // Validate tool execution for second version
+        VincentUserViewFacet.ToolExecutionValidation memory result = wrappedUserViewFacet
+            .validateToolExecutionAndGetPolicies(TEST_DELEGATEE_2, TEST_PKP_TOKEN_ID_1, TEST_TOOL_IPFS_CID_1);
+
+        // Verify that only the second version's policy is included
+        assertEq(result.policies.length, 1, "Should only have one policy");
+        assertEq(result.policies[0].policyIpfsCid, TEST_POLICY_2, "Should have correct policy IPFS CID");
+        assertEq(result.policies[0].parameters.length, 1, "Should have one parameter");
+        assertEq(result.policies[0].parameters[0].name, "param2", "Should have correct parameter name");
+        assertEq(
+            uint256(result.policies[0].parameters[0].paramType),
+            uint256(VincentAppStorage.ParameterType.STRING),
+            "Should have correct parameter type"
+        );
+        assertEq(
+            keccak256(result.policies[0].parameters[0].value),
+            keccak256(abi.encode("test")),
+            "Should have correct parameter value"
+        );
+
+        vm.stopPrank();
+    }
 }

@@ -200,24 +200,6 @@ contract VincentUserFacet is VincentBase {
     error EmptyParameterName();
 
     /**
-     * @notice Error thrown when duplicate parameter names are detected for a single policy
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     * @param paramName The duplicate parameter name
-     * @param firstIndex Index of the first occurrence of the parameter
-     * @param duplicateIndex Index of the duplicate occurrence of the parameter
-     */
-    error DuplicateParameterNameNotAllowed(
-        uint256 appId,
-        uint256 toolIndex,
-        uint256 policyIndex,
-        string paramName,
-        uint256 firstIndex,
-        uint256 duplicateIndex
-    );
-
-    /**
      * @notice Error thrown when not all registered tools for an app version are provided
      * @param appId The ID of the app
      * @param appVersion The version of the app

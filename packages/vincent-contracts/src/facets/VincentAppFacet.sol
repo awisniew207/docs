@@ -195,45 +195,6 @@ contract VincentAppFacet is VincentBase {
     error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
 
     /**
-     * @notice Error thrown when duplicate tool IPFS CIDs are detected in the same app version
-     * @param appId ID of the app
-     * @param toolIpfsCid The duplicate tool IPFS CID
-     * @param firstIndex Index of the first occurrence of the tool
-     * @param duplicateIndex Index of the duplicate occurrence of the tool
-     */
-    error DuplicateToolIpfsCidNotAllowed(uint256 appId, string toolIpfsCid, uint256 firstIndex, uint256 duplicateIndex);
-
-    /**
-     * @notice Error thrown when duplicate policy IPFS CIDs are detected for a single tool
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIpfsCid The duplicate policy IPFS CID
-     * @param firstIndex Index of the first occurrence of the policy
-     * @param duplicateIndex Index of the duplicate occurrence of the policy
-     */
-    error DuplicatePolicyIpfsCidNotAllowed(
-        uint256 appId, uint256 toolIndex, string policyIpfsCid, uint256 firstIndex, uint256 duplicateIndex
-    );
-
-    /**
-     * @notice Error thrown when duplicate parameter names are detected for a single policy
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     * @param paramName The duplicate parameter name
-     * @param firstIndex Index of the first occurrence of the parameter
-     * @param duplicateIndex Index of the duplicate occurrence of the parameter
-     */
-    error DuplicateParameterNameNotAllowed(
-        uint256 appId,
-        uint256 toolIndex,
-        uint256 policyIndex,
-        string paramName,
-        uint256 firstIndex,
-        uint256 duplicateIndex
-    );
-
-    /**
      * @notice Error thrown when the top-level tool arrays have mismatched lengths
      * @param toolsLength Length of the tools array
      * @param policiesLength Length of the policies array

@@ -327,15 +327,33 @@ contract VincentUserViewFacet is VincentBase {
         bytes32[] memory policyHashes = toolPolicyStorage.policyIpfsCidHashesWithParameters.values();
         uint256 policyCount = policyHashes.length;
 
-        // Create the policies array
-        validation.policies = new PolicyWithParameters[](policyCount);
+        // Get the tool policies for the current app version to check which policies are valid
+        VincentAppStorage.ToolPolicies storage currentVersionToolPolicies =
+            versionedApp.toolIpfsCidHashToToolPolicies[hashedToolIpfsCid];
 
-        // For each policy, get all its parameters
+        // Count how many policies are valid for the current version
+        uint256 validPolicyCount = 0;
+        for (uint256 i = 0; i < policyCount; i++) {
+            if (currentVersionToolPolicies.policyIpfsCidHashes.contains(policyHashes[i])) {
+                validPolicyCount++;
+            }
+        }
+
+        // Create the policies array with only valid policies
+        validation.policies = new PolicyWithParameters[](validPolicyCount);
+        uint256 validPolicyIndex = 0;
+
+        // For each policy, get all its parameters if it exists in the current version
         for (uint256 i = 0; i < policyCount; i++) {
             bytes32 policyHash = policyHashes[i];
 
+            // Skip if policy doesn't exist in current version
+            if (!currentVersionToolPolicies.policyIpfsCidHashes.contains(policyHash)) {
+                continue;
+            }
+
             // Get the policy IPFS CID
-            validation.policies[i].policyIpfsCid = ls_.ipfsCidHashToIpfsCid[policyHash];
+            validation.policies[validPolicyIndex].policyIpfsCid = ls_.ipfsCidHashToIpfsCid[policyHash];
 
             // Get the policy parameters storage
             VincentUserStorage.PolicyParametersStorage storage policyParametersStorage =
@@ -346,7 +364,7 @@ contract VincentUserViewFacet is VincentBase {
             uint256 paramCount = paramNameHashes.length;
 
             // Create the parameters array for this policy
-            validation.policies[i].parameters = new PolicyParameter[](paramCount);
+            validation.policies[validPolicyIndex].parameters = new PolicyParameter[](paramCount);
 
             // For each parameter, get its name, type, and value
             for (uint256 j = 0; j < paramCount; j++) {
@@ -354,14 +372,17 @@ contract VincentUserViewFacet is VincentBase {
 
                 // Get the policy data to access parameter type
                 VincentAppStorage.Policy storage policy =
-                    versionedApp.toolIpfsCidHashToToolPolicies[hashedToolIpfsCid].policyIpfsCidHashToPolicy[policyHash];
+                    currentVersionToolPolicies.policyIpfsCidHashToPolicy[policyHash];
 
                 // Get parameter name, type, and value
-                validation.policies[i].parameters[j].name = ls_.policyParameterNameHashToName[paramHash];
-                validation.policies[i].parameters[j].paramType = policy.policyParameterNameHashToType[paramHash];
-                validation.policies[i].parameters[j].value =
+                validation.policies[validPolicyIndex].parameters[j].name = ls_.policyParameterNameHashToName[paramHash];
+                validation.policies[validPolicyIndex].parameters[j].paramType =
+                    policy.policyParameterNameHashToType[paramHash];
+                validation.policies[validPolicyIndex].parameters[j].value =
                     policyParametersStorage.policyParameterNameHashToValue[paramHash];
             }
+
+            validPolicyIndex++;
         }
 
         return validation;
