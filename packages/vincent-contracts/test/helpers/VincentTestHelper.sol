@@ -93,6 +93,7 @@ abstract contract VincentTestHelper is Test {
     // Tool-related constants - IPFS CIDs for tool identification
     string constant TEST_TOOL_IPFS_CID_1 = "QmTestTool1";
     string constant TEST_TOOL_IPFS_CID_2 = "QmTestTool2";
+    string constant TEST_TOOL_IPFS_CID_3 = "QmTestTool3";
 
     // Policy-related constants for tool permissions and configurations
     string constant TEST_POLICY_1 = "QmTestPolicy1";
