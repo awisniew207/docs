@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import ConsentView from '../../../components/consent/pages/index';
+import ConsentView from '../../../../components/consent/pages/index';
 
 export const metadata: Metadata = {
   title: 'Vincent | App Consent',

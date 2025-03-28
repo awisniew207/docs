@@ -52,7 +52,7 @@ export default function AdvancedFunctionsPage() {
   }, [isConnected, loadAppData, router]);
   
   const handleBack = () => {
-    router.push(`/${appIdParam}`);
+    router.push(`/appId/${appIdParam}`);
   };
   
   const handleSuccess = () => {

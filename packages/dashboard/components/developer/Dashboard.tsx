@@ -150,7 +150,7 @@ export default function DashboardScreen({
             <Card
               key={index}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => router.push(`/${app.appId}`)}
+              onClick={() => router.push(`/appId/${app.appId}`)}
             >
               <CardHeader>
                 <CardTitle className="flex justify-between items-center text-black">

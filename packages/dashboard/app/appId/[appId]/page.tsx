@@ -140,7 +140,7 @@ export default function AppDetailPage() {
         <div className="flex gap-2 items-center">
           <Button
             variant="default"
-            onClick={() => router.push(`/${app.appId}/delegatee`)}
+            onClick={() => router.push(`/appId/${app.appId}/delegatee`)}
             className="text-black"
           >
             <Plus className="h-4 w-4 mr-2 font-bold text-black" />
@@ -148,7 +148,7 @@ export default function AppDetailPage() {
           </Button>
           <Button
             variant="default"
-            onClick={() => router.push(`/${app.appId}/tool-policies`)}
+            onClick={() => router.push(`/appId/${app.appId}/tool-policies`)}
             className="text-black"
           >
             <Plus className="h-4 w-4 mr-2 font-bold text-black" />
@@ -156,7 +156,7 @@ export default function AppDetailPage() {
           </Button>
           <Button
             variant="default"
-            onClick={() => router.push(`/${app.appId}/advanced-functions`)}
+            onClick={() => router.push(`/appId/${app.appId}/advanced-functions`)}
             className="text-black"
           >
             <Settings className="h-4 w-4 mr-2 font-bold text-black" />
