@@ -772,7 +772,6 @@ export const useConsentApproval = ({
           existing: existingParam.value,
           current: currentParam?.value,
           type: existingParam.type,
-          isAddressType: existingParam.type === ParameterType.ADDRESS,
         });
 
         // Parameter has been cleared if it existed before but now has empty value
