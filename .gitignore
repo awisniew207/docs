@@ -40,3 +40,14 @@ Thumbs.db
 
 .nx/cache
 .nx/workspace-data
+**/.next
+**/next-env.d.ts
+
+packages/examples
+
+**/vincent-contract-caller-config.json
+
+# Environment variables
+**/.env
+**/.env.*
+!.env.example
