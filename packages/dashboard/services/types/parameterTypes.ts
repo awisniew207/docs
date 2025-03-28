@@ -49,7 +49,9 @@ export const PARAMETER_TYPE_NAMES: Record<number, string> = {
 // Function to convert a type string to its enum value
 export const mapTypeToEnum = (type: string): number => {
   const normalizedType = type.toLowerCase().trim();
-  return PARAMETER_TYPE_MAP[normalizedType] || ParameterType.STRING; // Default to string if not found
+  const result = PARAMETER_TYPE_MAP[normalizedType];
+
+  return result !== undefined ? result : ParameterType.STRING; // Default to string if not found
 };
 
 // Function to convert an enum value to its human-readable name

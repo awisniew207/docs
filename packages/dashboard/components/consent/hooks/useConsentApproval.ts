@@ -13,6 +13,7 @@ import { AppView, VersionParameter } from '../types';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { litNodeClient, SELECTED_LIT_NETWORK } from '../utils/lit';
 import { ParameterType } from '@/services/types/parameterTypes';
+import { decodeParameterValue, isEmptyParameterValue } from '../utils/parameterDecoding';
 
 interface UseConsentApprovalProps {
   appId: string | null;
@@ -57,6 +58,260 @@ export const useConsentApproval = ({
     await userPkpWallet.init();
     const connectedContract = userRegistryContract.connect(userPkpWallet);
     
+    // Fetch existing parameters to identify which ones need to be removed
+    let existingParameters: VersionParameter[] = [];
+    try {
+      const userViewContract = getUserViewRegistryContract();
+      const appIdNum = Number(appId);
+      
+      const toolsAndPolicies = await userViewContract.getAllToolsAndPoliciesForApp(
+        agentPKP.tokenId,
+        appIdNum
+      );
+      
+      console.log('Existing tools and policies:', toolsAndPolicies);
+      
+      // Transform the contract data into the VersionParameter format
+      toolsAndPolicies.forEach((tool: any, toolIndex: number) => {
+        tool.policies.forEach((policy: any, policyIndex: number) => {
+          policy.parameters.forEach((param: any, paramIndex: number) => {
+            // Use the shared utility function to decode parameter values
+            const decodedValue = decodeParameterValue(param.value, param.paramType);
+            
+            existingParameters.push({
+              toolIndex,
+              policyIndex,
+              paramIndex,
+              name: param.name,
+              type: param.paramType,
+              value: decodedValue
+            });
+          });
+        });
+      });
+      
+      console.log('Existing parameters with decoded values:', existingParameters);
+    } catch (error) {
+      console.error('Error fetching existing parameters:', error);
+    }
+    
+    // Now check for parameters that need to be removed (form field is empty)
+    const parametersToRemove: VersionParameter[] = [];
+    
+    // First create a map of form parameters for easy comparison
+    const formParameterMap = new Map<string, VersionParameter>();
+    // Create a name+type map for more reliable matching
+    const formParameterNameTypeMap = new Map<string, VersionParameter>();
+
+    parameters.forEach(param => {
+      // Position-based mapping (legacy approach)
+      const posKey = `${param.toolIndex}-${param.policyIndex}-${param.paramIndex}`;
+      formParameterMap.set(posKey, param);
+      
+      // Name+type based mapping (more reliable)
+      const nameTypeKey = `${param.name}:${param.type}`;
+      formParameterNameTypeMap.set(nameTypeKey, param);
+      
+      // Additional logging for form parameter values
+      console.log(`Form parameter ${param.name} (type: ${param.type}): `, {
+        value: param.value,
+        valueType: typeof param.value,
+        isEmptyString: param.value === '',
+        isZero: param.value === '0' || param.value === 0,
+        isArray: Array.isArray(param.value),
+        hasHexPrefix: typeof param.value === 'string' && param.value.startsWith('0x')
+      });
+    });
+
+    console.log('Checking existing parameters for removal:', existingParameters);
+
+    // Check each existing parameter
+    existingParameters.forEach(existingParam => {
+      try {
+        // Simply match by name - the most direct approach
+        const formParam = parameters.find(p => p.name === existingParam.name);
+        
+        // Log comparisons for debugging
+        console.log(`Comparing parameter ${existingParam.name}:`, {
+          existingValue: existingParam.value,
+          formValue: formParam ? formParam.value : 'NOT FOUND',
+          existingType: existingParam.type,
+          formType: formParam ? formParam.type : 'N/A',
+          isArray: [
+            ParameterType.INT256_ARRAY,
+            ParameterType.UINT256_ARRAY,
+            ParameterType.BOOL_ARRAY,
+            ParameterType.ADDRESS_ARRAY,
+            ParameterType.STRING_ARRAY
+          ].includes(existingParam.type)
+        });
+
+        // If no matching parameter in form, remove it
+        if (!formParam) {
+          console.log(`Parameter ${existingParam.name} not found in form, will be removed`);
+          parametersToRemove.push(existingParam);
+        }
+        // Special case for array types: always remove if the array is empty or has only empty/default values
+        else if ([
+          ParameterType.INT256_ARRAY,
+          ParameterType.UINT256_ARRAY,
+          ParameterType.BOOL_ARRAY,
+          ParameterType.ADDRESS_ARRAY,
+          ParameterType.STRING_ARRAY
+        ].includes(formParam.type) && isEmptyParameterValue(formParam.value, formParam.type)) {
+          console.log(`Array parameter ${existingParam.name} is empty and will be removed`);
+          parametersToRemove.push(existingParam);
+        }
+        // If there is a matching parameter, but its value is empty or placeholder, remove if values differ
+        else if (isEmptyParameterValue(formParam.value, formParam.type)) {
+          // Only remove if the existing value wasn't also empty/zero
+          if (!isEmptyParameterValue(existingParam.value, existingParam.type)) {
+            console.log(`Parameter ${existingParam.name} will be removed: value changed from '${existingParam.value}' to empty`);
+            parametersToRemove.push(existingParam);
+          } else {
+            console.log(`Parameter ${existingParam.name} has empty value but existing was also empty/zero, not removing`);
+          }
+        } else {
+          console.log(`Parameter ${existingParam.name} has non-empty value (${formParam.value}), not removing`);
+        }
+      } catch (error) {
+        console.error(`Error checking parameter ${existingParam.name} for removal:`, error);
+      }
+    });
+    
+    // If we have parameters to remove, prepare and send the removal transaction
+    if (parametersToRemove.length > 0) {
+      console.log(`Found ${parametersToRemove.length} parameters to remove`);
+      onStatusChange?.('Removing cleared parameters...', 'info');
+      
+      // Prepare data structure for the removal function
+      const removalToolIpfsCids: string[] = [];
+      const removalPolicyIpfsCids: string[][] = [];
+      const removalParameterNames: string[][][] = [];
+      
+      parametersToRemove.forEach(param => {
+        const { toolIndex, policyIndex, name: paramName } = param;
+        
+        // Ensure arrays exist at this level
+        while (removalToolIpfsCids.length <= toolIndex) {
+          removalToolIpfsCids.push('');
+          removalPolicyIpfsCids.push([]);
+          removalParameterNames.push([]);
+        }
+        
+        // Set the tool IPFS CID if not already set
+        if (!removalToolIpfsCids[toolIndex] && versionInfo) {
+          const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+          if (toolsData && toolsData[toolIndex] && toolsData[toolIndex][0]) {
+            removalToolIpfsCids[toolIndex] = toolsData[toolIndex][0];
+          }
+        }
+        
+        // Ensure policy arrays exist
+        while (removalPolicyIpfsCids[toolIndex].length <= policyIndex) {
+          removalPolicyIpfsCids[toolIndex].push('');
+          removalParameterNames[toolIndex].push([]);
+        }
+        
+        // Set the policy IPFS CID
+        if (!removalPolicyIpfsCids[toolIndex][policyIndex] && versionInfo) {
+          const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+          if (toolsData && toolsData[toolIndex] && 
+              toolsData[toolIndex][1] && 
+              toolsData[toolIndex][1][policyIndex] && 
+              toolsData[toolIndex][1][policyIndex][0]) {
+            removalPolicyIpfsCids[toolIndex][policyIndex] = toolsData[toolIndex][1][policyIndex][0];
+          }
+        }
+        
+        // Add the parameter name
+        if (removalPolicyIpfsCids[toolIndex][policyIndex]) {
+          removalParameterNames[toolIndex][policyIndex].push(paramName);
+        }
+      });
+      
+      // Filter out empty tool entries
+      const filteredToolIndices = removalToolIpfsCids
+        .map((_, i) => i)
+        .filter(i => removalToolIpfsCids[i] !== '');
+      
+      // Create final arrays for the contract call
+      const filteredTools: string[] = [];
+      const filteredPolicies: string[][] = [];
+      const filteredParams: string[][][] = [];
+      
+      // Process each valid tool
+      filteredToolIndices.forEach(toolIndex => {
+        // Find valid policies for this tool
+        const validPolicyIndices = removalPolicyIpfsCids[toolIndex]
+          .map((_, i) => i)
+          .filter(i => removalPolicyIpfsCids[toolIndex][i] !== '' && 
+                     removalParameterNames[toolIndex][i].length > 0);
+        
+        if (validPolicyIndices.length > 0) {
+          filteredTools.push(removalToolIpfsCids[toolIndex]);
+          
+          // Gather policies and params
+          const toolPolicies: string[] = [];
+          const toolParams: string[][] = [];
+          
+          validPolicyIndices.forEach(policyIndex => {
+            toolPolicies.push(removalPolicyIpfsCids[toolIndex][policyIndex]);
+            toolParams.push(removalParameterNames[toolIndex][policyIndex]);
+          });
+          
+          filteredPolicies.push(toolPolicies);
+          filteredParams.push(toolParams);
+        }
+      });
+      
+      // Only proceed if we have valid data to remove
+      if (filteredTools.length > 0 && 
+          filteredPolicies.length > 0 && 
+          filteredParams.length > 0) {
+        
+        console.log('Calling removeToolPolicyParameters with:', {
+          filteredTools,
+          filteredPolicies,
+          filteredParams
+        });
+        
+        try {
+          const removeArgs = [
+            appId,
+            agentPKP.tokenId,
+            Number(appInfo.latestVersion),
+            filteredTools,
+            filteredPolicies,
+            filteredParams
+          ];
+          
+          const removeGasLimit = await estimateGasWithBuffer(
+            connectedContract,
+            'removeToolPolicyParameters',
+            removeArgs
+          );
+          
+          onStatusChange?.('Sending transaction to remove cleared parameters...', 'info');
+          const removeTxResponse = await connectedContract.removeToolPolicyParameters(
+            ...removeArgs,
+            {
+              gasLimit: removeGasLimit,
+            }
+          );
+          
+          console.log('PARAMETER REMOVAL TRANSACTION SENT:', removeTxResponse.hash);
+          onStatusChange?.(`Parameter removal transaction submitted! Hash: ${removeTxResponse.hash.substring(0, 10)}...`, 'info');
+          
+          await removeTxResponse.wait();
+          console.log('Parameter removal transaction confirmed!');
+        } catch (error) {
+          console.error('Parameter removal failed:', error);
+          onStatusChange?.('Failed to remove cleared parameters', 'warning');
+        }
+      }
+    }
+    
     onStatusChange?.('Preparing parameter data for contract...', 'info');
     const toolIpfsCids: string[] = [];
     const policyIpfsCids: string[][] = [];
@@ -90,13 +345,8 @@ export const useConsentApproval = ({
                 const paramNames = policy[1];
                 
                 if (Array.isArray(paramNames)) {
+                  // Filter parameters that have user-provided values
                   paramNames.forEach((name: any, paramIndex: number) => {
-                    const paramName = typeof name === 'string' && name.trim() !== '' 
-                      ? name.trim() 
-                      : `param_${paramIndex}`;
-                    
-                    policyParameterNames[toolIndex][policyIndex][paramIndex] = paramName;
-                    
                     // Find matching parameter value from user input
                     const param = parameters.find(p => 
                       p.toolIndex === toolIndex && 
@@ -104,14 +354,22 @@ export const useConsentApproval = ({
                       p.paramIndex === paramIndex
                     );
                     
-                    // Encode the parameter value
+                    // Only add parameters that have user-provided values and aren't empty
                     if (param && param.value !== undefined) {
-                      policyParameterValues[toolIndex][policyIndex][paramIndex] = 
-                        encodeParameterValue(param.type, param.value, paramName);
-                    } else {
-                      // Default value if not provided by user
-                      policyParameterValues[toolIndex][policyIndex][paramIndex] = 
-                        encodeParameterValue(ParameterType.STRING, "");
+                      // Check if parameter is empty and should be skipped using the shared utility
+                      const isEmpty = isEmptyParameterValue(param.value, param.type);
+                      
+                      // Skip if parameter is empty
+                      if (isEmpty) return;
+                      
+                      const paramName = typeof name === 'string' && name.trim() !== '' 
+                        ? name.trim() 
+                        : `param_${paramIndex}`;
+                      
+                      policyParameterNames[toolIndex][policyIndex].push(paramName);
+                      policyParameterValues[toolIndex][policyIndex].push(
+                        encodeParameterValue(param.type, param.value, paramName)
+                      );
                     }
                   });
                 }
@@ -293,45 +551,131 @@ export const useConsentApproval = ({
       });
     }
 
-    console.log('Sending transaction with parameters:', {
-      toolIpfsCids,
-      toolPolicies,
-      toolPolicyParameterNames,
-      toolPolicyParameterTypes
-    });
-    
-    // Create parameter values with proper encoding
-    const policyParameterValues = toolPolicyParameterNames.map((toolParams, toolIndex) => 
+    // Filter toolPolicyParameterNames and check for empty values
+    const filteredToolPolicyParameterNames = toolPolicyParameterNames.map((toolParams, toolIndex) => 
       toolParams.map((policyParams, policyIndex) => 
-        policyParams.map((paramName, paramIndex) => {
-          // Find the matching parameter from the user input
+        policyParams.filter((paramName, paramIndex) => {
           const param = parameters.find(p => 
             p.toolIndex === toolIndex && 
             p.policyIndex === policyIndex && 
             p.paramIndex === paramIndex
           );
           
-          // If a parameter was provided by the user, encode it based on its type
-          if (param && param.value !== undefined) {
-            return encodeParameterValue(param.type, param.value, paramName);
-          }
+          // Skip if param doesn't exist or value is undefined
+          if (!param || param.value === undefined) return false;
           
-          // Fallback to empty string if no parameter value was provided
-          return encodeParameterValue(ParameterType.STRING, "");
+          // Use shared utility to check if value is empty
+          return !isEmptyParameterValue(param.value, param.type);
         })
       )
     );
     
-    console.log('PERMIT: Transaction with ABI parameters', {
-      pkpTokenId: agentPKP.tokenId,
-      appId: appId,
-      appVersion: Number(appInfo.latestVersion),
-      toolsCount: toolIpfsCids.length,
-      policiesStructure: toolPolicies.map(p => p.length),
-      parameters
+    // Filter toolPolicyParameterTypes with the same logic
+    const filteredToolPolicyParameterTypes = toolPolicyParameterTypes.map((toolParams, toolIndex) => 
+      toolParams.map((policyParams, policyIndex) => 
+        policyParams.filter((_, paramIndex) => {
+          const param = parameters.find(p => 
+            p.toolIndex === toolIndex && 
+            p.policyIndex === policyIndex && 
+            p.paramIndex === paramIndex
+          );
+          
+          // Skip if param doesn't exist or value is undefined
+          if (!param || param.value === undefined) return false;
+          
+          // Use shared utility to check if value is empty
+          return !isEmptyParameterValue(param.value, param.type);
+        })
+      )
+    );
+    
+    // Filter and encode parameter values with the same logic
+    const policyParameterValues = toolPolicyParameterNames.map((toolParams, toolIndex) => 
+      toolParams.map((policyParams, policyIndex) => {
+        // Only include parameters that have user-provided values and aren't empty
+        const filteredParams = policyParams.filter((paramName, paramIndex) => {
+          const param = parameters.find(p => 
+            p.toolIndex === toolIndex && 
+            p.policyIndex === policyIndex && 
+            p.paramIndex === paramIndex
+          );
+          
+          // Skip if param doesn't exist or value is undefined
+          if (!param || param.value === undefined) return false;
+          
+          // Use shared utility to check if value is empty
+          return !isEmptyParameterValue(param.value, param.type);
+        });
+        
+        // For each filtered parameter, encode its value
+        return filteredParams.map((paramName, filteredIndex) => {
+          const originalIndex = policyParams.indexOf(paramName);
+          const param = parameters.find(p => 
+            p.toolIndex === toolIndex && 
+            p.policyIndex === policyIndex && 
+            p.paramIndex === originalIndex
+          );
+          return encodeParameterValue(param!.type, param!.value, paramName);
+        });
+      })
+    );
+    
+    // After creating the filtered arrays, log the filtered parameters
+    console.log('Sending transaction with filtered parameters:', {
+      toolIpfsCids,
+      toolPolicies,
+      filteredToolPolicyParameterNames,
+      filteredToolPolicyParameterTypes,
+      policyParameterValues
     });
     
-    try {
+    // Now check for parameters that need to be removed (were previously set but now cleared)
+    const parametersToRemove: VersionParameter[] = [];
+    if (parameters.length > 0) {
+      console.log('Checking existing parameters for removal:', parameters);
+      parameters.forEach(existingParam => {
+        // Find the matching parameter in the current parameters
+        const currentParam = parameters.find(p => 
+          p.toolIndex === existingParam.toolIndex && 
+          p.policyIndex === existingParam.policyIndex && 
+          p.paramIndex === existingParam.paramIndex
+        );
+        
+        console.log(`Checking parameter ${existingParam.name}: `, {
+          existing: existingParam.value,
+          current: currentParam?.value,
+          type: existingParam.type,
+          isAddressType: existingParam.type === ParameterType.ADDRESS
+        });
+        
+        // Parameter has been cleared if it existed before but now has empty value
+        const isCleared = 
+          // If there is no current parameter
+          !currentParam || 
+          // Or the current value is empty string
+          currentParam.value === '' || 
+          // Or for address type, it's the default address or placeholder
+          (existingParam.type === ParameterType.ADDRESS && 
+           (currentParam.value === '0x0000000000000000000000000000000000000000' || 
+            currentParam.value === '0x...'));
+        
+        if (isCleared) {
+          console.log(`Parameter ${existingParam.name} has been cleared and will be removed`);
+          parametersToRemove.push(existingParam);
+        }
+      });
+    }
+    
+    // After parameter removal (or if none needed), continue with permitAppVersion
+    onStatusChange?.('Sending transaction with filtered parameters:', 'info');
+    console.log('Sending transaction with filtered parameters:', {
+      toolIpfsCids,
+      toolPolicies,
+      filteredToolPolicyParameterNames,
+      filteredToolPolicyParameterTypes,
+      policyParameterValues
+    });
+    
       // Create the args array for the permitAppVersion method
       const permitArgs = [
         agentPKP.tokenId,
@@ -339,11 +683,11 @@ export const useConsentApproval = ({
         Number(appInfo.latestVersion),
         toolIpfsCids,
         toolPolicies,
-        toolPolicyParameterNames,
+      filteredToolPolicyParameterNames,
         policyParameterValues
       ];
       
-      // Estimate gas with buffer
+    try {
       onStatusChange?.('Estimating transaction gas fees...', 'info');
       const gasLimit = await estimateGasWithBuffer(
         connectedContract,

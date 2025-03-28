@@ -221,6 +221,30 @@ export default function AuthenticatedConsentForm({
     }
   }, [urlError, redirectError, showErrorWithStatus]);
 
+  // Add a ref to track when we've fetched parameters for a version
+  const paramsFetchedForVersionRef = useRef<number | null>(null);
+
+  // Add a dedicated effect to fetch parameters when updating the current version
+  useEffect(() => {
+    // We only want this to run when useCurrentVersionOnly is true and we don't have existingParameters yet
+    if (useCurrentVersionOnly && 
+        existingParameters.length === 0 && 
+        !isLoadingParameters && 
+        appId && 
+        agentPKP &&
+        permittedVersion !== null &&
+        paramsFetchedForVersionRef.current !== permittedVersion) {
+      
+      console.log(`Fetching existing parameters for current version ${permittedVersion}`);
+      paramsFetchedForVersionRef.current = permittedVersion;
+      
+      fetchExistingParameters().catch(error => {
+        console.error('Error fetching existing parameters:', error);
+        paramsFetchedForVersionRef.current = null; // Reset on error to allow retry
+      });
+    }
+  }, [useCurrentVersionOnly, existingParameters.length, isLoadingParameters, appId, agentPKP, fetchExistingParameters, permittedVersion]);
+
   // ===== Event Handler Functions =====
 
   /**
@@ -358,8 +382,9 @@ export default function AuthenticatedConsentForm({
    * 2. Sets the parameters form with existing parameter values
    */
   const handleUpdateParameters = useCallback(() => {
-    // Reset the ref to ensure we'll fetch the correct version info
+    // Reset the refs to ensure we'll fetch the correct version info
     permittedVersionFetchedRef.current = null;
+    paramsFetchedForVersionRef.current = null;
     
     updateState({
       showUpdateModal: false,
@@ -372,27 +397,45 @@ export default function AuthenticatedConsentForm({
       useCurrentVersionOnly: true
     });
 
-    // Populate the form with existing parameter values
-    if (existingParameters.length > 0) {
-      console.log('Setting form fields with existing parameter values:', existingParameters);
-      setParameters(existingParameters);
-    }
+    // Ensure we load existing parameters if they're not already loaded
+    const fetchAndPopulateParameters = async () => {
+      try {
+        if (existingParameters.length === 0) {
+          console.log('Fetching existing parameters for current version');
+          await fetchExistingParameters();
+        }
+        
+        // Ensure we have the parameters before setting them
+        if (existingParameters.length > 0) {
+          console.log('Setting form fields with existing parameter values:', existingParameters);
+          setParameters(existingParameters);
+        }
+      } catch (error) {
+        console.error('Error loading existing parameters:', error);
+      }
+    };
     
     // Explicitly force a version refresh if we have permittedVersion
     if (permittedVersion !== null && appId) {
       console.log(`Explicitly fetching version ${permittedVersion} data for parameter update`);
       fetchVersionInfo(permittedVersion)
         .then(() => {
-          updateState({ isLoading: false });
-          console.log(`Successfully loaded version ${permittedVersion} data`);
+          fetchAndPopulateParameters().then(() => {
+            updateState({ isLoading: false });
+            console.log(`Successfully loaded version ${permittedVersion} data and parameters`);
+          });
         })
         .catch(error => {
           console.error('Error fetching permitted version data:', error);
           updateState({ isLoading: false });
           showErrorWithStatus('Failed to load version data', 'Error');
         });
+    } else {
+      fetchAndPopulateParameters().then(() => {
+        updateState({ isLoading: false });
+      });
     }
-  }, [existingParameters, setParameters, updateState, permittedVersion, appId, fetchVersionInfo, showErrorWithStatus]);
+  }, [existingParameters, setParameters, updateState, permittedVersion, appId, fetchVersionInfo, fetchExistingParameters, showErrorWithStatus]);
 
 
   useEffect(() => {

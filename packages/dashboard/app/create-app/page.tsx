@@ -3,14 +3,22 @@
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
-import CreateAppScreen from '@/components/developer/CreateApp';
+import dynamic from 'next/dynamic';
 import { useErrorPopup } from '@/providers/error-popup';
+import { useIsMounted } from '@/hooks/useIsMounted';
+
+// Use dynamic import for CreateAppScreen to prevent SSR hydration issues
+const CreateAppScreen = dynamic(
+  () => import('@/components/developer/CreateApp'),
+  { ssr: false }
+);
 
 export default function CreateAppPage() {
   const router = useRouter();
   const { isConnected } = useAccount();
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+  const isMounted = useIsMounted();
   
   // Add the error popup hook
   const { showError } = useErrorPopup();
@@ -32,6 +40,9 @@ export default function CreateAppPage() {
       router.push('/');
     }, 1500);
   };
+  
+  // Prevent hydration errors by ensuring we only render when mounted
+  if (!isMounted) return null;
   
   // If not connected, redirect to dashboard
   if (!isConnected) {

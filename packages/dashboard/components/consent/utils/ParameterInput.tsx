@@ -1,5 +1,180 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ParameterType, mapEnumToTypeName } from '../../../services/types/parameterTypes';
+import { z } from 'zod';
+
+// Define styles for the array inputs
+const arrayInputStyles = `
+  .array-inputs {
+    margin-bottom: 10px;
+  }
+  
+  .array-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .array-item-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 14px;
+  }
+  
+  .array-item input[type="checkbox"] {
+    height: 16px;
+    width: 16px;
+  }
+  
+  .array-item-remove-btn {
+    background-color: transparent;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .bool-array-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    font-size: 14px;
+  }
+  
+  .bool-array-item input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  
+  .bool-array-item-label {
+    flex: 1;
+  }
+  
+  .empty-array-message {
+    color: #888;
+    font-style: italic;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  
+  .array-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .array-actions button {
+    font-size: 14px;
+  }
+`;
+
+// Define Zod schemas for different parameter types
+const zodSchemas: Record<number, z.ZodTypeAny> = {
+  // Basic types
+  [ParameterType.INT256]: z.union([
+    z.string().refine(val => val === '' || val === '-' || !isNaN(parseInt(val)), {
+      message: "Must be a valid integer or empty"
+    }),
+    z.number().int(),
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.UINT256]: z.union([
+    z.string().refine(val => val === '' || (!isNaN(parseInt(val)) && parseInt(val) >= 0), {
+      message: "Must be a non-negative integer or empty"
+    }),
+    z.number().int().nonnegative(),
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.BOOL]: z.union([
+    z.boolean(), 
+    z.literal(''), 
+    z.enum(['true', 'false', 'not_set'])
+  ]).optional(),
+  
+  [ParameterType.ADDRESS]: z.union([
+    z.string().regex(/^(0x[a-fA-F0-9]{40}|0x\.\.\.|)$/, {
+      message: "Must be a valid Ethereum address, 0x..., or empty"
+    }), 
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.STRING]: z.string().optional(),
+  
+  // Array types
+  [ParameterType.INT256_ARRAY]: z.union([
+    z.string().refine(val => {
+      if (val === '') return true;
+      return val.split(',').every(item => {
+        const trimmed = item.trim();
+        return trimmed === '' || trimmed === '-' || !isNaN(parseInt(trimmed));
+      });
+    }, {
+      message: "Must be comma-separated integers or empty"
+    }),
+    z.array(z.union([z.number().int(), z.string(), z.literal('')])),
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.UINT256_ARRAY]: z.union([
+    z.string().refine(val => {
+      if (val === '') return true;
+      return val.split(',').every(item => {
+        const trimmed = item.trim();
+        return trimmed === '' || (!isNaN(parseInt(trimmed)) && parseInt(trimmed) >= 0);
+      });
+    }, {
+      message: "Must be comma-separated non-negative integers or empty"
+    }),
+    z.array(z.union([z.number().int().nonnegative(), z.string(), z.literal('')])),
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.BOOL_ARRAY]: z.union([
+    z.string().refine(val => {
+      if (val === '') return true;
+      return val.split(',').every(item => {
+        const trimmed = item.trim().toLowerCase();
+        return trimmed === '' || 
+               ['true', 'false', 'yes', 'no', '1', '0', 'y', 'n'].includes(trimmed);
+      });
+    }, {
+      message: "Must be comma-separated boolean values or empty"
+    }),
+    z.array(z.union([z.boolean(), z.string(), z.literal('')])),
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.ADDRESS_ARRAY]: z.union([
+    z.string().refine(val => {
+      if (val === '') return true;
+      return val.split(',').every(item => {
+        const trimmed = item.trim();
+        return trimmed === '' || 
+               trimmed === '0x...' || 
+               /^0x[a-fA-F0-9]{40}$/.test(trimmed);
+      });
+    }, {
+      message: "Must be comma-separated Ethereum addresses or empty"
+    }),
+    z.array(z.string()),
+    z.literal('')
+  ]).optional(),
+  
+  [ParameterType.STRING_ARRAY]: z.union([
+    z.string(),
+    z.array(z.string()),
+    z.literal('')
+  ]).optional(),
+};
 
 interface ParameterInputProps {
   name: string;
@@ -10,212 +185,347 @@ interface ParameterInputProps {
 
 export default function ParameterInput({ name, type, onChange, value }: ParameterInputProps) {
   const [inputValue, setInputValue] = useState<any>(value || '');
+  const [error, setError] = useState<string | null>(null);
   const typeName = mapEnumToTypeName(type);
+  
+  // Get the appropriate Zod schema for this parameter type
+  const schema = zodSchemas[type] || z.any();
   
   // Update local state when prop value changes
   useEffect(() => {
     if (value !== undefined && value !== inputValue) {
       setInputValue(value);
+      validateValue(value);
     }
   }, [value]);
+
+  // Validate value against the Zod schema
+  const validateValue = useCallback((val: any) => {
+    try {
+      schema.parse(val);
+      setError(null);
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0]?.message || 'Invalid value');
+      } else {
+        setError('Invalid value');
+      }
+      return false;
+    }
+  }, [schema]);
 
   // Memoize handlers to prevent recreating on each render
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     
-    // Convert value based on type
-    let parsedValue: any;
-    switch (type) {
-      case ParameterType.INT256:
-        // Special case for just typing a minus sign
-        if (newValue === '-') {
-          parsedValue = newValue; // Keep as-is for now
-        } else {
-          try {
-            parsedValue = newValue ? parseInt(newValue, 10) : 0;
-            if (isNaN(parsedValue)) parsedValue = 0;
-          } catch (e) {
-            parsedValue = 0;
+    // Validate the new value
+    if (validateValue(newValue)) {
+      // Convert value based on type
+      let parsedValue: any;
+      switch (type) {
+        case ParameterType.INT256:
+          // Special case for just typing a minus sign
+          if (newValue === '-') {
+            parsedValue = newValue; // Keep as-is for now
+          } else if (newValue === '') {
+            parsedValue = ''; // Keep empty string
+          } else {
+            try {
+              // Keep as string but validate by parsing (don't assign the parsed number)
+              const num = parseInt(newValue, 10);
+              parsedValue = isNaN(num) ? '' : newValue;
+            } catch (e) {
+              parsedValue = '';
+            }
           }
-        }
-        break;
-      case ParameterType.UINT256:
-        try {
-          parsedValue = newValue ? parseInt(newValue, 10) : 0;
-          // Ensure non-negative for uint256
-          parsedValue = isNaN(parsedValue) || parsedValue < 0 ? 0 : parsedValue;
-        } catch (e) {
-          parsedValue = 0;
-        }
-        break;
-      case ParameterType.BOOL:
-        parsedValue = newValue === 'true';
-        break;
-      case ParameterType.INT256_ARRAY:
-      case ParameterType.UINT256_ARRAY:
-        try {
-          parsedValue = newValue 
-            ? newValue.split(',')
-                .map(v => {
-                  try {
-                    const num = parseInt(v.trim(), 10);
-                    return isNaN(num) ? 0 : num;
-                  } catch (e) {
-                    return 0;
-                  }
-                })
-            : [];
-        } catch (e) {
-          parsedValue = [];
-        }
-        break;
-      case ParameterType.BOOL_ARRAY:
-        // For boolean arrays, properly parse each item
-        parsedValue = newValue 
-          ? newValue.split(',').map(v => {
-              const trimmed = v.trim().toLowerCase();
-              return trimmed === 'true' || 
-                     trimmed === '1' || 
-                     trimmed === 'yes' || 
-                     trimmed === 'y' || 
-                     trimmed === 'on';
-            }) 
-          : [];
-        break;
-      case ParameterType.STRING_ARRAY:
-        parsedValue = newValue ? newValue.split(',') : [];
-        break;
-      case ParameterType.ADDRESS_ARRAY:
-      case ParameterType.BYTES_ARRAY:
-        parsedValue = newValue ? newValue.split(',').map(v => v.trim()) : [];
-        break;
-      default:
-        parsedValue = newValue;
-    }
-    
-    onChange(parsedValue);
-  }, [type, onChange]);
-
-  // Special handler for number array inputs to prevent NaN values
-  const handleNumberArrayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const rawValue = e.target.value;
-    
-    // Keep the raw input value in the textarea
-    setInputValue(rawValue);
-    
-    // Parse the comma-separated values, replacing invalid numbers with 0
-    try {
-      const parsedArray = rawValue 
-        ? rawValue.split(',')
-            .map(item => {
-              const trimmed = item.trim();
-              // Handle empty input
-              if (trimmed === '') return 0;
+          break;
+        case ParameterType.UINT256:
+          if (newValue === '') {
+            parsedValue = ''; // Keep empty string
+          } else {
+            try {
+              parsedValue = parseInt(newValue, 10);
+              // Ensure non-negative for uint256
+              parsedValue = isNaN(parsedValue) ? '' : Math.max(0, parsedValue);
+            } catch (e) {
+              parsedValue = '';
+            }
+          }
+          break;
+        case ParameterType.BOOL:
+          if (newValue === "not_set" || newValue === "") {
+            parsedValue = "";
+          } else {
+            parsedValue = newValue === 'true';
+          }
+          break;
+        case ParameterType.INT256_ARRAY:
+          if (newValue === '') {
+            parsedValue = ''; // Keep empty string for empty array
+          } else {
+            // Get cleaned array of integers or empty strings
+            parsedValue = newValue.split(',').map(v => {
+              const trimmed = v.trim();
+              if (trimmed === '' || trimmed === '-') return trimmed;
               
-              // Special case for just a minus sign (typing in progress)
-              if (trimmed === '-') {
-                // For int256 arrays, we'll allow this temporarily during typing
-                return type === ParameterType.INT256_ARRAY ? '-' : 0;
-              }
-              
-              // Parse the number correctly including negative sign
               const num = parseInt(trimmed, 10);
+              return isNaN(num) ? '' : num;
+            });
+          }
+          break;
+        case ParameterType.UINT256_ARRAY:
+          if (newValue === '') {
+            parsedValue = ''; // Keep empty string for empty array
+          } else {
+            // Get cleaned array of non-negative integers or empty strings
+            parsedValue = newValue.split(',').map(v => {
+              const trimmed = v.trim();
+              if (trimmed === '') return trimmed;
               
-              // For uint256 arrays, ensure non-negative
-              if (type === ParameterType.UINT256_ARRAY && num < 0) {
-                return 0;
-              }
+              const num = parseInt(trimmed, 10);
+              return isNaN(num) ? '' : Math.max(0, num);
+            });
+          }
+          break;
+        case ParameterType.BOOL_ARRAY:
+          if (newValue === '') {
+            parsedValue = ''; // Keep empty string for empty array
+          } else {
+            // Get cleaned array of booleans or empty strings
+            parsedValue = newValue.split(',').map(v => {
+              const trimmed = v.trim().toLowerCase();
+              if (trimmed === '') return '';
               
-              return isNaN(num) ? 0 : num;
-            })
-        : [];
+              return ['true', '1', 'yes', 'y', 'on'].includes(trimmed);
+            });
+          }
+          break;
+        case ParameterType.STRING_ARRAY:
+          if (newValue === '') {
+            parsedValue = ''; // Keep empty string for empty array
+          } else {
+            // Get cleaned array of strings (respecting spaces in each item)
+            parsedValue = newValue.split(',').map(v => v.trim());
+          }
+          break;
+        case ParameterType.ADDRESS_ARRAY:
+          if (newValue === '') {
+            parsedValue = ''; // Keep empty string for empty array
+          } else {
+            // Get cleaned array of addresses
+            parsedValue = newValue.split(',').map(v => v.trim());
+          }
+          break;
+        case ParameterType.STRING:
+          // Strings can use as-is
+          parsedValue = newValue;
+          break;
+        case ParameterType.ADDRESS:
+          // Addresses should be trimmed
+          parsedValue = newValue.trim();
+          break;
+        default:
+          parsedValue = newValue;
+      }
       
-      onChange(parsedArray);
-    } catch (error) {
-      console.error('Error parsing number array:', error);
-      onChange([]);
+      onChange(parsedValue);
     }
-  };
+  }, [type, onChange, validateValue]);
 
-  // Special handler specifically for int256 inputs to better handle negative numbers
-  const handleIntChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    
-    // Always preserve the raw input to allow typing of negative signs
-    setInputValue(rawValue);
-    
-    // Special case for just typing a minus sign
-    if (rawValue === '-') {
-      // Don't convert to a number yet, just keep the dash
-      onChange(rawValue);
-      return;
-    }
-    
-    // Otherwise parse as a number when possible
-    let parsedValue: number;
-    try {
-      parsedValue = rawValue ? parseInt(rawValue, 10) : 0;
-      if (isNaN(parsedValue)) parsedValue = 0;
-    } catch (e) {
-      parsedValue = 0;
-    }
-    
-    onChange(parsedValue);
-  };
-
-  // Handler for individual boolean array items
-  const handleBoolArrayItem = (index: number, checked: boolean) => {
+  // Add these helper functions for array manipulation
+  const addArrayItem = (defaultValue: any = '') => {
     // Get current array or initialize empty array
     const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
                         (typeof inputValue === 'string' && inputValue.length > 0) ? 
-                          inputValue.split(',').map(v => {
-                            const trimmed = v.trim().toLowerCase();
-                            return trimmed === 'true' || 
-                                  trimmed === '1' || 
-                                  trimmed === 'yes' || 
-                                  trimmed === 'y' || 
-                                  trimmed === 'on';
-                          }) : 
+                          inputValue.split(',').map(v => v.trim()) : 
                           [];
     
-    // Update the value at the specified index
-    if (index >= currentArray.length) {
-      // Extend array if needed
-      while (currentArray.length < index) {
-        currentArray.push(false);
-      }
-      currentArray.push(checked);
-    } else {
-      currentArray[index] = checked;
+    // Make sure defaultValue is appropriate for the type
+    if (type === ParameterType.INT256_ARRAY || type === ParameterType.UINT256_ARRAY) {
+      defaultValue = ''; // Use empty string instead of 0 for numeric arrays
     }
     
-    // Convert array to string representation for the textarea
+    // Add the new item
+    currentArray.push(defaultValue);
+    
+    // Update state
     const stringValue = currentArray.join(', ');
     setInputValue(stringValue);
     
-    // Pass the actual array to parent
-    onChange(currentArray);
-  };
-
-  // Add a new boolean to the array
-  const addBoolToArray = () => {
-    handleBoolArrayItem(
-      Array.isArray(inputValue) ? inputValue.length : 
-      typeof inputValue === 'string' && inputValue.length > 0 ? 
-        inputValue.split(',').length : 0,
-      false
-    );
-  };
-
-  // Format number array for display - this helps prevent NaN from showing
-  const formatNumberArrayForDisplay = (value: any): string => {
-    if (Array.isArray(value)) {
-      return value.join(', ');
-    } else if (typeof value === 'string') {
-      return value;
+    // Pass to parent
+    if (validateValue(currentArray)) {
+      onChange(currentArray);
     }
-    return '';
+  };
+
+  const removeArrayItem = (index: number) => {
+    // Get current array or initialize empty array
+    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
+                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
+                          inputValue.split(',').map(v => v.trim()) : 
+                          [];
+    
+    // Remove the item at the specified index
+    if (index >= 0 && index < currentArray.length) {
+      currentArray.splice(index, 1);
+      
+      // Update state
+      const stringValue = currentArray.length > 0 ? currentArray.join(', ') : '';
+      setInputValue(stringValue);
+      
+      // Pass to parent
+      if (validateValue(currentArray)) {
+        // Remove empty/default values from end of array
+        let trimmedArray = [...currentArray];
+        while (trimmedArray.length > 0 && 
+              (trimmedArray[trimmedArray.length - 1] === '' || 
+               trimmedArray[trimmedArray.length - 1] === 0 ||
+               trimmedArray[trimmedArray.length - 1] === '0')) {
+          trimmedArray.pop();
+        }
+        
+        // If all elements were removed or only empty elements remain, return empty string
+        if (trimmedArray.length === 0) {
+          onChange('');
+        } else {
+          onChange(trimmedArray);
+        }
+      }
+    }
+  };
+
+  const updateArrayItem = (index: number, value: any) => {
+    // Get current array or initialize empty array
+    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
+                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
+                          inputValue.split(',').map(v => v.trim()) : 
+                          [];
+    
+    // Update the value at the specified index
+    if (index >= 0 && index < currentArray.length) {
+      // For numeric arrays, empty or 0 values should be preserved as empty strings 
+      // rather than converted to 0
+      if ((type === ParameterType.INT256_ARRAY || type === ParameterType.UINT256_ARRAY) &&
+          (value === '' || value === '0')) {
+        currentArray[index] = '';
+      } else {
+        currentArray[index] = value;
+      }
+      
+      // Update state
+      const stringValue = currentArray.join(', ');
+      setInputValue(stringValue);
+      
+      // Pass to parent
+      if (validateValue(currentArray)) {
+        // Remove empty/default values from end of array
+        let trimmedArray = [...currentArray];
+        while (trimmedArray.length > 0 && 
+              (trimmedArray[trimmedArray.length - 1] === '' || 
+               trimmedArray[trimmedArray.length - 1] === 0 ||
+               trimmedArray[trimmedArray.length - 1] === '0')) {
+          trimmedArray.pop();
+        }
+        
+        onChange(trimmedArray.length > 0 ? trimmedArray : '');
+      }
+    }
+  };
+
+  // Render array input fields dynamically
+  const renderArrayFields = (arrayType: ParameterType) => {
+    // Parse the current value into an array
+    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
+                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
+                          inputValue.split(',').map(v => v.trim()) : 
+                          [];
+    
+    // Get the appropriate input type based on the array type
+    let inputType = 'text';
+    let placeholder = '';
+    let defaultValue: any = '';
+    
+    switch (arrayType) {
+      case ParameterType.INT256_ARRAY:
+        inputType = 'number';
+        placeholder = 'Enter an integer';
+        defaultValue = '';
+        break;
+      case ParameterType.UINT256_ARRAY:
+        inputType = 'number';
+        placeholder = 'Enter a non-negative integer';
+        defaultValue = '';
+        break;
+      case ParameterType.BOOL_ARRAY:
+        inputType = 'checkbox';
+        placeholder = '';
+        defaultValue = false;
+        break;
+      case ParameterType.ADDRESS_ARRAY:
+        inputType = 'text';
+        placeholder = '0x...';
+        defaultValue = '';
+        break;
+      case ParameterType.STRING_ARRAY:
+        inputType = 'text';
+        placeholder = 'Enter a string';
+        defaultValue = '';
+        break;
+    }
+    
+    return (
+      <div className="array-inputs">
+        {currentArray.length === 0 ? (
+          <div className="empty-array-message">No items added yet</div>
+        ) : (
+          currentArray.map((item, index) => (
+            <div key={index} className="array-item">
+              {arrayType === ParameterType.BOOL_ARRAY ? (
+                <div className="bool-array-item">
+                  <input
+                    type="checkbox"
+                    checked={!!item}
+                    onChange={(e) => updateArrayItem(index, e.target.checked)}
+                  />
+                  <span className="bool-array-item-label">
+                    Item {index + 1}: {item ? 'True' : 'False'}
+                  </span>
+                </div>
+              ) : (
+                <input
+                  type={inputType}
+                  value={item}
+                  min={arrayType === ParameterType.UINT256_ARRAY ? "0" : undefined}
+                  placeholder={placeholder}
+                  onChange={(e) => updateArrayItem(index, e.target.value)}
+                  className="array-item-input"
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => removeArrayItem(index)}
+                className="array-item-remove-btn"
+                aria-label="Remove item"
+              >
+                ✕
+              </button>
+            </div>
+          ))
+        )}
+        
+        <div className="array-actions">
+          <button
+            type="button"
+            className="parameter-input btn-add-item"
+            onClick={() => addArrayItem(defaultValue)}
+          >
+            Add Item
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const renderInputField = () => {
@@ -225,8 +535,8 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           <input
             type="number"
             value={inputValue}
-            onChange={handleIntChange}
-            className="parameter-input"
+            onChange={handleChange}
+            className={`parameter-input ${error ? 'input-error' : ''}`}
             placeholder="Enter an int256 value (can be negative)"
           />
         );
@@ -237,7 +547,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="number"
             value={inputValue}
             onChange={handleChange}
-            className="parameter-input"
+            className={`parameter-input ${error ? 'input-error' : ''}`}
             placeholder="Enter a uint256 value (non-negative)"
             min="0"
           />
@@ -248,92 +558,22 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
           <select
             value={String(inputValue)}
             onChange={(e) => {
-              setInputValue(e.target.value);
-              onChange(e.target.value === 'true');
+              const newValue = e.target.value;
+              // Special handling for "not set" value
+              if (newValue === "not_set") {
+                setInputValue("");
+                onChange("");
+              } else {
+                setInputValue(newValue === 'true');
+                onChange(newValue === 'true');
+              }
             }}
-            className="parameter-input"
+            className={`parameter-input ${error ? 'input-error' : ''}`}
           >
-            <option value="true">true</option>
-            <option value="false">false</option>
+            <option value="not_set">Not set</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
           </select>
-        );
-      
-      case ParameterType.BOOL_ARRAY:
-        // Parse the current array values for displaying checkboxes
-        const boolArray = Array.isArray(inputValue) ? inputValue : 
-                       typeof inputValue === 'string' && inputValue.length > 0 ? 
-                       inputValue.split(',').map(v => {
-                         const trimmed = v.trim().toLowerCase();
-                         return trimmed === 'true' || 
-                                trimmed === '1' || 
-                                trimmed === 'yes' || 
-                                trimmed === 'y' || 
-                                trimmed === 'on';
-                       }) : [];
-                       
-        return (
-          <div className="bool-array-input">
-            <textarea
-              value={inputValue}
-              onChange={handleChange}
-              className="parameter-input parameter-input--array"
-              placeholder={`Enter comma-separated ${typeName} values (true, false; delete by highlighting and backspacing)`}
-              rows={3}
-            />
-            <div className="bool-array-items">
-              {boolArray.map((isChecked, index) => (
-                <div key={index} className="bool-item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={(e) => handleBoolArrayItem(index, e.target.checked)}
-                    />
-                    Item {index + 1}
-                  </label>
-                </div>
-              ))}
-              <button 
-                type="button" 
-                className="bool-add-btn"
-                onClick={addBoolToArray}
-              >
-                + Add Boolean
-              </button>
-            </div>
-          </div>
-        );
-      
-      case ParameterType.INT256_ARRAY:
-        return (
-          <div className="number-array-input">
-            <textarea
-              value={inputValue}
-              onChange={handleNumberArrayChange}
-              className="parameter-input parameter-input--array"
-              placeholder={`Enter comma-separated int256 values (e.g. -42, 0, 123; delete by highlighting and backspacing)`}
-              rows={3}
-            />
-            <div className="number-array-help">
-              Enter comma-separated numbers (can include negative values). Invalid entries will be converted to 0.
-            </div>
-          </div>
-        );
-      
-      case ParameterType.UINT256_ARRAY:
-        return (
-          <div className="number-array-input">
-            <textarea
-              value={inputValue}
-              onChange={handleNumberArrayChange}
-              className="parameter-input parameter-input--array"
-              placeholder={`Enter comma-separated uint256 values (e.g. 42, 123, 456; delete by highlighting and backspacing)`}
-              rows={3}
-            />
-            <div className="number-array-help">
-              Enter comma-separated non-negative numbers. Invalid entries will be converted to 0.
-            </div>
-          </div>
         );
       
       case ParameterType.ADDRESS:
@@ -342,75 +582,36 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="text"
             value={inputValue}
             onChange={handleChange}
-            className="parameter-input"
+            className={`parameter-input ${error ? 'input-error' : ''}`}
             placeholder="0x..."
-            pattern="^0x[a-fA-F0-9]{40}$"
           />
         );
       
-      case ParameterType.BYTES:
+      case ParameterType.STRING:
         return (
-          <div className="bytes-input">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleChange}
-              className="parameter-input"
-              placeholder="Enter bytes (0x1234... or plain text)"
-              pattern="^(0x[a-fA-F0-9]*|.*)$"
-            />
-            <div className="bytes-help">
-              Enter bytes as hex with 0x prefix (0x1234...) for raw binary data, or as plain text to be encoded as UTF-8.
-            </div>
-          </div>
-        );
-      
-      case ParameterType.STRING_ARRAY:
-        return (
-          <textarea
+          <input
+            type="text"
             value={inputValue}
             onChange={handleChange}
-            className="parameter-input parameter-input--array"
-            placeholder={`Enter comma-separated ${typeName} values (spaces will be preserved; delete by highlighting and backspacing)`}
-            rows={3}
+            className={`parameter-input ${error ? 'input-error' : ''}`}
+            placeholder="Enter a string value"
           />
         );
       
+      case ParameterType.INT256_ARRAY:
+      case ParameterType.UINT256_ARRAY:
+      case ParameterType.BOOL_ARRAY:
       case ParameterType.ADDRESS_ARRAY:
-        return (
-          <textarea
-            value={inputValue}
-            onChange={handleChange}
-            className="parameter-input parameter-input--array"
-            placeholder={`Enter comma-separated ${typeName} values (delete by highlighting and backspacing)`}
-            rows={3}
-          />
-        );
+      case ParameterType.STRING_ARRAY:
+        return renderArrayFields(type);
       
-      case ParameterType.BYTES_ARRAY:
-        return (
-          <div className="bytes-array-input">
-            <textarea
-              value={inputValue}
-              onChange={handleChange}
-              className="parameter-input parameter-input--array"
-              placeholder={`Enter comma-separated bytes values (0x1234... or plain text; delete by highlighting and backspacing)`}
-              rows={3}
-            />
-            <div className="bytes-array-help">
-              Enter comma-separated bytes values. Use 0x prefix for hex values (0x1234...), or plain text for UTF-8 encoding.
-            </div>
-          </div>
-        );
-      
-      // Default to string input
       default:
         return (
           <input
             type="text"
             value={inputValue}
             onChange={handleChange}
-            className="parameter-input"
+            className={`parameter-input ${error ? 'input-error' : ''}`}
             placeholder={`Enter a ${typeName} value`}
           />
         );
@@ -418,11 +619,13 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   };
 
   return (
-    <div className="parameter-field">
+    <div className="parameter-input-container">
+      <style>{arrayInputStyles}</style>
       <label className="parameter-label">
         {name} <span className="parameter-type">({typeName})</span>
       </label>
       {renderInputField()}
+      {error && <div className="parameter-error">{error}</div>}
     </div>
   );
 } 
