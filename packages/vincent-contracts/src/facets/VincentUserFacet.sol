@@ -524,7 +524,7 @@ contract VincentUserFacet is VincentBase {
 
             // Step 3.3: Access the tool policy storage for the PKP owner.
             VincentUserStorage.ToolPolicyStorage storage toolStorage =
-                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][hashedToolIpfsCid];
+                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][appVersion][hashedToolIpfsCid];
 
             // Step 4: Iterate through each policy associated with the tool.
             for (uint256 j = 0; j < policyCount; j++) {
@@ -646,7 +646,7 @@ contract VincentUserFacet is VincentBase {
                 versionedApp.toolIpfsCidHashToToolPolicies[hashedToolIpfsCid];
 
             VincentUserStorage.ToolPolicyStorage storage userToolPolicyStorage =
-                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][hashedToolIpfsCid];
+                us_.agentPkpTokenIdToAgentStorage[pkpTokenId].toolPolicyStorage[appId][appVersion][hashedToolIpfsCid];
 
             // Step 4: Iterate through each policy associated with the tool.
             for (uint256 j = 0; j < policyCount; j++) {
