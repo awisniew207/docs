@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import "../LibVincentDiamondStorage.sol";
 import "../VincentBase.sol";
+import "../libs/LibVincentAppFacet.sol";
 
 /**
  * @title VincentAppFacet
@@ -18,222 +19,12 @@ contract VincentAppFacet is VincentBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice Emitted when a new app is registered
-     * @param appId Unique identifier for the newly registered app
-     * @param manager Address of the app manager
-     */
-    event NewAppRegistered(uint256 indexed appId, address indexed manager);
-
-    /**
-     * @notice Emitted when a new app version is registered
-     * @param appId ID of the app for which a new version is registered
-     * @param appVersion Version number of the newly registered app version
-     * @param manager Address of the app manager who registered the new version
-     */
-    event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
-
-    /**
-     * @notice Emitted when an app version's enabled status is changed
-     * @param appId ID of the app
-     * @param appVersion Version number of the app being enabled/disabled
-     * @param enabled New enabled status of the app version
-     */
-    event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
-
-    /**
-     * @notice Emitted when a new authorized redirect URI is added to an app
-     * @param appId ID of the app
-     * @param hashedRedirectUri The keccak256 hash of the redirect URI that was added.
-     *                          Original value can be retrieved using VincentAppViewFacet
-     */
-    event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
-
-    /**
-     * @notice Emitted when an authorized redirect URI is removed from an app
-     * @param appId ID of the app
-     * @param hashedRedirectUri The keccak256 hash of the redirect URI that was removed.
-     *                          Original value can be retrieved using VincentAppViewFacet
-     */
-    event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
-
-    /**
-     * @notice Emitted when a new delegatee is added to an app
-     * @param appId ID of the app
-     * @param delegatee Address of the delegatee added to the app
-     */
-    event DelegateeAdded(uint256 indexed appId, address indexed delegatee);
-
-    /**
-     * @notice Emitted when a delegatee is removed from an app
-     * @param appId ID of the app
-     * @param delegatee Address of the delegatee removed from the app
-     */
-    event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
-
-    /**
-     * @notice Emitted when a new lit action is registered
-     * @param litActionIpfsCidHash The keccak256 hash of the lit action's IPFS CID that was registered
-     */
-    event NewLitActionRegistered(bytes32 indexed litActionIpfsCidHash);
-
-    /**
-     * @notice Error thrown when a non-manager attempts to modify an app
-     * @param appId ID of the app being modified
-     * @param msgSender Address that attempted the unauthorized modification
-     */
-    error NotAppManager(uint256 appId, address msgSender);
-
-    /**
-     * @notice Error thrown when tool and policy array lengths don't match
-     * @dev This ensures each tool has appropriate policy configurations
-     */
-    error ToolsAndPoliciesLengthMismatch();
-
-    /**
-     * @notice Error thrown when attempting to register a delegatee already associated with an app
-     * @dev Delegatees are unique to apps and cannot be used with multiple apps simultaneously
-     * @param appId ID of the app the delegatee is already registered to
-     * @param delegatee Address of the delegatee that is already registered
-     */
-    error DelegateeAlreadyRegisteredToApp(uint256 appId, address delegatee);
-
-    /**
-     * @notice Error thrown when trying to remove a delegatee not registered to the specified app
-     * @param appId ID of the app from which removal was attempted
-     * @param delegatee Address of the delegatee that is not registered to the app
-     */
-    error DelegateeNotRegisteredToApp(uint256 appId, address delegatee);
-
-    /**
-     * @notice Error thrown when trying to remove a redirect URI not registered to the app
-     * @param appId ID of the app
-     * @param redirectUri The redirect URI that is not registered
-     */
-    error RedirectUriNotRegisteredToApp(uint256 appId, string redirectUri);
-
-    /**
-     * @notice Error thrown when no redirect URIs are provided during app registration
-     * @dev At least one redirect URI is required for app registration
-     */
-    error NoRedirectUrisProvided();
-
-    /**
-     * @notice Error thrown when trying to remove the last redirect URI of an app
-     * @param appId ID of the app
-     */
-    error CannotRemoveLastRedirectUri(uint256 appId);
-
-    /**
-     * @notice Error thrown when trying to set app version enabled status to its current status
-     * @param appId ID of the app
-     * @param appVersion Version number of the app
-     * @param enabled Current enabled status
-     */
-    error AppVersionAlreadyInRequestedState(uint256 appId, uint256 appVersion, bool enabled);
-
-    /**
-     * @notice Error thrown when trying to add a redirect URI that already exists for the app
-     * @param appId ID of the app
-     * @param redirectUri The redirect URI that already exists
-     */
-    error RedirectUriAlreadyAuthorizedForApp(uint256 appId, string redirectUri);
-
-    /**
-     * @notice Error thrown when trying to use an empty policy IPFS CID
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     */
-    error EmptyPolicyIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when a tool IPFS CID is empty
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     */
-    error EmptyToolIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when app name is empty
-     */
-    error EmptyAppNameNotAllowed();
-
-    /**
-     * @notice Error thrown when app description is empty
-     */
-    error EmptyAppDescriptionNotAllowed();
-
-    /**
-     * @notice Error thrown when a redirect URI is empty
-     */
-    error EmptyRedirectUriNotAllowed();
-
-    /**
-     * @notice Error thrown when a delegatee address is the zero address
-     */
-    error ZeroAddressDelegateeNotAllowed();
-
-    /**
-     * @notice Error thrown when no tools are provided during app version registration
-     * @param appId ID of the app
-     */
-    error NoToolsProvided(uint256 appId);
-
-    /**
-     * @notice Error thrown when no policies are provided for a tool
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool with no policies
-     */
-    error NoPoliciesProvidedForTool(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when a policy parameter name is empty
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     * @param paramIndex Index of the parameter in the parameters array
-     */
-    error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
-
-    /**
-     * @notice Error thrown when the top-level tool arrays have mismatched lengths
-     * @param toolsLength Length of the tools array
-     * @param policiesLength Length of the policies array
-     * @param paramNamesLength Length of the parameter names array
-     * @param paramTypesLength Length of the parameter types array
-     */
-    error ToolArrayDimensionMismatch(
-        uint256 toolsLength, uint256 policiesLength, uint256 paramNamesLength, uint256 paramTypesLength
-    );
-
-    /**
-     * @notice Error thrown when policy-related arrays for a specific tool have mismatched lengths
-     * @param toolIndex Index of the tool in the tools array
-     * @param policiesLength Length of the policies array for this tool
-     * @param paramNamesLength Length of the parameter names array for this tool
-     * @param paramTypesLength Length of the parameter types array for this tool
-     */
-    error PolicyArrayLengthMismatch(
-        uint256 toolIndex, uint256 policiesLength, uint256 paramNamesLength, uint256 paramTypesLength
-    );
-
-    /**
-     * @notice Error thrown when parameter arrays for a specific policy have mismatched lengths
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     * @param paramNamesLength Length of the parameter names array for this policy
-     * @param paramTypesLength Length of the parameter types array for this policy
-     */
-    error ParameterArrayLengthMismatch(
-        uint256 toolIndex, uint256 policyIndex, uint256 paramNamesLength, uint256 paramTypesLength
-    );
-
-    /**
      * @notice Modifier to restrict function access to the app manager only
      * @param appId ID of the app
      */
     modifier onlyAppManager(uint256 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (as_.appIdToApp[appId].manager != msg.sender) revert NotAppManager(appId, msg.sender);
+        if (as_.appIdToApp[appId].manager != msg.sender) revert LibVincentAppFacet.NotAppManager(appId, msg.sender);
         _;
     }
 
@@ -262,12 +53,12 @@ contract VincentAppFacet is VincentBase {
         VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
     ) external returns (uint256 newAppId, uint256 newAppVersion) {
         newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
-        emit NewAppRegistered(newAppId, msg.sender);
+        emit LibVincentAppFacet.NewAppRegistered(newAppId, msg.sender);
 
         newAppVersion = _registerNextAppVersion(
             newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
         );
-        emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
+        emit LibVincentAppFacet.NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
 
     /**
@@ -291,7 +82,7 @@ contract VincentAppFacet is VincentBase {
             appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
         );
 
-        emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
+        emit LibVincentAppFacet.NewAppVersionRegistered(appId, newAppVersion, msg.sender);
     }
 
     /**
@@ -314,11 +105,11 @@ contract VincentAppFacet is VincentBase {
 
         // Revert if trying to set to the same status
         if (versionedApp.enabled == enabled) {
-            revert AppVersionAlreadyInRequestedState(appId, appVersion, enabled);
+            revert LibVincentAppFacet.AppVersionAlreadyInRequestedState(appId, appVersion, enabled);
         }
 
         versionedApp.enabled = enabled;
-        emit AppEnabled(appId, appVersion, enabled);
+        emit LibVincentAppFacet.AppEnabled(appId, appVersion, enabled);
     }
 
     /**
@@ -334,7 +125,7 @@ contract VincentAppFacet is VincentBase {
     {
         // Check that the redirect URI is not empty
         if (bytes(redirectUri).length == 0) {
-            revert EmptyRedirectUriNotAllowed();
+            revert LibVincentAppFacet.EmptyRedirectUriNotAllowed();
         }
 
         _addAuthorizedRedirectUri(VincentAppStorage.appStorage(), appId, redirectUri);
@@ -356,17 +147,17 @@ contract VincentAppFacet is VincentBase {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 
         if (!as_.appIdToApp[appId].authorizedRedirectUris.contains(hashedRedirectUri)) {
-            revert RedirectUriNotRegisteredToApp(appId, redirectUri);
+            revert LibVincentAppFacet.RedirectUriNotRegisteredToApp(appId, redirectUri);
         }
 
         // Check if this is the last redirect URI
         if (as_.appIdToApp[appId].authorizedRedirectUris.length() == 1) {
-            revert CannotRemoveLastRedirectUri(appId);
+            revert LibVincentAppFacet.CannotRemoveLastRedirectUri(appId);
         }
 
         as_.appIdToApp[appId].authorizedRedirectUris.remove(hashedRedirectUri);
 
-        emit AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
+        emit LibVincentAppFacet.AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
     }
 
     /**
@@ -380,20 +171,20 @@ contract VincentAppFacet is VincentBase {
 
         // Check that the delegatee is not the zero address
         if (delegatee == address(0)) {
-            revert ZeroAddressDelegateeNotAllowed();
+            revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
         }
 
         // Check if the delegatee is already registered to any app
         uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
         if (delegateeAppId != 0) {
-            revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
+            revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
         }
 
         as_.appIdToApp[appId].delegatees.add(delegatee);
 
         as_.delegateeAddressToAppId[delegatee] = appId;
 
-        emit DelegateeAdded(appId, delegatee);
+        emit LibVincentAppFacet.DelegateeAdded(appId, delegatee);
     }
 
     /**
@@ -409,12 +200,14 @@ contract VincentAppFacet is VincentBase {
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
-        if (as_.delegateeAddressToAppId[delegatee] != appId) revert DelegateeNotRegisteredToApp(appId, delegatee);
+        if (as_.delegateeAddressToAppId[delegatee] != appId) {
+            revert LibVincentAppFacet.DelegateeNotRegisteredToApp(appId, delegatee);
+        }
 
         as_.appIdToApp[appId].delegatees.remove(delegatee);
         as_.delegateeAddressToAppId[delegatee] = 0;
 
-        emit DelegateeRemoved(appId, delegatee);
+        emit LibVincentAppFacet.DelegateeRemoved(appId, delegatee);
     }
 
     /**
@@ -434,16 +227,16 @@ contract VincentAppFacet is VincentBase {
     ) internal returns (uint256 newAppId) {
         // Validate app name and description are not empty
         if (bytes(name).length == 0) {
-            revert EmptyAppNameNotAllowed();
+            revert LibVincentAppFacet.EmptyAppNameNotAllowed();
         }
 
         if (bytes(description).length == 0) {
-            revert EmptyAppDescriptionNotAllowed();
+            revert LibVincentAppFacet.EmptyAppDescriptionNotAllowed();
         }
 
         // Require at least one authorized redirect URI
         if (authorizedRedirectUris.length == 0) {
-            revert NoRedirectUrisProvided();
+            revert LibVincentAppFacet.NoRedirectUrisProvided();
         }
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -462,7 +255,7 @@ contract VincentAppFacet is VincentBase {
         for (uint256 i = 0; i < authorizedRedirectUris.length; i++) {
             // Check that the redirect URI is not empty
             if (bytes(authorizedRedirectUris[i]).length == 0) {
-                revert EmptyRedirectUriNotAllowed();
+                revert LibVincentAppFacet.EmptyRedirectUriNotAllowed();
             }
             _addAuthorizedRedirectUri(as_, newAppId, authorizedRedirectUris[i]);
         }
@@ -471,12 +264,12 @@ contract VincentAppFacet is VincentBase {
         for (uint256 i = 0; i < delegatees.length; i++) {
             // Check that the delegatee is not the zero address
             if (delegatees[i] == address(0)) {
-                revert ZeroAddressDelegateeNotAllowed();
+                revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
             }
 
             uint256 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
             if (existingAppId != 0) {
-                revert DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
+                revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
             }
 
             app.delegatees.add(delegatees[i]);
@@ -509,7 +302,7 @@ contract VincentAppFacet is VincentBase {
     ) internal returns (uint256 newAppVersion) {
         // Step 1: Check that at least one tool is provided
         if (toolIpfsCids.length == 0) {
-            revert NoToolsProvided(appId);
+            revert LibVincentAppFacet.NoToolsProvided(appId);
         }
 
         // Check array lengths at top level
@@ -518,7 +311,7 @@ contract VincentAppFacet is VincentBase {
             toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length
                 || toolCount != toolPolicyParameterTypes.length
         ) {
-            revert ToolArrayDimensionMismatch(
+            revert LibVincentAppFacet.ToolArrayDimensionMismatch(
                 toolCount, toolPolicies.length, toolPolicyParameterNames.length, toolPolicyParameterTypes.length
             );
         }
@@ -529,14 +322,14 @@ contract VincentAppFacet is VincentBase {
 
             // Validate tool IPFS CID is not empty
             if (bytes(toolIpfsCid).length == 0) {
-                revert EmptyToolIpfsCidNotAllowed(appId, i);
+                revert LibVincentAppFacet.EmptyToolIpfsCidNotAllowed(appId, i);
             }
 
             // Check nested array lengths
             uint256 policyCount = toolPolicies[i].length;
             if (policyCount != toolPolicyParameterNames[i].length || policyCount != toolPolicyParameterTypes[i].length)
             {
-                revert PolicyArrayLengthMismatch(
+                revert LibVincentAppFacet.PolicyArrayLengthMismatch(
                     i, policyCount, toolPolicyParameterNames[i].length, toolPolicyParameterTypes[i].length
                 );
             }
@@ -544,7 +337,7 @@ contract VincentAppFacet is VincentBase {
             // Check parameter names and types match for each policy
             for (uint256 j = 0; j < policyCount; j++) {
                 if (toolPolicyParameterNames[i][j].length != toolPolicyParameterTypes[i][j].length) {
-                    revert ParameterArrayLengthMismatch(
+                    revert LibVincentAppFacet.ParameterArrayLengthMismatch(
                         i, j, toolPolicyParameterNames[i][j].length, toolPolicyParameterTypes[i][j].length
                     );
                 }
@@ -553,7 +346,7 @@ contract VincentAppFacet is VincentBase {
 
                 // Validate non-empty policy IPFS CID
                 if (bytes(policyIpfsCid).length == 0) {
-                    revert EmptyPolicyIpfsCidNotAllowed(appId, i);
+                    revert LibVincentAppFacet.EmptyPolicyIpfsCidNotAllowed(appId, i);
                 }
 
                 // Check for empty parameter names
@@ -563,7 +356,7 @@ contract VincentAppFacet is VincentBase {
 
                     // Check for empty parameter name
                     if (bytes(paramName).length == 0) {
-                        revert EmptyParameterNameNotAllowed(appId, i, j, k);
+                        revert LibVincentAppFacet.EmptyParameterNameNotAllowed(appId, i, j, k);
                     }
                 }
             }
@@ -597,7 +390,7 @@ contract VincentAppFacet is VincentBase {
             // before trying to register it again
             if (bytes(ls.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
                 ls.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
-                emit NewLitActionRegistered(hashedToolCid);
+                emit LibVincentAppFacet.NewLitActionRegistered(hashedToolCid);
             }
 
             // Step 6.2: Fetch the tool policies storage for this tool.
@@ -666,11 +459,11 @@ contract VincentAppFacet is VincentBase {
 
         // If the redirect URI was not added (already exists), revert
         if (!appStorage.appIdToApp[appId].authorizedRedirectUris.add(hashedRedirectUri)) {
-            revert RedirectUriAlreadyAuthorizedForApp(appId, redirectUri);
+            revert LibVincentAppFacet.RedirectUriAlreadyAuthorizedForApp(appId, redirectUri);
         }
 
         appStorage.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri] = redirectUri;
 
-        emit AuthorizedRedirectUriAdded(appId, hashedRedirectUri);
+        emit LibVincentAppFacet.AuthorizedRedirectUriAdded(appId, hashedRedirectUri);
     }
 }

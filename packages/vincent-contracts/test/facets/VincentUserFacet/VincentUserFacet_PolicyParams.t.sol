@@ -4,6 +4,7 @@ pragma solidity ^0.8.29;
 import "../../helpers/VincentTestHelper.sol";
 import "../../../src/VincentBase.sol";
 import "../../../src/LibVincentDiamondStorage.sol";
+import "../../../src/libs/LibVincentUserFacet.sol";
 
 /**
  * @title VincentUserFacetTest
@@ -447,7 +448,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         // Expect revert with PolicyArrayLengthMismatch error
         vm.expectRevert(
             abi.encodeWithSelector(
-                VincentUserFacet.PolicyArrayLengthMismatch.selector,
+                LibVincentUserFacet.PolicyArrayLengthMismatch.selector,
                 0, // toolIndex
                 1, // policiesLength
                 2, // paramNamesLength
@@ -484,7 +485,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         // Expect revert with ParameterArrayLengthMismatch error
         vm.expectRevert(
             abi.encodeWithSelector(
-                VincentUserFacet.ParameterArrayLengthMismatch.selector,
+                LibVincentUserFacet.ParameterArrayLengthMismatch.selector,
                 0, // toolIndex
                 0, // policyIndex
                 2, // paramNamesLength
@@ -538,7 +539,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         // Expect revert with PolicyArrayLengthMismatch error
         vm.expectRevert(
             abi.encodeWithSelector(
-                VincentUserFacet.PolicyArrayLengthMismatch.selector,
+                LibVincentUserFacet.PolicyArrayLengthMismatch.selector,
                 0, // toolIndex
                 1, // policiesLength
                 2, // paramNamesLength
