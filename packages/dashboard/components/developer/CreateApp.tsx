@@ -33,12 +33,12 @@ import { useRouter } from 'next/navigation';
 const toolSchema = z.object({
   toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
   policies: z.array(z.object({
-    policyIpfsCid: z.string().min(1, "Policy IPFS CID is required"),
+    policyIpfsCid: z.string(),
     parameters: z.array(z.object({
-      name: z.string().min(1, "Parameter name is required"),
+      name: z.string(),
       type: z.string().default("string")
-    })).min(1, "At least one parameter is required")
-  })).min(1, "At least one policy is required")
+    }))
+  }))
 });
 
 const formSchema = z.object({
