@@ -36,17 +36,13 @@ const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'in
 
 export default function DashboardScreen({
   vincentApp,
-  onRefetch,
 }: {
   vincentApp: AppView[];
-  onRefetch: () => void;
 }) {
   const router = useRouter();
   const [dashboard, setDashboard] = useState<AppView[]>([]);
-  const [showManageApp, setShowManageApp] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   
-  // Add status message state
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
   
@@ -57,11 +53,6 @@ export default function DashboardScreen({
   const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
     setStatusMessage(message);
     setStatusType(type);
-  }, []);
-  
-  // Clear status message
-  const clearStatus = useCallback(() => {
-    setStatusMessage('');
   }, []);
   
   // Create enhanced error function that shows both popup and status error
@@ -84,19 +75,6 @@ export default function DashboardScreen({
       }
     }
   }, [vincentApp, showErrorWithStatus]);
-
-  const handleRefetch = async () => {
-    setIsRefetching(true);
-    showStatus('Refreshing dashboard...', 'info');
-    try {
-      await onRefetch();
-      clearStatus();
-    } catch (error) {
-      console.error('Failed to refresh dashboard:', error);
-      showErrorWithStatus(error instanceof Error ? error.message : 'Failed to refresh dashboard', 'Refresh Error');
-      setIsRefetching(false);
-    }
-  };
 
   if (!dashboard || isRefetching) {
     return (

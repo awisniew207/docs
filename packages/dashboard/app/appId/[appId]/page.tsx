@@ -57,11 +57,6 @@ export default function AppDetailPage() {
     setStatusType(type);
   }, []);
   
-  // Clear status message
-  const clearStatus = useCallback(() => {
-    setStatusMessage('');
-  }, []);
-  
   // Create enhanced error function that shows both popup and status error
   const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
     // Show error in popup

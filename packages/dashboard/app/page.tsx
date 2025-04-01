@@ -21,7 +21,6 @@ export default function Developer() {
     const [app, setApp] = useState<AppView[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const isMounted = useIsMounted();
-    const [refetchApp, setRefetchApp] = useState(0);
 
     const { address, isConnected } = useAccount();
 
@@ -60,7 +59,7 @@ export default function Developer() {
             // If mounted but not connected, stop loading state
             setIsLoading(false);
         }
-    }, [address, isMounted, isConnected, refetchApp]);
+    }, [address, isMounted, isConnected]);
 
     // Return null while client-side is initializing to prevent hydration mismatch
     if (!isMounted) return null;
@@ -86,7 +85,7 @@ export default function Developer() {
     return (
         <div className="min-h-screen">
             {hasApp ? (
-                <DashboardScreen onRefetch={() => setRefetchApp(refetchApp + 1)} vincentApp={app!} />
+                <DashboardScreen vincentApp={app!} />
             ) : (
                 // Only render the CreateAppScreen once we're client-side 
                 <CreateAppScreen />
