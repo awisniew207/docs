@@ -4,7 +4,6 @@ import { BigNumber } from "ethers";
 
 export async function formCompleteVincentAppForDev(address: string): Promise<AppView[]> {
     const contracts = new VincentContracts('datil');
-    console.log("in formCompleteVincentAppForDev");
     const apps = await contracts.getAppsByManager(address);
 
 
