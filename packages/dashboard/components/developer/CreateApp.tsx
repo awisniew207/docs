@@ -177,6 +177,13 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     name: 'tools'
   });
 
+  const addTool = () => {
+    appendTool({ 
+      toolIpfsCid: '',
+      policies: []
+    });
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     form.handleSubmit(onSubmit)(e);
@@ -404,10 +411,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                         type="button"
                         variant="default"
                         size="sm"
-                        onClick={() => appendTool({ 
-                          toolIpfsCid: '',
-                          policies: [{ policyIpfsCid: '', parameters: [{ name: '', type: 'string' }] }]
-                        })}
+                        onClick={addTool}
                         className="text-black"
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
