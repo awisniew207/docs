@@ -20,8 +20,8 @@ export const mintNewPkp = async (
     pkpOwnerPrivateKey: string,
     vincentErc20ApprovalToolIpfsCid: string,
     vincentUniswapSwapToolIpfsCid: string,
-    vincentUniswapSwapPolicyIpfsCid: string,
-    litNetwork: string = 'datil'
+    vincentSpendingLimitPolicyIpfsCid: string,
+    litNetwork = 'datil'
 ): Promise<PKPInfo> => {
     // Create ethers provider and owner wallet
     const provider = new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL);
@@ -50,12 +50,12 @@ export const mintNewPkp = async (
             ).toString("hex")}`,
             `0x${Buffer.from(
                 ethers.utils.base58.decode(
-                    vincentUniswapSwapPolicyIpfsCid
+                    vincentSpendingLimitPolicyIpfsCid
                 )
             ).toString("hex")}`
         ],
-        ["0x", "0x", "0x", "0x"],
-        [[AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything]],
+        ["0x", "0x", "0x"],
+        [[AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything]],
         true, // addPkpEthAddressAsPermittedAddress
         false, // sendPkpToItself
         { value: await litContractClient.pkpNftContract.read.mintCost() }

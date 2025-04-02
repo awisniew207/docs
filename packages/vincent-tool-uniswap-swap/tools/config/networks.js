@@ -8,9 +8,8 @@ module.exports = {
     litNetwork: 'datil',
     outputFiles: [
       'deployed-lit-action-tool-datil.js',
-      'deployed-lit-action-policy-datil.js',
+      'deployed-lit-action-spending-limit-policy-datil.js',
       'deployed-lit-action-erc20-approval-datil.js',
-      'deployed-lit-action-erc20-approval-policy-datil.js',
     ],
   },
 };

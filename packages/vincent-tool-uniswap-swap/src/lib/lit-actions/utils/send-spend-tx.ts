@@ -6,7 +6,7 @@ const estimateGas = async (
     spendingLimitContract: ethers.Contract,
     appId: string,
     amountInUsd: ethers.BigNumber,
-    maxSpendingLimit: ethers.BigNumber,
+    maxSpendingLimitInUsdCents: ethers.BigNumber,
     spendingLimitDuration: ethers.BigNumber,
     pkpEthAddress: string,
 ) => {
@@ -14,7 +14,7 @@ const estimateGas = async (
     let estimatedGas = await spendingLimitContract.estimateGas.spend(
         appId,
         amountInUsd,
-        maxSpendingLimit,
+        maxSpendingLimitInUsdCents,
         spendingLimitDuration,
         { from: pkpEthAddress }
     );
@@ -43,7 +43,7 @@ export const sendSpendTx = async (
     yellowstoneProvider: ethers.providers.JsonRpcProvider,
     appId: string,
     amountInUsd: ethers.BigNumber,
-    maxSpendingLimit: ethers.BigNumber,
+    maxSpendingLimitInUsdCents: ethers.BigNumber,
     spendingLimitDuration: ethers.BigNumber,
     pkpEthAddress: string,
     pkpPubKey: string,
@@ -74,7 +74,7 @@ export const sendSpendTx = async (
                 spendingLimitContract,
                 appId,
                 amountInUsd,
-                maxSpendingLimit,
+                maxSpendingLimitInUsdCents,
                 spendingLimitDuration,
                 pkpEthAddress
             );
@@ -83,7 +83,7 @@ export const sendSpendTx = async (
             const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
                 appId,
                 amountInUsd,
-                maxSpendingLimit,
+                maxSpendingLimitInUsdCents,
                 spendingLimitDuration,
             ]);
 

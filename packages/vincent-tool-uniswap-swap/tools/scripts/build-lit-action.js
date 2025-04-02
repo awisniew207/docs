@@ -35,17 +35,13 @@ async function buildAction(network) {
     __dirname,
     '../../src/lib/lit-actions/tool.ts',
   );
-  const policyEntryPoint = path.resolve(
+  const spendingLimitPolicyEntryPoint = path.resolve(
     __dirname,
-    '../../src/lib/lit-actions/policy.ts',
+    '../../src/lib/lit-actions/spending-limit-policy.ts',
   );
   const erc20ApprovalEntryPoint = path.resolve(
     __dirname,
     '../../src/lib/lit-actions/erc20-approval.ts',
-  );
-  const erc20ApprovalPolicyEntryPoint = path.resolve(
-    __dirname,
-    '../../src/lib/lit-actions/erc20-approval-policy.ts',
   );
 
   const toolOutfile = path.resolve(
@@ -53,32 +49,26 @@ async function buildAction(network) {
     '../../dist',
     `deployed-lit-action-tool-${network}.js`,
   );
-  const policyOutfile = path.resolve(
+  const spendingLimitPolicyOutfile = path.resolve(
     __dirname,
     '../../dist',
-    `deployed-lit-action-policy-${network}.js`,
+    `deployed-lit-action-spending-limit-policy-${network}.js`,
   );
   const erc20ApprovalOutfile = path.resolve(
     __dirname,
     '../../dist',
     `deployed-lit-action-erc20-approval-${network}.js`,
   );
-  const erc20ApprovalPolicyOutfile = path.resolve(
-    __dirname,
-    '../../dist',
-    `deployed-lit-action-erc20-approval-policy-${network}.js`,
-  );
 
   await Promise.all([
     buildFile(toolEntryPoint, toolOutfile, network, config),
-    buildFile(policyEntryPoint, policyOutfile, network, config),
-    buildFile(erc20ApprovalEntryPoint, erc20ApprovalOutfile, network, config),
     buildFile(
-      erc20ApprovalPolicyEntryPoint,
-      erc20ApprovalPolicyOutfile,
+      spendingLimitPolicyEntryPoint,
+      spendingLimitPolicyOutfile,
       network,
       config,
     ),
+    buildFile(erc20ApprovalEntryPoint, erc20ApprovalOutfile, network, config),
   ]);
 }
 

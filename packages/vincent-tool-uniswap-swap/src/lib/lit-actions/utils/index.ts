@@ -3,8 +3,6 @@ export * from './get-on-chain-policy-params';
 export * from './get-uniswap-quote';
 export * from './get-token-amount-in-usd';
 export * from './get-eth-usd-price';
-export * from './validate-tokens-are-allowed';
-export * from './validate-spending-limits';
 export * from './send-spend-tx';
 export * from './sign-tx';
 export * from './get-erc20-info';

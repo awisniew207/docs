@@ -2,7 +2,7 @@
 import { ethers } from 'ethers';
 import { type Policy } from '@lit-protocol/vincent-tool';
 
-import { getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx, validateSpendingLimits, validateTokenAreAllowed } from './utils';
+import { getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx } from './utils';
 
 declare global {
   // Required Inputs
@@ -28,20 +28,10 @@ declare global {
 
 (async () => {
   const {
-    maxAmountPerTx,
-    maxSpendingLimit,
-    spendingLimitDuration,
-    allowedTokens
+    maxSpendingLimitInUsdCents,
   } = getOnChainPolicyParams(policy.parameters);
 
-  console.log(`Retrieved maxAmountPerTx: ${maxAmountPerTx?.toString()}`);
-  console.log(`Retrieved maxSpendingLimit: ${maxSpendingLimit?.toString()}`);
-  console.log(`Retrieved spendingLimitDuration: ${spendingLimitDuration?.toString()}`);
-  console.log(`Retrieved allowedTokens: ${allowedTokens}`);
-
-  if (allowedTokens && allowedTokens.length > 0) {
-    validateTokenAreAllowed([toolParams.tokenIn, toolParams.tokenOut], allowedTokens);
-  }
+  console.log(`Retrieved maxSpendingLimitInUsdCents: ${maxSpendingLimitInUsdCents?.toString()}`);
 
   const yellowstoneProvider = new ethers.providers.JsonRpcProvider(
     await Lit.Actions.getRpcUrl({
@@ -58,20 +48,13 @@ declare global {
     toolParams.tokenInDecimals
   )
 
-  if (maxAmountPerTx) {
-    validateSpendingLimits(
-      vincentAppId,
-      tokenAmountInUsd,
-      maxAmountPerTx);
-  }
-
-  if (maxSpendingLimit && spendingLimitDuration) {
+  if (maxSpendingLimitInUsdCents) {
     const spendTxHash = await sendSpendTx(
       yellowstoneProvider,
       vincentAppId,
       tokenAmountInUsd,
-      maxSpendingLimit,
-      spendingLimitDuration,
+      maxSpendingLimitInUsdCents,
+      ethers.BigNumber.from(86400), // number of seconds in a day
       userPkpInfo.ethAddress,
       userPkpInfo.publicKey
     );
