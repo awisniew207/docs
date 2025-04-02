@@ -49,11 +49,16 @@ declare global {
   )
 
   if (maxSpendingLimitInUsdCents) {
+    // maxSpendingLimitInUsdCents has 2 decimal precision, but tokenAmountInUsd has 8,
+    // so we multiply by 10^6 to match the precision
+    const adjustedMaxSpendingLimit = maxSpendingLimitInUsdCents.mul(ethers.BigNumber.from(1_000_000));
+    console.log(`Adjusted maxSpendingLimitInUsdCents to 8 decimal precision: ${adjustedMaxSpendingLimit.toString()}`);
+
     const spendTxHash = await sendSpendTx(
       yellowstoneProvider,
       vincentAppId,
       tokenAmountInUsd,
-      maxSpendingLimitInUsdCents,
+      adjustedMaxSpendingLimit,
       ethers.BigNumber.from(86400), // number of seconds in a day
       userPkpInfo.ethAddress,
       userPkpInfo.publicKey
