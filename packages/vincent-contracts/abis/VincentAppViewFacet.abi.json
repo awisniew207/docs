@@ -31,6 +31,11 @@
             "internalType": "string"
           },
           {
+            "name": "isDeleted",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
             "name": "deploymentStatus",
             "type": "uint8",
             "internalType": "enum VincentAppStorage.DeploymentStatus"
@@ -90,6 +95,11 @@
             "name": "description",
             "type": "string",
             "internalType": "string"
+          },
+          {
+            "name": "isDeleted",
+            "type": "bool",
+            "internalType": "bool"
           },
           {
             "name": "deploymentStatus",
@@ -156,6 +166,11 @@
             "name": "description",
             "type": "string",
             "internalType": "string"
+          },
+          {
+            "name": "isDeleted",
+            "type": "bool",
+            "internalType": "bool"
           },
           {
             "name": "deploymentStatus",
@@ -278,6 +293,11 @@
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
               },
               {
                 "name": "deploymentStatus",
