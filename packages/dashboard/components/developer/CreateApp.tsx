@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
-  toolIpfsCid: z.string(),
+  toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
   policies: z.array(z.object({
     policyIpfsCid: z.string(),
     parameters: z.array(z.object({
@@ -54,6 +54,8 @@ const formSchema = z.object({
 
   authorizedRedirectUris: z.array(z.string().min(1, "Redirect URI cannot be empty"))
     .min(1, 'At least one redirect URI is required'),
+  
+  deploymentStatus: z.number().default(0),
   
   tools: z.array(toolSchema).min(1, "At least one tool is required"),
 });
@@ -78,6 +80,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       appName: '',
       description: '',
       authorizedRedirectUris: [''],
+      deploymentStatus: 0, // DEV by default
       tools: [
         {
           toolIpfsCid: '',
@@ -103,7 +106,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           ...updatedTools[toolIndex].policies,
           {
             policyIpfsCid: '',
-            parameters: []
+            parameters: [{ name: '', type: 'string' }]
           }
         ]
       };
@@ -214,14 +217,26 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         toolIpfsCids,
         toolPolicies,
         toolPolicyParameterTypes,
-        toolPolicyParameterNames
+        toolPolicyParameterNames,
+        values.deploymentStatus
       );
       console.log('receipt', receipt);
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push('/'); // Navigate to root path on success
-      }
+      
+      // Show success message
+      setError(null);
+      setIsSubmitting(false);
+      
+      // Force redirect with window.location after a short delay
+      setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Force a full page reload to the dashboard
+          window.location.href = '/';
+        }
+      }, 1000);
+      
+      return; // Early return to prevent further processing
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
@@ -229,13 +244,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(false);
     }
   }
-
-  const addTool = () => {
-    appendTool({ 
-      toolIpfsCid: '',
-      policies: []
-    });
-  };
 
   return (
     <div className="space-y-8">
@@ -296,6 +304,29 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                             {...field}
                             className="text-black"
                           />
+                        </FormControl>
+                        <FormMessage className="text-destructive" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deploymentStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black">Deployment Status</FormLabel>
+                        <FormControl>
+                          <select 
+                            {...field} 
+                            className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-black ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            onChange={e => field.onChange(parseInt(e.target.value))}
+                            value={field.value}
+                          >
+                            <option value="0">DEV</option>
+                            <option value="1">TEST</option>
+                            <option value="2">PROD</option>
+                          </select>
                         </FormControl>
                         <FormMessage className="text-destructive" />
                       </FormItem>
@@ -373,7 +404,10 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                         type="button"
                         variant="default"
                         size="sm"
-                        onClick={addTool}
+                        onClick={() => appendTool({ 
+                          toolIpfsCid: '',
+                          policies: [{ policyIpfsCid: '', parameters: [{ name: '', type: 'string' }] }]
+                        })}
                         className="text-black"
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
@@ -436,15 +470,17 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                 <div key={`policy-${toolIndex}-${policyIndex}`} className="border p-3 rounded-md mb-4 space-y-3">
                                   <div className="flex justify-between items-center">
                                     <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => removePolicy(toolIndex, policyIndex)}
-                                      className="text-red-500 hover:text-red-700"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                    {policyIndex > 0 && (
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removePolicy(toolIndex, policyIndex)}
+                                        className="text-red-500 hover:text-red-700"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
                                   </div>
                                   
                                   <FormField
@@ -519,15 +555,17 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                           )}
                                         />
                                         
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
-                                          className="text-red-500 hover:text-red-700"
-                                        >
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                        {paramIndex > 0 && (
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
+                                            className="text-red-500 hover:text-red-700"
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        )}
                                       </div>
                                     ))}
                                   </div>

@@ -25,14 +25,18 @@ const AppInfo = ({
         <p>
           <strong>Description:</strong> {appInfo.description}
         </p>
-        {agentPKP && (
-          <p>
-            <strong>Account Address:</strong> {agentPKP.ethAddress}
-          </p>
-        )}
         <p>
           <strong>Version:</strong>{' '}
           {appInfo.latestVersion ? appInfo.latestVersion.toString() : '1'}
+        </p>
+        
+        <p>
+          <strong>Deployment Status:</strong>{' '}
+          {appInfo.deploymentStatus !== undefined ? 
+            (appInfo.deploymentStatus === 0 ? 'DEV' : 
+             appInfo.deploymentStatus === 1 ? 'TEST' : 
+             appInfo.deploymentStatus === 2 ? 'PROD' : 'Unknown') 
+            : 'DEV'}
         </p>
         
         {showIPFSDetails && versionInfo && (
@@ -85,6 +89,11 @@ const AppInfo = ({
               })()}
             </div>
           </div>
+        )}
+        {agentPKP && (
+          <p>
+            <strong>Your Account Address:</strong> {agentPKP.ethAddress}
+          </p>
         )}
       </div>
     </div>

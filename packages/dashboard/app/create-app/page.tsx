@@ -21,8 +21,10 @@ export default function CreateAppPage() {
   };
   
   const handleSuccess = () => {
+    // Wait a moment for the transaction to be indexed
     setTimeout(() => {
-      router.push('/');
+      // Use window.location to force a full page reload
+      window.location.href = '/';
     }, 1500);
   };
   
