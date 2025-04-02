@@ -123,6 +123,52 @@ contract VincentAppFacet is VincentBase {
     }
 
     /**
+     * @notice Update the name of an application
+     * @dev Only the app manager can update the name
+     * @param appId ID of the app
+     * @param newName New name for the app
+     */
+    function updateAppName(uint256 appId, string calldata newName)
+        external
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        // Validate new name is not empty
+        if (bytes(newName).length == 0) {
+            revert LibVincentAppFacet.EmptyAppNameNotAllowed();
+        }
+
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        app.name = newName;
+        emit LibVincentAppFacet.AppNameUpdated(appId, newName);
+    }
+
+    /**
+     * @notice Update the description of an application
+     * @dev Only the app manager can update the description
+     * @param appId ID of the app
+     * @param newDescription New description for the app
+     */
+    function updateAppDescription(uint256 appId, string calldata newDescription)
+        external
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        // Validate new description is not empty
+        if (bytes(newDescription).length == 0) {
+            revert LibVincentAppFacet.EmptyAppDescriptionNotAllowed();
+        }
+
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        app.description = newDescription;
+        emit LibVincentAppFacet.AppDescriptionUpdated(appId, newDescription);
+    }
+
+    /**
      * @notice Enable or disable a specific app version
      * @dev Only the app manager can change the enabled status of an app version
      * @param appId ID of the app

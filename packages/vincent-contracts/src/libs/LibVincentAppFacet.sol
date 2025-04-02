@@ -46,6 +46,20 @@ library LibVincentAppFacet {
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
 
     /**
+     * @notice Emitted when an app's name is updated
+     * @param appId ID of the app
+     * @param newName The new name of the app
+     */
+    event AppNameUpdated(uint256 indexed appId, string newName);
+
+    /**
+     * @notice Emitted when an app's description is updated
+     * @param appId ID of the app
+     * @param newDescription The new description of the app
+     */
+    event AppDescriptionUpdated(uint256 indexed appId, string newDescription);
+
+    /**
      * @notice Emitted when a new delegatee is added to an app
      * @param appId ID of the app
      * @param delegatee Address of the delegatee added to the app
