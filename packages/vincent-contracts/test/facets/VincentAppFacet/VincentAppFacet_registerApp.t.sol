@@ -1567,4 +1567,142 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test registering an app with a tool that has no policy
+     * @dev Verifies that app registration fails when a tool has no associated policy
+     */
+    function testRegisterAppWithToolWithNoPolicy() public {
+        vm.startPrank(deployer);
+
+        // Create tool array with one tool
+        string[] memory toolsArray = new string[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create an empty policy array for the tool
+        string[][] memory emptyPolicies = new string[][](1);
+        emptyPolicies[0] = new string[](0); // Empty array of policies for this tool
+
+        // Create matching empty parameter arrays
+        string[][][] memory emptyParameterNames = new string[][][](1);
+        emptyParameterNames[0] = new string[][](0);
+
+        VincentAppStorage.ParameterType[][][] memory emptyParameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        emptyParameterTypes[0] = new VincentAppStorage.ParameterType[][](0);
+
+        // Expect the NewAppRegistered and NewAppVersionRegistered events
+        vm.expectEmit(true, true, false, false);
+        emit NewAppRegistered(1, deployer);
+
+        vm.expectEmit(true, true, true, false);
+        emit NewAppVersionRegistered(1, 1, deployer);
+
+        // Register the app with a tool that has no policy
+        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            emptyPolicies,
+            emptyParameterNames,
+            emptyParameterTypes
+        );
+
+        // Verify returned values
+        assertEq(appId, 1, "App ID should be 1");
+        assertEq(versionNumber, 1, "App version should be 1");
+
+        // Verify app version was created
+        (VincentAppViewFacet.App memory app, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, versionNumber);
+
+        // Verify app version is enabled
+        assertTrue(versionData.enabled, "App version should be enabled");
+
+        // Verify the tool was registered
+        assertEq(versionData.tools.length, 1, "App version should have 1 tool");
+        assertEq(
+            keccak256(abi.encodePacked(versionData.tools[0].toolIpfsCid)),
+            keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)),
+            "Tool IPFS CID should match"
+        );
+
+        // Verify the tool has zero policies
+        assertEq(versionData.tools[0].policies.length, 0, "Tool should have 0 policies");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test registering an app with a tool that has a policy with no parameters
+     * @dev Verifies that a policy can be registered without any parameters
+     */
+    function testRegisterAppWithPolicyWithNoParameters() public {
+        vm.startPrank(deployer);
+
+        // Create tool array with one tool
+        string[] memory toolsArray = new string[](1);
+        toolsArray[0] = TEST_TOOL_IPFS_CID_1;
+
+        // Create policy array with one policy
+        string[][] memory policiesArray = new string[][](1);
+        policiesArray[0] = new string[](1);
+        policiesArray[0][0] = TEST_POLICY_1;
+
+        // Create empty parameter arrays for the policy
+        string[][][] memory emptyParameterNames = new string[][][](1);
+        emptyParameterNames[0] = new string[][](1);
+        emptyParameterNames[0][0] = new string[](0); // No parameters for the policy
+
+        VincentAppStorage.ParameterType[][][] memory emptyParameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        emptyParameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        emptyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](0); // No parameter types
+
+        // Register the app with a tool that has a policy with no parameters
+        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            testDelegatees,
+            toolsArray,
+            policiesArray,
+            emptyParameterNames,
+            emptyParameterTypes
+        );
+
+        // Verify returned values
+        assertEq(appId, 1, "App ID should be 1");
+        assertEq(versionNumber, 1, "App version should be 1");
+
+        // Verify app version was created
+        (VincentAppViewFacet.App memory app, VincentAppViewFacet.AppVersion memory versionData) =
+            wrappedAppViewFacet.getAppVersion(appId, versionNumber);
+
+        // Verify app version is enabled
+        assertTrue(versionData.enabled, "App version should be enabled");
+
+        // Verify the tool was registered
+        assertEq(versionData.tools.length, 1, "App version should have 1 tool");
+        assertEq(
+            keccak256(abi.encodePacked(versionData.tools[0].toolIpfsCid)),
+            keccak256(abi.encodePacked(TEST_TOOL_IPFS_CID_1)),
+            "Tool IPFS CID should match"
+        );
+
+        // Verify the tool has one policy
+        assertEq(versionData.tools[0].policies.length, 1, "Tool should have 1 policy");
+
+        // Verify the policy has the right IPFS CID
+        assertEq(
+            keccak256(abi.encodePacked(versionData.tools[0].policies[0].policyIpfsCid)),
+            keccak256(abi.encodePacked(TEST_POLICY_1)),
+            "Policy IPFS CID should match"
+        );
+
+        // Verify the policy has zero parameters
+        assertEq(versionData.tools[0].policies[0].parameterNames.length, 0, "Policy should have 0 parameters");
+
+        vm.stopPrank();
+    }
 }
