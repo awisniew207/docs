@@ -30,6 +30,12 @@ library VincentAppStorage {
         BYTES_ARRAY
     }
 
+    enum DeploymentStatus {
+        DEV,
+        TEST,
+        PROD
+    }
+
     /**
      * @notice Policy data structure storing parameter names and types
      * @dev Renamed from PolicyStorage to Policy for clarity
@@ -64,6 +70,7 @@ library VincentAppStorage {
         address manager;
         string name;
         string description;
+        DeploymentStatus deploymentStatus;
     }
 
     struct AppStorage {

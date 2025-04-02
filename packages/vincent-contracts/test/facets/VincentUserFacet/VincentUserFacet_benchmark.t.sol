@@ -102,7 +102,7 @@ contract VincentUserFacetBenchmark is VincentTestHelper {
         singleToolParamTypes[0][0][1] = VincentAppStorage.ParameterType.UINT256;
         singleToolParamTypes[0][0][2] = VincentAppStorage.ParameterType.BOOL;
 
-        (appId, appVersion) = wrappedAppFacet.registerApp(
+        (appId, appVersion) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -189,7 +189,7 @@ contract VincentUserFacetBenchmark is VincentTestHelper {
             threeToolParamTypes[i][0][2] = VincentAppStorage.ParameterType.BOOL;
         }
 
-        (appId, appVersion) = wrappedAppFacet.registerApp(
+        (appId, appVersion) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -285,7 +285,7 @@ contract VincentUserFacetBenchmark is VincentTestHelper {
             threeToolParamTypes[i][0][4] = VincentAppStorage.ParameterType.BYTES;
         }
 
-        (appId, appVersion) = wrappedAppFacet.registerApp(
+        (appId, appVersion) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -379,7 +379,7 @@ contract VincentUserFacetBenchmark is VincentTestHelper {
         singleToolParamTypes[0][0][4] = VincentAppStorage.ParameterType.STRING_ARRAY;
         singleToolParamTypes[0][0][5] = VincentAppStorage.ParameterType.BYTES_ARRAY;
 
-        (appId, appVersion) = wrappedAppFacet.registerApp(
+        (appId, appVersion) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,

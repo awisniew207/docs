@@ -32,7 +32,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         emit NewAppVersionRegistered(1, 1, deployer);
 
         // Call registerApp through the diamond with the test data from the test helper
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -110,7 +110,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectEmit(true, true, true, false);
         emit NewAppVersionRegistered(2, 1, deployer);
 
-        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
             secondAppName,
             secondAppDesc,
             testRedirectUris,
@@ -195,7 +195,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         multiToolParamTypes[1][1][0] = VincentAppStorage.ParameterType.UINT256;
 
         // Register app with multiple tools and policies
-        (uint256 appId, uint256 appVersion) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 appVersion) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -238,7 +238,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("NoRedirectUrisProvided()"));
 
         // Call registerApp with empty redirect URIs
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             emptyRedirectUris,
@@ -266,7 +266,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("EmptyAppNameNotAllowed()"));
 
         // Call registerApp with empty name
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             emptyName,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -294,7 +294,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("EmptyAppDescriptionNotAllowed()"));
 
         // Call registerApp with empty description
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             emptyDescription,
             testRedirectUris,
@@ -323,7 +323,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("EmptyRedirectUriNotAllowed()"));
 
         // Call registerApp with empty redirect URI
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             redirectUrisWithEmpty,
@@ -352,7 +352,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("ZeroAddressDelegateeNotAllowed()"));
 
         // Call registerApp with zero address delegatee
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -384,7 +384,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Call registerApp with mismatched arrays
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -433,7 +433,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Call registerApp with mismatched policy arrays
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -482,7 +482,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Call registerApp with mismatched parameter arrays
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -512,7 +512,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Create a new app using the same delegatee
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             "Second App",
             "Second app description",
             testRedirectUris,
@@ -544,7 +544,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidNotAllowed(uint256,uint256)", 1, 0));
 
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -572,7 +572,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         vm.expectRevert(abi.encodeWithSignature("EmptyPolicyIpfsCidNotAllowed(uint256,uint256)", 1, 0));
 
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -606,7 +606,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Attempt to register app with duplicate URIs - this should fail
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             duplicateRedirectUris,
@@ -633,7 +633,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         multipleRedirectUris[1] = TEST_REDIRECT_URI_2; // Different URI
 
         // Register app with multiple redirect URIs
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             multipleRedirectUris,
@@ -702,7 +702,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         emit NewAppVersionRegistered(appId, 2, deployer);
 
         // Register a new version of the app
-        uint256 newVersionNumber = wrappedAppFacet.registerNextAppVersion(
+        uint256 newVersionNumber = _registerNextAppVersionLegacy(
             appId, updatedToolIpfsCids, updatedPolicies, updatedParameterNames, updatedParameterTypes
         );
 
@@ -788,7 +788,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         multiToolParamTypes[1][1][0] = VincentAppStorage.ParameterType.UINT256;
 
         // Register a new version of the app with multiple tools
-        uint256 newVersionNumber = wrappedAppFacet.registerNextAppVersion(
+        uint256 newVersionNumber = _registerNextAppVersionLegacy(
             appId, multiToolIpfsCids, multiToolPolicies, multiToolParamNames, multiToolParamTypes
         );
 
@@ -828,7 +828,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("NotAppManager(uint256,address)", appId, address(0xBEEF)));
 
         // Try to register a new version of the app as non-manager
-        wrappedAppFacet.registerNextAppVersion(
+        _registerNextAppVersionLegacy(
             appId, testToolIpfsCids, testToolPolicies, testToolPolicyParameterNames, testToolPolicyParameterTypes
         );
 
@@ -856,7 +856,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Try to register a new app version with mismatched arrays
-        wrappedAppFacet.registerNextAppVersion(
+        _registerNextAppVersionLegacy(
             appId,
             extraTools, // 2 tools
             testToolPolicies, // 1 policy array
@@ -905,7 +905,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Try to register a new app version with mismatched policy arrays
-        wrappedAppFacet.registerNextAppVersion(appId, toolsArray, policies, parameterNames, parameterTypes);
+        _registerNextAppVersionLegacy(appId, toolsArray, policies, parameterNames, parameterTypes);
 
         vm.stopPrank();
     }
@@ -948,7 +948,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Try to register a new app version with mismatched parameter arrays
-        wrappedAppFacet.registerNextAppVersion(appId, toolsArray, policies, parameterNames, parameterTypes);
+        _registerNextAppVersionLegacy(appId, toolsArray, policies, parameterNames, parameterTypes);
 
         vm.stopPrank();
     }
@@ -969,7 +969,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         secondVersionTool[0] = TEST_TOOL_IPFS_CID_2;
 
         // Register second version
-        uint256 secondVersionNumber = wrappedAppFacet.registerNextAppVersion(
+        uint256 secondVersionNumber = _registerNextAppVersionLegacy(
             appId, secondVersionTool, testToolPolicies, testToolPolicyParameterNames, testToolPolicyParameterTypes
         );
 
@@ -980,7 +980,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         thirdVersionTool[0] = "QmThirdToolIpfsCid";
 
         // Register third version
-        uint256 thirdVersionNumber = wrappedAppFacet.registerNextAppVersion(
+        uint256 thirdVersionNumber = _registerNextAppVersionLegacy(
             appId, thirdVersionTool, testToolPolicies, testToolPolicyParameterNames, testToolPolicyParameterTypes
         );
 
@@ -1021,7 +1021,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("NoToolsProvided(uint256)", 1));
 
         // Call registerApp with empty tools array
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1057,9 +1057,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("NoToolsProvided(uint256)", appId));
 
         // Try to register a new app version with empty tools array
-        wrappedAppFacet.registerNextAppVersion(
-            appId, emptyToolsArray, emptyPolicies, emptyParameterNames, emptyParameterTypes
-        );
+        _registerNextAppVersionLegacy(appId, emptyToolsArray, emptyPolicies, emptyParameterNames, emptyParameterTypes);
 
         vm.stopPrank();
     }
@@ -1087,7 +1085,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         // Register app with a tool that has no policies
         // This should not revert
-        (uint256 appId, uint256 versionId) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionId) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1143,9 +1141,8 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         // Register a new app version with a tool that has no policies
         // This should not revert
-        uint256 newVersionId = wrappedAppFacet.registerNextAppVersion(
-            appId, toolsArray, emptyPoliciesForTool, parameterNames, parameterTypes
-        );
+        uint256 newVersionId =
+            _registerNextAppVersionLegacy(appId, toolsArray, emptyPoliciesForTool, parameterNames, parameterTypes);
 
         // Verify the new version was registered
         (VincentAppViewFacet.App memory appData, VincentAppViewFacet.AppVersion memory versionData) =
@@ -1193,7 +1190,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         );
 
         // Call registerApp with an empty parameter name
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1229,7 +1226,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("EmptyToolIpfsCidNotAllowed(uint256,uint256)", appId, 0));
 
         // Try to register a new app version with an empty tool IPFS CID
-        wrappedAppFacet.registerNextAppVersion(
+        _registerNextAppVersionLegacy(
             appId, emptyToolCids, policies, testToolPolicyParameterNames, testToolPolicyParameterTypes
         );
 
@@ -1254,7 +1251,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("EmptyPolicyIpfsCidNotAllowed(uint256,uint256)", appId, 0));
 
         // Try to register a new app version with an empty policy IPFS CID
-        wrappedAppFacet.registerNextAppVersion(
+        _registerNextAppVersionLegacy(
             appId, testToolIpfsCids, emptyPolicies, testToolPolicyParameterNames, testToolPolicyParameterTypes
         );
 
@@ -1299,7 +1296,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         multiToolParamTypes[1][0][0] = VincentAppStorage.ParameterType.STRING;
 
         // Register app with multiple tools
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1434,7 +1431,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         multiToolParamTypes[1][0][0] = VincentAppStorage.ParameterType.STRING;
 
         // Register app with multiple tools
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1554,7 +1551,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         vm.expectRevert(abi.encodeWithSignature("NoToolsProvided(uint256)", 1));
 
         // Register app with no tools - this should fail
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1598,7 +1595,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         emit NewAppVersionRegistered(1, 1, deployer);
 
         // Register the app with a tool that has no policy
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -1660,7 +1657,7 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
         emptyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](0); // No parameter types
 
         // Register the app with a tool that has a policy with no parameters
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,

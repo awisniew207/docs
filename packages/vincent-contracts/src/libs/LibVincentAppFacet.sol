@@ -66,6 +66,13 @@ library LibVincentAppFacet {
     event NewLitActionRegistered(bytes32 indexed litActionIpfsCidHash);
 
     /**
+     * @notice Emitted when an app's deployment status is updated
+     * @param appId ID of the app
+     * @param deploymentStatus New deployment status of the app
+     */
+    event AppDeploymentStatusUpdated(uint256 indexed appId, uint8 indexed deploymentStatus);
+
+    /**
      * @notice Error thrown when a non-manager attempts to modify an app
      * @param appId ID of the app being modified
      * @param msgSender Address that attempted the unauthorized modification
@@ -119,6 +126,13 @@ library LibVincentAppFacet {
      * @param enabled Current enabled status
      */
     error AppVersionAlreadyInRequestedState(uint256 appId, uint256 appVersion, bool enabled);
+
+    /**
+     * @notice Error thrown when trying to set app deployment status to its current status
+     * @param appId ID of the app
+     * @param deploymentStatus Current deployment status
+     */
+    error AppAlreadyInRequestedDeploymentStatus(uint256 appId, uint8 deploymentStatus);
 
     /**
      * @notice Error thrown when trying to add a redirect URI that already exists for the app

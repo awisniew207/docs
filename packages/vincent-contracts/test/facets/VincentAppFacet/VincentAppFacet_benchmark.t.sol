@@ -43,7 +43,7 @@ contract VincentAppFacetBenchmark is VincentTestHelper {
         // Measure gas for app registration
         uint256 gasStart = gasleft();
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -100,7 +100,7 @@ contract VincentAppFacetBenchmark is VincentTestHelper {
         // Measure gas for app registration
         uint256 gasStart = gasleft();
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -171,7 +171,7 @@ contract VincentAppFacetBenchmark is VincentTestHelper {
         // Measure gas for app registration
         uint256 gasStart = gasleft();
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -253,7 +253,7 @@ contract VincentAppFacetBenchmark is VincentTestHelper {
         // Measure gas for app registration
         uint256 gasStart = gasleft();
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -335,7 +335,7 @@ contract VincentAppFacetBenchmark is VincentTestHelper {
         // Measure gas for app registration
         uint256 gasStart = gasleft();
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,

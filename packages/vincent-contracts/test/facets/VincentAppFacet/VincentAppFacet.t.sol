@@ -218,8 +218,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         twoRedirectUris[0] = TEST_REDIRECT_URI_1;
         twoRedirectUris[1] = TEST_REDIRECT_URI_2;
 
-        // Register app with two redirect URIs
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        // Register app with two redirect URIs using the legacy helper
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             twoRedirectUris,
@@ -308,7 +308,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         twoRedirectUris[0] = TEST_REDIRECT_URI_1;
         twoRedirectUris[1] = TEST_REDIRECT_URI_2;
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             twoRedirectUris,
@@ -394,7 +394,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
-        (uint256 secondAppId, uint256 secondVersionNumber) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondVersionNumber) = _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -451,7 +451,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         twoDelegatees[0] = TEST_DELEGATEE_1;
         twoDelegatees[1] = TEST_DELEGATEE_2;
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -484,7 +484,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         secondAppDelegatees[0] = TEST_DELEGATEE_1; // Use the previously removed delegatee
 
         // Should be able to register a new app with the removed delegatee
-        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -572,7 +572,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -740,7 +740,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
-        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -915,7 +915,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         multipleRedirectUris[0] = TEST_REDIRECT_URI_1;
         multipleRedirectUris[1] = TEST_REDIRECT_URI_2;
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             multipleRedirectUris,

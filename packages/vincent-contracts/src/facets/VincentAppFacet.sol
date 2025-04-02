@@ -19,6 +19,40 @@ contract VincentAppFacet is VincentBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
+     * @title AppInfo
+     * @notice Structure containing basic information about an application
+     * @dev Used when registering a new application
+     * @param name The name of the application
+     * @param description A description of the application's purpose and functionality
+     * @param deploymentStatus The current deployment status (DEV, TEST, PROD)
+     * @param authorizedRedirectUris List of authorized redirect URIs for OAuth flows
+     * @param delegatees List of addresses authorized to act on behalf of the app
+     */
+    struct AppInfo {
+        string name;
+        string description;
+        VincentAppStorage.DeploymentStatus deploymentStatus;
+        string[] authorizedRedirectUris;
+        address[] delegatees;
+    }
+
+    /**
+     * @title AppVersionTools
+     * @notice Structure containing tools, policies, and parameters for an app version
+     * @dev Used when registering a new app version
+     * @param toolIpfsCids Array of IPFS CIDs pointing to tool metadata
+     * @param toolPolicies 2D array of policy identifiers for each tool
+     * @param toolPolicyParameterNames 3D array of parameter names for each policy of each tool
+     * @param toolPolicyParameterTypes 3D array of parameter types for each policy of each tool
+     */
+    struct AppVersionTools {
+        string[] toolIpfsCids;
+        string[][] toolPolicies;
+        string[][][] toolPolicyParameterNames;
+        VincentAppStorage.ParameterType[][][] toolPolicyParameterTypes;
+    }
+
+    /**
      * @notice Modifier to restrict function access to the app manager only
      * @param appId ID of the app
      */
@@ -31,33 +65,19 @@ contract VincentAppFacet is VincentBase {
     /**
      * @notice Register a new application with initial version, tools, and policies
      * @dev This function combines app registration and first version registration in one call
-     * @param name Name of the application
-     * @param description Description of the application
-     * @param authorizedRedirectUris List of authorized redirect URIs for the application
-     * @param delegatees List of delegatee addresses for the application
-     * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this app
-     * @param toolPolicies 2D array mapping each tool to its associated policies
-     * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
-     * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
+     * @param appInfo Basic information about the application
+     * @param versionTools Tools and policies for the app version
      * @return newAppId The ID of the newly registered app
      * @return newAppVersion The version number of the newly registered app version (always 1 for new apps)
      */
-    function registerApp(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedRedirectUris,
-        address[] calldata delegatees,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
-    ) external returns (uint256 newAppId, uint256 newAppVersion) {
-        newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
+    function registerApp(AppInfo calldata appInfo, AppVersionTools calldata versionTools)
+        external
+        returns (uint256 newAppId, uint256 newAppVersion)
+    {
+        newAppId = _registerApp(appInfo);
         emit LibVincentAppFacet.NewAppRegistered(newAppId, msg.sender);
 
-        newAppVersion = _registerNextAppVersion(
-            newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
-        );
+        newAppVersion = _registerNextAppVersion(newAppId, versionTools);
         emit LibVincentAppFacet.NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
 
@@ -65,24 +85,41 @@ contract VincentAppFacet is VincentBase {
      * @notice Register a new version of an existing application
      * @dev Only the app manager can register new versions of an existing app
      * @param appId ID of the app for which to register a new version
-     * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this version
-     * @param toolPolicies 2D array mapping each tool to its associated policies
-     * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
-     * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
+     * @param versionTools Tools and policies for the app version
      * @return newAppVersion The version number of the newly registered app version
      */
-    function registerNextAppVersion(
-        uint256 appId,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
-    ) external onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
-        newAppVersion = _registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
-        );
+    function registerNextAppVersion(uint256 appId, AppVersionTools calldata versionTools)
+        external
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+        returns (uint256 newAppVersion)
+    {
+        newAppVersion = _registerNextAppVersion(appId, versionTools);
 
         emit LibVincentAppFacet.NewAppVersionRegistered(appId, newAppVersion, msg.sender);
+    }
+
+    /**
+     * @notice Update the deployment status of an application
+     * @dev Only the app manager can update the deployment status
+     * @param appId ID of the app
+     * @param deploymentStatus New deployment status for the app
+     */
+    function updateAppDeploymentStatus(uint256 appId, VincentAppStorage.DeploymentStatus deploymentStatus)
+        external
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        // Revert if trying to set the same status
+        if (app.deploymentStatus == deploymentStatus) {
+            revert LibVincentAppFacet.AppAlreadyInRequestedDeploymentStatus(appId, uint8(deploymentStatus));
+        }
+
+        app.deploymentStatus = deploymentStatus;
+        emit LibVincentAppFacet.AppDeploymentStatusUpdated(appId, uint8(deploymentStatus));
     }
 
     /**
@@ -213,29 +250,21 @@ contract VincentAppFacet is VincentBase {
     /**
      * @notice Internal function to register a new app
      * @dev Sets up the basic app structure and associates redirect URIs and delegatees
-     * @param name Name of the application
-     * @param description Description of the application
-     * @param authorizedRedirectUris List of authorized redirect URIs for the application
-     * @param delegatees List of delegatee addresses for the application
+     * @param appInfo An AppInfo struct containing the app name, description, authorized redirect URIs, and delegatees
      * @return newAppId The ID of the newly registered app
      */
-    function _registerApp(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedRedirectUris,
-        address[] calldata delegatees
-    ) internal returns (uint256 newAppId) {
+    function _registerApp(AppInfo calldata appInfo) internal returns (uint256 newAppId) {
         // Validate app name and description are not empty
-        if (bytes(name).length == 0) {
+        if (bytes(appInfo.name).length == 0) {
             revert LibVincentAppFacet.EmptyAppNameNotAllowed();
         }
 
-        if (bytes(description).length == 0) {
+        if (bytes(appInfo.description).length == 0) {
             revert LibVincentAppFacet.EmptyAppDescriptionNotAllowed();
         }
 
         // Require at least one authorized redirect URI
-        if (authorizedRedirectUris.length == 0) {
+        if (appInfo.authorizedRedirectUris.length == 0) {
             revert LibVincentAppFacet.NoRedirectUrisProvided();
         }
 
@@ -249,32 +278,33 @@ contract VincentAppFacet is VincentBase {
         // Register the app
         VincentAppStorage.App storage app = as_.appIdToApp[newAppId];
         app.manager = msg.sender;
-        app.name = name;
-        app.description = description;
+        app.name = appInfo.name;
+        app.description = appInfo.description;
+        app.deploymentStatus = appInfo.deploymentStatus;
 
-        for (uint256 i = 0; i < authorizedRedirectUris.length; i++) {
+        for (uint256 i = 0; i < appInfo.authorizedRedirectUris.length; i++) {
             // Check that the redirect URI is not empty
-            if (bytes(authorizedRedirectUris[i]).length == 0) {
+            if (bytes(appInfo.authorizedRedirectUris[i]).length == 0) {
                 revert LibVincentAppFacet.EmptyRedirectUriNotAllowed();
             }
-            _addAuthorizedRedirectUri(as_, newAppId, authorizedRedirectUris[i]);
+            _addAuthorizedRedirectUri(as_, newAppId, appInfo.authorizedRedirectUris[i]);
         }
 
         // Add the delegatees to the app
-        for (uint256 i = 0; i < delegatees.length; i++) {
+        for (uint256 i = 0; i < appInfo.delegatees.length; i++) {
             // Check that the delegatee is not the zero address
-            if (delegatees[i] == address(0)) {
+            if (appInfo.delegatees[i] == address(0)) {
                 revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
             }
 
-            uint256 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
+            uint256 existingAppId = as_.delegateeAddressToAppId[appInfo.delegatees[i]];
             if (existingAppId != 0) {
-                revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
+                revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(existingAppId, appInfo.delegatees[i]);
             }
 
-            app.delegatees.add(delegatees[i]);
+            app.delegatees.add(appInfo.delegatees[i]);
 
-            as_.delegateeAddressToAppId[delegatees[i]] = newAppId;
+            as_.delegateeAddressToAppId[appInfo.delegatees[i]] = newAppId;
         }
     }
 
@@ -287,38 +317,35 @@ contract VincentAppFacet is VincentBase {
      * @notice App versions are enabled by default when registered.
      *
      * @param appId The ID of the app for which a new version is being registered.
-     * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
-     * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
-     * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
-     * @param toolPolicyParameterTypes A 3D array mapping each policy parameter to its type.
+     * @param versionTools An AppVersionTools struct containing the tools, policies, and parameters for the new app version.
      * @return newAppVersion The newly created version number for the app.
      */
-    function _registerNextAppVersion(
-        uint256 appId,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
-    ) internal returns (uint256 newAppVersion) {
+    function _registerNextAppVersion(uint256 appId, AppVersionTools calldata versionTools)
+        internal
+        returns (uint256 newAppVersion)
+    {
         // Step 1: Check that at least one tool is provided
-        if (toolIpfsCids.length == 0) {
+        if (versionTools.toolIpfsCids.length == 0) {
             revert LibVincentAppFacet.NoToolsProvided(appId);
         }
 
         // Check array lengths at top level
-        uint256 toolCount = toolIpfsCids.length;
+        uint256 toolCount = versionTools.toolIpfsCids.length;
         if (
-            toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length
-                || toolCount != toolPolicyParameterTypes.length
+            toolCount != versionTools.toolPolicies.length || toolCount != versionTools.toolPolicyParameterNames.length
+                || toolCount != versionTools.toolPolicyParameterTypes.length
         ) {
             revert LibVincentAppFacet.ToolArrayDimensionMismatch(
-                toolCount, toolPolicies.length, toolPolicyParameterNames.length, toolPolicyParameterTypes.length
+                toolCount,
+                versionTools.toolPolicies.length,
+                versionTools.toolPolicyParameterNames.length,
+                versionTools.toolPolicyParameterTypes.length
             );
         }
 
         // Then check nested arrays for each tool
         for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i];
+            string memory toolIpfsCid = versionTools.toolIpfsCids[i];
 
             // Validate tool IPFS CID is not empty
             if (bytes(toolIpfsCid).length == 0) {
@@ -326,23 +353,34 @@ contract VincentAppFacet is VincentBase {
             }
 
             // Check nested array lengths
-            uint256 policyCount = toolPolicies[i].length;
-            if (policyCount != toolPolicyParameterNames[i].length || policyCount != toolPolicyParameterTypes[i].length)
-            {
+            uint256 policyCount = versionTools.toolPolicies[i].length;
+            if (
+                policyCount != versionTools.toolPolicyParameterNames[i].length
+                    || policyCount != versionTools.toolPolicyParameterTypes[i].length
+            ) {
                 revert LibVincentAppFacet.PolicyArrayLengthMismatch(
-                    i, policyCount, toolPolicyParameterNames[i].length, toolPolicyParameterTypes[i].length
+                    i,
+                    policyCount,
+                    versionTools.toolPolicyParameterNames[i].length,
+                    versionTools.toolPolicyParameterTypes[i].length
                 );
             }
 
             // Check parameter names and types match for each policy
             for (uint256 j = 0; j < policyCount; j++) {
-                if (toolPolicyParameterNames[i][j].length != toolPolicyParameterTypes[i][j].length) {
+                if (
+                    versionTools.toolPolicyParameterNames[i][j].length
+                        != versionTools.toolPolicyParameterTypes[i][j].length
+                ) {
                     revert LibVincentAppFacet.ParameterArrayLengthMismatch(
-                        i, j, toolPolicyParameterNames[i][j].length, toolPolicyParameterTypes[i][j].length
+                        i,
+                        j,
+                        versionTools.toolPolicyParameterNames[i][j].length,
+                        versionTools.toolPolicyParameterTypes[i][j].length
                     );
                 }
 
-                string memory policyIpfsCid = toolPolicies[i][j];
+                string memory policyIpfsCid = versionTools.toolPolicies[i][j];
 
                 // Validate non-empty policy IPFS CID
                 if (bytes(policyIpfsCid).length == 0) {
@@ -350,9 +388,9 @@ contract VincentAppFacet is VincentBase {
                 }
 
                 // Check for empty parameter names
-                uint256 paramCount = toolPolicyParameterNames[i][j].length;
+                uint256 paramCount = versionTools.toolPolicyParameterNames[i][j].length;
                 for (uint256 k = 0; k < paramCount; k++) {
-                    string memory paramName = toolPolicyParameterNames[i][j][k];
+                    string memory paramName = versionTools.toolPolicyParameterNames[i][j][k];
 
                     // Check for empty parameter name
                     if (bytes(paramName).length == 0) {
@@ -379,7 +417,7 @@ contract VincentAppFacet is VincentBase {
 
         // Step 6: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
+            string memory toolIpfsCid = versionTools.toolIpfsCids[i]; // Cache calldata value
 
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
@@ -398,10 +436,10 @@ contract VincentAppFacet is VincentBase {
                 versionedApp.toolIpfsCidHashToToolPolicies[hashedToolCid];
 
             // Step 7: Iterate through policies linked to this tool.
-            uint256 policyCount = toolPolicies[i].length;
+            uint256 policyCount = versionTools.toolPolicies[i].length;
 
             for (uint256 j = 0; j < policyCount; j++) {
-                string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
+                string memory policyIpfsCid = versionTools.toolPolicies[i][j]; // Cache calldata value
 
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
@@ -421,10 +459,10 @@ contract VincentAppFacet is VincentBase {
                 EnumerableSet.Bytes32Set storage policyParameterNameHashes = policy.policyParameterNameHashes;
 
                 // Step 9: Iterate through policy parameters.
-                uint256 paramCount = toolPolicyParameterNames[i][j].length;
+                uint256 paramCount = versionTools.toolPolicyParameterNames[i][j].length;
 
                 for (uint256 k = 0; k < paramCount; k++) {
-                    string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
+                    string memory paramName = versionTools.toolPolicyParameterNames[i][j][k]; // Cache calldata value
 
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
@@ -437,7 +475,7 @@ contract VincentAppFacet is VincentBase {
                     }
 
                     // Step 9.3: Store the parameter type
-                    VincentAppStorage.ParameterType paramType = toolPolicyParameterTypes[i][j][k];
+                    VincentAppStorage.ParameterType paramType = versionTools.toolPolicyParameterTypes[i][j][k];
                     policy.policyParameterNameHashToType[hashedPolicyParameterName] = paramType;
                 }
             }

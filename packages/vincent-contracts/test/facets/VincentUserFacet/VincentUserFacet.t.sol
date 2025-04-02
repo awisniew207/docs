@@ -698,7 +698,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         newAppDelegatees[0] = TEST_DELEGATEE_2;
 
         // Register first app version
-        (uint256 testAppId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 testAppId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -745,7 +745,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         toolPolicyParameterTypes2[0][0][0] = VincentAppStorage.ParameterType.STRING;
 
         // Register second app version
-        uint256 versionNumber2 = wrappedAppFacet.registerNextAppVersion(
+        uint256 versionNumber2 = _registerNextAppVersionLegacy(
             testAppId, toolIpfsCids2, toolPolicies2, toolPolicyParameterNames2, toolPolicyParameterTypes2
         );
 
@@ -822,7 +822,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         newAppDelegatees[0] = TEST_DELEGATEE_2;
 
         // Register the new app with policy having no parameters
-        (uint256 noParamAppId, uint256 noParamAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 noParamAppId, uint256 noParamAppVersion) = _registerAppLegacy(
             "App With No Param Policy",
             "Test app with a policy having no parameters",
             testRedirectUris,
@@ -914,7 +914,7 @@ contract VincentUserFacetTest is VincentTestHelper {
         newAppDelegatees[0] = TEST_DELEGATEE_2;
 
         // Register the new app with policy having no parameters
-        (uint256 noParamAppId, uint256 noParamAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 noParamAppId, uint256 noParamAppVersion) = _registerAppLegacy(
             "App With No Param Policy 2",
             "Test app with a policy having no parameters",
             testRedirectUris,
