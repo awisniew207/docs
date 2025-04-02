@@ -78,6 +78,7 @@ contract VincentAppViewFacet is VincentBase {
         uint256 id;
         string name;
         string description;
+        bool isDeleted;
         VincentAppStorage.DeploymentStatus deploymentStatus;
         address manager;
         uint256 latestVersion;
@@ -149,19 +150,14 @@ contract VincentAppViewFacet is VincentBase {
      * @param appId ID of the app to retrieve
      * @return app Detailed view of the app containing its metadata and relationships
      */
-    function getAppById(uint256 appId)
-        public
-        view
-        appNotDeleted(appId)
-        onlyRegisteredApp(appId)
-        returns (App memory app)
-    {
+    function getAppById(uint256 appId) public view onlyRegisteredApp(appId) returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
         app.id = appId;
         app.name = storedApp.name;
         app.description = storedApp.description;
+        app.isDeleted = storedApp.isDeleted;
         app.deploymentStatus = storedApp.deploymentStatus;
         app.manager = storedApp.manager;
         // App versions are 1-indexed, so the array length corresponds directly to the latest version number

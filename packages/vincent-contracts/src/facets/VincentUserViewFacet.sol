@@ -197,8 +197,13 @@ contract VincentUserViewFacet is VincentBase {
             revert InvalidAppId();
         }
 
-        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+
+        if (as_.appIdToApp[appId].isDeleted) {
+            revert AppHasBeenDeleted(appId);
+        }
+
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentLitActionStorage.LitActionStorage storage ls_ = VincentLitActionStorage.litActionStorage();
 
         // Get the permitted app version for this PKP and app
@@ -207,10 +212,6 @@ contract VincentUserViewFacet is VincentBase {
         // If no version is permitted (appVersion == 0), return an empty array
         if (appVersion == 0) {
             return new ToolWithPolicies[](0);
-        }
-
-        if (as_.appIdToApp[appId].isDeleted) {
-            revert AppHasBeenDeleted(appId);
         }
 
         // Get the app version

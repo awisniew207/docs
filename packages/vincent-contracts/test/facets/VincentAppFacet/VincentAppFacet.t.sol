@@ -641,6 +641,30 @@ contract VincentAppFacetTest is VincentTestHelper {
     }
 
     /**
+     * @notice Test getting app by ID returns deleted property
+     * @dev Verifies that getAppById returns the correct isDeleted value when an app has been deleted
+     */
+    function testGetAppByIdReturnsDeletedProperty() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Verify app is not deleted by default
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+        assertFalse(app.isDeleted, "App should not be deleted by default");
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Verify app is now marked as deleted
+        app = wrappedAppViewFacet.getAppById(appId);
+        assertTrue(app.isDeleted, "App should be marked as deleted after deleteApp call");
+
+        vm.stopPrank();
+    }
+
+    /**
      * @notice Test getting app version
      * @dev Verifies that getAppVersion returns the correct app version data
      */
@@ -776,6 +800,49 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
         assertEq(appsWithVersions[1].versions.length, 1, "Second app should have 1 version");
         assertEq(appsWithVersions[1].versions[0].version, 1, "Second app version number should be 1");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that getAppsByManager includes both deleted and non-deleted apps
+     * @dev Verifies that getAppsByManager returns all apps including ones marked as deleted
+     */
+    function testGetAppsByManagerIncludesDeletedApps() public {
+        vm.startPrank(deployer);
+
+        // Register two apps
+        (uint256 firstAppId, uint256 firstAppVersion) = _registerTestApp();
+
+        address[] memory secondAppDelegatees = new address[](1);
+        secondAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
+            "Second App",
+            "Second App Description",
+            testRedirectUris,
+            secondAppDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Delete the first app
+        wrappedAppFacet.deleteApp(firstAppId);
+
+        // Get apps by manager
+        VincentAppViewFacet.AppWithVersions[] memory appsWithVersions = wrappedAppViewFacet.getAppsByManager(deployer);
+
+        // Verify apps count - should still have both apps
+        assertEq(appsWithVersions.length, 2, "Manager should have 2 apps (1 deleted, 1 active)");
+
+        // Verify first app is deleted and second app is not
+        assertEq(appsWithVersions[0].app.id, firstAppId, "First app ID should match");
+        assertTrue(appsWithVersions[0].app.isDeleted, "First app should be marked as deleted");
+
+        assertEq(appsWithVersions[1].app.id, secondAppId, "Second app ID should match");
+        assertFalse(appsWithVersions[1].app.isDeleted, "Second app should not be deleted");
 
         vm.stopPrank();
     }
