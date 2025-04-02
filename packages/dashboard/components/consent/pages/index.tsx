@@ -11,12 +11,14 @@ import AuthenticatedConsentForm from '../components/AuthenticatedConsentForm';
 import Loading from '../components/Loading';
 import LoginMethods from '../components/LoginMethods';
 import { getAgentPKP } from '../utils/getAgentPKP';
+import { useErrorPopup } from '@/providers/error-popup';
 
 export default function IndexView() {
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
   const [agentPKP, setAgentPKP] = useState<IRelayPKP>();
   const [sessionLoading, setSessionLoading] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<Error>();
+  const { showError } = useErrorPopup();
 
   const {
     authMethod,
@@ -36,6 +38,13 @@ export default function IndexView() {
   } = useAccounts();
 
   const error = authError || accountsError || sessionError;
+
+  // Show errors in the popup when they occur
+  useEffect(() => {
+    if (error) {
+      showError(error, 'Authentication Error');
+    }
+  }, [error, showError]);
 
   // Store referrer URL when component mounts
   useEffect(() => {
@@ -66,13 +75,14 @@ export default function IndexView() {
         setAgentPKP(agentPkpInfo);
       } catch (agentError) {
         console.error('Error handling Agent PKP:', agentError);
+        showError(agentError as Error, 'Agent PKP Error');
       }
     } catch (err) {
       setSessionError(err as Error);
     } finally {
       setSessionLoading(false);
     }
-  }, [authMethod, userPKP, setSessionSigs, setAgentPKP, setSessionError, setSessionLoading]);
+  }, [authMethod, userPKP, setSessionSigs, setAgentPKP, setSessionError, setSessionLoading, showError]);
 
   async function handleRegisterWithWebAuthn() {
     const newPKP = await registerWebAuthn();
@@ -114,13 +124,13 @@ export default function IndexView() {
 
   // Loading states
   if (authLoading) {
-    return <Loading copy={'Authenticating your credentials...'} error={error} />;
+    return <Loading copy={'Authenticating your credentials...'} />;
   }
   if (accountsLoading) {
-    return <Loading copy={'Looking up your accounts...'} error={error} />;
+    return <Loading copy={'Looking up your accounts...'} />;
   }
   if (sessionLoading) {
-    return <Loading copy={'Securing your session...'} error={error} />;
+    return <Loading copy={'Securing your session...'} />;
   }
 
   // Authenticated states
@@ -189,7 +199,7 @@ export default function IndexView() {
 
       case AUTH_METHOD_TYPE.StytchEmailFactorOtp:
       case AUTH_METHOD_TYPE.StytchSmsFactorOtp:
-        return <Loading copy={'Creating your account...'} error={error} />;
+        return <Loading copy={'Creating your account...'} />;
 
       case AUTH_METHOD_TYPE.EthWallet:
         return (

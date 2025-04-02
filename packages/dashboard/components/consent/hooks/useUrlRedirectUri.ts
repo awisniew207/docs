@@ -22,10 +22,7 @@ export function useUrlRedirectUri(): UrlParamsResult {
       return;
     }
 
-    // Set the parsed appId 
     setRedirectUri(urlRedirectUri);
-    
-    // Clear any previous errors
     setError(null);
   }, []);
 

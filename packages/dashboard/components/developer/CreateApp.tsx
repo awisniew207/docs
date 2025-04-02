@@ -27,42 +27,18 @@ import { VincentContracts } from '@/services';
 import { Network } from '@/services';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { mapTypeToEnum } from '@/services/types';
-
-// URL normalization helpers
-const normalizeURL = (url: string): string => {
-  if (!url) return url;
-  url = url.trim();
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url;
-  }
-  if (url.startsWith('http://')) {
-    url = 'https://' + url.slice(7);
-  }
-  return url;
-};
-
-const normalizeGitHubURL = (url: string): string => {
-  if (!url) return url;
-  url = url.trim();
-  if (!url.includes('github.com') && url.includes('/')) {
-    url = 'https://github.com/' + url;
-  }
-  if (!url.includes('github.com') && !url.includes('/')) {
-    url = 'https://github.com/' + url;
-  }
-  return normalizeURL(url);
-};
+import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
-  toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
+  toolIpfsCid: z.string(),
   policies: z.array(z.object({
-    policyIpfsCid: z.string().min(1, "Policy IPFS CID is required"),
+    policyIpfsCid: z.string(),
     parameters: z.array(z.object({
-      name: z.string().min(1, "Parameter name is required"),
+      name: z.string(),
       type: z.string().default("string")
-    })).min(1, "At least one parameter is required")
-  })).min(1, "At least one policy is required")
+    }))
+  }))
 });
 
 const formSchema = z.object({
@@ -76,52 +52,10 @@ const formSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description cannot exceed 500 characters'),
 
-  authorizedRedirectUris: z.string(),
+  authorizedRedirectUris: z.array(z.string().min(1, "Redirect URI cannot be empty"))
+    .min(1, 'At least one redirect URI is required'),
   
   tools: z.array(toolSchema).min(1, "At least one tool is required"),
-
-  logo: z.string().optional(),
-
-  githubLink: z
-    .string()
-    .optional()
-    .transform((val) => {
-      if (!val) return undefined;
-      return normalizeGitHubURL(val);
-    })
-    .pipe(
-      z
-        .string()
-        .url('Please enter a valid GitHub URL')
-        .refine((url) => {
-          try {
-            const parsed = new URL(url);
-            return parsed.hostname === 'github.com';
-          } catch {
-            return false;
-          }
-        }, 'Must be a GitHub URL (e.g., github.com/username/repo)')
-        .optional()
-    ),
-
-  websiteUrl: z
-    .string()
-    .transform(normalizeURL)
-    .pipe(
-      z
-        .string()
-        .url('Please enter a valid website URL')
-        .refine((url) => {
-          try {
-            const parsed = new URL(url);
-            return parsed.protocol === 'https:';
-          } catch {
-            return false;
-          }
-        }, 'Website URL must use HTTPS')
-    )
-    .optional()
-    .transform((val) => val || undefined),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -136,41 +70,29 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
   const chainId = useChainId();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       appName: '',
       description: '',
-      authorizedRedirectUris: '',
+      authorizedRedirectUris: [''],
       tools: [
         {
           toolIpfsCid: '',
-          policies: [
-            {
-              policyIpfsCid: '',
-              parameters: [
-                {
-                  name: '',
-                  type: 'string'
-                }
-              ]
-            }
-          ]
+          policies: []
         }
       ]
     },
     mode: 'onBlur',
   });
 
-  // Using a single field array for tools
   const { fields: toolFields, append: appendTool, remove: removeTool } = useFieldArray({
     control: form.control,
     name: "tools",
   });
 
-  // Using a simplified approach to manage nested arrays
-  // This avoids creating multiple field arrays upfront
   const appendPolicy = (toolIndex: number) => {
     const currentTools = form.getValues().tools;
     if (toolIndex >= 0 && toolIndex < currentTools.length) {
@@ -181,7 +103,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           ...updatedTools[toolIndex].policies,
           {
             policyIpfsCid: '',
-            parameters: [{ name: '', type: 'string' }]
+            parameters: []
           }
         ]
       };
@@ -249,7 +171,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     }
   };
 
-  // Force a re-render when form values change
   const watchTools = useWatch({
     control: form.control,
     name: 'tools'
@@ -269,46 +190,26 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(true);
       setError(null);
 
-      // Parse string inputs into array structures expected by the contract
-      const authorizedRedirectUris = !values.authorizedRedirectUris ? [] : 
-        values.authorizedRedirectUris
-          .split(',')
-          .map((uri) => normalizeURL(uri.trim()))
-          .filter(Boolean);
-
-      // Build arrays for contract parameters from the form values
       const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
-      
-      // Each tool has an array of policies
       const toolPolicies = values.tools.map(tool => 
-        tool.policies.map(policy => policy.policyIpfsCid)
+        (tool.policies || []).map(policy => policy.policyIpfsCid)
       );
-
-      // Each policy has parameter types
       const toolPolicyParameterTypes = values.tools.map(tool => 
-        tool.policies.map(policy => 
-          policy.parameters.map(param => mapTypeToEnum(param.type))
+        (tool.policies || []).map(policy => 
+          (policy.parameters || []).map(param => mapTypeToEnum(param.type))
         )
       );
-
-      // Each policy has parameter names
       const toolPolicyParameterNames = values.tools.map(tool => 
-        tool.policies.map(policy => 
-          policy.parameters.map(param => param.name)
+        (tool.policies || []).map(policy => 
+          (policy.parameters || []).map(param => param.name)
         )
       );
-
-      console.log("Submitting to contract:");
-      console.log("Tools:", toolIpfsCids);
-      console.log("Policies:", toolPolicies);
-      console.log("Parameter Types:", toolPolicyParameterTypes);
-      console.log("Parameter Names:", toolPolicyParameterNames);
 
       const contracts = new VincentContracts('datil' as Network);
       const receipt = await contracts.registerApp(
         values.appName,
         values.description,
-        authorizedRedirectUris,
+        values.authorizedRedirectUris,
         [],
         toolIpfsCids,
         toolPolicies,
@@ -316,8 +217,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         toolPolicyParameterNames
       );
       console.log('receipt', receipt);
-      onSuccess?.();
-      window.location.reload();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/'); // Navigate to root path on success
+      }
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
@@ -326,11 +230,18 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     }
   }
 
+  const addTool = () => {
+    appendTool({ 
+      toolIpfsCid: '',
+      policies: []
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4 mb-4">
         {onBack && (
-          <Button variant="outline" size="sm" onClick={onBack}>
+          <Button variant="default" size="sm" onClick={onBack} className="text-black">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
@@ -367,7 +278,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                         <FormControl>
                           <Input placeholder="My Vincent App" {...field} className="text-black" />
                         </FormControl>
-                        <FormMessage className="text-black" />
+                        <FormMessage className="text-destructive" />
                       </FormItem>
                     )}
                   />
@@ -386,7 +297,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                             className="text-black"
                           />
                         </FormControl>
-                        <FormMessage className="text-black" />
+                        <FormMessage className="text-destructive" />
                       </FormItem>
                     )}
                   />
@@ -398,13 +309,59 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       <FormItem>
                         <FormLabel className="text-black">Authorized Redirect URIs</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="https://example.com/callback, https://app.example.com/callback"
-                            {...field}
-                            className="text-black"
-                          />
+                          <div className="space-y-2">
+                            {field.value.map((uri: string, index: number) => (
+                              <div key={index} className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    placeholder="https://example.com/callback"
+                                    value={uri}
+                                    onChange={(e) => {
+                                      const newValues = [...field.value];
+                                      newValues[index] = e.target.value;
+                                      field.onChange(newValues);
+                                    }}
+                                    className="text-black flex-1"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newValues = [...field.value];
+                                      newValues.splice(index, 1);
+                                      field.onChange(newValues);
+                                    }}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                {!uri && form.formState.errors.authorizedRedirectUris && (
+                                  <span className="text-sm font-medium text-destructive">
+                                    Redirect URI cannot be empty
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                            <Button
+                              type="button"
+                              variant="default"
+                              size="sm"
+                              onClick={() => {
+                                field.onChange([...field.value, '']);
+                              }}
+                              className="text-black"
+                            >
+                              <Plus className="h-4 w-4 mr-2" /> Add Redirect URI
+                            </Button>
+                          </div>
                         </FormControl>
-                        <FormMessage className="text-black" />
+                        {form.formState.errors.authorizedRedirectUris?.message && (
+                          <p className="text-sm font-medium text-destructive mt-2">
+                            {form.formState.errors.authorizedRedirectUris.message}
+                          </p>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -414,12 +371,10 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       <h3 className="text-lg font-medium text-black">Tools</h3>
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="default"
                         size="sm"
-                        onClick={() => appendTool({ 
-                          toolIpfsCid: '',
-                          policies: [{ policyIpfsCid: '', parameters: [{ name: '', type: 'string' }] }]
-                        })}
+                        onClick={addTool}
+                        className="text-black"
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
                       </Button>
@@ -455,7 +410,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                 <FormControl>
                                   <Input placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY" {...field} className="text-black" />
                                 </FormControl>
-                                <FormMessage className="text-black" />
+                                <FormMessage className="text-destructive" />
                               </FormItem>
                             )}
                           />
@@ -465,9 +420,10 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                               <h5 className="font-medium text-black">Policies</h5>
                               <Button
                                 type="button"
-                                variant="outline"
+                                variant="default"
                                 size="sm"
                                 onClick={() => appendPolicy(toolIndex)}
+                                className="text-black"
                               >
                                 <Plus className="h-4 w-4 mr-2" /> Add Policy
                               </Button>
@@ -480,17 +436,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                 <div key={`policy-${toolIndex}-${policyIndex}`} className="border p-3 rounded-md mb-4 space-y-3">
                                   <div className="flex justify-between items-center">
                                     <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
-                                    {policyIndex > 0 && (
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removePolicy(toolIndex, policyIndex)}
-                                        className="text-red-500 hover:text-red-700"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removePolicy(toolIndex, policyIndex)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                   
                                   <FormField
@@ -502,7 +456,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                         <FormControl>
                                           <Input placeholder="policy1" {...field} className="text-black" />
                                         </FormControl>
-                                        <FormMessage className="text-black" />
+                                        <FormMessage className="text-destructive" />
                                       </FormItem>
                                     )}
                                   />
@@ -512,9 +466,10 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                       <h6 className="font-medium text-black">Parameters</h6>
                                       <Button
                                         type="button"
-                                        variant="outline"
+                                        variant="default"
                                         size="sm"
                                         onClick={() => appendParameter(toolIndex, policyIndex)}
+                                        className="text-black"
                                       >
                                         <Plus className="h-4 w-4 mr-2" /> Add Parameter
                                       </Button>
@@ -530,7 +485,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                               <FormControl>
                                                 <Input placeholder="Parameter name" {...field} className="text-black" />
                                               </FormControl>
-                                              <FormMessage className="text-black" />
+                                              <FormMessage className="text-destructive" />
                                             </FormItem>
                                           )}
                                         />
@@ -543,7 +498,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                               <FormControl>
                                                 <select 
                                                   {...field} 
-                                                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-black ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                 >
                                                   <option value="string">string</option>
                                                   <option value="string[]">string[]</option>
@@ -559,22 +514,20 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                                   <option value="bytes[]">bytes[]</option>
                                                 </select>
                                               </FormControl>
-                                              <FormMessage className="text-black" />
+                                              <FormMessage className="text-destructive" />
                                             </FormItem>
                                           )}
                                         />
                                         
-                                        {paramIndex > 0 && (
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
-                                            className="text-red-500 hover:text-red-700"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        )}
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
+                                          className="text-red-500 hover:text-red-700"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
                                       </div>
                                     ))}
                                   </div>
@@ -592,8 +545,8 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
               <div className="mt-6">
                 <Button
                   type="submit"
-                  className="w-full"
-                  variant="secondary"
+                  className="w-full text-black"
+                  variant="default"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}

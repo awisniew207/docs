@@ -13,6 +13,7 @@ function cleanWorkspace() {
 
   const paths = [
     join(rootDir, `node_modules`),
+    join(rootDir, `bun.lock`),
     join(rootDir, `packages/*/node_modules`),
     join(rootDir, `packages/*/dist`),
   ];

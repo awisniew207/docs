@@ -1,7 +1,7 @@
 "use client";
 
 import { AppView } from '@/services/types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft, Plus, Settings, ExternalLink, Trash2 } from 'lucide-react';
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { getContract, Network, ContractFacet } from '@/services/contract/config';
+import { Network, ContractFacet } from '@/services/contract/config';
 import {
   Select,
   SelectContent,
@@ -21,12 +21,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useErrorPopup } from '@/providers/error-popup';
 
 interface AdvancedFunctionsProps {
   onBack: () => void;
   dashboard: AppView;
   onSuccess?: () => void;
 }
+
+// Status message component
+const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
+  if (!message) return null;
+  
+  const getStatusClass = () => {
+    switch (type) {
+      case 'warning': return 'status-message--warning';
+      case 'success': return 'status-message--success';
+      case 'error': return 'status-message--error';
+      default: return 'status-message--info';
+    }
+  };
+  
+  return (
+    <div className={`status-message ${getStatusClass()}`}>
+      {type === 'info' && <div className="spinner"></div>}
+      <span>{message}</span>
+    </div>
+  );
+};
 
 export default function ManageAdvancedFunctionsScreen({
   onBack,
@@ -42,6 +64,32 @@ export default function ManageAdvancedFunctionsScreen({
   const [isVersionEnabled, setIsVersionEnabled] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [availableVersions, setAvailableVersions] = useState<{version: number, enabled: boolean}[]>([]);
+  
+  // Add status message state
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+  
+  // Add the error popup hook
+  const { showError } = useErrorPopup();
+  
+  // Helper function to set status messages
+  const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
+    setStatusMessage(message);
+    setStatusType(type);
+  }, []);
+  
+  // Clear status message
+  const clearStatus = useCallback(() => {
+    setStatusMessage('');
+  }, []);
+  
+  // Create enhanced error function that shows both popup and status error
+  const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
+    // Show error in popup
+    showError(errorMessage, title || 'Error', details);
+    // Also show in status message
+    showStatus(errorMessage, 'error');
+  }, [showError, showStatus]);
   
   useEffect(() => {
     setVersionNumber(dashboard.currentVersion || 1);
@@ -59,12 +107,13 @@ export default function ManageAdvancedFunctionsScreen({
   // Redirect URI management functions
   async function handleAddRedirectUri() {
     if (!redirectUri || redirectUri.trim() === '') {
-      alert("Please enter a valid redirect URI");
+      showErrorWithStatus("Please enter a valid redirect URI", "Invalid URI");
       return;
     }
     
     try {
       setIsProcessing(true);
+      showStatus("Adding redirect URI...", "info");
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
       
@@ -72,25 +121,34 @@ export default function ManageAdvancedFunctionsScreen({
       const args = [dashboard.appId, redirectUri.trim()];
       
       // Estimate gas with buffer
+      showStatus("Estimating gas...", "info");
       const gasLimit = await estimateGasWithBuffer(
         contract,
         'addAuthorizedRedirectUri',
         args
       );
       
+      showStatus("Sending transaction...", "info");
       const tx = await contract.addAuthorizedRedirectUri(
         ...args,
         {gasLimit}
       );
+      
+      showStatus("Waiting for confirmation...", "info");
       await tx.wait();
       
-      alert("Redirect URI added successfully");
+      showStatus("Redirect URI added successfully", "success");
       setShowAddUriDialog(false);
       setRedirectUri("");
-      onSuccess?.(); // Refresh app data
+      
+      // Refresh app data after a delay
+      setTimeout(() => {
+        clearStatus();
+        onSuccess?.();
+      }, 2000);
     } catch (error: any) {
       console.error("Error adding redirect URI:", error);
-      alert(`Failed to add redirect URI: ${error.message || "Unknown error"}`);
+      showErrorWithStatus(`Failed to add redirect URI: ${error.message || "Unknown error"}`, "Transaction Error");
     } finally {
       setIsProcessing(false);
     }
@@ -98,12 +156,13 @@ export default function ManageAdvancedFunctionsScreen({
   
   async function handleRemoveRedirectUri() {
     if (!redirectUri || redirectUri.trim() === '') {
-      alert("Please enter a valid redirect URI");
+      showErrorWithStatus("Please enter a valid redirect URI", "Invalid URI");
       return;
     }
     
     try {
       setIsProcessing(true);
+      showStatus("Removing redirect URI...", "info");
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
       
@@ -111,25 +170,34 @@ export default function ManageAdvancedFunctionsScreen({
       const args = [dashboard.appId, redirectUri.trim()];
       
       // Estimate gas with buffer
+      showStatus("Estimating gas...", "info");
       const gasLimit = await estimateGasWithBuffer(
         contract,
         'removeAuthorizedRedirectUri',
         args
       );
       
+      showStatus("Sending transaction...", "info");
       const tx = await contract.removeAuthorizedRedirectUri(
         ...args,
         {gasLimit}
       );
+      
+      showStatus("Waiting for confirmation...", "info");
       await tx.wait();
       
-      alert("Redirect URI removed successfully");
+      showStatus("Redirect URI removed successfully", "success");
       setShowRemoveUriDialog(false);
       setRedirectUri("");
-      onSuccess?.(); // Refresh app data
+      
+      // Refresh app data after a delay
+      setTimeout(() => {
+        clearStatus();
+        onSuccess?.();
+      }, 2000);
     } catch (error: any) {
       console.error("Error removing redirect URI:", error);
-      alert(`Failed to remove redirect URI: ${error.message || "Unknown error"}`);
+      showErrorWithStatus(`Failed to remove redirect URI: ${error.message || "Unknown error"}`, "Transaction Error");
     } finally {
       setIsProcessing(false);
     }
@@ -139,6 +207,7 @@ export default function ManageAdvancedFunctionsScreen({
   async function handleToggleVersion() {
     try {
       setIsProcessing(true);
+      showStatus(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}...`, "info");
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
       
@@ -153,26 +222,33 @@ export default function ManageAdvancedFunctionsScreen({
       ];
       
       // Estimate gas with buffer
+      showStatus("Estimating gas...", "info");
       const gasLimit = await estimateGasWithBuffer(
         contract,
         'enableAppVersion',
         args
       );
       
-      // Toggle the version status (enable if disabled, disable if enabled)
-      const toggleTx = await contract.enableAppVersion(
+      showStatus("Sending transaction...", "info");
+      const tx = await contract.enableAppVersion(
         ...args,
         {gasLimit}
       );
-      await toggleTx.wait();
       
-      alert(`App version ${versionNumber} ${isVersionEnabled ? 'disabled' : 'enabled'} successfully.`);
+      showStatus("Waiting for confirmation...", "info");
+      await tx.wait();
       
+      showStatus(`Version ${versionNumber} ${isVersionEnabled ? 'disabled' : 'enabled'} successfully`, "success");
       setShowEnableVersionDialog(false);
-      onSuccess?.(); // Refresh app data
+      
+      // Refresh app data after a delay
+      setTimeout(() => {
+        clearStatus();
+        onSuccess?.();
+      }, 2000);
     } catch (error: any) {
-      console.error("Error toggling app version:", error);
-      alert(`Failed to ${isVersionEnabled ? 'disable' : 'enable'} version ${versionNumber}: ${error.message || "Unknown error"}`);
+      console.error("Error toggling version:", error);
+      showErrorWithStatus(`Failed to ${isVersionEnabled ? 'disable' : 'enable'} version: ${error.message || "Unknown error"}`, "Transaction Error");
     } finally {
       setIsProcessing(false);
     }
@@ -180,11 +256,17 @@ export default function ManageAdvancedFunctionsScreen({
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      {/* Display status message */}
+      {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
+      
+      <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack} className="text-black">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="p-0 text-black"
+          >
+            <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-3xl font-bold text-black">Advanced Functions</h1>
         </div>

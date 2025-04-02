@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Plus, Copy, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Wallet } from "ethers";
 import {
     Dialog,
@@ -15,11 +15,32 @@ import {
 import { AppView } from "@/services/types";
 import { VincentContracts } from "@/services";
 import { Input } from "@/components/ui/input";
+import { useErrorPopup } from "@/providers/error-popup";
 
 interface DelegateeManagerProps {
     onBack: () => void;
     dashboard: AppView;
 }
+
+const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
+  if (!message) return null;
+  
+  const getStatusClass = () => {
+    switch (type) {
+      case 'warning': return 'status-message--warning';
+      case 'success': return 'status-message--success';
+      case 'error': return 'status-message--error';
+      default: return 'status-message--info';
+    }
+  };
+  
+  return (
+    <div className={`status-message ${getStatusClass()}`}>
+      {type === 'info' && <div className="spinner"></div>}
+      <span>{message}</span>
+    </div>
+  );
+};
 
 export default function DelegateeManagerScreen({
     onBack,
@@ -36,6 +57,25 @@ export default function DelegateeManagerScreen({
     const [manualAddress, setManualAddress] = useState("");
     const [isAdding, setIsAdding] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    
+    const [statusMessage, setStatusMessage] = useState<string>('');
+    const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+    
+    const { showError } = useErrorPopup();
+    
+    const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
+        setStatusMessage(message);
+        setStatusType(type);
+    }, []);
+    
+    const clearStatus = useCallback(() => {
+        setStatusMessage('');
+    }, []);
+    
+    const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
+        showError(errorMessage, title || 'Error', details);
+        showStatus(errorMessage, 'error');
+    }, [showError, showStatus]);
     
     useEffect(() => {
         setDelegatees(dashboard.delegatees || []);
@@ -62,113 +102,36 @@ export default function DelegateeManagerScreen({
     async function handleConfirmSaved() {
         try {
             setIsSaving(true);
-            const contracts = new VincentContracts('datil');
-            
-            console.log("Adding generated delegatee to app ID:", dashboard.appId);
-            console.log("Delegatee address:", newAddress);
-            
-            // Add the delegatee using addDelegatee
-            const tx = await contracts.addDelegatee(dashboard.appId, newAddress);
-            console.log("Transaction sent:", tx.hash);
-            
-            // Wait for transaction confirmation
-            const receipt = await tx.wait();
-            console.log("Transaction confirmed:", receipt);
-            
-            // Update the UI
-            setDelegatees((prev) => [...prev, newAddress]);
-            setShowKeyDialog(false);
-            setNewPrivateKey("");
-            setNewAddress("");
-            
-            alert("Delegatee added successfully!");
-            
-            // Notify parent to refresh
-            onBack();
-        } catch (error: any) {
-            console.error("Error adding generated delegatee:", error);
-            
-            let errorMessage = "Failed to add delegatee. ";
-            if (error.message) {
-                if (error.message.includes("CALL_EXCEPTION")) {
-                    errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
-                } else if (error.message.includes("user rejected")) {
-                    errorMessage = "Transaction was rejected by the user.";
-                } else {
-                    errorMessage += error.message.split('(')[0];
-                }
-            }
-            
-            alert(errorMessage);
-            // Keep the dialog open so user can copy the private key even if adding fails
-        } finally {
-            setIsSaving(false);
-        }
-    }
-
-    async function handleAddDelegatee() {
-        if (!manualAddress || !manualAddress.startsWith('0x') || manualAddress.length !== 42) {
-            alert("Please enter a valid Ethereum address");
-            return;
-        }
-
-        try {
-            setIsAdding(true);
+            showStatus("Adding new delegatee...", "info");
             const contracts = new VincentContracts('datil');
             
             try {
-                // Check if the delegatee is already added
-                if (delegatees.includes(manualAddress)) {
-                    alert("This address is already a delegatee for this app");
-                    setIsAdding(false);
+                if (delegatees.includes(newAddress)) {
+                    showErrorWithStatus("This address is already a delegatee for this app", "Duplicate Address");
+                    setIsSaving(false);
                     return;
                 }
                 
-                // First verify that we can access the app data
-                try {
-                    const appData = await contracts.getAppById(dashboard.appId);
-                    console.log("App data fetched:", appData);
-                    
-                    // Ensure the app exists and we have the correct ID
-                    if (!appData || !appData.id) {
-                        alert(`App ID ${dashboard.appId} not found or not accessible`);
-                        setIsAdding(false);
-                        return;
-                    }
-                } catch (appError) {
-                    console.error("Error verifying app:", appError);
-                    alert(`Could not verify app ID ${dashboard.appId}. Please check your connection and permissions.`);
-                    setIsAdding(false);
-                    return;
-                }
+                showStatus("Sending transaction...", "info");
+                const tx = await contracts.addDelegatee(dashboard.appId, newAddress);
                 
-                console.log("Adding delegatee to app ID:", dashboard.appId);
-                console.log("Delegatee address:", manualAddress);
-                
-                // Attempt to add the delegatee with explicit gas settings
-                // Use the app manager's wallet or ensure we're connected with the right wallet
-                const tx = await contracts.addDelegatee(dashboard.appId, manualAddress);
-                console.log("Transaction sent:", tx.hash);
-                
-                // Wait for the transaction
+                showStatus("Waiting for confirmation...", "info");
                 const receipt = await tx.wait();
                 console.log("Transaction confirmed:", receipt);
                 
-                // Update UI
-                setDelegatees((prev) => [...prev, manualAddress]);
-                setShowAddDialog(false);
-                setManualAddress("");
-                alert("Delegatee added successfully!");
+                setDelegatees((prev) => [...prev, newAddress]);
+                setShowKeyDialog(false);
+                showStatus("Delegatee added successfully!", "success");
                 
-                // Notify parent to refresh
-                onBack();
+                setTimeout(() => {
+                    clearStatus();
+                    onBack();
+                }, 2000);
             } catch (innerError: any) {
                 console.error("Detailed error:", innerError);
                 let errorMessage = "Failed to add delegatee. ";
                 
-                // Extract the most useful part of the error message
                 if (innerError.message) {
-                    // Check for common error patterns
                     if (innerError.message.includes("CALL_EXCEPTION")) {
                         errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
                     } else if (innerError.message.includes("user rejected")) {
@@ -178,57 +141,148 @@ export default function DelegateeManagerScreen({
                     }
                 }
                 
-                alert(errorMessage);
+                showErrorWithStatus(errorMessage, "Transaction Error");
             }
         } catch (error: any) {
             console.error("Error adding delegatee:", error);
-            alert(`Failed to add delegatee: ${error.message || "Unknown error"}`);
+            showErrorWithStatus(`Failed to add delegatee: ${error.message || "Unknown error"}`, "Error");
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
+    async function handleAddDelegatee() {
+        if (!manualAddress || !manualAddress.startsWith('0x') || manualAddress.length !== 42) {
+            showErrorWithStatus("Please enter a valid Ethereum address", "Invalid Address");
+            return;
+        }
+
+        try {
+            setIsAdding(true);
+            showStatus("Adding delegatee...", "info");
+            const contracts = new VincentContracts('datil');
+            
+            try {
+                if (delegatees.includes(manualAddress)) {
+                    showErrorWithStatus("This address is already a delegatee for this app", "Duplicate Address");
+                    setIsAdding(false);
+                    return;
+                }
+                
+                try {
+                    const appData = await contracts.getAppById(dashboard.appId);
+                    console.log("App data fetched:", appData);
+                    
+                    if (!appData || !appData.id) {
+                        showErrorWithStatus(`App ID ${dashboard.appId} not found or not accessible`, "App Not Found");
+                        setIsAdding(false);
+                        return;
+                    }
+                } catch (appError) {
+                    console.error("Error verifying app:", appError);
+                    showErrorWithStatus(`Could not verify app ID ${dashboard.appId}. Please check your connection and permissions.`, "Verification Error");
+                    setIsAdding(false);
+                    return;
+                }
+                
+                console.log("Adding delegatee to app ID:", dashboard.appId);
+                console.log("Delegatee address:", manualAddress);
+                
+                showStatus("Sending transaction...", "info");
+                const tx = await contracts.addDelegatee(dashboard.appId, manualAddress);
+                console.log("Transaction sent:", tx.hash);
+                
+                showStatus("Waiting for confirmation...", "info");
+                const receipt = await tx.wait();
+                console.log("Transaction confirmed:", receipt);
+                
+                setDelegatees((prev) => [...prev, manualAddress]);
+                setShowAddDialog(false);
+                setManualAddress("");
+                showStatus("Delegatee added successfully!", "success");
+                
+                setTimeout(() => {
+                    clearStatus();
+                    onBack();
+                }, 2000);
+            } catch (innerError: any) {
+                console.error("Detailed error:", innerError);
+                let errorMessage = "Failed to add delegatee. ";
+                
+                if (innerError.message) {
+                    if (innerError.message.includes("CALL_EXCEPTION")) {
+                        errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
+                    } else if (innerError.message.includes("user rejected")) {
+                        errorMessage = "Transaction was rejected by the user.";
+                    } else {
+                        errorMessage += innerError.message.split('(')[0]; // Get first part of error
+                    }
+                }
+                
+                showErrorWithStatus(errorMessage, "Transaction Error");
+            }
+        } catch (error: any) {
+            console.error("Error adding delegatee:", error);
+            showErrorWithStatus(`Failed to add delegatee: ${error.message || "Unknown error"}`, "Error");
         } finally {
             setIsAdding(false);
         }
     }
 
-    // Function to remove a delegatee
     async function handleRemoveDelegatee(delegateeAddress: string) {
         if (!confirm(`Are you sure you want to remove ${delegateeAddress} from delegatees?`)) {
             return;
         }
         
         try {
+            showStatus("Removing delegatee...", "info");
             const contracts = new VincentContracts('datil');
             const tx = await contracts.removeDelegatee(dashboard.appId, delegateeAddress);
+            
+            showStatus("Waiting for confirmation...", "info");
             await tx.wait();
             
-            // Update UI
-            setDelegatees(prev => prev.filter(addr => addr !== delegateeAddress));
-            alert("Delegatee removed successfully");
+            setDelegatees(current => current.filter(d => d !== delegateeAddress));
+            showStatus("Delegatee removed successfully!", "success");
             
-            // Notify parent to refresh
-            onBack();
+            setTimeout(() => clearStatus(), 2000);
         } catch (error: any) {
             console.error("Error removing delegatee:", error);
-            alert(`Failed to remove delegatee: ${error.message || "Unknown error"}`);
+            showErrorWithStatus(`Failed to remove delegatee: ${error.message || "Unknown error"}`, "Removal Error");
         }
     }
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
+            {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
+            
+            <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" size="sm" onClick={onBack} className="text-black">
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
+                    <Button
+                        variant="ghost"
+                        onClick={onBack}
+                        className="p-0 text-black"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
                     </Button>
-                    <h1 className="text-3xl font-bold">Delegatees</h1>
+                    <h1 className="text-3xl font-bold text-black">Manage Delegatees</h1>
                 </div>
-                <div className="flex gap-2">
-                    <Button onClick={() => setShowAddDialog(true)} className="text-black">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Delegatee
-                    </Button>
-                    <Button onClick={handleGenerateDelegatee} className="text-black">
-                        <Plus className="h-4 w-4 mr-2" />
+                <div className="flex gap-2 items-center">
+                    <Button
+                        variant="default"
+                        onClick={handleGenerateDelegatee}
+                        className="text-black"
+                    >
+                        <Plus className="h-4 w-4 mr-2 font-bold text-black" />
                         Generate Delegatee
+                    </Button>
+                    <Button
+                        variant="default"
+                        onClick={() => setShowAddDialog(true)}
+                        className="text-black"
+                    >
+                        <Plus className="h-4 w-4 mr-2 font-bold text-black" />
+                        Add Delegatee
                     </Button>
                 </div>
             </div>

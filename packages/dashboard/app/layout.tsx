@@ -11,6 +11,7 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { yellowstone } from './config/chains';
 import { usePathname } from 'next/navigation';
+import { ErrorPopupProvider } from '@/providers/error-popup';
 
 const wagmiConfig = createConfig({
   chains: [yellowstone],
@@ -33,27 +34,32 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   
-  // Don't apply this layout to consent pages - let them use their own layout
-  if (pathname?.startsWith('/consent')) {
+  // Don't apply this layout to appId routes - let them use their own layout
+  if (pathname?.startsWith('/appId/')) {
     return <>{children}</>;
   }
   
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-          <html>
-            <body>
-              <RainbowKitProvider
-                theme={darkTheme()}
-                initialChain={yellowstone}
-                appInfo={demoAppInfo}
-              >
+        <html lang="en">
+          <head>
+            <title>Vincent Dashboard</title>
+          </head>
+          <body>
+            <RainbowKitProvider
+              theme={darkTheme()}
+              initialChain={yellowstone}
+              appInfo={demoAppInfo}
+            >
+              <ErrorPopupProvider>
                 <Header />
                 <main className="max-w-screen-xl mx-auto p-6">{children}</main>
-              </RainbowKitProvider>
-            </body>
-          </html>
-        </QueryClientProvider>
-      </WagmiProvider>
+              </ErrorPopupProvider>
+            </RainbowKitProvider>
+          </body>
+        </html>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }

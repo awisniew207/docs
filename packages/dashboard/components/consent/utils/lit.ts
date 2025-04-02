@@ -148,7 +148,7 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
   const options = await webAuthnProvider.register();
 
   if (options.user) {
-    const displayName = prompt("Enter display name for your passkey:", "Lit Protocol User") || "Lit Protocol User";
+    const displayName = prompt("Enter display name for your passkey:", "Vincent User") || "Vincent User";
     options.user.displayName = displayName;
     options.user.name = displayName.toLowerCase().replace(/\s+/g, '-');
     // Make sure id exists - use name as id if missing
@@ -156,7 +156,7 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
       options.user.id = options.user.name;
     }
   } else {
-    const displayName = prompt("Enter display name for your passkey:", "Lit Protocol User") || "Lit Protocol User";
+    const displayName = prompt("Enter display name for your passkey:", "Vincent User") || "Vincent User";
     const userName = displayName.toLowerCase().replace(/\s+/g, '-');
     options.user = {
       displayName: displayName,
@@ -177,6 +177,7 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
     ethAddress: userResponse.pkpEthAddress,
   };
 
+  
   try {
     await addPayee(newUserPKP.ethAddress);
     console.log('Added payee', newUserPKP.ethAddress);
@@ -187,10 +188,11 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
   console.log('newUserPKP', newUserPKP);
 
   // Mint a new PKP to be controlled by the new user PKP
-  const newUserPKP2 = await mintPKPToExistingPKP(newUserPKP);
-  console.log('newUserPKP2', newUserPKP2);
+  // We'll still mint this, but we won't return it
+  const agentPKP = await mintPKPToExistingPKP(newUserPKP);
+  console.log('agentPKP ', agentPKP);
 
-  return newUserPKP2;
+  return newUserPKP;
 }
 
 /**
@@ -228,11 +230,13 @@ export async function getSessionSigs({
 }): Promise<SessionSigs> {
   await litNodeClient.connect();
 
+  console.log('pkpPublicKey', pkpPublicKey);
+
   const sessionSigs = await litNodeClient.getPkpSessionSigs({
     chain: 'ethereum',
     expiration: new Date(
-      Date.now() + 1000 * 60 * 15
-    ).toISOString(), // 15 minutes
+      Date.now() + 1000 * 60 * 60 * 24
+    ).toISOString(), // 1 day
     pkpPublicKey,
     authMethods: [authMethod],
     resourceAbilityRequests: [
@@ -411,13 +415,6 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
     publicKey,
     ethAddress,
   };
-
-  try {
-    await addPayee(agentPKP.ethAddress);
-    console.log('Added payee', agentPKP.ethAddress);
-  } catch (err) {
-    console.warn('Failed to add payee', err);
-  }
 
   return agentPKP;
 }

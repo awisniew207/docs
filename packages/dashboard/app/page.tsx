@@ -7,16 +7,20 @@ import DashboardScreen from "@/components/developer/Dashboard";
 import { formCompleteVincentAppForDev } from "@/services";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { AppView } from "@/services/types";
-import CreateAppScreen from "@/components/developer/CreateApp";
+import dynamic from 'next/dynamic';
 import ConnectWalletScreen from "@/components/developer/ConnectWallet";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Use dynamic import for CreateAppScreen to prevent SSR hydration issues
+const CreateAppScreen = dynamic(
+  () => import("@/components/developer/CreateApp"),
+  { ssr: false }
+);
 
 export default function Developer() {
     const [hasApp, setHasApp] = useState<Boolean>(false);
     const [app, setApp] = useState<AppView[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const isMounted = useIsMounted();
-    const [refetchApp, setRefetchApp] = useState(0);
 
     const { address, isConnected } = useAccount();
 
@@ -51,9 +55,13 @@ export default function Developer() {
 
         if (isMounted && isConnected) {
             checkAndFetchApp();
+        } else if (isMounted) {
+            // If mounted but not connected, stop loading state
+            setIsLoading(false);
         }
-    }, [address, isMounted, isConnected, refetchApp]);
+    }, [address, isMounted, isConnected]);
 
+    // Return null while client-side is initializing to prevent hydration mismatch
     if (!isMounted) return null;
 
     if (!isConnected) {
@@ -76,14 +84,12 @@ export default function Developer() {
 
     return (
         <div className="min-h-screen">
-             <ScrollArea className="h-[calc(123vh-20rem)]">
-
             {hasApp ? (
-                <DashboardScreen onRefetch={() => setRefetchApp(refetchApp + 1)} vincentApp={app!} />
+                <DashboardScreen vincentApp={app!} />
             ) : (
+                // Only render the CreateAppScreen once we're client-side 
                 <CreateAppScreen />
             )}
-            </ScrollArea>
         </div>
     );
 }
