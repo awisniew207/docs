@@ -31,14 +31,14 @@ import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
-  toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
+  toolIpfsCid: z.string(),
   policies: z.array(z.object({
-    policyIpfsCid: z.string().min(1, "Policy IPFS CID is required"),
+    policyIpfsCid: z.string(),
     parameters: z.array(z.object({
-      name: z.string().min(1, "Parameter name is required"),
+      name: z.string(),
       type: z.string().default("string")
-    })).min(1, "At least one parameter is required")
-  })).min(1, "At least one policy is required")
+    }))
+  }))
 });
 
 const formSchema = z.object({
@@ -81,17 +81,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       tools: [
         {
           toolIpfsCid: '',
-          policies: [
-            {
-              policyIpfsCid: '',
-              parameters: [
-                {
-                  name: '',
-                  type: 'string'
-                }
-              ]
-            }
-          ]
+          policies: []
         }
       ]
     },
@@ -113,7 +103,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           ...updatedTools[toolIndex].policies,
           {
             policyIpfsCid: '',
-            parameters: [{ name: '', type: 'string' }]
+            parameters: []
           }
         ]
       };
@@ -202,16 +192,16 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
       const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
       const toolPolicies = values.tools.map(tool => 
-        tool.policies.map(policy => policy.policyIpfsCid)
+        (tool.policies || []).map(policy => policy.policyIpfsCid)
       );
       const toolPolicyParameterTypes = values.tools.map(tool => 
-        tool.policies.map(policy => 
-          policy.parameters.map(param => mapTypeToEnum(param.type))
+        (tool.policies || []).map(policy => 
+          (policy.parameters || []).map(param => mapTypeToEnum(param.type))
         )
       );
       const toolPolicyParameterNames = values.tools.map(tool => 
-        tool.policies.map(policy => 
-          policy.parameters.map(param => param.name)
+        (tool.policies || []).map(policy => 
+          (policy.parameters || []).map(param => param.name)
         )
       );
 
@@ -239,6 +229,13 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(false);
     }
   }
+
+  const addTool = () => {
+    appendTool({ 
+      toolIpfsCid: '',
+      policies: []
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -376,10 +373,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                         type="button"
                         variant="default"
                         size="sm"
-                        onClick={() => appendTool({ 
-                          toolIpfsCid: '',
-                          policies: [{ policyIpfsCid: '', parameters: [{ name: '', type: 'string' }] }]
-                        })}
+                        onClick={addTool}
                         className="text-black"
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
@@ -442,17 +436,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                 <div key={`policy-${toolIndex}-${policyIndex}`} className="border p-3 rounded-md mb-4 space-y-3">
                                   <div className="flex justify-between items-center">
                                     <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
-                                    {policyIndex > 0 && (
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removePolicy(toolIndex, policyIndex)}
-                                        className="text-red-500 hover:text-red-700"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removePolicy(toolIndex, policyIndex)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                   
                                   <FormField
@@ -527,17 +519,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                           )}
                                         />
                                         
-                                        {paramIndex > 0 && (
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
-                                            className="text-red-500 hover:text-red-700"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        )}
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
+                                          className="text-red-500 hover:text-red-700"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
                                       </div>
                                     ))}
                                   </div>
