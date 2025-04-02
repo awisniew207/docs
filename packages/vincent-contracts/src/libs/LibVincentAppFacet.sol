@@ -87,6 +87,12 @@ library LibVincentAppFacet {
     event AppDeploymentStatusUpdated(uint256 indexed appId, uint8 indexed deploymentStatus);
 
     /**
+     * @notice Emitted when an app is deleted
+     * @param appId ID of the deleted app
+     */
+    event AppDeleted(uint256 indexed appId);
+
+    /**
      * @notice Error thrown when a non-manager attempts to modify an app
      * @param appId ID of the app being modified
      * @param msgSender Address that attempted the unauthorized modification
@@ -243,4 +249,17 @@ library LibVincentAppFacet {
     error ParameterArrayLengthMismatch(
         uint256 toolIndex, uint256 policyIndex, uint256 paramNamesLength, uint256 paramTypesLength
     );
+
+    /**
+     * @notice Error thrown when the app is already deleted
+     * @param appId ID of the deleted app
+     */
+    error AppAlreadyDeleted(uint256 appId);
+
+    /**
+     * @notice Error thrown when the app version has delegated agents
+     * @param appId ID of the app
+     * @param appVersion Version number of the app
+     */
+    error AppVersionHasDelegatedAgents(uint256 appId, uint256 appVersion);
 }

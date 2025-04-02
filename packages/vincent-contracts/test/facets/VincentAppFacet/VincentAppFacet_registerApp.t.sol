@@ -1702,4 +1702,186 @@ contract VincentAppFacetTestRegisterApp is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test that registering a new app version fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testRegisterNextAppVersionWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to register next version
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        _registerNextAppVersionLegacy(
+            appId, testToolIpfsCids, testToolPolicies, testToolPolicyParameterNames, testToolPolicyParameterTypes
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that updating app deployment status fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testUpdateAppDeploymentStatusWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to update deployment status
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.updateAppDeploymentStatus(appId, VincentAppStorage.DeploymentStatus.PROD);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that updating app name fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testUpdateAppNameWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to update name
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.updateAppName(appId, "New Name");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that updating app description fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testUpdateAppDescriptionWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to update description
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.updateAppDescription(appId, "New Description");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that enabling app version fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testEnableAppVersionWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to enable version
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.enableAppVersion(appId, 1, true);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that adding authorized redirect URI fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testAddAuthorizedRedirectUriWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to add redirect URI
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.addAuthorizedRedirectUri(appId, "https://new-uri.com");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removing authorized redirect URI fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testRemoveAuthorizedRedirectUriWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to remove redirect URI
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.removeAuthorizedRedirectUri(appId, "https://example.com");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that adding delegatee fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testAddDelegateeWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to add delegatee
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.addDelegatee(appId, address(0x123));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that removing delegatee fails when the app has been deleted
+     * @dev Verifies that the AppHasBeenDeleted error is thrown
+     */
+    function testRemoveDelegateeWhenAppDeleted() public {
+        vm.startPrank(deployer);
+
+        // First register an app
+        (uint256 appId, uint256 firstVersionNumber) = _registerTestApp();
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to remove delegatee
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedAppFacet.removeDelegatee(appId, address(0x123));
+
+        vm.stopPrank();
+    }
 }

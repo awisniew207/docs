@@ -145,10 +145,17 @@ contract VincentAppViewFacet is VincentBase {
     /**
      * @notice Retrieves detailed information about an app
      * @dev Fetches app data from storage and formats it into the App struct
+     * @dev This function will revert if the app is deleted or isn't registered
      * @param appId ID of the app to retrieve
      * @return app Detailed view of the app containing its metadata and relationships
      */
-    function getAppById(uint256 appId) public view onlyRegisteredApp(appId) returns (App memory app) {
+    function getAppById(uint256 appId)
+        public
+        view
+        appNotDeleted(appId)
+        onlyRegisteredApp(appId)
+        returns (App memory app)
+    {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 

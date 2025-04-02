@@ -62,7 +62,7 @@ contract VincentUserFacet is VincentBase {
         string[][] calldata policyIpfsCids,
         string[][][] calldata policyParameterNames,
         bytes[][][] calldata policyParameterValues
-    ) external onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
+    ) external appNotDeleted(appId) onlyPkpOwner(pkpTokenId) onlyRegisteredAppVersion(appId, appVersion) {
         if (
             toolIpfsCids.length != policyIpfsCids.length || toolIpfsCids.length != policyParameterNames.length
                 || toolIpfsCids.length != policyParameterValues.length

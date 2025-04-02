@@ -90,6 +90,7 @@ contract VincentAppFacet is VincentBase {
      */
     function registerNextAppVersion(uint256 appId, AppVersionTools calldata versionTools)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
         returns (uint256 newAppVersion)
@@ -107,6 +108,7 @@ contract VincentAppFacet is VincentBase {
      */
     function updateAppDeploymentStatus(uint256 appId, VincentAppStorage.DeploymentStatus deploymentStatus)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -130,6 +132,7 @@ contract VincentAppFacet is VincentBase {
      */
     function updateAppName(uint256 appId, string calldata newName)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -153,6 +156,7 @@ contract VincentAppFacet is VincentBase {
      */
     function updateAppDescription(uint256 appId, string calldata newDescription)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -177,6 +181,7 @@ contract VincentAppFacet is VincentBase {
      */
     function enableAppVersion(uint256 appId, uint256 appVersion, bool enabled)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredAppVersion(appId, appVersion)
     {
@@ -203,6 +208,7 @@ contract VincentAppFacet is VincentBase {
      */
     function addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -222,6 +228,7 @@ contract VincentAppFacet is VincentBase {
      */
     function removeAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -249,7 +256,12 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param delegatee Address of the delegatee to add
      */
-    function addDelegatee(uint256 appId, address delegatee) external onlyAppManager(appId) onlyRegisteredApp(appId) {
+    function addDelegatee(uint256 appId, address delegatee)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         // Check that the delegatee is not the zero address
@@ -278,6 +290,7 @@ contract VincentAppFacet is VincentBase {
      */
     function removeDelegatee(uint256 appId, address delegatee)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -291,6 +304,26 @@ contract VincentAppFacet is VincentBase {
         as_.delegateeAddressToAppId[delegatee] = 0;
 
         emit LibVincentAppFacet.DelegateeRemoved(appId, delegatee);
+    }
+
+    /**
+     * @notice Delete an application by setting its isDeleted flag to true
+     * @dev Only the app manager can delete an app
+     * @param appId ID of the app to delete
+     */
+    function deleteApp(uint256 appId) external appNotDeleted(appId) onlyAppManager(appId) onlyRegisteredApp(appId) {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        // Check that no app versions have delegated agent PKPs
+        for (uint256 i = 0; i < app.versionedApps.length; i++) {
+            if (app.versionedApps[i].delegatedAgentPkps.length() > 0) {
+                revert LibVincentAppFacet.AppVersionHasDelegatedAgents(appId, i + 1);
+            }
+        }
+
+        app.isDeleted = true;
+        emit LibVincentAppFacet.AppDeleted(appId);
     }
 
     /**

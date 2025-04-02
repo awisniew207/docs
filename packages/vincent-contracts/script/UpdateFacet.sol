@@ -231,7 +231,7 @@ contract UpdateFacet is Script {
 
     /// @dev Get VincentAppFacet selectors
     function getVincentAppFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](10);
+        bytes4[] memory selectors = new bytes4[](11);
         selectors[0] = VincentAppFacet.registerApp.selector;
         selectors[1] = VincentAppFacet.registerNextAppVersion.selector;
         selectors[2] = VincentAppFacet.enableAppVersion.selector;
@@ -242,6 +242,7 @@ contract UpdateFacet is Script {
         selectors[7] = VincentAppFacet.updateAppName.selector;
         selectors[8] = VincentAppFacet.updateAppDescription.selector;
         selectors[9] = VincentAppFacet.updateAppDeploymentStatus.selector;
+        selectors[10] = VincentAppFacet.deleteApp.selector;
         return selectors;
     }
 

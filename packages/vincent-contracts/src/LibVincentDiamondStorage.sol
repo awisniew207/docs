@@ -71,6 +71,7 @@ library VincentAppStorage {
         string name;
         string description;
         DeploymentStatus deploymentStatus;
+        bool isDeleted;
     }
 
     struct AppStorage {

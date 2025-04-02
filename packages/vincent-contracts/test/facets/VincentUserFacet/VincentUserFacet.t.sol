@@ -970,4 +970,30 @@ contract VincentUserFacetTest is VincentTestHelper {
 
         vm.stopPrank();
     }
+
+    /**
+     * @notice Test permitting an app version fails when app is deleted
+     * @dev Verifies that permitting an app version reverts when the app has been deleted
+     */
+    function testPermitAppVersionWhenAppDeleted() public {
+        // Start as deployer
+        vm.startPrank(deployer);
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to permit app version
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
+        );
+
+        vm.stopPrank();
+    }
 }
