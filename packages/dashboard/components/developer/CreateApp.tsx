@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
-  toolIpfsCid: z.string(),
+  toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
   policies: z.array(z.object({
     policyIpfsCid: z.string(),
     parameters: z.array(z.object({
@@ -217,11 +217,20 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         toolPolicyParameterNames
       );
       console.log('receipt', receipt);
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push('/'); // Navigate to root path on success
-      }
+
+      // Show success message
+      setError(null);
+      setIsSubmitting(false);
+
+      // Force redirect with window.location after a short delay
+      setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Force a full page reload to the dashboard
+          window.location.href = '/';
+        }
+      }, 1000);
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
