@@ -27,7 +27,6 @@ import { VincentContracts } from '@/services';
 import { Network } from '@/services';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { mapTypeToEnum } from '@/services/types';
-import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
@@ -72,7 +71,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
   const chainId = useChainId();
-  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -106,7 +104,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           ...updatedTools[toolIndex].policies,
           {
             policyIpfsCid: '',
-            parameters: [{ name: '', type: 'string' }]
+            parameters: []
           }
         ]
       };
@@ -354,19 +352,21 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                     }}
                                     className="text-black flex-1"
                                   />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                      const newValues = [...field.value];
-                                      newValues.splice(index, 1);
-                                      field.onChange(newValues);
-                                    }}
-                                    className="text-red-500 hover:text-red-700"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
+                                  {index > 0 && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newValues = [...field.value];
+                                        newValues.splice(index, 1);
+                                        field.onChange(newValues);
+                                      }}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
                                 </div>
                                 {!uri && form.formState.errors.authorizedRedirectUris && (
                                   <span className="text-sm font-medium text-destructive">
@@ -470,17 +470,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                 <div key={`policy-${toolIndex}-${policyIndex}`} className="border p-3 rounded-md mb-4 space-y-3">
                                   <div className="flex justify-between items-center">
                                     <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
-                                    {policyIndex > 0 && (
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removePolicy(toolIndex, policyIndex)}
-                                        className="text-red-500 hover:text-red-700"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removePolicy(toolIndex, policyIndex)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                   
                                   <FormField
@@ -555,17 +553,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                           )}
                                         />
                                         
-                                        {paramIndex > 0 && (
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
-                                            className="text-red-500 hover:text-red-700"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        )}
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
+                                          className="text-red-500 hover:text-red-700"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
                                       </div>
                                     ))}
                                   </div>

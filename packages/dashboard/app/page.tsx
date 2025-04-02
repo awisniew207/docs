@@ -27,17 +27,11 @@ export default function Developer() {
     useEffect(() => {
         async function checkAndFetchApp() {
             if (!address) return;
-            
             setIsLoading(true);
-
             try {
-                console.log("Fetching apps for address:", address);
                 const appData = await formCompleteVincentAppForDev(address);
-                
-                // Check if we have any apps
                 const exists = appData && appData.length > 0;
-                console.log("Apps found:", exists, appData?.length || 0);
-                
+                       
                 if (exists) {
                     setApp(appData);
                     setHasApp(true);
