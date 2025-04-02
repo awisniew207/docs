@@ -22,7 +22,7 @@ export default function CreateAppPage() {
   
   const handleSuccess = () => {
     setTimeout(() => {
-      router.push('/');
+      window.location.href = '/';
     }, 1500);
   };
   
