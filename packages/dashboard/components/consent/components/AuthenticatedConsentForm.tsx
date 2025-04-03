@@ -12,6 +12,7 @@ import ConsentActions from './authForm/ConsentActions';
 import RedirectMessage from './authForm/RedirectMessage';
 import VersionUpgradePrompt from './authForm/VersionUpgradePrompt';
 import UntrustedUriError from './authForm/UntrustedUriError';
+import DeletedAppError from './DeletedAppError';
 import { useUrlAppId } from '../hooks/useUrlAppId';
 import { useUrlRedirectUri } from '../hooks/useUrlRedirectUri';
 import { useStatusMessage } from '../hooks/useStatusMessage';
@@ -89,7 +90,8 @@ export default function AuthenticatedConsentForm({
     continueWithExistingPermission,
     handleUpgrade,
     updateState,
-    useCurrentVersionOnly
+    useCurrentVersionOnly,
+    isAppDeleted
   } = useAppPermissionCheck({
     appId,
     agentPKP,
@@ -496,6 +498,16 @@ export default function AuthenticatedConsentForm({
       <UntrustedUriError
         redirectUri={redirectUri}
         appInfo={appInfo}
+        statusMessage={statusMessage}
+        statusType={statusType}
+      />
+    );
+  }
+
+  // If app is deleted, show an error message
+  if (isAppDeleted) {
+    return (
+      <DeletedAppError
         statusMessage={statusMessage}
         statusType={statusType}
       />

@@ -27,7 +27,6 @@ import { VincentContracts } from '@/services';
 import { Network } from '@/services';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { mapTypeToEnum } from '@/services/types';
-import { useRouter } from 'next/navigation';
 
 // Tool schema
 const toolSchema = z.object({
@@ -88,6 +87,10 @@ const formSchema = z.object({
     
     return new Set(allParamNames).size === allParamNames.length;
   }, { message: "Parameter names must be unique across all policies" })
+
+  deploymentStatus: z.number().default(0),
+  
+
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -102,7 +105,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
   const chainId = useChainId();
-  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -110,6 +112,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       appName: '',
       description: '',
       authorizedRedirectUris: [''],
+      deploymentStatus: 0, // DEV by default
       tools: [
         {
           toolIpfsCid: '',
@@ -208,6 +211,13 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     name: 'tools'
   });
 
+  const addTool = () => {
+    appendTool({ 
+      toolIpfsCid: '',
+      policies: []
+    });
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     form.handleSubmit(onSubmit)(e);
@@ -265,43 +275,35 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           )
         );
 
-        const contracts = new VincentContracts('datil' as Network);
-        const receipt = await contracts.registerApp(
-          values.appName,
-          values.description,
-          values.authorizedRedirectUris,
-          [],
-          toolIpfsCids,
-          toolPolicies,
-          toolPolicyParameterTypes,
-          toolPolicyParameterNames
-        ).catch((err) => {
-          // Handle user rejection specifically
-          console.error('Transaction rejected:', err);
-          setIsSubmitting(false);
-          setError(err.message && err.message.includes('user rejected') 
-            ? 'Transaction was rejected' 
-            : 'Failed to create app - rejected the transaction');
-          return null;
-        });
+      const contracts = new VincentContracts('datil' as Network);
+      const receipt = await contracts.registerApp(
+        values.appName,
+        values.description,
+        values.authorizedRedirectUris,
+        [],
+        toolIpfsCids,
+        toolPolicies,
+        toolPolicyParameterTypes,
+        toolPolicyParameterNames,
+        values.deploymentStatus
+      );
+      console.log('receipt', receipt);
+      
+      // Show success message
+      setError(null);
+      setIsSubmitting(false);
+      
+      // Force redirect with window.location after a short delay
+      setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Force a full page reload to the dashboard
+          window.location.href = '/';
+        }
+      }, 1000);
+      return; // Early return to prevent further processing
 
-        // If receipt is null, the transaction was rejected or failed
-        if (!receipt) return;
-        console.log('receipt', receipt);
-
-        // Show success message
-        setError(null);
-        setIsSubmitting(false);
-
-        // Force redirect with window.location after a short delay
-        setTimeout(() => {
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            // Force a full page reload to the dashboard
-            window.location.href = '/';
-          }
-        }, 1000);
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
@@ -309,13 +311,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(false);
     }
   }
-
-  const addTool = () => {
-    appendTool({ 
-      toolIpfsCid: '',
-      policies: []
-    });
-  };
 
   return (
     <div className="space-y-8">
@@ -384,6 +379,29 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
                   <FormField
                     control={form.control}
+                    name="deploymentStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black">Deployment Status</FormLabel>
+                        <FormControl>
+                          <select 
+                            {...field} 
+                            className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-black ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            onChange={e => field.onChange(parseInt(e.target.value))}
+                            value={field.value}
+                          >
+                            <option value="0">DEV</option>
+                            <option value="1">TEST</option>
+                            <option value="2">PROD</option>
+                          </select>
+                        </FormControl>
+                        <FormMessage className="text-destructive" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="authorizedRedirectUris"
                     render={({ field }) => (
                       <FormItem>
@@ -403,19 +421,21 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                     }}
                                     className="text-black flex-1"
                                   />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                      const newValues = [...field.value];
-                                      newValues.splice(index, 1);
-                                      field.onChange(newValues);
-                                    }}
-                                    className="text-red-500 hover:text-red-700"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
+                                  {index > 0 && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newValues = [...field.value];
+                                        newValues.splice(index, 1);
+                                        field.onChange(newValues);
+                                      }}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
                                 </div>
                                 {!uri && form.formState.errors.authorizedRedirectUris && (
                                   <span className="text-sm font-medium text-destructive">

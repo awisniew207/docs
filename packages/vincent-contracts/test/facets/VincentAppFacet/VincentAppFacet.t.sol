@@ -218,8 +218,8 @@ contract VincentAppFacetTest is VincentTestHelper {
         twoRedirectUris[0] = TEST_REDIRECT_URI_1;
         twoRedirectUris[1] = TEST_REDIRECT_URI_2;
 
-        // Register app with two redirect URIs
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        // Register app with two redirect URIs using the legacy helper
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             twoRedirectUris,
@@ -308,7 +308,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         twoRedirectUris[0] = TEST_REDIRECT_URI_1;
         twoRedirectUris[1] = TEST_REDIRECT_URI_2;
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             twoRedirectUris,
@@ -394,7 +394,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
-        (uint256 secondAppId, uint256 secondVersionNumber) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondVersionNumber) = _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -451,7 +451,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         twoDelegatees[0] = TEST_DELEGATEE_1;
         twoDelegatees[1] = TEST_DELEGATEE_2;
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             testRedirectUris,
@@ -484,7 +484,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         secondAppDelegatees[0] = TEST_DELEGATEE_1; // Use the previously removed delegatee
 
         // Should be able to register a new app with the removed delegatee
-        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -572,7 +572,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
-        wrappedAppFacet.registerApp(
+        _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -636,6 +636,30 @@ contract VincentAppFacetTest is VincentTestHelper {
         uint256 nonExistentAppId = 999;
         vm.expectRevert(abi.encodeWithSignature("AppNotRegistered(uint256)", nonExistentAppId));
         wrappedAppViewFacet.getAppById(nonExistentAppId);
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getting app by ID returns deleted property
+     * @dev Verifies that getAppById returns the correct isDeleted value when an app has been deleted
+     */
+    function testGetAppByIdReturnsDeletedProperty() public {
+        vm.startPrank(deployer);
+
+        // Register an app
+        (uint256 appId, uint256 versionNumber) = _registerTestApp();
+
+        // Verify app is not deleted by default
+        VincentAppViewFacet.App memory app = wrappedAppViewFacet.getAppById(appId);
+        assertFalse(app.isDeleted, "App should not be deleted by default");
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Verify app is now marked as deleted
+        app = wrappedAppViewFacet.getAppById(appId);
+        assertTrue(app.isDeleted, "App should be marked as deleted after deleteApp call");
 
         vm.stopPrank();
     }
@@ -740,7 +764,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         address[] memory secondAppDelegatees = new address[](1);
         secondAppDelegatees[0] = TEST_DELEGATEE_2;
 
-        (uint256 secondAppId, uint256 secondAppVersion) = wrappedAppFacet.registerApp(
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
             "Second App",
             "Second App Description",
             testRedirectUris,
@@ -776,6 +800,49 @@ contract VincentAppFacetTest is VincentTestHelper {
         );
         assertEq(appsWithVersions[1].versions.length, 1, "Second app should have 1 version");
         assertEq(appsWithVersions[1].versions[0].version, 1, "Second app version number should be 1");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test that getAppsByManager includes both deleted and non-deleted apps
+     * @dev Verifies that getAppsByManager returns all apps including ones marked as deleted
+     */
+    function testGetAppsByManagerIncludesDeletedApps() public {
+        vm.startPrank(deployer);
+
+        // Register two apps
+        (uint256 firstAppId, uint256 firstAppVersion) = _registerTestApp();
+
+        address[] memory secondAppDelegatees = new address[](1);
+        secondAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        (uint256 secondAppId, uint256 secondAppVersion) = _registerAppLegacy(
+            "Second App",
+            "Second App Description",
+            testRedirectUris,
+            secondAppDelegatees,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterTypes
+        );
+
+        // Delete the first app
+        wrappedAppFacet.deleteApp(firstAppId);
+
+        // Get apps by manager
+        VincentAppViewFacet.AppWithVersions[] memory appsWithVersions = wrappedAppViewFacet.getAppsByManager(deployer);
+
+        // Verify apps count - should still have both apps
+        assertEq(appsWithVersions.length, 2, "Manager should have 2 apps (1 deleted, 1 active)");
+
+        // Verify first app is deleted and second app is not
+        assertEq(appsWithVersions[0].app.id, firstAppId, "First app ID should match");
+        assertTrue(appsWithVersions[0].app.isDeleted, "First app should be marked as deleted");
+
+        assertEq(appsWithVersions[1].app.id, secondAppId, "Second app ID should match");
+        assertFalse(appsWithVersions[1].app.isDeleted, "Second app should not be deleted");
 
         vm.stopPrank();
     }
@@ -915,7 +982,7 @@ contract VincentAppFacetTest is VincentTestHelper {
         multipleRedirectUris[0] = TEST_REDIRECT_URI_1;
         multipleRedirectUris[1] = TEST_REDIRECT_URI_2;
 
-        (uint256 appId, uint256 versionNumber) = wrappedAppFacet.registerApp(
+        (uint256 appId, uint256 versionNumber) = _registerAppLegacy(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
             multipleRedirectUris,
