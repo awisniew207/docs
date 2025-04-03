@@ -672,8 +672,8 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
               <div className="mt-6">
                 {form.getValues().tools.length > 0 && (
-                    <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
-                      <p className="font-medium">Warning:</p>
+                    <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4">
+                      <p className="font-medium">Info:</p>
                       <ul className="list-disc ml-5 text-sm">
                         <li>Each Tool IPFS CID must be unique across the entire application</li>
                         <li>Each Policy IPFS CID must be unique across the entire application</li>
