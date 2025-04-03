@@ -15,7 +15,7 @@ export const validateUserToolPolicies = async (
     console.log(`Retrieved Tool Policies for App ID: ${appId} Delegatee: ${delegateeAddress} PKP: ${userPkpInfo.tokenId} from Vincent contract: ${JSON.stringify({ isPermitted, appId, appVersion, policies })}`);
 
     if (!isPermitted) {
-        throw new Error('User tool policies not permitted');
+        throw new Error(`Delegatee: ${delegateeAddress} is not permitted to execute App ID: ${appId} for PKP: ${userPkpInfo.tokenId}`);
     }
 
     if (policies.length === 0) {
