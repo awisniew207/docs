@@ -28,8 +28,15 @@ const AppInfo = ({
         <p>
           <strong>Version:</strong>{' '}
           {appInfo.latestVersion ? appInfo.latestVersion.toString() : '1'}
+        </p> 
+        <p>
+          <strong>Deployment Status:</strong>{' '}
+          {appInfo.deploymentStatus !== undefined ? 
+            (appInfo.deploymentStatus === 0 ? 'DEV' : 
+             appInfo.deploymentStatus === 1 ? 'TEST' : 
+             appInfo.deploymentStatus === 2 ? 'PROD' : 'Unknown') 
+            : 'DEV'}
         </p>
-
         {showIPFSDetails && versionInfo && (
           <div className="ipfs-cids-container" style={{ marginTop: '10px' }}>
             <strong>IPFS CIDs:</strong>
