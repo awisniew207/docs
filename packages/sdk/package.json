@@ -1,0 +1,23 @@
+{
+  "name": "@lit-protocol/vincent-sdk",
+  "version": "0.1.1-1",
+  "description": "Vincent SDK for browser and backend",
+  "author": "Lit Protocol",
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "./dist/src/index.js",
+  "typings": "./dist/src/index.d.ts",
+  "keywords": [
+    "jwt",
+    "authentication",
+    "sdk"
+  ],
+  "dependencies": {
+    "@noble/secp256k1": "^2.2.3",
+    "did-jwt": "^8.0.8"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ]
+}
