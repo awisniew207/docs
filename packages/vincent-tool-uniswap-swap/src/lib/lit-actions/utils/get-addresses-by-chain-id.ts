@@ -26,7 +26,7 @@ export const getAddressesByChainId = (chainId: string) => {
             WETH_ADDRESS = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
             break;
         case '175188': // Yellowstone
-            SPENDING_LIMIT_ADDRESS = '0x2d043f8c6b80ea6396a51dc6333027fbdb8343a3';
+            SPENDING_LIMIT_ADDRESS = '0x756fA449De893446B26e10C6C66E62ccabeE908C';
             break;
         default:
             throw new Error(`Unsupported chain ID: ${chainId}`);
