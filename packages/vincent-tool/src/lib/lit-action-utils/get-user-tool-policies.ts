@@ -27,7 +27,7 @@ export const getUserToolPolicies = async (
     toolIpfsCid: string
 ): Promise<ToolExecutionResult> => {
     const VINCENT_CONTRACT_ABI = [
-        `function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata toolIpfsCid) external view returns (tuple(bool isPermitted, uint256 appId, uint256 appVersion, tuple(string policyIpfsCid, tuple(string name, uint8 paramType, bytes value)[] parameters)[] policies))`,
+        `function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata toolIpfsCid) external view returns (tuple(bool isPermitted, uint256 appId, uint256 appVersion, tuple(string policyIpfsCid, tuple(string name, uint8 paramType, bytes value)[] parameters)[] policies) validation)`,
     ];
 
     const vincentContract = new ethers.Contract(

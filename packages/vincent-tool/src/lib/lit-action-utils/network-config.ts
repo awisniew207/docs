@@ -8,6 +8,6 @@
 export const NETWORK_CONFIG = {
   datil: {
     pubkeyRouterAddress: '0xF182d6bEf16Ba77e69372dD096D8B70Bc3d5B475',
-    vincentAddress: '0x456DFB72AAe179E219FEbf3f339dF412dF30313D'
+    vincentAddress: '0x78Cd1d270Ff12BA55e98BDff1f3646426E25D932'
   },
 } as const;
