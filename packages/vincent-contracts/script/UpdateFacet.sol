@@ -209,7 +209,7 @@ contract UpdateFacet is Script {
      * @return selectors The function selectors for the facet
      */
     function getDefaultSelectors(string memory facetName) internal pure returns (bytes4[] memory) {
-        // Using the same selector logic as in VincentDiamond contract
+        // Using the same selector logic as in VincentDiamond
         if (compareStrings(facetName, "VincentAppFacet")) {
             return getVincentAppFacetSelectors();
         } else if (compareStrings(facetName, "VincentAppViewFacet")) {
@@ -231,7 +231,7 @@ contract UpdateFacet is Script {
 
     /// @dev Get VincentAppFacet selectors
     function getVincentAppFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](7);
+        bytes4[] memory selectors = new bytes4[](11);
         selectors[0] = VincentAppFacet.registerApp.selector;
         selectors[1] = VincentAppFacet.registerNextAppVersion.selector;
         selectors[2] = VincentAppFacet.enableAppVersion.selector;
@@ -239,6 +239,10 @@ contract UpdateFacet is Script {
         selectors[4] = VincentAppFacet.removeAuthorizedRedirectUri.selector;
         selectors[5] = VincentAppFacet.addDelegatee.selector;
         selectors[6] = VincentAppFacet.removeDelegatee.selector;
+        selectors[7] = VincentAppFacet.updateAppName.selector;
+        selectors[8] = VincentAppFacet.updateAppDescription.selector;
+        selectors[9] = VincentAppFacet.updateAppDeploymentStatus.selector;
+        selectors[10] = VincentAppFacet.deleteApp.selector;
         return selectors;
     }
 

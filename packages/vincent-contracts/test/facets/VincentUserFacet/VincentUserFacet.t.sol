@@ -220,8 +220,9 @@ contract VincentUserFacetTest is VincentTestHelper {
         // The tools should still exist, but policies should be removed when all parameters are removed
         assertGt(toolsAndPoliciesAfter.length, 0, "Should still have tools after parameter removal");
         assertEq(
-            toolsAndPoliciesAfter[0].policies.length, 0, "Policies should be removed when all parameters are removed"
+            toolsAndPoliciesAfter[0].policies.length, 1, "Policies should remain even when all parameters are removed"
         );
+        assertEq(toolsAndPoliciesAfter[0].policies[0].parameters.length, 0, "The policy should have no parameters");
 
         vm.stopPrank();
     }
@@ -660,6 +661,337 @@ contract VincentUserFacetTest is VincentTestHelper {
         // Try to remove tool policy parameters with empty parameter name
         wrappedUserFacet.removeToolPolicyParameters(
             appId, TEST_PKP_TOKEN_ID_1, appVersion, toolIpfsCids, policies, paramNamesWithEmpty
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test to demonstrate bug where policy parameters from previous app versions are incorrectly included
+     * @dev This test shows that when a user permits a new app version, policy parameters from previous versions
+     *      are incorrectly included in the validateToolExecutionAndGetPolicies response
+     */
+    function testBugPolicyParametersFromPreviousVersions() public {
+        vm.startPrank(deployer);
+
+        // Create test data for first app version
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory toolPolicies = new string[][](1);
+        toolPolicies[0] = new string[](1);
+        toolPolicies[0][0] = TEST_POLICY_1;
+
+        string[][][] memory toolPolicyParameterNames = new string[][][](1);
+        toolPolicyParameterNames[0] = new string[][](1);
+        toolPolicyParameterNames[0][0] = new string[](1);
+        toolPolicyParameterNames[0][0][0] = "param1";
+
+        VincentAppStorage.ParameterType[][][] memory toolPolicyParameterTypes =
+            new VincentAppStorage.ParameterType[][][](1);
+        toolPolicyParameterTypes[0] = new VincentAppStorage.ParameterType[][](1);
+        toolPolicyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        toolPolicyParameterTypes[0][0][0] = VincentAppStorage.ParameterType.UINT256;
+
+        // Create array with a different delegatee for the new app
+        address[] memory newAppDelegatees = new address[](1);
+        newAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        // Register first app version
+        (uint256 testAppId, uint256 versionNumber) = _registerAppLegacy(
+            TEST_APP_NAME,
+            TEST_APP_DESCRIPTION,
+            testRedirectUris,
+            newAppDelegatees,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames,
+            toolPolicyParameterTypes
+        );
+
+        // Set policy parameters for first version
+        bytes[][][] memory policyParameterValues = new bytes[][][](1);
+        policyParameterValues[0] = new bytes[][](1);
+        policyParameterValues[0][0] = new bytes[](1);
+        policyParameterValues[0][0][0] = abi.encode(uint256(100));
+
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            testAppId,
+            versionNumber,
+            toolIpfsCids,
+            toolPolicies,
+            toolPolicyParameterNames,
+            policyParameterValues
+        );
+
+        // Create test data for second app version with different policy
+        string[] memory toolIpfsCids2 = new string[](1);
+        toolIpfsCids2[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory toolPolicies2 = new string[][](1);
+        toolPolicies2[0] = new string[](1);
+        toolPolicies2[0][0] = TEST_POLICY_2;
+
+        string[][][] memory toolPolicyParameterNames2 = new string[][][](1);
+        toolPolicyParameterNames2[0] = new string[][](1);
+        toolPolicyParameterNames2[0][0] = new string[](1);
+        toolPolicyParameterNames2[0][0][0] = "param2";
+
+        VincentAppStorage.ParameterType[][][] memory toolPolicyParameterTypes2 =
+            new VincentAppStorage.ParameterType[][][](1);
+        toolPolicyParameterTypes2[0] = new VincentAppStorage.ParameterType[][](1);
+        toolPolicyParameterTypes2[0][0] = new VincentAppStorage.ParameterType[](1);
+        toolPolicyParameterTypes2[0][0][0] = VincentAppStorage.ParameterType.STRING;
+
+        // Register second app version
+        uint256 versionNumber2 = _registerNextAppVersionLegacy(
+            testAppId, toolIpfsCids2, toolPolicies2, toolPolicyParameterNames2, toolPolicyParameterTypes2
+        );
+
+        // Set policy parameters for second version
+        bytes[][][] memory policyParameterValues2 = new bytes[][][](1);
+        policyParameterValues2[0] = new bytes[][](1);
+        policyParameterValues2[0][0] = new bytes[](1);
+        policyParameterValues2[0][0][0] = abi.encode("test");
+
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            testAppId,
+            versionNumber2,
+            toolIpfsCids2,
+            toolPolicies2,
+            toolPolicyParameterNames2,
+            policyParameterValues2
+        );
+
+        // Validate tool execution for second version
+        VincentUserViewFacet.ToolExecutionValidation memory result = wrappedUserViewFacet
+            .validateToolExecutionAndGetPolicies(TEST_DELEGATEE_2, TEST_PKP_TOKEN_ID_1, TEST_TOOL_IPFS_CID_1);
+
+        // Verify that only the second version's policy is included
+        assertEq(result.policies.length, 1, "Should only have one policy");
+        assertEq(result.policies[0].policyIpfsCid, TEST_POLICY_2, "Should have correct policy IPFS CID");
+        assertEq(result.policies[0].parameters.length, 1, "Should have one parameter");
+        assertEq(result.policies[0].parameters[0].name, "param2", "Should have correct parameter name");
+        assertEq(
+            uint256(result.policies[0].parameters[0].paramType),
+            uint256(VincentAppStorage.ParameterType.STRING),
+            "Should have correct parameter type"
+        );
+        assertEq(
+            keccak256(result.policies[0].parameters[0].value),
+            keccak256(abi.encode("test")),
+            "Should have correct parameter value"
+        );
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test validateToolExecutionAndGetPolicies returns policies with no parameters
+     * @dev Verifies that policies without parameters are included in the validation results
+     */
+    function testValidateToolExecutionWithPolicyNoParameters() public {
+        // Start as deployer for app registration
+        vm.startPrank(deployer);
+
+        // Register a new app version with a tool having a policy with no parameters
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory policyIpfsCids = new string[][](1);
+        policyIpfsCids[0] = new string[](2); // Two policies: one with parameters, one without
+        policyIpfsCids[0][0] = TEST_POLICY_1;
+        policyIpfsCids[0][1] = TEST_POLICY_2; // This policy will have no parameters
+
+        string[][][] memory policyParameterNames = new string[][][](1);
+        policyParameterNames[0] = new string[][](2);
+        policyParameterNames[0][0] = new string[](1); // First policy has a parameter
+        policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        policyParameterNames[0][1] = new string[](0); // Second policy has no parameters
+
+        VincentAppStorage.ParameterType[][][] memory policyParameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        policyParameterTypes[0] = new VincentAppStorage.ParameterType[][](2);
+        policyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        policyParameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        policyParameterTypes[0][1] = new VincentAppStorage.ParameterType[](0); // No parameters for second policy
+
+        // Create array with a different delegatee for the new app
+        address[] memory newAppDelegatees = new address[](1);
+        newAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        // Register the new app with policy having no parameters
+        (uint256 noParamAppId, uint256 noParamAppVersion) = _registerAppLegacy(
+            "App With No Param Policy",
+            "Test app with a policy having no parameters",
+            testRedirectUris,
+            newAppDelegatees,
+            toolIpfsCids,
+            policyIpfsCids,
+            policyParameterNames,
+            policyParameterTypes
+        );
+
+        // Prepare parameter values for permit (only for the first policy)
+        string[][][] memory permitPolicyParamNames = new string[][][](1);
+        permitPolicyParamNames[0] = new string[][](2);
+        permitPolicyParamNames[0][0] = new string[](1);
+        permitPolicyParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+        permitPolicyParamNames[0][1] = new string[](0); // No parameters for second policy
+
+        bytes[][][] memory permitPolicyParamValues = new bytes[][][](1);
+        permitPolicyParamValues[0] = new bytes[][](2);
+        permitPolicyParamValues[0][0] = new bytes[](1);
+        permitPolicyParamValues[0][0][0] = bytes(TEST_POLICY_PARAM_STRING_VALUE);
+        permitPolicyParamValues[0][1] = new bytes[](0); // No parameter values for second policy
+
+        // Permit the app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            noParamAppId,
+            noParamAppVersion,
+            toolIpfsCids,
+            policyIpfsCids,
+            permitPolicyParamNames,
+            permitPolicyParamValues
+        );
+
+        // Validate tool execution
+        VincentUserViewFacet.ToolExecutionValidation memory validation = wrappedUserViewFacet
+            .validateToolExecutionAndGetPolicies(TEST_DELEGATEE_2, TEST_PKP_TOKEN_ID_1, TEST_TOOL_IPFS_CID_1);
+
+        // Verify that both policies are included in the result
+        assertEq(validation.isPermitted, true, "Tool execution should be permitted");
+        assertEq(validation.appId, noParamAppId, "App ID should match");
+        assertEq(validation.appVersion, noParamAppVersion, "App version should match");
+
+        // There should be two policies returned: one with parameters and one without
+        assertEq(validation.policies.length, 2, "Should return two policies (one with parameters, one without)");
+
+        // Verify the policy with parameters
+        assertEq(validation.policies[0].policyIpfsCid, TEST_POLICY_1, "First policy should be TEST_POLICY_1");
+        assertEq(validation.policies[0].parameters.length, 1, "First policy should have 1 parameter");
+
+        // Verify the policy without parameters
+        assertEq(validation.policies[1].policyIpfsCid, TEST_POLICY_2, "Second policy should be TEST_POLICY_2");
+        assertEq(validation.policies[1].parameters.length, 0, "Second policy should have 0 parameters");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test getAllToolsAndPoliciesForApp returns policies with no parameters
+     * @dev Verifies that policies without parameters are included when getting all tools and policies
+     */
+    function testGetAllToolsAndPoliciesWithPolicyNoParameters() public {
+        // Start as deployer for app registration
+        vm.startPrank(deployer);
+
+        // Register a new app version with a tool having a policy with no parameters
+        string[] memory toolIpfsCids = new string[](1);
+        toolIpfsCids[0] = TEST_TOOL_IPFS_CID_1;
+
+        string[][] memory policyIpfsCids = new string[][](1);
+        policyIpfsCids[0] = new string[](2); // Two policies: one with parameters, one without
+        policyIpfsCids[0][0] = TEST_POLICY_1;
+        policyIpfsCids[0][1] = TEST_POLICY_2; // This policy will have no parameters
+
+        string[][][] memory policyParameterNames = new string[][][](1);
+        policyParameterNames[0] = new string[][](2);
+        policyParameterNames[0][0] = new string[](1); // First policy has a parameter
+        policyParameterNames[0][0][0] = TEST_POLICY_PARAM_1;
+        policyParameterNames[0][1] = new string[](0); // Second policy has no parameters
+
+        VincentAppStorage.ParameterType[][][] memory policyParameterTypes = new VincentAppStorage.ParameterType[][][](1);
+        policyParameterTypes[0] = new VincentAppStorage.ParameterType[][](2);
+        policyParameterTypes[0][0] = new VincentAppStorage.ParameterType[](1);
+        policyParameterTypes[0][0][0] = VincentAppStorage.ParameterType.STRING;
+        policyParameterTypes[0][1] = new VincentAppStorage.ParameterType[](0); // No parameters for second policy
+
+        // Create array with a different delegatee for the new app
+        address[] memory newAppDelegatees = new address[](1);
+        newAppDelegatees[0] = TEST_DELEGATEE_2;
+
+        // Register the new app with policy having no parameters
+        (uint256 noParamAppId, uint256 noParamAppVersion) = _registerAppLegacy(
+            "App With No Param Policy 2",
+            "Test app with a policy having no parameters",
+            testRedirectUris,
+            newAppDelegatees,
+            toolIpfsCids,
+            policyIpfsCids,
+            policyParameterNames,
+            policyParameterTypes
+        );
+
+        // Prepare parameter values for permit (only for the first policy)
+        string[][][] memory permitPolicyParamNames = new string[][][](1);
+        permitPolicyParamNames[0] = new string[][](2);
+        permitPolicyParamNames[0][0] = new string[](1);
+        permitPolicyParamNames[0][0][0] = TEST_POLICY_PARAM_1;
+        permitPolicyParamNames[0][1] = new string[](0); // No parameters for second policy
+
+        bytes[][][] memory permitPolicyParamValues = new bytes[][][](1);
+        permitPolicyParamValues[0] = new bytes[][](2);
+        permitPolicyParamValues[0][0] = new bytes[](1);
+        permitPolicyParamValues[0][0][0] = bytes(TEST_POLICY_PARAM_STRING_VALUE);
+        permitPolicyParamValues[0][1] = new bytes[](0); // No parameter values for second policy
+
+        // Permit the app version
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            noParamAppId,
+            noParamAppVersion,
+            toolIpfsCids,
+            policyIpfsCids,
+            permitPolicyParamNames,
+            permitPolicyParamValues
+        );
+
+        // Get all tools and policies
+        VincentUserViewFacet.ToolWithPolicies[] memory tools =
+            wrappedUserViewFacet.getAllToolsAndPoliciesForApp(TEST_PKP_TOKEN_ID_1, noParamAppId);
+
+        // Verify the results
+        assertEq(tools.length, 1, "Should have one tool");
+        assertEq(tools[0].toolIpfsCid, TEST_TOOL_IPFS_CID_1, "Tool should be TEST_TOOL_IPFS_CID_1");
+
+        // There should be two policies returned: one with parameters and one without
+        assertEq(tools[0].policies.length, 2, "Should return two policies (one with parameters, one without)");
+
+        // Verify the policy with parameters
+        assertEq(tools[0].policies[0].policyIpfsCid, TEST_POLICY_1, "First policy should be TEST_POLICY_1");
+        assertEq(tools[0].policies[0].parameters.length, 1, "First policy should have 1 parameter");
+
+        // Verify the policy without parameters
+        assertEq(tools[0].policies[1].policyIpfsCid, TEST_POLICY_2, "Second policy should be TEST_POLICY_2");
+        assertEq(tools[0].policies[1].parameters.length, 0, "Second policy should have 0 parameters");
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Test permitting an app version fails when app is deleted
+     * @dev Verifies that permitting an app version reverts when the app has been deleted
+     */
+    function testPermitAppVersionWhenAppDeleted() public {
+        // Start as deployer
+        vm.startPrank(deployer);
+
+        // Delete the app
+        wrappedAppFacet.deleteApp(appId);
+
+        // Try to permit app version
+        vm.expectRevert(abi.encodeWithSignature("AppHasBeenDeleted(uint256)", appId));
+        wrappedUserFacet.permitAppVersion(
+            TEST_PKP_TOKEN_ID_1,
+            appId,
+            appVersion,
+            testToolIpfsCids,
+            testToolPolicies,
+            testToolPolicyParameterNames,
+            testToolPolicyParameterValues
         );
 
         vm.stopPrank();

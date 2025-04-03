@@ -68,6 +68,7 @@ contract VincentAppViewFacet is VincentBase {
      * @param id Unique identifier for the app
      * @param name Human-readable name of the app
      * @param description Detailed description of the app
+     * @param deploymentStatus Deployment status of the app
      * @param manager Address of the account that manages this app
      * @param latestVersion The most recent version number of this app
      * @param delegatees Array of addresses that are delegated to act on behalf of this app
@@ -77,6 +78,8 @@ contract VincentAppViewFacet is VincentBase {
         uint256 id;
         string name;
         string description;
+        bool isDeleted;
+        VincentAppStorage.DeploymentStatus deploymentStatus;
         address manager;
         uint256 latestVersion;
         address[] delegatees;
@@ -143,6 +146,7 @@ contract VincentAppViewFacet is VincentBase {
     /**
      * @notice Retrieves detailed information about an app
      * @dev Fetches app data from storage and formats it into the App struct
+     * @dev This function will revert if the app is deleted or isn't registered
      * @param appId ID of the app to retrieve
      * @return app Detailed view of the app containing its metadata and relationships
      */
@@ -153,6 +157,8 @@ contract VincentAppViewFacet is VincentBase {
         app.id = appId;
         app.name = storedApp.name;
         app.description = storedApp.description;
+        app.isDeleted = storedApp.isDeleted;
+        app.deploymentStatus = storedApp.deploymentStatus;
         app.manager = storedApp.manager;
         // App versions are 1-indexed, so the array length corresponds directly to the latest version number
         app.latestVersion = storedApp.versionedApps.length;

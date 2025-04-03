@@ -44,3 +44,14 @@ Thumbs.db
 packages/examples
 screenshots
 .env
+**/.next
+**/next-env.d.ts
+
+packages/examples
+
+**/vincent-contract-caller-config.json
+
+# Environment variables
+**/.env
+**/.env.*
+!.env.example

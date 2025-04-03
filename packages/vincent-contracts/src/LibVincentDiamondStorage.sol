@@ -30,6 +30,12 @@ library VincentAppStorage {
         BYTES_ARRAY
     }
 
+    enum DeploymentStatus {
+        DEV,
+        TEST,
+        PROD
+    }
+
     /**
      * @notice Policy data structure storing parameter names and types
      * @dev Renamed from PolicyStorage to Policy for clarity
@@ -64,6 +70,8 @@ library VincentAppStorage {
         address manager;
         string name;
         string description;
+        DeploymentStatus deploymentStatus;
+        bool isDeleted;
     }
 
     struct AppStorage {
@@ -132,8 +140,8 @@ library VincentUserStorage {
         EnumerableSet.UintSet permittedApps;
         // App ID -> Permitted App Version
         mapping(uint256 => uint256) permittedAppVersion;
-        // App ID -> Tool IPFS CID Hash -> Tool Policy Storage
-        mapping(uint256 => mapping(bytes32 => ToolPolicyStorage)) toolPolicyStorage;
+        // App ID -> App Version -> Tool IPFS CID Hash -> Tool Policy Storage
+        mapping(uint256 => mapping(uint256 => mapping(bytes32 => ToolPolicyStorage))) toolPolicyStorage;
     }
 
     struct UserStorage {
