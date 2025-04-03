@@ -84,7 +84,7 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
     ];
     const TOOL_POLICY_PARAMETER_NAMES = [
         [[]], // Parameters for ERC20_APPROVAL_TOOL
-        [['maxSpendingLimitInUsdCents']] // Parameters for SPENDING_LIMIT_POLICY_TOOL
+        [['maxDailySpendingLimitInUsdCents']] // Parameters for SPENDING_LIMIT_POLICY_TOOL
     ];
     const TOOL_POLICY_PARAMETER_TYPES = [
         [[]], // Parameter types for ERC20_APPROVAL_TOOL
@@ -95,7 +95,7 @@ const APP_DELEGATEE_ADDRESS = privateKeyToAccount(APP_DELEGATEE_PRIVATE_KEY as `
         [
             [
                 // Parameter values for SPENDING_LIMIT_POLICY_TOOL
-                { type: 'uint256', value: "10000000000000" }, // maxSpendingLimitInUsdCents $100,000 USD (8 decimals)
+                { type: 'uint256', value: "10000000000000" }, // maxDailySpendingLimitInUsdCents $100,000 USD (8 decimals)
             ]
         ]
     ];

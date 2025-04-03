@@ -28,10 +28,10 @@ declare global {
 
 (async () => {
   const {
-    maxSpendingLimitInUsdCents,
+    maxDailySpendingLimitInUsdCents,
   } = getOnChainPolicyParams(policy.parameters);
 
-  console.log(`Retrieved maxSpendingLimitInUsdCents: ${maxSpendingLimitInUsdCents?.toString()}`);
+  console.log(`Retrieved maxDailySpendingLimitInUsdCents: ${maxDailySpendingLimitInUsdCents?.toString()}`);
 
   const yellowstoneProvider = new ethers.providers.JsonRpcProvider(
     await Lit.Actions.getRpcUrl({
@@ -48,17 +48,17 @@ declare global {
     toolParams.tokenInDecimals
   )
 
-  if (maxSpendingLimitInUsdCents) {
-    // maxSpendingLimitInUsdCents has 2 decimal precision, but tokenAmountInUsd has 8,
+  if (maxDailySpendingLimitInUsdCents) {
+    // maxDailySpendingLimitInUsdCents has 2 decimal precision, but tokenAmountInUsd has 8,
     // so we multiply by 10^6 to match the precision
-    const adjustedMaxSpendingLimit = maxSpendingLimitInUsdCents.mul(ethers.BigNumber.from(1_000_000));
-    console.log(`Adjusted maxSpendingLimitInUsdCents to 8 decimal precision: ${adjustedMaxSpendingLimit.toString()}`);
+    const adjustedMaxDailySpendingLimit = maxDailySpendingLimitInUsdCents.mul(ethers.BigNumber.from(1_000_000));
+    console.log(`Adjusted maxDailySpendingLimitInUsdCents to 8 decimal precision: ${adjustedMaxDailySpendingLimit.toString()}`);
 
     const spendTxHash = await sendSpendTx(
       yellowstoneProvider,
       vincentAppId,
       tokenAmountInUsd,
-      adjustedMaxSpendingLimit,
+      adjustedMaxDailySpendingLimit,
       ethers.BigNumber.from(86400), // number of seconds in a day
       userPkpInfo.ethAddress,
       userPkpInfo.publicKey
