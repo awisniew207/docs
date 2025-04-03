@@ -18,8 +18,12 @@
     "@lit-protocol/contracts-sdk": "^7.0.6",
     "@lit-protocol/lit-auth-client": "^7.0.6",
     "@lit-protocol/lit-node-client": "^7.0.8",
+    "@types/jest": "^29.5.14",
     "esbuild": "^0.19.11",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
     "node-fetch": "^2.7.0",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "viem": "^2.23.2"
   },
@@ -32,7 +36,8 @@
     "!**/*.tsbuildinfo"
   ],
   "scripts": {
-    "test:contract-caller": "npx ts-node tools/scripts/vincent-contract-caller.ts"
+    "test:contract-caller": "npx ts-node tools/scripts/vincent-contract-caller.ts",
+    "test": "jest"
   },
   "nx": {
     "sourceRoot": "packages/vincent-tools/vincent-tool-uniswap-swap/src",
