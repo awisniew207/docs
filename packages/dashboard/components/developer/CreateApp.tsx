@@ -240,8 +240,8 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           window.location.href = '/';
         }
       }, 1000);
-      
       return; // Early return to prevent further processing
+
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');

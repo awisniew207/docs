@@ -31,7 +31,7 @@ export default function Developer() {
             try {
                 const appData = await formCompleteVincentAppForDev(address);
                 const exists = appData && appData.length > 0;
-                       
+              
                 if (exists) {
                     setApp(appData);
                     setHasApp(true);
