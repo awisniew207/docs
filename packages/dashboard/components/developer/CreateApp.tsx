@@ -61,6 +61,20 @@ const formSchema = z.object({
     return new Set(cids).size === cids.length;
   }, { message: "Tool IPFS CIDs must be unique" })
   .refine(tools => {
+    // Check that policy CIDs are unique across all tools
+    const allPolicyCids: string[] = [];
+    
+    for (const tool of tools) {
+      for (const policy of tool.policies) {
+        if (policy.policyIpfsCid && policy.policyIpfsCid.trim() !== '') {
+          allPolicyCids.push(policy.policyIpfsCid);
+        }
+      }
+    }
+    
+    return new Set(allPolicyCids).size === allPolicyCids.length;
+  }, { message: "Policy IPFS CIDs must be unique across all tools" })
+  .refine(tools => {
     // Check that parameter names are unique across all policies
     const allParamNames: string[] = [];
     
@@ -236,58 +250,58 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           }
         }
 
-      const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
-      const toolPolicies = values.tools.map(tool => 
-        (tool.policies || []).map(policy => policy.policyIpfsCid)
-      );
-      const toolPolicyParameterTypes = values.tools.map(tool => 
-        (tool.policies || []).map(policy => 
-          (policy.parameters || []).map(param => mapTypeToEnum(param.type))
-        )
-      );
-      const toolPolicyParameterNames = values.tools.map(tool => 
-        (tool.policies || []).map(policy => 
-          (policy.parameters || []).map(param => param.name)
-        )
-      );
+        const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
+        const toolPolicies = values.tools.map(tool => 
+          (tool.policies || []).map(policy => policy.policyIpfsCid)
+        );
+        const toolPolicyParameterTypes = values.tools.map(tool => 
+          (tool.policies || []).map(policy => 
+            (policy.parameters || []).map(param => mapTypeToEnum(param.type))
+          )
+        );
+        const toolPolicyParameterNames = values.tools.map(tool => 
+          (tool.policies || []).map(policy => 
+            (policy.parameters || []).map(param => param.name)
+          )
+        );
 
-      const contracts = new VincentContracts('datil' as Network);
-      const receipt = await contracts.registerApp(
-        values.appName,
-        values.description,
-        values.authorizedRedirectUris,
-        [],
-        toolIpfsCids,
-        toolPolicies,
-        toolPolicyParameterTypes,
-        toolPolicyParameterNames
-      ).catch((err) => {
-        // Handle user rejection specifically
-        console.error('Transaction rejected:', err);
+        const contracts = new VincentContracts('datil' as Network);
+        const receipt = await contracts.registerApp(
+          values.appName,
+          values.description,
+          values.authorizedRedirectUris,
+          [],
+          toolIpfsCids,
+          toolPolicies,
+          toolPolicyParameterTypes,
+          toolPolicyParameterNames
+        ).catch((err) => {
+          // Handle user rejection specifically
+          console.error('Transaction rejected:', err);
+          setIsSubmitting(false);
+          setError(err.message && err.message.includes('user rejected') 
+            ? 'Transaction was rejected' 
+            : 'Failed to create app - rejected the transaction');
+          return null;
+        });
+
+        // If receipt is null, the transaction was rejected or failed
+        if (!receipt) return;
+        console.log('receipt', receipt);
+
+        // Show success message
+        setError(null);
         setIsSubmitting(false);
-        setError(err.message && err.message.includes('user rejected') 
-          ? 'Transaction was rejected by the user' 
-          : 'Failed to create app - user rejected the transaction');
-        return null;
-      });
 
-      // If receipt is null, the transaction was rejected or failed
-      if (!receipt) return;
-      console.log('receipt', receipt);
-
-      // Show success message
-      setError(null);
-      setIsSubmitting(false);
-
-      // Force redirect with window.location after a short delay
-      setTimeout(() => {
-        if (onSuccess) {
-          onSuccess();
-        } else {
-          // Force a full page reload to the dashboard
-          window.location.href = '/';
-        }
-      }, 1000);
+        // Force redirect with window.location after a short delay
+        setTimeout(() => {
+          if (onSuccess) {
+            onSuccess();
+          } else {
+            // Force a full page reload to the dashboard
+            window.location.href = '/';
+          }
+        }, 1000);
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
