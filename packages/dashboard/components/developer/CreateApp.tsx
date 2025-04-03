@@ -86,11 +86,10 @@ const formSchema = z.object({
     }
     
     return new Set(allParamNames).size === allParamNames.length;
-  }, { message: "Parameter names must be unique across all policies" })
-
-  deploymentStatus: z.number().default(0),
+  }, { message: "Parameter names must be unique across all policies" }),
+ 
+   deploymentStatus: z.number().default(0),
   
-
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -260,20 +259,20 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           }
         }
 
-        const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
-        const toolPolicies = values.tools.map(tool => 
-          (tool.policies || []).map(policy => policy.policyIpfsCid)
-        );
-        const toolPolicyParameterTypes = values.tools.map(tool => 
-          (tool.policies || []).map(policy => 
-            (policy.parameters || []).map(param => mapTypeToEnum(param.type))
-          )
-        );
-        const toolPolicyParameterNames = values.tools.map(tool => 
-          (tool.policies || []).map(policy => 
-            (policy.parameters || []).map(param => param.name)
-          )
-        );
+      const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
+      const toolPolicies = values.tools.map(tool => 
+        (tool.policies || []).map(policy => policy.policyIpfsCid)
+      );
+      const toolPolicyParameterTypes = values.tools.map(tool => 
+        (tool.policies || []).map(policy => 
+          (policy.parameters || []).map(param => mapTypeToEnum(param.type))
+        )
+      );
+      const toolPolicyParameterNames = values.tools.map(tool => 
+        (tool.policies || []).map(policy => 
+          (policy.parameters || []).map(param => param.name)
+        )
+      );
 
       const contracts = new VincentContracts('datil' as Network);
       const receipt = await contracts.registerApp(
@@ -286,13 +285,24 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
         toolPolicyParameterTypes,
         toolPolicyParameterNames,
         values.deploymentStatus
-      );
+      ).catch((err) => {
+        // Handle user rejection specifically
+        console.error('Transaction rejected:', err);
+        setIsSubmitting(false);
+        setError(err.message && err.message.includes('user rejected') 
+          ? 'Transaction was rejected' 
+          : 'Failed to create app - rejected the transaction');
+        return null;
+      });
+
+      // If receipt is null, the transaction was rejected or failed
+      if (!receipt) return;
       console.log('receipt', receipt);
-      
+
       // Show success message
       setError(null);
       setIsSubmitting(false);
-      
+
       // Force redirect with window.location after a short delay
       setTimeout(() => {
         if (onSuccess) {
@@ -376,7 +386,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                       </FormItem>
                     )}
                   />
-
+                  
                   <FormField
                     control={form.control}
                     name="deploymentStatus"
@@ -425,14 +435,14 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                     <Button
                                       type="button"
                                       variant="ghost"
-                                      size="sm"
-                                      onClick={() => {
-                                        const newValues = [...field.value];
-                                        newValues.splice(index, 1);
-                                        field.onChange(newValues);
-                                      }}
-                                      className="text-red-500 hover:text-red-700"
-                                    >
+                                    size="sm"
+                                    onClick={() => {
+                                      const newValues = [...field.value];
+                                      newValues.splice(index, 1);
+                                      field.onChange(newValues);
+                                    }}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
                                   )}
