@@ -11,4 +11,5 @@ export interface AppView {
   managementWallet: string;
   currentVersion: number;
   deploymentStatus?: number; // 0: DEV, 1: TEST, 2: PROD
+  isDeleted?: boolean;
 } 
