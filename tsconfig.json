@@ -4,10 +4,10 @@
   "files": [],
   "references": [
     {
-      "path": "./packages/vincent-tool-uniswap-swap"
+      "path": "./packages/vincent-tools/vincent-tool-uniswap-swap"
     },
     {
-      "path": "./packages/vincent-tool"
+      "path": "./packages/vincent-tools/vincent-tool"
     }
   ]
 }

@@ -35,7 +35,7 @@
     "test:contract-caller": "npx ts-node tools/scripts/vincent-contract-caller.ts"
   },
   "nx": {
-    "sourceRoot": "packages/vincent-tool-uniswap-swap/src",
+    "sourceRoot": "packages/vincent-tools/vincent-tool-uniswap-swap/src",
     "projectType": "library",
     "targets": {
       "build": {
@@ -44,11 +44,11 @@
           "{options.outputPath}"
         ],
         "options": {
-          "outputPath": "packages/vincent-tool-uniswap-swap/dist",
-          "main": "packages/vincent-tool-uniswap-swap/src/index.ts",
-          "tsConfig": "packages/vincent-tool-uniswap-swap/tsconfig.lib.json",
+          "outputPath": "packages/vincent-tools/vincent-tool-uniswap-swap/dist",
+          "main": "packages/vincent-tools/vincent-tool-uniswap-swap/src/index.ts",
+          "tsConfig": "packages/vincent-tools/vincent-tool-uniswap-swap/tsconfig.lib.json",
           "assets": [
-            "packages/vincent-tool-uniswap-swap/*.md"
+            "packages/vincent-tools/vincent-tool-uniswap-swap/*.md"
           ]
         }
       },
@@ -61,11 +61,11 @@
           "commands": [
             "node tools/scripts/build-lit-action.js"
           ],
-          "cwd": "packages/vincent-tool-uniswap-swap",
+          "cwd": "packages/vincent-tools/vincent-tool-uniswap-swap",
           "parallel": false
         },
         "outputs": [
-          "{workspaceRoot}/packages/vincent-tool-uniswap-swap/dist/deployed-lit-action.js"
+          "{workspaceRoot}/packages/vincent-tools/vincent-tool-uniswap-swap/dist/deployed-lit-action.js"
         ]
       },
       "deploy": {
@@ -77,7 +77,7 @@
           "commands": [
             "node tools/scripts/deploy-lit-action.js"
           ],
-          "cwd": "packages/vincent-tool-uniswap-swap"
+          "cwd": "packages/vincent-tools/vincent-tool-uniswap-swap"
         }
       },
       "publish": {

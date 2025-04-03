@@ -16,6 +16,8 @@ function cleanWorkspace() {
     join(rootDir, `bun.lock`),
     join(rootDir, `packages/*/node_modules`),
     join(rootDir, `packages/*/dist`),
+    join(rootDir, `packages/vincent-tools/*/node_modules`),
+    join(rootDir, `packages/vincent-tools/*/dist`),
   ];
   paths.forEach((path) => {
     try {
