@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 export type Network = 'datil';
 
 export const VINCENT_DIAMOND_ADDRESS: Record<Network, string> = {
-  datil: '0x456DFB72AAe179E219FEbf3f339dF412dF30313D',
+  datil: process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT || '',
 };
 
 import APP_VIEW_FACET_ABI from './abis/VincentAppViewFacet.abi.json';

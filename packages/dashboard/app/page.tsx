@@ -27,13 +27,17 @@ export default function Developer() {
     useEffect(() => {
         async function checkAndFetchApp() {
             if (!address) return;
-
+            setIsLoading(true);
             try {
                 const appData = await formCompleteVincentAppForDev(address);
                 const exists = appData && appData.length > 0;
-                setHasApp(exists);
+              
                 if (exists) {
                     setApp(appData);
+                    setHasApp(true);
+                } else {
+                    setHasApp(false);
+                    setApp(null);
                 }
             } catch (error) {
                 // Check if this is the NoAppsFoundForManager error
@@ -43,10 +47,12 @@ export default function Developer() {
                     // This is expected when the user hasn't created any apps yet
                     console.log("No apps found for this address");
                     setHasApp(false);
+                    setApp(null);
                 } else {
                     // Log other unexpected errors
                     console.error("Error fetching app:", error);
                     setHasApp(false);
+                    setApp(null);
                 }
             } finally {
                 setIsLoading(false);

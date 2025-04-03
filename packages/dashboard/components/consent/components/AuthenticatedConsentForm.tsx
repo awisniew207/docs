@@ -12,6 +12,7 @@ import ConsentActions from './authForm/ConsentActions';
 import RedirectMessage from './authForm/RedirectMessage';
 import VersionUpgradePrompt from './authForm/VersionUpgradePrompt';
 import UntrustedUriError from './authForm/UntrustedUriError';
+import DeletedAppError from './DeletedAppError';
 import { useUrlAppId } from '../hooks/useUrlAppId';
 import { useUrlRedirectUri } from '../hooks/useUrlRedirectUri';
 import { useStatusMessage } from '../hooks/useStatusMessage';
@@ -89,7 +90,8 @@ export default function AuthenticatedConsentForm({
     continueWithExistingPermission,
     handleUpgrade,
     updateState,
-    useCurrentVersionOnly
+    useCurrentVersionOnly,
+    isAppDeleted
   } = useAppPermissionCheck({
     appId,
     agentPKP,
@@ -502,6 +504,16 @@ export default function AuthenticatedConsentForm({
     );
   }
 
+  // If app is deleted, show an error message
+  if (isAppDeleted) {
+    return (
+      <DeletedAppError
+        statusMessage={statusMessage}
+        statusType={statusType}
+      />
+    );
+  }
+
   // Change the rendering order to check for version upgrade prompt before checking for already permitted
   // If the app is already permitted, show a brief loading spinner or success animation
   if (showVersionUpgradePrompt && appInfo && permittedVersion !== null) {
@@ -594,7 +606,7 @@ export default function AuthenticatedConsentForm({
         {showSuccess && <StatusAnimation type="success" />}
         {showDisapproval && <StatusAnimation type="disapproval" />}
 
-        <h1>Vincent Consent Notice</h1>
+        <h1 className="text-center">Vincent Consent Notice</h1>
 
         {appInfo && (
           <>

@@ -337,7 +337,7 @@ export default function AppDetailPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {app.delegatees.length === 0 ? (
+            {!app.delegatees || !Array.isArray(app.delegatees) || app.delegatees.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-black">
                   Add delegatees to execute your application

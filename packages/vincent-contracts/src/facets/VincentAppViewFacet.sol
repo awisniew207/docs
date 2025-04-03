@@ -68,6 +68,7 @@ contract VincentAppViewFacet is VincentBase {
      * @param id Unique identifier for the app
      * @param name Human-readable name of the app
      * @param description Detailed description of the app
+     * @param deploymentStatus Deployment status of the app
      * @param manager Address of the account that manages this app
      * @param latestVersion The most recent version number of this app
      * @param delegatees Array of addresses that are delegated to act on behalf of this app
@@ -77,6 +78,8 @@ contract VincentAppViewFacet is VincentBase {
         uint256 id;
         string name;
         string description;
+        bool isDeleted;
+        VincentAppStorage.DeploymentStatus deploymentStatus;
         address manager;
         uint256 latestVersion;
         address[] delegatees;
@@ -143,6 +146,7 @@ contract VincentAppViewFacet is VincentBase {
     /**
      * @notice Retrieves detailed information about an app
      * @dev Fetches app data from storage and formats it into the App struct
+     * @dev This function will revert if the app is deleted or isn't registered
      * @param appId ID of the app to retrieve
      * @return app Detailed view of the app containing its metadata and relationships
      */
@@ -153,6 +157,8 @@ contract VincentAppViewFacet is VincentBase {
         app.id = appId;
         app.name = storedApp.name;
         app.description = storedApp.description;
+        app.isDeleted = storedApp.isDeleted;
+        app.deploymentStatus = storedApp.deploymentStatus;
         app.manager = storedApp.manager;
         // App versions are 1-indexed, so the array length corresponds directly to the latest version number
         app.latestVersion = storedApp.versionedApps.length;
@@ -198,7 +204,7 @@ contract VincentAppViewFacet is VincentBase {
         appVersion.delegatedAgentPkpTokenIds = storedVersionedApp.delegatedAgentPkps.values();
 
         // Step 5: Prepare to access tool data
-        VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
+        VincentLitActionStorage.LitActionStorage storage ls = VincentLitActionStorage.litActionStorage();
 
         // Step 6: Get the number of tools for this version
         uint256 toolIpfsCidHashesLength = storedVersionedApp.toolIpfsCidHashes.length();
@@ -210,7 +216,7 @@ contract VincentAppViewFacet is VincentBase {
         for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
             // Step 8.1: Get the tool hash and resolve to the actual IPFS CID
             bytes32 toolIpfsCidHash = storedVersionedApp.toolIpfsCidHashes.at(i);
-            string memory toolIpfsCid = ts.ipfsCidHashToIpfsCid[toolIpfsCidHash];
+            string memory toolIpfsCid = ls.ipfsCidHashToIpfsCid[toolIpfsCidHash];
 
             // Step 8.2: Set the tool IPFS CID in the return structure
             appVersion.tools[i].toolIpfsCid = toolIpfsCid;
@@ -227,7 +233,7 @@ contract VincentAppViewFacet is VincentBase {
             for (uint256 j = 0; j < policyCount; j++) {
                 // Step 10.1: Get the policy hash and resolve to the actual IPFS CID
                 bytes32 policyIpfsCidHash = toolPolicies.policyIpfsCidHashes.at(j);
-                string memory policyIpfsCid = ts.ipfsCidHashToIpfsCid[policyIpfsCidHash];
+                string memory policyIpfsCid = ls.ipfsCidHashToIpfsCid[policyIpfsCidHash];
 
                 // Step 10.2: Set the policy IPFS CID in the return structure
                 appVersion.tools[i].policies[j].policyIpfsCid = policyIpfsCid;
@@ -249,7 +255,7 @@ contract VincentAppViewFacet is VincentBase {
                     bytes32 paramNameHash = policyParamNameHashes.at(k);
 
                     // Step 12.2.2: Get and set the parameter name
-                    appVersion.tools[i].policies[j].parameterNames[k] = ts.policyParameterNameHashToName[paramNameHash];
+                    appVersion.tools[i].policies[j].parameterNames[k] = ls.policyParameterNameHashToName[paramNameHash];
 
                     // Step 12.2.3: Get and set the parameter type
                     appVersion.tools[i].policies[j].parameterTypes[k] =

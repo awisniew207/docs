@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import "../LibVincentDiamondStorage.sol";
 import "../VincentBase.sol";
+import "../libs/LibVincentAppFacet.sol";
 
 /**
  * @title VincentAppFacet
@@ -18,181 +19,38 @@ contract VincentAppFacet is VincentBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice Emitted when a new app is registered
-     * @param appId Unique identifier for the newly registered app
-     * @param manager Address of the app manager
+     * @title AppInfo
+     * @notice Structure containing basic information about an application
+     * @dev Used when registering a new application
+     * @param name The name of the application
+     * @param description A description of the application's purpose and functionality
+     * @param deploymentStatus The current deployment status (DEV, TEST, PROD)
+     * @param authorizedRedirectUris List of authorized redirect URIs for OAuth flows
+     * @param delegatees List of addresses authorized to act on behalf of the app
      */
-    event NewAppRegistered(uint256 indexed appId, address indexed manager);
+    struct AppInfo {
+        string name;
+        string description;
+        VincentAppStorage.DeploymentStatus deploymentStatus;
+        string[] authorizedRedirectUris;
+        address[] delegatees;
+    }
 
     /**
-     * @notice Emitted when a new app version is registered
-     * @param appId ID of the app for which a new version is registered
-     * @param appVersion Version number of the newly registered app version
-     * @param manager Address of the app manager who registered the new version
+     * @title AppVersionTools
+     * @notice Structure containing tools, policies, and parameters for an app version
+     * @dev Used when registering a new app version
+     * @param toolIpfsCids Array of IPFS CIDs pointing to tool metadata
+     * @param toolPolicies 2D array of policy identifiers for each tool
+     * @param toolPolicyParameterNames 3D array of parameter names for each policy of each tool
+     * @param toolPolicyParameterTypes 3D array of parameter types for each policy of each tool
      */
-    event NewAppVersionRegistered(uint256 indexed appId, uint256 indexed appVersion, address indexed manager);
-
-    /**
-     * @notice Emitted when an app version's enabled status is changed
-     * @param appId ID of the app
-     * @param appVersion Version number of the app being enabled/disabled
-     * @param enabled New enabled status of the app version
-     */
-    event AppEnabled(uint256 indexed appId, uint256 indexed appVersion, bool indexed enabled);
-
-    /**
-     * @notice Emitted when a new authorized redirect URI is added to an app
-     * @param appId ID of the app
-     * @param hashedRedirectUri The keccak256 hash of the redirect URI that was added.
-     *                          Original value can be retrieved using VincentAppViewFacet
-     */
-    event AuthorizedRedirectUriAdded(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
-
-    /**
-     * @notice Emitted when an authorized redirect URI is removed from an app
-     * @param appId ID of the app
-     * @param hashedRedirectUri The keccak256 hash of the redirect URI that was removed.
-     *                          Original value can be retrieved using VincentAppViewFacet
-     */
-    event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
-
-    /**
-     * @notice Emitted when a new delegatee is added to an app
-     * @param appId ID of the app
-     * @param delegatee Address of the delegatee added to the app
-     */
-    event DelegateeAdded(uint256 indexed appId, address indexed delegatee);
-
-    /**
-     * @notice Emitted when a delegatee is removed from an app
-     * @param appId ID of the app
-     * @param delegatee Address of the delegatee removed from the app
-     */
-    event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
-
-    /**
-     * @notice Emitted when a new tool is registered
-     * @param toolIpfsCidHash The keccak256 hash of the tool's IPFS CID that was registered
-     */
-    event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
-
-    /**
-     * @notice Error thrown when a non-manager attempts to modify an app
-     * @param appId ID of the app being modified
-     * @param msgSender Address that attempted the unauthorized modification
-     */
-    error NotAppManager(uint256 appId, address msgSender);
-
-    /**
-     * @notice Error thrown when tool and policy array lengths don't match
-     * @dev This ensures each tool has appropriate policy configurations
-     */
-    error ToolsAndPoliciesLengthMismatch();
-
-    /**
-     * @notice Error thrown when attempting to register a delegatee already associated with an app
-     * @dev Delegatees are unique to apps and cannot be used with multiple apps simultaneously
-     * @param appId ID of the app the delegatee is already registered to
-     * @param delegatee Address of the delegatee that is already registered
-     */
-    error DelegateeAlreadyRegisteredToApp(uint256 appId, address delegatee);
-
-    /**
-     * @notice Error thrown when trying to remove a delegatee not registered to the specified app
-     * @param appId ID of the app from which removal was attempted
-     * @param delegatee Address of the delegatee that is not registered to the app
-     */
-    error DelegateeNotRegisteredToApp(uint256 appId, address delegatee);
-
-    /**
-     * @notice Error thrown when trying to remove a redirect URI not registered to the app
-     * @param appId ID of the app
-     * @param redirectUri The redirect URI that is not registered
-     */
-    error RedirectUriNotRegisteredToApp(uint256 appId, string redirectUri);
-
-    /**
-     * @notice Error thrown when no redirect URIs are provided during app registration
-     * @dev At least one redirect URI is required for app registration
-     */
-    error NoRedirectUrisProvided();
-
-    /**
-     * @notice Error thrown when trying to remove the last redirect URI of an app
-     * @param appId ID of the app
-     */
-    error CannotRemoveLastRedirectUri(uint256 appId);
-
-    /**
-     * @notice Error thrown when trying to set app version enabled status to its current status
-     * @param appId ID of the app
-     * @param appVersion Version number of the app
-     * @param enabled Current enabled status
-     */
-    error AppVersionAlreadyInRequestedState(uint256 appId, uint256 appVersion, bool enabled);
-
-    /**
-     * @notice Error thrown when trying to add a redirect URI that already exists for the app
-     * @param appId ID of the app
-     * @param redirectUri The redirect URI that already exists
-     */
-    error RedirectUriAlreadyAuthorizedForApp(uint256 appId, string redirectUri);
-
-    /**
-     * @notice Error thrown when trying to use an empty policy IPFS CID
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     */
-    error EmptyPolicyIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when a tool IPFS CID is empty
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     */
-    error EmptyToolIpfsCidNotAllowed(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when app name is empty
-     */
-    error EmptyAppNameNotAllowed();
-
-    /**
-     * @notice Error thrown when app description is empty
-     */
-    error EmptyAppDescriptionNotAllowed();
-
-    /**
-     * @notice Error thrown when a redirect URI is empty
-     */
-    error EmptyRedirectUriNotAllowed();
-
-    /**
-     * @notice Error thrown when a delegatee address is the zero address
-     */
-    error ZeroAddressDelegateeNotAllowed();
-
-    /**
-     * @notice Error thrown when no tools are provided during app version registration
-     * @param appId ID of the app
-     */
-    error NoToolsProvided(uint256 appId);
-
-    /**
-     * @notice Error thrown when no policies are provided for a tool
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool with no policies
-     */
-    error NoPoliciesProvidedForTool(uint256 appId, uint256 toolIndex);
-
-    /**
-     * @notice Error thrown when a policy parameter name is empty
-     * @param appId ID of the app
-     * @param toolIndex Index of the tool in the tools array
-     * @param policyIndex Index of the policy in the policies array
-     * @param paramIndex Index of the parameter in the parameters array
-     */
-    error EmptyParameterNameNotAllowed(uint256 appId, uint256 toolIndex, uint256 policyIndex, uint256 paramIndex);
+    struct AppVersionTools {
+        string[] toolIpfsCids;
+        string[][] toolPolicies;
+        string[][][] toolPolicyParameterNames;
+        VincentAppStorage.ParameterType[][][] toolPolicyParameterTypes;
+    }
 
     /**
      * @notice Modifier to restrict function access to the app manager only
@@ -200,65 +58,118 @@ contract VincentAppFacet is VincentBase {
      */
     modifier onlyAppManager(uint256 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        if (as_.appIdToApp[appId].manager != msg.sender) revert NotAppManager(appId, msg.sender);
+        if (as_.appIdToApp[appId].manager != msg.sender) revert LibVincentAppFacet.NotAppManager(appId, msg.sender);
         _;
     }
 
     /**
      * @notice Register a new application with initial version, tools, and policies
      * @dev This function combines app registration and first version registration in one call
-     * @param name Name of the application
-     * @param description Description of the application
-     * @param authorizedRedirectUris List of authorized redirect URIs for the application
-     * @param delegatees List of delegatee addresses for the application
-     * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this app
-     * @param toolPolicies 2D array mapping each tool to its associated policies
-     * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
-     * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
+     * @param appInfo Basic information about the application
+     * @param versionTools Tools and policies for the app version
      * @return newAppId The ID of the newly registered app
      * @return newAppVersion The version number of the newly registered app version (always 1 for new apps)
      */
-    function registerApp(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedRedirectUris,
-        address[] calldata delegatees,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
-    ) external returns (uint256 newAppId, uint256 newAppVersion) {
-        newAppId = _registerApp(name, description, authorizedRedirectUris, delegatees);
-        emit NewAppRegistered(newAppId, msg.sender);
+    function registerApp(AppInfo calldata appInfo, AppVersionTools calldata versionTools)
+        external
+        returns (uint256 newAppId, uint256 newAppVersion)
+    {
+        newAppId = _registerApp(appInfo);
+        emit LibVincentAppFacet.NewAppRegistered(newAppId, msg.sender);
 
-        newAppVersion = _registerNextAppVersion(
-            newAppId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
-        );
-        emit NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
+        newAppVersion = _registerNextAppVersion(newAppId, versionTools);
+        emit LibVincentAppFacet.NewAppVersionRegistered(newAppId, newAppVersion, msg.sender);
     }
 
     /**
      * @notice Register a new version of an existing application
      * @dev Only the app manager can register new versions of an existing app
      * @param appId ID of the app for which to register a new version
-     * @param toolIpfsCids Array of IPFS CIDs representing the tools associated with this version
-     * @param toolPolicies 2D array mapping each tool to its associated policies
-     * @param toolPolicyParameterNames 3D array mapping each policy to its parameter names
-     * @param toolPolicyParameterTypes 3D array mapping each policy parameter to its type
+     * @param versionTools Tools and policies for the app version
      * @return newAppVersion The version number of the newly registered app version
      */
-    function registerNextAppVersion(
-        uint256 appId,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
-    ) external onlyAppManager(appId) onlyRegisteredApp(appId) returns (uint256 newAppVersion) {
-        newAppVersion = _registerNextAppVersion(
-            appId, toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes
-        );
+    function registerNextAppVersion(uint256 appId, AppVersionTools calldata versionTools)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+        returns (uint256 newAppVersion)
+    {
+        newAppVersion = _registerNextAppVersion(appId, versionTools);
 
-        emit NewAppVersionRegistered(appId, newAppVersion, msg.sender);
+        emit LibVincentAppFacet.NewAppVersionRegistered(appId, newAppVersion, msg.sender);
+    }
+
+    /**
+     * @notice Update the deployment status of an application
+     * @dev Only the app manager can update the deployment status
+     * @param appId ID of the app
+     * @param deploymentStatus New deployment status for the app
+     */
+    function updateAppDeploymentStatus(uint256 appId, VincentAppStorage.DeploymentStatus deploymentStatus)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        // Revert if trying to set the same status
+        if (app.deploymentStatus == deploymentStatus) {
+            revert LibVincentAppFacet.AppAlreadyInRequestedDeploymentStatus(appId, uint8(deploymentStatus));
+        }
+
+        app.deploymentStatus = deploymentStatus;
+        emit LibVincentAppFacet.AppDeploymentStatusUpdated(appId, uint8(deploymentStatus));
+    }
+
+    /**
+     * @notice Update the name of an application
+     * @dev Only the app manager can update the name
+     * @param appId ID of the app
+     * @param newName New name for the app
+     */
+    function updateAppName(uint256 appId, string calldata newName)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        // Validate new name is not empty
+        if (bytes(newName).length == 0) {
+            revert LibVincentAppFacet.EmptyAppNameNotAllowed();
+        }
+
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        app.name = newName;
+        emit LibVincentAppFacet.AppNameUpdated(appId, newName);
+    }
+
+    /**
+     * @notice Update the description of an application
+     * @dev Only the app manager can update the description
+     * @param appId ID of the app
+     * @param newDescription New description for the app
+     */
+    function updateAppDescription(uint256 appId, string calldata newDescription)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        // Validate new description is not empty
+        if (bytes(newDescription).length == 0) {
+            revert LibVincentAppFacet.EmptyAppDescriptionNotAllowed();
+        }
+
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        app.description = newDescription;
+        emit LibVincentAppFacet.AppDescriptionUpdated(appId, newDescription);
     }
 
     /**
@@ -270,6 +181,7 @@ contract VincentAppFacet is VincentBase {
      */
     function enableAppVersion(uint256 appId, uint256 appVersion, bool enabled)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredAppVersion(appId, appVersion)
     {
@@ -281,11 +193,11 @@ contract VincentAppFacet is VincentBase {
 
         // Revert if trying to set to the same status
         if (versionedApp.enabled == enabled) {
-            revert AppVersionAlreadyInRequestedState(appId, appVersion, enabled);
+            revert LibVincentAppFacet.AppVersionAlreadyInRequestedState(appId, appVersion, enabled);
         }
 
         versionedApp.enabled = enabled;
-        emit AppEnabled(appId, appVersion, enabled);
+        emit LibVincentAppFacet.AppEnabled(appId, appVersion, enabled);
     }
 
     /**
@@ -296,12 +208,13 @@ contract VincentAppFacet is VincentBase {
      */
     function addAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
         // Check that the redirect URI is not empty
         if (bytes(redirectUri).length == 0) {
-            revert EmptyRedirectUriNotAllowed();
+            revert LibVincentAppFacet.EmptyRedirectUriNotAllowed();
         }
 
         _addAuthorizedRedirectUri(VincentAppStorage.appStorage(), appId, redirectUri);
@@ -315,6 +228,7 @@ contract VincentAppFacet is VincentBase {
      */
     function removeAuthorizedRedirectUri(uint256 appId, string calldata redirectUri)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
@@ -323,17 +237,17 @@ contract VincentAppFacet is VincentBase {
         bytes32 hashedRedirectUri = keccak256(abi.encodePacked(redirectUri));
 
         if (!as_.appIdToApp[appId].authorizedRedirectUris.contains(hashedRedirectUri)) {
-            revert RedirectUriNotRegisteredToApp(appId, redirectUri);
+            revert LibVincentAppFacet.RedirectUriNotRegisteredToApp(appId, redirectUri);
         }
 
         // Check if this is the last redirect URI
         if (as_.appIdToApp[appId].authorizedRedirectUris.length() == 1) {
-            revert CannotRemoveLastRedirectUri(appId);
+            revert LibVincentAppFacet.CannotRemoveLastRedirectUri(appId);
         }
 
         as_.appIdToApp[appId].authorizedRedirectUris.remove(hashedRedirectUri);
 
-        emit AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
+        emit LibVincentAppFacet.AuthorizedRedirectUriRemoved(appId, hashedRedirectUri);
     }
 
     /**
@@ -342,25 +256,30 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param delegatee Address of the delegatee to add
      */
-    function addDelegatee(uint256 appId, address delegatee) external onlyAppManager(appId) onlyRegisteredApp(appId) {
+    function addDelegatee(uint256 appId, address delegatee)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         // Check that the delegatee is not the zero address
         if (delegatee == address(0)) {
-            revert ZeroAddressDelegateeNotAllowed();
+            revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
         }
 
         // Check if the delegatee is already registered to any app
         uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
         if (delegateeAppId != 0) {
-            revert DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
+            revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
         }
 
         as_.appIdToApp[appId].delegatees.add(delegatee);
 
         as_.delegateeAddressToAppId[delegatee] = appId;
 
-        emit DelegateeAdded(appId, delegatee);
+        emit LibVincentAppFacet.DelegateeAdded(appId, delegatee);
     }
 
     /**
@@ -371,46 +290,61 @@ contract VincentAppFacet is VincentBase {
      */
     function removeDelegatee(uint256 appId, address delegatee)
         external
+        appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
     {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
-        if (as_.delegateeAddressToAppId[delegatee] != appId) revert DelegateeNotRegisteredToApp(appId, delegatee);
+        if (as_.delegateeAddressToAppId[delegatee] != appId) {
+            revert LibVincentAppFacet.DelegateeNotRegisteredToApp(appId, delegatee);
+        }
 
         as_.appIdToApp[appId].delegatees.remove(delegatee);
         as_.delegateeAddressToAppId[delegatee] = 0;
 
-        emit DelegateeRemoved(appId, delegatee);
+        emit LibVincentAppFacet.DelegateeRemoved(appId, delegatee);
+    }
+
+    /**
+     * @notice Delete an application by setting its isDeleted flag to true
+     * @dev Only the app manager can delete an app
+     * @param appId ID of the app to delete
+     */
+    function deleteApp(uint256 appId) external appNotDeleted(appId) onlyAppManager(appId) onlyRegisteredApp(appId) {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        // Check that no app versions have delegated agent PKPs
+        for (uint256 i = 0; i < app.versionedApps.length; i++) {
+            if (app.versionedApps[i].delegatedAgentPkps.length() > 0) {
+                revert LibVincentAppFacet.AppVersionHasDelegatedAgents(appId, i + 1);
+            }
+        }
+
+        app.isDeleted = true;
+        emit LibVincentAppFacet.AppDeleted(appId);
     }
 
     /**
      * @notice Internal function to register a new app
      * @dev Sets up the basic app structure and associates redirect URIs and delegatees
-     * @param name Name of the application
-     * @param description Description of the application
-     * @param authorizedRedirectUris List of authorized redirect URIs for the application
-     * @param delegatees List of delegatee addresses for the application
+     * @param appInfo An AppInfo struct containing the app name, description, authorized redirect URIs, and delegatees
      * @return newAppId The ID of the newly registered app
      */
-    function _registerApp(
-        string calldata name,
-        string calldata description,
-        string[] calldata authorizedRedirectUris,
-        address[] calldata delegatees
-    ) internal returns (uint256 newAppId) {
+    function _registerApp(AppInfo calldata appInfo) internal returns (uint256 newAppId) {
         // Validate app name and description are not empty
-        if (bytes(name).length == 0) {
-            revert EmptyAppNameNotAllowed();
+        if (bytes(appInfo.name).length == 0) {
+            revert LibVincentAppFacet.EmptyAppNameNotAllowed();
         }
 
-        if (bytes(description).length == 0) {
-            revert EmptyAppDescriptionNotAllowed();
+        if (bytes(appInfo.description).length == 0) {
+            revert LibVincentAppFacet.EmptyAppDescriptionNotAllowed();
         }
 
         // Require at least one authorized redirect URI
-        if (authorizedRedirectUris.length == 0) {
-            revert NoRedirectUrisProvided();
+        if (appInfo.authorizedRedirectUris.length == 0) {
+            revert LibVincentAppFacet.NoRedirectUrisProvided();
         }
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
@@ -423,32 +357,33 @@ contract VincentAppFacet is VincentBase {
         // Register the app
         VincentAppStorage.App storage app = as_.appIdToApp[newAppId];
         app.manager = msg.sender;
-        app.name = name;
-        app.description = description;
+        app.name = appInfo.name;
+        app.description = appInfo.description;
+        app.deploymentStatus = appInfo.deploymentStatus;
 
-        for (uint256 i = 0; i < authorizedRedirectUris.length; i++) {
+        for (uint256 i = 0; i < appInfo.authorizedRedirectUris.length; i++) {
             // Check that the redirect URI is not empty
-            if (bytes(authorizedRedirectUris[i]).length == 0) {
-                revert EmptyRedirectUriNotAllowed();
+            if (bytes(appInfo.authorizedRedirectUris[i]).length == 0) {
+                revert LibVincentAppFacet.EmptyRedirectUriNotAllowed();
             }
-            _addAuthorizedRedirectUri(as_, newAppId, authorizedRedirectUris[i]);
+            _addAuthorizedRedirectUri(as_, newAppId, appInfo.authorizedRedirectUris[i]);
         }
 
         // Add the delegatees to the app
-        for (uint256 i = 0; i < delegatees.length; i++) {
+        for (uint256 i = 0; i < appInfo.delegatees.length; i++) {
             // Check that the delegatee is not the zero address
-            if (delegatees[i] == address(0)) {
-                revert ZeroAddressDelegateeNotAllowed();
+            if (appInfo.delegatees[i] == address(0)) {
+                revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
             }
 
-            uint256 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
+            uint256 existingAppId = as_.delegateeAddressToAppId[appInfo.delegatees[i]];
             if (existingAppId != 0) {
-                revert DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
+                revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(existingAppId, appInfo.delegatees[i]);
             }
 
-            app.delegatees.add(delegatees[i]);
+            app.delegatees.add(appInfo.delegatees[i]);
 
-            as_.delegateeAddressToAppId[delegatees[i]] = newAppId;
+            as_.delegateeAddressToAppId[appInfo.delegatees[i]] = newAppId;
         }
     }
 
@@ -461,39 +396,95 @@ contract VincentAppFacet is VincentBase {
      * @notice App versions are enabled by default when registered.
      *
      * @param appId The ID of the app for which a new version is being registered.
-     * @param toolIpfsCids An array of IPFS CIDs representing the tools associated with this version.
-     * @param toolPolicies A 2D array mapping each tool to a list of associated policies.
-     * @param toolPolicyParameterNames A 3D array mapping each policy to a list of associated parameter names.
-     * @param toolPolicyParameterTypes A 3D array mapping each policy parameter to its type.
+     * @param versionTools An AppVersionTools struct containing the tools, policies, and parameters for the new app version.
      * @return newAppVersion The newly created version number for the app.
      */
-    function _registerNextAppVersion(
-        uint256 appId,
-        string[] calldata toolIpfsCids,
-        string[][] calldata toolPolicies,
-        string[][][] calldata toolPolicyParameterNames,
-        VincentAppStorage.ParameterType[][][] calldata toolPolicyParameterTypes
-    ) internal returns (uint256 newAppVersion) {
+    function _registerNextAppVersion(uint256 appId, AppVersionTools calldata versionTools)
+        internal
+        returns (uint256 newAppVersion)
+    {
         // Step 1: Check that at least one tool is provided
-        if (toolIpfsCids.length == 0) {
-            revert NoToolsProvided(appId);
+        if (versionTools.toolIpfsCids.length == 0) {
+            revert LibVincentAppFacet.NoToolsProvided(appId);
         }
 
-        // Step 2: Validate input array lengths to ensure all tools have corresponding policies and parameters.
-        uint256 toolCount = toolIpfsCids.length;
+        // Check array lengths at top level
+        uint256 toolCount = versionTools.toolIpfsCids.length;
         if (
-            toolCount != toolPolicies.length || toolCount != toolPolicyParameterNames.length
-                || toolCount != toolPolicyParameterTypes.length
+            toolCount != versionTools.toolPolicies.length || toolCount != versionTools.toolPolicyParameterNames.length
+                || toolCount != versionTools.toolPolicyParameterTypes.length
         ) {
-            revert ToolsAndPoliciesLengthMismatch();
+            revert LibVincentAppFacet.ToolArrayDimensionMismatch(
+                toolCount,
+                versionTools.toolPolicies.length,
+                versionTools.toolPolicyParameterNames.length,
+                versionTools.toolPolicyParameterTypes.length
+            );
         }
 
-        // Step 3: Fetch necessary storage references.
+        // Then check nested arrays for each tool
+        for (uint256 i = 0; i < toolCount; i++) {
+            string memory toolIpfsCid = versionTools.toolIpfsCids[i];
+
+            // Validate tool IPFS CID is not empty
+            if (bytes(toolIpfsCid).length == 0) {
+                revert LibVincentAppFacet.EmptyToolIpfsCidNotAllowed(appId, i);
+            }
+
+            // Check nested array lengths
+            uint256 policyCount = versionTools.toolPolicies[i].length;
+            if (
+                policyCount != versionTools.toolPolicyParameterNames[i].length
+                    || policyCount != versionTools.toolPolicyParameterTypes[i].length
+            ) {
+                revert LibVincentAppFacet.PolicyArrayLengthMismatch(
+                    i,
+                    policyCount,
+                    versionTools.toolPolicyParameterNames[i].length,
+                    versionTools.toolPolicyParameterTypes[i].length
+                );
+            }
+
+            // Check parameter names and types match for each policy
+            for (uint256 j = 0; j < policyCount; j++) {
+                if (
+                    versionTools.toolPolicyParameterNames[i][j].length
+                        != versionTools.toolPolicyParameterTypes[i][j].length
+                ) {
+                    revert LibVincentAppFacet.ParameterArrayLengthMismatch(
+                        i,
+                        j,
+                        versionTools.toolPolicyParameterNames[i][j].length,
+                        versionTools.toolPolicyParameterTypes[i][j].length
+                    );
+                }
+
+                string memory policyIpfsCid = versionTools.toolPolicies[i][j];
+
+                // Validate non-empty policy IPFS CID
+                if (bytes(policyIpfsCid).length == 0) {
+                    revert LibVincentAppFacet.EmptyPolicyIpfsCidNotAllowed(appId, i);
+                }
+
+                // Check for empty parameter names
+                uint256 paramCount = versionTools.toolPolicyParameterNames[i][j].length;
+                for (uint256 k = 0; k < paramCount; k++) {
+                    string memory paramName = versionTools.toolPolicyParameterNames[i][j][k];
+
+                    // Check for empty parameter name
+                    if (bytes(paramName).length == 0) {
+                        revert LibVincentAppFacet.EmptyParameterNameNotAllowed(appId, i, j, k);
+                    }
+                }
+            }
+        }
+
+        // Step 4: Fetch necessary storage references.
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
-        VincentToolStorage.ToolStorage storage ts = VincentToolStorage.toolStorage();
+        VincentLitActionStorage.LitActionStorage storage ls = VincentLitActionStorage.litActionStorage();
 
-        // Step 4: Create a new app version.
+        // Step 5: Create a new app version.
         app.versionedApps.push();
         newAppVersion = app.versionedApps.length;
 
@@ -503,86 +494,67 @@ contract VincentAppFacet is VincentBase {
         // Store this once outside the loop instead of repeatedly accessing it
         EnumerableSet.Bytes32Set storage toolIpfsCidHashes = versionedApp.toolIpfsCidHashes;
 
-        // Step 5: Iterate through each tool to register it with the new app version.
+        // Step 6: Iterate through each tool to register it with the new app version.
         for (uint256 i = 0; i < toolCount; i++) {
-            string memory toolIpfsCid = toolIpfsCids[i]; // Cache calldata value
-
-            // Validate tool IPFS CID is not empty
-            if (bytes(toolIpfsCid).length == 0) {
-                revert EmptyToolIpfsCidNotAllowed(appId, i);
-            }
+            string memory toolIpfsCid = versionTools.toolIpfsCids[i]; // Cache calldata value
 
             bytes32 hashedToolCid = keccak256(abi.encodePacked(toolIpfsCid));
 
-            // Step 5.1: Register the tool IPFS CID globally if it hasn't been added already.
-            if (!toolIpfsCidHashes.contains(hashedToolCid)) {
-                toolIpfsCidHashes.add(hashedToolCid);
+            // Step 6.1: Register the tool IPFS CID globally if it hasn't been added already.
+            toolIpfsCidHashes.add(hashedToolCid);
 
-                // First check if the tool is already registered in global storage
-                // before trying to register it again
-                if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
-                    ts.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
-                    emit NewToolRegistered(hashedToolCid);
-                }
-                // If tool is already registered globally, just continue
-                // without trying to register it again
+            // First check if the tool is already registered in global storage
+            // before trying to register it again
+            if (bytes(ls.ipfsCidHashToIpfsCid[hashedToolCid]).length == 0) {
+                ls.ipfsCidHashToIpfsCid[hashedToolCid] = toolIpfsCid;
+                emit LibVincentAppFacet.NewLitActionRegistered(hashedToolCid);
             }
 
-            // Step 5.2: Fetch the tool policies storage for this tool.
+            // Step 6.2: Fetch the tool policies storage for this tool.
             VincentAppStorage.ToolPolicies storage toolPoliciesStorage =
                 versionedApp.toolIpfsCidHashToToolPolicies[hashedToolCid];
 
-            // Step 6: Iterate through policies linked to this tool.
-            uint256 policyCount = toolPolicies[i].length;
+            // Step 7: Iterate through policies linked to this tool.
+            uint256 policyCount = versionTools.toolPolicies[i].length;
 
             for (uint256 j = 0; j < policyCount; j++) {
-                string memory policyIpfsCid = toolPolicies[i][j]; // Cache calldata value
-
-                // Validate non-empty policy IPFS CID
-                if (bytes(policyIpfsCid).length == 0) {
-                    revert EmptyPolicyIpfsCidNotAllowed(appId, i);
-                }
+                string memory policyIpfsCid = versionTools.toolPolicies[i][j]; // Cache calldata value
 
                 bytes32 hashedToolPolicy = keccak256(abi.encodePacked(policyIpfsCid));
 
-                // Step 6.1: Add the policy hash to the ToolPolicies
+                // Step 7.1: Add the policy hash to the ToolPolicies
                 toolPoliciesStorage.policyIpfsCidHashes.add(hashedToolPolicy);
 
-                // Step 6.2: Store the policy IPFS CID globally if it's not already stored.
-                if (bytes(ts.ipfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
-                    ts.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
+                // Step 7.2: Store the policy IPFS CID globally if it's not already stored.
+                if (bytes(ls.ipfsCidHashToIpfsCid[hashedToolPolicy]).length == 0) {
+                    ls.ipfsCidHashToIpfsCid[hashedToolPolicy] = policyIpfsCid;
                 }
 
                 // Create a new Policy storage structure for this policy in the current app version
                 VincentAppStorage.Policy storage policy =
                     toolPoliciesStorage.policyIpfsCidHashToPolicy[hashedToolPolicy];
 
-                // Step 7: Get the Policy parameter name hashes for this policy
+                // Step 8: Get the Policy parameter name hashes for this policy
                 EnumerableSet.Bytes32Set storage policyParameterNameHashes = policy.policyParameterNameHashes;
 
-                // Step 8: Iterate through policy parameters.
-                uint256 paramCount = toolPolicyParameterNames[i][j].length;
+                // Step 9: Iterate through policy parameters.
+                uint256 paramCount = versionTools.toolPolicyParameterNames[i][j].length;
 
                 for (uint256 k = 0; k < paramCount; k++) {
-                    string memory paramName = toolPolicyParameterNames[i][j][k]; // Cache calldata value
-
-                    // Check for empty parameter name
-                    if (bytes(paramName).length == 0) {
-                        revert EmptyParameterNameNotAllowed(appId, i, j, k);
-                    }
+                    string memory paramName = versionTools.toolPolicyParameterNames[i][j][k]; // Cache calldata value
 
                     bytes32 hashedPolicyParameterName = keccak256(abi.encodePacked(paramName));
 
-                    // Step 8.1: Register the policy parameter.
+                    // Step 9.1: Register the policy parameter.
                     policyParameterNameHashes.add(hashedPolicyParameterName);
 
-                    // Step 8.2: Store the parameter name if not already stored.
-                    if (bytes(ts.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
-                        ts.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
+                    // Step 9.2: Store the parameter name if not already stored.
+                    if (bytes(ls.policyParameterNameHashToName[hashedPolicyParameterName]).length == 0) {
+                        ls.policyParameterNameHashToName[hashedPolicyParameterName] = paramName;
                     }
 
-                    // Step 8.3: Store the parameter type
-                    VincentAppStorage.ParameterType paramType = toolPolicyParameterTypes[i][j][k];
+                    // Step 9.3: Store the parameter type
+                    VincentAppStorage.ParameterType paramType = versionTools.toolPolicyParameterTypes[i][j][k];
                     policy.policyParameterNameHashToType[hashedPolicyParameterName] = paramType;
                 }
             }
@@ -604,11 +576,11 @@ contract VincentAppFacet is VincentBase {
 
         // If the redirect URI was not added (already exists), revert
         if (!appStorage.appIdToApp[appId].authorizedRedirectUris.add(hashedRedirectUri)) {
-            revert RedirectUriAlreadyAuthorizedForApp(appId, redirectUri);
+            revert LibVincentAppFacet.RedirectUriAlreadyAuthorizedForApp(appId, redirectUri);
         }
 
         appStorage.authorizedRedirectUriHashToRedirectUri[hashedRedirectUri] = redirectUri;
 
-        emit AuthorizedRedirectUriAdded(appId, hashedRedirectUri);
+        emit LibVincentAppFacet.AuthorizedRedirectUriAdded(appId, hashedRedirectUri);
     }
 }

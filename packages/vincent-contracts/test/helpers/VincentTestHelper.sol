@@ -6,8 +6,8 @@ import "../../script/DeployVincentDiamond.sol";
 import "../../src/VincentDiamond.sol";
 import "../../src/facets/VincentAppFacet.sol";
 import "../../src/facets/VincentAppViewFacet.sol";
-import "../../src/facets/VincentToolFacet.sol";
-import "../../src/facets/VincentToolViewFacet.sol";
+import "../../src/facets/VincentLitActionFacet.sol";
+import "../../src/facets/VincentLitActionViewFacet.sol";
 import "../../src/facets/VincentUserFacet.sol";
 import "../../src/facets/VincentUserViewFacet.sol";
 import "../mocks/MockPKPNftFacet.sol";
@@ -64,11 +64,11 @@ abstract contract VincentTestHelper is Test {
     /// @notice App view facet - provides read-only access to app data
     VincentAppViewFacet public wrappedAppViewFacet;
 
-    /// @notice Tool management facet - handles tool registration and approval
-    VincentToolFacet public wrappedToolFacet;
+    /// @notice LitAction management facet - handles litAction registration and approval
+    VincentLitActionFacet public wrappedLitActionFacet;
 
-    /// @notice Tool view facet - provides read-only access to tool data
-    VincentToolViewFacet public wrappedToolViewFacet;
+    /// @notice LitAction view facet - provides read-only access to litAction data
+    VincentLitActionViewFacet public wrappedLitActionViewFacet;
 
     /// @notice User management facet - handles user settings and permissions
     VincentUserFacet public wrappedUserFacet;
@@ -93,6 +93,7 @@ abstract contract VincentTestHelper is Test {
     // Tool-related constants - IPFS CIDs for tool identification
     string constant TEST_TOOL_IPFS_CID_1 = "QmTestTool1";
     string constant TEST_TOOL_IPFS_CID_2 = "QmTestTool2";
+    string constant TEST_TOOL_IPFS_CID_3 = "QmTestTool3";
 
     // Policy-related constants for tool permissions and configurations
     string constant TEST_POLICY_1 = "QmTestPolicy1";
@@ -162,12 +163,13 @@ abstract contract VincentTestHelper is Test {
     event AuthorizedRedirectUriRemoved(uint256 indexed appId, bytes32 indexed hashedRedirectUri);
     event DelegateeAdded(uint256 indexed appId, address indexed delegatee);
     event DelegateeRemoved(uint256 indexed appId, address indexed delegatee);
+    event AppDeploymentStatusUpdated(uint256 indexed appId, uint8 indexed deploymentStatus);
 
-    // Tool-related events
-    event NewToolRegistered(bytes32 indexed toolIpfsCidHash);
-    event ToolApproved(bytes32 indexed toolIpfsCidHash);
-    event ToolApprovalRemoved(bytes32 indexed toolIpfsCidHash);
-    event ApprovedToolsManagerUpdated(address indexed previousManager, address indexed newManager);
+    // LitAction-related events
+    event NewLitActionRegistered(bytes32 indexed litActionIpfsCidHash);
+    event LitActionApproved(bytes32 indexed litActionIpfsCidHash);
+    event LitActionApprovalRemoved(bytes32 indexed litActionIpfsCidHash);
+    event ApprovedLitActionsManagerUpdated(address indexed previousManager, address indexed newManager);
 
     // User-related errors
     error NotPkpOwner(uint256 pkpTokenId, address msgSender);
@@ -206,7 +208,7 @@ abstract contract VincentTestHelper is Test {
 
         // Set the approved tools manager as the deployer for testing
         // In production, this would be a separate secure account
-        vm.setEnv("APPROVED_TOOLS_MANAGER_ADDRESS", vm.toString(deployer));
+        vm.setEnv("APPROVED_LIT_ACTIONS_MANAGER_ADDRESS", vm.toString(deployer));
 
         // Deploy mock dependencies first
         deployScript = new DeployVincentDiamond();
@@ -225,8 +227,8 @@ abstract contract VincentTestHelper is Test {
         // In the Diamond pattern, all calls route through the Diamond but execute code from different facets
         wrappedAppFacet = VincentAppFacet(address(diamond));
         wrappedAppViewFacet = VincentAppViewFacet(address(diamond));
-        wrappedToolFacet = VincentToolFacet(address(diamond));
-        wrappedToolViewFacet = VincentToolViewFacet(address(diamond));
+        wrappedLitActionFacet = VincentLitActionFacet(address(diamond));
+        wrappedLitActionViewFacet = VincentLitActionViewFacet(address(diamond));
         wrappedUserFacet = VincentUserFacet(address(diamond));
         wrappedUserViewFacet = VincentUserViewFacet(address(diamond));
 
@@ -283,6 +285,44 @@ abstract contract VincentTestHelper is Test {
     }
 
     /**
+     * @notice Helper function to create an AppInfo struct from parameters
+     * @dev Creates a struct that can be used with the new app registration function
+     */
+    function _createAppInfo(
+        string memory name,
+        string memory description,
+        VincentAppStorage.DeploymentStatus deploymentStatus,
+        string[] memory redirectUris,
+        address[] memory delegatees
+    ) internal pure returns (VincentAppFacet.AppInfo memory) {
+        return VincentAppFacet.AppInfo({
+            name: name,
+            description: description,
+            deploymentStatus: deploymentStatus,
+            authorizedRedirectUris: redirectUris,
+            delegatees: delegatees
+        });
+    }
+
+    /**
+     * @notice Helper function to create an AppVersionTools struct from parameters
+     * @dev Creates a struct that can be used with the new app registration function
+     */
+    function _createVersionTools(
+        string[] memory toolIpfsCids,
+        string[][] memory toolPolicies,
+        string[][][] memory parameterNames,
+        VincentAppStorage.ParameterType[][][] memory parameterTypes
+    ) internal pure returns (VincentAppFacet.AppVersionTools memory) {
+        return VincentAppFacet.AppVersionTools({
+            toolIpfsCids: toolIpfsCids,
+            toolPolicies: toolPolicies,
+            toolPolicyParameterNames: parameterNames,
+            toolPolicyParameterTypes: parameterTypes
+        });
+    }
+
+    /**
      * @notice Helper function to register a test app with standard configuration
      * @dev Creates a standard app with one tool, one policy, and one parameter
      * @return appId The ID of the registered app
@@ -299,17 +339,82 @@ abstract contract VincentTestHelper is Test {
      * - One parameter defined for the policy
      */
     function _registerTestApp() internal returns (uint256 appId, uint256 appVersion) {
-        // Register app with version through the diamond's app facet using test data
-        // This call will register both the app and its first version in one transaction
-        return wrappedAppFacet.registerApp(
+        // Create structs for app registration
+        VincentAppFacet.AppInfo memory appInfo = _createAppInfo(
             TEST_APP_NAME,
             TEST_APP_DESCRIPTION,
+            VincentAppStorage.DeploymentStatus.DEV,
             testRedirectUris,
-            testDelegatees,
-            testToolIpfsCids,
-            testToolPolicies,
-            testToolPolicyParameterNames,
-            testToolPolicyParameterTypes
+            testDelegatees
         );
+
+        VincentAppFacet.AppVersionTools memory versionTools = _createVersionTools(
+            testToolIpfsCids, testToolPolicies, testToolPolicyParameterNames, testToolPolicyParameterTypes
+        );
+
+        // Register app with version through the diamond's app facet using test data
+        // This call will register both the app and its first version in one transaction
+        return wrappedAppFacet.registerApp(appInfo, versionTools);
+    }
+
+    /**
+     * @notice Helper function to register an app using the old API parameters
+     * @dev This is a translation function that converts the old API parameters to the new struct-based approach
+     * @param name The name of the app
+     * @param description The description of the app
+     * @param redirectUris Array of authorized redirect URIs
+     * @param delegatees Array of delegatee addresses
+     * @param toolIpfsCids Array of tool IPFS CIDs
+     * @param toolPolicies 2D array of policy identifiers for each tool
+     * @param toolPolicyParameterNames 3D array of parameter names for each policy of each tool
+     * @param toolPolicyParameterTypes 3D array of parameter types for each policy of each tool
+     * @return appId The ID of the registered app
+     * @return appVersion The version number of the registered app
+     */
+    function _registerAppLegacy(
+        string memory name,
+        string memory description,
+        string[] memory redirectUris,
+        address[] memory delegatees,
+        string[] memory toolIpfsCids,
+        string[][] memory toolPolicies,
+        string[][][] memory toolPolicyParameterNames,
+        VincentAppStorage.ParameterType[][][] memory toolPolicyParameterTypes
+    ) internal returns (uint256 appId, uint256 appVersion) {
+        // Create AppInfo struct
+        VincentAppFacet.AppInfo memory appInfo =
+            _createAppInfo(name, description, VincentAppStorage.DeploymentStatus.DEV, redirectUris, delegatees);
+
+        // Create AppVersionTools struct
+        VincentAppFacet.AppVersionTools memory versionTools =
+            _createVersionTools(toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes);
+
+        // Register app using the new struct-based approach
+        return wrappedAppFacet.registerApp(appInfo, versionTools);
+    }
+
+    /**
+     * @notice Helper function to register a new app version using the old API parameters
+     * @dev This is a translation function that converts the old API parameters to the new struct-based approach
+     * @param appId The ID of the app
+     * @param toolIpfsCids Array of tool IPFS CIDs
+     * @param toolPolicies 2D array of policy identifiers for each tool
+     * @param toolPolicyParameterNames 3D array of parameter names for each policy of each tool
+     * @param toolPolicyParameterTypes 3D array of parameter types for each policy of each tool
+     * @return newAppVersion The version number of the newly registered app version
+     */
+    function _registerNextAppVersionLegacy(
+        uint256 appId,
+        string[] memory toolIpfsCids,
+        string[][] memory toolPolicies,
+        string[][][] memory toolPolicyParameterNames,
+        VincentAppStorage.ParameterType[][][] memory toolPolicyParameterTypes
+    ) internal returns (uint256 newAppVersion) {
+        // Create AppVersionTools struct
+        VincentAppFacet.AppVersionTools memory versionTools =
+            _createVersionTools(toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes);
+
+        // Register next app version using the new struct-based approach
+        return wrappedAppFacet.registerNextAppVersion(appId, versionTools);
     }
 }
