@@ -9,7 +9,7 @@ import { ChrnoicleYellowstone } from '../networks/shared/chains/ChrnoicleYellows
 import * as VincentAppFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentAppFacet';
 import * as VincentAppViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentAppViewFacet';
 import * as VincentLitActionFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentLitActionFacet';
-import * as VincentLitActionViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentLitActionFacetViewFacet';
+import * as VincentLitActionViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentLitActionViewFacet';
 import * as VincentUserFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentUserFacet';
 import * as VincentUserViewFacet from '../networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentUserViewFacet';
 

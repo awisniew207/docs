@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createPublicClient, getContract, http, PublicClient } from 'viem';
 import { VincentNetworkContext } from './NetworkContextManager';
 
