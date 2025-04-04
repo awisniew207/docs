@@ -129,6 +129,16 @@ get-abis: ## Get human-readable ABIs for all facets
 	@echo "Getting ABI for VincentUserViewFacet..."
 	@forge inspect VincentUserViewFacet abi --json > abis/VincentUserViewFacet.abi.json
 	@echo "ABIs written to abis/*.abi.json"
+	@echo "🔄 Running postbuild scripts..."
+	@for script in $$(ls -v postbuild-scripts/*.ts); do \
+		echo "Running $$script..."; \
+		bun run $$script; \
+		if [ $$? -ne 0 ]; then \
+			echo "Error running $$script"; \
+			exit 1; \
+		fi; \
+	done
+	@echo "✅All postbuild scripts completed successfully." 
 
 run-postbuild-scripts: ## Run all postbuild scripts in numerical order
 	@echo "Running postbuild scripts..."
