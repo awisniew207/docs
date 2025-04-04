@@ -59,7 +59,10 @@ export const getTestContext = async (opts?: {
     APP_NAME: 'Test App',
     APP_DESCRIPTION: 'Test Description',
     AUTHORIZED_REDIRECT_URIS: ['http://localhost:3000'],
-    DELEGATEES: [masterTestAccount.address, randomDelegateeAccount.address],
+    DELEGATEES: [
+      // masterTestAccount.address, 
+      randomDelegateeAccount.address
+    ],
     TOOL_IPFS_CIDS: ['QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY'],
     TOOL_POLICIES: [['QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE']],
     TOOL_POLICY_PARAMETER_NAMES: [

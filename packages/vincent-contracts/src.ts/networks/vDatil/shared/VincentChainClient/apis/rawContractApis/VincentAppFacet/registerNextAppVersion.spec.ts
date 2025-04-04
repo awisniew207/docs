@@ -1,11 +1,7 @@
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { registerNextAppVersion } from './registerNextAppVersion';
-import { vincentNetworkContext } from '../../../NetworkContextManager';
-import { registerApp } from './registerApp';
 import { getTestContext } from '../testContext';
+import { registerNextAppVersion } from './registerNextAppVersion';
 
 describe('registerNextAppVersion', () => {
-
   let testContext: Awaited<ReturnType<typeof getTestContext>>;
 
   beforeAll(async () => {
@@ -15,7 +11,6 @@ describe('registerNextAppVersion', () => {
   });
 
   it('should register a new version of an existing app with test parameters', async () => {
-
     // first we need to register an app
     const { appId } = testContext.registerAppRes;
 
@@ -28,7 +23,7 @@ describe('registerNextAppVersion', () => {
         toolPolicyParameterNames: [[['param1']]],
         toolPolicyParameterTypes: [[['INT256']]], // Updated different parameter type
       },
-      testContext.networkContext
+      testContext.networkContext,
     );
 
     console.log(res2);
@@ -36,18 +31,18 @@ describe('registerNextAppVersion', () => {
     expect(res2.hash).toBeDefined();
     expect(res2.receipt).toBeDefined();
     expect(res2.decodedLogs).toBeDefined();
-    
+
     // Check events
     const newVersionEvent = res2.decodedLogs.find(
-      (log) => log.eventName === 'NewAppVersionRegistered'
+      (log) => log.eventName === 'NewAppVersionRegistered',
     );
-    
+
     expect(newVersionEvent).toBeDefined();
-    
+
     const appId2 = newVersionEvent?.args.appId;
     const appVersion = newVersionEvent?.args.appVersion;
 
-    console.log("App ID: ", appId2);
-    console.log("App Version: ", appVersion);
+    console.log('App ID: ', appId2);
+    console.log('App Version: ', appVersion);
   });
-}); 
+});
