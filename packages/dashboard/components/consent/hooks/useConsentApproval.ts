@@ -780,7 +780,7 @@ export const useConsentApproval = ({
           !currentParam ||
           // Or the current value is empty string
           currentParam.value === '';
-          // Or for address type, it's the default address or placeholder
+        // Or for address type, it's the default address or placeholder
 
         if (isCleared) {
           console.log(
@@ -944,70 +944,74 @@ export const useConsentApproval = ({
     }
 
 
-      // Initialize Lit Contracts
-      const litContracts = new LitContracts({
-        network: SELECTED_LIT_NETWORK,
-        signer: userPkpWallet,
-      });
-      await litContracts.connect();
-      
-      console.log(`Adding permitted actions for ${toolIpfsCids.length} tools`);
-      onStatusChange?.(
-        `Adding permissions for ${toolIpfsCids.length} action(s)...`,
-        'info',
-      );
-      
-      for (const ipfsCid of toolIpfsCids) {
-        try {
-          // Check if this action is already permitted
-          const isAlreadyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
+    // Initialize Lit Contracts
+    const litContracts = new LitContracts({
+      network: SELECTED_LIT_NETWORK,
+      signer: userPkpWallet,
+    });
+    await litContracts.connect();
+
+    console.log(`Adding permitted actions for ${toolIpfsCids.length} tools`);
+    onStatusChange?.(
+      `Adding permissions for ${toolIpfsCids.length} action(s)...`,
+      'info',
+    );
+
+    for (const ipfsCid of toolIpfsCids) {
+      try {
+        // Check if this action is already permitted
+        const isAlreadyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
+          agentPKP.tokenId,
+          ipfsCid
+        );
+
+        if (ipfsCid === process.env.NEXT_PUBLIC_DCA_TOOL_IPFS_CID) {
+          const isPolicyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
             agentPKP.tokenId,
-            ipfsCid
+            process.env.NEXT_PUBLIC_DCA_POLICY_IPFS_CID!
           );
-          
-          if (isAlreadyPermitted) {
-            console.log(`Permission already exists for IPFS CID: ${ipfsCid}`);
-            onStatusChange?.(
-              `Permission already exists for ${ipfsCid.substring(0, 8)}...`,
-              'info'
-            );
-            await new Promise((resolve) => setTimeout(resolve, 10000));
-            continue;
-
-          }
-          
-          // Permission doesn't exist, add it
-          onStatusChange?.(
-            `Adding permission for ${ipfsCid.substring(0, 8)}...`,
-            'info',
-          );
-
-          const tx = await litContracts.addPermittedAction({
-            ipfsId: ipfsCid,
-            pkpTokenId: agentPKP.tokenId,
-            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-          });
-
-          if(ipfsCid === process.env.NEXT_PUBLIC_DCA_TOOL_IPFS_CID) {
+          if (!isPolicyPermitted) {
+            console.log(`Adding DCA policy for ${process.env.NEXT_PUBLIC_DCA_POLICY_IPFS_CID}`);
             await litContracts.addPermittedAction({
               ipfsId: process.env.NEXT_PUBLIC_DCA_POLICY_IPFS_CID!,
               pkpTokenId: agentPKP.tokenId,
               authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
             });
           }
-
-          console.log(`Added permission for ${ipfsCid} - Transaction hash: ${tx}`);
-        } catch (error) {
-          console.error(
-            `Error adding permitted action for IPFS CID ${ipfsCid}:`,
-            error
-          );
-          onStatusChange?.(`Failed to add permission for an action`, 'warning');
-          // Continue with the next IPFS CID even if one fails
         }
-      }
-      onStatusChange?.('Action permissions added!', 'success');
 
+        if (isAlreadyPermitted) {
+          console.log(`Permission already exists for IPFS CID: ${ipfsCid}`);
+          onStatusChange?.(
+            `Permission already exists for ${ipfsCid.substring(0, 8)}...`,
+            'info'
+          );
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          continue;
+
+        }
+
+        // Permission doesn't exist, add it
+        onStatusChange?.(
+          `Adding permission for ${ipfsCid.substring(0, 8)}...`,
+          'info',
+        );
+
+        const tx = await litContracts.addPermittedAction({
+          ipfsId: ipfsCid,
+          pkpTokenId: agentPKP.tokenId,
+          authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+        });
+        console.log(`Added permission for ${ipfsCid} - Transaction hash: ${tx}`);
+      } catch (error) {
+        console.error(
+          `Error adding permitted action for IPFS CID ${ipfsCid}:`,
+          error
+        );
+        onStatusChange?.(`Failed to add permission for an action`, 'warning');
+        // Continue with the next IPFS CID even if one fails
+      }
+    }
     onStatusChange?.('Permission grant successful!', 'success');
 
     return;
