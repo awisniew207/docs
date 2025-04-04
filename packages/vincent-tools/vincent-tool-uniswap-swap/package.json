@@ -37,7 +37,8 @@
   ],
   "scripts": {
     "test:contract-caller": "npx ts-node tools/scripts/vincent-contract-caller.ts",
-    "test": "jest"
+    "test": "jest --testPathIgnorePatterns=test/tool.spec.ts",
+    "test:execute-tools": "jest test/tool.spec.ts --bail"
   },
   "nx": {
     "sourceRoot": "packages/vincent-tools/vincent-tool-uniswap-swap/src",

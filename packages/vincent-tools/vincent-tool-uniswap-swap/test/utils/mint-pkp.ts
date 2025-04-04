@@ -54,8 +54,8 @@ export const mintNewPkp = async (
                 )
             ).toString("hex")}`
         ],
-        ["0x", "0x", "0x"],
-        [[AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything]],
+        ["0x", "0x", "0x", "0x"],
+        [[AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything], [AUTH_METHOD_SCOPE.SignAnything]],
         true, // addPkpEthAddressAsPermittedAddress
         false, // sendPkpToItself
         { value: await litContractClient.pkpNftContract.read.mintCost() }

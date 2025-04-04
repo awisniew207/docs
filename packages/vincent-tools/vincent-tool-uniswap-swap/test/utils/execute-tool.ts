@@ -10,7 +10,6 @@ export interface ExecuteToolOptions {
     toolIpfsCid: string;
     toolParameters: any;
     delegateePrivateKey: string;
-    pkpEthAddress: string;
     litNetwork?: string;
     requestsPerKilosecond?: number;
     daysUntilUTCMidnightExpiration?: number;
