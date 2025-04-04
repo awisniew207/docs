@@ -1,9 +1,10 @@
 import path from "path";
-import { createWalletClient, http, defineChain, createPublicClient, parseEventLogs, encodeAbiParameters } from 'viem';
+import { createWalletClient, http, defineChain, createPublicClient, parseEventLogs, encodeAbiParameters, formatEther } from 'viem';
 import { privateKeyToAccount } from "viem/accounts";
 
 import { getTestConfig, saveTestConfig, TestConfig, mintNewPkp, executeTool } from "./utils";
 import VincentAppFacetAbi from './utils/vincent-contract-abis/VincentAppFacet.abi.json';
+import VincentAppViewFacetAbi from './utils/vincent-contract-abis/VincentAppViewFacet.abi.json';
 import VincentUserFacetAbi from './utils/vincent-contract-abis/VincentUserFacet.abi.json';
 import VincentUserViewFacetAbi from './utils/vincent-contract-abis/VincentUserViewFacet.abi.json';
 
@@ -23,7 +24,6 @@ describe('Uniswap Swap Tool Tests', () => {
     const YELLOWSTONE_RPC_URL = getEnv('YELLOWSTONE_RPC_URL');
     const BASE_RPC_URL = getEnv('BASE_RPC_URL');
 
-    // Define Datil chain for Viem
     const datilChain = defineChain({
         id: 175188,
         name: 'Datil Mainnet',
@@ -43,6 +43,25 @@ describe('Uniswap Swap Tool Tests', () => {
         },
     });
 
+    const baseChain = defineChain({
+        id: 8453,
+        name: 'Base Mainnet',
+        network: 'base',
+        nativeCurrency: {
+            decimals: 18,
+            name: 'Ether',
+            symbol: 'ETH',
+        },
+        rpcUrls: {
+            default: {
+                http: [BASE_RPC_URL],
+            },
+            public: {
+                http: [BASE_RPC_URL],
+            },
+        },
+    });
+
     const TEST_APP_MANAGER_PRIVATE_KEY = getEnv('TEST_APP_MANAGER_PRIVATE_KEY');
     const TEST_APP_MANAGER_VIEM_ACCOUNT = privateKeyToAccount(TEST_APP_MANAGER_PRIVATE_KEY as `0x${string}`);
     const TEST_APP_MANAGER_VIEM_WALLET_CLIENT = createWalletClient({
@@ -55,6 +74,11 @@ describe('Uniswap Swap Tool Tests', () => {
     const DATIL_PUBLIC_CLIENT = createPublicClient({
         chain: datilChain,
         transport: http(YELLOWSTONE_RPC_URL)
+    });
+
+    const BASE_PUBLIC_CLIENT = createPublicClient({
+        chain: baseChain,
+        transport: http(BASE_RPC_URL)
     });
 
     const TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY = getEnv('TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY');
@@ -133,6 +157,73 @@ describe('Uniswap Swap Tool Tests', () => {
         TEST_CONFIG = getTestConfig(TEST_CONFIG_PATH);
 
         // TODO Precheck that Agent Wallet has Base ETH and WETH
+
+        if (TEST_CONFIG.userPkp!.ethAddress === null) {
+            // The Agent Wallet PKP Owner needs to have Lit test tokens
+            // in order to mint the Agent Wallet PKP
+            const agentWalletOwnerBalance = await DATIL_PUBLIC_CLIENT.getBalance({
+                address: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
+            });
+            if (agentWalletOwnerBalance === 0n) {
+                const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
+                    to: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
+                    value: BigInt(10000000000000000) // 0.01 ETH in wei
+                });
+                const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
+                    hash: txHash,
+                });
+                console.log(`ℹ️  Funded TEST_AGENT_WALLET_PKP_OWNER with 0.01 Lit test tokens\nTx hash: ${txHash}`);
+                expect(txReceipt.status).toBe('success');
+            } else {
+                console.log(`ℹ️  TEST_AGENT_WALLET_PKP_OWNER has ${formatEther(agentWalletOwnerBalance)} Lit test tokens`)
+            }
+
+            // Mint the Agent Wallet PKP
+            const pkpInfo = await mintNewPkp(
+                TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
+                ERC20_APPROVAL_TOOL_IPFS_ID,
+                UNISWAP_SWAP_TOOL_IPFS_ID,
+                SPENDING_LIMIT_POLICY_IPFS_ID
+            );
+
+            console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
+            console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
+
+            expect(pkpInfo.tokenId).toBeDefined();
+            expect(pkpInfo.ethAddress).toBeDefined();
+            expect(pkpInfo.publicKey).toBeDefined();
+
+            TEST_CONFIG.userPkp = {
+                tokenId: pkpInfo.tokenId,
+                ethAddress: pkpInfo.ethAddress,
+                pkpPubkey: pkpInfo.publicKey
+            };
+
+            saveTestConfig(TEST_CONFIG_PATH, TEST_CONFIG);
+            console.log(`ℹ️  Saved PKP info to config file: ${TEST_CONFIG_PATH}`);
+        } else {
+            console.log(`ℹ️  Using existing PKP with token id: ${TEST_CONFIG.userPkp!.tokenId}`);
+        }
+
+        // The Agent Wallet PKP needs to have Base ETH and WETH
+        // in order to execute the ERC20 Approval and Uniswap Swap Tools
+        const agentWalletPkpBaseEthBalance = await BASE_PUBLIC_CLIENT.getBalance({
+            address: TEST_CONFIG.userPkp!.ethAddress! as `0x${string}`,
+        });
+        if (agentWalletPkpBaseEthBalance === 0n) {
+            throw new Error(`❌ Agent Wallet PKP has no Base ETH. Please fund ${TEST_CONFIG.userPkp!.ethAddress!} with Base ETH`)
+        } else {
+            console.log(`ℹ️  Agent Wallet PKP has ${formatEther(agentWalletPkpBaseEthBalance)} Base ETH`)
+        }
+
+        const agentWalletPkpBaseWethBalance = await BASE_PUBLIC_CLIENT.getBalance({
+            address: TEST_CONFIG.userPkp!.ethAddress! as `0x${string}`,
+        });
+        if (agentWalletPkpBaseWethBalance === 0n) {
+            throw new Error(`❌ Agent Wallet PKP has no Base WETH. Please fund ${TEST_CONFIG.userPkp!.ethAddress!} with Base WETH`)
+        } else {
+            console.log(`ℹ️  Agent Wallet PKP has ${formatEther(agentWalletPkpBaseWethBalance)} Base WETH`)
+        }
     });
 
     it('should remove TEST_APP_DELEGATEE_ACCOUNT from an existing App if needed', async () => {
@@ -151,7 +242,55 @@ describe('Uniswap Swap Tool Tests', () => {
             expect(txReceipt.status).toBe('success');
             console.log(`Removed Delegatee from App ID: ${TEST_CONFIG.appId}\nTx hash: ${txHash}`);
         } else {
-            console.log('ℹ️  No existing App ID found, skipping removal of delegatee');
+            console.log('🔄 No existing App ID found, checking if Delegatee is registered to an App...');
+
+            let registeredApp: {
+                id: bigint;
+                name: string;
+                description: string;
+                isDeleted: boolean;
+                deploymentStatus: number;
+                manager: `0x${string}`;
+                latestVersion: bigint;
+                delegatees: `0x${string}`[];
+                authorizedRedirectUris: string[];
+            } | null = null;
+
+            try {
+                registeredApp = await DATIL_PUBLIC_CLIENT.readContract({
+                    address: VINCENT_ADDRESS as `0x${string}`,
+                    abi: VincentAppViewFacetAbi,
+                    functionName: 'getAppByDelegatee',
+                    args: [TEST_APP_DELEGATEE_ACCOUNT.address],
+                }) as typeof registeredApp;
+
+                if (registeredApp!.manager !== TEST_APP_MANAGER_VIEM_ACCOUNT.address) {
+                    throw new Error(`❌ App Delegatee: ${TEST_APP_DELEGATEE_ACCOUNT.address} is already registered to App ID: ${registeredApp!.id.toString()}, and TEST_APP_MANAGER_PRIVATE_KEY is not the owner of the App`);
+                }
+
+                console.log(`ℹ️  App Delegatee: ${TEST_APP_DELEGATEE_ACCOUNT.address} is already registered to App ID: ${registeredApp!.id.toString()}. Removing Delegatee...`);
+
+                const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.writeContract({
+                    address: VINCENT_ADDRESS as `0x${string}`,
+                    abi: VincentAppFacetAbi,
+                    functionName: 'removeDelegatee',
+                    args: [registeredApp!.id, TEST_APP_DELEGATEE_ACCOUNT.address],
+                });
+
+                const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
+                    hash: txHash,
+                });
+
+                expect(txReceipt.status).toBe('success');
+                console.log(`ℹ️  Removed Delegatee from App ID: ${registeredApp!.id}\nTx hash: ${txHash}`);
+            } catch (error: unknown) {
+                // Check if the error is a DelegateeNotRegistered revert
+                if (error instanceof Error && error.message.includes('DelegateeNotRegistered')) {
+                    console.log(`ℹ️  App Delegatee: ${TEST_APP_DELEGATEE_ACCOUNT.address} is not registered to any App.`);
+                } else {
+                    throw new Error(`❌ Error checking if delegatee is registered: ${(error as Error).message}`);
+                }
+            }
         }
     });
 
@@ -200,54 +339,6 @@ describe('Uniswap Swap Tool Tests', () => {
         TEST_CONFIG.appVersion = "1";
         saveTestConfig(TEST_CONFIG_PATH, TEST_CONFIG);
         console.log(`Registered new App with ID: ${TEST_CONFIG.appId}\nTx hash: ${txHash}`);
-    });
-
-    it('should fund TEST_AGENT_WALLET_PKP_OWNER if they have no Lit test tokens', async () => {
-        const balance = await DATIL_PUBLIC_CLIENT.getBalance({
-            address: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
-        });
-        if (balance === 0n) {
-            const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
-                to: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
-                value: BigInt(10000000000000000) // 0.01 ETH in wei
-            });
-            const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
-                hash: txHash,
-            });
-            console.log(`Funded TEST_AGENT_WALLET_PKP_OWNER with 0.01 ETH\nTx hash: ${txHash}`);
-            expect(txReceipt.status).toBe('success');
-        } else {
-            expect(balance).toBeGreaterThan(0n);
-        }
-    });
-
-    it('should setup Agent Wallet PKP to execute App Tools', async () => {
-        if (TEST_CONFIG.userPkp!.ethAddress === null) {
-            const pkpInfo = await mintNewPkp(
-                TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
-                ERC20_APPROVAL_TOOL_IPFS_ID,
-                UNISWAP_SWAP_TOOL_IPFS_ID,
-                SPENDING_LIMIT_POLICY_IPFS_ID
-            );
-
-            console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
-            console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);
-
-            expect(pkpInfo.tokenId).toBeDefined();
-            expect(pkpInfo.ethAddress).toBeDefined();
-            expect(pkpInfo.publicKey).toBeDefined();
-
-            TEST_CONFIG.userPkp = {
-                tokenId: pkpInfo.tokenId,
-                ethAddress: pkpInfo.ethAddress,
-                pkpPubkey: pkpInfo.publicKey
-            };
-
-            saveTestConfig(TEST_CONFIG_PATH, TEST_CONFIG);
-            console.log(`ℹ️  Saved PKP info to config file: ${TEST_CONFIG_PATH}`);
-        } else {
-            console.log(`ℹ️  Using existing PKP with token id: ${TEST_CONFIG.userPkp!.tokenId}`);
-        }
     });
 
     it('should permit the App version for the Agent Wallet PKP', async () => {
@@ -397,5 +488,10 @@ describe('Uniswap Swap Tool Tests', () => {
 
         expect(parsedResponse.status).toBe("success");
         expect(parsedResponse.swapTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+
+        const swapTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+            hash: parsedResponse.swapTxHash,
+        });
+        expect(swapTxReceipt.status).toBe('success');
     })
 });

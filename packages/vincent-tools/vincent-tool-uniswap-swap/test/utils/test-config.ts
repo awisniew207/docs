@@ -13,7 +13,7 @@ export interface TestConfig {
 export const getTestConfig = (filePath: string) => {
     if (fs.existsSync(filePath)) {
         const config = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        console.log(`ℹ️  Loaded existing App ID: ${config.appId}, App Version: ${config.appVersion}, User PKP: ${JSON.stringify(config.userPkP, null, 2)}`);
+        console.log(`ℹ️  Loaded existing App ID: ${config.appId}, App Version: ${config.appVersion}, User PKP: ${JSON.stringify(config.userPkp, null, 2)}`);
         return config
     } else {
         console.log('ℹ️  No existing test config found, initializing with default values');
