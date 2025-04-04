@@ -9,6 +9,7 @@ import { parameterTypeSchema, ParameterTypeInput } from './schemas/ParameterType
 const RegisterAppRequest = z.object({
   appName: z.string(),
   appDescription: z.string(),
+  deploymentStatus: z.number().default(0), // Default to 0 if not provided
   authorizedRedirectUris: z.array(z.string()),
   delegatees: z.array(z.string().transform((val) => val as `0x${string}`)),
   toolIpfsCids: z.array(z.string()),
@@ -30,18 +31,28 @@ export async function registerApp(request: RegisterAppRequest, ctx: VincentNetwo
     publicClient,
   } = createVincentContracts(ctx);
 
+  // Structure the parameters according to the expected ABI
+  const appInfo = {
+    name: validatedRequest.appName,
+    description: validatedRequest.appDescription,
+    deploymentStatus: validatedRequest.deploymentStatus,
+    authorizedRedirectUris: validatedRequest.authorizedRedirectUris,
+    delegatees: validatedRequest.delegatees,
+  };
+
+  const versionTools = {
+    toolIpfsCids: validatedRequest.toolIpfsCids,
+    toolPolicies: validatedRequest.toolPolicies,
+    toolPolicyParameterNames: validatedRequest.toolPolicyParameterNames,
+    toolPolicyParameterTypes: validatedRequest.toolPolicyParameterTypes,
+  };
+
   const hash = await callWithAdjustedOverrides(
     vincentAppFacetContract,
     "registerApp",
     [
-      validatedRequest.appName,
-      validatedRequest.appDescription,
-      validatedRequest.authorizedRedirectUris,
-      validatedRequest.delegatees,
-      validatedRequest.toolIpfsCids,
-      validatedRequest.toolPolicies,
-      validatedRequest.toolPolicyParameterNames,
-      validatedRequest.toolPolicyParameterTypes,
+      appInfo,
+      versionTools
     ]
   );
 
