@@ -48,6 +48,8 @@ export const createVincentContracts = (
       contractData.VincentAppFacet.methods.registerNextAppVersion,
       contractData.VincentAppFacet.methods.removeAuthorizedRedirectUri,
       contractData.VincentAppFacet.methods.removeDelegatee,
+      contractData.VincentAppFacet.methods.deleteApp,
+      contractData.VincentAppFacet.methods.updateAppDeploymentStatus,
       ...contractData.VincentAppFacet.events,
       ...contractData.VincentAppFacet.errors,
     ],

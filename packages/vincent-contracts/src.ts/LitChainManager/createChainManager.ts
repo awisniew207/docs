@@ -72,6 +72,10 @@ export function createDatilChainManager(config: DatilChainManagerConfig) {
             addAuthorizedRedirectUri: bindContext(
               VincentAppFacet.addAuthorizedRedirectUri,
             ),
+            deleteApp: bindContext(VincentAppFacet.deleteApp),
+            updateAppDeploymentStatus: bindContext(
+              VincentAppFacet.updateAppDeploymentStatus,
+            ),
             addDelegatee: bindContext(VincentAppFacet.addDelegatee),
             enableAppVersion: bindContext(VincentAppFacet.enableAppVersion),
             getAppsByManager: bindContext(VincentAppViewFacet.getAppsByManager),
