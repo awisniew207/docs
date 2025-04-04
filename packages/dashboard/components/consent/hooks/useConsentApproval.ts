@@ -116,9 +116,18 @@ export const useConsentApproval = ({
 
     onStatusChange?.('Preparing to update parameters...', 'info');
 
-    // Initialize wallet and contract
     const { wallet, connectedContract } = await initializeWallet();
 
+    // Check for permitted version to ensure we use the correct version number
+    const { isPermitted, permittedVersion } = await checkAppPermissionStatus(
+      agentPKP.tokenId,
+      appId,
+      onStatusChange
+    );
+    
+    // Use the correct version number - the one that's actually permitted, not the latest
+    const versionToUse = isPermitted ? permittedVersion : Number(appInfo.latestVersion);
+    
     // Fetch existing parameters
     let existingParameters: VersionParameter[] = [];
     try {
@@ -130,7 +139,6 @@ export const useConsentApproval = ({
         appIdNum,
       );
 
-      console.log('Existing tools and policies:', toolsAndPolicies);
 
       // Transform the contract data into the VersionParameter format
       toolsAndPolicies.forEach((tool: any, toolIndex: number) => {
@@ -142,7 +150,7 @@ export const useConsentApproval = ({
               paramIndex,
               name: param.name,
               type: param.paramType,
-              value: param.value, // The decoded value will be handled by identifyParametersToRemove
+              value: param.value,
             });
           });
         });
@@ -173,13 +181,13 @@ export const useConsentApproval = ({
           const removeArgs = [
             appId,
             agentPKP.tokenId,
-            Number(appInfo.latestVersion),
+            versionToUse,
             filteredTools,
             filteredPolicies,
             filteredParams,
           ];
 
-          await sendTransaction(
+          const removeTxResponse = await sendTransaction(
             connectedContract,
             'removeToolPolicyParameters',
             removeArgs,
@@ -187,11 +195,26 @@ export const useConsentApproval = ({
             onStatusChange,
             onError
           );
+          
+          // Wait for the transaction to be mined
+          onStatusChange?.('Waiting for removal transaction to be confirmed...', 'info');
+          
+          // Try to wait for confirmation with longer timeout
+          const receipt = await Promise.race([
+            removeTxResponse.wait(1),
+          ]);
+          
+          onStatusChange?.('Parameter removal transaction confirmed!', 'success');
+          
         } catch (error) {
           console.error('Parameter removal failed:', error);
           onStatusChange?.('Failed to remove cleared parameters', 'warning');
         }
+      } else {
+        console.log('No valid removal data, skipping removal transaction');
       }
+    } else {
+      console.log('ℹ️ No parameters to remove, skipping removal step');
     }
 
     // Prepare parameter data for the contract call
@@ -217,7 +240,7 @@ export const useConsentApproval = ({
       const updateArgs = [
         agentPKP.tokenId,
         appId,
-        Number(appInfo.latestVersion),
+        versionToUse, // Use the correct version that's actually permitted
         toolIpfsCids,
         policyIpfsCids,
         policyParameterNames,
@@ -232,6 +255,15 @@ export const useConsentApproval = ({
         onStatusChange,
         onError
       );
+
+      onStatusChange?.('Waiting for update transaction to be confirmed...', 'info');
+
+      // Try to wait for confirmation with longer timeout
+      const receipt = await Promise.race([
+        txResponse.wait(1),
+      ]);
+      
+      onStatusChange?.('Parameter update transaction confirmed!', 'success');
       
       return txResponse;
     } catch (error) {
