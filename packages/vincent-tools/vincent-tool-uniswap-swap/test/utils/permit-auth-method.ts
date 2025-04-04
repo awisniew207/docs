@@ -10,7 +10,7 @@ export const permitAuthMethod = async (
     vincentErc20ApprovalToolIpfsCid: string,
     vincentUniswapSwapToolIpfsCid: string,
     vincentUniswapSwapPolicyIpfsCid: string,
-    litNetwork: string = 'datil'
+    litNetwork = 'datil'
 ) => {
     const provider = new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL);
     const pkpOwnerWallet = new ethers.Wallet(pkpOwnerPrivateKey as string, provider);

@@ -99,13 +99,13 @@ export const sendErc20ApprovalTx = async (
     };
 
     console.log(`Signing approval transaction...`);
-    const signedSpendTx = await signTx(pkpPubKey, unsignedApprovalTx, 'spendingLimitSig');
+    const signedApprovalTx = await signTx(pkpPubKey, unsignedApprovalTx, 'erc20ApprovalSig');
 
     console.log(`Broadcasting approval transaction...`);
     const approvalTxHash = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'approvalTxSender' },
         async () => {
-            const receipt = await userRpcProvider.sendTransaction(signedSpendTx);
+            const receipt = await userRpcProvider.sendTransaction(signedApprovalTx);
             return receipt.hash;
         }
     );

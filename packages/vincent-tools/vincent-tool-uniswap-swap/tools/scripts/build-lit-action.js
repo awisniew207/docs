@@ -47,7 +47,7 @@ async function buildAction(network) {
   const toolOutfile = path.resolve(
     __dirname,
     '../../dist',
-    `deployed-lit-action-tool-${network}.js`,
+    `deployed-lit-action-uniswap-swap-tool-${network}.js`,
   );
   const spendingLimitPolicyOutfile = path.resolve(
     __dirname,

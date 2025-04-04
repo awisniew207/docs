@@ -2,10 +2,11 @@
 import { ethers } from 'ethers';
 import { type Policy } from '@lit-protocol/vincent-tool';
 
-import { getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx } from './utils';
+import { getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx, validatePolicyIsPermitted } from './utils';
 
 declare global {
   // Required Inputs
+  const parentToolIpfsCid: string;
   const userRpcUrl: string;
   const vincentAppId: string;
   const vincentAppVersion: string;
@@ -27,17 +28,20 @@ declare global {
 }
 
 (async () => {
+  const yellowstoneProvider = new ethers.providers.JsonRpcProvider(
+    await Lit.Actions.getRpcUrl({
+      chain: 'yellowstone',
+    })
+  );
+
+  await validatePolicyIsPermitted(yellowstoneProvider);
+
   const {
     maxDailySpendingLimitInUsdCents,
   } = getOnChainPolicyParams(policy.parameters);
 
   console.log(`Retrieved maxDailySpendingLimitInUsdCents: ${maxDailySpendingLimitInUsdCents?.toString()}`);
 
-  const yellowstoneProvider = new ethers.providers.JsonRpcProvider(
-    await Lit.Actions.getRpcUrl({
-      chain: 'yellowstone',
-    })
-  );
   const userRpcProvider = new ethers.providers.JsonRpcProvider(userRpcUrl);
 
   const tokenAmountInUsd = await getTokenAmountInUsd(

@@ -2,7 +2,8 @@ import path from "path";
 import { createWalletClient, http, defineChain, createPublicClient, parseEventLogs, encodeAbiParameters, formatEther } from 'viem';
 import { privateKeyToAccount } from "viem/accounts";
 
-import { getTestConfig, saveTestConfig, TestConfig, mintNewPkp, executeTool } from "./utils";
+import { getTestConfig, saveTestConfig, TestConfig, mintNewPkp, executeTool, permitAuthMethod } from "./utils";
+
 import VincentAppFacetAbi from './utils/vincent-contract-abis/VincentAppFacet.abi.json';
 import VincentAppViewFacetAbi from './utils/vincent-contract-abis/VincentAppViewFacet.abi.json';
 import VincentUserFacetAbi from './utils/vincent-contract-abis/VincentUserFacet.abi.json';
@@ -156,7 +157,7 @@ describe('Uniswap Swap Tool Tests', () => {
     beforeAll(async () => {
         TEST_CONFIG = getTestConfig(TEST_CONFIG_PATH);
 
-        // TODO Precheck that Agent Wallet has Base ETH and WETH
+        // TODO Precheck that Agent Wallet has Lit test tokens
 
         if (TEST_CONFIG.userPkp!.ethAddress === null) {
             // The Agent Wallet PKP Owner needs to have Lit test tokens
@@ -224,6 +225,16 @@ describe('Uniswap Swap Tool Tests', () => {
         } else {
             console.log(`ℹ️  Agent Wallet PKP has ${formatEther(agentWalletPkpBaseWethBalance)} Base WETH`)
         }
+    });
+
+    it('should permit the ERC20 Approval Tool, Uniswap Swap Tool, and Spending Limit Policy for the Agent Wallet PKP', async () => {
+        await permitAuthMethod(
+            TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
+            TEST_CONFIG.userPkp!.tokenId!,
+            ERC20_APPROVAL_TOOL_IPFS_ID,
+            UNISWAP_SWAP_TOOL_IPFS_ID,
+            SPENDING_LIMIT_POLICY_IPFS_ID
+        );
     });
 
     it('should remove TEST_APP_DELEGATEE_ACCOUNT from an existing App if needed', async () => {
