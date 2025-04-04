@@ -5,32 +5,31 @@ import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides
 import { createVincentContracts } from '../../../ContractDataManager';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
 
-const RemoveToolApprovalsRequest = z.object({
-  toolIpfsCids: z.array(z.string()),
+const DeleteAppRequest = z.object({
+  appId: z.bigint(),
 });
 
-type RemoveToolApprovalsRequest = z.input<typeof RemoveToolApprovalsRequest>;
+type DeleteAppRequest = z.input<typeof DeleteAppRequest>;
 
 /**
- * Removes approvals for tools on the Vincent network
- * @param request The request containing an array of tool IPFS CIDs to remove approvals for
+ * Deletes an app on the Vincent network by setting its isDeleted flag to true
+ * @param request The request containing appId to delete
  * @param ctx The Vincent network context
  * @returns Object containing transaction hash, receipt, and decoded logs
  */
-export async function removeToolApprovals(
-  request: RemoveToolApprovalsRequest,
+export async function deleteApp(
+  request: DeleteAppRequest,
   ctx: VincentNetworkContext,
 ) {
-  const validatedRequest = RemoveToolApprovalsRequest.parse(request);
+  const validatedRequest = DeleteAppRequest.parse(request);
   logger.debug({ validatedRequest });
 
-  const { vincentToolFacetContract, publicClient } =
-    createVincentContracts(ctx);
+  const { vincentAppFacetContract, publicClient } = createVincentContracts(ctx);
 
   const hash = await callWithAdjustedOverrides(
-    vincentToolFacetContract,
-    'removeToolApprovals',
-    [validatedRequest.toolIpfsCids],
+    vincentAppFacetContract,
+    'deleteApp',
+    [validatedRequest.appId],
   );
 
   logger.info({ hash });

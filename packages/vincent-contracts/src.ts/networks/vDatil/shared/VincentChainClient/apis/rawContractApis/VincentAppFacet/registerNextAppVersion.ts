@@ -33,15 +33,20 @@ export async function registerNextAppVersion(request: RegisterNextAppVersionRequ
     publicClient,
   } = createVincentContracts(ctx);
 
+  // Structure the parameters according to the expected ABI
+  const versionTools = {
+    toolIpfsCids: validatedRequest.toolIpfsCids,
+    toolPolicies: validatedRequest.toolPolicies,
+    toolPolicyParameterNames: validatedRequest.toolPolicyParameterNames,
+    toolPolicyParameterTypes: validatedRequest.toolPolicyParameterTypes,
+  };
+
   const hash = await callWithAdjustedOverrides(
     vincentAppFacetContract,
     "registerNextAppVersion",
     [
       validatedRequest.appId,
-      validatedRequest.toolIpfsCids,
-      validatedRequest.toolPolicies,
-      validatedRequest.toolPolicyParameterNames,
-      validatedRequest.toolPolicyParameterTypes,
+      versionTools
     ]
   );
 

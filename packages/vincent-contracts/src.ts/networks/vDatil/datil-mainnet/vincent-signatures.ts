@@ -3,18 +3,18 @@
  * This file is auto-generated. DO NOT EDIT UNLESS YOU KNOW WHAT YOU'RE DOING.
  */
 
-export const vincentDiamondAddress = '0x87cD7840425Fe836ea5fEc2b8Dea40149042AdCe';
+export const vincentDiamondAddress = '0x78Cd1d270Ff12BA55e98BDff1f3646426E25D932';
 
 export const vincentSignatures = {
-  "VincentToolFacet": {
-    "address": "0xe56ab2e80fff45e7692a1e28c715b2515e8847ff",
+  "VincentLitActionFacet": {
+    "address": "0x317dcaf11816237da6e9dc42730fbca5c778adb8",
     "methods": {
-      "approveTools": {
+      "approveLitActions": {
         "type": "function",
-        "name": "approveTools",
+        "name": "approveLitActions",
         "inputs": [
           {
-            "name": "toolIpfsCids",
+            "name": "litActionIpfsCids",
             "type": "string[]",
             "internalType": "string[]"
           }
@@ -22,12 +22,12 @@ export const vincentSignatures = {
         "outputs": [],
         "stateMutability": "nonpayable"
       },
-      "registerTools": {
+      "removeLitActionApprovals": {
         "type": "function",
-        "name": "registerTools",
+        "name": "removeLitActionApprovals",
         "inputs": [
           {
-            "name": "toolIpfsCids",
+            "name": "litActionIpfsCids",
             "type": "string[]",
             "internalType": "string[]"
           }
@@ -35,22 +35,9 @@ export const vincentSignatures = {
         "outputs": [],
         "stateMutability": "nonpayable"
       },
-      "removeToolApprovals": {
+      "updateApprovedLitActionsManager": {
         "type": "function",
-        "name": "removeToolApprovals",
-        "inputs": [
-          {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          }
-        ],
-        "outputs": [],
-        "stateMutability": "nonpayable"
-      },
-      "updateApprovedToolsManager": {
-        "type": "function",
-        "name": "updateApprovedToolsManager",
+        "name": "updateApprovedLitActionsManager",
         "inputs": [
           {
             "name": "newManager",
@@ -65,7 +52,7 @@ export const vincentSignatures = {
     "events": [
       {
         "type": "event",
-        "name": "ApprovedToolsManagerUpdated",
+        "name": "ApprovedLitActionsManagerUpdated",
         "inputs": [
           {
             "name": "previousManager",
@@ -84,10 +71,10 @@ export const vincentSignatures = {
       },
       {
         "type": "event",
-        "name": "NewToolRegistered",
+        "name": "LitActionApprovalRemoved",
         "inputs": [
           {
-            "name": "toolIpfsCidHash",
+            "name": "litActionIpfsCidHash",
             "type": "bytes32",
             "indexed": true,
             "internalType": "bytes32"
@@ -97,10 +84,10 @@ export const vincentSignatures = {
       },
       {
         "type": "event",
-        "name": "ToolApprovalRemoved",
+        "name": "LitActionApproved",
         "inputs": [
           {
-            "name": "toolIpfsCidHash",
+            "name": "litActionIpfsCidHash",
             "type": "bytes32",
             "indexed": true,
             "internalType": "bytes32"
@@ -110,10 +97,10 @@ export const vincentSignatures = {
       },
       {
         "type": "event",
-        "name": "ToolApproved",
+        "name": "NewLitActionRegistered",
         "inputs": [
           {
-            "name": "toolIpfsCidHash",
+            "name": "litActionIpfsCidHash",
             "type": "bytes32",
             "indexed": true,
             "internalType": "bytes32"
@@ -125,17 +112,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
-        "name": "EmptyToolIpfsCid",
+        "name": "EmptyLitActionIpfsCid",
         "inputs": []
       },
       {
         "type": "error",
-        "name": "EmptyToolIpfsCidsArray",
+        "name": "EmptyLitActionIpfsCidsArray",
         "inputs": []
       },
       {
         "type": "error",
-        "name": "InvalidApprovedToolsManager",
+        "name": "InvalidApprovedLitActionsManager",
         "inputs": [
           {
             "name": "manager",
@@ -146,7 +133,51 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
-        "name": "NotApprovedToolsManager",
+        "name": "LitActionAlreadyApproved",
+        "inputs": [
+          {
+            "name": "litActionIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "LitActionAlreadyRegistered",
+        "inputs": [
+          {
+            "name": "litActionIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "LitActionNotApproved",
+        "inputs": [
+          {
+            "name": "litActionIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "LitActionNotRegistered",
+        "inputs": [
+          {
+            "name": "litActionIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NotApprovedLitActionsManager",
         "inputs": [
           {
             "name": "caller",
@@ -154,153 +185,11 @@ export const vincentSignatures = {
             "internalType": "address"
           }
         ]
-      },
-      {
-        "type": "error",
-        "name": "ToolAlreadyApproved",
-        "inputs": [
-          {
-            "name": "toolIpfsCidHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "ToolAlreadyRegistered",
-        "inputs": [
-          {
-            "name": "toolIpfsCidHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "ToolNotApproved",
-        "inputs": [
-          {
-            "name": "toolIpfsCidHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "ToolNotRegistered",
-        "inputs": [
-          {
-            "name": "toolIpfsCidHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
-      }
-    ]
-  },
-  "VincentToolViewFacet": {
-    "address": "0x9c12da5660980e33488267bb1e41e9f5beb3dfee",
-    "methods": {
-      "getAllApprovedTools": {
-        "type": "function",
-        "name": "getAllApprovedTools",
-        "inputs": [],
-        "outputs": [
-          {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          }
-        ],
-        "stateMutability": "view"
-      },
-      "getApprovedToolsManager": {
-        "type": "function",
-        "name": "getApprovedToolsManager",
-        "inputs": [],
-        "outputs": [
-          {
-            "name": "manager",
-            "type": "address",
-            "internalType": "address"
-          }
-        ],
-        "stateMutability": "view"
-      },
-      "getToolIpfsCidByHash": {
-        "type": "function",
-        "name": "getToolIpfsCidByHash",
-        "inputs": [
-          {
-            "name": "toolIpfsCidHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ],
-        "outputs": [
-          {
-            "name": "",
-            "type": "string",
-            "internalType": "string"
-          }
-        ],
-        "stateMutability": "view"
-      },
-      "isToolApproved": {
-        "type": "function",
-        "name": "isToolApproved",
-        "inputs": [
-          {
-            "name": "toolIpfsCid",
-            "type": "string",
-            "internalType": "string"
-          }
-        ],
-        "outputs": [
-          {
-            "name": "isApproved",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ],
-        "stateMutability": "view"
-      }
-    },
-    "events": [],
-    "errors": [
-      {
-        "type": "error",
-        "name": "EmptyToolIpfsCid",
-        "inputs": []
-      },
-      {
-        "type": "error",
-        "name": "NoToolsApproved",
-        "inputs": []
-      },
-      {
-        "type": "error",
-        "name": "NoToolsRegistered",
-        "inputs": []
-      },
-      {
-        "type": "error",
-        "name": "ToolHashNotFound",
-        "inputs": [
-          {
-            "name": "toolIpfsCidHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
       }
     ]
   },
   "VincentAppViewFacet": {
-    "address": "0xb208465a1de6eae8fdfd922ab738fd9ec82ba653",
+    "address": "0xf38cd856b8b6d5dfb8cb4c19b16f4cd357dca50c",
     "methods": {
       "getAppByDelegatee": {
         "type": "function",
@@ -332,6 +221,16 @@ export const vincentSignatures = {
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -388,6 +287,16 @@ export const vincentSignatures = {
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -449,6 +358,16 @@ export const vincentSignatures = {
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -566,6 +485,16 @@ export const vincentSignatures = {
                     "name": "description",
                     "type": "string",
                     "internalType": "string"
+                  },
+                  {
+                    "name": "isDeleted",
+                    "type": "bool",
+                    "internalType": "bool"
+                  },
+                  {
+                    "name": "deploymentStatus",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.DeploymentStatus"
                   },
                   {
                     "name": "manager",
@@ -706,6 +635,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -783,7 +723,7 @@ export const vincentSignatures = {
     ]
   },
   "VincentUserViewFacet": {
-    "address": "0x7e3f021e2c22afdf0e660b611113b3a7e098948c",
+    "address": "0xe9513d17f0b26350007e52181c5090de44cc2382",
     "methods": {
       "getAllPermittedAppIdsForPkp": {
         "type": "function",
@@ -997,6 +937,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -1118,8 +1069,106 @@ export const vincentSignatures = {
       }
     ]
   },
+  "VincentLitActionViewFacet": {
+    "address": "0x4464d6f15f6b98e9694da8ca8927c663896f3a8b",
+    "methods": {
+      "getAllApprovedLitActions": {
+        "type": "function",
+        "name": "getAllApprovedLitActions",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "litActionIpfsCids",
+            "type": "string[]",
+            "internalType": "string[]"
+          }
+        ],
+        "stateMutability": "view"
+      },
+      "getApprovedLitActionsManager": {
+        "type": "function",
+        "name": "getApprovedLitActionsManager",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "manager",
+            "type": "address",
+            "internalType": "address"
+          }
+        ],
+        "stateMutability": "view"
+      },
+      "getLitActionIpfsCidByHash": {
+        "type": "function",
+        "name": "getLitActionIpfsCidByHash",
+        "inputs": [
+          {
+            "name": "litActionIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "stateMutability": "view"
+      },
+      "isLitActionApproved": {
+        "type": "function",
+        "name": "isLitActionApproved",
+        "inputs": [
+          {
+            "name": "litActionIpfsCid",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "isApproved",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ],
+        "stateMutability": "view"
+      }
+    },
+    "events": [],
+    "errors": [
+      {
+        "type": "error",
+        "name": "EmptyLitActionIpfsCid",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "LitActionHashNotFound",
+        "inputs": [
+          {
+            "name": "litActionIpfsCidHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "NoLitActionsApproved",
+        "inputs": []
+      },
+      {
+        "type": "error",
+        "name": "NoLitActionsRegistered",
+        "inputs": []
+      }
+    ]
+  },
   "VincentAppFacet": {
-    "address": "0x7a65adf3ccb1c985357b96410e8524ce0c204e66",
+    "address": "0x13ff2a260be776569d45de32d0f11a0414454b88",
     "methods": {
       "addAuthorizedRedirectUri": {
         "type": "function",
@@ -1157,6 +1206,19 @@ export const vincentSignatures = {
         "outputs": [],
         "stateMutability": "nonpayable"
       },
+      "deleteApp": {
+        "type": "function",
+        "name": "deleteApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
       "enableAppVersion": {
         "type": "function",
         "name": "enableAppVersion",
@@ -1185,44 +1247,63 @@ export const vincentSignatures = {
         "name": "registerApp",
         "inputs": [
           {
-            "name": "name",
-            "type": "string",
-            "internalType": "string"
+            "name": "appInfo",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppInfo",
+            "components": [
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
+              },
+              {
+                "name": "authorizedRedirectUris",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "delegatees",
+                "type": "address[]",
+                "internalType": "address[]"
+              }
+            ]
           },
           {
-            "name": "description",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "delegatees",
-            "type": "address[]",
-            "internalType": "address[]"
-          },
-          {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolPolicies",
-            "type": "string[][]",
-            "internalType": "string[][]"
-          },
-          {
-            "name": "toolPolicyParameterNames",
-            "type": "string[][][]",
-            "internalType": "string[][][]"
-          },
-          {
-            "name": "toolPolicyParameterTypes",
-            "type": "uint8[][][]",
-            "internalType": "enum VincentAppStorage.ParameterType[][][]"
+            "name": "versionTools",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppVersionTools",
+            "components": [
+              {
+                "name": "toolIpfsCids",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "toolPolicies",
+                "type": "string[][]",
+                "internalType": "string[][]"
+              },
+              {
+                "name": "toolPolicyParameterNames",
+                "type": "string[][][]",
+                "internalType": "string[][][]"
+              },
+              {
+                "name": "toolPolicyParameterTypes",
+                "type": "uint8[][][]",
+                "internalType": "enum VincentAppStorage.ParameterType[][][]"
+              }
+            ]
           }
         ],
         "outputs": [
@@ -1249,24 +1330,31 @@ export const vincentSignatures = {
             "internalType": "uint256"
           },
           {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolPolicies",
-            "type": "string[][]",
-            "internalType": "string[][]"
-          },
-          {
-            "name": "toolPolicyParameterNames",
-            "type": "string[][][]",
-            "internalType": "string[][][]"
-          },
-          {
-            "name": "toolPolicyParameterTypes",
-            "type": "uint8[][][]",
-            "internalType": "enum VincentAppStorage.ParameterType[][][]"
+            "name": "versionTools",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppVersionTools",
+            "components": [
+              {
+                "name": "toolIpfsCids",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "toolPolicies",
+                "type": "string[][]",
+                "internalType": "string[][]"
+              },
+              {
+                "name": "toolPolicyParameterNames",
+                "type": "string[][][]",
+                "internalType": "string[][][]"
+              },
+              {
+                "name": "toolPolicyParameterTypes",
+                "type": "uint8[][][]",
+                "internalType": "enum VincentAppStorage.ParameterType[][][]"
+              }
+            ]
           }
         ],
         "outputs": [
@@ -1313,9 +1401,114 @@ export const vincentSignatures = {
         ],
         "outputs": [],
         "stateMutability": "nonpayable"
+      },
+      "updateAppDeploymentStatus": {
+        "type": "function",
+        "name": "updateAppDeploymentStatus",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "internalType": "enum VincentAppStorage.DeploymentStatus"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      "updateAppDescription": {
+        "type": "function",
+        "name": "updateAppDescription",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "newDescription",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      "updateAppName": {
+        "type": "function",
+        "name": "updateAppName",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "newName",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
       }
     },
     "events": [
+      {
+        "type": "event",
+        "name": "AppDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppDeploymentStatusUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "indexed": true,
+            "internalType": "uint8"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppDescriptionUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "newDescription",
+            "type": "string",
+            "indexed": false,
+            "internalType": "string"
+          }
+        ],
+        "anonymous": false
+      },
       {
         "type": "event",
         "name": "AppEnabled",
@@ -1337,6 +1530,25 @@ export const vincentSignatures = {
             "type": "bool",
             "indexed": true,
             "internalType": "bool"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppNameUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "newName",
+            "type": "string",
+            "indexed": false,
+            "internalType": "string"
           }
         ],
         "anonymous": false
@@ -1463,10 +1675,10 @@ export const vincentSignatures = {
       },
       {
         "type": "event",
-        "name": "NewToolRegistered",
+        "name": "NewLitActionRegistered",
         "inputs": [
           {
-            "name": "toolIpfsCidHash",
+            "name": "litActionIpfsCidHash",
             "type": "bytes32",
             "indexed": true,
             "internalType": "bytes32"
@@ -1476,6 +1688,33 @@ export const vincentSignatures = {
       }
     ],
     "errors": [
+      {
+        "type": "error",
+        "name": "AppAlreadyInRequestedDeploymentStatus",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "internalType": "uint8"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
       {
         "type": "error",
         "name": "AppNotRegistered",
@@ -1505,6 +1744,22 @@ export const vincentSignatures = {
             "name": "enabled",
             "type": "bool",
             "internalType": "bool"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionHasDelegatedAgents",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       },
@@ -1642,22 +1897,6 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
-        "name": "NoPoliciesProvidedForTool",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
         "name": "NoRedirectUrisProvided",
         "inputs": []
       },
@@ -1685,6 +1924,58 @@ export const vincentSignatures = {
             "name": "msgSender",
             "type": "address",
             "internalType": "address"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "ParameterArrayLengthMismatch",
+        "inputs": [
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policyIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramNamesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramTypesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "PolicyArrayLengthMismatch",
+        "inputs": [
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policiesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramNamesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramTypesLength",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       },
@@ -1722,8 +2013,29 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
-        "name": "ToolsAndPoliciesLengthMismatch",
-        "inputs": []
+        "name": "ToolArrayDimensionMismatch",
+        "inputs": [
+          {
+            "name": "toolsLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policiesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramNamesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramTypesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
       },
       {
         "type": "error",
@@ -1733,7 +2045,7 @@ export const vincentSignatures = {
     ]
   },
   "VincentUserFacet": {
-    "address": "0x8c5e234a071b8714fbbc6f67ba5867136edc66ec",
+    "address": "0x10ba7711ca4f7f75fe7db7945bcf82b3b605f9cd",
     "methods": {
       "permitAppVersion": {
         "type": "function",
@@ -2031,6 +2343,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -2147,6 +2470,22 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
+        "name": "NotAllRegisteredToolsProvided",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "NotPkpOwner",
         "inputs": [
           {
@@ -2163,10 +2502,62 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
+        "name": "ParameterArrayLengthMismatch",
+        "inputs": [
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policyIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramNamesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramValuesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "PkpTokenDoesNotExist",
         "inputs": [
           {
             "name": "pkpTokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "PolicyArrayLengthMismatch",
+        "inputs": [
+          {
+            "name": "toolIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "policiesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramNamesLength",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paramValuesLength",
             "type": "uint256",
             "internalType": "uint256"
           }
