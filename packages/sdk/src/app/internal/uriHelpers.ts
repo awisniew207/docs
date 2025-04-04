@@ -1,7 +1,7 @@
 import { JWT_URL_KEY, PRODUCTION_VINCENT_DASHBOARD_URL } from '../constants';
-import { decodeJWT } from '../../jwt/core/validate';
+import { verifyJWT } from '../../jwt/core/validate';
 
-export const decodeVincentJWTFromUri = (uri: string) => {
+export const decodeVincentJWTFromUri = (uri: string, expectedAudience: string) => {
   const url = new URL(uri);
   const jwt = url.searchParams.get(JWT_URL_KEY);
 
@@ -9,7 +9,7 @@ export const decodeVincentJWTFromUri = (uri: string) => {
     return null;
   }
 
-  return { decodedJWT: decodeJWT(jwt), jwtStr: jwt };
+  return { decodedJWT: verifyJWT(jwt, expectedAudience), jwtStr: jwt };
 };
 
 export const isLoginUri = (uri: string) => {

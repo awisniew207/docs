@@ -8,79 +8,201 @@ npm install @lit-protocol/vincent-sdk
 
 ## Usage
 
-### Client
+# Client (Web)
 
-In client app you would want to use the Vincent SDK to get the user consent with the application tools and policies and get a JWT they can use to interact with your backend.
+## VincentWebAppClient
+
+The Vincent Web App Client provides methods for managing user authentication, JWT tokens, and consent flows in Vincent applications.
+
+### Methods
+
+#### redirectToConsentPage()
+
+Redirects the user to the Vincent consent page to obtain authorization. Once the user has completed the vincent consent flow
+they will be redirected back to your app with a signed JWT that you can use to authenticate requests against your backend APIs 
+
+- When a JWT is expired, you need to use this method to get a new JWT
+
+#### isLoginUri()
+
+Checks if the current window location contains a Vincent login JWT. You can use this method to know that you should update login state with the newly provided JWT
+
+- Returns: Boolean indicating if the URI contains a login JWT
+
+#### decodeVincentLoginJWT(expectedAudience)
+
+Decodes a Vincent login JWT. Performs basic sanity check but does not perform full verify() logic.  You will want to run `verify()` from the jwt tools to verify the JWT is fully valid and not expired etc.
+
+- The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration
+
+- Returns: An object containing both the original JWT string and the decoded JWT object
+
+
+#### removeLoginJWTFromURI()
+
+Removes the login JWT parameter from the current URI. Call this after you have verified and stored the JWT for later usage.
+
+### Basic Usage
 
 ```typescript
-import { VincentSDK } from '@lit-protocol/vincent-sdk';
+import { getVincentWebAppClient, jwt } from '@lit-protocol/vincent-sdk';
 
-const APP_ID = 'YOUR_REGISTERED_APP_ID';
-const REDIRECT_URI = 'https://your-redirect-uri.com';
+const { isExpired } = jwt;
 
-const vincentSdk = new VincentSDK({ consentPageUrl: 'https://dashboard.heyvincent.ai' });
+const vincentAppClient = getVincentWebAppClient({ appId: MY_APP_ID });
+// ... In your app logic:
+if(vincentAppClient.isLogin()) {
+  // Handle app logic for the user has just logged in
+  const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(window.location.origin);
+  // Store `jwt` for later usage; the user is now logged in.
+} else {
+  // Handle app logic for the user is _already logged in_ (check for stored & unexpired JWT)
+  
+  const jwt = localStorage.getItem('VINCENT_AUTH_JWT');
+  if(jwt && isExpired(jwt)) {
+    // User must re-log in
+    vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
+  }
 
-// 1. Send user to Vincent consent page to get their approved delegation and fetch a JWT
-function getJWT() {
-  vincentSdk.redirectConsentPage(APP_ID, REDIRECT_URI);
-}
-
-// 2. Fetch the JWT at your redirect uri
-function getJWT() {
-  const jwt = new URLSearchParams(window.location.search).get('jwt');
-  // store the JWT somewhere until it expires
-}
-
-// 3. Use the JWT to make requests to your backend
-async function makeRequest(jwt: string) {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${jwt}`,
-  };
-
-  const response = await fetch('https://your-backend-url.com/api/data', {
-    method: 'GET',
-    headers: headers,
-  });
-
-  // Handle the response
+  if(!jwt) {
+    // Handle app logic for the user is not yet logged in
+    vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
+  }
 }
 ```
 
-### Backend
+# Backend
 
 In your backend, you will have to verify the JWT to make sure the user has granted you the required permissions to act on their behalf.
 
+## VincentToolClient
+
+The Vincent Tool Client uses an ethers signer for your delegatee account to run Vincent Tools on behalf of your app users.
+
+This client will typically be used by an AI agent or your app backend service, as it requires a signer that conforms to the ethers v5 signer API, and with access to your delegatee account's private key to authenticate with the LIT network when executing the Vincent Tool.
+
+### Configuration
+
 ```typescript
-import { VincentSDK } from '@lit-protocol/vincent-sdk';
+interface VincentToolClientConfig {
+  ethersSigner: ethers.Signer;  // An ethers v5 compatible signer
+  vincentToolCid: string;       // The CID of the Vincent Tool to execute
+}
+```
+
+### Methods
+
+#### execute(params: VincentToolParams): Promise<ExecuteJsResponse>
+
+Executes a Vincent Tool with the provided parameters.
+
+- `params`: Record<string, unknown> - Parameters to pass to the Vincent Tool
+- Returns: Promise resolving to an ExecuteJsResponse from the LIT network
+
+### Usage
+
+### Authentication
+```typescript
+import { NextFunction, Request, Response } from 'express';
+
+import { jwt } from '@lit-protocol/vincent-sdk';
+
+const { verify } = jwt;
+
+const { ALLOWED_AUDIENCE } = process.env;
+
+export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    res.status(401).json({ error: 'No token provided' });
+    return;
+  }
+
+  const parts = authHeader.split(' ');
+  if (parts.length !== 2) {
+    res.status(401).json({ error: 'Token error' });
+    return;
+  }
+
+  const [scheme, jwtStr] = parts;
+  if (!/^Bearer$/i.test(scheme)) {
+    res.status(401).json({ error: 'Token malformatted' });
+    return;
+  }
+
+  try {
+    const decodedJWT = verify(jwtStr, ALLOWED_AUDIENCE);
+    if (!decodedJWT) {
+      res.status(401).json({ error: 'Invalid token' });
+      return;
+    }
+
+    req.user = {
+      jwt: jwtStr,
+      pkp: {
+        address: decodedJWT.payload.pkpAddress,
+        publicKey: decodedJWT.payload.pkpPublicKey,
+      },
+    };
+    next();
+  } catch (e) {
+    res.status(401).json({ error: `Invalid token: ${(e as Error).message}` });
+  }
+};
+```
+
+### Tool execution
+```typescript
+import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
 
 const ALLOWED_AUDIENCE = 'YOUR_FRONTEND_URL';
 
 const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
 
-const vincentSdk = new VincentSDK();
+// Initialize the Vincent Tool Client
+const toolClient = getVincentToolClient({
+  ethersSigner: delegateeSigner,
+  vincentToolCid: 'your-vincent-tool-cid'
+});
 
-const processRequest = async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-
-  const [scheme, jwt] = authHeader.split(' ');
-  if (!vincentSdk.verifyJWT(jwt, ALLOWED_AUDIENCE)) {
-    res.status(401).json({ error: 'Invalid token' });
-    return;
-  }
-
-  const decodedJWT = vincentSdk.decodeJWT(jwt);
-
-  // You can get the user's address and public key from the decoded JWT, among other things
-  // const userAddress = decodedJWT.payload.pkpAddress,
-  // const userPublicKey = decodedJWT.payload.pkpPublicKey,
-
-  // You can now execute a tool on behalf of the user using the approved delegation (tools and policies)
-  const result = await vincentSdk.executeTool(delegateeSigner, 'YOUR_TOOL_ID', {
-    // Your tool params
-    foo: 'bar',
-  });
-};
+// Execute the Vincent Tool
+const response = await toolClient.execute({
+  // Tool-specific parameters
+  param1: 'value1',
+  param2: 'value2'
+});
 ```
+
+
+## JWT Authentication
+
+### Overview
+
+The JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Tools. JWTs are used to verify user consent and authorize tool executions.
+
+### Authentication Flow
+
+1. User initiates an action requiring Vincent Tool access
+2. Application redirects to the Vincent consent page using `VincentWebAppClient.redirectToConsentPage()`
+3. User provides consent for the requested tools/policies
+4. User is redirected back to the application with a JWT in the URL
+5. Application validates and stores the JWT using `VincentWebAppClient` methods
+6. JWT is used to authenticate with the app backend 
+
+### JWT Structure
+
+Vincent JWTs contain:
+- User account identity information (pkpAddress and pkpPublicKey)
+- Expiration timestamp
+- Signature from the Vincent authorization service
+
+### Error Handling
+
+When JWT validation fails, descriptive error messages are thrown to help with troubleshooting.
+
+### Usage Notes
+
+- JWTs have an expiration time after which they are no longer valid
+- When a JWT expires, redirect the user to the consent page to obtain a new one using the `VincentWebAppClient`
 
 

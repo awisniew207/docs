@@ -36,7 +36,8 @@ export const getVincentWebAppClient = (
       redirectToConsentPage({ appId, redirectUri });
     },
     isLogin: () => isLoginUri(window.location.href),
-    decodeVincentLoginJWT: () => decodeVincentJWTFromUri(window.location.href),
+    decodeVincentLoginJWT: (expectedAudience: string) =>
+      decodeVincentJWTFromUri(window.location.href, expectedAudience),
     removeLoginJWTFromURI: () => {
       const urlWithoutJWTSearchParam = removeSearchParam({
         paramName: JWT_URL_KEY,

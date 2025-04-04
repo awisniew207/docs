@@ -48,7 +48,7 @@ export interface VincentWebAppClient {
    *   // ... In your app logic:
    *   if(vincentAppClient.isLogin()) {
    *     // Handle app logic for the user has just logged in
-   *     const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT();
+   *     const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(EXPECTED_AUDIENCE);
    *     // Store `jwt` for later usage; the user is now logged in.
    *   } else {
    *     // Handle app logic for the user is already logged in (check for stored & unexpired JWT)
@@ -85,12 +85,15 @@ export interface VincentWebAppClient {
    *
    * See: {@link VincentWebAppClient.redirectToConsentPage} for example usage
    *
+   * @param { string } expectedAudience Provide a valid `redirectUri` for your app; this is typically your app's origin
    * @function
    * @inline
    * @returns {decodedJWT: VincentJWT; jwtStr: string | null} `null` if no JWT is found, otherwise both the decoded jwt and the original JWT string is returned
    * @throws {Error} If there was a JWT in the page URL, but it was invalid / could not be verified
    */
-  decodeVincentLoginJWT: () => { decodedJWT: VincentJWT; jwtStr: string } | null;
+  decodeVincentLoginJWT: (
+    expectedAudience: string
+  ) => { decodedJWT: VincentJWT; jwtStr: string } | null;
 
   /**
    * Removes the Vincent login JWT from the current window URI.
@@ -107,7 +110,7 @@ export interface VincentWebAppClient {
    *
    * if (vincentAppClient.isLogin()) {
    *   const { decodedJWT, jwtStr } = vincentAppClient.decodeVincentLoginJWT();
-   *   // Store the JWT or use it for authentication
+   *   // Store the JWT and use it for authentication
    *
    *   // Now we can remove the JWT from the URL searchParams
    *   vincentAppClient.removeLoginJWTFromURI();
