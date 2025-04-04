@@ -1,36 +1,40 @@
 import { z } from 'zod';
 import { logger } from '../../../../../../shared/logger';
+import { toEthAddress } from '../../../../../../shared/utils/z-transformers';
 import { VincentNetworkContext } from '../../../NetworkContextManager';
 import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides';
 import { createVincentContracts } from '../../../ContractDataManager';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
 
-const RegisterToolsRequest = z.object({
-  toolIpfsCids: z.array(z.string()),
+const UpdateApprovedLitActionsManagerRequest = z.object({
+  newManager: toEthAddress,
 });
 
-type RegisterToolsRequest = z.input<typeof RegisterToolsRequest>;
+type UpdateApprovedLitActionsManagerRequest = z.input<
+  typeof UpdateApprovedLitActionsManagerRequest
+>;
 
 /**
- * Registers tools on the Vincent network
- * @param request The request containing an array of tool IPFS CIDs to register
+ * Updates the approved tools manager on the Vincent network
+ * @param request The request containing the new manager address
  * @param ctx The Vincent network context
  * @returns Object containing transaction hash, receipt, and decoded logs
  */
-export async function registerTools(
-  request: RegisterToolsRequest,
+export async function updateApprovedLitActionsManager(
+  request: UpdateApprovedLitActionsManagerRequest,
   ctx: VincentNetworkContext,
 ) {
-  const validatedRequest = RegisterToolsRequest.parse(request);
+  const validatedRequest =
+    UpdateApprovedLitActionsManagerRequest.parse(request);
   logger.debug({ validatedRequest });
 
-  const { vincentToolFacetContract, publicClient } =
+  const { vincentLitActionFacetContract, publicClient } =
     createVincentContracts(ctx);
 
   const hash = await callWithAdjustedOverrides(
-    vincentToolFacetContract,
-    'registerTools',
-    [validatedRequest.toolIpfsCids],
+    vincentLitActionFacetContract,
+    'updateApprovedLitActionsManager',
+    [validatedRequest.newManager],
   );
 
   logger.info({ hash });

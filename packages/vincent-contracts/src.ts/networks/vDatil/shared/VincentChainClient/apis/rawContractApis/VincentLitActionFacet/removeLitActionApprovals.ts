@@ -5,32 +5,34 @@ import { callWithAdjustedOverrides } from '../../utils/callWithAdjustedOverrides
 import { createVincentContracts } from '../../../ContractDataManager';
 import { decodeVincentLogs } from '../../utils/decodeVincentLogs';
 
-const ApproveToolsRequest = z.object({
-  toolIpfsCids: z.array(z.string()),
+const RemoveLitActionApprovalsRequest = z.object({
+  litActionIpfsCids: z.array(z.string()),
 });
 
-type ApproveToolsRequest = z.input<typeof ApproveToolsRequest>;
+type RemoveLitActionApprovalsRequest = z.input<
+  typeof RemoveLitActionApprovalsRequest
+>;
 
 /**
- * Approves tools for use on the Vincent network
- * @param request The request containing an array of tool IPFS CIDs to approve
+ * Removes approvals for tools on the Vincent network
+ * @param request The request containing an array of tool IPFS CIDs to remove approvals for
  * @param ctx The Vincent network context
  * @returns Object containing transaction hash, receipt, and decoded logs
  */
-export async function approveTools(
-  request: ApproveToolsRequest,
+export async function removeLitActionApprovals(
+  request: RemoveLitActionApprovalsRequest,
   ctx: VincentNetworkContext,
 ) {
-  const validatedRequest = ApproveToolsRequest.parse(request);
+  const validatedRequest = RemoveLitActionApprovalsRequest.parse(request);
   logger.debug({ validatedRequest });
 
-  const { vincentToolFacetContract, publicClient } =
+  const { vincentLitActionFacetContract, publicClient } =
     createVincentContracts(ctx);
 
   const hash = await callWithAdjustedOverrides(
-    vincentToolFacetContract,
-    'approveTools',
-    [validatedRequest.toolIpfsCids],
+    vincentLitActionFacetContract,
+    'removeLitActionApprovals',
+    [validatedRequest.litActionIpfsCids],
   );
 
   logger.info({ hash });
