@@ -27,7 +27,10 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     try {
       let response: any;
       if (method === 'email') {
-        response = await stytchClient.otps.email.loginOrCreate(userId);
+        response = await stytchClient.otps.email.loginOrCreate(userId, {
+          expiration_minutes: 2,
+          login_template_id: 'vincent_v1',
+        });
       } else {
         response = await stytchClient.otps.sms.loginOrCreate(
           !userId.startsWith('+') ? `+${userId}` : userId
