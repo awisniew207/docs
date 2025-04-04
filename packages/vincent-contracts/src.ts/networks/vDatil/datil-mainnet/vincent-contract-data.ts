@@ -3,7 +3,7 @@
  * This file is auto-generated. DO NOT EDIT UNLESS YOU KNOW WHAT YOU'RE DOING.
  */
 
-export const vincentDiamondAddress = '0x463f798049D300566686b5623Bb6b46c24e0faA9';
+export const vincentDiamondAddress = '0x78Cd1d270Ff12BA55e98BDff1f3646426E25D932';
 
 export const vincentContractData = [
   {
@@ -217,6 +217,16 @@ export const vincentContractData = [
                 "internalType": "string"
               },
               {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
+              },
+              {
                 "name": "manager",
                 "type": "address",
                 "internalType": "address"
@@ -271,6 +281,16 @@ export const vincentContractData = [
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -332,6 +352,16 @@ export const vincentContractData = [
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -449,6 +479,16 @@ export const vincentContractData = [
                     "name": "description",
                     "type": "string",
                     "internalType": "string"
+                  },
+                  {
+                    "name": "isDeleted",
+                    "type": "bool",
+                    "internalType": "bool"
+                  },
+                  {
+                    "name": "deploymentStatus",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.DeploymentStatus"
                   },
                   {
                     "name": "manager",
@@ -583,6 +623,17 @@ export const vincentContractData = [
           }
         ],
         "stateMutability": "view"
+      },
+      {
+        "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
       },
       {
         "type": "error",
@@ -873,6 +924,17 @@ export const vincentContractData = [
       },
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -1128,6 +1190,19 @@ export const vincentContractData = [
       },
       {
         "type": "function",
+        "name": "deleteApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      {
+        "type": "function",
         "name": "enableAppVersion",
         "inputs": [
           {
@@ -1154,44 +1229,63 @@ export const vincentContractData = [
         "name": "registerApp",
         "inputs": [
           {
-            "name": "name",
-            "type": "string",
-            "internalType": "string"
+            "name": "appInfo",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppInfo",
+            "components": [
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
+              },
+              {
+                "name": "authorizedRedirectUris",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "delegatees",
+                "type": "address[]",
+                "internalType": "address[]"
+              }
+            ]
           },
           {
-            "name": "description",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "delegatees",
-            "type": "address[]",
-            "internalType": "address[]"
-          },
-          {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolPolicies",
-            "type": "string[][]",
-            "internalType": "string[][]"
-          },
-          {
-            "name": "toolPolicyParameterNames",
-            "type": "string[][][]",
-            "internalType": "string[][][]"
-          },
-          {
-            "name": "toolPolicyParameterTypes",
-            "type": "uint8[][][]",
-            "internalType": "enum VincentAppStorage.ParameterType[][][]"
+            "name": "versionTools",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppVersionTools",
+            "components": [
+              {
+                "name": "toolIpfsCids",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "toolPolicies",
+                "type": "string[][]",
+                "internalType": "string[][]"
+              },
+              {
+                "name": "toolPolicyParameterNames",
+                "type": "string[][][]",
+                "internalType": "string[][][]"
+              },
+              {
+                "name": "toolPolicyParameterTypes",
+                "type": "uint8[][][]",
+                "internalType": "enum VincentAppStorage.ParameterType[][][]"
+              }
+            ]
           }
         ],
         "outputs": [
@@ -1218,24 +1312,31 @@ export const vincentContractData = [
             "internalType": "uint256"
           },
           {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolPolicies",
-            "type": "string[][]",
-            "internalType": "string[][]"
-          },
-          {
-            "name": "toolPolicyParameterNames",
-            "type": "string[][][]",
-            "internalType": "string[][][]"
-          },
-          {
-            "name": "toolPolicyParameterTypes",
-            "type": "uint8[][][]",
-            "internalType": "enum VincentAppStorage.ParameterType[][][]"
+            "name": "versionTools",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppVersionTools",
+            "components": [
+              {
+                "name": "toolIpfsCids",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "toolPolicies",
+                "type": "string[][]",
+                "internalType": "string[][]"
+              },
+              {
+                "name": "toolPolicyParameterNames",
+                "type": "string[][][]",
+                "internalType": "string[][][]"
+              },
+              {
+                "name": "toolPolicyParameterTypes",
+                "type": "uint8[][][]",
+                "internalType": "enum VincentAppStorage.ParameterType[][][]"
+              }
+            ]
           }
         ],
         "outputs": [
@@ -1284,6 +1385,111 @@ export const vincentContractData = [
         "stateMutability": "nonpayable"
       },
       {
+        "type": "function",
+        "name": "updateAppDeploymentStatus",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "internalType": "enum VincentAppStorage.DeploymentStatus"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      {
+        "type": "function",
+        "name": "updateAppDescription",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "newDescription",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      {
+        "type": "function",
+        "name": "updateAppName",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "newName",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      {
+        "type": "event",
+        "name": "AppDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppDeploymentStatusUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "indexed": true,
+            "internalType": "uint8"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppDescriptionUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "newDescription",
+            "type": "string",
+            "indexed": false,
+            "internalType": "string"
+          }
+        ],
+        "anonymous": false
+      },
+      {
         "type": "event",
         "name": "AppEnabled",
         "inputs": [
@@ -1304,6 +1510,25 @@ export const vincentContractData = [
             "type": "bool",
             "indexed": true,
             "internalType": "bool"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppNameUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "newName",
+            "type": "string",
+            "indexed": false,
+            "internalType": "string"
           }
         ],
         "anonymous": false
@@ -1443,6 +1668,33 @@ export const vincentContractData = [
       },
       {
         "type": "error",
+        "name": "AppAlreadyInRequestedDeploymentStatus",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "internalType": "uint8"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -1470,6 +1722,22 @@ export const vincentContractData = [
             "name": "enabled",
             "type": "bool",
             "internalType": "bool"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionHasDelegatedAgents",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       },
@@ -1534,99 +1802,6 @@ export const vincentContractData = [
       },
       {
         "type": "error",
-        "name": "DuplicateParameterNameNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "policyIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "paramName",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "DuplicatePolicyIpfsCidNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "policyIpfsCid",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "DuplicateToolIpfsCidNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIpfsCid",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
         "name": "EmptyAppDescriptionNotAllowed",
         "inputs": []
       },
@@ -1685,22 +1860,6 @@ export const vincentContractData = [
       {
         "type": "error",
         "name": "EmptyToolIpfsCidNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "NoPoliciesProvidedForTool",
         "inputs": [
           {
             "name": "appId",
@@ -1855,11 +2014,6 @@ export const vincentContractData = [
             "internalType": "uint256"
           }
         ]
-      },
-      {
-        "type": "error",
-        "name": "ToolsAndPoliciesLengthMismatch",
-        "inputs": []
       },
       {
         "type": "error",
@@ -2162,6 +2316,17 @@ export const vincentContractData = [
       },
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -2240,42 +2405,6 @@ export const vincentContractData = [
           },
           {
             "name": "appVersion",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "DuplicateParameterNameNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "policyIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "paramName",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
             "type": "uint256",
             "internalType": "uint256"
           }

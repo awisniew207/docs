@@ -3,11 +3,11 @@
  * This file is auto-generated. DO NOT EDIT UNLESS YOU KNOW WHAT YOU'RE DOING.
  */
 
-export const vincentDiamondAddress = '0x463f798049D300566686b5623Bb6b46c24e0faA9';
+export const vincentDiamondAddress = '0x78Cd1d270Ff12BA55e98BDff1f3646426E25D932';
 
 export const vincentSignatures = {
   "VincentLitActionFacet": {
-    "address": "0xa813b35388a05268d8f577a767d777578593ec46",
+    "address": "0x317dcaf11816237da6e9dc42730fbca5c778adb8",
     "methods": {
       "approveLitActions": {
         "type": "function",
@@ -189,7 +189,7 @@ export const vincentSignatures = {
     ]
   },
   "VincentAppViewFacet": {
-    "address": "0x72984b6f4d5d4e737f96782d6602ff5a2a037f91",
+    "address": "0xf38cd856b8b6d5dfb8cb4c19b16f4cd357dca50c",
     "methods": {
       "getAppByDelegatee": {
         "type": "function",
@@ -221,6 +221,16 @@ export const vincentSignatures = {
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -277,6 +287,16 @@ export const vincentSignatures = {
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -338,6 +358,16 @@ export const vincentSignatures = {
                 "name": "description",
                 "type": "string",
                 "internalType": "string"
+              },
+              {
+                "name": "isDeleted",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
               },
               {
                 "name": "manager",
@@ -455,6 +485,16 @@ export const vincentSignatures = {
                     "name": "description",
                     "type": "string",
                     "internalType": "string"
+                  },
+                  {
+                    "name": "isDeleted",
+                    "type": "bool",
+                    "internalType": "bool"
+                  },
+                  {
+                    "name": "deploymentStatus",
+                    "type": "uint8",
+                    "internalType": "enum VincentAppStorage.DeploymentStatus"
                   },
                   {
                     "name": "manager",
@@ -595,6 +635,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -672,7 +723,7 @@ export const vincentSignatures = {
     ]
   },
   "VincentUserViewFacet": {
-    "address": "0x9fee9f5db65e3296401094e8144eaed07b52ec3c",
+    "address": "0xe9513d17f0b26350007e52181c5090de44cc2382",
     "methods": {
       "getAllPermittedAppIdsForPkp": {
         "type": "function",
@@ -886,6 +937,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -1008,7 +1070,7 @@ export const vincentSignatures = {
     ]
   },
   "VincentLitActionViewFacet": {
-    "address": "0x9ebcc840ecc6cde51562e81d5b4931583d0c99f6",
+    "address": "0x4464d6f15f6b98e9694da8ca8927c663896f3a8b",
     "methods": {
       "getAllApprovedLitActions": {
         "type": "function",
@@ -1106,7 +1168,7 @@ export const vincentSignatures = {
     ]
   },
   "VincentAppFacet": {
-    "address": "0x1d5f6ecabc2da760ca7e8554c222b8bc35b36701",
+    "address": "0x13ff2a260be776569d45de32d0f11a0414454b88",
     "methods": {
       "addAuthorizedRedirectUri": {
         "type": "function",
@@ -1144,6 +1206,19 @@ export const vincentSignatures = {
         "outputs": [],
         "stateMutability": "nonpayable"
       },
+      "deleteApp": {
+        "type": "function",
+        "name": "deleteApp",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
       "enableAppVersion": {
         "type": "function",
         "name": "enableAppVersion",
@@ -1172,44 +1247,63 @@ export const vincentSignatures = {
         "name": "registerApp",
         "inputs": [
           {
-            "name": "name",
-            "type": "string",
-            "internalType": "string"
+            "name": "appInfo",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppInfo",
+            "components": [
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "deploymentStatus",
+                "type": "uint8",
+                "internalType": "enum VincentAppStorage.DeploymentStatus"
+              },
+              {
+                "name": "authorizedRedirectUris",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "delegatees",
+                "type": "address[]",
+                "internalType": "address[]"
+              }
+            ]
           },
           {
-            "name": "description",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "authorizedRedirectUris",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "delegatees",
-            "type": "address[]",
-            "internalType": "address[]"
-          },
-          {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolPolicies",
-            "type": "string[][]",
-            "internalType": "string[][]"
-          },
-          {
-            "name": "toolPolicyParameterNames",
-            "type": "string[][][]",
-            "internalType": "string[][][]"
-          },
-          {
-            "name": "toolPolicyParameterTypes",
-            "type": "uint8[][][]",
-            "internalType": "enum VincentAppStorage.ParameterType[][][]"
+            "name": "versionTools",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppVersionTools",
+            "components": [
+              {
+                "name": "toolIpfsCids",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "toolPolicies",
+                "type": "string[][]",
+                "internalType": "string[][]"
+              },
+              {
+                "name": "toolPolicyParameterNames",
+                "type": "string[][][]",
+                "internalType": "string[][][]"
+              },
+              {
+                "name": "toolPolicyParameterTypes",
+                "type": "uint8[][][]",
+                "internalType": "enum VincentAppStorage.ParameterType[][][]"
+              }
+            ]
           }
         ],
         "outputs": [
@@ -1236,24 +1330,31 @@ export const vincentSignatures = {
             "internalType": "uint256"
           },
           {
-            "name": "toolIpfsCids",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "toolPolicies",
-            "type": "string[][]",
-            "internalType": "string[][]"
-          },
-          {
-            "name": "toolPolicyParameterNames",
-            "type": "string[][][]",
-            "internalType": "string[][][]"
-          },
-          {
-            "name": "toolPolicyParameterTypes",
-            "type": "uint8[][][]",
-            "internalType": "enum VincentAppStorage.ParameterType[][][]"
+            "name": "versionTools",
+            "type": "tuple",
+            "internalType": "struct VincentAppFacet.AppVersionTools",
+            "components": [
+              {
+                "name": "toolIpfsCids",
+                "type": "string[]",
+                "internalType": "string[]"
+              },
+              {
+                "name": "toolPolicies",
+                "type": "string[][]",
+                "internalType": "string[][]"
+              },
+              {
+                "name": "toolPolicyParameterNames",
+                "type": "string[][][]",
+                "internalType": "string[][][]"
+              },
+              {
+                "name": "toolPolicyParameterTypes",
+                "type": "uint8[][][]",
+                "internalType": "enum VincentAppStorage.ParameterType[][][]"
+              }
+            ]
           }
         ],
         "outputs": [
@@ -1300,9 +1401,114 @@ export const vincentSignatures = {
         ],
         "outputs": [],
         "stateMutability": "nonpayable"
+      },
+      "updateAppDeploymentStatus": {
+        "type": "function",
+        "name": "updateAppDeploymentStatus",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "internalType": "enum VincentAppStorage.DeploymentStatus"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      "updateAppDescription": {
+        "type": "function",
+        "name": "updateAppDescription",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "newDescription",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+      },
+      "updateAppName": {
+        "type": "function",
+        "name": "updateAppName",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "newName",
+            "type": "string",
+            "internalType": "string"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
       }
     },
     "events": [
+      {
+        "type": "event",
+        "name": "AppDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppDeploymentStatusUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "indexed": true,
+            "internalType": "uint8"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppDescriptionUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "newDescription",
+            "type": "string",
+            "indexed": false,
+            "internalType": "string"
+          }
+        ],
+        "anonymous": false
+      },
       {
         "type": "event",
         "name": "AppEnabled",
@@ -1324,6 +1530,25 @@ export const vincentSignatures = {
             "type": "bool",
             "indexed": true,
             "internalType": "bool"
+          }
+        ],
+        "anonymous": false
+      },
+      {
+        "type": "event",
+        "name": "AppNameUpdated",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "indexed": true,
+            "internalType": "uint256"
+          },
+          {
+            "name": "newName",
+            "type": "string",
+            "indexed": false,
+            "internalType": "string"
           }
         ],
         "anonymous": false
@@ -1465,6 +1690,33 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppAlreadyInRequestedDeploymentStatus",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deploymentStatus",
+            "type": "uint8",
+            "internalType": "uint8"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -1492,6 +1744,22 @@ export const vincentSignatures = {
             "name": "enabled",
             "type": "bool",
             "internalType": "bool"
+          }
+        ]
+      },
+      {
+        "type": "error",
+        "name": "AppVersionHasDelegatedAgents",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "appVersion",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       },
@@ -1556,99 +1824,6 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
-        "name": "DuplicateParameterNameNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "policyIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "paramName",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "DuplicatePolicyIpfsCidNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "policyIpfsCid",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "DuplicateToolIpfsCidNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIpfsCid",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
         "name": "EmptyAppDescriptionNotAllowed",
         "inputs": []
       },
@@ -1707,22 +1882,6 @@ export const vincentSignatures = {
       {
         "type": "error",
         "name": "EmptyToolIpfsCidNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "NoPoliciesProvidedForTool",
         "inputs": [
           {
             "name": "appId",
@@ -1880,18 +2039,13 @@ export const vincentSignatures = {
       },
       {
         "type": "error",
-        "name": "ToolsAndPoliciesLengthMismatch",
-        "inputs": []
-      },
-      {
-        "type": "error",
         "name": "ZeroAddressDelegateeNotAllowed",
         "inputs": []
       }
     ]
   },
   "VincentUserFacet": {
-    "address": "0x5b0d51ef015b2b90166149fd13329ecac8e96b0c",
+    "address": "0x10ba7711ca4f7f75fe7db7945bcf82b3b605f9cd",
     "methods": {
       "permitAppVersion": {
         "type": "function",
@@ -2189,6 +2343,17 @@ export const vincentSignatures = {
     "errors": [
       {
         "type": "error",
+        "name": "AppHasBeenDeleted",
+        "inputs": [
+          {
+            "name": "appId",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "type": "error",
         "name": "AppNotRegistered",
         "inputs": [
           {
@@ -2267,42 +2432,6 @@ export const vincentSignatures = {
           },
           {
             "name": "appVersion",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "type": "error",
-        "name": "DuplicateParameterNameNotAllowed",
-        "inputs": [
-          {
-            "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "toolIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "policyIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "paramName",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "firstIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "duplicateIndex",
             "type": "uint256",
             "internalType": "uint256"
           }
