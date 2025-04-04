@@ -34,7 +34,7 @@ declare global {
     })
   );
 
-  await validatePolicyIsPermitted(yellowstoneProvider);
+  await validatePolicyIsPermitted(yellowstoneProvider, userPkpInfo.tokenId, parentToolIpfsCid);
 
   const {
     maxDailySpendingLimitInUsdCents,
