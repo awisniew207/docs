@@ -26,9 +26,9 @@ describe('registerNextAppVersion', () => {
         toolIpfsCids: ['QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY'],
         toolPolicies: [['QmcLbQPohPURMuNdhYYa6wyDp9pm6eHPdHv9TRgFkPVebE']],
         toolPolicyParameterNames: [[['param1']]],
-        toolPolicyParameterTypes: [[['INT256']]], // <-- Updated different parameter type
+        toolPolicyParameterTypes: [[['INT256']]], // Updated different parameter type
       },
-      vincentNetworkContext
+      testContext.networkContext
     );
 
     console.log(res2);
@@ -37,8 +37,17 @@ describe('registerNextAppVersion', () => {
     expect(res2.receipt).toBeDefined();
     expect(res2.decodedLogs).toBeDefined();
     
-    const appId2 = res2.decodedLogs.find((log) => log.eventName === 'NewAppVersionRegistered')?.args.appId;
+    // Check events
+    const newVersionEvent = res2.decodedLogs.find(
+      (log) => log.eventName === 'NewAppVersionRegistered'
+    );
+    
+    expect(newVersionEvent).toBeDefined();
+    
+    const appId2 = newVersionEvent?.args.appId;
+    const appVersion = newVersionEvent?.args.appVersion;
 
     console.log("App ID: ", appId2);
+    console.log("App Version: ", appVersion);
   });
 }); 
