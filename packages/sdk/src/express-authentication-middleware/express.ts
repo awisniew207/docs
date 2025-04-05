@@ -109,7 +109,6 @@ export const authenticatedRequestHandler =
  */
 export const getAuthenticateUserExpressHandler =
   (allowedAudience: string) => async (req: Request, res: Response, next: NextFunction) => {
-    console.log('checking allowedAudience', allowedAudience);
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       res.status(401).json({ error: 'No token provided' });
@@ -129,8 +128,6 @@ export const getAuthenticateUserExpressHandler =
     }
 
     try {
-      console.log('Verifying JWT', allowedAudience);
-
       const decodedJWT = verify(rawJWT, allowedAudience);
       if (!decodedJWT) {
         res.status(401).json({ error: 'Invalid token' });
@@ -143,8 +140,6 @@ export const getAuthenticateUserExpressHandler =
         pkpAddress: decodedJWT.payload.pkpAddress,
       };
 
-      // @ts-expect-error duh.
-      console.log('Set req.user to', JSON.stringify(req.user));
       next();
     } catch (e) {
       res.status(401).json({ error: `Invalid token: ${(e as Error).message}` });
