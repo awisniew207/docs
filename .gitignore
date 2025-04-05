@@ -57,3 +57,4 @@ packages/examples
 !.env.example
 
 screenshots
+.env
