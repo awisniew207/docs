@@ -1,7 +1,7 @@
 /** expressAuthHelpers are used to add a VincentJWT-specific authentication to your Express.js server routes
  *
  * - Create an express middleware using {@link getAuthenticateUserExpressHandler}
- * - Once you have addd the middleware to your route, use {@link authenticatedRequestHandler} to provide
+ * - Once you have added the middleware to your route, use {@link authenticatedRequestHandler} to provide
  * type-safe access to `req.user` in your downstream RequestHandler functions.
  * @example
  * ```typescript
