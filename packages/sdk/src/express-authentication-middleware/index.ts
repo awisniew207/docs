@@ -30,6 +30,10 @@
  * app.get('/profile', authenticateUser, authenticatedRequestHandler(getUserProfile));
  * ```
  *
+ * You can see the source for `getAuthenticateUserExpressHandler()` below; use this as a reference to implement
+ * your own midddleware/authentication for other frameworks! Pull requests are welcome.
+ *
+ * {@includeCode ./express.ts#expressHandlerTSDocExample}
  *
  * @module expressAuthHelpers
  * @category Vincent SDK API

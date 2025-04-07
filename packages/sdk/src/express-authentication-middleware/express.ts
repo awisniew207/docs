@@ -106,7 +106,11 @@ export const authenticatedRequestHandler =
  * // Apply to routes that require authentication by using authenticatedRequestHandler
  * app.get('/protected-resource', authenticateUser, authenticatedRequestHandler(getProtectedResource));
  * ```
+ * You can see the source for `getAuthenticateUserExpressHandler()` below; use this as a reference to implement
+ * your own midddleware/authentication for other frameworks! Pull requests are welcome.
+ * {@includeCode ./express.ts#expressHandlerTSDocExample}
  */
+// #region expressHandlerTSDocExample
 export const getAuthenticateUserExpressHandler =
   (allowedAudience: string) => async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -145,3 +149,4 @@ export const getAuthenticateUserExpressHandler =
       res.status(401).json({ error: `Invalid token: ${(e as Error).message}` });
     }
   };
+// #endregion expressHandlerTSDocExample
