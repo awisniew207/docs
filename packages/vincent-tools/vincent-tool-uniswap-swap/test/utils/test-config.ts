@@ -10,6 +10,14 @@ export interface TestConfig {
     } | undefined;
 }
 
+export const getEnv = (key: string) => {
+    const value = process.env[key];
+    if (!value) {
+        throw new Error(`Environment variable ${key} is not set`);
+    }
+    return value;
+};
+
 export const getTestConfig = (filePath: string) => {
     if (fs.existsSync(filePath)) {
         const config = JSON.parse(fs.readFileSync(filePath, 'utf8'));

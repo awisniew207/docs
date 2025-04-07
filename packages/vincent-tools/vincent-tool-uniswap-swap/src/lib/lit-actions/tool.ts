@@ -29,60 +29,75 @@ declare global {
 }
 
 (async () => {
-  console.log(`Using Lit Network: ${LIT_NETWORK}`);
+  try {
+    console.log(`Using Lit Network: ${LIT_NETWORK}`);
 
-  const networkConfig = NETWORK_CONFIG[LIT_NETWORK as keyof typeof NETWORK_CONFIG];
-  console.log(
-    `Using Vincent Contract Address: ${networkConfig.vincentAddress}`
-  );
-  console.log(
-    `Using Pubkey Router Address: ${networkConfig.pubkeyRouterAddress}`
-  );
+    const networkConfig = NETWORK_CONFIG[LIT_NETWORK as keyof typeof NETWORK_CONFIG];
+    console.log(
+      `Using Vincent Contract Address: ${networkConfig.vincentAddress}`
+    );
+    console.log(
+      `Using Pubkey Router Address: ${networkConfig.pubkeyRouterAddress}`
+    );
 
-  const delegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
-  const toolIpfsCid = LitAuth.actionIpfsIds[0];
-  const userRpcProvider = new ethers.providers.JsonRpcProvider(toolParams.rpcUrl);
-  const yellowstoneRpcProvider = new ethers.providers.JsonRpcProvider(
-    await Lit.Actions.getRpcUrl({
-      chain: 'yellowstone',
-    })
-  );
+    const delegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
+    const toolIpfsCid = LitAuth.actionIpfsIds[0];
+    const userRpcProvider = new ethers.providers.JsonRpcProvider(toolParams.rpcUrl);
+    const yellowstoneRpcProvider = new ethers.providers.JsonRpcProvider(
+      await Lit.Actions.getRpcUrl({
+        chain: 'yellowstone',
+      })
+    );
 
-  const pkpInfo = await getPkpInfo(networkConfig.pubkeyRouterAddress, yellowstoneRpcProvider, toolParams.pkpEthAddress);
-  console.log(`Retrieved PKP info for PKP ETH Address: ${toolParams.pkpEthAddress}: ${JSON.stringify(pkpInfo)}`);
+    const pkpInfo = await getPkpInfo(networkConfig.pubkeyRouterAddress, yellowstoneRpcProvider, toolParams.pkpEthAddress);
+    console.log(`Retrieved PKP info for PKP ETH Address: ${toolParams.pkpEthAddress}: ${JSON.stringify(pkpInfo)}`);
 
-  const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
-  const tokenOutInfo = await getErc20Info(userRpcProvider, toolParams.tokenOut);
+    const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
+    const tokenOutInfo = await getErc20Info(userRpcProvider, toolParams.tokenOut);
 
-  await validateUserToolPolicies(
-    yellowstoneRpcProvider,
-    toolParams.rpcUrl,
-    delegateeAddress,
-    pkpInfo,
-    toolIpfsCid,
-    {
-      ...toolParams,
-      tokenInDecimals: tokenInInfo.decimals.toString(),
-      tokenOutDecimals: tokenOutInfo.decimals.toString(),
+    const { status, error } = await validateUserToolPolicies(
+      yellowstoneRpcProvider,
+      toolParams.rpcUrl,
+      delegateeAddress,
+      pkpInfo,
+      toolIpfsCid,
+      {
+        ...toolParams,
+        tokenInDecimals: tokenInInfo.decimals.toString(),
+        tokenOutDecimals: tokenOutInfo.decimals.toString(),
+      }
+    );
+
+    if (status === 'error') {
+      throw new Error(error ?? 'Unknown error');
     }
-  );
 
-  const swapTxHash = await sendUniswapTx(
-    userRpcProvider,
-    toolParams.chainId,
-    toolParams.tokenIn,
-    toolParams.tokenOut,
-    toolParams.amountIn,
-    tokenInInfo.decimals.toString(),
-    tokenOutInfo.decimals.toString(),
-    toolParams.pkpEthAddress,
-    pkpInfo.publicKey,
-  );
+    const swapTxHash = await sendUniswapTx(
+      userRpcProvider,
+      toolParams.chainId,
+      toolParams.tokenIn,
+      toolParams.tokenOut,
+      toolParams.amountIn,
+      tokenInInfo.decimals.toString(),
+      tokenOutInfo.decimals.toString(),
+      toolParams.pkpEthAddress,
+      pkpInfo.publicKey,
+    );
 
-  Lit.Actions.setResponse({
-    response: JSON.stringify({
-      status: 'success',
-      swapTxHash,
-    }),
-  });
+    Lit.Actions.setResponse({
+      response: JSON.stringify({
+        status: 'success',
+        swapTxHash,
+      }),
+    });
+  } catch (error: unknown) {
+    console.error('Error:', error);
+
+    Lit.Actions.setResponse({
+      response: JSON.stringify({
+        status: 'error',
+        error: (error as Error).message || String(error)
+      }),
+    });
+  }
 })();
