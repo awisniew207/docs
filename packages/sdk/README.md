@@ -99,40 +99,6 @@ Executes a Vincent Tool with the provided parameters.
 - `params`: Record<string, unknown> - Parameters to pass to the Vincent Tool
 - Returns: Promise resolving to an ExecuteJsResponse from the LIT network
 
-### Usage
-
-### Authentication
-A basic Express authentication middleware factory function is provided with the SDK.
-- Create an express middleware using `getAuthenticateUserExpressHandler()`
-- Once you have added the middleware to your route, use `authenticatedRequestHandler()` to provide
-  type-safe access to `req.user` in your downstream RequestHandler functions.
-- When defining your authenticated routes, use the `ExpressAuthHelpers` type to type your functions and function arguments.
-
-```typescript
-import { expressAuthHelpers } from '@lit-protocol/vincent-sdk';
-const { authenticatedRequestHandler, getAuthenticateUserExpressHandler } = expressAuthHelpers;
-
-import type { ExpressAuthHelpers } from '@lit-protocol/vincent-sdk';
-
-const { ALLOWED_AUDIENCE } = process.env;
-
-
-const authenticateUserMiddleware = getAuthenticateUserExpressHandler(ALLOWED_AUDIENCE);
-
-
-// Define an authenticated route handler
-const getUserProfile = async (req: ExpressAuthHelpers['AuthenticatedRequest'], res: Response) => {
-  // Access authenticated user information
-  const { pkpAddress } = req.user;
-
-  // Fetch and return user data
-  const userData = await userRepository.findByAddress(pkpAddress);
-  res.json(userData);
-};
-
-// Use in Express route with authentication
-app.get('/profile', authenticateUser, authenticatedRequestHandler(getUserProfile));
-```
 
 ### Tool execution
 ```typescript
@@ -156,6 +122,43 @@ const response = await toolClient.execute({
 });
 ```
 
+
+
+### Usage
+
+### Authentication
+A basic Express authentication middleware factory function is provided with the SDK.
+- Create an express middleware using `getAuthenticateUserExpressHandler()`
+- Once you have added the middleware to your route, use `authenticatedRequestHandler()` to provide
+  type-safe access to `req.user` in your downstream RequestHandler functions.
+- When defining your authenticated routes, use the `ExpressAuthHelpers` type to type your functions and function arguments.
+
+See getAuthenticateUserExpressHandler() documentation to see the source for the express authentication route handler
+
+```typescript
+import { expressAuthHelpers } from '@lit-protocol/vincent-sdk';
+const { authenticatedRequestHandler, getAuthenticateUserExpressHandler } = expressAuthHelpers;
+
+import type { ExpressAuthHelpers } from '@lit-protocol/vincent-sdk';
+
+const { ALLOWED_AUDIENCE } = process.env;
+
+
+const authenticateUserMiddleware = getAuthenticateUserExpressHandler(ALLOWED_AUDIENCE);
+
+// Define an authenticated route handler
+const getUserProfile = async (req: ExpressAuthHelpers['AuthenticatedRequest'], res: Response) => {
+  // Access authenticated user information
+  const { pkpAddress } = req.user;
+
+  // Fetch and return user data
+  const userData = await userRepository.findByAddress(pkpAddress);
+  res.json(userData);
+};
+
+// Use in Express route with authentication
+app.get('/profile', authenticateUser, authenticatedRequestHandler(getUserProfile));
+```
 
 ## JWT Authentication
 

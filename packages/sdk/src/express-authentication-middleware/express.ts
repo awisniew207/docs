@@ -41,6 +41,7 @@ function assertAuthenticatedRequest(req: Request): asserts req is AuthenticatedR
  * NOTE: This does not verify signatures or any other content -- use `getAuthenticateUserExpressHandler` to create a
  * middleware that does those things and ensure that your routes use it.
  *
+ * See [express.js documentation](https://expressjs.com/en/guide/writing-middleware.html) for details on writing your route handler
  * @example
  * ```typescript
  * import { expressAuthHelpers } from '@lit-protocol/vincent-sdk';
@@ -82,6 +83,8 @@ export const authenticatedRequestHandler =
  * NOTE: Wrap your route handler functions with `authenticatedRequestHandler()` to assert the type of `Request` and to
  * ensure that `req.user` was correctly set before your route handler is run.
  *
+ * See [express.js documentation](https://expressjs.com/en/guide/writing-middleware.html) for details on writing your route handler
+ *
  * @example
  * ```typescript
  * import { expressAuthHelpers } from '@lit-protocol/vincent-sdk';
@@ -106,6 +109,7 @@ export const authenticatedRequestHandler =
  * // Apply to routes that require authentication by using authenticatedRequestHandler
  * app.get('/protected-resource', authenticateUser, authenticatedRequestHandler(getProtectedResource));
  * ```
+ *
  * You can see the source for `getAuthenticateUserExpressHandler()` below; use this as a reference to implement
  * your own midddleware/authentication for other frameworks! Pull requests are welcome.
  * {@includeCode ./express.ts#expressHandlerTSDocExample}

@@ -9,7 +9,9 @@ type ExtractRequestHandlerParams<T> =
     ? [P, ResBody, ReqBody, ReqQuery, Locals]
     : never;
 
-/** A RequestHandler that guarantees the request is authenticated with a PKP address */
+/**
+ * A RequestHandler that guarantees the request is authenticated with a PKP address
+ * */
 export type AuthenticatedRequestHandler<
   P = ExtractRequestHandlerParams<RequestHandler>[0],
   ResBody = ExtractRequestHandlerParams<RequestHandler>[1],
@@ -22,7 +24,8 @@ export type AuthenticatedRequestHandler<
   next: NextFunction
 ) => void | Promise<void>;
 
-/** Interface that extends Express Request to include authenticated user data */
+/** Interface that extends Express Request to include authenticated user data
+ * */
 export interface AuthenticatedRequest<P = any, ResBody = any, ReqBody = any, ReqQuery = any>
   extends Request<P, ResBody, ReqBody, ReqQuery> {
   user: {
