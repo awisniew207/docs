@@ -4,10 +4,25 @@
   "sourceRoot": "packages/sdk/src",
   "projectType": "library",
   "targets": {
+    "publish-typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typedoc",
+          "mkdir ./sdk-docs/.vercel",
+          "printf '{\"projectId\": \"%s\", \"orgId\": \"%s\"}\\n' \"$SDK_DOCS_VERCEL_PROJECT_ID\" \"$SDK_DOCS_VERCEL_ORG_ID\" > ./sdk-docs/.vercel/project.json\n",
+          "pnpm dotenvx run -- vercel --prod --cwd=./sdk-docs",
+          "rm -Rf ./sdk-docs"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
     "typedoc": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm typedoc --watch", "node ./typedocServer.mjs"],
+        "commands": ["pnpm typedoc --watch", "node ./scripts/typedocServer.mjs"],
         "cwd": "{projectRoot}",
         "tty": true
       }

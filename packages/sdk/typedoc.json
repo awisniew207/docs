@@ -3,9 +3,9 @@
   "entryPoints": [
     "./src/index.ts"
   ],
-  "out": "../../sdk-docs",
+  "out": "./sdk-docs",
   "skipErrorChecking": true,
-  "plugin": ["typedoc-material-theme"],
+  "plugin": ["typedoc-github-theme"],
   "navigation": {
     "includeCategories": true
   },
@@ -14,6 +14,7 @@
   "categoryOrder": ["Vincent SDK API", "Vincent Web App",  "Vincent Tools"],
   "router": "category",
   "visibilityFilters": { },
+  "includeVersion": true,
   "externalSymbolLinkMappings": {
     "@lit-protocol/types" : {
       "*": "https://v7-api-doc-lit-js-sdk.vercel.app/modules/types_src.html"

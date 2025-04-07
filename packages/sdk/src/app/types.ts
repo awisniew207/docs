@@ -58,7 +58,6 @@ export interface VincentWebAppClient {
    *    vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
    *   }
    * ```
-   * See {@link RedirectToVincentConsentPageParams}
    * @function
    * @inline
    */
