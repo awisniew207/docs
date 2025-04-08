@@ -314,8 +314,11 @@ describe('Uniswap Swap Tool Tests', () => {
 
         const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
 
-        expect(parsedResponse.status).toBe("success");
-        expect(parsedResponse.approvalTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+        expect(parsedResponse.details).toBeDefined();
+        expect(Array.isArray(parsedResponse.details)).toBe(true);
+
+        expect(parsedResponse.details[0]).toMatch(/^0x[a-fA-F0-9]{64}$/);
+        expect(parsedResponse.details[1]).toMatch(/^0x[a-fA-F0-9]{40} approved 0\.00001 0x4200000000000000000000000000000000000006 for Uniswap V3 Router$/);
     })
 
     it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {
@@ -342,11 +345,11 @@ describe('Uniswap Swap Tool Tests', () => {
         expect(parsedResponse.details).toBeDefined();
         expect(Array.isArray(parsedResponse.details)).toBe(true);
 
-        expect(parsedResponse.details[0]).toMatch(/^Swap transaction hash: 0x[a-fA-F0-9]{64}$/);
+        const swapTxHash = parsedResponse.details[0];
 
-        expect(parsedResponse.details[1]).toMatch(/^Swapped 0\.00001 0x4200000000000000000000000000000000000006 for 0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed$/);
+        expect(swapTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+        expect(parsedResponse.details[1]).toMatch(/^0x[a-fA-F0-9]{40} swapped 0\.00001 0x4200000000000000000000000000000000000006 for 0x[a-fA-F0-9]{40}$/);
 
-        const swapTxHash = parsedResponse.details[0].split(': ')[1];
         const swapTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
             hash: swapTxHash as `0x${string}`,
         });

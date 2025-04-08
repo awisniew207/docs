@@ -1,11 +1,11 @@
-import { getUserToolPolicies } from '@lit-protocol/vincent-tool';
+import { getUserToolPolicies, type VincentToolPolicyResponse } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
 
 export const validatePolicyIsPermitted = async (
     yellowstoneRpcProvider: ethers.providers.JsonRpcProvider,
     userPkpTokenId: string,
     parentToolIpfsCid: string,
-) => {
+): Promise<VincentToolPolicyResponse> => {
     console.log(`Spending Limit Policy is being executed by parent Lit Action tool: ${parentToolIpfsCid}`);
 
     const delegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);

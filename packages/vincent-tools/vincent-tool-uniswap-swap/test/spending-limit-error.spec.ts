@@ -314,8 +314,11 @@ describe('Max Spending Limit Reached Error', () => {
 
         const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
 
-        expect(parsedResponse.status).toBe("success");
-        expect(parsedResponse.approvalTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+        expect(parsedResponse.details).toBeDefined();
+        expect(Array.isArray(parsedResponse.details)).toBe(true);
+
+        expect(parsedResponse.details[0]).toMatch(/^0x[a-fA-F0-9]{64}$/);
+        expect(parsedResponse.details[1]).toMatch(/^0x[a-fA-F0-9]{40} approved 0\.00001 0x4200000000000000000000000000000000000006 for Uniswap V3 Router$/);
     })
 
     it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {

@@ -37,8 +37,7 @@ declare global {
   );
 
   const policyValidationResult = await validatePolicyIsPermitted(yellowstoneProvider, userPkpInfo.tokenId, parentToolIpfsCid);
-
-  if (!policyValidationResult.allow) {
+  if ('allow' in policyValidationResult && !policyValidationResult.allow) {
     Lit.Actions.setResponse({
       response: JSON.stringify(policyValidationResult),
     });
@@ -48,7 +47,6 @@ declare global {
   policySuccessDetails.push(...policyValidationResult.details);
 
   const onChainPolicyParamsResult = getOnChainPolicyParams(policy.parameters);
-
   if ('allow' in onChainPolicyParamsResult && !onChainPolicyParamsResult.allow) {
     Lit.Actions.setResponse({
       response: JSON.stringify(onChainPolicyParamsResult),
@@ -63,13 +61,22 @@ declare global {
 
     const userRpcProvider = new ethers.providers.JsonRpcProvider(userRpcUrl);
 
-    const tokenAmountInUsd = await getTokenAmountInUsd(
+    const tokenAmountInUsdResponse = await getTokenAmountInUsd(
       userRpcProvider,
       toolParams.chainId,
       toolParams.amountIn,
       toolParams.tokenIn,
       toolParams.tokenInDecimals
     )
+
+    if ('status' in tokenAmountInUsdResponse && tokenAmountInUsdResponse.status === 'error') {
+      Lit.Actions.setResponse({
+        response: JSON.stringify(tokenAmountInUsdResponse),
+      });
+      return;
+    }
+
+    const { amountInUsd: tokenAmountInUsd } = tokenAmountInUsdResponse as { amountInUsd: ethers.BigNumber };
 
     // maxDailySpendingLimitInUsdCents has 2 decimal precision, but tokenAmountInUsd has 8,
     // so we multiply by 10^6 to match the precision
@@ -99,6 +106,13 @@ declare global {
             `Attempting to spend ${tokenAmountInUsd.toString()} USD for App ID: ${vincentAppId} when the max daily spending limit is ${adjustedMaxDailySpendingLimit.toString()} USD`
           ]
         }),
+      });
+      return;
+    }
+
+    if ('status' in spendTxResponse && spendTxResponse.status === 'error') {
+      Lit.Actions.setResponse({
+        response: JSON.stringify(spendTxResponse),
       });
       return;
     }

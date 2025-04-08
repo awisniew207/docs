@@ -77,7 +77,7 @@ declare global {
       return;
     }
 
-    const swapTxHash = await sendUniswapTx(
+    const swapTxResponse = await sendUniswapTx(
       userRpcProvider,
       toolParams.chainId,
       toolParams.tokenIn,
@@ -89,12 +89,18 @@ declare global {
       pkpInfo.publicKey,
     );
 
+    if ('status' in swapTxResponse && swapTxResponse.status === 'error') {
+      Lit.Actions.setResponse({
+        response: JSON.stringify(swapTxResponse),
+      });
+    }
+
     Lit.Actions.setResponse({
       response: JSON.stringify({
         status: 'success',
         details: [
-          `Swap transaction hash: ${swapTxHash}`,
-          `Swapped ${toolParams.amountIn} ${toolParams.tokenIn} for ${toolParams.tokenOut}`,
+          swapTxResponse.details[0],
+          `${pkpInfo.ethAddress} swapped ${toolParams.amountIn} ${toolParams.tokenIn} for ${toolParams.tokenOut}`,
         ],
       }),
     });

@@ -1,6 +1,43 @@
 import { ethers } from 'ethers';
+import type { VincentToolPolicyError, VincentToolPolicyResponse, VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { getAddressesByChainId, signTx } from '.';
+import { type AddressesByChainIdResponse, getAddressesByChainId, signTx } from '.';
+
+interface EstimateGasResponse {
+    estimatedGas: ethers.BigNumber;
+    maxFeePerGas: ethers.BigNumber;
+    maxPriorityFeePerGas: ethers.BigNumber;
+}
+
+const tryParseSpendLimitExceededError = (spendingLimitContract: ethers.Contract, error: unknown): VincentToolPolicyError | unknown => {
+    console.log(`Got error when trying to estimate gas for spending limit transaction:`, error);
+    console.log('Attempting to parse error with Ethers to get revert reason...');
+
+    const errorData = (error as any).error?.error?.data;
+    if (!errorData) {
+        throw error;
+    }
+
+    const ethersParsedError = spendingLimitContract.interface.parseError(errorData);
+    if (ethersParsedError.name === 'SpendLimitExceeded') {
+        const [user, appId, amount, limit] = ethersParsedError.args;
+        console.log('Spending limit exceeded:', {
+            user,
+            appId: appId.toString(),
+            amount: amount.toString(),
+            limit: limit.toString()
+        });
+
+        return {
+            allow: false,
+            details: [
+                'Spending limit exceeded',
+            ]
+        };
+    }
+
+    throw error;
+}
 
 const estimateGas = async (
     spendingLimitContract: ethers.Contract,
@@ -9,7 +46,7 @@ const estimateGas = async (
     maxSpendingLimitInUsdCents: ethers.BigNumber,
     spendingLimitDuration: ethers.BigNumber,
     pkpEthAddress: string,
-) => {
+): Promise<EstimateGasResponse | VincentToolPolicyError> => {
     console.log(`Making gas estimation call...`);
     try {
         let estimatedGas = await spendingLimitContract.estimateGas.spend(
@@ -39,38 +76,7 @@ const estimateGas = async (
             maxPriorityFeePerGas,
         };
     } catch (error: unknown) {
-        try {
-            console.log(`Got error when trying to estimate gas for spending limit transaction:`, error);
-            console.log('Attempting to parse error with Ethers to get revert reason...');
-
-            const errorData = (error as any).error?.error?.data;
-            if (!errorData) {
-                throw error;
-            }
-
-            const ethersParsedError = spendingLimitContract.interface.parseError(errorData);
-            if (ethersParsedError.name === 'SpendLimitExceeded') {
-                const [user, appId, amount, limit] = ethersParsedError.args;
-                console.log('Spending limit exceeded:', {
-                    user,
-                    appId: appId.toString(),
-                    amount: amount.toString(),
-                    limit: limit.toString()
-                });
-
-                return {
-                    allow: false,
-                    details: [
-                        'Spending limit exceeded',
-                    ]
-                };
-            }
-        } catch (parseError) {
-            // If we can't parse the error, just throw the original error
-            throw error;
-        }
-
-        throw error;
+        return tryParseSpendLimitExceededError(spendingLimitContract, error) as VincentToolPolicyError;
     }
 }
 
@@ -82,27 +88,31 @@ export const sendSpendTx = async (
     spendingLimitDuration: ethers.BigNumber,
     pkpEthAddress: string,
     pkpPubKey: string,
-) => {
-    const { SPENDING_LIMIT_ADDRESS } = getAddressesByChainId('175188'); // Yellowstone
+): Promise<VincentToolResponse | VincentToolPolicyResponse> => {
+    const addressByChainIdResponse = getAddressesByChainId('175188'); // Yellowstone
+
+    if ('status' in addressByChainIdResponse && addressByChainIdResponse.status === 'error') {
+        return addressByChainIdResponse;
+    }
+
+    const { SPENDING_LIMIT_ADDRESS } = addressByChainIdResponse as AddressesByChainIdResponse;
+    const SPENDING_LIMIT_ABI = [
+        `function checkLimit(address user, uint256 appId, uint256 amountToSpend, uint256 userMaxSpendLimit, uint256 duration) view returns (bool)`,
+        `function spend(uint256 appId, uint256 amount, uint256 userMaxSpendLimit, uint256 duration)`,
+        `error SpendLimitExceeded(address user, uint256 appId, uint256 amount, uint256 limit)`,
+        `error ZeroAppIdNotAllowed(address user)`,
+        `error ZeroDurationQuery(address user)`
+    ];
+    const spendingLimitContract = new ethers.Contract(
+        SPENDING_LIMIT_ADDRESS!,
+        SPENDING_LIMIT_ABI,
+        yellowstoneProvider
+    );
 
     const buildPartialSpendTxResponse = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send spend tx gas estimation' },
         async () => {
-            const SPENDING_LIMIT_ABI = [
-                `function checkLimit(address user, uint256 appId, uint256 amountToSpend, uint256 userMaxSpendLimit, uint256 duration) view returns (bool)`,
-                `function spend(uint256 appId, uint256 amount, uint256 userMaxSpendLimit, uint256 duration)`,
-                `error SpendLimitExceeded(address user, uint256 appId, uint256 amount, uint256 limit)`,
-                `error ZeroAppIdNotAllowed(address user)`,
-                `error ZeroDurationQuery(address user)`
-            ];
-
             console.log(`Preparing transaction to send to Spending Limit Contract: ${SPENDING_LIMIT_ADDRESS}`);
-
-            const spendingLimitContract = new ethers.Contract(
-                SPENDING_LIMIT_ADDRESS!,
-                SPENDING_LIMIT_ABI,
-                yellowstoneProvider
-            );
 
             console.log(`Estimating gas for spending limit transaction...`);
             const estimatedGasResponse = await estimateGas(
@@ -118,7 +128,7 @@ export const sendSpendTx = async (
                 return JSON.stringify(estimatedGasResponse);
             }
 
-            const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = estimatedGasResponse;
+            const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = estimatedGasResponse as EstimateGasResponse;
 
             console.log(`Encoding transaction data...`);
             const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
@@ -142,7 +152,6 @@ export const sendSpendTx = async (
     );
 
     const parsedPartialSpendTxResponse = JSON.parse(buildPartialSpendTxResponse);
-
     if ('allow' in parsedPartialSpendTxResponse && !parsedPartialSpendTxResponse.allow) {
         return parsedPartialSpendTxResponse;
     }
@@ -175,27 +184,19 @@ export const sendSpendTx = async (
                     ]
                 });
             } catch (error: unknown) {
-                if (error instanceof Error) {
-                    if (error.message.includes('SpendLimitExceeded')) {
-                        console.log('Spending limit exceeded');
-                        return JSON.stringify({
-                            allow: false,
-                            details: [
-                                'Spending limit exceeded',
-                            ]
-                        });
-                    } else {
-                        throw error;
-                    }
-                } else {
-                    throw error;
-                }
+                return tryParseSpendLimitExceededError(spendingLimitContract, error);
             }
         }
     );
     console.log(`Spend transaction response: ${spendTxResponse}`);
 
-    const parsedSpendTxResponse = JSON.parse(spendTxResponse as string);
+    let parsedSpendTxResponse;
+    try {
+        parsedSpendTxResponse = JSON.parse(spendTxResponse as string);
+    } catch (error) {
+        throw new Error('Invalid spend transaction response, failed to parse as JSON:', spendTxResponse);
+    }
+
     if (parsedSpendTxResponse.status === 'success') {
         return {
             status: 'success',
@@ -209,6 +210,6 @@ export const sendSpendTx = async (
             details: parsedSpendTxResponse.details
         };
     } else {
-        throw new Error(`Invalid spend transaction response: ${spendTxResponse}`);
+        throw new Error('Invalid spend transaction response:', spendTxResponse);
     }
 }

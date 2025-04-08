@@ -1,8 +1,8 @@
 /* eslint-disable */
-import { type PolicyParameter } from '@lit-protocol/vincent-tool';
+import type { VincentToolPolicyError, PolicyParameter } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
 
-export const getOnChainPolicyParams = (parameters: PolicyParameter[]): { allow: boolean, details: string[] } | { maxDailySpendingLimitInUsdCents?: ethers.BigNumber } => {
+export const getOnChainPolicyParams = (parameters: PolicyParameter[]): VincentToolPolicyError | { maxDailySpendingLimitInUsdCents?: ethers.BigNumber } => {
     let maxDailySpendingLimitInUsdCents: ethers.BigNumber | undefined;
 
     for (const parameter of parameters) {
