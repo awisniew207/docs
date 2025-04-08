@@ -1,5 +1,4 @@
 /* eslint-disable */
-// @ts-nocheck
 import { NETWORK_CONFIG, validateUserToolPolicies, getPkpInfo } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
 
@@ -95,7 +94,7 @@ declare global {
         status: 'success',
         details: [
           `Swap transaction hash: ${swapTxHash}`,
-          `Swapped ${toolParams.amountIn} ${toolParams.tokenIn} for ${swapTxHash} ${toolParams.tokenOut}`,
+          `Swapped ${toolParams.amountIn} ${toolParams.tokenIn} for ${toolParams.tokenOut}`,
         ],
       }),
     });
@@ -105,7 +104,7 @@ declare global {
     Lit.Actions.setResponse({
       response: JSON.stringify({
         status: 'error',
-        error: (error as Error).message || JSON.stringify(error)
+        details: [(error as Error).message || JSON.stringify(error)]
       }),
     });
   }
