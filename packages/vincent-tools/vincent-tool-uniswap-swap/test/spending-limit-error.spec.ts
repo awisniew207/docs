@@ -338,7 +338,12 @@ describe('Max Spending Limit Reached Error', () => {
         const parsedResponse = JSON.parse(uniswapSwapExecutionResult.response as string);
 
         expect(parsedResponse.status).toBe("error");
-        expect(parsedResponse.error).toBeDefined();
-        expect(parsedResponse.error).toContain("Spent limit exceeded");
+
+        expect(parsedResponse.details).toBeDefined();
+        expect(Array.isArray(parsedResponse.details)).toBe(true);
+
+        expect(parsedResponse.details[0]).toBe("Spending limit exceeded");
+        expect(parsedResponse.details[1]).toContain("Attempting to spend");
+        expect(parsedResponse.details[1]).toContain("when the max daily spending limit is 100000000 USD");
     })
 });

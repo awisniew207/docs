@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-nocheck
 import { NETWORK_CONFIG, validateUserToolPolicies, getPkpInfo } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
 
@@ -55,7 +56,7 @@ declare global {
     const tokenInInfo = await getErc20Info(userRpcProvider, toolParams.tokenIn);
     const tokenOutInfo = await getErc20Info(userRpcProvider, toolParams.tokenOut);
 
-    const { status, error } = await validateUserToolPolicies(
+    const response = await validateUserToolPolicies(
       yellowstoneRpcProvider,
       toolParams.rpcUrl,
       delegateeAddress,
@@ -67,9 +68,14 @@ declare global {
         tokenOutDecimals: tokenOutInfo.decimals.toString(),
       }
     );
+    console.log(`validateUserToolPolicies response: ${JSON.stringify(response)}`);
 
-    if (status === 'error') {
-      throw new Error(error ?? 'Unknown error');
+    if (response.status === 'error') {
+      Lit.Actions.setResponse({
+        response: JSON.stringify(response),
+      });
+
+      return;
     }
 
     const swapTxHash = await sendUniswapTx(
@@ -87,7 +93,10 @@ declare global {
     Lit.Actions.setResponse({
       response: JSON.stringify({
         status: 'success',
-        swapTxHash,
+        details: [
+          `Swap transaction hash: ${swapTxHash}`,
+          `Swapped ${toolParams.amountIn} ${toolParams.tokenIn} for ${swapTxHash} ${toolParams.tokenOut}`,
+        ],
       }),
     });
   } catch (error: unknown) {
@@ -96,7 +105,7 @@ declare global {
     Lit.Actions.setResponse({
       response: JSON.stringify({
         status: 'error',
-        error: (error as Error).message || String(error)
+        error: (error as Error).message || JSON.stringify(error)
       }),
     });
   }

@@ -17,25 +17,31 @@ export const validateUserToolPolicies = async (
     if (!isPermitted) {
         return {
             status: 'error',
-            error: `Delegatee: ${delegateeAddress} is not permitted to execute App ID: ${appId} App Version: ${appVersion} for PKP: ${userPkpInfo.tokenId}`,
+            details: [
+                `Delegatee: ${delegateeAddress} is not permitted to execute App ID: ${appId} App Version: ${appVersion} for PKP: ${userPkpInfo.tokenId}`,
+            ]
         }
     }
 
     if (policies.length === 0) {
         console.log(
-            `No policies found for App ID: ${appId} App Version: ${appVersion} tool ${toolIpfsCid} on PKP ${userPkpInfo.tokenId} for delegatee ${delegateeAddress}, skipping policy execution...`
+            `No policies found for App ID: ${appId} App Version: ${appVersion} tool ${toolIpfsCid} on PKP ${userPkpInfo.tokenId} for delegatee ${delegateeAddress}, skipping policy execution`
         );
         return {
             status: 'success',
-            error: null,
+            details: [
+                `No policies found for App ID: ${appId} App Version: ${appVersion} tool ${toolIpfsCid} on PKP ${userPkpInfo.tokenId} for delegatee ${delegateeAddress}, skipping policy execution`
+            ]
         }
     }
 
+    const policySuccessDetails = [];
     for (const policy of policies) {
         console.log(`Executing Policy child Lit Action: ${policy.policyIpfsCid} with parameters: ${JSON.stringify(policy.parameters, null, 2)}`);
+        policySuccessDetails.push(`Executing Policy child Lit Action: ${policy.policyIpfsCid} with parameters: ${JSON.stringify(policy.parameters, null, 2)}`);
 
         try {
-            await Lit.Actions.call({
+            const response = await Lit.Actions.call({
                 ipfsId: policy.policyIpfsCid,
                 params: {
                     parentToolIpfsCid: toolIpfsCid,
@@ -47,18 +53,34 @@ export const validateUserToolPolicies = async (
                     policy,
                 },
             });
+
+            console.log(`Policy ${policy.policyIpfsCid} executed successfully with response: ${response}`);
+
+            const parsedResponse = JSON.parse(response as unknown as string) as { allow: boolean, details: string[] };
+
+            if (!parsedResponse.allow) {
+                return {
+                    status: 'error',
+                    details: parsedResponse.details
+                }
+            }
+
+            policySuccessDetails.push(`Policy ${policy.policyIpfsCid} executed successfully with response: ${response}`);
         } catch (error) {
             console.error(`Error executing policy: ${policy.policyIpfsCid} with parameters: ${JSON.stringify(policy.parameters)}`, error);
 
             return {
                 status: 'error',
-                error: (error as Error).message || String(error)
+                error: (error as Error).message || JSON.stringify(error)
             }
         }
     }
 
+    console.log(`All policies executed successfully for App ID: ${appId} App Version: ${appVersion} tool ${toolIpfsCid} on PKP ${userPkpInfo.tokenId} for delegatee ${delegateeAddress}`);
+    policySuccessDetails.push(`All policies executed successfully for App ID: ${appId} App Version: ${appVersion} tool ${toolIpfsCid} on PKP ${userPkpInfo.tokenId} for delegatee ${delegateeAddress}`);
+
     return {
         status: 'success',
-        error: null,
+        details: policySuccessDetails
     }
 };
