@@ -41,4 +41,44 @@ export interface PolicyWithParameters {
 export interface ToolWithPolicies {
   toolIpfsCid: string;
   policies: PolicyWithParameters[];
-} 
+}
+
+/**
+ * Represents a BigNumber in hex format
+ */
+interface BigNumberHex {
+  type: "BigNumber";
+  hex: string;
+}
+
+/**
+ * Structure returned by getAppVersion from the VincentAppViewFacet contract
+ * Based on the ABI structure - getAppVersion returns {app, appVersion}
+ */
+export interface VersionInfo {
+  app: {
+    id: BigNumberHex;
+    name: string;
+    description: string;
+    isDeleted: boolean;
+    deploymentStatus: number;
+    manager: string;
+    latestVersion: BigNumberHex;
+    delegatees: any[];
+    authorizedRedirectUris: string[];
+  };
+  appVersion: {
+    version: BigNumberHex;
+    enabled: boolean;
+    delegatedAgentPkpTokenIds: any[];
+    tools: {
+      toolIpfsCid: string;
+      policies: {
+        policyIpfsCid: string;
+        parameterNames: string[];
+        parameterTypes: number[];
+      }[];
+    }[];
+  };
+}
+

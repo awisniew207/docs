@@ -151,8 +151,8 @@ export default function AuthenticatedConsentForm({
 
   // Use the consent approval hook
   const { approveConsent, updateParameters } = useConsentApproval({
-    appId,
-    appInfo,
+    appId: appId!,
+    appInfo: appInfo!,
     versionInfo,
     parameters,
     agentPKP,

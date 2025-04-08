@@ -77,7 +77,7 @@ const AppInfo = ({
             <strong>IPFS CIDs:</strong>
             <div style={{ marginTop: '8px' }}>
               {(() => {
-                const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+                const toolsData = versionInfo.appVersion.tools;
 
                 if (!toolsData || !Array.isArray(toolsData) || toolsData.length === 0) {
                   return <p style={{ fontStyle: 'italic' }}>No tools configured</p>;

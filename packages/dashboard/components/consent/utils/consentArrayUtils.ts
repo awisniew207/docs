@@ -1,4 +1,4 @@
-import { VersionParameter } from '../types';
+import { VersionParameter, VersionInfo } from '../types';
 import { isEmptyParameterValue, decodeParameterValue } from './parameterDecoding';
 import { encodeParameterValue } from '../../../utils/parameterEncoding';
 
@@ -8,7 +8,7 @@ import { encodeParameterValue } from '../../../utils/parameterEncoding';
  */
 export const prepareParameterRemovalData = (
   parametersToRemove: VersionParameter[],
-  versionInfo: any
+  versionInfo: VersionInfo
 ) => {
   const removalToolIpfsCids: string[] = [];
   const removalPolicyIpfsCids: string[][] = [];
@@ -26,9 +26,9 @@ export const prepareParameterRemovalData = (
 
     // Set the tool IPFS CID if not already set
     if (!removalToolIpfsCids[toolIndex] && versionInfo) {
-      const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
-      if (toolsData && toolsData[toolIndex] && toolsData[toolIndex][0]) {
-        removalToolIpfsCids[toolIndex] = toolsData[toolIndex][0];
+      const toolsData = versionInfo.appVersion.tools;
+      if (toolsData && toolsData[toolIndex]) {
+        removalToolIpfsCids[toolIndex] = toolsData[toolIndex].toolIpfsCid;
       }
     }
 
@@ -40,16 +40,15 @@ export const prepareParameterRemovalData = (
 
     // Set the policy IPFS CID
     if (!removalPolicyIpfsCids[toolIndex][policyIndex] && versionInfo) {
-      const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+      const toolsData = versionInfo.appVersion.tools;
       if (
         toolsData &&
         toolsData[toolIndex] &&
-        toolsData[toolIndex][1] &&
-        toolsData[toolIndex][1][policyIndex] &&
-        toolsData[toolIndex][1][policyIndex][0]
+        toolsData[toolIndex].policies &&
+        toolsData[toolIndex].policies[policyIndex]
       ) {
         removalPolicyIpfsCids[toolIndex][policyIndex] =
-          toolsData[toolIndex][1][policyIndex][0];
+          toolsData[toolIndex].policies[policyIndex].policyIpfsCid;
       }
     }
 
@@ -110,7 +109,7 @@ export const prepareParameterRemovalData = (
  */
 export const prepareParameterUpdateData = (
   parameters: VersionParameter[],
-  versionInfo: any
+  versionInfo: VersionInfo
 ) => {
   const toolIpfsCids: string[] = [];
   const policyIpfsCids: string[][] = [];
@@ -127,34 +126,34 @@ export const prepareParameterUpdateData = (
     };
   }
 
-  const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+  const toolsData = versionInfo.appVersion.tools;
 
   if (toolsData && Array.isArray(toolsData)) {
-    toolsData.forEach((tool: any, toolIndex: number) => {
-      if (!tool || !Array.isArray(tool)) return;
+    toolsData.forEach((tool, toolIndex) => {
+      if (!tool) return;
 
-      const toolIpfsCid = tool[0];
+      const toolIpfsCid = tool.toolIpfsCid;
       if (toolIpfsCid) {
         toolIpfsCids[toolIndex] = toolIpfsCid;
         policyIpfsCids[toolIndex] = [];
         policyParameterNames[toolIndex] = [];
         policyParameterValues[toolIndex] = [];
 
-        const policies = tool[1];
+        const policies = tool.policies;
         if (Array.isArray(policies)) {
-          policies.forEach((policy: any, policyIndex: number) => {
-            if (!policy || !Array.isArray(policy)) return;
+          policies.forEach((policy, policyIndex) => {
+            if (!policy) return;
 
-            const policyIpfsCid = policy[0];
+            const policyIpfsCid = policy.policyIpfsCid;
             policyIpfsCids[toolIndex][policyIndex] = policyIpfsCid;
             policyParameterNames[toolIndex][policyIndex] = [];
             policyParameterValues[toolIndex][policyIndex] = [];
 
-            const paramNames = policy[1];
+            const paramNames = policy.parameterNames;
 
             if (Array.isArray(paramNames)) {
               // Filter parameters that have user-provided values
-              paramNames.forEach((name: any, paramIndex: number) => {
+              paramNames.forEach((name, paramIndex) => {
                 // Find matching parameter value from user input
                 const param = parameters.find(
                   (p) =>
@@ -262,8 +261,8 @@ export const identifyParametersToRemove = (
  * @returns Formatted arrays for contract call (toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes)
  */
 export const prepareVersionPermitData = (
-  versionInfo: any,
-  parameters: any[]
+  versionInfo: VersionInfo,
+  parameters: VersionParameter[]
 ) => {
   const toolIpfsCids: string[] = [];
   const toolPolicies: string[][] = [];
@@ -271,13 +270,13 @@ export const prepareVersionPermitData = (
   const toolPolicyParameterTypes: number[][][] = [];
 
   if (versionInfo) {
-    const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+    const toolsData = versionInfo.appVersion.tools;
 
     if (toolsData && Array.isArray(toolsData)) {
-      toolsData.forEach((tool: any, toolIndex: number) => {
-        if (!tool || !Array.isArray(tool)) return;
+      toolsData.forEach((tool, toolIndex) => {
+        if (!tool) return;
 
-        const toolIpfsCid = tool[0];
+        const toolIpfsCid = tool.toolIpfsCid;
         if (toolIpfsCid) {
           toolIpfsCids[toolIndex] = toolIpfsCid;
         }
@@ -286,18 +285,18 @@ export const prepareVersionPermitData = (
         toolPolicyParameterNames[toolIndex] = [];
         toolPolicyParameterTypes[toolIndex] = [];
 
-        const policies = tool[1];
+        const policies = tool.policies;
         if (Array.isArray(policies)) {
-          policies.forEach((policy: any, policyIndex: number) => {
-            if (!policy || !Array.isArray(policy)) return;
+          policies.forEach((policy, policyIndex) => {
+            if (!policy) return;
 
-            toolPolicies[toolIndex][policyIndex] = policy[0];
+            toolPolicies[toolIndex][policyIndex] = policy.policyIpfsCid;
             toolPolicyParameterNames[toolIndex][policyIndex] = [];
             toolPolicyParameterTypes[toolIndex][policyIndex] = [];
 
             // Extract the actual parameter names and types from the policy
-            const paramNames = policy[1];
-            const paramTypes = policy[2];
+            const paramNames = policy.parameterNames;
+            const paramTypes = policy.parameterTypes;
 
             if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
               // Use the actual parameter names from the version info

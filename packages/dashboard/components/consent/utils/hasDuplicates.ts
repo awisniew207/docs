@@ -1,7 +1,9 @@
-export const checkForDuplicates = (versionInfo: any) => {
+import { VersionInfo } from "../types";
+
+export const checkForDuplicates = (versionInfo: VersionInfo) => {
     if (!versionInfo) return { hasDuplicates: false };
     
-    const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
+    const toolsData = versionInfo.appVersion.tools;
     if (!toolsData || !Array.isArray(toolsData) || toolsData.length === 0) {
       return { hasDuplicates: false };
     }
