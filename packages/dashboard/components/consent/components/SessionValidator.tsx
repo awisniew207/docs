@@ -19,25 +19,20 @@ interface AuthInfo {
 }
 
 /**
- * A streamlined SessionValidator component that validates session signatures on mount
+ * Hook to retrieve authentication info from localStorage
+ * @returns The authentication info stored in localStorage, or null if not found
  */
-const SessionValidator: React.FC = () => {
-  const [showConsentForm, setShowConsentForm] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
+const useAuthInfo = (): AuthInfo | null => {
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
-  const [hasCheckedSession, setHasCheckedSession] = useState(false);
 
-  // Check for auth info on mount
   useEffect(() => {
     try {
       const storedAuthInfo = localStorage.getItem('lit-auth-info');
       if (storedAuthInfo) {
-        const parsedAuthInfo = JSON.parse(storedAuthInfo);
+        const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
         setAuthInfo(parsedAuthInfo);
-        console.log('Retrieved auth info:', parsedAuthInfo);
 
-        // If we have auth info with a PKP, show the popup
+        // If we have auth info with a PKP, log it
         if (parsedAuthInfo.agentPKP) {
           console.log(
             'Found existing PKP in auth info, will check session validity'
@@ -49,14 +44,25 @@ const SessionValidator: React.FC = () => {
     }
   }, []);
 
+  return authInfo;
+};
+
+/**
+ * A streamlined SessionValidator component that validates session signatures on mount
+ */
+const SessionValidator: React.FC = () => {
+  const [showConsentForm, setShowConsentForm] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
+  const authInfo = useAuthInfo();
+  const [hasCheckedSession, setHasCheckedSession] = useState(false);
+
   // Validate session once we have auth info
   useEffect(() => {
     // Skip if we've already checked the session or don't have auth info
     if (hasCheckedSession || !authInfo || !authInfo.agentPKP) return;
 
     const validateSession = async () => {
-      try {
-        // Try to get a wallet signature using the session capability object
         try {
           // Check if lit-wallet-sig exists in localStorage first
           const litWalletSig = localStorage.getItem('lit-wallet-sig');
@@ -94,11 +100,6 @@ const SessionValidator: React.FC = () => {
             nonce: Date.now().toString(),
           });
 
-          if (!walletSig) {
-            setHasCheckedSession(true);
-            return;
-          }
-
           if (walletSig) {
             await litNodeClient.connect();
             const attemptedSessionSigs = await litNodeClient.getSessionSigs({
@@ -120,7 +121,6 @@ const SessionValidator: React.FC = () => {
 
             // Store session sigs in state for later use
             setSessionSigs(attemptedSessionSigs);
-            console.log('Session sigs:', attemptedSessionSigs);
 
             if(!attemptedSessionSigs) {
               setHasCheckedSession(true);
@@ -140,10 +140,7 @@ const SessionValidator: React.FC = () => {
               setShowPopup(true);
             }
           }
-        } catch (walletSigError) {
-          console.error('Error generating wallet signature:', walletSigError);
-        }
-      } catch (error) {
+        } catch (error) {
         console.error('Error validating session:', error);
       } finally {
         setHasCheckedSession(true);
