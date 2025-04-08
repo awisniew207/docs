@@ -17,9 +17,6 @@ export const getAddressesByChainId = (chainId: string): AddressesByChainIdRespon
 
     switch (chainId) {
         case '1': // Ethereum Mainnet
-            UNISWAP_V3_QUOTER = '0x61fFE014bA17989E743c5F6cB21bF9697530B21e';
-            UNISWAP_V3_ROUTER = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45';
-            WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
             /**
              * Source: https://docs.chain.link/data-feeds/price-feeds/addresses/?network=ethereum&page=1&search=ETH%2FUSD
              */
@@ -29,11 +26,6 @@ export const getAddressesByChainId = (chainId: string): AddressesByChainIdRespon
             UNISWAP_V3_QUOTER = '0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a';
             UNISWAP_V3_ROUTER = '0x2626664c2603336E57B271c5C0b26F421741e481';
             WETH_ADDRESS = '0x4200000000000000000000000000000000000006';
-            break;
-        case '42161': // Arbitrum
-            UNISWAP_V3_QUOTER = '0x61fFE014bA17989E743c5F6cB21bF9697530B21e';
-            UNISWAP_V3_ROUTER = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45';
-            WETH_ADDRESS = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
             break;
         case '175188': // Yellowstone
             SPENDING_LIMIT_ADDRESS = '0x756fA449De893446B26e10C6C66E62ccabeE908C';
