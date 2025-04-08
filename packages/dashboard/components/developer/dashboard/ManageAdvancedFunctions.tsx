@@ -220,9 +220,6 @@ export default function ManageAdvancedFunctionsScreen({
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
       
-      // Enable or disable the selected version
-      console.log(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}`);
-      
       // Create args array for gas estimation
       const args = [
         dashboard.appId,

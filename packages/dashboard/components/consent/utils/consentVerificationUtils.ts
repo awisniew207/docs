@@ -19,7 +19,6 @@ export const checkAppPermissionStatus = async (
   }
 
   statusCallback?.('Checking if app version is already permitted...', 'info');
-  console.log('CHECKING IF APP VERSION IS ALREADY PERMITTED...');
   
   try {
     const userViewContract = getUserViewRegistryContract();
@@ -30,28 +29,23 @@ export const checkAppPermissionStatus = async (
       (id: ethers.BigNumber) => id.toNumber() === appIdNum,
     );
 
-    if (isAppPermitted) {
-      try {
-        const currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
-          agentPKPTokenId,
-          appIdNum,
-        );
-
-        const versionNumber = currentPermittedVersion.toNumber();
-        console.log(`FOUND PERMITTED VERSION: v${versionNumber}`);
-        
-        return { 
-          isPermitted: true, 
-          permittedVersion: versionNumber 
-        };
-      } catch (e) {
-        console.error('Error checking permitted version:', e);
-        return { isPermitted: true, permittedVersion: null };
-      }
-    } else {
-      console.log('No currently permitted version found for this app');
+    if (!isAppPermitted) {
       return { isPermitted: false, permittedVersion: null };
     }
+    
+    let currentPermittedVersion;
+    try {
+      currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
+        agentPKPTokenId,
+        appIdNum,
+      );
+    } catch (versionError) {
+      console.error('Error checking permitted version:', versionError);
+      return { isPermitted: true, permittedVersion: null };
+    }
+
+    const versionNumber = currentPermittedVersion.toNumber();
+    return { isPermitted: true, permittedVersion: versionNumber };
   } catch (e) {
     console.error('Error checking for permitted apps:', e);
     return { isPermitted: false, permittedVersion: null };
@@ -79,7 +73,6 @@ export const verifyPermissionGrant = async (
 
   try {
     statusCallback?.('Verifying permission grant...', 'info');
-    console.log('VERIFYING PERMIT: Checking if new version was properly registered...');
     
     const userViewContract = getUserViewRegistryContract();
     const verifiedVersion = await userViewContract.getPermittedAppVersionForPkp(
@@ -88,7 +81,6 @@ export const verifyPermissionGrant = async (
     );
 
     const verifiedVersionNum = verifiedVersion.toNumber();
-    console.log(`VERIFICATION RESULT: Current permitted version is now ${verifiedVersionNum}`);
 
     if (verifiedVersionNum !== expectedVersion) {
       console.error(
@@ -97,7 +89,6 @@ export const verifyPermissionGrant = async (
       statusCallback?.('Version verification failed - unexpected version number', 'warning');
       return verifiedVersionNum;
     } else {
-      console.log('PERMIT SUCCESS: Version was successfully updated');
       return verifiedVersionNum;
     }
   } catch (verifyError) {

@@ -39,7 +39,6 @@ export default function WebAuthn({
           authenticatedAt: new Date().toISOString(),
         };
         
-        console.log('Storing basic WebAuthn information in localStorage:', authInfo);
         localStorage.setItem('lit-auth-info', JSON.stringify(authInfo));
       } catch (storageError) {
         console.error('Error storing WebAuthn info in localStorage:', storageError);

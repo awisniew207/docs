@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import '@/utils/disableLogsInProduction';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import { SharedProviders } from '../layout';

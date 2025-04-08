@@ -234,14 +234,12 @@ export const identifyParametersToRemove = (
 
       // If no matching parameter in form, remove it
       if (!formParam) {
-        console.log(`Parameter ${existingParam.name} not found in form, will be removed`);
         parametersToRemove.push(existingParam);
       }
       // If parameter exists but is empty/default, remove if existing value is not empty
       else if (isEmptyParameterValue(formParam.value, formParam.type)) {
         // Only remove if the existing value wasn't also empty/zero
         if (!isEmptyParameterValue(existingParam.value, existingParam.type)) {
-          console.log(`Parameter ${existingParam.name} will be removed: value changed to empty`);
           parametersToRemove.push(existingParam);
         }
       }

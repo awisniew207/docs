@@ -116,8 +116,8 @@ export default function DelegateeManagerScreen({
                 const tx = await contracts.addDelegatee(dashboard.appId, newAddress);
                 
                 showStatus("Waiting for confirmation...", "info");
-                const receipt = await tx.wait();
-                console.log("Transaction confirmed:", receipt);
+                await tx.wait(1);
+                showStatus("Transaction confirmed!", "success");
                 
                 setDelegatees((prev) => [...prev, newAddress]);
                 setShowKeyDialog(false);
@@ -171,7 +171,6 @@ export default function DelegateeManagerScreen({
                 
                 try {
                     const appData = await contracts.getAppById(dashboard.appId);
-                    console.log("App data fetched:", appData);
                     
                     if (!appData || !appData.id) {
                         showErrorWithStatus(`App ID ${dashboard.appId} not found or not accessible`, "App Not Found");
@@ -184,17 +183,13 @@ export default function DelegateeManagerScreen({
                     setIsAdding(false);
                     return;
                 }
-                
-                console.log("Adding delegatee to app ID:", dashboard.appId);
-                console.log("Delegatee address:", manualAddress);
-                
+
                 showStatus("Sending transaction...", "info");
                 const tx = await contracts.addDelegatee(dashboard.appId, manualAddress);
-                console.log("Transaction sent:", tx.hash);
                 
                 showStatus("Waiting for confirmation...", "info");
-                const receipt = await tx.wait();
-                console.log("Transaction confirmed:", receipt);
+                await tx.wait(1);
+                showStatus("Transaction confirmed!", "success");
                 
                 setDelegatees((prev) => [...prev, manualAddress]);
                 setShowAddDialog(false);

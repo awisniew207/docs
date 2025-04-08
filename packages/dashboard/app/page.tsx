@@ -44,8 +44,6 @@ export default function Developer() {
                 if (error instanceof Error && 
                     (error.message.includes("NoAppsFoundForManager") || 
                      error.message.includes("call revert exception"))) {
-                    // This is expected when the user hasn't created any apps yet
-                    console.log("No apps found for this address");
                     setHasApp(false);
                     setApp(null);
                 } else {

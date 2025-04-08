@@ -37,7 +37,6 @@ export const sendTransaction = async (
       }
     );
 
-    console.log(`TRANSACTION SENT (${methodName}):`, txResponse.hash);
     statusCallback?.(
       `Transaction submitted! Hash: ${txResponse.hash.substring(0, 10)}...`,
       'info'
@@ -137,7 +136,6 @@ export const addPermittedActions = async (
     return;
   }
 
-  console.log(`Adding permitted actions for ${toolIpfsCids.length} tools`);
   statusCallback?.(
     `Adding permissions for ${toolIpfsCids.length} action(s)...`,
     'info'
@@ -195,7 +193,6 @@ export const addPermittedActions = async (
         pkpTokenId: agentPKPTokenId,
         authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
       });
-      console.log(`Added permission for ${ipfsCid} - Transaction hash: ${tx}`);
     } catch (error) {
       console.error(
         `Error adding permitted action for IPFS CID ${ipfsCid}:`,

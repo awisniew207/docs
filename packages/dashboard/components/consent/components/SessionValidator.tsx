@@ -31,13 +31,6 @@ const useAuthInfo = (): AuthInfo | null => {
       if (storedAuthInfo) {
         const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
         setAuthInfo(parsedAuthInfo);
-
-        // If we have auth info with a PKP, log it
-        if (parsedAuthInfo.agentPKP) {
-          console.log(
-            'Found existing PKP in auth info, will check session validity'
-          );
-        }
       }
     } catch (error) {
       console.error('Error retrieving auth info:', error);
@@ -67,14 +60,10 @@ const SessionValidator: React.FC = () => {
           // Check if lit-wallet-sig exists in localStorage first
           const litWalletSig = localStorage.getItem('lit-wallet-sig');
           if (!litWalletSig) {
-            console.log(
-              'Storage key "lit-wallet-sig" is missing. Skipping session validation.'
-            );
             setHasCheckedSession(true);
             return; // Exit early if the key is missing
           }
 
-          console.log('Generating wallet signature...');
           // Create lit resources for action execution and PKP signing
           const litResources = [
             new LitActionResource('*'),
@@ -130,13 +119,9 @@ const SessionValidator: React.FC = () => {
             const validationResult = await validateSessionSigs(
               attemptedSessionSigs
             );
-            console.log('Validation result:', validationResult.isValid);
 
             // If validation is successful, show options (change from showing popup to showing consent form)
             if (validationResult.isValid) {
-              console.log(
-                'Session is valid, showing popup to use existing account'
-              );
               setShowPopup(true);
             }
           }

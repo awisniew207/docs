@@ -1,6 +1,5 @@
 'use client';
-// Import the utility that automatically disables logs in production
-import '@/utils/disableLogsInProduction';
+
 import './dashboard.css'; // Dashboard-specific styling
 import Header from '@/components/layout/Header';
 import { WagmiProvider } from 'wagmi';

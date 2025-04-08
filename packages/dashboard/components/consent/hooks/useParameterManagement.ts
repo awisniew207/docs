@@ -66,7 +66,6 @@ export const useParameterManagement = ({
     onStatusChange?.('Loading your existing app parameters...', 'info');
     
     try {
-      console.log('Fetching parameters with:', { appId, tokenId: agentPKP.tokenId });
       const userViewContract = getUserViewRegistryContract();
       const appIdNum = Number(appId);
       
@@ -74,8 +73,6 @@ export const useParameterManagement = ({
         agentPKP.tokenId,
         appIdNum
       );
-      
-      console.log('Existing tools and policies:', toolsAndPolicies);
       
       // Transform the contract data into the VersionParameter format
       const existingParams: VersionParameter[] = [];
@@ -100,8 +97,7 @@ export const useParameterManagement = ({
           });
         });
       });
-      
-      console.log('Transformed parameters with decoded values:', existingParams);
+    
       setExistingParameters(existingParams);
       onStatusChange?.('Successfully loaded your existing parameters', 'success');
       
@@ -110,7 +106,6 @@ export const useParameterManagement = ({
         try {
           const contract = getAppViewRegistryContract();
           const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
-          console.log('Fetched version info for parameter matching:', versionData);
           setVersionInfo(versionData);
         } catch (err) {
           console.error('Error fetching version info for parameter matching:', err);
@@ -135,7 +130,6 @@ export const useParameterManagement = ({
       parameters.length !== newParameters.length ||
       JSON.stringify(parameters) !== JSON.stringify(newParameters)
     ) {
-      console.log('Parameters updated:', newParameters);
       setParameters(newParameters);
     }
   }, [parameters]);
@@ -157,7 +151,6 @@ export const useParameterManagement = ({
       onStatusChange?.(`Loading app version information for v${versionToFetch}...`, 'info');
       const contract = getAppViewRegistryContract();
       const versionData = await contract.getAppVersion(Number(appId), versionToFetch);
-      console.log('Version info:', versionData);
       
       setVersionInfo(versionData);
       onStatusChange?.('Successfully loaded app version information', 'success');

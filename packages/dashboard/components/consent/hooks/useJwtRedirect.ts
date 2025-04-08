@@ -44,7 +44,6 @@ export const useJwtRedirect = ({
           'Initializing agent PKP wallet for JWT creation...',
           'info',
         );
-        console.log('Initializing agent PKP wallet for JWT creation...');
 
         const agentPkpWallet = new PKPEthersWallet({
           controllerSessionSigs: sessionSigs,
@@ -54,7 +53,6 @@ export const useJwtRedirect = ({
         await agentPkpWallet.init();
 
         onStatusChange?.('Creating signed JWT...', 'info');
-        console.log('Creating signed JWT...');
         const jwt = await create({
           pkpWallet: agentPkpWallet,
           pkp: agentPKP,

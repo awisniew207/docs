@@ -145,7 +145,6 @@ export default function IndexView() {
         authInfo.agentPKP = agentPKP;
         authInfo.userPKP = userPKP;
         localStorage.setItem('lit-auth-info', JSON.stringify(authInfo));
-        console.log('Updated auth info with PKP public keys:', authInfo);
       }
     } catch (error) {
       console.error('Error saving PKP info to localStorage:', error);

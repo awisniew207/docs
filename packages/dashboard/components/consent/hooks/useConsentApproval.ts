@@ -164,7 +164,6 @@ export const useConsentApproval = ({
 
     // Check for parameters to remove
     if (parametersToRemove.length > 0) {
-      console.log(`Found ${parametersToRemove.length} parameters to remove`);
       onStatusChange?.('Removing cleared parameters...', 'info');
 
       // Prepare data for parameter removal
@@ -217,7 +216,6 @@ export const useConsentApproval = ({
 
     // Skip setToolPolicyParameters if there are no parameters to set
     if (!hasParametersToSet) {
-      console.log('No parameters to set, skipping setToolPolicyParameters call');
       onStatusChange?.('Parameter updates complete', 'success');
       return;
     }
@@ -284,9 +282,6 @@ export const useConsentApproval = ({
 
     // If the same version is already permitted, just update parameters
     if (isPermitted && permittedVersion === Number(appInfo.latestVersion)) {
-      console.log(
-        `VERSION MATCH: Using setToolPolicyParameters for version ${permittedVersion} instead of permitAppVersion`,
-      );
       return await updateParameters();
     }
 
@@ -295,7 +290,6 @@ export const useConsentApproval = ({
       `Permitting version ${Number(appInfo.latestVersion)}...`,
       'info',
     );
-    console.log(`PERMITTING: Now permitting version ${Number(appInfo.latestVersion)}`);
 
     // Initialize wallet and get contract
     const { wallet, connectedContract } = await initializeWallet();

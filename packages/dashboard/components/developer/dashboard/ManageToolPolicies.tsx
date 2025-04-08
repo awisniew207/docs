@@ -94,7 +94,6 @@ export default function ManageToolPoliciesScreen({
         try {
             const contracts = new VincentContracts('datil');
             const appVersion = await contracts.getAppVersion(dashboard.appId, dashboard.currentVersion);
-            console.log("Fetched app version:", appVersion);
             
             let toolsData = [];
             
@@ -130,23 +129,11 @@ export default function ManageToolPoliciesScreen({
                         parameterTypes = tool[3];
                     }
                     
-                    console.log("Processing array tool:", { 
-                        toolIpfsCid, 
-                        policiesLength: rawPolicies.length,
-                        parameterNames,
-                        parameterTypes
-                    });
                 } else if (typeof tool === 'object') {
                     toolIpfsCid = tool.toolIpfsCid || "";
                     rawPolicies = tool.policies || [];
                     parameterNames = tool.parameterNames || [];
                     parameterTypes = tool.parameterTypes || [];
-                    console.log("Processing object tool:", { 
-                        toolIpfsCid, 
-                        policiesLength: rawPolicies.length,
-                        parameterNames,
-                        parameterTypes
-                    });
                 }
                 
                 const formattedTool: ToolPolicyWithId = {
@@ -156,7 +143,6 @@ export default function ManageToolPoliciesScreen({
                 };
                 
                 if (rawPolicies && rawPolicies.length > 0) {
-                    console.log("Processing rawPolicies:", rawPolicies);
                     
                     rawPolicies.forEach((policyData: any) => {
                         let policyIpfsCid = "";
@@ -199,7 +185,6 @@ export default function ManageToolPoliciesScreen({
                     });
                 } 
                 else if (parameterNames && parameterNames.length > 0 && parameterTypes && parameterTypes.length > 0) {
-                    console.log("Processing direct parameters:", { parameterNames, parameterTypes });
                     
                     const policy: PolicyWithId = {
                         _id: crypto.randomUUID(),
@@ -228,7 +213,6 @@ export default function ManageToolPoliciesScreen({
             });
             
             const validTools = formattedTools.filter((tool: ToolPolicyWithId) => !!tool.toolIpfsCid);
-            console.log("Formatted tools:", validTools);
             
             if (validTools.length === 0) {
                 validTools.push(createEmptyToolPolicy());
@@ -456,12 +440,10 @@ export default function ManageToolPoliciesScreen({
                         ...args,
                         {gasLimit}
                     );
-                    
-                    console.log("Transaction sent:", tx.hash);
-                    
+
                     setStatusMessage({ message: "Waiting for confirmation...", type: "info" });
-                    const receipt = await tx.wait();
-                    console.log("Transaction confirmed:", receipt);
+                    await tx.wait(1);
+                    setStatusMessage({ message: "Transaction confirmed!", type: "success" });
                     
                     setStatusMessage({ message: "New version published successfully!", type: "success" });
                     setTimeout(() => {

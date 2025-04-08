@@ -297,7 +297,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
       // If receipt is null, the transaction was rejected or failed
       if (!receipt) return;
-      console.log('receipt', receipt);
 
       // Show success message
       setError(null);

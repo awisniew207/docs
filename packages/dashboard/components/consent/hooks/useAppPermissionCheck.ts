@@ -161,16 +161,9 @@ export const useAppPermissionCheck = ({
     // IF #1: Check if we need to fetch existing parameters
     if (fetchExistingParameters) {
       // TRY-CATCH #1: Outer try-catch to handle any errors in fetchExistingParameters call
-      try {
-        console.log('Fetching existing parameters for version upgrade');
-        // Using a Promise catch because we're not awaiting the Promise
-        fetchExistingParameters().catch(error => {
-          console.error('Error fetching parameters for version upgrade:', error);
-        });
-      } catch (error) {
-        // This would only catch synchronous errors in the function call
-        console.error('Error calling fetchExistingParameters:', error);
-      }
+      fetchExistingParameters().catch(error => {
+        console.error('Error fetching parameters for version upgrade:', error);
+      });
     }
   }, [updateState, fetchExistingParameters]);
   
@@ -250,7 +243,6 @@ export const useAppPermissionCheck = ({
         (id: ethers.BigNumber) => id.toNumber() === appIdNum
       );
 
-      console.log('Is app already permitted?', isPermitted);
       updateState({ isAppAlreadyPermitted: isPermitted });
 
       // IF #6: Check if app is permitted and we have redirect URI
