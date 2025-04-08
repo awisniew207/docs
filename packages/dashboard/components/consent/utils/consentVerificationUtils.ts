@@ -81,9 +81,6 @@ export const verifyPermissionGrant = async (
     statusCallback?.('Verifying permission grant...', 'info');
     console.log('VERIFYING PERMIT: Checking if new version was properly registered...');
     
-    // Small delay to ensure the blockchain state has been updated
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     const userViewContract = getUserViewRegistryContract();
     const verifiedVersion = await userViewContract.getPermittedAppVersionForPkp(
       agentPKPTokenId,

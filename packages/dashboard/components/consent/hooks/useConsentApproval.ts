@@ -345,8 +345,8 @@ export const useConsentApproval = ({
     ];
 
     try {
-      // Send the transaction
-      await sendTransaction(
+      // Send the transaction, use txResponse to wait for confirmation (and readability)
+      const txResponse = await sendTransaction(
         connectedContract,
         'permitAppVersion',
         permitArgs,
@@ -354,6 +354,8 @@ export const useConsentApproval = ({
         onStatusChange,
         onError
       );
+
+      await txResponse.wait(1);
 
       // Verify the permitted version after the transaction
       await verifyPermissionGrant(
