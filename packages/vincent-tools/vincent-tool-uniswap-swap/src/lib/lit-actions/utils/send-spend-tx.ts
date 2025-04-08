@@ -11,32 +11,67 @@ const estimateGas = async (
     pkpEthAddress: string,
 ) => {
     console.log(`Making gas estimation call...`);
-    let estimatedGas = await spendingLimitContract.estimateGas.spend(
-        appId,
-        amountInUsd,
-        maxSpendingLimitInUsdCents,
-        spendingLimitDuration,
-        { from: pkpEthAddress }
-    );
-    // Add 10% buffer to estimated gas
-    estimatedGas = estimatedGas.mul(110).div(100);
+    try {
+        let estimatedGas = await spendingLimitContract.estimateGas.spend(
+            appId,
+            amountInUsd,
+            maxSpendingLimitInUsdCents,
+            spendingLimitDuration,
+            { from: pkpEthAddress }
+        );
+        // Add 10% buffer to estimated gas
+        estimatedGas = estimatedGas.mul(110).div(100);
 
-    console.log('Getting block and gas price...');
-    const [block, gasPrice] = await Promise.all([
-        spendingLimitContract.provider.getBlock('latest'),
-        spendingLimitContract.provider.getGasPrice()
-    ]);
+        console.log('Getting block and gas price...');
+        const [block, gasPrice] = await Promise.all([
+            spendingLimitContract.provider.getBlock('latest'),
+            spendingLimitContract.provider.getGasPrice()
+        ]);
 
-    // Use a more conservative max fee per gas calculation
-    const baseFeePerGas = block.baseFeePerGas || gasPrice;
-    const maxFeePerGas = baseFeePerGas.mul(150).div(100); // 1.5x base fee
-    const maxPriorityFeePerGas = gasPrice.div(10); // 0.1x gas price
+        // Use a more conservative max fee per gas calculation
+        const baseFeePerGas = block.baseFeePerGas || gasPrice;
+        const maxFeePerGas = baseFeePerGas.mul(150).div(100); // 1.5x base fee
+        const maxPriorityFeePerGas = gasPrice.div(10); // 0.1x gas price
 
-    return {
-        estimatedGas,
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-    };
+        return {
+            estimatedGas,
+            maxFeePerGas,
+            maxPriorityFeePerGas,
+        };
+    } catch (error: unknown) {
+        try {
+            console.log(`Got error when trying to estimate gas for spending limit transaction:`, error);
+            console.log('Attempting to parse error with Ethers to get revert reason...');
+
+            const errorData = (error as any).error?.error?.data;
+            if (!errorData) {
+                throw error;
+            }
+
+            const ethersParsedError = spendingLimitContract.interface.parseError(errorData);
+            if (ethersParsedError.name === 'SpendLimitExceeded') {
+                const [user, appId, amount, limit] = ethersParsedError.args;
+                console.log('Spending limit exceeded:', {
+                    user,
+                    appId: appId.toString(),
+                    amount: amount.toString(),
+                    limit: limit.toString()
+                });
+
+                return {
+                    allow: false,
+                    details: [
+                        'Spending limit exceeded',
+                    ]
+                };
+            }
+        } catch (parseError) {
+            // If we can't parse the error, just throw the original error
+            throw error;
+        }
+
+        throw error;
+    }
 }
 
 export const sendSpendTx = async (
@@ -50,7 +85,7 @@ export const sendSpendTx = async (
 ) => {
     const { SPENDING_LIMIT_ADDRESS } = getAddressesByChainId('175188'); // Yellowstone
 
-    const partialSpendTxStringified = await Lit.Actions.runOnce(
+    const buildPartialSpendTxResponse = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send spend tx gas estimation' },
         async () => {
             const SPENDING_LIMIT_ABI = [
@@ -70,7 +105,7 @@ export const sendSpendTx = async (
             );
 
             console.log(`Estimating gas for spending limit transaction...`);
-            const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
+            const estimatedGasResponse = await estimateGas(
                 spendingLimitContract,
                 appId,
                 amountInUsd,
@@ -78,6 +113,12 @@ export const sendSpendTx = async (
                 spendingLimitDuration,
                 pkpEthAddress
             );
+
+            if ('allow' in estimatedGasResponse && !estimatedGasResponse.allow) {
+                return JSON.stringify(estimatedGasResponse);
+            }
+
+            const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = estimatedGasResponse;
 
             console.log(`Encoding transaction data...`);
             const txData = spendingLimitContract.interface.encodeFunctionData('spend', [
@@ -100,15 +141,20 @@ export const sendSpendTx = async (
         }
     );
 
-    const partialSpendTxObject = JSON.parse(partialSpendTxStringified);
+    const parsedPartialSpendTxResponse = JSON.parse(buildPartialSpendTxResponse);
+
+    if ('allow' in parsedPartialSpendTxResponse && !parsedPartialSpendTxResponse.allow) {
+        return parsedPartialSpendTxResponse;
+    }
+
     const unsignedSpendTx = {
         to: SPENDING_LIMIT_ADDRESS as string,
-        data: partialSpendTxObject.data,
+        data: parsedPartialSpendTxResponse.data,
         value: ethers.BigNumber.from(0),
-        gasLimit: ethers.BigNumber.from(partialSpendTxObject.gasLimit),
-        maxFeePerGas: ethers.BigNumber.from(partialSpendTxObject.maxFeePerGas),
-        maxPriorityFeePerGas: ethers.BigNumber.from(partialSpendTxObject.maxPriorityFeePerGas),
-        nonce: parseInt(partialSpendTxObject.nonce),
+        gasLimit: ethers.BigNumber.from(parsedPartialSpendTxResponse.gasLimit),
+        maxFeePerGas: ethers.BigNumber.from(parsedPartialSpendTxResponse.maxFeePerGas),
+        maxPriorityFeePerGas: ethers.BigNumber.from(parsedPartialSpendTxResponse.maxPriorityFeePerGas),
+        nonce: parseInt(parsedPartialSpendTxResponse.nonce),
         chainId: ethers.BigNumber.from(175188).toNumber(),
         type: 2,
     };
@@ -117,15 +163,52 @@ export const sendSpendTx = async (
     const signedSpendTx = await signTx(pkpPubKey, unsignedSpendTx, 'spendingLimitSig');
 
     console.log(`Broadcasting spend transaction...`);
-    const spendTxHash = await Lit.Actions.runOnce(
+    const spendTxResponse = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'spendTxSender' },
         async () => {
-            const receipt = await yellowstoneProvider.sendTransaction(signedSpendTx);
-            return receipt.hash;
+            try {
+                const receipt = await yellowstoneProvider.sendTransaction(signedSpendTx);
+                return JSON.stringify({
+                    status: 'success',
+                    details: [
+                        receipt.hash,
+                    ]
+                });
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    if (error.message.includes('SpendLimitExceeded')) {
+                        console.log('Spending limit exceeded');
+                        return JSON.stringify({
+                            allow: false,
+                            details: [
+                                'Spending limit exceeded',
+                            ]
+                        });
+                    } else {
+                        throw error;
+                    }
+                } else {
+                    throw error;
+                }
+            }
         }
     );
+    console.log(`Spend transaction response: ${spendTxResponse}`);
 
-    console.log(`Spend transaction hash: ${spendTxHash}`);
-
-    return spendTxHash;
+    const parsedSpendTxResponse = JSON.parse(spendTxResponse as string);
+    if (parsedSpendTxResponse.status === 'success') {
+        return {
+            status: 'success',
+            details: [
+                parsedSpendTxResponse.details[0],
+            ]
+        };
+    } else if ('allow' in parsedSpendTxResponse && !parsedSpendTxResponse.allow) {
+        return {
+            allow: false,
+            details: parsedSpendTxResponse.details
+        };
+    } else {
+        throw new Error(`Invalid spend transaction response: ${spendTxResponse}`);
+    }
 }

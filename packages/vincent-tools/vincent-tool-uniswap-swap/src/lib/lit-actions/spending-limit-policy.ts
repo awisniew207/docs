@@ -2,7 +2,7 @@
 import { ethers } from 'ethers';
 import { type Policy } from '@lit-protocol/vincent-tool';
 
-import { checkSpendLimit, getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx, validatePolicyIsPermitted } from './utils';
+import { getOnChainPolicyParams, getTokenAmountInUsd, sendSpendTx, validatePolicyIsPermitted } from './utils';
 
 declare global {
   // Required Inputs
@@ -76,16 +76,19 @@ declare global {
     const adjustedMaxDailySpendingLimit = maxDailySpendingLimitInUsdCents.mul(ethers.BigNumber.from(1_000_000));
     console.log(`Adjusted maxDailySpendingLimitInUsdCents to 8 decimal precision: ${adjustedMaxDailySpendingLimit.toString()}`);
 
-    const doesntExceedSpendLimit = await checkSpendLimit(
+    policySuccessDetails.push(`Spending ${tokenAmountInUsd.toString()} USD for App ID: ${vincentAppId} when the max daily spending limit is ${adjustedMaxDailySpendingLimit.toString()} USD`);
+
+    const spendTxResponse = await sendSpendTx(
       yellowstoneProvider,
       vincentAppId,
       tokenAmountInUsd,
       adjustedMaxDailySpendingLimit,
       ethers.BigNumber.from(86400), // number of seconds in a day
-      userPkpInfo.ethAddress
+      userPkpInfo.ethAddress,
+      userPkpInfo.publicKey
     );
 
-    if (!doesntExceedSpendLimit) {
+    if ('allow' in spendTxResponse && !spendTxResponse.allow) {
       console.log(`Spending limit exceeded. tokenAmountInUsd: ${tokenAmountInUsd.toString()} adjustedMaxDailySpendingLimit: ${adjustedMaxDailySpendingLimit.toString()}`);
 
       Lit.Actions.setResponse({
@@ -100,19 +103,8 @@ declare global {
       return;
     }
 
-    policySuccessDetails.push(`Spending ${tokenAmountInUsd.toString()} USD for App ID: ${vincentAppId} when the max daily spending limit is ${adjustedMaxDailySpendingLimit.toString()} USD`);
-
-    const spendTxHash = await sendSpendTx(
-      yellowstoneProvider,
-      vincentAppId,
-      tokenAmountInUsd,
-      adjustedMaxDailySpendingLimit,
-      ethers.BigNumber.from(86400), // number of seconds in a day
-      userPkpInfo.ethAddress,
-      userPkpInfo.publicKey
-    );
-    console.log(`Spend transaction hash: ${spendTxHash}`);
-    policySuccessDetails.push(`Spend transaction hash: ${spendTxHash}`);
+    console.log(`Spend transaction hash: ${spendTxResponse.details[0]}`);
+    policySuccessDetails.push(`Spend transaction hash: ${spendTxResponse.details[0]}`);
   } else {
     console.log(`No maxDailySpendingLimitInUsdCents set on-chain for App ID: ${vincentAppId} App Version: ${vincentAppVersion} Tool: ${parentToolIpfsCid} PKP token ID: ${userPkpInfo.tokenId} Delegatee: ${userPkpInfo.ethAddress}`);
     policySuccessDetails.push(`No maxDailySpendingLimitInUsdCents set on-chain for App ID: ${vincentAppId} App Version: ${vincentAppVersion} Tool: ${parentToolIpfsCid} PKP token ID: ${userPkpInfo.tokenId} Delegatee: ${userPkpInfo.ethAddress}`);
