@@ -11,8 +11,8 @@ interface UseAppPermissionCheckProps {
   appId: string | null;
   agentPKP?: IRelayPKP;
   redirectUri: string | null;
-  generateJWT?: (appInfo: AppView) => Promise<string | null>;
-  redirectWithJWT?: (jwt: string | null) => void;
+  generateJWT?: (appInfo: AppView) => Promise<string>;
+  redirectWithJWT?: (jwt: string) => void;
   fetchExistingParameters?: () => Promise<void>;
   onStatusChange?: (message: string, type?: 'info' | 'warning' | 'success' | 'error') => void;
 }
