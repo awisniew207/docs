@@ -130,17 +130,24 @@ export const sendUniswapTx = async (
     const swapTxHash = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'swapTxSender' },
         async () => {
-            const receipt = await userRpcProvider.sendTransaction(signedSwapTx);
-            return receipt.hash;
+            try {
+                const receipt = await userRpcProvider.sendTransaction(signedSwapTx);
+                return JSON.stringify({
+                    status: 'success',
+                    details: [
+                        receipt.hash,
+                    ]
+                });
+            } catch (error) {
+                return JSON.stringify({
+                    status: 'error',
+                    details: [
+                        (error as Error).message || JSON.stringify(error)
+                    ]
+                });
+            }
         }
     );
 
-    console.log(`Swap transaction hash: ${swapTxHash}`);
-
-    return {
-        status: 'success',
-        details: [
-            swapTxHash
-        ]
-    };
+    return JSON.parse(swapTxHash);
 }

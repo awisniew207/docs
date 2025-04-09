@@ -92,6 +92,7 @@ declare global {
       Lit.Actions.setResponse({
         response: JSON.stringify(swapTxResponse),
       });
+      return;
     }
 
     Lit.Actions.setResponse({
