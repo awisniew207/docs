@@ -257,10 +257,13 @@ export default function VersionParametersForm({
       existingParameters.forEach(existingParam => {
         // Find the matching parameter in our form
         const formParamIndex = updatedParams.findIndex(p => 
-          (p.name === existingParam.name) || // Match by name
+          // Match by name AND type to avoid type mismatches
+          (p.name === existingParam.name && p.type === existingParam.type) || 
+          // Match by position AND type
           (p.toolIndex === existingParam.toolIndex && 
            p.policyIndex === existingParam.policyIndex && 
-           p.paramIndex === existingParam.paramIndex) // Or match by position
+           p.paramIndex === existingParam.paramIndex &&
+           p.type === existingParam.type) // Ensure type matches
         );
         
         if (formParamIndex !== -1) {
@@ -272,7 +275,7 @@ export default function VersionParametersForm({
               value: existingParam.value
             };
             hasChanges = true;
-            console.log(`Applied existing value for "${existingParam.name}": ${existingParam.value}`);
+            console.log(`Applied existing value for "${existingParam.name}" (type: ${existingParam.type}): ${existingParam.value}`);
           }
         }
       });

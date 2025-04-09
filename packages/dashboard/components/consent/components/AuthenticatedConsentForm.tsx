@@ -25,6 +25,7 @@ import { useAppPermissionCheck } from '../hooks/useAppPermissionCheck';
 // Import types
 import {
   AuthenticatedConsentFormProps,
+  VersionParameter
 } from '../types';
 
 /**
@@ -115,7 +116,6 @@ export default function AuthenticatedConsentForm({
     versionInfo,
     fetchVersionInfo,
     fetchExistingParameters,
-    handleParametersChange
   } = useParameterManagement({
     appId,
     agentPKP,
@@ -240,6 +240,24 @@ export default function AuthenticatedConsentForm({
     }
   }, [useCurrentVersionOnly, existingParameters.length, isLoadingParameters, appId, agentPKP, fetchExistingParameters, permittedVersion]);
 
+  /**
+   * Handles parameter changes from the form.
+   * Makes sure parameter changes are stored for submission.
+   */
+  const handleParametersChange = useCallback((newParameters: VersionParameter[]) => {
+    console.log('Parameters updated from form:', newParameters);
+    
+    // Important: Make sure all parameter values are properly set
+    const validatedParameters = newParameters.map(param => ({
+      ...param,
+      // Ensure value is not undefined (prevents errors in contract calls)
+      value: param.value === undefined ? '' : param.value
+    }));
+    
+    // Update the parameters state with the new values
+    setParameters(validatedParameters);
+  }, [setParameters]);
+
   // ===== Event Handler Functions =====
 
   /**
@@ -326,7 +344,7 @@ export default function AuthenticatedConsentForm({
     } finally {
       setSubmitting(false);
     }
-  }, [approveConsent, updateParameters, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, showErrorWithStatus, showStatus, updateState, useCurrentVersionOnly]);
+  }, [approveConsent, updateParameters, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, showErrorWithStatus, showStatus, updateState, useCurrentVersionOnly, parameters]);
 
   /**
    * Handles the disapproval action when the user denies permission to the app.

@@ -92,6 +92,9 @@ export const isEmptyParameterValue = (value: string | undefined | null, type: Pa
   // Handle non-array types
   switch (type) {
     case ParameterType.BOOL:
+      if (value === undefined || value === null || value === '' || value === 'Not Set') {
+        return true;
+      }
       return false;
     case ParameterType.INT256:
     case ParameterType.UINT256:
@@ -99,7 +102,7 @@ export const isEmptyParameterValue = (value: string | undefined | null, type: Pa
     case ParameterType.ADDRESS:
       return value === '';
     case ParameterType.STRING:
-      return false
+      return value === '';
     default:
       return false;
   }

@@ -389,11 +389,11 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
                 <div className="bool-array-item">
                   <input
                     type="checkbox"
-                    checked={!!item}
+                    checked={item === true || item === 'true'}
                     onChange={(e) => updateArrayItem(index, e.target.checked)}
                   />
                   <span className="bool-array-item-label">
-                    Item {index + 1}: {item ? 'True' : 'False'}
+                    Item {index + 1}: {item === true || item === 'true' ? 'True' : 'False'}
                   </span>
                 </div>
               ) : (

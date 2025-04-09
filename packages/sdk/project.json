@@ -4,6 +4,42 @@
   "sourceRoot": "packages/sdk/src",
   "projectType": "library",
   "targets": {
+    "publish-typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typedoc",
+          "mkdir ./sdk-docs/.vercel",
+          "printf '{\"projectId\": \"%s\", \"orgId\": \"%s\"}\\n' \"$SDK_DOCS_VERCEL_PROJECT_ID\" \"$SDK_DOCS_VERCEL_ORG_ID\" > ./sdk-docs/.vercel/project.json\n",
+          "pnpm dotenvx run -- vercel --prod --cwd=./sdk-docs",
+          "rm -Rf ./sdk-docs"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm typedoc --watch", "node ./scripts/typedocServer.mjs"],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "dev": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/sdk/dist",
+        "main": "packages/sdk/src/index.ts",
+        "tsConfig": "packages/sdk/tsconfig.lib.json",
+        "assets": ["packages/sdk/*.md"],
+        "formats": ["cjs"],
+        "updateBuildableProjectDepsInPackageJson": true,
+        "watch": true
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
