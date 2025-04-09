@@ -10,4 +10,4 @@ export * from './send-uniswap-tx';
 export * from './send-erc20-approval';
 export * from './validate-policy-is-permitted';
 export * from './check-spend-limit';
-export * from './estimate-gas';
+export * from './get-gas-params';
