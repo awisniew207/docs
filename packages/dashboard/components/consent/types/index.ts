@@ -153,9 +153,3 @@ export interface ContractVersionResult extends Array<any> {
   };
 }
 
-/**
- * Union type for version information that can handle both
- * the processed object format and the raw contract return format
- */
-export type VersionData = VersionInfo | ContractVersionResult;
-
