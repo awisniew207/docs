@@ -2,6 +2,7 @@ import { estimateGasWithBuffer } from '@/services/contract/config';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { SELECTED_LIT_NETWORK } from './lit';
+import { DCA_POLICY_IPFS_CID, DCA_TOOL_IPFS_CID } from '@/app/constants';
 
 /**
  * Handles sending a transaction with proper error handling
@@ -142,13 +143,40 @@ export const addPermittedActions = async (
     `Adding permissions for ${toolIpfsCids.length} action(s)...`,
     'info'
   );
-
+  
   // Initialize Lit Contracts
   const litContracts = new LitContracts({
     network: SELECTED_LIT_NETWORK,
     signer: wallet,
   });
   await litContracts.connect();
+
+  // Handle special case for DCA
+  const sortedInputCids = toolIpfsCids.sort();
+  const sortedDcaToolCids = DCA_TOOL_IPFS_CID.sort();
+  const isDcaToolSet = JSON.stringify(sortedInputCids) === JSON.stringify(sortedDcaToolCids);
+
+  if (isDcaToolSet) {
+    for (const policyCid of DCA_POLICY_IPFS_CID) {
+      try {
+        const isPolicyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
+          agentPKPTokenId,
+          policyCid
+        );
+        
+        if (!isPolicyPermitted) {
+          console.log(`Adding DCA policy for ${policyCid}`);
+          await litContracts.addPermittedAction({
+            ipfsId: policyCid,
+            pkpTokenId: agentPKPTokenId,
+            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+          });
+        }
+      } catch (error) {
+        console.error(`Error adding DCA policy permission for ${policyCid}:`, error);
+      }
+    }
+  }
 
   for (const ipfsCid of toolIpfsCids) {
     try {
@@ -157,22 +185,6 @@ export const addPermittedActions = async (
         agentPKPTokenId,
         ipfsCid
       );
-
-      // Handle special case for DCA
-      if (ipfsCid === process.env.NEXT_PUBLIC_DCA_TOOL_IPFS_CID) {
-        const isPolicyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
-          agentPKPTokenId,
-          process.env.NEXT_PUBLIC_DCA_POLICY_IPFS_CID!
-        );
-        if (!isPolicyPermitted) {
-          console.log(`Adding DCA policy for ${process.env.NEXT_PUBLIC_DCA_POLICY_IPFS_CID}`);
-          await litContracts.addPermittedAction({
-            ipfsId: process.env.NEXT_PUBLIC_DCA_POLICY_IPFS_CID!,
-            pkpTokenId: agentPKPTokenId,
-            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-          });
-        }
-      }
 
       if (isAlreadyPermitted) {
         console.log(`Permission already exists for IPFS CID: ${ipfsCid}`);
