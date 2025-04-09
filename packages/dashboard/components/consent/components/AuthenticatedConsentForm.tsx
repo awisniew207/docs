@@ -153,7 +153,7 @@ export default function AuthenticatedConsentForm({
   const { approveConsent, updateParameters } = useConsentApproval({
     appId: appId!,
     appInfo: appInfo!,
-    versionInfo,
+    versionInfo: versionInfo!,
     parameters,
     agentPKP,
     userPKP,
@@ -629,7 +629,7 @@ export default function AuthenticatedConsentForm({
                   appInfo.latestVersion
               }}
               agentPKP={agentPKP}
-              versionInfo={versionInfo}
+              versionInfo={versionInfo!}
               showIPFSDetails={true}
             />
 
