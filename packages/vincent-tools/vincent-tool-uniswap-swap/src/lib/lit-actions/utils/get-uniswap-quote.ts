@@ -27,13 +27,12 @@ export const getUniswapQuote = async (
     const FEE_TIERS = [3000, 500]; // Supported fee tiers (0.3% and 0.05%)
     console.log('Supported fee tiers:', FEE_TIERS.map(fee => `${fee / 10000}%`));
 
-    // Convert amountIn to wei using provided decimals
-    const amountInWei = ethers.utils.parseUnits(amountIn, tokenInDecimals);
+    const amountInSmallestUnit = ethers.utils.parseUnits(amountIn, tokenInDecimals);
     console.log('Amount conversion:', {
         original: amountIn,
         decimals: tokenInDecimals,
-        wei: amountInWei.toString(),
-        formatted: ethers.utils.formatUnits(amountInWei, tokenInDecimals)
+        wei: amountInSmallestUnit.toString(),
+        formatted: ethers.utils.formatUnits(amountInSmallestUnit, tokenInDecimals)
     });
 
     let bestQuote = null;
@@ -44,7 +43,7 @@ export const getUniswapQuote = async (
             const quoteParams = {
                 tokenIn: tokenInAddress,
                 tokenOut: tokenOutAddress,
-                amountIn: amountInWei.toString(),
+                amountIn: amountInSmallestUnit.toString(),
                 fee: fee,
                 sqrtPriceLimitX96: 0,
             };
