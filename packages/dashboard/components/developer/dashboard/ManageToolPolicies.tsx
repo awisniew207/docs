@@ -13,7 +13,7 @@ import { VincentContracts } from "@/services";
 import { useErrorPopup } from "@/providers/error-popup";
 import { mapTypeToEnum } from "@/services/types";
 import { mapEnumToTypeName, ParameterType } from "@/services/types";
-
+import { StatusMessage } from "@/utils/statusMessage";
 interface PolicyParameter {
     name: string;
     type: string;
@@ -48,27 +48,6 @@ interface ToolPolicyManagerProps {
     onBack: () => void;
     dashboard: AppView;
 }
-
-// Simple non-reactive status message
-const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
-  if (!message) return null;
-  
-  const getStatusClass = () => {
-    switch (type) {
-      case 'warning': return 'status-message--warning';
-      case 'success': return 'status-message--success';
-      case 'error': return 'status-message--error';
-      default: return 'status-message--info';
-    }
-  };
-  
-  return (
-    <div className={`status-message ${getStatusClass()}`}>
-      {type === 'info' && <div className="spinner"></div>}
-      <span>{message}</span>
-    </div>
-  );
-};
 
 // Uncontrolled input that updates state only on blur 
 const LazyInput = ({ initialValue = "", onUpdate, placeholder }: 
