@@ -1,4 +1,4 @@
-export * from './get-addresses-by-chain-id';
+export * from './address-constants';
 export * from './get-on-chain-policy-params';
 export * from './get-uniswap-quote';
 export * from './get-token-amount-in-usd';

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import type { VincentToolPolicyResponse, VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { type AddressesByChainIdResponse, getAddressesByChainId, signTx } from '.';
+import { BASE_MAINNET_UNISWAP_V3_ROUTER, signTx } from '.';
 
 const estimateGasForApproval = async (
     tokenInContract: ethers.Contract,
@@ -48,14 +48,6 @@ export const sendErc20ApprovalTx = async (
     const partialApprovalTxStringified = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send approval tx gas estimation' },
         async () => {
-            const addressByChainIdResponse = getAddressesByChainId(userChainId);
-
-            if ('status' in addressByChainIdResponse && addressByChainIdResponse.status === 'error') {
-                return addressByChainIdResponse;
-            }
-
-            const { UNISWAP_V3_ROUTER } = addressByChainIdResponse as AddressesByChainIdResponse;
-
             const tokenInContract = new ethers.Contract(
                 tokenInAddress,
                 ['function approve(address,uint256) external returns (bool)'],
@@ -68,14 +60,14 @@ export const sendErc20ApprovalTx = async (
             console.log(`Estimating gas for approval transaction...`);
             const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGasForApproval(
                 tokenInContract,
-                UNISWAP_V3_ROUTER!,
+                BASE_MAINNET_UNISWAP_V3_ROUTER,
                 amountInSmallestUnit,
                 pkpEthAddress
             );
 
             console.log(`Encoding approval transaction data...`);
             const approvalTxData = tokenInContract.interface.encodeFunctionData('approve', [
-                UNISWAP_V3_ROUTER!,
+                BASE_MAINNET_UNISWAP_V3_ROUTER,
                 amountInSmallestUnit,
             ]);
 

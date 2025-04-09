@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import type { VincentToolPolicyError, VincentToolPolicyResponse, VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { type AddressesByChainIdResponse, getAddressesByChainId, signTx } from '.';
+import { signTx, YELLOWSTONE_SPENDING_LIMIT_ADDRESS } from '.';
 
 interface EstimateGasResponse {
     estimatedGas: ethers.BigNumber;
@@ -89,13 +89,6 @@ export const sendSpendTx = async (
     pkpEthAddress: string,
     pkpPubKey: string,
 ): Promise<VincentToolResponse | VincentToolPolicyResponse> => {
-    const addressByChainIdResponse = getAddressesByChainId('175188'); // Yellowstone
-
-    if ('status' in addressByChainIdResponse && addressByChainIdResponse.status === 'error') {
-        return addressByChainIdResponse;
-    }
-
-    const { SPENDING_LIMIT_ADDRESS } = addressByChainIdResponse as AddressesByChainIdResponse;
     const SPENDING_LIMIT_ABI = [
         `function checkLimit(address user, uint256 appId, uint256 amountToSpend, uint256 userMaxSpendLimit, uint256 duration) view returns (bool)`,
         `function spend(uint256 appId, uint256 amount, uint256 userMaxSpendLimit, uint256 duration)`,
@@ -104,7 +97,7 @@ export const sendSpendTx = async (
         `error ZeroDurationQuery(address user)`
     ];
     const spendingLimitContract = new ethers.Contract(
-        SPENDING_LIMIT_ADDRESS!,
+        YELLOWSTONE_SPENDING_LIMIT_ADDRESS,
         SPENDING_LIMIT_ABI,
         yellowstoneProvider
     );
@@ -112,7 +105,7 @@ export const sendSpendTx = async (
     const buildPartialSpendTxResponse = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send spend tx gas estimation' },
         async () => {
-            console.log(`Preparing transaction to send to Spending Limit Contract: ${SPENDING_LIMIT_ADDRESS}`);
+            console.log(`Preparing transaction to send to Spending Limit Contract: ${YELLOWSTONE_SPENDING_LIMIT_ADDRESS}`);
 
             console.log(`Estimating gas for spending limit transaction...`);
             const estimatedGasResponse = await estimateGas(
@@ -157,7 +150,7 @@ export const sendSpendTx = async (
     }
 
     const unsignedSpendTx = {
-        to: SPENDING_LIMIT_ADDRESS as string,
+        to: YELLOWSTONE_SPENDING_LIMIT_ADDRESS,
         data: parsedPartialSpendTxResponse.data,
         value: ethers.BigNumber.from(0),
         gasLimit: ethers.BigNumber.from(parsedPartialSpendTxResponse.gasLimit),

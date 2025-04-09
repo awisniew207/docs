@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-
-import { type AddressesByChainIdResponse, getAddressesByChainId } from ".";
 import { type VincentToolError } from "@lit-protocol/vincent-tool";
+
+import { BASE_MAINNET_UNISWAP_V3_QUOTER } from ".";
 
 export interface UniswapQuoteResponse {
     bestQuote: ethers.BigNumber;
@@ -11,7 +11,6 @@ export interface UniswapQuoteResponse {
 
 export const getUniswapQuote = async (
     userRpcProvider: ethers.providers.JsonRpcProvider,
-    userChainId: string,
     tokenInAddress: string,
     tokenOutAddress: string,
     amountIn: string,
@@ -19,14 +18,8 @@ export const getUniswapQuote = async (
     tokenOutDecimals: string,
 ): Promise<UniswapQuoteResponse | VincentToolError> => {
     console.log('Starting Uniswap quote calculation...');
-    const addressByChainIdResponse = getAddressesByChainId(userChainId);
 
-    if ('status' in addressByChainIdResponse && addressByChainIdResponse.status === 'error') {
-        return addressByChainIdResponse;
-    }
-
-    const { UNISWAP_V3_QUOTER } = addressByChainIdResponse as AddressesByChainIdResponse;
-    console.log('Using Uniswap V3 Quoter address:', UNISWAP_V3_QUOTER);
+    console.log('Using Uniswap V3 Quoter address:', BASE_MAINNET_UNISWAP_V3_QUOTER);
 
     const uniswapV3QuoterInterface = new ethers.utils.Interface([
         'function quoteExactInputSingle((address tokenIn, address tokenOut, uint256 amountIn, uint24 fee, uint160 sqrtPriceLimitX96)) external returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)',
@@ -60,7 +53,7 @@ export const getUniswapQuote = async (
             console.log('Quote parameters:', quoteParams);
 
             const quote = await userRpcProvider.call({
-                to: UNISWAP_V3_QUOTER!,
+                to: BASE_MAINNET_UNISWAP_V3_QUOTER,
                 data: uniswapV3QuoterInterface.encodeFunctionData('quoteExactInputSingle', [
                     quoteParams,
                 ]),

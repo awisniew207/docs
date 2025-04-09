@@ -63,7 +63,6 @@ declare global {
 
     const tokenAmountInUsdResponse = await getTokenAmountInUsd(
       userRpcProvider,
-      toolParams.chainId,
       toolParams.amountIn,
       toolParams.tokenIn,
       toolParams.tokenInDecimals

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { type VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { type AddressesByChainIdResponse, getAddressesByChainId, getUniswapQuote, signTx, type UniswapQuoteResponse } from '.';
+import { BASE_MAINNET_UNISWAP_V3_ROUTER, getUniswapQuote, signTx, type UniswapQuoteResponse } from '.';
 
 const estimateGasForSwap = async (
     uniswapV3RouterContract: ethers.Contract,
@@ -57,14 +57,6 @@ export const sendUniswapTx = async (
     pkpEthAddress: string,
     pkpPubKey: string,
 ): Promise<VincentToolResponse> => {
-    const addressByChainIdResponse = getAddressesByChainId(userChainId);
-
-    if ('status' in addressByChainIdResponse && addressByChainIdResponse.status === 'error') {
-        return addressByChainIdResponse;
-    }
-
-    const { UNISWAP_V3_ROUTER } = addressByChainIdResponse as AddressesByChainIdResponse;
-
     console.log('Estimating gas for Swap transaction...');
     const partialSwapTxStringified = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'send swap tx gas estimation' },
@@ -73,7 +65,7 @@ export const sendUniswapTx = async (
             const amountInSmallestUnit = ethers.utils.parseUnits(amountIn, tokenInDecimals);
 
             const uniswapV3RouterContract = new ethers.Contract(
-                UNISWAP_V3_ROUTER!,
+                BASE_MAINNET_UNISWAP_V3_ROUTER,
                 ['function exactInputSingle((address,address,uint24,address,uint256,uint256,uint160)) external payable returns (uint256)'],
                 userRpcProvider
             );
@@ -81,7 +73,6 @@ export const sendUniswapTx = async (
             console.log('Getting Uniswap quote for swap...');
             const uniswapQuoteResponse = await getUniswapQuote(
                 userRpcProvider,
-                userChainId,
                 tokenInAddress,
                 tokenOutAddress,
                 amountIn,
@@ -133,7 +124,7 @@ export const sendUniswapTx = async (
 
     const partialSwapTxObject = JSON.parse(partialSwapTxStringified);
     const unsignedSwapTx = {
-        to: UNISWAP_V3_ROUTER!,
+        to: BASE_MAINNET_UNISWAP_V3_ROUTER,
         data: partialSwapTxObject.data,
         value: ethers.BigNumber.from(0),
         gasLimit: ethers.BigNumber.from(partialSwapTxObject.gasLimit),
