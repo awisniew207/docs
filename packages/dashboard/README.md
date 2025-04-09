@@ -43,7 +43,7 @@ The Vincent Agent Wallet system is a decentralized permission management framewo
 ### Developer Flow
 1. Developers register an App with a unique Management Wallet and define metadata (name, description, etc.)
 2. They either create Tools (with IPFS-hosted Lit Actions and Policy schemas) and Policies, or use existing ones.
-3. They secure their app using explicitly allowed `redirectUrls` that the Vincent consent page respects.
+3. They secure their app using explicitly allowed `redirectUris` that the Vincent consent page respects.
 4. The App integrates with the Consent Page, using an appId
 5. When a user uses the Consent page to add delegations, they are redirected to the app with a signed JWT.
 
