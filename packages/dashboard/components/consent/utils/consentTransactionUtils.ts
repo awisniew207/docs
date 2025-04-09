@@ -43,11 +43,11 @@ export const sendTransaction = async (
       `Transaction submitted! Hash: ${txResponse.hash.substring(0, 10)}...`,
       'info'
     );
-    
+
     return txResponse;
   } catch (error) {
     console.error(`TRANSACTION FAILED (${methodName}):`, error);
-    
+
     // Try to extract more specific error information
     const errorObj = error as any;
     const errorMessage = errorObj.message || '';
@@ -143,7 +143,7 @@ export const addPermittedActions = async (
     `Adding permissions for ${toolIpfsCids.length} action(s)...`,
     'info'
   );
-  
+
   // Initialize Lit Contracts
   const litContracts = new LitContracts({
     network: SELECTED_LIT_NETWORK,
@@ -163,7 +163,7 @@ export const addPermittedActions = async (
           agentPKPTokenId,
           policyCid
         );
-        
+
         if (!isPolicyPermitted) {
           console.log(`Adding DCA policy for ${policyCid}`);
           await litContracts.addPermittedAction({
@@ -217,6 +217,6 @@ export const addPermittedActions = async (
       // Continue with the next IPFS CID even if one fails
     }
   }
-  
+
   statusCallback?.('Permission grants successful!', 'success');
 }; 
