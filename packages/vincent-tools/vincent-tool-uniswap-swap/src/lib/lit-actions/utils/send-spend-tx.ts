@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import type { VincentToolPolicyError, VincentToolPolicyResponse, VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { signTx, YELLOWSTONE_SPENDING_LIMIT_ADDRESS } from '.';
+import { getGasParams, signTx, YELLOWSTONE_SPENDING_LIMIT_ADDRESS } from '.';
 
 interface EstimateGasResponse {
     estimatedGas: ethers.BigNumber;
@@ -49,31 +49,21 @@ const estimateGas = async (
 ): Promise<EstimateGasResponse | VincentToolPolicyError> => {
     console.log(`Making gas estimation call...`);
     try {
-        let estimatedGas = await spendingLimitContract.estimateGas.spend(
-            appId,
-            amountInUsd,
-            maxSpendingLimitInUsdCents,
-            spendingLimitDuration,
-            { from: pkpEthAddress }
-        );
-        // Add 10% buffer to estimated gas
-        estimatedGas = estimatedGas.mul(110).div(100);
-
-        console.log('Getting block and gas price...');
-        const [block, gasPrice] = await Promise.all([
+        console.log('Getting block, gas price, and estimated gas...');
+        const [block, feeData, estimatedGas] = await Promise.all([
             spendingLimitContract.provider.getBlock('latest'),
-            spendingLimitContract.provider.getGasPrice()
+            spendingLimitContract.provider.getFeeData(),
+            spendingLimitContract.estimateGas.spend(
+                appId,
+                amountInUsd,
+                maxSpendingLimitInUsdCents,
+                spendingLimitDuration,
+                { from: pkpEthAddress }
+            )
         ]);
 
-        // Use a more conservative max fee per gas calculation
-        const baseFeePerGas = block.baseFeePerGas || gasPrice;
-        const maxFeePerGas = baseFeePerGas.mul(150).div(100); // 1.5x base fee
-        const maxPriorityFeePerGas = gasPrice.div(10); // 0.1x gas price
-
         return {
-            estimatedGas,
-            maxFeePerGas,
-            maxPriorityFeePerGas,
+            ...await getGasParams(spendingLimitContract.provider, block, feeData, estimatedGas),
         };
     } catch (error: unknown) {
         return tryParseSpendLimitExceededError(spendingLimitContract, error) as VincentToolPolicyError;

@@ -1,38 +1,27 @@
 import { ethers } from 'ethers';
 import type { VincentToolPolicyResponse, VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { BASE_MAINNET_UNISWAP_V3_ROUTER, signTx } from '.';
+import { BASE_MAINNET_UNISWAP_V3_ROUTER, getGasParams, signTx } from '.';
 
 const estimateGasForApproval = async (
     tokenInContract: ethers.Contract,
     uniswapV3RouterAddress: string,
     amountInSmallestUnit: ethers.BigNumber,
-    pkpEthAddress: string,
+    pkpEthAddress: string
 ) => {
-    let estimatedGas = await tokenInContract.estimateGas.approve(
-        uniswapV3RouterAddress,
-        amountInSmallestUnit,
-        { from: pkpEthAddress }
-    );
-
-    // Add 10% buffer to estimated gas
-    estimatedGas = estimatedGas.mul(110).div(100);
-
-    // Get current gas data
-    const [block, gasPrice] = await Promise.all([
+    // Get current gas data in parallel
+    const [block, feeData, estimatedGas] = await Promise.all([
         tokenInContract.provider.getBlock('latest'),
-        tokenInContract.provider.getGasPrice()
+        tokenInContract.provider.getFeeData(),
+        tokenInContract.estimateGas.approve(
+            uniswapV3RouterAddress,
+            amountInSmallestUnit,
+            { from: pkpEthAddress }
+        )
     ]);
 
-    // Use a more conservative max fee per gas calculation
-    const baseFeePerGas = block.baseFeePerGas || gasPrice;
-    const maxFeePerGas = baseFeePerGas.mul(150).div(100); // 1.5x base fee
-    const maxPriorityFeePerGas = gasPrice.div(10); // 0.1x gas price
-
     return {
-        estimatedGas,
-        maxFeePerGas,
-        maxPriorityFeePerGas,
+        ...await getGasParams(tokenInContract.provider, block, feeData, estimatedGas),
     };
 }
 

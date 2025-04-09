@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { type VincentToolResponse } from '@lit-protocol/vincent-tool';
 
-import { BASE_MAINNET_UNISWAP_V3_ROUTER, getUniswapQuote, signTx, type UniswapQuoteResponse } from '.';
+import { BASE_MAINNET_UNISWAP_V3_ROUTER, getGasParams, getUniswapQuote, signTx, type UniswapQuoteResponse } from '.';
 
 const estimateGasForSwap = async (
     uniswapV3RouterContract: ethers.Contract,
@@ -12,37 +12,25 @@ const estimateGasForSwap = async (
     amountInSmallestUnit: ethers.BigNumber,
     amountOutMin: ethers.BigNumber
 ) => {
-    let estimatedGas = await uniswapV3RouterContract.estimateGas.exactInputSingle(
-        [
-            tokenInAddress,
-            tokenOutAddress,
-            uniswapV3PoolFee,
-            pkpEthAddress,
-            amountInSmallestUnit,
-            amountOutMin,
-            0
-        ],
-        { from: pkpEthAddress }
-    );
-
-    // Add 10% buffer to estimated gas
-    estimatedGas = estimatedGas.mul(110).div(100);
-
-    // Get current gas data
-    const [block, gasPrice] = await Promise.all([
+    const [block, feeData, estimatedGas] = await Promise.all([
         uniswapV3RouterContract.provider.getBlock('latest'),
-        uniswapV3RouterContract.provider.getGasPrice()
+        uniswapV3RouterContract.provider.getFeeData(),
+        uniswapV3RouterContract.estimateGas.exactInputSingle(
+            [
+                tokenInAddress,
+                tokenOutAddress,
+                uniswapV3PoolFee,
+                pkpEthAddress,
+                amountInSmallestUnit,
+                amountOutMin,
+                0
+            ],
+            { from: pkpEthAddress }
+        )
     ]);
 
-    // Use a more conservative max fee per gas calculation
-    const baseFeePerGas = block.baseFeePerGas || gasPrice;
-    const maxFeePerGas = baseFeePerGas.mul(150).div(100); // 1.5x base fee
-    const maxPriorityFeePerGas = gasPrice.div(10); // 0.1x gas price
-
     return {
-        estimatedGas,
-        maxFeePerGas,
-        maxPriorityFeePerGas,
+        ...await getGasParams(uniswapV3RouterContract.provider, block, feeData, estimatedGas),
     };
 }
 
