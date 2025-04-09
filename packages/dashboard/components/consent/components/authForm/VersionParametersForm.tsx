@@ -20,15 +20,7 @@ export default function VersionParametersForm({
   
   useEffect(() => {
     // Generate a version key for tracking changes
-    let versionKey: string;
-    
-    try {
-      // Use named properties instead of array indices
-      versionKey = `${versionInfo.app.id.hex}:${versionInfo.appVersion.version.hex}`;
-    } catch (error) {
-      console.error('Error generating version key:', error);
-      versionKey = 'unknown';
-    }
+    const versionKey = `${versionInfo.app.id.hex}:${versionInfo.appVersion.version.hex}`;
     
     const shouldInitialize = !initializedRef.current || 
                              existingParameters.length > 0 ||

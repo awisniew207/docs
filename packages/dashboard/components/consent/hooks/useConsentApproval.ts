@@ -109,7 +109,7 @@ export const useConsentApproval = ({
    * Updates parameters for an existing app consent
    */
   const updateParameters = useCallback(async () => {
-    if (!agentPKP || !appId || !appInfo) {
+    if (!agentPKP || !appId || !appInfo || !versionInfo) {
       console.error('Missing required data for parameter update');
       throw new Error('Missing required data for parameter update');
     }
@@ -156,7 +156,7 @@ export const useConsentApproval = ({
       });
     } catch (error) {
       onStatusChange?.('Error fetching existing parameters:', 'error');
-      throw new Error('Error fetching existing parameters:', error as Error);
+      throw new Error('Error fetching existing parameters');
     }
 
     // Identify parameters that need to be removed
@@ -268,7 +268,7 @@ export const useConsentApproval = ({
    * Main consent approval function
    */
   const approveConsent = useCallback(async () => {
-    if (!agentPKP || !appId || !appInfo) {
+    if (!agentPKP || !appId || !appInfo || !versionInfo) {
       console.error('Missing required data for consent approval');
       throw new Error('Missing required data for consent approval');
     }

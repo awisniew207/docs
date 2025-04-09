@@ -1,10 +1,15 @@
 import { ethers } from 'ethers';
+import { LIT_NETWORK, LIT_RPC } from "@lit-protocol/constants";
 
-export type Network = 'datil';
+export type Network = typeof LIT_NETWORK.Datil;
 
 export const VINCENT_DIAMOND_ADDRESS: Record<Network, string> = {
-  datil: process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT || '',
+  datil: process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT!,
 };
+
+if (!VINCENT_DIAMOND_ADDRESS.datil) {
+  throw new Error('Vincent Diamond contract address for datil network is undefined. Check your environment variables.');
+}
 
 import APP_VIEW_FACET_ABI from './abis/VincentAppViewFacet.abi.json';
 import APP_FACET_ABI from './abis/VincentAppFacet.abi.json';
@@ -24,7 +29,7 @@ export const FACET_ABIS = {
   User: USER_FACET_ABI,
 };
 
-export const rpc = 'https://yellowstone-rpc.litprotocol.com';
+export const rpc = LIT_RPC.CHRONICLE_YELLOWSTONE;
 
 /**
  * Get a contract instance for a specific facet of the Vincent Diamond
@@ -73,13 +78,11 @@ export async function estimateGasWithBuffer(
     const estimatedGas = await contract.estimateGas[method](...args);
 
     // Add 10% buffer to the estimated gas
-    const buffer = estimatedGas.div(10); // 10% = divide by 10
+    const buffer = estimatedGas.div(process.env.NEXT_PUBLIC_GAS_BUFFER_DIVISOR!);
     const gasLimitWithBuffer = estimatedGas.add(buffer);
     
     return gasLimitWithBuffer;
   } catch (error) {
-    console.warn(`Using default gas limit for ${method} due to estimation failure`);
-    const defaultGasLimit = ethers.BigNumber.from("3000000");
-    return defaultGasLimit;
+    throw new Error('Gas estimation failed');
   }
 }

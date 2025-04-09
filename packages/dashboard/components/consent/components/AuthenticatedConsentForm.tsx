@@ -25,7 +25,9 @@ import { useAppPermissionCheck } from '../hooks/useAppPermissionCheck';
 // Import types
 import {
   AuthenticatedConsentFormProps,
-  VersionParameter
+  VersionParameter,
+  AppView,
+  ContractVersionResult
 } from '../types';
 
 /**
@@ -151,9 +153,9 @@ export default function AuthenticatedConsentForm({
 
   // Use the consent approval hook
   const { approveConsent, updateParameters } = useConsentApproval({
-    appId: appId!,
-    appInfo: appInfo!,
-    versionInfo: versionInfo!,
+    appId: appId as string,
+    appInfo: appInfo as AppView,
+    versionInfo: versionInfo as ContractVersionResult,
     parameters,
     agentPKP,
     userPKP,
