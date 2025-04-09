@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSetAuthInfo } from '../hooks/useAuthInfo';
 
 interface WebAuthnProps {
   authWithWebAuthn: any;
@@ -12,6 +13,7 @@ export default function WebAuthn({
   registerWithWebAuthn,
 }: WebAuthnProps) {
   const [loading, setLoading] = useState<boolean>(false);
+  const { setAuthInfo } = useSetAuthInfo();
 
   async function handleRegister() {
     if (!registerWithWebAuthn) {
@@ -34,12 +36,10 @@ export default function WebAuthn({
       // Store WebAuthn information in localStorage with a basic entry
       // since the response is undefined
       try {
-        const authInfo = {
+        setAuthInfo({
           type: 'webauthn',
           authenticatedAt: new Date().toISOString(),
-        };
-        
-        localStorage.setItem('lit-auth-info', JSON.stringify(authInfo));
+        });
       } catch (storageError) {
         console.error('Error storing WebAuthn info in localStorage:', storageError);
       }

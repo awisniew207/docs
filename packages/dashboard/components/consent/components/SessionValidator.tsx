@@ -3,42 +3,11 @@ import { LitActionResource } from '@lit-protocol/auth-helpers';
 import { LitPKPResource } from '@lit-protocol/auth-helpers';
 import { LIT_ABILITY } from '@lit-protocol/constants';
 import { validateSessionSigs } from '@lit-protocol/misc';
-import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
+import { SessionSigs } from '@lit-protocol/types';
 
 import { cleanupSession, litNodeClient } from '../utils/lit';
 import AuthenticatedConsentForm from './AuthenticatedConsentForm';
-
-
-// Define interfaces for the authentication info
-interface AuthInfo {
-  type: string;
-  authenticatedAt: string;
-  agentPKP?: IRelayPKP;
-  userPKP?: IRelayPKP;
-  value?: string;
-}
-
-/**
- * Hook to retrieve authentication info from localStorage
- * @returns The authentication info stored in localStorage, or null if not found
- */
-const useAuthInfo = (): AuthInfo | null => {
-  const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
-
-  useEffect(() => {
-    try {
-      const storedAuthInfo = localStorage.getItem('lit-auth-info');
-      if (storedAuthInfo) {
-        const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
-        setAuthInfo(parsedAuthInfo);
-      }
-    } catch (error) {
-      console.error('Error retrieving auth info:', error);
-    }
-  }, []);
-
-  return authInfo;
-};
+import { useReadAuthInfo } from '../hooks/useAuthInfo';
 
 /**
  * A streamlined SessionValidator component that validates session signatures on mount
@@ -47,7 +16,7 @@ const SessionValidator: React.FC = () => {
   const [showConsentForm, setShowConsentForm] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
-  const authInfo = useAuthInfo();
+  const authInfo = useReadAuthInfo();
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
 
   // Validate session once we have auth info
