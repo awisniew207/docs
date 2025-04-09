@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NETWORK_CONFIG, validateUserToolPolicies, getPkpInfo } from '@lit-protocol/vincent-tool';
 import { ethers } from 'ethers';
 
