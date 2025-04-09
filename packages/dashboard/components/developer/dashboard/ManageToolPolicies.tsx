@@ -1,104 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { AppView } from "@/services/types";
 import { VersionInfo } from "@/components/consent/types";
-import { Input } from "@/components/ui/input";
 import { getContract, estimateGasWithBuffer } from "@/services/contract/config";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Plus, Trash2, Info } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VincentContracts } from "@/services";
 import { useErrorPopup } from "@/providers/error-popup";
 import { mapTypeToEnum } from "@/services/types";
 import { mapEnumToTypeName, ParameterType } from "@/services/types";
 import { StatusMessage } from "@/utils/statusMessage";
-interface PolicyParameter {
-    name: string;
-    type: string;
-}
-
-interface Policy {
-    policyIpfsCid: string;
-    parameters: PolicyParameter[];
-}
-
-interface ToolPolicy {
-    toolIpfsCid?: string;
-    policies?: Policy[];
-    [key: string]: any;
-}
-
-interface PolicyParameterWithId extends PolicyParameter {
-    _id: string;
-}
-
-interface PolicyWithId extends Policy {
-    _id: string;
-    parameters: PolicyParameterWithId[];
-}
-
-interface ToolPolicyWithId extends ToolPolicy {
-    _id: string;
-    policies: PolicyWithId[];
-}
-
-interface ToolPolicyManagerProps {
-    onBack: () => void;
-    dashboard: AppView;
-}
-
-// Uncontrolled input that updates state only on blur 
-const LazyInput = ({ initialValue = "", onUpdate, placeholder }: 
-  { initialValue: string, onUpdate: (value: string) => void, placeholder?: string }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  
-  // Using onBlur is much better for performance than onChange 
-  const handleBlur = () => {
-    if (inputRef.current) {
-      onUpdate(inputRef.current.value);
-    }
-  };
-
-  return (
-    <Input
-      ref={inputRef}
-      placeholder={placeholder}
-      defaultValue={initialValue}
-      onBlur={handleBlur}
-    />
-  );
-};
-
-// Uncontrolled select that updates state only when value changes
-const LazySelect = ({ initialValue = "string", onUpdate }: 
-  { initialValue: string, onUpdate: (value: string) => void }) => {
-  return (
-    <Select
-      defaultValue={initialValue}
-      onValueChange={onUpdate}
-    >
-      <SelectTrigger className="text-black">
-        <SelectValue placeholder="Type" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="string">string</SelectItem>
-        <SelectItem value="string[]">string[]</SelectItem>
-        <SelectItem value="bool">bool</SelectItem>
-        <SelectItem value="bool[]">bool[]</SelectItem>
-        <SelectItem value="uint256">uint256</SelectItem>
-        <SelectItem value="uint256[]">uint256[]</SelectItem>
-        <SelectItem value="int256">int256</SelectItem>
-        <SelectItem value="int256[]">int256[]</SelectItem>
-        <SelectItem value="address">address</SelectItem>
-        <SelectItem value="address[]">address[]</SelectItem>
-        <SelectItem value="bytes">bytes</SelectItem>
-        <SelectItem value="bytes[]">bytes[]</SelectItem>
-      </SelectContent>
-    </Select>
-  );
-};
+import { LazyInput } from "@/app/appId/[appId]/tool-policies/components/lazyInput";
+import { LazySelect } from "@/app/appId/[appId]/tool-policies/components/lazySelect";
+import { ToolPolicyWithId, PolicyWithId, ToolPolicyManagerProps } from "@/app/appId/[appId]/tool-policies/types";
 
 export default function ManageToolPoliciesScreen({
     onBack,
