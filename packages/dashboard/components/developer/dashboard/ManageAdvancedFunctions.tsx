@@ -74,7 +74,7 @@ export default function ManageAdvancedFunctionsScreen({
   
   // Add these new state variables after the other states in the component
   const [showUpdateDeploymentStatusDialog, setShowUpdateDeploymentStatusDialog] = useState(false);
-  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus || 0);
+  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus!);
   const deploymentStatusNames = ['DEV', 'TEST', 'PROD'];
   
   // Add state for delete app dialog
@@ -101,12 +101,12 @@ export default function ManageAdvancedFunctionsScreen({
   }, [showError, showStatus]);
   
   useEffect(() => {
-    setVersionNumber(dashboard.currentVersion || 1);
+    setVersionNumber(dashboard.currentVersion);
     
     // Extract available versions
     const versions = (dashboard.toolPolicies || []).map(versionData => {
-      const version = versionData.version || versionData[0];
-      const enabled = versionData.enabled !== undefined ? versionData.enabled : versionData[1];
+      const version = versionData.version;
+      const enabled = versionData.enabled;
       return { version: parseInt(version.toString()), enabled };
     });
     
@@ -602,7 +602,7 @@ export default function ManageAdvancedFunctionsScreen({
                   {availableVersions.length > 0 ? (
                     availableVersions.map((versionData, index) => (
                       <SelectItem key={index} value={versionData.version.toString()}>
-                        Version {versionData.version.toString()} {versionData.enabled ? "(Currently Enabled)" : ""}
+                        Version {versionData.version.toString()} {versionData.enabled ? "(Enabled)" : "(Disabled)"}
                       </SelectItem>
                     ))
                   ) : (

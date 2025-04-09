@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AppView } from "@/services/types";
+import { VersionInfo } from "@/components/consent/types";
 import { Input } from "@/components/ui/input";
 import { getContract, estimateGasWithBuffer } from "@/services/contract/config";
 import { Button } from "@/components/ui/button";
@@ -95,80 +96,26 @@ export default function ManageToolPoliciesScreen({
             const contracts = new VincentContracts('datil');
             const appVersion = await contracts.getAppVersion(dashboard.appId, dashboard.currentVersion);
             
-            let toolsData = [];
-            
-            if (appVersion?.appVersion?.tools) {
-                toolsData = appVersion.appVersion.tools;
-            } else if (appVersion?.[1]?.[3]) {
-                toolsData = appVersion[1][3];
-            } else if (Array.isArray(appVersion) && appVersion.length >= 2 && appVersion[1] && Array.isArray(appVersion[1])) {
-                const appVersionArr = appVersion[1];
-                if (appVersionArr.length >= 4 && Array.isArray(appVersionArr[3])) {
-                    toolsData = appVersionArr[3];
-                }
-            }
-            
-            const formattedTools = toolsData.map((tool: any) => {
-                let toolIpfsCid = "";
-                let rawPolicies = [];
-                let parameterNames = [];
-                let parameterTypes = [];
-                
-                if (Array.isArray(tool)) {
-                    toolIpfsCid = tool[0] || "";
-                    
-                    if (tool.length > 1 && Array.isArray(tool[1])) {
-                        rawPolicies = tool[1] || [];
-                    }
-                    
-                    if (tool.length > 2 && Array.isArray(tool[2])) {
-                        parameterNames = tool[2];
-                    }
-                    
-                    if (tool.length > 3 && Array.isArray(tool[3])) {
-                        parameterTypes = tool[3];
-                    }
-                    
-                } else if (typeof tool === 'object') {
-                    toolIpfsCid = tool.toolIpfsCid || "";
-                    rawPolicies = tool.policies || [];
-                    parameterNames = tool.parameterNames || [];
-                    parameterTypes = tool.parameterTypes || [];
-                }
-                
+            const appVersionInfo = appVersion as VersionInfo;
+            const formattedTools = appVersionInfo.appVersion.tools.map(tool => {
                 const formattedTool: ToolPolicyWithId = {
                     _id: crypto.randomUUID(),
-                    toolIpfsCid: toolIpfsCid,
+                    toolIpfsCid: tool.toolIpfsCid,
                     policies: []
                 };
                 
-                if (rawPolicies && rawPolicies.length > 0) {
-                    
-                    rawPolicies.forEach((policyData: any) => {
-                        let policyIpfsCid = "";
-                        let policyParamNames: string[] = [];
-                        let policyParamTypes: number[] = [];
-                        
-                        if (Array.isArray(policyData)) {
-                            policyIpfsCid = policyData[0] || '';
-                            policyParamNames = Array.isArray(policyData[1]) ? policyData[1] : [];
-                            policyParamTypes = Array.isArray(policyData[2]) ? policyData[2] : [];
-                        } else if (typeof policyData === 'object') {
-                            policyIpfsCid = policyData.policyIpfsCid || '';
-                            policyParamNames = policyData.parameterNames || [];
-                            policyParamTypes = policyData.parameterTypes || [];
-                        }
-                        
+                if (tool.policies && tool.policies.length > 0) {
+                    tool.policies.forEach(policyData => {
                         const policy: PolicyWithId = {
                             _id: crypto.randomUUID(),
-                            policyIpfsCid: policyIpfsCid,
+                            policyIpfsCid: policyData.policyIpfsCid,
                             parameters: []
                         };
                         
-                        if (policyParamNames && policyParamNames.length > 0) {
-                            policyParamNames.forEach((name: string, index: number) => {
-                                const typeValue = policyParamTypes[index] !== undefined ? 
-                                    policyParamTypes[index] : 
+                        if (policyData.parameterNames && policyData.parameterNames.length > 0) {
+                            policyData.parameterNames.forEach((name, index) => {
+                                const typeValue = policyData.parameterTypes[index] !== undefined ? 
+                                    policyData.parameterTypes[index] : 
                                     ParameterType.STRING;
                                 
                                 const typeName = mapEnumToTypeName(Number(typeValue)) || "string";
@@ -183,36 +130,12 @@ export default function ManageToolPoliciesScreen({
                         
                         formattedTool.policies.push(policy);
                     });
-                } 
-                else if (parameterNames && parameterNames.length > 0 && parameterTypes && parameterTypes.length > 0) {
-                    
-                    const policy: PolicyWithId = {
-                        _id: crypto.randomUUID(),
-                        policyIpfsCid: "",
-                        parameters: []
-                    };
-                    
-                    parameterNames.forEach((name: string, index: number) => {
-                        const typeValue = parameterTypes[index] !== undefined ? 
-                            parameterTypes[index] : 
-                            ParameterType.STRING;
-                        
-                        const typeName = mapEnumToTypeName(Number(typeValue)) || "string";
-                        
-                        policy.parameters.push({
-                            _id: crypto.randomUUID(),
-                            name: name,
-                            type: typeName
-                        });
-                    });
-                    
-                    formattedTool.policies.push(policy);
                 }
                 
                 return formattedTool;
             });
             
-            const validTools = formattedTools.filter((tool: ToolPolicyWithId) => !!tool.toolIpfsCid);
+            const validTools = formattedTools.filter(tool => !!tool.toolIpfsCid);
             
             if (validTools.length === 0) {
                 validTools.push(createEmptyToolPolicy());
@@ -452,20 +375,7 @@ export default function ManageToolPoliciesScreen({
                     }, 2000);
                 } catch (txError: any) {
                     console.error("Transaction failed:", txError);
-                    setStatusMessage(null);
-                    
-                    if (txError.code === -32603 && txError.message?.includes("429")) {
-                        showError("Transaction failed due to RPC rate limiting. Please wait a moment and try again.");
-                    } else {
-                        let errorMsg = txError.message || "Unknown transaction error";
-                        if (errorMsg.includes("transaction failed")) {
-                            errorMsg = "Transaction failed. Please check your MetaMask and try again.";
-                        } else if (errorMsg.includes("Cannot estimate gas")) {
-                            const matches = errorMsg.match(/Cannot estimate gas for .+?: (.+)/);
-                            errorMsg = matches && matches[1] ? matches[1] : "Gas estimation failed. The transaction would likely fail.";
-                        }
-                        showError(`Transaction failed: ${errorMsg}`);
-                    }
+                    setStatusMessage({ message: "Transaction failed: " + txError.message, type: "error" });
                 }
             } catch (error: any) {
                 console.error("Error saving tool policies:", error);

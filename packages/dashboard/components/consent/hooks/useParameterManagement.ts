@@ -10,7 +10,8 @@ import {
   VersionParameter, 
   PolicyParameter, 
   PolicyWithParameters, 
-  ToolWithPolicies 
+  ToolWithPolicies,
+  ContractVersionResult
 } from '../types';
 import { decodeParameterValue } from '../utils/parameterDecoding';
 
@@ -35,7 +36,7 @@ export const useParameterManagement = ({
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
   const [existingParameters, setExistingParameters] = useState<VersionParameter[]>([]);
   const [isLoadingParameters, setIsLoadingParameters] = useState<boolean>(false);
-  const [versionInfo, setVersionInfo] = useState<any>(null);
+  const [versionInfo, setVersionInfo] = useState<ContractVersionResult | null>(null);
 
   // Ref to track if we've already fetched parameters
   const parametersFetchedRef = useRef(false);
@@ -48,13 +49,11 @@ export const useParameterManagement = ({
   const fetchExistingParameters = useCallback(async () => {
     // Safety check to ensure required values are present
     if (!appId) {
-      console.error('Missing appId in fetchExistingParameters');
-      return;
+      throw new Error('Missing appId in fetchExistingParameters');
     }
     
     if (!agentPKP) {
-      console.error('Missing agentPKP in fetchExistingParameters');
-      return;
+      throw new Error('Missing agentPKP in fetchExistingParameters');
     }
     
     if (isLoadingParameters || existingParameters.length > 0 || parametersFetchedRef.current) {
@@ -109,12 +108,14 @@ export const useParameterManagement = ({
           setVersionInfo(versionData);
         } catch (err) {
           console.error('Error fetching version info for parameter matching:', err);
+          throw new Error(`Failed to fetch version info for parameter matching: ${err instanceof Error ? err.message : String(err)}`);
         }
       }
       
     } catch (error) {
       console.error('Error fetching existing parameters:', error);
       onStatusChange?.('Failed to load your existing parameters', 'error');
+      throw new Error(`Failed to fetch existing parameters: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsLoadingParameters(false);
     }
@@ -139,11 +140,11 @@ export const useParameterManagement = ({
    * This provides details about the latest version of the app, including
    * tools, policies, and parameters that can be configured.
    * @param versionNumber Optional specific version to fetch. If not provided, uses the latest version.
+   * @throws Error if appId or appInfo is missing, or if the contract call fails
    */
-  const fetchVersionInfo = useCallback(async (versionNumber?: number) => {
+  const fetchVersionInfo = useCallback(async (versionNumber?: number): Promise<ContractVersionResult> => {
     if (!appId || !appInfo) {
-      console.error('Missing appId or appInfo in fetchVersionInfo');
-      return null;
+      throw new Error('Missing appId or appInfo in fetchVersionInfo');
     }
 
     try {
@@ -158,7 +159,7 @@ export const useParameterManagement = ({
     } catch (err) {
       console.error('Error fetching version info:', err);
       onStatusChange?.('Failed to load app information', 'error');
-      return null;
+      throw new Error(`Failed to fetch version info: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, [appId, appInfo, onStatusChange]);
 

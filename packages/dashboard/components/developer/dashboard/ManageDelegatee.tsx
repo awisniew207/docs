@@ -127,21 +127,9 @@ export default function DelegateeManagerScreen({
                     clearStatus();
                     onBack();
                 }, 2000);
-            } catch (innerError: any) {
-                console.error("Detailed error:", innerError);
-                let errorMessage = "Failed to add delegatee. ";
-                
-                if (innerError.message) {
-                    if (innerError.message.includes("CALL_EXCEPTION")) {
-                        errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
-                    } else if (innerError.message.includes("user rejected")) {
-                        errorMessage = "Transaction was rejected by the user.";
-                    } else {
-                        errorMessage += innerError.message.split('(')[0]; // Get first part of error
-                    }
-                }
-                
-                showErrorWithStatus(errorMessage, "Transaction Error");
+            } catch (error: any) {
+                console.error("Detailed error:", error);
+                showErrorWithStatus(error.message, "Transaction Error");
             }
         } catch (error: any) {
             console.error("Error adding delegatee:", error);

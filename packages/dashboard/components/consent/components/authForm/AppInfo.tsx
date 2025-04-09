@@ -1,12 +1,12 @@
 import React from 'react';
-import { AppView } from '../../types';
+import { AppView, ContractVersionResult } from '../../types';
 import { checkForDuplicates } from '../../utils/hasDuplicates';
 import { IRelayPKP } from '@lit-protocol/types';
 
 interface AppInfoProps {
   appInfo: AppView;
   agentPKP?: IRelayPKP;
-  versionInfo?: any;
+  versionInfo?: ContractVersionResult;
   showIPFSDetails?: boolean;
 }
 
@@ -77,17 +77,17 @@ const AppInfo = ({
             <strong>IPFS CIDs:</strong>
             <div style={{ marginTop: '8px' }}>
               {(() => {
-                const toolsData = versionInfo.appVersion.tools;
+                const tools = versionInfo.appVersion.tools;
 
-                if (!toolsData || !Array.isArray(toolsData) || toolsData.length === 0) {
+                if (!Array.isArray(tools) || tools.length === 0) {
                   return <p style={{ fontStyle: 'italic' }}>No tools configured</p>;
                 }
 
-                return toolsData.map((tool: any, toolIndex: number) => {
-                  if (!tool || !Array.isArray(tool) || !tool[0]) return null;
+                return tools.map((tool, toolIndex) => {
+                  if (!tool) return null;
 
-                  const toolIpfsCid = tool[0];
-                  const policies = tool[1];
+                  const toolIpfsCid = tool.toolIpfsCid;
+                  const policies = tool.policies;
 
                   return (
                     <div key={`tool-${toolIndex}`} style={{ marginBottom: '10px' }}>
@@ -100,10 +100,10 @@ const AppInfo = ({
 
                       {Array.isArray(policies) && policies.length > 0 && (
                         <div style={{ marginTop: '5px', paddingLeft: '20px' }}>
-                          {policies.map((policy: any, policyIndex: number) => {
-                            if (!policy || !Array.isArray(policy) || !policy[0]) return null;
+                          {policies.map((policy, policyIndex) => {
+                            if (!policy) return null;
 
-                            const policyIpfsCid = policy[0];
+                            const policyIpfsCid = policy.policyIpfsCid;
 
                             return (
                               <div key={`policy-${toolIndex}-${policyIndex}`} style={{ marginTop: '5px' }}>
