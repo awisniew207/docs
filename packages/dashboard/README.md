@@ -21,7 +21,7 @@ The Vincent Agent Wallet system is a decentralized permission management framewo
 ## Key Components
 
 ### AgentPKP (On-Chain Agent Registry)
-- Manages user-approved permissions for Apps using Policis
+- Manages user-approved permissions for Apps using Policies
 - Structure: AgentPKP → Apps → Tools → Policies
 - Controlled by the User Admin PKP, allowing updates like enabling/disabling Apps, Tools & Policies
 
