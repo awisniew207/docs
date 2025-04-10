@@ -485,7 +485,7 @@ export default function AuthenticatedConsentForm({
   // ===== Render Logic =====
 
   // Show the parameter update modal - this should take precedence over all other views
-  if (showUpdateModal && appInfo) {
+  if (showUpdateModal && appInfo && permittedVersion !== null) {
     return (
       <div className='container'>
         <div className='consent-form-container'>
@@ -495,6 +495,7 @@ export default function AuthenticatedConsentForm({
             onContinue={handleContinueWithExisting}
             onUpdate={handleUpdateParameters}
             appName={appInfo.name}
+            permittedVersion={permittedVersion}
           />
           {isLoadingParameters && (
             <p className="text-center mt-4">Loading your existing parameters...</p>
