@@ -30,8 +30,6 @@ export class VincentContracts {
     deploymentStatus: number = 0 // DEV=0, TEST=1, PROD=2
   ) {
     const contract = await getContract(this.network, 'App', true, this.signer);
-    console.log("toolpolicyparametertypes", toolPolicyParameterTypes);
-    console.log("formatted toolpolicyparametertypes", JSON.stringify(toolPolicyParameterTypes));
     
     // Create tuple arguments as expected by the contract
     const appInfo = {
@@ -69,7 +67,6 @@ export class VincentContracts {
 
   async addDelegatee(appId: number, delegatee: string) {
     const contract = await getContract(this.network, 'App', true, this.signer);
-    console.log("Trying to add delegatee", appId, delegatee);
     const tx = await contract.addDelegatee(appId, delegatee);
     await tx.wait();
     return tx;

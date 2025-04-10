@@ -3,20 +3,11 @@ import { LitActionResource } from '@lit-protocol/auth-helpers';
 import { LitPKPResource } from '@lit-protocol/auth-helpers';
 import { LIT_ABILITY } from '@lit-protocol/constants';
 import { validateSessionSigs } from '@lit-protocol/misc';
-import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
+import { SessionSigs } from '@lit-protocol/types';
 
 import { cleanupSession, litNodeClient } from '../utils/lit';
 import AuthenticatedConsentForm from './AuthenticatedConsentForm';
-
-
-// Define interfaces for the authentication info
-interface AuthInfo {
-  type: string;
-  authenticatedAt: string;
-  agentPKP?: IRelayPKP;
-  userPKP?: IRelayPKP;
-  value?: string;
-}
+import { useReadAuthInfo } from '../hooks/useAuthInfo';
 
 /**
  * A streamlined SessionValidator component that validates session signatures on mount
@@ -25,29 +16,8 @@ const SessionValidator: React.FC = () => {
   const [showConsentForm, setShowConsentForm] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
-  const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
+  const authInfo = useReadAuthInfo();
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
-
-  // Check for auth info on mount
-  useEffect(() => {
-    try {
-      const storedAuthInfo = localStorage.getItem('lit-auth-info');
-      if (storedAuthInfo) {
-        const parsedAuthInfo = JSON.parse(storedAuthInfo);
-        setAuthInfo(parsedAuthInfo);
-        console.log('Retrieved auth info:', parsedAuthInfo);
-
-        // If we have auth info with a PKP, show the popup
-        if (parsedAuthInfo.agentPKP) {
-          console.log(
-            'Found existing PKP in auth info, will check session validity'
-          );
-        }
-      }
-    } catch (error) {
-      console.error('Error retrieving auth info:', error);
-    }
-  }, []);
 
   // Validate session once we have auth info
   useEffect(() => {
@@ -55,20 +25,14 @@ const SessionValidator: React.FC = () => {
     if (hasCheckedSession || !authInfo || !authInfo.agentPKP) return;
 
     const validateSession = async () => {
-      try {
-        // Try to get a wallet signature using the session capability object
         try {
           // Check if lit-wallet-sig exists in localStorage first
           const litWalletSig = localStorage.getItem('lit-wallet-sig');
           if (!litWalletSig) {
-            console.log(
-              'Storage key "lit-wallet-sig" is missing. Skipping session validation.'
-            );
             setHasCheckedSession(true);
             return; // Exit early if the key is missing
           }
 
-          console.log('Generating wallet signature...');
           // Create lit resources for action execution and PKP signing
           const litResources = [
             new LitActionResource('*'),
@@ -94,11 +58,6 @@ const SessionValidator: React.FC = () => {
             nonce: Date.now().toString(),
           });
 
-          if (!walletSig) {
-            setHasCheckedSession(true);
-            return;
-          }
-
           if (walletSig) {
             await litNodeClient.connect();
             const attemptedSessionSigs = await litNodeClient.getSessionSigs({
@@ -120,7 +79,6 @@ const SessionValidator: React.FC = () => {
 
             // Store session sigs in state for later use
             setSessionSigs(attemptedSessionSigs);
-            console.log('Session sigs:', attemptedSessionSigs);
 
             if(!attemptedSessionSigs) {
               setHasCheckedSession(true);
@@ -130,20 +88,13 @@ const SessionValidator: React.FC = () => {
             const validationResult = await validateSessionSigs(
               attemptedSessionSigs
             );
-            console.log('Validation result:', validationResult.isValid);
 
             // If validation is successful, show options (change from showing popup to showing consent form)
             if (validationResult.isValid) {
-              console.log(
-                'Session is valid, showing popup to use existing account'
-              );
               setShowPopup(true);
             }
           }
-        } catch (walletSigError) {
-          console.error('Error generating wallet signature:', walletSigError);
-        }
-      } catch (error) {
+        } catch (error) {
         console.error('Error validating session:', error);
       } finally {
         setHasCheckedSession(true);

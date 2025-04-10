@@ -22,33 +22,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useErrorPopup } from '@/providers/error-popup';
+import { StatusMessage } from '@/utils/statusMessage';
 
 interface AdvancedFunctionsProps {
   onBack: () => void;
   dashboard: AppView;
   onSuccess?: () => void;
 }
-
-// Status message component
-const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
-  if (!message) return null;
-  
-  const getStatusClass = () => {
-    switch (type) {
-      case 'warning': return 'status-message--warning';
-      case 'success': return 'status-message--success';
-      case 'error': return 'status-message--error';
-      default: return 'status-message--info';
-    }
-  };
-  
-  return (
-    <div className={`status-message ${getStatusClass()}`}>
-      {type === 'info' && <div className="spinner"></div>}
-      <span>{message}</span>
-    </div>
-  );
-};
 
 export default function ManageAdvancedFunctionsScreen({
   onBack,
@@ -74,7 +54,7 @@ export default function ManageAdvancedFunctionsScreen({
   
   // Add these new state variables after the other states in the component
   const [showUpdateDeploymentStatusDialog, setShowUpdateDeploymentStatusDialog] = useState(false);
-  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus || 0);
+  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus!);
   const deploymentStatusNames = ['DEV', 'TEST', 'PROD'];
   
   // Add state for delete app dialog
@@ -101,12 +81,12 @@ export default function ManageAdvancedFunctionsScreen({
   }, [showError, showStatus]);
   
   useEffect(() => {
-    setVersionNumber(dashboard.currentVersion || 1);
+    setVersionNumber(dashboard.currentVersion);
     
     // Extract available versions
     const versions = (dashboard.toolPolicies || []).map(versionData => {
-      const version = versionData.version || versionData[0];
-      const enabled = versionData.enabled !== undefined ? versionData.enabled : versionData[1];
+      const version = versionData.version;
+      const enabled = versionData.enabled;
       return { version: parseInt(version.toString()), enabled };
     });
     
@@ -219,9 +199,6 @@ export default function ManageAdvancedFunctionsScreen({
       showStatus(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}...`, "info");
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
-      
-      // Enable or disable the selected version
-      console.log(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}`);
       
       // Create args array for gas estimation
       const args = [
@@ -605,7 +582,7 @@ export default function ManageAdvancedFunctionsScreen({
                   {availableVersions.length > 0 ? (
                     availableVersions.map((versionData, index) => (
                       <SelectItem key={index} value={versionData.version.toString()}>
-                        Version {versionData.version.toString()} {versionData.enabled ? "(Currently Enabled)" : ""}
+                        Version {versionData.version.toString()} {versionData.enabled ? "(Enabled)" : "(Disabled)"}
                       </SelectItem>
                     ))
                   ) : (

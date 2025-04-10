@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStytch } from '@stytch/nextjs';
+import { useSetAuthInfo } from '../hooks/useAuthInfo';
 
 interface StytchOTPProps {
   method: OtpMethod;
@@ -20,6 +21,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
   const [code, setCode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const stytchClient = useStytch();
+  const { setAuthInfo } = useSetAuthInfo();
 
   async function sendPasscode(event: any) {
     event.preventDefault();
@@ -36,7 +38,6 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
           !userId.startsWith('+') ? `+${userId}` : userId
         );
       }
-      console.log(response);
       setMethodId(response.method_id);
       setStep('verify');
     } catch (err) {
@@ -55,14 +56,12 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       });
       
       try {
-        const authInfo = {
+        setAuthInfo({
           type: method,
           value: userId,
           userId: response.user_id,
           authenticatedAt: new Date().toISOString()
-        };
-        console.log(`Storing ${method} information in localStorage:`, authInfo);
-        localStorage.setItem('lit-auth-info', JSON.stringify(authInfo));
+        });
       } catch (storageError) {
         console.error('Error storing auth info in localStorage:', storageError);
       }

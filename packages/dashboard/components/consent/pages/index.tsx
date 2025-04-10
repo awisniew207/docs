@@ -12,6 +12,7 @@ import Loading from '../components/Loading';
 import LoginMethods from '../components/LoginMethods';
 import { getAgentPKP } from '../utils/getAgentPKP';
 import { useErrorPopup } from '@/providers/error-popup';
+import { useSetAuthInfo } from '../hooks/useAuthInfo';
 
 export default function IndexView() {
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
@@ -19,6 +20,7 @@ export default function IndexView() {
   const [sessionLoading, setSessionLoading] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<Error>();
   const { showError } = useErrorPopup();
+  const { updateAuthInfo } = useSetAuthInfo();
 
   const {
     authMethod,
@@ -137,16 +139,10 @@ export default function IndexView() {
   if (userPKP && sessionSigs) {
     // Save the PKP info in localStorage for SessionValidator to use
     try {
-      const storedAuthInfo = localStorage.getItem('lit-auth-info');
-      if (storedAuthInfo) {
-        const authInfo = JSON.parse(storedAuthInfo);
-
-        // Add PKP info to the existing auth info
-        authInfo.agentPKP = agentPKP;
-        authInfo.userPKP = userPKP;
-        localStorage.setItem('lit-auth-info', JSON.stringify(authInfo));
-        console.log('Updated auth info with PKP public keys:', authInfo);
-      }
+      updateAuthInfo({
+        agentPKP,
+        userPKP
+      });
     } catch (error) {
       console.error('Error saving PKP info to localStorage:', error);
     }

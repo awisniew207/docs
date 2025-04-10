@@ -1,10 +1,15 @@
 import { ethers } from 'ethers';
+import { LIT_NETWORK, LIT_RPC } from "@lit-protocol/constants";
 
-export type Network = 'datil';
+export type Network = typeof LIT_NETWORK.Datil;
 
 export const VINCENT_DIAMOND_ADDRESS: Record<Network, string> = {
-  datil: process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT || '',
+  datil: process.env.NEXT_PUBLIC_VINCENT_DATIL_CONTRACT!,
 };
+
+if (!VINCENT_DIAMOND_ADDRESS.datil) {
+  throw new Error('Vincent Diamond contract address for datil network is undefined. Check your environment variables.');
+}
 
 import APP_VIEW_FACET_ABI from './abis/VincentAppViewFacet.abi.json';
 import APP_FACET_ABI from './abis/VincentAppFacet.abi.json';
@@ -24,7 +29,7 @@ export const FACET_ABIS = {
   User: USER_FACET_ABI,
 };
 
-export const rpc = 'https://yellowstone-rpc.litprotocol.com';
+export const rpc = LIT_RPC.CHRONICLE_YELLOWSTONE;
 
 /**
  * Get a contract instance for a specific facet of the Vincent Diamond
@@ -72,63 +77,12 @@ export async function estimateGasWithBuffer(
     // Estimate the gas required for the transaction
     const estimatedGas = await contract.estimateGas[method](...args);
 
-    // Add 20% buffer to the estimated gas
-    const buffer = estimatedGas.div(5); // 20% = divide by 5
+    // Add 10% buffer to the estimated gas
+    const buffer = estimatedGas.div(process.env.NEXT_PUBLIC_GAS_BUFFER_DIVISOR!);
     const gasLimitWithBuffer = estimatedGas.add(buffer);
-    
-    console.log(`Gas estimation for ${method}:`, {
-      estimated: estimatedGas.toString(),
-      withBuffer: gasLimitWithBuffer.toString()
-    });
     
     return gasLimitWithBuffer;
   } catch (error) {
-    // Format and log a more detailed error message
-    console.error(`Error estimating gas for ${method}:`, error);
-    
-    // Extract detailed error information
-    const errorObj = error as any;
-    const errorMessage = errorObj.message || '';
-    const errorCode = errorObj.code || '';
-    const errorData = errorObj.data || '';
-    const errorReason = errorObj.reason || '';
-    
-    // Extract revert reason if available
-    let revertReason = '';
-    if (errorMessage && typeof errorMessage === 'string') {
-      if (errorMessage.includes('execution reverted')) {
-        const match = errorMessage.match(/execution reverted: (.*?)(?:,|$)/);
-        if (match && match[1]) {
-          revertReason = match[1].trim();
-        }
-      }
-    }
-    
-    // Log all details for debugging
-    console.error('Detailed error information:', {
-      method,
-      args,
-      errorMessage,
-      errorCode,
-      errorData,
-      errorReason,
-      revertReason
-    });
-    
-    // For gas estimation errors, it's usually better to fail the transaction
-    // with a helpful message rather than using a default gas limit
-    if (errorMessage.includes('cannot estimate gas') || 
-        errorMessage.includes('execution reverted')) {
-      const detailedMessage = revertReason 
-        ? `Cannot estimate gas for ${method}: ${revertReason}`
-        : `Cannot estimate gas for ${method}: The transaction would fail. This might be due to invalid arguments, insufficient permissions, or contract restrictions.`;
-      
-      throw new Error(detailedMessage);
-    }
-    
-    // If not a gas estimation error, return a default gas limit
-    console.warn(`Using default gas limit for ${method} due to estimation failure`);
-    const defaultGasLimit = ethers.BigNumber.from("3000000");
-    return defaultGasLimit;
+    throw new Error('Gas estimation failed');
   }
 }

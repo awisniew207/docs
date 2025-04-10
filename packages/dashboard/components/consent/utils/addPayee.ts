@@ -39,4 +39,5 @@ export async function addPayee(ethAddress: string) {
     } catch (err) {
         console.warn('Failed to add payee', err);
     }
+    console.log('Payee added: ', ethAddress);
 }

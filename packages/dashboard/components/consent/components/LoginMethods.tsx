@@ -39,7 +39,7 @@ export default function LoginMethods({
               />
               <span>Agent Wallet Management</span>
             </h1>
-            <p>Access or create your Vincent Agent Wallet.</p>
+            <p className="text-center">Access or create your Vincent Agent Wallet.</p>
             <AuthMethods setView={setView as Dispatch<SetStateAction<string>>} />
           </>
         )}

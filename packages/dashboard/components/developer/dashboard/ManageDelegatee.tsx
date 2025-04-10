@@ -16,31 +16,12 @@ import { AppView } from "@/services/types";
 import { VincentContracts } from "@/services";
 import { Input } from "@/components/ui/input";
 import { useErrorPopup } from "@/providers/error-popup";
+import { StatusMessage } from "@/utils/statusMessage";
 
 interface DelegateeManagerProps {
     onBack: () => void;
     dashboard: AppView;
 }
-
-const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
-  if (!message) return null;
-  
-  const getStatusClass = () => {
-    switch (type) {
-      case 'warning': return 'status-message--warning';
-      case 'success': return 'status-message--success';
-      case 'error': return 'status-message--error';
-      default: return 'status-message--info';
-    }
-  };
-  
-  return (
-    <div className={`status-message ${getStatusClass()}`}>
-      {type === 'info' && <div className="spinner"></div>}
-      <span>{message}</span>
-    </div>
-  );
-};
 
 export default function DelegateeManagerScreen({
     onBack,
@@ -116,8 +97,8 @@ export default function DelegateeManagerScreen({
                 const tx = await contracts.addDelegatee(dashboard.appId, newAddress);
                 
                 showStatus("Waiting for confirmation...", "info");
-                const receipt = await tx.wait();
-                console.log("Transaction confirmed:", receipt);
+                await tx.wait(1);
+                showStatus("Transaction confirmed!", "success");
                 
                 setDelegatees((prev) => [...prev, newAddress]);
                 setShowKeyDialog(false);
@@ -127,21 +108,9 @@ export default function DelegateeManagerScreen({
                     clearStatus();
                     onBack();
                 }, 2000);
-            } catch (innerError: any) {
-                console.error("Detailed error:", innerError);
-                let errorMessage = "Failed to add delegatee. ";
-                
-                if (innerError.message) {
-                    if (innerError.message.includes("CALL_EXCEPTION")) {
-                        errorMessage += "Transaction was rejected by the contract. You might not have permission to add delegatees for this app.";
-                    } else if (innerError.message.includes("user rejected")) {
-                        errorMessage = "Transaction was rejected by the user.";
-                    } else {
-                        errorMessage += innerError.message.split('(')[0]; // Get first part of error
-                    }
-                }
-                
-                showErrorWithStatus(errorMessage, "Transaction Error");
+            } catch (error: any) {
+                console.error("Detailed error:", error);
+                showErrorWithStatus(error.message, "Transaction Error");
             }
         } catch (error: any) {
             console.error("Error adding delegatee:", error);
@@ -171,7 +140,6 @@ export default function DelegateeManagerScreen({
                 
                 try {
                     const appData = await contracts.getAppById(dashboard.appId);
-                    console.log("App data fetched:", appData);
                     
                     if (!appData || !appData.id) {
                         showErrorWithStatus(`App ID ${dashboard.appId} not found or not accessible`, "App Not Found");
@@ -184,17 +152,13 @@ export default function DelegateeManagerScreen({
                     setIsAdding(false);
                     return;
                 }
-                
-                console.log("Adding delegatee to app ID:", dashboard.appId);
-                console.log("Delegatee address:", manualAddress);
-                
+
                 showStatus("Sending transaction...", "info");
                 const tx = await contracts.addDelegatee(dashboard.appId, manualAddress);
-                console.log("Transaction sent:", tx.hash);
                 
                 showStatus("Waiting for confirmation...", "info");
-                const receipt = await tx.wait();
-                console.log("Transaction confirmed:", receipt);
+                await tx.wait(1);
+                showStatus("Transaction confirmed!", "success");
                 
                 setDelegatees((prev) => [...prev, manualAddress]);
                 setShowAddDialog(false);
