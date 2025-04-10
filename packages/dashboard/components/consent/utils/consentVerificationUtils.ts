@@ -1,4 +1,3 @@
-import * as ethers from 'ethers';
 import { getUserViewRegistryContract } from './contracts';
 
 /**
@@ -19,31 +18,14 @@ export const checkAppPermissionStatus = async (
   }
 
   statusCallback?.('Checking if app version is already permitted...', 'info');
-  
+
   try {
     const userViewContract = getUserViewRegistryContract();
-    const permittedAppIds = await userViewContract.getAllPermittedAppIdsForPkp(agentPKPTokenId);
-
     const appIdNum = Number(appId);
-    const isAppPermitted = permittedAppIds.some(
-      (id: ethers.BigNumber) => id.toNumber() === appIdNum,
+    const currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
+      agentPKPTokenId,
+      appIdNum,
     );
-
-    if (!isAppPermitted) {
-      return { isPermitted: false, permittedVersion: null };
-    }
-    
-    let currentPermittedVersion;
-    try {
-      currentPermittedVersion = await userViewContract.getPermittedAppVersionForPkp(
-        agentPKPTokenId,
-        appIdNum,
-      );
-    } catch (versionError) {
-      console.error('Error checking permitted version:', versionError);
-      return { isPermitted: true, permittedVersion: null };
-    }
-
     const versionNumber = currentPermittedVersion.toNumber();
     return { isPermitted: true, permittedVersion: versionNumber };
   } catch (e) {
@@ -73,7 +55,7 @@ export const verifyPermissionGrant = async (
 
   try {
     statusCallback?.('Verifying permission grant...', 'info');
-    
+
     const userViewContract = getUserViewRegistryContract();
     const verifiedVersion = await userViewContract.getPermittedAppVersionForPkp(
       agentPKPTokenId,
