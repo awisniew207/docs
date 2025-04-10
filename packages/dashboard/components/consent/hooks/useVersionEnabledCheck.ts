@@ -8,7 +8,7 @@ import { useUrlAppId } from './useUrlAppId';
  */
 export const useVersionEnabledCheck = ({ versionNumber }: { versionNumber: number }) => {
   const { appId } = useUrlAppId();
-  const [isVersionEnabled, setIsVersionEnabled] = useState<boolean | null>(null);
+  const [isVersionEnabled, setIsVersionEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     const checkVersionEnabled = async () => {
