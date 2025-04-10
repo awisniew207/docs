@@ -8,7 +8,7 @@ import { useUrlAppId } from './useUrlAppId';
  */
 export const useVersionEnabledCheck = ({ versionNumber }: { versionNumber: number }) => {
   const { appId } = useUrlAppId();
-  const [isVersionEnabled, setIsVersionEnabled] = useState<boolean>(false);
+  const [isVersionEnabled, setIsVersionEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkVersionEnabled = async () => {
@@ -21,7 +21,8 @@ export const useVersionEnabledCheck = ({ versionNumber }: { versionNumber: numbe
         const [, versionData] = await contract.getAppVersion(Number(appId), versionNumber);
         setIsVersionEnabled(versionData.enabled);
       } catch (err) {
-        throw new Error('Error checking if version is enabled');
+        console.error('Error checking if version is enabled:', err);
+        setIsVersionEnabled(null);
       }
     };
 

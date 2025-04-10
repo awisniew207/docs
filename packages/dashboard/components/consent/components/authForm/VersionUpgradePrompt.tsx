@@ -53,7 +53,7 @@ const VersionUpgradePrompt = ({
         }}>
           <p style={{ display: "block" }}>
             <strong>Warning:</strong> Version {permittedVersion} has been disabled by the app developer.
-            It is recommended to update to the latest version.
+            To continue using the app, please update to the latest version.
           </p>
         </div>
       )}

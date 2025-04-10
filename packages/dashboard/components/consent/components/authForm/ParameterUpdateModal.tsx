@@ -16,10 +16,11 @@ const ParameterUpdateModal = ({
   appName, 
   permittedVersion 
 }: ParameterUpdateModalProps) => {
+  
   const { isVersionEnabled } = useVersionEnabledCheck({
     versionNumber: permittedVersion
   });
-  
+
   if (!isOpen) return null;
   
   return (
@@ -31,7 +32,7 @@ const ParameterUpdateModal = ({
           Would you like to continue with your existing parameters or update them?
         </p>
         
-        {!isVersionEnabled && (
+        {isVersionEnabled === false && (
           <div className="alert alert--warning mb-4" style={{
             backgroundColor: "#FFFBE6", 
             color: "#806A00",
