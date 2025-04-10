@@ -93,17 +93,24 @@ export const sendErc20ApprovalTx = async (
     const approvalTxHash = await Lit.Actions.runOnce(
         { waitForResponse: true, name: 'approvalTxSender' },
         async () => {
-            const receipt = await userRpcProvider.sendTransaction(signedApprovalTx);
-            return receipt.hash;
+            try {
+                const receipt = await userRpcProvider.sendTransaction(signedApprovalTx);
+                return JSON.stringify({
+                    status: 'success',
+                    details: [
+                        receipt.hash
+                    ],
+                });
+            } catch (error) {
+                return JSON.stringify({
+                    status: 'error',
+                    details: [
+                        (error as Error).message || JSON.stringify(error)
+                    ]
+                });
+            }
         }
     );
 
-    console.log(`Approval transaction hash: ${approvalTxHash}`);
-
-    return {
-        status: 'success',
-        details: [
-            approvalTxHash,
-        ]
-    };
+    return JSON.parse(approvalTxHash);
 }
