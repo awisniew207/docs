@@ -1,14 +1,28 @@
 import React from 'react';
+import { useVersionEnabledCheck } from '../../hooks/useVersionEnabledCheck';
 
 interface ParameterUpdateModalProps {
   isOpen: boolean;
   onContinue: () => void;
   onUpdate: () => void;
   appName: string;
+  permittedVersion: number;
 }
 
-const ParameterUpdateModal = ({ isOpen, onContinue, onUpdate, appName }: ParameterUpdateModalProps) => {
+const ParameterUpdateModal = ({ 
+  isOpen, 
+  onContinue, 
+  onUpdate, 
+  appName, 
+  permittedVersion 
+}: ParameterUpdateModalProps) => {
   if (!isOpen) return null;
+  
+  const { isVersionEnabled } = useVersionEnabledCheck({
+    versionNumber: permittedVersion
+  });
+  
+  const isDisabled = isVersionEnabled === false;
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -18,6 +32,20 @@ const ParameterUpdateModal = ({ isOpen, onContinue, onUpdate, appName }: Paramet
           You&apos;ve already granted permission to App: <strong>{appName}</strong>. 
           Would you like to continue with your existing parameters or update them?
         </p>
+        
+        {isDisabled && (
+          <div className="alert alert--warning mb-4" style={{
+            backgroundColor: "#FFFBE6", 
+            color: "#806A00",
+            padding: "12px",
+            borderRadius: "4px"
+          }}>
+            <p>
+              <strong>Warning:</strong> Version {permittedVersion} has been disabled by the app developer. 
+            </p>
+          </div>
+        )}
+        
         <div className="flex justify-end space-x-3">
           <button 
             className="btn btn--outline"
