@@ -20,6 +20,14 @@ const phoneSchema = z.string()
     { message: 'Phone number must include country code (e.g. +12025551234)' }
   );
 
+// Zod schema for verification code
+const codeSchema = z.string()
+  .trim()
+  .refine(
+    (val) => /^\d{6}$/.test(val),
+    { message: 'Verification code must be 6 digits' }
+  );
+
 /**
  * One-time passcodes can be sent via phone number through Stytch
  */
@@ -39,35 +47,33 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     setError('');
     
     try {
-      if (method === 'phone') {
-        try {
-          phoneSchema.parse(userId);
-        } catch (validationError) {
-          if (validationError instanceof z.ZodError) {
-            throw new Error(validationError.errors[0].message);
-          }
-          throw validationError;
-        }
-      }
-      
       let response: any;
+      
       if (method === 'email') {
         response = await stytchClient.otps.email.loginOrCreate(userId, {
           expiration_minutes: 2,
           login_template_id: 'vincent_v1',
         });
       } else {
+        phoneSchema.parse(userId);
         response = await stytchClient.otps.sms.loginOrCreate(userId);
       }
+      
       setMethodId(response.method_id);
       setStep('verify');
     } catch (err: any) {
       console.error(`Error sending ${method} OTP:`, err);
-      if (method === 'phone' && err.message?.includes('invalid_phone_number_country_code')) {
-        setError('Please enter a valid phone number with country code (e.g. +12025551234)');
-      } else {
-        setError(err.message || `Failed to send verification code. Please try again.`);
+      let errorMessage = 'Failed to send verification code. Please try again.';
+      
+      if (err instanceof z.ZodError && err.errors.length > 0) {
+        errorMessage = err.errors[0].message;
+      } else if (err.message?.includes('invalid_phone_number_country_code')) {
+        errorMessage = 'Please enter a valid phone number with country code (e.g. +12025551234)';
+      } else if (typeof err.message === 'string') {
+        errorMessage = err.message;
       }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -78,6 +84,8 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     setLoading(true);
     setError('');
     try {
+      codeSchema.parse(code);
+      
       const response = await stytchClient.otps.authenticate(code, methodId, {
         session_duration_minutes: 60,
       });
@@ -96,11 +104,17 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       await authWithStytch(response.session_jwt, response.user_id, method);
     } catch (err: any) {
       console.error(`Error authenticating with ${method} OTP:`, err);
-      if (err.message?.includes('invalid_code')) {
-        setError('Invalid verification code. Please check and try again.');
-      } else {
-        setError('Failed to verify code. Please try again.');
+      let errorMessage = 'Failed to verify code. Please try again.';
+      
+      if (err instanceof z.ZodError && err.errors.length > 0) {
+        errorMessage = err.errors[0].message;
+      } else if (err.message?.includes('invalid_code')) {
+        errorMessage = 'Invalid verification code. Please check and try again.';
+      } else if (typeof err.message === 'string') {
+        errorMessage = err.message;
       }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -162,7 +176,10 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                 id="code"
                 value={code}
                 onChange={e => setCode(e.target.value)}
-                type="code"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
                 name="code"
                 className="form__input"
                 placeholder="Verification code"
