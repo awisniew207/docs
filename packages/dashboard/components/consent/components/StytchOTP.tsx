@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStytch } from '@stytch/nextjs';
 import { useSetAuthInfo } from '../hooks/useAuthInfo';
+import { z } from 'zod';
 
 interface StytchOTPProps {
   method: OtpMethod;
@@ -11,6 +12,14 @@ interface StytchOTPProps {
 type OtpMethod = 'email' | 'phone';
 type OtpStep = 'submit' | 'verify';
 
+// Zod schema for phone number validation
+const phoneSchema = z.string()
+  .trim()
+  .refine(
+    (val) => val.startsWith('+') && /^\+[1-9]\d{1,14}$/.test(val),
+    { message: 'Phone number must include country code (e.g. +12025551234)' }
+  );
+
 /**
  * One-time passcodes can be sent via phone number through Stytch
  */
@@ -20,13 +29,27 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
   const [methodId, setMethodId] = useState<string>('');
   const [code, setCode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const stytchClient = useStytch();
   const { setAuthInfo } = useSetAuthInfo();
 
   async function sendPasscode(event: any) {
     event.preventDefault();
     setLoading(true);
+    setError('');
+    
     try {
+      if (method === 'phone') {
+        try {
+          phoneSchema.parse(userId);
+        } catch (validationError) {
+          if (validationError instanceof z.ZodError) {
+            throw new Error(validationError.errors[0].message);
+          }
+          throw validationError;
+        }
+      }
+      
       let response: any;
       if (method === 'email') {
         response = await stytchClient.otps.email.loginOrCreate(userId, {
@@ -34,14 +57,17 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
           login_template_id: 'vincent_v1',
         });
       } else {
-        response = await stytchClient.otps.sms.loginOrCreate(
-          !userId.startsWith('+') ? `+${userId}` : userId
-        );
+        response = await stytchClient.otps.sms.loginOrCreate(userId);
       }
       setMethodId(response.method_id);
       setStep('verify');
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error sending ${method} OTP:`, err);
+      if (method === 'phone' && err.message?.includes('invalid_phone_number_country_code')) {
+        setError('Please enter a valid phone number with country code (e.g. +12025551234)');
+      } else {
+        setError(err.message || `Failed to send verification code. Please try again.`);
+      }
     } finally {
       setLoading(false);
     }
@@ -50,6 +76,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
   async function authenticate(event: any) {
     event.preventDefault();
     setLoading(true);
+    setError('');
     try {
       const response = await stytchClient.otps.authenticate(code, methodId, {
         session_duration_minutes: 60,
@@ -67,8 +94,13 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       }
       
       await authWithStytch(response.session_jwt, response.user_id, method);
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error authenticating with ${method} OTP:`, err);
+      if (err.message?.includes('invalid_code')) {
+        setError('Invalid verification code. Please check and try again.');
+      } else {
+        setError('Failed to verify code. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -97,6 +129,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                 }
                 autoComplete="off"
               ></input>
+              {error && <div className="error-message" style={{ color: 'red', margin: '8px 0' }}>{error}</div>}
               <button
                 type="submit"
                 className="btn btn--primary"
@@ -135,6 +168,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                 placeholder="Verification code"
                 autoComplete="off"
               ></input>
+              {error && <div className="error-message" style={{ color: 'red', margin: '8px 0' }}>{error}</div>}
               <button type="submit" className="btn btn--primary" style={{ marginBottom: '4px' }}>
                 Verify
               </button>
