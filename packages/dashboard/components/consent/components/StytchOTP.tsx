@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useStytch } from '@stytch/nextjs';
 import { useSetAuthInfo } from '../hooks/useAuthInfo';
 import { z } from 'zod';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 interface StytchOTPProps {
   method: OtpMethod;
@@ -12,15 +14,6 @@ interface StytchOTPProps {
 type OtpMethod = 'email' | 'phone';
 type OtpStep = 'submit' | 'verify';
 
-// Zod schema for phone number validation
-const phoneSchema = z.string()
-  .trim()
-  .refine(
-    (val) => val.startsWith('+') && /^\+[1-9]\d{1,14}$/.test(val),
-    { message: 'Phone number must include country code (e.g. +12025551234)' }
-  );
-
-// Zod schema for verification code
 const codeSchema = z.string()
   .trim()
   .refine(
@@ -55,7 +48,10 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
           login_template_id: 'vincent_v1',
         });
       } else {
-        phoneSchema.parse(userId);
+        if (!userId) {
+          throw new Error('Please enter a valid phone number with country code');
+        }
+        
         response = await stytchClient.otps.sms.loginOrCreate(userId);
       }
       
@@ -63,12 +59,13 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       setStep('verify');
     } catch (err: any) {
       console.error(`Error sending ${method} OTP:`, err);
+      
       let errorMessage = 'Failed to send verification code. Please try again.';
       
-      if (err instanceof z.ZodError && err.errors.length > 0) {
-        errorMessage = err.errors[0].message;
-      } else if (err.message?.includes('invalid_phone_number_country_code')) {
-        errorMessage = 'Please enter a valid phone number with country code (e.g. +12025551234)';
+      if (err.message?.includes('invalid_phone_number_country_code')) {
+        errorMessage = 'Please enter a valid phone number with country code';
+      } else if (err.message?.includes('invalid_phone_number')) {
+        errorMessage = 'Please enter a valid phone number in international format (e.g. +12025551234)';
       } else if (typeof err.message === 'string') {
         errorMessage = err.message;
       }
@@ -83,6 +80,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     event.preventDefault();
     setLoading(true);
     setError('');
+    
     try {
       codeSchema.parse(code);
       
@@ -128,21 +126,34 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
           <p>A verification code will be sent to your {method}.</p>
           <div className="form-wrapper">
             <form className="form" onSubmit={sendPasscode}>
-              <label htmlFor={method} className="sr-only">
-                {method === 'email' ? 'Email' : 'Phone number'}
-              </label>
-              <input
-                id={method}
-                value={userId}
-                onChange={e => setUserId(e.target.value)}
-                type={method === 'email' ? 'email' : 'tel'}
-                name={method}
-                className="form__input"
-                placeholder={
-                  method === 'email' ? 'Your email' : 'Your phone number (e.g. +12025551234)'
-                }
-                autoComplete="off"
-              ></input>
+              {method === 'email' ? (
+                <>
+                  <label htmlFor="email" className="sr-only">Email</label>
+                  <input
+                    id="email"
+                    value={userId}
+                    onChange={e => setUserId(e.target.value)}
+                    type="email"
+                    name="email"
+                    className="form__input"
+                    placeholder="Your email"
+                    autoComplete="off"
+                  />
+                </>
+              ) : (
+                <div className="phone-input-container" style={{ marginBottom: '16px' }}>
+                  <label htmlFor="phone" className="sr-only">Phone number</label>
+                  <PhoneInput
+                    id="phone"
+                    international
+                    defaultCountry="US"
+                    value={userId}
+                    onChange={value => setUserId(value || '')}
+                    className="form__input"
+                    placeholder="Your phone number"
+                  />
+                </div>
+              )}
               {error && <div className="error-message" style={{ color: 'red', margin: '8px 0' }}>{error}</div>}
               <button
                 type="submit"
