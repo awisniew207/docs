@@ -49,7 +49,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
         });
       } else {
         if (!userId) {
-          throw new Error('Please enter a valid phone number with country code');
+          throw new Error('Please enter a valid phone number in international format (e.g. +12025551234)');
         }
         
         response = await stytchClient.otps.sms.loginOrCreate(userId);
@@ -62,9 +62,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       
       let errorMessage = 'Failed to send verification code. Please try again.';
       
-      if (err.message?.includes('invalid_phone_number_country_code')) {
-        errorMessage = 'Please enter a valid phone number with country code';
-      } else if (err.message?.includes('invalid_phone_number')) {
+      if (err.message?.includes('invalid_phone_number')) {
         errorMessage = 'Please enter a valid phone number in international format (e.g. +12025551234)';
       } else if (typeof err.message === 'string') {
         errorMessage = err.message;
