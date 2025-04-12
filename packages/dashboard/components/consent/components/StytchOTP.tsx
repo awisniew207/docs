@@ -46,6 +46,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
         response = await stytchClient.otps.email.loginOrCreate(userId, {
           expiration_minutes: 2,
           login_template_id: 'vincent_v1',
+          signup_template_id: 'vincent_v1_signup',
         });
       } else {
         if (!userId) {
