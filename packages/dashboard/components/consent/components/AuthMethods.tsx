@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface AuthMethodsProps {
   setView: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -6,76 +8,60 @@ const AuthMethods = ({
   setView,
 }: AuthMethodsProps) => {
   return (
-    <>
-      <div className="buttons-container">
-        <button
-          type="button"
-          className="btn btn--outline"
-          onClick={() => setView('email')}
-        >
-          <div className="btn__icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-              />
+    <div className="space-y-3">
+      <h2 className="text-sm font-medium text-gray-700 mb-2">Select an authentication method:</h2>
+      
+      <div 
+        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        onClick={() => setView('email')}
+      >
+        <div className="flex items-center">
+          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <span className="btn__label">Continue with email</span>
-        </button>
-        <button
-          type="button"
-          className="btn btn--outline"
-          onClick={() => setView('phone')}
-        >
-          <div className="btn__icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
-              />
-            </svg>
-          </div>
-          <span className="btn__label">Continue with phone</span>
-        </button>
-        <button
-          type="button"
-          className="btn btn--outline"
-          onClick={() => setView('webauthn')}
-        >
-          <div className="btn__icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
-              />
-            </svg>
-          </div>
-          <span className="btn__label">Use a passkey</span>
-        </button>
+          <span className="text-gray-700 text-sm font-medium">Continue with email</span>
+        </div>
+        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
       </div>
-    </>
+      
+      <div 
+        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        onClick={() => setView('phone')}
+      >
+        <div className="flex items-center">
+          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span className="text-gray-700 text-sm font-medium">Continue with phone</span>
+        </div>
+        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+      
+      <div 
+        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        onClick={() => setView('webauthn')}
+      >
+        <div className="flex items-center">
+          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+            </svg>
+          </div>
+          <span className="text-gray-700 text-sm font-medium">Use a passkey</span>
+        </div>
+        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
   );
 };
 

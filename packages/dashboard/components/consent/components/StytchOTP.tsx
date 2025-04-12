@@ -120,91 +120,117 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     <>
       {step === 'submit' && (
         <>
-          <h1>Enter your {method}</h1>
-          <p>A verification code will be sent to your {method}.</p>
-          <div className="form-wrapper">
-            <form className="form" onSubmit={sendPasscode}>
+          <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Enter your {method}</h1>
+          <p className="text-sm text-gray-600 text-center mb-6">A verification code will be sent to your {method}.</p>
+          
+          <div className="w-full">
+            <form className="space-y-4" onSubmit={sendPasscode}>
               {method === 'email' ? (
-                <>
-                  <label htmlFor="email" className="sr-only">Email</label>
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-gray-700 block">Email address</label>
                   <input
                     id="email"
                     value={userId}
                     onChange={e => setUserId(e.target.value)}
                     type="email"
                     name="email"
-                    className="form__input"
-                    placeholder="Your email"
-                    autoComplete="off"
-                  />
-                </>
-              ) : (
-                <div className="phone-input-container" style={{ marginBottom: '16px' }}>
-                  <label htmlFor="phone" className="sr-only">Phone number</label>
-                  <PhoneInput
-                    id="phone"
-                    international
-                    defaultCountry="US"
-                    value={userId}
-                    onChange={value => setUserId(value || '')}
-                    className="form__input"
-                    placeholder="Your phone number"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="your@email.com"
+                    autoComplete="email"
                   />
                 </div>
+              ) : (
+                <div className="space-y-2">
+                  <label htmlFor="phone" className="text-sm font-medium text-gray-700 block">Phone number</label>
+                  <div className="phone-input-container">
+                    <PhoneInput
+                      id="phone"
+                      international
+                      defaultCountry="US"
+                      value={userId}
+                      onChange={value => setUserId(value || '')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+                </div>
               )}
-              {error && <div className="error-message" style={{ color: 'red', margin: '8px 0' }}>{error}</div>}
-              <button
-                type="submit"
-                className="btn btn--primary"
-                disabled={loading}
-                style={{ marginBottom: '4px' }}
-              >
-                Send code
-              </button>
-              <button
-                onClick={() => setView('default')}
-                className="btn btn--outline"
-                style={{ marginTop: '0px' }}
-              >
-                Back
-              </button>
+              
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
+                >
+                  {loading ? 'Sending...' : 'Send code'}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setView('default')}
+                  className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors mt-3"
+                >
+                  Back
+                </button>
+              </div>
             </form>
           </div>
         </>
       )}
+      
       {step === 'verify' && (
         <>
-          <h1>Check your {method}</h1>
-          <p>Enter the 6-digit verification code to {userId}</p>
-          <div className="form-wrapper">
-            <form className="form" onSubmit={authenticate}>
-              <label htmlFor="code" className="sr-only">
-                Code
-              </label>
-              <input
-                id="code"
-                value={code}
-                onChange={e => setCode(e.target.value)}
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                name="code"
-                className="form__input"
-                placeholder="Verification code"
-                autoComplete="off"
-              ></input>
-              {error && <div className="error-message" style={{ color: 'red', margin: '8px 0' }}>{error}</div>}
-              <button type="submit" className="btn btn--primary" style={{ marginBottom: '4px' }}>
-                Verify
-              </button>
-              <button
-                onClick={() => setStep('submit')}
-                className="btn btn--outline"
-                style={{ marginTop: '0px' }}
-              >
-                Try again
-              </button>
+          <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Check your {method}</h1>
+          <p className="text-sm text-gray-600 text-center mb-6">Enter the 6-digit verification code sent to {userId}</p>
+          
+          <div className="w-full">
+            <form className="space-y-4" onSubmit={authenticate}>
+              <div className="space-y-2">
+                <label htmlFor="code" className="text-sm font-medium text-gray-700 block">Verification code</label>
+                <input
+                  id="code"
+                  value={code}
+                  onChange={e => setCode(e.target.value)}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  name="code"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center tracking-widest text-lg"
+                  placeholder="000000"
+                  autoComplete="one-time-code"
+                />
+              </div>
+              
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div className="pt-2">
+                <button 
+                  type="submit" 
+                  className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
+                >
+                  {loading ? 'Verifying...' : 'Verify code'}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setStep('submit')}
+                  className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors mt-3"
+                >
+                  Try again
+                </button>
+              </div>
             </form>
           </div>
         </>

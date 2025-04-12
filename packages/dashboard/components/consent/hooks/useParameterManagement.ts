@@ -101,6 +101,7 @@ export const useParameterManagement = ({
       onStatusChange?.('Successfully loaded your existing parameters', 'success');
       
       // Also try to fetch version info to match parameter names if not already loaded
+      /*
       if (!versionInfo && appInfo) {
         try {
           const contract = getAppViewRegistryContract();
@@ -110,7 +111,9 @@ export const useParameterManagement = ({
           console.error('Error fetching version info for parameter matching:', err);
           throw new Error(`Failed to fetch version info for parameter matching: ${err instanceof Error ? err.message : String(err)}`);
         }
-      }
+      }*/
+
+      onStatusChange?.('Successfully loaded your existing parameters', 'success');
       
     } catch (error) {
       console.error('Error fetching existing parameters:', error);
@@ -146,7 +149,7 @@ export const useParameterManagement = ({
     if (!appId || !appInfo) {
       throw new Error('Missing appId or appInfo in fetchVersionInfo');
     }
-
+    
     try {
       const versionToFetch = versionNumber !== undefined ? versionNumber : Number(appInfo.latestVersion);
       onStatusChange?.(`Loading app version information for v${versionToFetch}...`, 'info');
@@ -154,7 +157,7 @@ export const useParameterManagement = ({
       const versionData = await contract.getAppVersion(Number(appId), versionToFetch);
       
       setVersionInfo(versionData);
-      onStatusChange?.('Successfully loaded app version information', 'success');
+      onStatusChange?.('', 'info')
       return versionData;
     } catch (err) {
       console.error('Error fetching version info:', err);

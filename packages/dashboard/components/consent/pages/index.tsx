@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
+import Image from 'next/image';
 
 import useAuthenticate from '../hooks/useAuthenticate';
 import useAccounts from '../hooks/useAccounts';
@@ -13,6 +14,13 @@ import LoginMethods from '../components/LoginMethods';
 import { getAgentPKP } from '../utils/getAgentPKP';
 import { useErrorPopup } from '@/providers/error-popup';
 import { useSetAuthInfo } from '../hooks/useAuthInfo';
+
+// Wrapper component for centering content
+const CenteredContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-20">
+    {children}
+  </div>
+);
 
 export default function IndexView() {
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
@@ -114,7 +122,40 @@ export default function IndexView() {
     }
   }, [authMethod, userPKP, generateSessionSigs]);
 
-  // Cleanup on unmount
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Update loading message based on current state with smooth transitions
+  useEffect(() => {
+    // Determine the appropriate message based on current loading state
+    let newMessage = '';
+    if (authLoading) {
+      newMessage = 'Authenticating your credentials...';
+    } else if (accountsLoading) {
+      newMessage = 'Fetching your Agent Wallet...';
+    } else if (sessionLoading) {
+      newMessage = 'Securing your session...';
+    }
+    
+    // Only transition if the message is actually changing and not empty
+    if (newMessage && newMessage !== loadingMessage) {
+      // Start the transition
+      setIsTransitioning(true);
+      
+      // Wait briefly before changing the message
+      const timeout = setTimeout(() => {
+        setLoadingMessage(newMessage);
+        
+        // After changing message, end the transition
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 150);
+      }, 150);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [authLoading, accountsLoading, sessionLoading, loadingMessage]);
+
   useEffect(() => {
     return () => {
       // Cleanup web3 connection when component unmounts
@@ -124,15 +165,16 @@ export default function IndexView() {
     };
   }, [sessionSigs]);
 
-  // Loading states
-  if (authLoading) {
-    return <Loading copy={'Authenticating your credentials...'} />;
-  }
-  if (accountsLoading) {
-    return <Loading copy={'Looking up your accounts...'} />;
-  }
-  if (sessionLoading) {
-    return <Loading copy={'Securing your session...'} />;
+  // Unified loading state
+  if (authLoading || accountsLoading || sessionLoading) {
+    return (
+      <CenteredContainer>
+        <Loading 
+          copy={loadingMessage} 
+          isTransitioning={isTransitioning}
+        />
+      </CenteredContainer>
+    );
   }
 
   // Authenticated states
@@ -148,15 +190,13 @@ export default function IndexView() {
     }
 
     return (
-      <div className="consent-form-overlay">
-        <div className="consent-form-modal">
-          <AuthenticatedConsentForm
-            userPKP={userPKP}
-            sessionSigs={sessionSigs}
-            agentPKP={agentPKP}
-          />
-        </div>
-      </div>
+      <CenteredContainer>
+        <AuthenticatedConsentForm
+          userPKP={userPKP}
+          sessionSigs={sessionSigs}
+          agentPKP={agentPKP}
+        />
+      </CenteredContainer>
     );
   }
 
@@ -165,81 +205,140 @@ export default function IndexView() {
     switch (authMethod.authMethodType) {
       case AUTH_METHOD_TYPE.WebAuthn:
         return (
-          <div className="container">
-            <div className="wrapper">
-              <h1>No Accounts Found</h1>
-              <p>You don&apos;t have any accounts associated with this WebAuthn credential.</p>
-              <div className="auth-options">
-                <div className="auth-option">
+          <CenteredContainer>
+            <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+                <div className="h-8 w-8 rounded-md bg-black flex items-center justify-center">
+                  <Image src="/V.svg" alt="Vincent logo" width={16} height={16} />
+                </div>
+                <div className="ml-3 text-base font-medium text-gray-700">Connect with Vincent</div>
+              </div>
+              
+              <div className="p-6">
+                <h1 className="text-xl font-semibold text-center mb-4">No Accounts Found</h1>
+                <p className="text-sm text-gray-600 text-center mb-6">You don&apos;t have any accounts associated with this WebAuthn credential.</p>
+                <div className="flex flex-col space-y-3">
                   <button
                     type="button"
-                    className="btn btn--outline"
+                    className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleRegisterWithWebAuthn}
                   >
                     Create New Account
                   </button>
-                </div>
-                <div className="auth-option">
                   <button
                     type="button"
-                    className="btn btn--outline"
+                    className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => authWithWebAuthn()}
                   >
                     Try Sign In Again
                   </button>
                 </div>
               </div>
+              
+              <div className="px-6 py-3 text-center border-t border-gray-100">
+                <p className="text-xs text-gray-400 flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                  </svg>
+                  Protected by Lit
+                </p>
+              </div>
             </div>
-          </div>
+          </CenteredContainer>
         );
 
       case AUTH_METHOD_TYPE.StytchEmailFactorOtp:
       case AUTH_METHOD_TYPE.StytchSmsFactorOtp:
-        return <Loading copy={'Creating your account...'} />;
+        return (
+          <CenteredContainer>
+            <Loading copy={'Creating your account...'} />
+          </CenteredContainer>
+        );
 
       case AUTH_METHOD_TYPE.EthWallet:
         return (
-          <div className="container">
-            <div className="wrapper">
-              <h1>No Accounts Found</h1>
-              <p>No accounts were found for this wallet address.</p>
-              <button
-                type="button"
-                className="btn btn--outline"
-                onClick={() => window.location.reload()}
-              >
-                Try Again
-              </button>
+          <CenteredContainer>
+            <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+                <div className="h-8 w-8 rounded-md bg-black flex items-center justify-center">
+                  <Image src="/V.svg" alt="Vincent logo" width={16} height={16} />
+                </div>
+                <div className="ml-3 text-base font-medium text-gray-700">Connect with Vincent</div>
+              </div>
+              
+              <div className="p-6">
+                <h1 className="text-xl font-semibold text-center mb-4">No Accounts Found</h1>
+                <p className="text-sm text-gray-600 text-center mb-6">No accounts were found for this wallet address.</p>
+                <button
+                  type="button"
+                  className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 w-full font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => window.location.reload()}
+                >
+                  Try Again
+                </button>
+              </div>
+              
+              <div className="px-6 py-3 text-center border-t border-gray-100">
+                <p className="text-xs text-gray-400 flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                  </svg>
+                  Protected by Lit
+                </p>
+              </div>
             </div>
-          </div>
+          </CenteredContainer>
         );
 
       default:
         return (
-          <div className="container">
-            <div className="wrapper">
-              <h1>Unsupported Authentication Method</h1>
-              <p>The authentication method you&apos;re using is not supported.</p>
-              <button
-                type="button"
-                className="btn btn--outline"
-                onClick={() => window.location.reload()}
-              >
-                Start Over
-              </button>
+          <CenteredContainer>
+            <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+                <div className="h-8 w-8 rounded-md bg-black flex items-center justify-center">
+                  <Image src="/V.svg" alt="Vincent logo" width={16} height={16} />
+                </div>
+                <div className="ml-3 text-base font-medium text-gray-700">Connect with Vincent</div>
+              </div>
+              
+              <div className="p-6">
+                <h1 className="text-xl font-semibold text-center mb-4">Unsupported Authentication Method</h1>
+                <p className="text-sm text-gray-600 text-center mb-6">The authentication method you&apos;re using is not supported.</p>
+                <button
+                  type="button"
+                  className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 w-full font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => window.location.reload()}
+                >
+                  Start Over
+                </button>
+              </div>
+              
+              <div className="px-6 py-3 text-center border-t border-gray-100">
+                <p className="text-xs text-gray-400 flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                  </svg>
+                  Protected by Lit
+                </p>
+              </div>
             </div>
-          </div>
+          </CenteredContainer>
         );
     }
   }
 
   // Initial authentication state
   return (
-    <LoginMethods
-      authWithEthWallet={authWithEthWallet}
-      authWithWebAuthn={authWithWebAuthn}
-      authWithStytch={authWithStytch}
-      registerWithWebAuthn={handleRegisterWithWebAuthn}
-    />
+    <CenteredContainer>
+      <LoginMethods
+        authWithEthWallet={authWithEthWallet}
+        authWithWebAuthn={authWithWebAuthn}
+        authWithStytch={authWithStytch}
+        registerWithWebAuthn={handleRegisterWithWebAuthn}
+      />
+    </CenteredContainer>
   );
 } 

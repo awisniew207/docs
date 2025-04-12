@@ -30,6 +30,15 @@ export default function AppIdLayout({
             }
           `}} />
         )}
+        {isConsentPage && (
+          <style dangerouslySetInnerHTML={{ __html: `
+            body, html {
+              background-color: transparent !important;
+              background-image: none !important;
+              animation: none !important;
+            }
+          `}} />
+        )}
       </head>
       <body className={isConsentPage ? 'consent-only' : ''}>
         <SharedProviders>

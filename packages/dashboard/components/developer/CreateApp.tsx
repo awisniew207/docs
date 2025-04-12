@@ -391,7 +391,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     name="deploymentStatus"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-black">Deployment Status</FormLabel>
+                        <FormLabel className="text-black">App Mode</FormLabel>
                         <FormControl>
                           <select 
                             {...field} 

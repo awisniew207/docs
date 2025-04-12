@@ -4,17 +4,25 @@ import { LitPKPResource } from '@lit-protocol/auth-helpers';
 import { LIT_ABILITY } from '@lit-protocol/constants';
 import { validateSessionSigs } from '@lit-protocol/misc';
 import { SessionSigs } from '@lit-protocol/types';
+import Image from 'next/image';
 
 import { cleanupSession, litNodeClient } from '../utils/lit';
 import AuthenticatedConsentForm from './AuthenticatedConsentForm';
 import { useReadAuthInfo } from '../hooks/useAuthInfo';
+
+// Wrapper component for centering content
+const CenteredContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-20">
+    {children}
+  </div>
+);
 
 /**
  * A streamlined SessionValidator component that validates session signatures on mount
  */
 const SessionValidator: React.FC = () => {
   const [showConsentForm, setShowConsentForm] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showExistingAccount, setShowExistingAccount] = useState(false);
   const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
   const authInfo = useReadAuthInfo();
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
@@ -89,9 +97,9 @@ const SessionValidator: React.FC = () => {
               attemptedSessionSigs
             );
 
-            // If validation is successful, show options (change from showing popup to showing consent form)
+            // If validation is successful, show options (change from showing popup to showing existing account option)
             if (validationResult.isValid) {
-              setShowPopup(true);
+              setShowExistingAccount(true);
             }
           }
         } catch (error) {
@@ -108,17 +116,19 @@ const SessionValidator: React.FC = () => {
   const handleUseExistingAccount = async () => {
     if (sessionSigs && authInfo?.agentPKP) {
       // Instead of doing the JWT creation here, show the consent form
-      setShowPopup(false);
+      setShowExistingAccount(false);
       setShowConsentForm(true);
     } else {
-      setShowPopup(false);
+      setShowExistingAccount(false);
     }
   };
 
   // Handle user's choice to sign out
   const handleSignOut = async () => {
     cleanupSession();
-    setShowPopup(false);
+    setShowExistingAccount(false);
+    // Reload the page to show the regular authentication form
+    window.location.reload();
   };
 
   // Function to render auth method information
@@ -161,7 +171,7 @@ const SessionValidator: React.FC = () => {
         <p className='auth-time'>Authenticated at: {authTime}</p>
         <div className='pkp-key'>
           <p>
-            <strong>Account Ethereum Address:</strong>
+            <strong>EVM Address:</strong>
           </p>
           <p className='pkp-key-value'>{pkpEthAddress}</p>
         </div>
@@ -177,8 +187,8 @@ const SessionValidator: React.FC = () => {
     authInfo?.userPKP
   ) {
     return (
-      <div className='consent-form-overlay'>
-        <div className='consent-form-modal'>
+      <CenteredContainer>
+        <div className="w-full max-w-[650px]">
           <AuthenticatedConsentForm
             userPKP={authInfo.userPKP}
             agentPKP={authInfo.agentPKP}
@@ -186,40 +196,64 @@ const SessionValidator: React.FC = () => {
             isSessionValidation={false}
           />
         </div>
-      </div>
+      </CenteredContainer>
     );
   }
 
-  // If not showing consent form, render popup or nothing
-  return (
-    <>
-      {showPopup && (
-        <div className='session-popup-overlay'>
-          <div className='session-popup'>
-            <h3>Use Existing Account?</h3>
-            <p>
-              Would you like to use your existing authentication for this
-              session?
+  // If showing existing account options, render them directly in a styled container
+  if (showExistingAccount) {
+    return (
+      <CenteredContainer>
+        <div className="bg-white rounded-xl shadow-lg max-w-[650px] w-full mx-auto border border-gray-100 overflow-hidden">
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+            <div className="h-8 w-8 rounded-md flex items-center justify-center">
+              <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+            </div>
+            <div className="ml-3 text-base font-medium text-gray-700">Connect with Vincent</div>
+          </div>
+          
+          {/* Content */}
+          <div className="p-6">
+            <h2 className="text-xl font-semibold text-center mb-4">Use Existing Account?</h2>
+            <p className="text-sm text-gray-600 text-center mb-6">
+              Would you like to use your existing authentication for this session?
             </p>
-
+            
             {renderAuthMethodInfo()}
-
-            <div className='session-popup-buttons'>
+            
+            <div className="flex flex-col space-y-3 mt-6">
               <button
                 onClick={handleUseExistingAccount}
-                className='btn btn--primary'
+                className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Yes, Use Existing Account
               </button>
-              <button onClick={handleSignOut} className='btn btn--outline'>
+              <button 
+                onClick={handleSignOut} 
+                className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 No, Sign Out
               </button>
             </div>
           </div>
+          
+          <div className="px-6 py-3 text-center border-t border-gray-100">
+            <p className="text-xs text-gray-400 flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+              Protected by Lit
+            </p>
+          </div>
         </div>
-      )}
-    </>
-  );
+      </CenteredContainer>
+    );
+  }
+
+  // If not showing consent form or existing account options, render nothing
+  return null;
 };
 
 export default SessionValidator;
