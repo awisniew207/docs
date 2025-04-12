@@ -266,18 +266,6 @@ export default function AuthenticatedConsentForm({
     return !versionInfo.appVersion.enabled;
   }, [versionInfo]);
 
-  // Add debugging to track version information
-  useEffect(() => {
-    if (versionInfo) {
-      console.log('Version info structure in AuthenticatedConsentForm:', {
-        hasVersionInfo: !!versionInfo,
-        appVersion: versionInfo.appVersion,
-        versionHex: versionInfo.appVersion.version.hex,
-        parsedVersion: versionInfo.appVersion.version.hex ? parseInt(versionInfo.appVersion.version.hex, 16).toString() : 'Unknown',
-        appInfoLatestVersion: appInfo?.latestVersion
-      });
-    }
-  }, [versionInfo, appInfo]);
 
   // ===== Event Handler Functions =====
 
