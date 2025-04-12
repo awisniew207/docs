@@ -75,27 +75,42 @@ const VersionUpgradePrompt = ({
         </div>
 
         <div className="flex flex-col space-y-3 mt-6">
-          <button
-            className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onUpdateParameters}
-          >
-            Update Policies Only
-          </button>
-          <button
-            className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onContinue}
-          >
-            Continue Without Changes
-          </button>
-
-          <button
-            className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onUpgrade}
-            disabled={isLatestVersionEnabled === false}
-            title={isLatestVersionEnabled === false ? "Latest version is currently disabled" : "Update to the latest version"}
-          >
-            Update to Latest Version
-          </button>
+          {/* Show standard buttons unless both versions are disabled */}
+          {!(isVersionEnabled === false && isLatestVersionEnabled === false) ? (
+            <>
+              <button
+                className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={onUpdateParameters}
+                disabled={isVersionEnabled === false}
+                title={isVersionEnabled === false ? "Current version is disabled and cannot be updated" : "Update parameters for the current version"}
+              >
+                Update Policies Only
+              </button>
+              <button
+                className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={onContinue}
+                title="Continue using the current version without changes"
+              >
+                Continue Without Changes
+              </button>
+              <button
+                className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={onUpgrade}
+                disabled={isLatestVersionEnabled === false}
+                title={isLatestVersionEnabled === false ? "Latest version is currently disabled" : "Update to the latest version"}
+              >
+                Update to Latest Version
+              </button>
+            </>
+          ) : (
+            // When both versions are disabled, show a special "Go Back" button instead
+            <button
+              className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors"
+              onClick={onContinue}
+            >
+              Go Back
+            </button>
+          )}
         </div>
       </div>
     </div>
