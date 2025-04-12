@@ -57,7 +57,7 @@ export default function Loading({
   const shouldTransition = isTransitioning || localTransitioning;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg max-w-[800px] w-full mx-auto border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-100 flex items-center">
         <div className="h-8 w-8 rounded-md flex items-center justify-center">
           <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
@@ -85,11 +85,13 @@ export default function Loading({
       </div>
 
       <div className="px-6 py-3 text-center border-t border-gray-100">
-        <p className="text-xs text-gray-400 flex items-center justify-center">
+        <p className="text-xs text-black flex items-center justify-center">
           <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span>Protected by Lit</span>
+          <a href="https://litprotocol.com" target="_blank" rel="noopener noreferrer" className="flex items-center">
+            Protected by <Image src="/wordmark.svg" alt="Lit" width={15} height={9} className="ml-1" />
+          </a>
         </p>
       </div>
     </div>

@@ -80,12 +80,14 @@ export default function LoginMethods({
       </div>
       
       <div className="px-6 py-3 text-center border-t border-gray-100">
-        <p className="text-xs text-gray-400 flex items-center justify-center">
+        <p className="text-xs text-black flex items-center justify-center">
           <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
             <path d="M7 11V7a5 5 0 0110 0v4" />
           </svg>
-          Protected by Lit
+          <a href="https://litprotocol.com" target="_blank" rel="noopener noreferrer" className="flex items-center">
+            Protected by <Image src="/wordmark.svg" alt="Lit" width={15} height={9} className="ml-1" />
+          </a>
         </p>
       </div>
 
