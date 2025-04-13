@@ -10,48 +10,16 @@ const StatusAnimation = ({ type }: StatusAnimationProps) => {
   if (!type) return null;
 
   return (
-    <div className='animation-overlay'>
+    <div className='flex justify-center items-center my-4'>
       {type === 'success' && (
-        <svg className='success-checkmark' viewBox='0 0 52 52'>
-          <circle
-            className='success-checkmark__circle'
-            cx='26'
-            cy='26'
-            r='25'
-            fill='none'
-          />
-          <path
-            className='success-checkmark__check'
-            fill='none'
-            d='M14.1 27.2l7.1 7.2 16.7-16.8'
-          />
-        </svg>
-      )}
-
-      {type === 'disapproval' && (
-        <svg className='error-x' viewBox='0 0 52 52'>
-          <circle
-            className='error-x__circle'
-            cx='26'
-            cy='26'
-            r='25'
-            fill='none'
-          />
-          <line
-            className='error-x__line error-x__line--first'
-            x1='16'
-            y1='16'
-            x2='36'
-            y2='36'
-          />
-          <line
-            className='error-x__line error-x__line--second'
-            x1='36'
-            y1='16'
-            x2='16'
-            y2='36'
-          />
-        </svg>
+        <div className="rounded-full bg-green-100 p-3 h-16 w-16 flex items-center justify-center">
+          <svg className="w-10 h-10 text-green-600" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+            />
+          </svg>
+        </div>
       )}
     </div>
   );

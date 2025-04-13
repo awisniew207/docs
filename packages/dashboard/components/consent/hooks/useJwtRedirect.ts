@@ -41,7 +41,7 @@ export const useJwtRedirect = ({
       try {
         setIsGenerating(true);
         onStatusChange?.(
-          'Initializing agent PKP wallet for JWT creation...',
+          'Initializing Agent EVM Wallet...',
           'info',
         );
 
@@ -52,7 +52,6 @@ export const useJwtRedirect = ({
         });
         await agentPkpWallet.init();
 
-        onStatusChange?.('Creating signed JWT...', 'info');
         const jwt = await create({
           pkpWallet: agentPkpWallet,
           pkp: agentPKP,
@@ -61,7 +60,7 @@ export const useJwtRedirect = ({
           audience: appInfo.authorizedRedirectUris,
         });
 
-        onStatusChange?.('JWT created successfully!', 'success');
+        onStatusChange?.('Successfully logged in', 'success');
         return jwt;
       } catch (error) {
         console.error('Error creating JWT:', error);

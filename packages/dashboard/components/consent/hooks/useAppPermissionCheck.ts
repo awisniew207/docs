@@ -155,16 +155,28 @@ export const useAppPermissionCheck = ({
       showVersionUpgradePrompt: false,
       isAppAlreadyPermitted: false,
       isLoading: true,
-      checkingPermissions: false
+      checkingPermissions: false,
+      useCurrentVersionOnly: false
     });
 
-    // IF #1: Check if we need to fetch existing parameters
-    if (fetchExistingParameters) {
-      // TRY-CATCH #1: Outer try-catch to handle any errors in fetchExistingParameters call
-      fetchExistingParameters().catch(error => {
+    setTimeout(async () => {
+      try {
+        if (fetchExistingParameters) {
+          await fetchExistingParameters();
+        }
+        
+        updateState({
+          isLoading: false,
+          checkingPermissions: false
+        });
+      } catch (error) {
         console.error('Error fetching parameters for version upgrade:', error);
-      });
-    }
+        updateState({
+          isLoading: false,
+          checkingPermissions: false
+        });
+      }
+    }, 100);
   }, [updateState, fetchExistingParameters]);
   
   /**

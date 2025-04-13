@@ -62,10 +62,12 @@ export const useSetAuthInfo = () => {
         const currentAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
         updatedAuthInfo = { ...currentAuthInfo, ...updates };
       } else {
-        if (!updates.authenticatedAt || !updates.type) {
-          throw new Error('New auth info must include type and authenticatedAt');
-        }
-        updatedAuthInfo = updates as AuthInfo;
+        // If creating new auth info without required fields, set defaults instead of throwing an error
+        updatedAuthInfo = {
+          type: updates.type || (updates.agentPKP ? 'webauthn' : 'unknown'), // Default to webauthn if we have PKP info
+          authenticatedAt: updates.authenticatedAt || new Date().toISOString(),
+          ...updates
+        } as AuthInfo;
       }
       
       localStorage.setItem(AUTH_INFO_KEY, JSON.stringify(updatedAuthInfo));

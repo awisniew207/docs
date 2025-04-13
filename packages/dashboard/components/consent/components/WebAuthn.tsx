@@ -52,54 +52,57 @@ export default function WebAuthn({
 
   if (loading) {
     return (
-      <>
-        <div className="loader-container">
-          <div className="loader"></div>
-          <p>Follow the prompts to continue...</p>
-        </div>
-      </>
+      <div className="flex flex-col items-center justify-center py-6">
+        <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-black animate-spin mb-4"></div>
+        <p className="text-sm text-gray-600">Creating your account...</p>
+      </div>
     );
   }
 
   return (
     <>
-      <div className="auth-options">
+      <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Passkey Authentication</h1>
+      <p className="text-sm text-gray-600 text-center mb-6">Use passkeys for secure, passwordless login</p>
+      
+      <div className="space-y-6">
         {registerWithWebAuthn && (
-          <div className="auth-option">
-            <h2>Register with a passkey</h2>
-            <p>Create a new passkey for passwordless authentication.</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <h2 className="text-base font-medium text-gray-800 mb-1">Register a new passkey</h2>
+            <p className="text-sm text-gray-600 mb-3">Create a new passkey for passwordless authentication</p>
             <button
               type="button"
-              className={`btn btn--primary ${loading && 'btn--loading'}`}
+              className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleRegister}
               disabled={loading}
             >
-              Create a credential
+              {loading ? 'Creating...' : 'Create a passkey'}
             </button>
           </div>
         )}
 
-        <div className="auth-option">
-          <h2>Sign in with passkey</h2>
-          <p>Use your existing passkey to sign in.</p>
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <h2 className="text-base font-medium text-gray-800 mb-1">Sign in with passkey</h2>
+          <p className="text-sm text-gray-600 mb-3">Use your existing passkey to sign in</p>
           <button
             type="button"
-            className={`btn btn--primary ${loading && 'btn--loading'}`}
+            className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleAuthenticate}
             disabled={loading}
           >
-            Sign in with passkey
+            {loading ? 'Signing in...' : 'Sign in with passkey'}
           </button>
         </div>
       </div>
       
-      <button
-        onClick={() => setView('default')}
-        className="btn btn--outline"
-        style={{ marginTop: '8px' }}
-      >
-        Back
-      </button>
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={() => setView('default')}
+          className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors"
+        >
+          Back
+        </button>
+      </div>
     </>
   );
 }
