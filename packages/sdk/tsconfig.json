@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "nodenext",
+    "module": "esnext",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
@@ -12,6 +12,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
+    "moduleResolution": "bundler",
     "baseUrl": "./",
     "paths": {
       "*": ["node_modules/*"]
