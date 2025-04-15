@@ -52,9 +52,17 @@ export default function IndexView() {
   // State to show existing account option
   const [showExistingAccount, setShowExistingAccount] = useState(false);
   
+  // Check for existing auth info once the validation process is complete
+  useEffect(() => {
+    if (isProcessing) return;
+    if (validatedSessionSigs) {
+      setShowExistingAccount(true);
+    }
+  }, [validatedSessionSigs, isProcessing]);
+  
   // Handle using existing account
   const handleUseExistingAccount = () => {
-    if (!authInfo || !validatedSessionSigs) return;
+    if (!validatedSessionSigs || !authInfo) return;
     
     // Use the existing session and auth info
     setSessionSigs(validatedSessionSigs);
@@ -62,21 +70,6 @@ export default function IndexView() {
     setAgentPKP(authInfo.agentPKP);
     setShowExistingAccount(false);
   };
-  
-  // Handle sign out
-  const handleSignOut = async () => {
-    cleanupSession();
-    clearAuthInfo();
-    window.location.reload();
-  };
-  
-  // Check for existing auth info once the validation process is complete
-  useEffect(() => {
-    if (isProcessing) return;
-    if (authInfo && validatedSessionSigs) {
-      setShowExistingAccount(true);
-    }
-  }, [authInfo, validatedSessionSigs, isProcessing]);
   
   // ------ NEW AUTHENTICATION FLOW ------
   
@@ -207,6 +200,12 @@ export default function IndexView() {
   }, [authLoading, accountsLoading, sessionLoading, isProcessing, loadingMessage]);
   
   // ------ CLEANUP ------
+
+  const handleSignOut = async () => {
+    cleanupSession();
+    clearAuthInfo();
+    window.location.reload();
+  };
   
   useEffect(() => {
     return () => {
