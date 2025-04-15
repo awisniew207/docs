@@ -55,7 +55,7 @@ export const useReadAuthInfo = (): UseReadAuthInfo => {
       } catch (error) {
         console.error('Error retrieving auth info:', error);
         setError(error as string);
-        localStorage.removeItem(AUTH_INFO_KEY);
+        await clearInfo();
       } finally {
         setIsProcessing(false);
       }
