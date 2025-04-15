@@ -14,7 +14,7 @@ import { useSetAuthInfo, useReadAuthInfo, useClearAuthInfo } from '../hooks/useA
 
 import ExistingAccountView from '../views/ExistingAccountView';
 import AuthenticatedConsentForm from '../components/AuthenticatedConsentForm';
-import NoAccountsView from '../views/NoAccountsView';
+import SignUpView from '../views/SignUpView';
 import Loading from '../components/Loading';
 
 // Wrapper component for centering content
@@ -265,7 +265,7 @@ export default function IndexView() {
     // If authenticated but no accounts found
     if (authMethod && accounts.length === 0) {
       return (
-        <NoAccountsView
+        <SignUpView
           authMethodType={authMethod.authMethodType as typeof AUTH_METHOD_TYPE[keyof typeof AUTH_METHOD_TYPE]}
           handleRegisterWithWebAuthn={handleRegisterWithWebAuthn}
           authWithWebAuthn={authWithWebAuthn}

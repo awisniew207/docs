@@ -3,13 +3,13 @@ import Image from 'next/image';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import Loading from '../components/Loading';
 
-interface NoAccountsViewProps {
+interface SignUpViewProps {
   authMethodType: typeof AUTH_METHOD_TYPE[keyof typeof AUTH_METHOD_TYPE];
   handleRegisterWithWebAuthn?: () => Promise<void>;
   authWithWebAuthn?: () => void;
 }
 
-const NoAccountsView: React.FC<NoAccountsViewProps> = ({
+const SignUpView: React.FC<SignUpViewProps> = ({
   authMethodType,
   handleRegisterWithWebAuthn,
   authWithWebAuthn
@@ -145,4 +145,4 @@ const NoAccountsView: React.FC<NoAccountsViewProps> = ({
   }
 };
 
-export default NoAccountsView; 
+export default SignUpView; 
