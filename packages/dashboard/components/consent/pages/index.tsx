@@ -290,8 +290,8 @@ export default function IndexView() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen pt-20">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-20">
       {renderContent()}
     </div>
   );
-} 
+}
