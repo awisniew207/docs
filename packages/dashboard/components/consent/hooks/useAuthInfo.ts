@@ -49,6 +49,8 @@ export const useReadAuthInfo = (): UseReadAuthInfo => {
         const sigs = await getValidSessionSigs();
         if (sigs) {
           setSessionSigs(sigs);
+        } else {
+          await clearInfo();
         }
       } catch (error) {
         console.error('Error retrieving auth info:', error);
@@ -129,8 +131,7 @@ export const useClearAuthInfo = () => {
   // Clear auth info from localStorage
   const clearAuthInfo = useCallback(async () => {
     try {
-      localStorage.removeItem(AUTH_INFO_KEY);
-      await disconnectWeb3();
+      await clearInfo();
       return true;
     } catch (err) {
       const error = err as Error;
@@ -145,6 +146,11 @@ export const useClearAuthInfo = () => {
     error
   };
 };
+
+async function clearInfo() {
+  localStorage.removeItem(AUTH_INFO_KEY);
+  await disconnectWeb3();
+}
 
 // For backward compatibility
 export default useReadAuthInfo; 
