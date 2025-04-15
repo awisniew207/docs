@@ -17,13 +17,6 @@ import AuthenticatedConsentForm from '../components/AuthenticatedConsentForm';
 import SignUpView from '../views/SignUpView';
 import Loading from '../components/Loading';
 
-// Wrapper component for centering content
-const CenteredContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-20">
-    {children}
-  </div>
-);
-
 export default function IndexView() {
   // ------ STATE AND HOOKS ------
   const { showError } = useErrorPopup();
@@ -297,8 +290,8 @@ export default function IndexView() {
   };
 
   return (
-    <CenteredContainer>
+    <div className="flex items-center justify-center min-h-screen pt-20">
       {renderContent()}
-    </CenteredContainer>
+    </div>
   );
 } 
