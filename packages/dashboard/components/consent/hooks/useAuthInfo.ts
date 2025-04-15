@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
-import validateSession from '../utils/getValidSessionSigs';
+import { getValidSessionSigs } from '../utils/getValidSessionSigs';
 import { disconnectWeb3 } from '@lit-protocol/auth-browser';
 // Define interfaces for the authentication info
 export interface AuthInfo {
@@ -46,7 +46,7 @@ export const useReadAuthInfo = (): UseReadAuthInfo => {
           const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
           setAuthInfo(parsedAuthInfo);
         }
-        const sigs = await validateSession();
+        const sigs = await getValidSessionSigs();
         if (sigs) {
           setSessionSigs(sigs);
         }

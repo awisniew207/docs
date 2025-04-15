@@ -1,11 +1,10 @@
 import { LitPKPResource } from "@lit-protocol/auth-helpers";
-
 import { LitActionResource } from "@lit-protocol/auth-helpers";
 import { litNodeClient } from "./lit";
 import { LIT_ABILITY } from "@lit-protocol/constants";
 import { validateSessionSigs } from "@lit-protocol/misc";
 
-const getValidSessionSigs = async () => {
+export const getValidSessionSigs = async () => {
   try {
     // Check if lit-wallet-sig exists in localStorage first
     const litWalletSig = localStorage.getItem('lit-wallet-sig');
@@ -66,5 +65,3 @@ const getValidSessionSigs = async () => {
     console.error('Error validating session:', error);
   }
 };
-
-export default getValidSessionSigs;
