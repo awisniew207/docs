@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { IRelayPKP } from '@lit-protocol/types';
-
+import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
+import validateSession from '../utils/validateSession';
 // Define interfaces for the authentication info
 export interface AuthInfo {
   type: string;
@@ -11,29 +11,50 @@ export interface AuthInfo {
   userId?: string;
 }
 
+export interface UseReadAuthInfo { 
+  authInfo: AuthInfo | null;
+  sessionSigs: SessionSigs | null;
+  isProcessing: boolean;
+  error: string | null;
+}
+
 const AUTH_INFO_KEY = 'lit-auth-info';
 
 /**
  * Hook to retrieve authentication info from localStorage
  * @returns The authentication info stored in localStorage
  */
-export const useReadAuthInfo = () => {
+export const useReadAuthInfo = (): UseReadAuthInfo => {
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
+  const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load auth info from localStorage
   useEffect(() => {
-    try {
-      const storedAuthInfo = localStorage.getItem(AUTH_INFO_KEY);
-      if (storedAuthInfo) {
-        const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
-        setAuthInfo(parsedAuthInfo);
+    const loadAuthInfo = async () => {
+      try {
+        const storedAuthInfo = localStorage.getItem(AUTH_INFO_KEY);
+        if (storedAuthInfo) {
+          const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
+          setAuthInfo(parsedAuthInfo);
+        }
+        const sigs = await validateSession();
+        if (sigs) {
+          setSessionSigs(sigs);
+        }
+      } catch (error) {
+        console.error('Error retrieving auth info:', error);
+        setError(error as string);
+        useClearAuthInfo();
+      } finally {
+        setIsProcessing(false);
       }
-    } catch (error) {
-      console.error('Error retrieving auth info:', error);
-    }
+    };
+    loadAuthInfo();
   }, []);
 
-  return authInfo;
+  return { authInfo, sessionSigs, isProcessing, error };
 };
 
 /**

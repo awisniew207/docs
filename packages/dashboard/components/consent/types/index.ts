@@ -5,7 +5,6 @@ export interface AuthenticatedConsentFormProps {
   userPKP: IRelayPKP;
   sessionSigs: SessionSigs;
   agentPKP?: IRelayPKP;
-  isSessionValidation?: boolean;
 }
 
 export interface AppView {
