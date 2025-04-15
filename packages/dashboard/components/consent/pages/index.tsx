@@ -6,7 +6,7 @@ import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 
 import useAuthenticate from '../hooks/useAuthenticate';
 import useAccounts from '../hooks/useAccounts';
-import { registerWebAuthn, getSessionSigs, cleanupSession } from '../utils/lit';
+import { registerWebAuthn, getSessionSigs } from '../utils/lit';
 import LoginMethods from '../components/LoginMethods';
 import { getAgentPKP } from '../utils/getAgentPKP';
 import { useErrorPopup } from '@/providers/error-popup';
@@ -28,7 +28,7 @@ export default function IndexView() {
   // ------ STATE AND HOOKS ------
   const { showError } = useErrorPopup();
   const { updateAuthInfo } = useSetAuthInfo();
-  const clearAuthInfo = useClearAuthInfo();
+  const { clearAuthInfo } = useClearAuthInfo();
 
   // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
@@ -62,12 +62,6 @@ export default function IndexView() {
   
   // Handle using existing account
   const handleUseExistingAccount = () => {
-    if (!validatedSessionSigs || !authInfo) return;
-    
-    // Use the existing session and auth info
-    setSessionSigs(validatedSessionSigs);
-    setuserPKP(authInfo.userPKP);
-    setAgentPKP(authInfo.agentPKP);
     setShowExistingAccount(false);
   };
   
@@ -202,7 +196,6 @@ export default function IndexView() {
   // ------ CLEANUP ------
 
   const handleSignOut = async () => {
-    cleanupSession();
     clearAuthInfo();
     window.location.reload();
   };
@@ -211,7 +204,7 @@ export default function IndexView() {
     return () => {
       // Cleanup web3 connection when component unmounts
       if (sessionSigs) {
-        cleanupSession();
+        clearAuthInfo();
       }
     };
   }, [sessionSigs]);
@@ -250,6 +243,15 @@ export default function IndexView() {
         });
       } catch (error) {
         console.error('Error saving PKP info to localStorage:', error);
+        showError(error as Error, 'Authentication Error');
+        return (
+          <LoginMethods
+            authWithEthWallet={authWithEthWallet}
+            authWithWebAuthn={authWithWebAuthn}
+            authWithStytch={authWithStytch}
+            registerWithWebAuthn={handleRegisterWithWebAuthn}
+          />
+        );
       }
   
       return (
@@ -257,6 +259,17 @@ export default function IndexView() {
           userPKP={userPKP}
           sessionSigs={sessionSigs}
           agentPKP={agentPKP}
+        />
+      );
+    }
+
+    // If we're not showing the existing account and have validated session sigs
+    if (!showExistingAccount && validatedSessionSigs && authInfo?.userPKP) {
+      return (
+        <AuthenticatedConsentForm
+          userPKP={authInfo.userPKP}
+          sessionSigs={validatedSessionSigs}
+          agentPKP={authInfo.agentPKP}
         />
       );
     }
