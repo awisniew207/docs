@@ -54,7 +54,6 @@ import {
 export default function AuthenticatedConsentForm({
   sessionSigs,
   agentPKP,
-  isSessionValidation,
   userPKP,
 }: AuthenticatedConsentFormProps) {
   const { appId, error: urlError } = useUrlAppId();

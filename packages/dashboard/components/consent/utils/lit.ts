@@ -249,14 +249,6 @@ export async function getSessionSigs({
 }
 
 /**
- * Disconnects web3 session after use
- */
-export async function cleanupSession(): Promise<void> {
-  localStorage.removeItem('lit-auth-info');
-  await disconnectWeb3();
-}
-
-/**
  * Fetch PKPs associated with given auth method, minting one if none exist
  */
 export async function getOrMintPKPs(authMethod: AuthMethod): Promise<IRelayPKP[]> {

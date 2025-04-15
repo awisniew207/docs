@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { IRelayPKP } from '@lit-protocol/types';
-
+import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
+import { getValidSessionSigs } from '../utils/getValidSessionSigs';
+import { disconnectWeb3 } from '@lit-protocol/auth-browser';
 // Define interfaces for the authentication info
 export interface AuthInfo {
   type: string;
@@ -11,44 +12,77 @@ export interface AuthInfo {
   userId?: string;
 }
 
+export interface UseReadAuthInfo { 
+  authInfo: AuthInfo | null;
+  sessionSigs: SessionSigs | null;
+  isProcessing: boolean;
+  error: string | null;
+}
+
+export interface UseSetAuthInfo {
+  setAuthInfo: (newAuthInfo: AuthInfo) => boolean;
+  updateAuthInfo: (updates: Partial<AuthInfo>) => boolean;
+  error: Error | null;
+}
+
 const AUTH_INFO_KEY = 'lit-auth-info';
 
 /**
  * Hook to retrieve authentication info from localStorage
  * @returns The authentication info stored in localStorage
  */
-export const useReadAuthInfo = () => {
+export const useReadAuthInfo = (): UseReadAuthInfo => {
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
+  const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load auth info from localStorage
   useEffect(() => {
-    try {
-      const storedAuthInfo = localStorage.getItem(AUTH_INFO_KEY);
-      if (storedAuthInfo) {
-        const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
-        setAuthInfo(parsedAuthInfo);
+    const loadAuthInfo = async () => {
+      try {
+        const storedAuthInfo = localStorage.getItem(AUTH_INFO_KEY);
+        if (storedAuthInfo) {
+          const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
+          setAuthInfo(parsedAuthInfo);
+        }
+        const sigs = await getValidSessionSigs();
+        if (sigs) {
+          setSessionSigs(sigs);
+        } else {
+          await clearInfo();
+        }
+      } catch (error) {
+        console.error('Error retrieving auth info:', error);
+        setError(error as string);
+        await clearInfo();
+      } finally {
+        setIsProcessing(false);
       }
-    } catch (error) {
-      console.error('Error retrieving auth info:', error);
-    }
+    };
+    loadAuthInfo();
   }, []);
 
-  return authInfo;
+  return { authInfo, sessionSigs, isProcessing, error };
 };
 
 /**
  * Hook to provide functions for setting and updating authentication info
  * @returns Functions to set and update auth info
  */
-export const useSetAuthInfo = () => {
+export const useSetAuthInfo = (): UseSetAuthInfo => {
+  const [error, setError] = useState<Error | null>(null);
+
   // Set new auth info (replaces existing)
   const setAuthInfo = useCallback((newAuthInfo: AuthInfo) => {
     try {
       localStorage.setItem(AUTH_INFO_KEY, JSON.stringify(newAuthInfo));
       return true;
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       console.error('Error storing auth info:', error);
-      return false;
+      setError(error);
+      throw error;
     }
   }, []);
 
@@ -62,25 +96,28 @@ export const useSetAuthInfo = () => {
         const currentAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
         updatedAuthInfo = { ...currentAuthInfo, ...updates };
       } else {
-        // If creating new auth info without required fields, set defaults instead of throwing an error
         updatedAuthInfo = {
-          type: updates.type || (updates.agentPKP ? 'webauthn' : 'unknown'), // Default to webauthn if we have PKP info
-          authenticatedAt: updates.authenticatedAt || new Date().toISOString(),
+          type: updates.type,
+          authenticatedAt: updates.authenticatedAt,
           ...updates
         } as AuthInfo;
       }
       
       localStorage.setItem(AUTH_INFO_KEY, JSON.stringify(updatedAuthInfo));
       return true;
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       console.error('Error updating auth info:', error);
-      return false;
+      setError(error);
+      localStorage.removeItem(AUTH_INFO_KEY);
+      throw error;
     }
   }, []);
 
   return {
     setAuthInfo,
-    updateAuthInfo
+    updateAuthInfo,
+    error
   };
 };
 
@@ -89,19 +126,31 @@ export const useSetAuthInfo = () => {
  * @returns Function to clear auth info
  */
 export const useClearAuthInfo = () => {
+  const [error, setError] = useState<Error | null>(null);
+
   // Clear auth info from localStorage
-  const clearAuthInfo = useCallback(() => {
+  const clearAuthInfo = useCallback(async () => {
     try {
-      localStorage.removeItem(AUTH_INFO_KEY);
+      await clearInfo();
       return true;
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       console.error('Error clearing auth info:', error);
-      return false;
+      setError(error);
+      throw error;
     }
   }, []);
 
-  return clearAuthInfo;
+  return {
+    clearAuthInfo,
+    error
+  };
 };
+
+async function clearInfo() {
+  localStorage.removeItem(AUTH_INFO_KEY);
+  await disconnectWeb3();
+}
 
 // For backward compatibility
 export default useReadAuthInfo; 
