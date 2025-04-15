@@ -3,7 +3,13 @@ import * as didJWT from 'did-jwt';
 import { JWT_ERROR } from 'did-jwt';
 import { ethers } from 'ethers';
 import { VincentJWT } from '../types';
-import { isJWTExpired, processJWTSignature, splitJWT, validateJWTTime } from './utils';
+import {
+  isDefinedObject,
+  isJWTExpired,
+  processJWTSignature,
+  splitJWT,
+  validateJWTTime,
+} from './utils';
 
 /**
  * Decodes and verifies an {@link VincentJWT} token in string form
@@ -62,8 +68,13 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
     const r = signatureBytes.slice(0, 32);
     const s = signatureBytes.slice(32, 64);
 
+    const { app, authentication, pkp } = decoded.payload;
+    if (!isDefinedObject(app) || !isDefinedObject(authentication) || !isDefinedObject(pkp)) {
+      throw new Error(`Missing required fields in JWT payload`);
+    }
+
     // Process public key
-    let publicKey = decoded.payload.pkp.publicKey;
+    let publicKey = pkp.publicKey;
     if (publicKey.startsWith('0x')) {
       publicKey = publicKey.substring(2);
     }

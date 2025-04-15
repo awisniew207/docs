@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { IRelayPKP } from '@lit-protocol/types';
 
 import { VincentJWT } from '../jwt/types';
 
@@ -30,16 +29,7 @@ export type AuthenticatedRequestHandler<
 export interface AuthenticatedRequest<P = any, ResBody = any, ReqBody = any, ReqQuery = any>
   extends Request<P, ResBody, ReqBody, ReqQuery> {
   user: {
-    app: {
-      id: string;
-      version: number;
-    };
-    authentication: {
-      type: string;
-      value?: string;
-    };
     decodedJWT: VincentJWT;
-    pkp: IRelayPKP;
     rawJWT: string;
   };
 }

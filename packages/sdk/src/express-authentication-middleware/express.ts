@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { jwt } from '@lit-protocol/vincent-sdk';
+import { jwt } from '..';
+import { isDefinedObject } from '../jwt/core/utils';
 
 import { AuthenticatedRequest, AuthenticatedRequestHandler } from './types';
 
@@ -13,26 +14,13 @@ function assertAuthenticatedRequest(req: Request): asserts req is AuthenticatedR
 
   // Cast with a type assertion
   const user = req.user as Partial<{
-    app: unknown;
-    authentication: unknown;
     decodedJWT: unknown;
-    pkp: unknown;
     rawJWT: unknown;
   }>;
 
-  const { app, authentication, decodedJWT, pkp, rawJWT } = user;
+  const { decodedJWT, rawJWT } = user;
 
-  function isDefinedObject(value: unknown): value is object {
-    return typeof value === 'object' && value !== null;
-  }
-
-  if (
-    typeof rawJWT !== 'string' ||
-    !isDefinedObject(app) ||
-    !isDefinedObject(authentication) ||
-    !isDefinedObject(decodedJWT) ||
-    !isDefinedObject(pkp)
-  ) {
+  if (typeof rawJWT !== 'string' || !isDefinedObject(decodedJWT)) {
     throw new Error('Request is not an AuthenticatedRequest: Invalid "user" properties');
   }
 }
@@ -150,11 +138,8 @@ export const getAuthenticateUserExpressHandler =
       }
 
       (req as AuthenticatedRequest).user = {
-        app: decodedJWT.payload.app,
-        authentication: decodedJWT.payload.authentication,
         decodedJWT,
         rawJWT,
-        pkp: decodedJWT.payload.pkp,
       };
 
       next();

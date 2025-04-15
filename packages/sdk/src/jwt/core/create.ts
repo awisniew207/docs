@@ -2,7 +2,7 @@ import * as didJWT from 'did-jwt';
 import { ethers } from 'ethers';
 
 import type { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import type { JWTConfig } from '../types';
+import type { JWTConfig, VincentJWTPayload } from '../types';
 
 /**
  * Creates a signer function compatible with did-jwt that uses a PKP wallet for signing
@@ -99,13 +99,7 @@ export async function createPKPSignedJWT(config: JWTConfig): Promise<string> {
 
   const walletAddress = await pkpWallet.getAddress();
 
-  const fullPayload: {
-    iat: number;
-    exp: number;
-    iss: string;
-    aud?: string | string[];
-    [key: string]: unknown;
-  } = {
+  const fullPayload: VincentJWTPayload = {
     ...payload,
     aud: audience,
     iat,
