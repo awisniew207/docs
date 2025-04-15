@@ -6,20 +6,64 @@ import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 
 import useAuthenticate from '../hooks/useAuthenticate';
 import useAccounts from '../hooks/useAccounts';
-import { registerWebAuthn, getSessionSigs, cleanupSession } from '../utils/lit';
-import AuthenticatedConsentForm from '../components/AuthenticatedConsentForm';
-import Loading from '../components/Loading';
+import { registerWebAuthn, getSessionSigs } from '../utils/lit';
 import LoginMethods from '../components/LoginMethods';
 import { getAgentPKP } from '../utils/getAgentPKP';
 import { useErrorPopup } from '@/providers/error-popup';
+import { useSetAuthInfo, useReadAuthInfo, useClearAuthInfo } from '../hooks/useAuthInfo';
+
+import ExistingAccountView from '../views/ExistingAccountView';
+import AuthenticatedConsentForm from '../components/AuthenticatedConsentForm';
+import SignUpView from '../views/SignUpView';
+import Loading from '../components/Loading';
 
 export default function IndexView() {
+  // ------ STATE AND HOOKS ------
+  const { showError } = useErrorPopup();
+  const { updateAuthInfo } = useSetAuthInfo();
+  const { clearAuthInfo } = useClearAuthInfo();
+
+  // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
   const [agentPKP, setAgentPKP] = useState<IRelayPKP>();
-  const [sessionLoading, setSessionLoading] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<Error>();
-  const { showError } = useErrorPopup();
-
+  
+  // State for loading messages
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // ------ EXISTING SESSION HANDLING ------
+  
+  // Check for existing auth info
+  const { 
+    authInfo, 
+    sessionSigs: validatedSessionSigs, 
+    isProcessing,
+    error: readError
+  } = useReadAuthInfo();
+  
+  // State to show existing account option
+  const [showExistingAccount, setShowExistingAccount] = useState(false);
+  
+  // Check for existing auth info once the validation process is complete
+  useEffect(() => {
+    if (isProcessing) return;
+    if (validatedSessionSigs) {
+      setShowExistingAccount(true);
+    }
+  }, [validatedSessionSigs, isProcessing]);
+  
+  // Handle using existing account
+  const handleUseExistingAccount = () => {
+    setShowExistingAccount(false);
+  };
+  
+  // ------ NEW AUTHENTICATION FLOW ------
+  
+  // Authentication state
+  const [sessionLoading, setSessionLoading] = useState<boolean>(false);
+  
+  // Authentication methods
   const {
     authMethod,
     authWithEthWallet,
@@ -28,6 +72,8 @@ export default function IndexView() {
     loading: authLoading,
     error: authError,
   } = useAuthenticate();
+  
+  // Account handling
   const {
     fetchAccounts,
     setuserPKP,
@@ -36,26 +82,26 @@ export default function IndexView() {
     loading: accountsLoading,
     error: accountsError,
   } = useAccounts();
-
-  const error = authError || accountsError || sessionError;
-
+  
+  // Combine errors
+  const error = authError || accountsError || sessionError || readError;
+  
   // Show errors in the popup when they occur
   useEffect(() => {
     if (error) {
       showError(error, 'Authentication Error');
     }
   }, [error, showError]);
-
-  // Store referrer URL when component mounts
-  useEffect(() => {
-    // Get the document referrer (the URL the user came from)
-    const referrer = document.referrer;
-    if (referrer && referrer !== '') {
-      sessionStorage.setItem('referrerUrl', referrer);
+  
+  // Register with WebAuthn
+  async function handleRegisterWithWebAuthn() {
+    const newPKP = await registerWebAuthn();
+    if (newPKP) {
+      setuserPKP(newPKP);
     }
-  }, []);
-
-  // Function to generate session signatures on-demand
+  }
+  
+  // Generate session signatures on-demand
   const generateSessionSigs = useCallback(async () => {
     if (!authMethod || !userPKP) return;
 
@@ -83,167 +129,169 @@ export default function IndexView() {
       setSessionLoading(false);
     }
   }, [authMethod, userPKP, setSessionSigs, setAgentPKP, setSessionError, setSessionLoading, showError]);
-
-  async function handleRegisterWithWebAuthn() {
-    const newPKP = await registerWebAuthn();
-    if (newPKP) {
-      setuserPKP(newPKP);
-    }
-  }
-
+  
+  // If user is authenticated, fetch accounts
   useEffect(() => {
-    // If user is authenticated, fetch accounts
     if (authMethod) {
       fetchAccounts(authMethod);
     }
   }, [authMethod, fetchAccounts]);
 
+  // If user is authenticated and has accounts, select the first one
   useEffect(() => {
-    // If user is authenticated and has accounts, select the first one
     if (authMethod && accounts.length > 0 && !userPKP) {
       setuserPKP(accounts[0]);
     }
   }, [authMethod, accounts, userPKP, setuserPKP]);
 
+  // If user is authenticated and has selected an account, generate session sigs
   useEffect(() => {
-    // If user is authenticated and has selected an account, generate session sigs
     if (authMethod && userPKP) {
       generateSessionSigs();
     }
   }, [authMethod, userPKP, generateSessionSigs]);
+  
+  // ------ LOADING STATES ------
+  
+  // Update loading message based on current state with smooth transitions
+  useEffect(() => {
+    // Determine the appropriate message based on current loading state
+    let newMessage = '';
+    if (authLoading) {
+      newMessage = 'Authenticating your credentials...';
+    } else if (accountsLoading) {
+      newMessage = 'Fetching your Agent Wallet...';
+    } else if (sessionLoading) {
+      newMessage = 'Securing your session...';
+    } else if (isProcessing) {
+      newMessage = 'Checking existing session...';
+    }
+    
+    // Only transition if the message is actually changing and not empty
+    if (newMessage && newMessage !== loadingMessage) {
+      // Start the transition
+      setIsTransitioning(true);
+      
+      // Wait briefly before changing the message
+      const timeout = setTimeout(() => {
+        setLoadingMessage(newMessage);
+        
+        // After changing message, end the transition
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 150);
+      }, 150);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [authLoading, accountsLoading, sessionLoading, isProcessing, loadingMessage]);
+  
+  // ------ CLEANUP ------
 
-  // Cleanup on unmount
+  const handleSignOut = async () => {
+    clearAuthInfo();
+    window.location.reload();
+  };
+  
   useEffect(() => {
     return () => {
       // Cleanup web3 connection when component unmounts
       if (sessionSigs) {
-        cleanupSession();
+        clearAuthInfo();
       }
     };
   }, [sessionSigs]);
 
-  // Loading states
-  if (authLoading) {
-    return <Loading copy={'Authenticating your credentials...'} />;
-  }
-  if (accountsLoading) {
-    return <Loading copy={'Looking up your accounts...'} />;
-  }
-  if (sessionLoading) {
-    return <Loading copy={'Securing your session...'} />;
-  }
-
-  // Authenticated states
-  if (userPKP && sessionSigs) {
-    // Save the PKP info in localStorage for SessionValidator to use
-    try {
-      const storedAuthInfo = localStorage.getItem('lit-auth-info');
-      if (storedAuthInfo) {
-        const authInfo = JSON.parse(storedAuthInfo);
-
-        // Add PKP info to the existing auth info
-        authInfo.agentPKP = agentPKP;
-        authInfo.userPKP = userPKP;
-        localStorage.setItem('lit-auth-info', JSON.stringify(authInfo));
-        console.log('Updated auth info with PKP public keys:', authInfo);
-      }
-    } catch (error) {
-      console.error('Error saving PKP info to localStorage:', error);
+  // ------ RENDER CONTENT ------
+  
+  const renderContent = () => {
+    // Handle loading states first
+    if (authLoading || accountsLoading || sessionLoading || isProcessing) {
+      return (
+        <Loading 
+          copy={loadingMessage} 
+          isTransitioning={isTransitioning}
+        />
+      );
     }
-
-    return (
-      <div className="consent-form-overlay">
-        <div className="consent-form-modal">
-          <AuthenticatedConsentForm
-            userPKP={userPKP}
-            sessionSigs={sessionSigs}
-            agentPKP={agentPKP}
+    
+    // If we have existing auth info, show the option to use it
+    if (showExistingAccount) {
+      return (
+        <ExistingAccountView
+          authInfo={authInfo}
+          handleUseExistingAccount={handleUseExistingAccount}
+          handleSignOut={handleSignOut}
+        />
+      );
+    }
+  
+    // If authenticated with a new PKP and session sigs
+    if (userPKP && sessionSigs) {
+      // Save the PKP info in localStorage for SessionValidator to use
+      try {
+        updateAuthInfo({
+          agentPKP,
+          userPKP
+        });
+      } catch (error) {
+        console.error('Error saving PKP info to localStorage:', error);
+        showError(error as Error, 'Authentication Error');
+        return (
+          <LoginMethods
+            authWithEthWallet={authWithEthWallet}
+            authWithWebAuthn={authWithWebAuthn}
+            authWithStytch={authWithStytch}
+            registerWithWebAuthn={handleRegisterWithWebAuthn}
           />
-        </div>
-      </div>
-    );
-  }
-
-  // No accounts found state
-  if (authMethod && accounts.length === 0) {
-    switch (authMethod.authMethodType) {
-      case AUTH_METHOD_TYPE.WebAuthn:
-        return (
-          <div className="container">
-            <div className="wrapper">
-              <h1>No Accounts Found</h1>
-              <p>You don&apos;t have any accounts associated with this WebAuthn credential.</p>
-              <div className="auth-options">
-                <div className="auth-option">
-                  <button
-                    type="button"
-                    className="btn btn--outline"
-                    onClick={handleRegisterWithWebAuthn}
-                  >
-                    Create New Account
-                  </button>
-                </div>
-                <div className="auth-option">
-                  <button
-                    type="button"
-                    className="btn btn--outline"
-                    onClick={() => authWithWebAuthn()}
-                  >
-                    Try Sign In Again
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         );
-
-      case AUTH_METHOD_TYPE.StytchEmailFactorOtp:
-      case AUTH_METHOD_TYPE.StytchSmsFactorOtp:
-        return <Loading copy={'Creating your account...'} />;
-
-      case AUTH_METHOD_TYPE.EthWallet:
-        return (
-          <div className="container">
-            <div className="wrapper">
-              <h1>No Accounts Found</h1>
-              <p>No accounts were found for this wallet address.</p>
-              <button
-                type="button"
-                className="btn btn--outline"
-                onClick={() => window.location.reload()}
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
-        );
-
-      default:
-        return (
-          <div className="container">
-            <div className="wrapper">
-              <h1>Unsupported Authentication Method</h1>
-              <p>The authentication method you&apos;re using is not supported.</p>
-              <button
-                type="button"
-                className="btn btn--outline"
-                onClick={() => window.location.reload()}
-              >
-                Start Over
-              </button>
-            </div>
-          </div>
-        );
+      }
+  
+      return (
+        <AuthenticatedConsentForm
+          userPKP={userPKP}
+          sessionSigs={sessionSigs}
+          agentPKP={agentPKP}
+        />
+      );
     }
-  }
 
-  // Initial authentication state
+    // If we're not showing the existing account and have validated session sigs
+    if (!showExistingAccount && validatedSessionSigs && authInfo?.userPKP) {
+      return (
+        <AuthenticatedConsentForm
+          userPKP={authInfo.userPKP}
+          sessionSigs={validatedSessionSigs}
+          agentPKP={authInfo.agentPKP}
+        />
+      );
+    }
+  
+    // If authenticated but no accounts found
+    if (authMethod && accounts.length === 0) {
+      return (
+        <SignUpView
+          authMethodType={authMethod.authMethodType as typeof AUTH_METHOD_TYPE[keyof typeof AUTH_METHOD_TYPE]}
+          handleRegisterWithWebAuthn={handleRegisterWithWebAuthn}
+          authWithWebAuthn={authWithWebAuthn}
+        />
+      );
+    }
+  
+    // Initial authentication state - show login methods
+    return (
+      <LoginMethods
+        authWithEthWallet={authWithEthWallet}
+        authWithWebAuthn={authWithWebAuthn}
+        authWithStytch={authWithStytch}
+        registerWithWebAuthn={handleRegisterWithWebAuthn}
+      />
+    );
+  };
+
   return (
-    <LoginMethods
-      authWithEthWallet={authWithEthWallet}
-      authWithWebAuthn={authWithWebAuthn}
-      authWithStytch={authWithStytch}
-      registerWithWebAuthn={handleRegisterWithWebAuthn}
-    />
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-20">
+      {renderContent()}
+    </div>
   );
-} 
+}

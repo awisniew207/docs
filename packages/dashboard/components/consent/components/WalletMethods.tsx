@@ -15,48 +15,51 @@ const WalletMethods = ({ authWithEthWallet, setView }: WalletMethodsProps) => {
 
   return (
     <>
-      <h1>Connect your web3 wallet</h1>
-      <p>
-        Connect your wallet then sign a message to verify you&apos;re the owner
-        of the address.
+      <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Connect your wallet</h1>
+      <p className="text-sm text-gray-600 text-center mb-6">
+        Connect your wallet and sign a message to verify ownership
       </p>
-      <div className="buttons-container">
+      
+      <div className="space-y-3">
         {connectors.map(connector => (
           <button
-            type="button"
-            className="btn btn--outline"
-            disabled={!connector.ready}
             key={connector.id}
+            type="button"
+            className="w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            disabled={!connector.ready}
             onClick={() => authWithEthWallet({ connector })}
           >
             {connector.name.toLowerCase() === 'metamask' && (
-              <div className="btn__icon">
+              <div className="w-5 h-5 relative mr-2">
                 <Image
                   src="/metamask.png"
                   alt="MetaMask logo"
                   fill={true}
-                ></Image>
+                />
               </div>
             )}
             {connector.name.toLowerCase() === 'coinbase wallet' && (
-              <div className="btn__icon">
+              <div className="w-5 h-5 relative mr-2">
                 <Image
                   src="/coinbase.png"
                   alt="Coinbase logo"
                   fill={true}
-                ></Image>
+                />
               </div>
             )}
-            <span className="btn__label">Continue with {connector.name}</span>
+            <span>Continue with {connector.name}</span>
           </button>
         ))}
-        <button 
-          onClick={() => setView('default')} 
-          className="btn btn--outline"
-          style={{ marginTop: '8px' }}
-        >
-          Back
-        </button>
+        
+        <div className="mt-6">
+          <button 
+            type="button"
+            onClick={() => setView('default')} 
+            className="w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 font-medium text-sm hover:bg-gray-50 transition-colors"
+          >
+            Back
+          </button>
+        </div>
       </div>
     </>
   );

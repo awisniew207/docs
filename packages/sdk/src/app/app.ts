@@ -4,10 +4,9 @@ import {
   VincentWebAppClient,
 } from './types';
 import { uriHelpers } from './internal';
-import { composeConsentUrl, removeSearchParam } from './internal/uriHelpers';
 import { JWT_URL_KEY } from './constants';
 
-const { isLoginUri, decodeVincentJWTFromUri } = uriHelpers;
+const { isLoginUri, composeConsentUrl, removeSearchParam, decodeVincentJWTFromUri } = uriHelpers;
 
 const redirectToConsentPage = ({
   appId,

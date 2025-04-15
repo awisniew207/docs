@@ -257,6 +257,10 @@
   font-size: 14px;
   line-height: 1.5;
   max-width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.2s ease;
+  min-height: 48px; /* Set a consistent min-height */
+  opacity: 1;
+  will-change: opacity, background-color;
 }
 
 .status-message--info {
@@ -283,8 +287,25 @@
   border: 1px solid #f7d4d6;
 }
 
-.status-message span {
-  margin-left: 8px;
+.status-message .status-text {
+  margin-left: 12px;
+  transition: opacity 0.2s ease;
+}
+
+/* Common styles for status icons */
+.status-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.status-svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Spinner animation for loading states */
@@ -304,4 +325,26 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Icon colors for different status types */
+.warning-icon {
+  color: #9a6700;
+}
+
+.success-icon {
+  color: #1a7f37;
+}
+
+.error-icon {
+  color: #cf222e;
+}
+
+/* Fixed height container for loading messages to prevent layout shifts */
+.status-message-container {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 } 

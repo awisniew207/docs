@@ -22,33 +22,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useErrorPopup } from '@/providers/error-popup';
+import { StatusMessage } from '@/utils/statusMessage';
 
 interface AdvancedFunctionsProps {
   onBack: () => void;
   dashboard: AppView;
   onSuccess?: () => void;
 }
-
-// Status message component
-const StatusMessage = ({ message, type = 'info' }: { message: string, type?: 'info' | 'warning' | 'success' | 'error' }) => {
-  if (!message) return null;
-  
-  const getStatusClass = () => {
-    switch (type) {
-      case 'warning': return 'status-message--warning';
-      case 'success': return 'status-message--success';
-      case 'error': return 'status-message--error';
-      default: return 'status-message--info';
-    }
-  };
-  
-  return (
-    <div className={`status-message ${getStatusClass()}`}>
-      {type === 'info' && <div className="spinner"></div>}
-      <span>{message}</span>
-    </div>
-  );
-};
 
 export default function ManageAdvancedFunctionsScreen({
   onBack,
@@ -61,7 +41,7 @@ export default function ManageAdvancedFunctionsScreen({
   const [showEnableVersionDialog, setShowEnableVersionDialog] = useState(false);
   const [redirectUri, setRedirectUri] = useState("");
   const [versionNumber, setVersionNumber] = useState<number>(dashboard.currentVersion || 1);
-  const [isVersionEnabled, setIsVersionEnabled] = useState(true);
+  const [willEnableVersion, setWillEnableVersion] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [availableVersions, setAvailableVersions] = useState<{version: number, enabled: boolean}[]>([]);
   
@@ -74,7 +54,7 @@ export default function ManageAdvancedFunctionsScreen({
   
   // Add these new state variables after the other states in the component
   const [showUpdateDeploymentStatusDialog, setShowUpdateDeploymentStatusDialog] = useState(false);
-  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus || 0);
+  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus!);
   const deploymentStatusNames = ['DEV', 'TEST', 'PROD'];
   
   // Add state for delete app dialog
@@ -101,12 +81,12 @@ export default function ManageAdvancedFunctionsScreen({
   }, [showError, showStatus]);
   
   useEffect(() => {
-    setVersionNumber(dashboard.currentVersion || 1);
+    setVersionNumber(dashboard.currentVersion);
     
     // Extract available versions
     const versions = (dashboard.toolPolicies || []).map(versionData => {
-      const version = versionData.version || versionData[0];
-      const enabled = versionData.enabled !== undefined ? versionData.enabled : versionData[1];
+      const version = versionData.version;
+      const enabled = versionData.enabled;
       return { version: parseInt(version.toString()), enabled };
     });
     
@@ -216,18 +196,15 @@ export default function ManageAdvancedFunctionsScreen({
   async function handleToggleVersion() {
     try {
       setIsProcessing(true);
-      showStatus(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}...`, "info");
+      showStatus(`${willEnableVersion ? 'Enabling' : 'Disabling'} version ${versionNumber}...`, "info");
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
-      
-      // Enable or disable the selected version
-      console.log(`${isVersionEnabled ? 'Disabling' : 'Enabling'} version ${versionNumber}`);
       
       // Create args array for gas estimation
       const args = [
         dashboard.appId,
         versionNumber,
-        !isVersionEnabled // Toggle the current status
+        willEnableVersion // Set to the new state we want
       ];
       
       // Estimate gas with buffer
@@ -247,7 +224,7 @@ export default function ManageAdvancedFunctionsScreen({
       showStatus("Waiting for confirmation...", "info");
       await tx.wait();
       
-      showStatus(`Version ${versionNumber} ${isVersionEnabled ? 'disabled' : 'enabled'} successfully`, "success");
+      showStatus(`Version ${versionNumber} ${willEnableVersion ? 'enabled' : 'disabled'} successfully`, "success");
       setShowEnableVersionDialog(false);
       
       // Refresh app data after a delay
@@ -257,7 +234,7 @@ export default function ManageAdvancedFunctionsScreen({
       }, 2000);
     } catch (error: any) {
       console.error("Error toggling version:", error);
-      showErrorWithStatus(`Failed to ${isVersionEnabled ? 'disable' : 'enable'} version: ${error.message || "Unknown error"}`, "Transaction Error");
+      showErrorWithStatus(`Failed to ${willEnableVersion ? 'enable' : 'disable'} version: ${error.message || "Unknown error"}`, "Transaction Error");
     } finally {
       setIsProcessing(false);
     }
@@ -409,6 +386,10 @@ export default function ManageAdvancedFunctionsScreen({
                   alert("No app versions available. Create an app version first.");
                   return;
                 }
+                const initialVersion = dashboard.currentVersion || availableVersions[0]?.version;
+                setVersionNumber(initialVersion);
+                const selectedVersion = availableVersions.find(v => v.version === initialVersion);
+                setWillEnableVersion(!(selectedVersion?.enabled || false));
                 setShowEnableVersionDialog(true);
               }}
             >
@@ -575,11 +556,11 @@ export default function ManageAdvancedFunctionsScreen({
       <Dialog open={showEnableVersionDialog} onOpenChange={setShowEnableVersionDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{isVersionEnabled ? "Disable" : "Enable"} App Version</DialogTitle>
+            <DialogTitle>{willEnableVersion ? "Enable" : "Disable"} App Version</DialogTitle>
             <DialogDescription>
-              {isVersionEnabled 
-                ? "Disable this version. This will prevent it from being used."
-                : "Enable this version. This will allow it to be used."}
+              {willEnableVersion 
+                ? "Enable this version. This will allow it to be used."
+                : "Disable this version. This will prevent it from being used."}
             </DialogDescription>
           </DialogHeader>
 
@@ -593,9 +574,10 @@ export default function ManageAdvancedFunctionsScreen({
                 onValueChange={(value) => {
                   const versionNum = parseInt(value);
                   setVersionNumber(versionNum);
-                  // Update isVersionEnabled based on the selected version
+                  // Update willEnableVersion based on the selected version
                   const selectedVersion = availableVersions.find(v => v.version === versionNum);
-                  setIsVersionEnabled(selectedVersion?.enabled || false);
+                  // If currently disabled, we will enable it and vice versa
+                  setWillEnableVersion(!(selectedVersion?.enabled || false));
                 }}
               >
                 <SelectTrigger className="w-full">
@@ -605,7 +587,7 @@ export default function ManageAdvancedFunctionsScreen({
                   {availableVersions.length > 0 ? (
                     availableVersions.map((versionData, index) => (
                       <SelectItem key={index} value={versionData.version.toString()}>
-                        Version {versionData.version.toString()} {versionData.enabled ? "(Currently Enabled)" : ""}
+                        Version {versionData.version.toString()} {versionData.enabled ? "(Enabled)" : "(Disabled)"}
                       </SelectItem>
                     ))
                   ) : (
@@ -633,7 +615,7 @@ export default function ManageAdvancedFunctionsScreen({
                 disabled={isProcessing}
                 className="text-black"
               >
-                {isProcessing ? "Updating..." : isVersionEnabled ? "Disable Version" : "Enable Version"}
+                {isProcessing ? "Updating..." : (willEnableVersion ? "Enable Version" : "Disable Version")}
               </Button>
             </div>
           </div>

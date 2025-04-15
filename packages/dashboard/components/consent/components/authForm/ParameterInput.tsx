@@ -255,10 +255,20 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   // Add these helper functions for array manipulation
   const addArrayItem = (defaultValue: any = '') => {
     // Get current array or initialize empty array
-    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
-                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
-                          inputValue.split(',').map(v => v.trim()) : 
-                          [];
+    let currentArray: any[] = [];
+    
+    if (Array.isArray(inputValue)) {
+      currentArray = [...inputValue];
+    } else if (typeof inputValue === 'string') {
+      if (inputValue.length > 0) {
+        currentArray = inputValue.split(',').map(v => v.trim());
+      }
+    } else if (inputValue === null || inputValue === undefined) {
+      // Initialize as empty array
+    } else {
+      // Handle any unexpected type by using empty array
+      console.warn('Unexpected inputValue type:', typeof inputValue);
+    }
     
     if (type === ParameterType.INT256_ARRAY || type === ParameterType.UINT256_ARRAY) {
       defaultValue = ''; // Use empty string instead of 0 for numeric arrays
@@ -267,9 +277,8 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     // Add the new item
     currentArray.push(defaultValue);
     
-    // Update state
-    const stringValue = currentArray.join(', ');
-    setInputValue(stringValue);
+    // Store the array value directly for rendering
+    setInputValue(currentArray);
     
     // Pass to parent
     if (validateValue(currentArray)) {
@@ -279,19 +288,23 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
 
   const removeArrayItem = (index: number) => {
     // Get current array or initialize empty array
-    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
-                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
-                          inputValue.split(',').map(v => v.trim()) : 
-                          [];
+    let currentArray: any[] = [];
+    
+    if (Array.isArray(inputValue)) {
+      currentArray = [...inputValue];
+    } else if (typeof inputValue === 'string') {
+      if (inputValue.length > 0) {
+        currentArray = inputValue.split(',').map(v => v.trim());
+      }
+    }
     
     // Remove the item at the specified index
     if (index >= 0 && index < currentArray.length) {
       currentArray.splice(index, 1);
       
-      const stringValue = currentArray.length > 0 ? currentArray.join(', ') : '';
-      setInputValue(stringValue);
+      // Store the array value directly for rendering
+      setInputValue(currentArray);
       
-
       if (validateValue(currentArray)) {
         // Remove only empty values from end of array
         let trimmedArray = [...currentArray];
@@ -311,18 +324,22 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
 
   const updateArrayItem = (index: number, value: any) => {
     // Get current array or initialize empty array
-    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
-                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
-                          inputValue.split(',').map(v => v.trim()) : 
-                          [];
+    let currentArray: any[] = [];
+    
+    if (Array.isArray(inputValue)) {
+      currentArray = [...inputValue];
+    } else if (typeof inputValue === 'string') {
+      if (inputValue.length > 0) {
+        currentArray = inputValue.split(',').map(v => v.trim());
+      }
+    }
     
     // Update the value at the specified index
     if (index >= 0 && index < currentArray.length) {
       currentArray[index] = value;
       
-      // Update state
-      const stringValue = currentArray.join(', ');
-      setInputValue(stringValue);
+      // Store the array value directly for rendering
+      setInputValue(currentArray);
       
       // Pass to parent
       if (validateValue(currentArray)) {
@@ -379,52 +396,62 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
     }
     
     return (
-      <div className="array-inputs">
+      <div className="array-inputs font-sans">
         {currentArray.length === 0 ? (
-          <div className="empty-array-message">No items added yet</div>
+          <div className="empty-array-message text-sm text-gray-500 p-2 text-center bg-gray-50 rounded-lg">No items added yet</div>
         ) : (
-          currentArray.map((item, index) => (
-            <div key={index} className="array-item">
-              {arrayType === ParameterType.BOOL_ARRAY ? (
-                <div className="bool-array-item">
-                  <input
-                    type="checkbox"
-                    checked={item === true || item === 'true'}
-                    onChange={(e) => updateArrayItem(index, e.target.checked)}
-                  />
-                  <span className="bool-array-item-label">
-                    Item {index + 1}: {item === true || item === 'true' ? 'True' : 'False'}
-                  </span>
+          <div className="space-y-2">
+            {currentArray.map((item, index) => (
+              <div key={index} className="array-item border border-gray-200 rounded-lg flex items-center overflow-hidden">
+                <div className="flex-grow px-2 py-1">
+                  {arrayType === ParameterType.BOOL_ARRAY ? (
+                    <div className="bool-array-item flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={item === true || item === 'true'}
+                        onChange={(e) => updateArrayItem(index, e.target.checked)}
+                        className="mr-2"
+                      />
+                      <span className="bool-array-item-label text-sm text-gray-700">
+                        Item {index + 1}: {item === true || item === 'true' ? 'True' : 'False'}
+                      </span>
+                    </div>
+                  ) : (
+                    <input
+                      type={inputType}
+                      value={item}
+                      min={arrayType === ParameterType.UINT256_ARRAY ? "0" : undefined}
+                      placeholder={placeholder}
+                      onChange={(e) => updateArrayItem(index, e.target.value)}
+                      onKeyDown={arrayType === ParameterType.UINT256_ARRAY ? (e) => {
+                        if (e.key === '-' || e.key === 'e') {
+                          e.preventDefault();
+                        }
+                      } : undefined}
+                      className="array-item-input w-full px-2 py-1 text-sm border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded text-gray-700"
+                    />
+                  )}
                 </div>
-              ) : (
-                <input
-                  type={inputType}
-                  value={item}
-                  min={arrayType === ParameterType.UINT256_ARRAY ? "0" : undefined}
-                  placeholder={placeholder}
-                  onChange={(e) => updateArrayItem(index, e.target.value)}
-                  className="array-item-input"
-                />
-              )}
-              <button
-                type="button"
-                onClick={() => removeArrayItem(index)}
-                className="array-item-remove-btn"
-                aria-label="Remove item"
-              >
-                ✕
-              </button>
-            </div>
-          ))
+                <button
+                  type="button"
+                  onClick={() => removeArrayItem(index)}
+                  className="array-item-remove-btn flex-shrink-0 h-full px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                  aria-label="Remove item"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
         )}
         
-        <div className="array-actions">
+        <div className="array-actions mt-3">
           <button
             type="button"
-            className="parameter-input btn-add-item"
+            className="parameter-input btn-add-item py-1 px-3 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg text-sm transition-colors flex items-center font-medium"
             onClick={() => addArrayItem(defaultValue)}
           >
-            Add Item
+            Add Item +
           </button>
         </div>
       </div>
@@ -439,7 +466,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="number"
             value={inputValue}
             onChange={handleChange}
-            className={`parameter-input ${error ? 'input-error' : ''}`}
+            className={`parameter-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 text-sm ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             placeholder="Enter an int256 value (can be negative)"
           />
         );
@@ -450,7 +477,12 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="number"
             value={inputValue}
             onChange={handleChange}
-            className={`parameter-input ${error ? 'input-error' : ''}`}
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e') {
+                e.preventDefault();
+              }
+            }}
+            className={`parameter-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 text-sm ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             placeholder="Enter a uint256 value (non-negative)"
             min="0"
           />
@@ -471,7 +503,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
                 onChange(newValue === 'true');
               }
             }}
-            className={`parameter-input ${error ? 'input-error' : ''}`}
+            className={`parameter-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 text-sm ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
           >
             <option value="not_set">Not set</option>
             <option value="true">True</option>
@@ -485,7 +517,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="text"
             value={inputValue}
             onChange={handleChange}
-            className={`parameter-input ${error ? 'input-error' : ''}`}
+            className={`parameter-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 text-sm ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             placeholder="0x..."
           />
         );
@@ -496,7 +528,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="text"
             value={inputValue}
             onChange={handleChange}
-            className={`parameter-input ${error ? 'input-error' : ''}`}
+            className={`parameter-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 text-sm ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             placeholder="Enter a string value"
           />
         );
@@ -514,7 +546,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             type="text"
             value={inputValue}
             onChange={handleChange}
-            className={`parameter-input ${error ? 'input-error' : ''}`}
+            className={`parameter-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 text-sm ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             placeholder={`Enter a ${typeName} value`}
           />
         );
@@ -522,12 +554,17 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   };
 
   return (
-    <div className="parameter-input-container">
-      <label className="parameter-label">
-        {name} <span className="parameter-type">({typeName})</span>
-      </label>
-      {renderInputField()}
-      {error && <div className="parameter-error">{error}</div>}
+    <div className="parameter-input-container border border-gray-200 rounded-lg overflow-hidden bg-white mb-3 font-sans">
+      <div className="bg-gray-50 px-3 py-2 border-b border-gray-100">
+        <label className="parameter-label text-gray-700 font-medium text-sm flex items-center justify-between">
+          <div>{name}</div>
+          <span className="parameter-type text-xs text-gray-500 font-mono">({typeName})</span>
+        </label>
+      </div>
+      <div className="p-3">
+        {renderInputField()}
+        {error && <div className="parameter-error text-red-500 text-xs mt-1">{error}</div>}
+      </div>
     </div>
   );
 } 
