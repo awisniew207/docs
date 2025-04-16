@@ -22,6 +22,13 @@ const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
   onMaxAmount,
   onSubmit
 }) => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      onAmountChange(e);
+    }
+  };
+
   return (
     <form className="withdraw-form" onSubmit={onSubmit}>
       <div className="px-6 pb-6">
@@ -47,7 +54,7 @@ const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
               id="withdraw-amount"
               type="text"
               value={withdrawAmount}
-              onChange={onAmountChange}
+              onChange={handleAmountChange}
               placeholder="0.0"
               disabled={submitting}
               required

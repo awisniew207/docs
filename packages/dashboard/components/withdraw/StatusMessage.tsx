@@ -10,9 +10,10 @@ const StatusMessage: React.FC<StatusMessageProps> = ({ message, type }) => {
   if (!message) return null;
   
   return (
-    <div className={`status-message status-${type}`}>
-      {message}
-    </div>
+    <div 
+      className={`status-message status-${type}`}
+      dangerouslySetInnerHTML={{ __html: message }}
+    />
   );
 };
 

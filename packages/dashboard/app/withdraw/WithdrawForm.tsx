@@ -5,14 +5,13 @@ import { useErrorPopup } from '@/providers/error-popup';
 import { useHiddenTokens } from './utils/hiddenTokens';
 import {
   FormHeader,
-  LoadingState,
   StatusMessage,
   TokenList,
   WalletInfo,
   WithdrawPanel,
   TokenBalance,
   StatusType
-} from '../../components/components';
+} from '../../components/withdraw';
 import {
   handleTokenSelect,
   handleMaxAmount,
@@ -129,7 +128,7 @@ export default function WithdrawForm({
       selectedToken,
       withdrawAmount,
       withdrawAddress,
-      agentPKP,
+      agentPKP!,
       sessionSigs,
       setSubmitting,
       setWithdrawAmount,
@@ -148,7 +147,9 @@ export default function WithdrawForm({
       <StatusMessage message={statusMessage} type={statusType} />
 
       {loading ? (
-        <LoadingState />
+        <div className="px-6 py-4 text-center text-gray-600">
+          Loading tokens...
+        </div>
       ) : (
         <>
           <TokenList 

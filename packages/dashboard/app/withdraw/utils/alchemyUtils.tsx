@@ -3,12 +3,6 @@ import * as ethers from 'ethers';
 const BASE_RPC_URL = 'https://mainnet.base.org';
 const ALCHEMY_BASE_URL = `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`;
 
-const ERC20_ABI = [
-  "function decimals() view returns (uint8)",
-  "function symbol() view returns (string)",
-  "function name() view returns (string)",
-];
-
 interface TokenBalance {
   address: string;
   symbol: string;
@@ -91,7 +85,8 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
           const metadata: AlchemyTokenMetadata = metadataData.result;
 
           if (!metadata || !metadata.decimals) {
-            throw new Error('No metadata found for token');
+            console.warn("No metadata found for token", token.contractAddress);
+            return null;
           }
 
           const decimals = metadata.decimals;
@@ -114,7 +109,11 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
       });
 
       const tokenDetails = await Promise.all(tokenDetailsPromises);
-      const allTokens = [...tokenBalances, ...tokenDetails];
+      const validTokenDetails = tokenDetails.filter(detail => detail !== null) as TokenBalance[];
+      console.log("tokenDetails", tokenDetails);
+      console.log("validTokenDetails", validTokenDetails);
+      console.log("tokenBalances", tokenBalances);
+      const allTokens = [...tokenBalances, ...validTokenDetails];
       console.log("returning allTokens", allTokens);
       return allTokens;
     } else {
