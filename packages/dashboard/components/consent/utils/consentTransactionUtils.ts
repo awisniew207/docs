@@ -162,11 +162,12 @@ export const addPermittedActions = async (
 
         if (!isPolicyPermitted) {
           console.log(`Adding sign permission for policy ${ipfsCid}, ${IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid].description}`);
-          await litContracts.addPermittedAction({
+          const tx = await litContracts.addPermittedAction({
             ipfsId: ipfsCid,
             pkpTokenId: agentPKPTokenId,
             authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
           });
+          console.log(`Added sign permission for policy ${ipfsCid} - Transaction hash: ${tx.transactionHash}`);
         }
       } catch (error) {
         console.error(`Error adding DCA policy permission for ${ipfsCid}:`, error);
@@ -203,7 +204,7 @@ export const addPermittedActions = async (
         pkpTokenId: agentPKPTokenId,
         authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
       });
-      console.log(`Added permission for ${ipfsCid} - Transaction hash: ${tx}`);
+      console.log(`Added permission for ${ipfsCid} - Transaction hash: ${tx.transactionHash}`);
     } catch (error) {
       console.error(
         `Error adding permitted action for IPFS CID ${ipfsCid}:`,
