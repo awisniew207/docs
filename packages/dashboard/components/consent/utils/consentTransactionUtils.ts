@@ -2,7 +2,7 @@ import { estimateGasWithBuffer } from '@/services/contract/config';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { SELECTED_LIT_NETWORK } from './lit';
-import { IPFS_POLICIES_THAT_NEED_SIGNING, type IPFSPoliciesMap } from '@/app/constants';
+import { IPFS_POLICIES_THAT_NEED_SIGNING } from '@/app/config/policyConstants';
 
 /**
  * Handles sending a transaction with proper error handling
