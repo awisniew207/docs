@@ -37,20 +37,36 @@ const formatBalance = (balance: ethers.BigNumber, decimals: number): string => {
   return ethers.utils.formatUnits(balance, decimals);
 };
 
-export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalanceResult> => {
+export const fetchEthBalance = async (ethAddress: string): Promise<TokenBalanceResult> => {
   try {
     const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
 
-    // Check ETH balance without using Alchemy
     const ethBalance = await provider.getBalance(ethAddress);
-    const tokenBalances: TokenBalance[] = [{
+    const tokenBalance: TokenBalance = {
       address: 'ETH',
       symbol: 'ETH',
       name: 'Ethereum',
       balance: formatBalance(ethBalance, 18),
       rawBalance: ethBalance,
       decimals: 18
-    }];
+    };
+
+    return {
+      success: true,
+      balances: [tokenBalance]
+    };
+  } catch (err: any) {
+    console.error('Error fetching ETH balance:', err);
+    return {
+      success: false,
+      balances: [],
+    };
+  }
+};
+
+export const fetchERC20TokenBalances = async (ethAddress: string): Promise<TokenBalanceResult> => {
+  try {
+    const tokenBalances: TokenBalance[] = [];
 
     // Get all token balances for the address - Specific to Base Mainnet
     const tokensResponse = await fetch(ALCHEMY_BASE_URL, {
@@ -74,7 +90,7 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
     }
 
     const tokensData = await tokensResponse.json();
-    
+
     if (tokensData.error) {
       return {
         success: false,
@@ -83,7 +99,7 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
         errorDetails: JSON.stringify(tokensData.error)
       };
     }
-    
+
     const tokenBalancesList = tokensData.result?.tokenBalances || [];
     const nonZeroBalances = tokenBalancesList.filter((token: AlchemyTokenBalance) => {
       if (token.error) return false;
@@ -112,12 +128,12 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
           }
 
           const metadataData = await metadataResponse.json();
-          
+
           if (metadataData.error) {
             console.warn(`API error for token ${token.contractAddress}: ${JSON.stringify(metadataData.error)}`);
             return null;
           }
-          
+
           const metadata: AlchemyTokenMetadata = metadataData.result;
 
           if (!metadata || !metadata.decimals) {
@@ -146,9 +162,9 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
 
       const tokenDetails = await Promise.all(tokenDetailsPromises);
       const validTokenDetails = tokenDetails.filter(detail => detail !== null) as TokenBalance[];
-      
-      const allBalances = [...tokenBalances, ...validTokenDetails];    
-      
+
+      const allBalances = [...tokenBalances, ...validTokenDetails];
+
       return {
         success: true,
         balances: allBalances

@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { TokenBalance, StatusType } from '../../../components/withdraw/types';
 import { sendEthTransaction, sendTokenTransaction, calculateEthGasCosts } from './transactionService';
-import { fetchTokenBalances } from './alchemyUtils';
+import { fetchERC20TokenBalances, fetchEthBalance } from './tokenUtils';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { LIT_NETWORK } from '@lit-protocol/constants';
@@ -92,15 +92,21 @@ export const handleRefreshBalances = async (
 
   try {
     setLoading(true);
-    const result = await fetchTokenBalances(ethAddress);
+    const ethBalance = await fetchEthBalance(ethAddress);
+    const erc20TokenBalances = await fetchERC20TokenBalances(ethAddress);
 
-    if (result.success) {
-      setBalances(result.balances);
+    const balances = [ethBalance.balances[0],...erc20TokenBalances.balances];
+
+    if (erc20TokenBalances.success && ethBalance.success) {
+      setBalances(balances);
       showStatus('Token balances fetched successfully', 'success');
     } else {
       showStatus('Failed to fetch all token balances', 'warning');
-      if (result.error) {
-        showError(result.error, 'Token Balance Error');
+      if (erc20TokenBalances.error) {
+        showError(erc20TokenBalances.error, 'Token Balance Error');
+      }
+      if (ethBalance.error) {
+        showError(ethBalance.error, 'Token Balance Error');
       }
     }
   } catch (err: any) {
