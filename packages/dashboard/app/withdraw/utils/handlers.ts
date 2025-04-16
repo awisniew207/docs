@@ -5,7 +5,20 @@ import { sendEthTransaction, sendTokenTransaction, calculateEthGasCosts } from '
 import { fetchERC20TokenBalances, fetchEthBalance } from './tokenUtils';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
-import { LIT_NETWORK } from '@lit-protocol/constants';
+import { SELECTED_LIT_NETWORK } from '@/components/consent/utils/lit';
+
+let isLitNodeClientInitialized = false;
+let litNodeClient: LitNodeClient;
+async function initLitNodeClient() {
+  if (!isLitNodeClientInitialized) {
+    litNodeClient = new LitNodeClient({
+      litNetwork: SELECTED_LIT_NETWORK
+    });
+    await litNodeClient.connect();
+    isLitNodeClientInitialized = true;
+  }
+  return litNodeClient;
+}
 
 const BASE_MAINNET_RPC = process.env.NEXT_PUBLIC_BASE_MAINNET_RPC;
 const BASE_EXPLORER_URL = "https://basescan.org/tx/";
@@ -161,11 +174,7 @@ export const handleSubmit = async (
   try {
     setSubmitting(true);
     showStatus('Preparing withdrawal...', 'info');
-
-    const litNodeClient = new LitNodeClient({
-      litNetwork: LIT_NETWORK.Datil
-    });
-    await litNodeClient.connect();
+    litNodeClient = await initLitNodeClient();
 
     const pkpWallet = new PKPEthersWallet({
       pkpPubKey: agentPKP.publicKey,

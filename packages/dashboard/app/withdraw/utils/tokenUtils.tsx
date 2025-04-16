@@ -4,6 +4,16 @@ import Moralis from 'moralis';
 const BASE_RPC_URL = 'https://mainnet.base.org';
 const BASE_CHAIN_ID = '0x2105';
 
+let isMoralisInitialized = false;
+async function initMoralis() {
+  if (!isMoralisInitialized) {
+    await Moralis.start({
+      apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY
+    });
+    isMoralisInitialized = true;
+  }
+}
+
 interface TokenBalance {
   address: string;
   symbol: string;
@@ -54,9 +64,8 @@ export const fetchEthBalance = async (ethAddress: string): Promise<TokenBalanceR
 
 export const fetchERC20TokenBalances = async (ethAddress: string): Promise<TokenBalanceResult> => {
   try {
-    await Moralis.start({
-      apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY
-    });
+    // Initialize Moralis before using it
+    await initMoralis();
 
     const response = await Moralis.EvmApi.token.getWalletTokenBalances({
       chain: BASE_CHAIN_ID,
