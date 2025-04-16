@@ -1,18 +1,18 @@
 import { useEffect, useState, useCallback } from "react";
 import { z } from "zod";
 
-export interface HiddenTokensData {
+interface HiddenTokensData {
     hiddenTokens: string[];
     isProcessing: boolean;
     error: string | null;
 }
 
-export interface HiddenTokensActions {
+interface HiddenTokensActions {
     hideToken: (address: string) => void;
     unhideToken: (address: string) => void;
 }
 
-export interface HiddenTokensHook extends HiddenTokensData, HiddenTokensActions {}
+interface HiddenTokensHook extends HiddenTokensData, HiddenTokensActions {}
 
 const HIDDEN_TOKENS_KEY = 'hidden-tokens';
 
@@ -35,39 +35,39 @@ export const useHiddenTokens = (): HiddenTokensHook => {
 
     useEffect(() => {
         const loadHiddenTokens = async () => {
+            setIsProcessing(true);
+            
+            // Fetch data
+            const storedHiddenTokens = localStorage.getItem(HIDDEN_TOKENS_KEY);
+
+            if (!storedHiddenTokens) {
+                setIsProcessing(false);
+                return;
+            }
+
+            // Parse data
+            let parsedData;
             try {
-                const storedHiddenTokens = localStorage.getItem(HIDDEN_TOKENS_KEY);
-                if (storedHiddenTokens) {
-                    let parsedData;
-                    
-                    try {
-                        parsedData = JSON.parse(storedHiddenTokens);
-                    } catch (parseError) {
-                        console.error('Error parsing hidden tokens data', parseError);
-                        throw new Error('Invalid hidden tokens format');
-                    }
-                    
-                    try {
-                        const validatedData = hiddenTokensSchema.parse(parsedData);
-                        setHiddenTokens(validatedData);
-                    } catch (validationError) {
-                        console.warn('Hidden tokens data validation failed:', validationError);
-                        
-                        localStorage.removeItem(HIDDEN_TOKENS_KEY);
-                        setHiddenTokens([]);
-                        
-                        throw new Error('Hidden tokens data is invalid');
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading hidden tokens from localStorage', error);
-                setError(error as string);
-                setHiddenTokens([]);
+                parsedData = JSON.parse(storedHiddenTokens);
+            } catch (parseError) {
+                setError("Failed to parse hidden tokens data from storage");
                 localStorage.setItem(HIDDEN_TOKENS_KEY, JSON.stringify([]));
+                setIsProcessing(false);
+                return;
+            }
+
+            // Validate data
+            try {
+                const validatedData = hiddenTokensSchema.parse(parsedData);
+                setHiddenTokens(validatedData);
+            } catch (validationError) {
+                localStorage.removeItem(HIDDEN_TOKENS_KEY);
+                setError("Invalid token data format - resetting token preferences");
             } finally {
                 setIsProcessing(false);
             }
-        }
+        };
+        
         loadHiddenTokens();
     }, []);
 
@@ -79,6 +79,7 @@ export const useHiddenTokens = (): HiddenTokensHook => {
             ethereumAddressSchema.parse(lowercaseAddress);
         } catch (validationError) {
             console.error('Invalid address format:', validationError);
+            setError("Invalid Ethereum address format - cannot hide token");
             return;
         }
 
@@ -88,7 +89,8 @@ export const useHiddenTokens = (): HiddenTokensHook => {
         try {
             localStorage.setItem(HIDDEN_TOKENS_KEY, JSON.stringify(newHiddenTokens));
         } catch (error) {
-            console.error('Error saving to localStorage', error);
+            setError("Failed to save token preferences to browser storage");
+            return;
         }
     }, [hiddenTokens]);
 
@@ -103,7 +105,8 @@ export const useHiddenTokens = (): HiddenTokensHook => {
         try {
             localStorage.setItem(HIDDEN_TOKENS_KEY, JSON.stringify(newHiddenTokens));
         } catch (error) {
-            console.error('Error saving to localStorage', error);
+            setError("Failed to save token preferences to browser storage");
+            return;
         }
     }, [hiddenTokens]);
 

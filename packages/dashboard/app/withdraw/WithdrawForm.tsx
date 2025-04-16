@@ -77,7 +77,13 @@ export default function WithdrawForm({
   };
   
   // Use the hidden tokens hook
-  const { hiddenTokens, hideToken, unhideToken } = useHiddenTokens();
+  const { hiddenTokens, hideToken, unhideToken, error: hiddenTokensError } = useHiddenTokens();
+
+  useEffect(() => {
+    if (hiddenTokensError) {
+      showStatus(hiddenTokensError, 'error');
+    }
+  }, [hiddenTokensError]);
 
   // Helper function to set status message
   const showStatus = (message: string, type: StatusType = 'info') => {
