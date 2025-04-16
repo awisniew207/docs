@@ -384,6 +384,7 @@ export const useConsentApproval = ({
         wallet, 
         agentPKP.tokenId, 
         toolIpfsCids,
+        toolPolicies.flat(),
         onStatusChange
       );
 

@@ -2,7 +2,7 @@ import { estimateGasWithBuffer } from '@/services/contract/config';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { SELECTED_LIT_NETWORK } from './lit';
-import { DCA_POLICY_IPFS_CID, DCA_TOOL_IPFS_CID } from '@/app/constants';
+import { IPFS_POLICIES_THAT_NEED_SIGNING, type IPFSPoliciesMap } from '@/app/constants';
 
 /**
  * Handles sending a transaction with proper error handling
@@ -131,6 +131,7 @@ export const addPermittedActions = async (
   wallet: any,
   agentPKPTokenId: string,
   toolIpfsCids: string[],
+  policyIpfsCids: string[],
   statusCallback?: (message: string, type: 'info' | 'warning' | 'success' | 'error') => void
 ) => {
   if (!wallet || !agentPKPTokenId || !toolIpfsCids.length) {
@@ -151,29 +152,24 @@ export const addPermittedActions = async (
   });
   await litContracts.connect();
 
-  // Handle special case for DCA
-  const sortedInputCids = toolIpfsCids.sort();
-  const sortedDcaToolCids = DCA_TOOL_IPFS_CID.sort();
-  const isDcaToolSet = JSON.stringify(sortedInputCids) === JSON.stringify(sortedDcaToolCids);
-
-  if (isDcaToolSet) {
-    for (const policyCid of DCA_POLICY_IPFS_CID) {
+  for (const ipfsCid of policyIpfsCids) {
+    if (IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid]) {
       try {
         const isPolicyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
           agentPKPTokenId,
-          policyCid
+          ipfsCid
         );
 
         if (!isPolicyPermitted) {
-          console.log(`Adding DCA policy for ${policyCid}`);
+          console.log(`Adding sign permission for policy ${ipfsCid}, ${IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid].description}`);
           await litContracts.addPermittedAction({
-            ipfsId: policyCid,
+            ipfsId: ipfsCid,
             pkpTokenId: agentPKPTokenId,
             authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
           });
         }
       } catch (error) {
-        console.error(`Error adding DCA policy permission for ${policyCid}:`, error);
+        console.error(`Error adding DCA policy permission for ${ipfsCid}:`, error);
       }
     }
   }
