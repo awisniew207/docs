@@ -31,26 +31,25 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
   }
 
   const decoded = decodeJWT(jwt);
+  const { aud, exp, pkp } = decoded.payload;
 
-  if (!decoded.payload.exp) {
+  if (!exp) {
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT does not contain an expiration claim (exp)`);
   }
 
   const isExpired = isJWTExpired(decoded);
   if (isExpired) {
-    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT expired at ${decoded.payload.exp}`);
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT expired at ${exp}`);
   }
 
   validateJWTTime(decoded.payload, Math.floor(Date.now() / 1000));
 
   // Always validate audience - reject if no audience claim or expected audience isn't included
-  if (!decoded.payload.aud) {
+  if (!aud) {
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT does not contain an audience claim (aud)`);
   }
 
-  const audiences = Array.isArray(decoded.payload.aud)
-    ? decoded.payload.aud
-    : [decoded.payload.aud];
+  const audiences = Array.isArray(aud) ? aud : [aud];
 
   if (!audiences.includes(expectedAudience)) {
     throw new Error(
@@ -67,11 +66,6 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
     // Extract r and s values from the signature
     const r = signatureBytes.slice(0, 32);
     const s = signatureBytes.slice(32, 64);
-
-    const { app, authentication, pkp } = decoded.payload;
-    if (!isDefinedObject(app) || !isDefinedObject(authentication) || !isDefinedObject(pkp)) {
-      throw new Error(`Missing required fields in JWT payload`);
-    }
 
     // Process public key
     let publicKey = pkp.publicKey;
@@ -111,5 +105,19 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
  * @returns The decoded Vincent JWT fields
  */
 export function decodeJWT(jwt: string): VincentJWT {
-  return didJWT.decodeJWT(jwt) as VincentJWT;
+  const decodedJwt = didJWT.decodeJWT(jwt);
+
+  const { app, authentication, pkp } = decodedJwt.payload;
+
+  if (!isDefinedObject(app)) {
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "app" field in JWT payload.`);
+  }
+  if (!isDefinedObject(authentication)) {
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "authentication" field in JWT payload.`);
+  }
+  if (!isDefinedObject(pkp)) {
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "pkp" field in JWT payload.`);
+  }
+
+  return decodedJwt as VincentJWT;
 }
