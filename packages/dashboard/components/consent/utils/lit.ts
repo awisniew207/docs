@@ -180,17 +180,13 @@ export async function registerWebAuthn(): Promise<IRelayPKP> {
   
   try {
     await addPayee(newUserPKP.ethAddress);
-    console.log('Added payee', newUserPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
   }
 
-  console.log('newUserPKP', newUserPKP);
-
   // Mint a new PKP to be controlled by the new user PKP
   // We'll still mint this, but we won't return it
-  const agentPKP = await mintPKPToExistingPKP(newUserPKP);
-  console.log('agentPKP ', agentPKP);
+  await mintPKPToExistingPKP(newUserPKP);
 
   return newUserPKP;
 }
@@ -230,8 +226,6 @@ export async function getSessionSigs({
 }): Promise<SessionSigs> {
   await litNodeClient.connect();
 
-  console.log('pkpPublicKey', pkpPublicKey);
-
   const sessionSigs = await litNodeClient.getPkpSessionSigs({
     chain: 'ethereum',
     expiration: new Date(
@@ -252,14 +246,6 @@ export async function getSessionSigs({
   });
 
   return sessionSigs;
-}
-
-/**
- * Disconnects web3 session after use
- */
-export async function cleanupSession(): Promise<void> {
-  localStorage.removeItem('lit-auth-info');
-  await disconnectWeb3();
 }
 
 /**
@@ -335,7 +321,6 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
 
   try {
     await addPayee(newPKP.ethAddress);
-    console.log('Added payee', newPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
   }
@@ -347,8 +332,6 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
  * Mint a PKP to be controlled by an existing PKP
  */
 export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
-  console.log('Minting PKP to existing PKP:', pkp);
-  
   const requestBody = {
     keyType: "2",
     permittedAuthMethodTypes: ["2"],
@@ -377,7 +360,6 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
   }
 
   const agentMintResponseJson = await agentMintResponse.json();
-  console.log('Agent mint response:', agentMintResponseJson);
 
   // Wait for transaction and verify
   const provider = new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE);

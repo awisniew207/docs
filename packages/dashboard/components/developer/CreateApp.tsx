@@ -297,7 +297,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
       // If receipt is null, the transaction was rejected or failed
       if (!receipt) return;
-      console.log('receipt', receipt);
 
       // Show success message
       setError(null);
@@ -392,7 +391,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     name="deploymentStatus"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-black">Deployment Status</FormLabel>
+                        <FormLabel className="text-black">App Mode</FormLabel>
                         <FormControl>
                           <select 
                             {...field} 

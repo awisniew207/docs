@@ -10,7 +10,8 @@ import {
   VersionParameter, 
   PolicyParameter, 
   PolicyWithParameters, 
-  ToolWithPolicies 
+  ToolWithPolicies,
+  ContractVersionResult
 } from '../types';
 import { decodeParameterValue } from '../utils/parameterDecoding';
 
@@ -35,7 +36,7 @@ export const useParameterManagement = ({
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
   const [existingParameters, setExistingParameters] = useState<VersionParameter[]>([]);
   const [isLoadingParameters, setIsLoadingParameters] = useState<boolean>(false);
-  const [versionInfo, setVersionInfo] = useState<any>(null);
+  const [versionInfo, setVersionInfo] = useState<ContractVersionResult | null>(null);
 
   // Ref to track if we've already fetched parameters
   const parametersFetchedRef = useRef(false);
@@ -48,13 +49,11 @@ export const useParameterManagement = ({
   const fetchExistingParameters = useCallback(async () => {
     // Safety check to ensure required values are present
     if (!appId) {
-      console.error('Missing appId in fetchExistingParameters');
-      return;
+      throw new Error('Missing appId in fetchExistingParameters');
     }
     
     if (!agentPKP) {
-      console.error('Missing agentPKP in fetchExistingParameters');
-      return;
+      throw new Error('Missing agentPKP in fetchExistingParameters');
     }
     
     if (isLoadingParameters || existingParameters.length > 0 || parametersFetchedRef.current) {
@@ -66,7 +65,6 @@ export const useParameterManagement = ({
     onStatusChange?.('Loading your existing app parameters...', 'info');
     
     try {
-      console.log('Fetching parameters with:', { appId, tokenId: agentPKP.tokenId });
       const userViewContract = getUserViewRegistryContract();
       const appIdNum = Number(appId);
       
@@ -74,8 +72,6 @@ export const useParameterManagement = ({
         agentPKP.tokenId,
         appIdNum
       );
-      
-      console.log('Existing tools and policies:', toolsAndPolicies);
       
       // Transform the contract data into the VersionParameter format
       const existingParams: VersionParameter[] = [];
@@ -100,26 +96,29 @@ export const useParameterManagement = ({
           });
         });
       });
-      
-      console.log('Transformed parameters with decoded values:', existingParams);
+    
       setExistingParameters(existingParams);
       onStatusChange?.('Successfully loaded your existing parameters', 'success');
       
       // Also try to fetch version info to match parameter names if not already loaded
+      /*
       if (!versionInfo && appInfo) {
         try {
           const contract = getAppViewRegistryContract();
           const versionData = await contract.getAppVersion(Number(appId), Number(appInfo.latestVersion));
-          console.log('Fetched version info for parameter matching:', versionData);
           setVersionInfo(versionData);
         } catch (err) {
           console.error('Error fetching version info for parameter matching:', err);
+          throw new Error(`Failed to fetch version info for parameter matching: ${err instanceof Error ? err.message : String(err)}`);
         }
-      }
+      }*/
+
+      onStatusChange?.('Successfully loaded your existing parameters', 'success');
       
     } catch (error) {
       console.error('Error fetching existing parameters:', error);
       onStatusChange?.('Failed to load your existing parameters', 'error');
+      throw new Error(`Failed to fetch existing parameters: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsLoadingParameters(false);
     }
@@ -135,7 +134,6 @@ export const useParameterManagement = ({
       parameters.length !== newParameters.length ||
       JSON.stringify(parameters) !== JSON.stringify(newParameters)
     ) {
-      console.log('Parameters updated:', newParameters);
       setParameters(newParameters);
     }
   }, [parameters]);
@@ -145,27 +143,26 @@ export const useParameterManagement = ({
    * This provides details about the latest version of the app, including
    * tools, policies, and parameters that can be configured.
    * @param versionNumber Optional specific version to fetch. If not provided, uses the latest version.
+   * @throws Error if appId or appInfo is missing, or if the contract call fails
    */
-  const fetchVersionInfo = useCallback(async (versionNumber?: number) => {
+  const fetchVersionInfo = useCallback(async (versionNumber?: number): Promise<ContractVersionResult> => {
     if (!appId || !appInfo) {
-      console.error('Missing appId or appInfo in fetchVersionInfo');
-      return null;
+      throw new Error('Missing appId or appInfo in fetchVersionInfo');
     }
-
+    
     try {
       const versionToFetch = versionNumber !== undefined ? versionNumber : Number(appInfo.latestVersion);
       onStatusChange?.(`Loading app version information for v${versionToFetch}...`, 'info');
       const contract = getAppViewRegistryContract();
       const versionData = await contract.getAppVersion(Number(appId), versionToFetch);
-      console.log('Version info:', versionData);
       
       setVersionInfo(versionData);
-      onStatusChange?.('Successfully loaded app version information', 'success');
+      onStatusChange?.('', 'info')
       return versionData;
     } catch (err) {
       console.error('Error fetching version info:', err);
       onStatusChange?.('Failed to load app information', 'error');
-      return null;
+      throw new Error(`Failed to fetch version info: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, [appId, appInfo, onStatusChange]);
 

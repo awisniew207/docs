@@ -1,6 +1,5 @@
 'use client';
-// Import the utility that automatically disables logs in production
-import '@/utils/disableLogsInProduction';
+
 import './dashboard.css'; // Dashboard-specific styling
 import Header from '@/components/layout/Header';
 import { WagmiProvider } from 'wagmi';
@@ -12,8 +11,10 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { yellowstone } from './config/chains';
 import { usePathname } from 'next/navigation';
 import { ErrorPopupProvider } from '@/providers/error-popup';
+import React from 'react';
 
-const wagmiConfig = createConfig({
+// Export for reuse in other layouts
+export const wagmiConfig = createConfig({
   chains: [yellowstone],
   connectors: [injected()],
   transports: {
@@ -21,11 +22,30 @@ const wagmiConfig = createConfig({
   },
 });
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
-const demoAppInfo = {
+export const demoAppInfo = {
   appName: 'Vincent',
 };
+
+// Shared provider component that can be used by both layouts
+export function SharedProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider
+          theme={darkTheme()}
+          initialChain={yellowstone}
+          appInfo={demoAppInfo}
+        >
+          <ErrorPopupProvider>
+            {children}
+          </ErrorPopupProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -40,26 +60,16 @@ export default function RootLayout({
   }
   
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <html lang="en">
-          <head>
-            <title>Vincent Dashboard</title>
-          </head>
-          <body>
-            <RainbowKitProvider
-              theme={darkTheme()}
-              initialChain={yellowstone}
-              appInfo={demoAppInfo}
-            >
-              <ErrorPopupProvider>
-                <Header />
-                <main className="max-w-screen-xl mx-auto p-6">{children}</main>
-              </ErrorPopupProvider>
-            </RainbowKitProvider>
-          </body>
-        </html>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <html lang="en">
+      <head>
+        <title>Vincent Dashboard</title>
+      </head>
+      <body>
+        <SharedProviders>
+          <Header />
+          <main className="max-w-screen-xl mx-auto p-6">{children}</main>
+        </SharedProviders>
+      </body>
+    </html>
   );
 }

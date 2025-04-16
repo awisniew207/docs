@@ -1,208 +1,175 @@
 import { useState, useEffect, useRef } from 'react';
 import ParameterInput from './ParameterInput';
-import { VersionParameter } from '../../types';
-import { ParameterType } from '@/services/types/parameterTypes';
+import { VersionParameter, ContractVersionResult } from '../../types';
 import { decodeParameterValue } from '../../utils/parameterDecoding';
 
 interface VersionParametersFormProps {
-  versionData: any;
+  versionInfo: ContractVersionResult;
   onChange: (parameters: VersionParameter[]) => void;
   existingParameters?: VersionParameter[];
 }
 
+// Interface for grouped structure
+interface ToolData {
+  toolIndex: number;
+  toolIpfsCid: string;
+  policies: PolicyData[];
+}
+
+interface PolicyData {
+  policyIndex: number;
+  policyIpfsCid: string;
+  parameters: VersionParameter[];
+}
+
 export default function VersionParametersForm({
-  versionData,
+  versionInfo,
   onChange,
   existingParameters = []
 }: VersionParametersFormProps) {
   const [parameters, setParameters] = useState<VersionParameter[]>([]);
   const initializedRef = useRef(false);
   const processedVersionRef = useRef<string | null>(null);
+  const [expandedTools, setExpandedTools] = useState<Record<string, boolean>>({});
+  const [expandedPolicies, setExpandedPolicies] = useState<Record<string, boolean>>({});
+  const [toolsData, setToolsData] = useState<ToolData[]>([]);
+  
+  // Toggle tool expand/collapse
+  const toggleTool = (toolId: string) => {
+    setExpandedTools(prev => ({
+      ...prev,
+      [toolId]: !prev[toolId]
+    }));
+  };
+  
+  // Toggle policy expand/collapse
+  const togglePolicy = (policyId: string) => {
+    setExpandedPolicies(prev => ({
+      ...prev,
+      [policyId]: !prev[policyId]
+    }));
+  };
   
   useEffect(() => {
-    if (!versionData) return;
+    // Generate a version key for tracking changes
+    const versionKey = `${versionInfo.app.id.hex}:${versionInfo.appVersion.version.hex}`;
     
-    const versionKey = `${versionData[1]?.[0]}:${versionData[1]?.[1]}`;
     const shouldInitialize = !initializedRef.current || 
-                             (existingParameters && existingParameters.length > 0) ||
-                             (versionKey !== processedVersionRef.current);
+                             existingParameters.length > 0 ||
+                             versionKey !== processedVersionRef.current;
     
     if (!shouldInitialize && parameters.length > 0) return;
     
     processedVersionRef.current = versionKey;
     
     try {
-      const toolsData = versionData[1]?.[3];
+      const tools = versionInfo.appVersion.tools;
       
-      if (!toolsData || !Array.isArray(toolsData)) return;
-      
-      console.log(`Initializing parameters for version: ${versionKey}`);
-      const extractedParams: VersionParameter[] = [];
-      console.log('Initializing version parameters form with existing parameters:', existingParameters);
-      
-      if (existingParameters.length > 0) {
-        console.log('Existing parameter details:');
-        existingParameters.forEach(param => {
-          console.log(`${param.name} (type: ${param.type}): ${param.value?.toString().substring(0, 30)}${param.value?.toString().length > 30 ? '...' : ''}`);
-        });
+      if (!Array.isArray(tools) || tools.length === 0) {
+        console.warn('No tools array found or empty tools array');
+        setParameters([]);
+        initializedRef.current = true;
+        return;
       }
+
+      const extractedParams: VersionParameter[] = [];
+      const toolsStructure: ToolData[] = [];
       
-      toolsData.forEach((tool, toolIndex) => {
-        if (!tool || !Array.isArray(tool)) return;
+      // Initialize expansion state objects
+      const toolExpansions: Record<string, boolean> = {};
+      const policyExpansions: Record<string, boolean> = {};
+      
+      tools.forEach((tool, toolIndex) => {
+        if (!tool) return;
         
-        const policies = tool[1];
+        // Set tool as expanded by default
+        const toolId = `tool-${toolIndex}`;
+        toolExpansions[toolId] = true;
         
-        if (Array.isArray(policies)) {
-          policies.forEach((policy, policyIndex) => {
-            if (!policy || !Array.isArray(policy)) return;
-            
-            const paramNames = policy[1];
-            const paramTypes = policy[2];
-            
-            if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
-              paramNames.forEach((name, paramIndex) => {
-                if (paramIndex < paramTypes.length) {
-                  const paramType = paramTypes[paramIndex];
-                  const paramName = typeof name === 'string' && name.trim() !== '' 
-                    ? name.trim() 
-                    : `param_${paramIndex}`;
-                  
-                  let existingParam = null;
-                  
-                  // Match by name AND type (most accurate)
-                  existingParam = existingParameters.find(p => 
-                    typeof p.name === 'string' && 
-                    p.name.toLowerCase() === paramName.toLowerCase() &&
-                    p.type === paramType
-                  );
-                  
-                  if (existingParam) {
-                    console.log(`Found parameter by name AND type: "${paramName}" (type: ${paramType})`);
-                  }
-                  
-                  const processExistingValue = (existingValue: any, paramType: number) => {
-                    // If no existing value, return appropriate default
-                    if (existingValue === undefined || existingValue === null) {
-                      return getDefaultForType(paramType);
-                    }
-                    
-                    // For hex-encoded values, use the decoder
-                    if (typeof existingValue === 'string' && existingValue.startsWith('0x')) {
-                      try {
-                        return decodeParameterValue(existingValue, paramType);
-                      } catch (err) {
-                        console.error(`Error decoding value for type ${paramType}:`, err);
-                        return existingValue; // Return as is to prevent data loss
-                      }
-                    }
-                    
-                    // Return value as is for other types
-                    return existingValue;
-                  };
-                  
-                  // Helper function to get default empty value for a type
-                  const getDefaultForType = (paramType: number): any => {
-                    switch(paramType) {
-                      case ParameterType.BOOL:
-                      case ParameterType.INT256:
-                      case ParameterType.UINT256:
-                      case ParameterType.ADDRESS:
-                      case ParameterType.STRING:
-                      case ParameterType.INT256_ARRAY:
-                      case ParameterType.UINT256_ARRAY:
-                      case ParameterType.BOOL_ARRAY:
-                      case ParameterType.ADDRESS_ARRAY:
-                      case ParameterType.STRING_ARRAY:
-                        return '';
-                      default:
-                        return '';
-                    }
-                  }
-                  
-                  // Preserve value handling
-                  const value = existingParam ? processExistingValue(existingParam.value, paramType) : getDefaultForType(paramType);
-                  
-                  if (existingParam) {
-                    console.log(`Using existing value for "${paramName}": ${value} (type: ${paramType})`);
-                  }
-                  
-                  extractedParams.push({
-                    toolIndex,
-                    policyIndex,
-                    paramIndex,
-                    name: paramName,
-                    type: paramType,
-                    value 
-                  });
-                }
-              });
-            }
-          });
+        const toolData: ToolData = {
+          toolIndex,
+          toolIpfsCid: tool.toolIpfsCid,
+          policies: []
+        };
+        
+        const policies = tool.policies;
+        
+        if (!Array.isArray(policies) || policies.length === 0) {
+          // Still add the tool to toolsStructure even if it has no policies
+          toolsStructure.push(toolData);
+          return;
         }
-      });
-      
-      // Log parameter initialization info - showing which parameters are new vs preserved
-      if (!initializedRef.current) {
-        console.log('Form initialized with parameters:', extractedParams);
         
-        // Log which parameters had values preserved from previous version
-        const preservedParams = extractedParams.filter(p => {
-          // Empty string is considered empty
-          if (p.value === '') return false;
+        policies.forEach((policy, policyIndex) => {
+          if (!policy) return;
           
-          // Array-specific checks
-          if (p.type === ParameterType.ADDRESS_ARRAY || 
-              p.type === ParameterType.STRING_ARRAY || 
-              p.type === ParameterType.INT256_ARRAY || 
-              p.type === ParameterType.UINT256_ARRAY ||
-              p.type === ParameterType.BOOL_ARRAY) {
-            
-            // If it's an empty array or empty string
-            if (Array.isArray(p.value) && p.value.length === 0) return false;
-            if (typeof p.value === 'string' && p.value === '') return false;
-            
-            // If it's a comma-separated string, check if all values are empty
-            if (typeof p.value === 'string') {
-              const values = p.value.split(',').map(v => v.trim());
-              if (values.every(v => v === '')) {
-                return false;
-              }
-            }
+          // Set policy as expanded by default
+          const policyId = `tool-${toolIndex}-policy-${policyIndex}`;
+          policyExpansions[policyId] = true;
+          
+          const policyData: PolicyData = {
+            policyIndex,
+            policyIpfsCid: policy.policyIpfsCid,
+            parameters: []
+          };
+          
+          const parameterNames = policy.parameterNames;
+          const parameterTypes = policy.parameterTypes;
+          
+          if (!Array.isArray(parameterNames) || !Array.isArray(parameterTypes)) {
+            return;
           }
           
-          return true;
+          parameterNames.forEach((name, paramIndex) => {
+            if (paramIndex < parameterTypes.length) {
+              const paramType = parameterTypes[paramIndex];
+              const paramName = typeof name === 'string' && name.trim() !== '' 
+                ? name.trim() 
+                : `param_${paramIndex}`;
+              
+              let existingParam = existingParameters.find(p => 
+                typeof p.name === 'string' && 
+                p.name.toLowerCase() === paramName.toLowerCase() &&
+                p.type === paramType
+              );
+              
+              const parameter = {
+                toolIndex,
+                policyIndex,
+                paramIndex,
+                name: paramName,
+                type: paramType,
+                value: existingParam ? existingParam.value : ''
+              };
+              
+              extractedParams.push(parameter);
+              policyData.parameters.push(parameter);
+            }
+          });
+          
+          if (policyData.parameters.length > 0) {
+            toolData.policies.push(policyData);
+          }
         });
         
-        if (preservedParams.length > 0) {
-          console.log(`Preserved ${preservedParams.length} parameter values from previous version:`, 
-            preservedParams.map(p => ({ name: p.name, value: p.value }))
-          );
+        if (toolData.policies.length > 0) {
+          toolsStructure.push(toolData);
         }
-        
-        // Log which parameters are new and will start with empty values
-        const newParams = extractedParams.filter(p => !preservedParams.some(pp => 
-          pp.toolIndex === p.toolIndex && 
-          pp.policyIndex === p.policyIndex && 
-          pp.paramIndex === p.paramIndex
-        ));
-        
-        if (newParams.length > 0) {
-          console.log(`${newParams.length} new parameters with empty values:`, 
-            newParams.map(p => p.name)
-          );
-        }
-      }
-      
-      // Set the parameters state without calling onChange directly
+      });
+
       setParameters(extractedParams);
-      
-      // Mark as initialized
+      setToolsData(toolsStructure);
+      setExpandedTools(toolExpansions);
+      setExpandedPolicies(policyExpansions);
       initializedRef.current = true;
       
     } catch (error) {
       console.error('Error parsing version data:', error);
+      setParameters([]);
+      setToolsData([]);
+      initializedRef.current = true;
     }
-  }, [versionData, existingParameters]);
+  }, [versionInfo, existingParameters]);
   
   useEffect(() => {
     if (initializedRef.current && parameters.length > 0) {
@@ -217,8 +184,6 @@ export default function VersionParametersForm({
   
   // Add debugging to track parameter changes
   const handleParameterChange = (updatedParam: VersionParameter) => {
-    console.log(`Parameter changed: ${updatedParam.name} (${updatedParam.type}) = ${updatedParam.value}`);
-    
     // Update the parameters state by replacing the matching parameter
     setParameters(prevParams => {
       const updatedParams = prevParams.map(param => {
@@ -237,7 +202,7 @@ export default function VersionParametersForm({
   // Add a specific useEffect to handle applying existingParameters to the form
   useEffect(() => {
     // Only apply if we have both existing parameters and the form is already initialized
-    if (existingParameters && existingParameters.length > 0 && initializedRef.current && parameters.length > 0) {
+    if (existingParameters.length > 0 && initializedRef.current && parameters.length > 0) {
       // Use a ref to prevent multiple updates for the same set of parameters
       const existingParamsKey = existingParameters.map(p => `${p.name}:${p.value}`).join('|');
       const currentParamsKey = parameters.map(p => `${p.name}:${p.value}`).join('|');
@@ -246,9 +211,6 @@ export default function VersionParametersForm({
       if (existingParamsKey === currentParamsKey) {
         return;
       }
-      
-      console.log('Applying existing parameters to form fields:', existingParameters);
-      
       // Create a copy of the current parameters
       const updatedParams = [...parameters];
       let hasChanges = false;
@@ -275,7 +237,6 @@ export default function VersionParametersForm({
               value: existingParam.value
             };
             hasChanges = true;
-            console.log(`Applied existing value for "${existingParam.name}" (type: ${existingParam.type}): ${existingParam.value}`);
           }
         }
       });
@@ -288,26 +249,184 @@ export default function VersionParametersForm({
   // Remove parameters from dependency array to break the loop
   }, [existingParameters]);
   
-  if (!parameters.length) {
-    return null;
+  // Helper functions to abbreviate long strings
+  const abbreviateIpfs = (cid: string) => {
+    if (!cid) return '';
+    return cid.length > 12 ? `${cid.substring(0, 6)}...${cid.substring(cid.length - 6)}` : cid;
+  };
+  
+  // Function to categorize what a tool might be based on its name or IPFS
+  const getToolFriendlyName = (toolCid: string, toolIndex: number) => {
+    // This is a placeholder - in a real implementation, you might map known CIDs
+    // to friendly names or fetch metadata about the tool
+    return `Tool ${toolIndex + 1}`;
+  };
+  
+  const getPolicyFriendlyName = (policyCid: string, policyIndex: number) => {
+    // Similar placeholder for policy naming
+    return `Policy ${policyIndex + 1}`;
+  };
+  
+  if (parameters.length === 0) {
+    return (
+      <div className="mb-6">
+        <div className="text-sm font-medium text-gray-700 mb-3">
+          Parameters
+        </div>
+        <div className="bg-gray-50 p-3 rounded-lg text-sm text-gray-500">
+          No parameter inputs found for this application version.
+        </div>
+      </div>
+    );
   }
   
   return (
-    <div className="version-parameters">
-      <h3>Parameter Inputs</h3>
-      <div className="parameters-list">
-        {parameters.map((param, index) => (
-          <ParameterInput
-            key={`${param.toolIndex}-${param.policyIndex}-${param.paramIndex}`}
-            name={param.name}
-            type={param.type}
-            value={param.value}
-            onChange={(value) => handleParameterChange({
-              ...param,
-              value
-            })}
-          />
-        ))}
+    <div className="mb-6">
+      <div className="text-sm font-medium text-gray-700 mb-3">
+        Application Parameters
+      </div>
+      <div className="space-y-3">
+        {toolsData.map((tool) => {
+          const toolId = `tool-${tool.toolIndex}`;
+          const isToolExpanded = expandedTools[toolId] === true;
+          
+          const toolName = getToolFriendlyName(tool.toolIpfsCid, tool.toolIndex);
+          
+          return (
+            <div key={toolId} className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+              {/* Tool Header */}
+              <div 
+                className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50"
+                onClick={() => toggleTool(toolId)}
+              >
+                <div className="flex items-center">
+                  <div className="font-medium text-sm">
+                    {toolName}
+                  </div>
+                  {/*
+                  <div className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-full flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Verified
+                  </div>
+                  */}
+                </div>
+                <div className="flex items-center">
+                  <a 
+                    href={`https://ipfs.io/ipfs/${tool.toolIpfsCid}`}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs text-gray-500 mr-2 font-mono hover:text-blue-500"
+                    title={`View on IPFS: ${tool.toolIpfsCid}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {abbreviateIpfs(tool.toolIpfsCid)}
+                  </a>
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`transform transition-transform duration-300 ease-in-out ${isToolExpanded ? 'rotate-180' : ''}`}
+                  >
+                    <path d="M6 9L12 15L18 9" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Tool Body - Contains Policies */}
+              <div 
+                className={`border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${isToolExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}
+              >
+                {tool.policies.length === 0 ? (
+                  <div className="p-3 pt-2 pl-8 pr-4 text-sm text-gray-500 italic">
+                    No policies found for this tool
+                  </div>
+                ) : (
+                  tool.policies.map((policy) => {
+                    const policyId = `tool-${tool.toolIndex}-policy-${policy.policyIndex}`;
+                    const isPolicyExpanded = expandedPolicies[policyId] === true;
+                    
+                    const policyName = getPolicyFriendlyName(policy.policyIpfsCid, policy.policyIndex);
+                    
+                    return (
+                      <div key={policyId} className="border-b border-gray-100 last:border-b-0">
+                        {/* Policy Header */}
+                        <div 
+                          className="flex items-center justify-between p-3 pl-6 cursor-pointer hover:bg-gray-50"
+                          onClick={() => togglePolicy(policyId)}
+                        >
+                          <div className="flex items-center">
+                            <div className="font-medium text-sm">
+                              {policyName}
+                            </div>
+                            {/*
+                            <div className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-full flex items-center">
+                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              Verified
+                            </div>
+                            */}
+                          </div>
+                          <div className="flex items-center">
+                            <a 
+                              href={`https://ipfs.io/ipfs/${policy.policyIpfsCid}`}
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-xs text-gray-500 mr-2 font-mono hover:text-blue-500"
+                              title={`View on IPFS: ${policy.policyIpfsCid}`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {abbreviateIpfs(policy.policyIpfsCid)}
+                            </a>
+                            <svg 
+                              width="16" 
+                              height="16" 
+                              viewBox="0 0 24 24" 
+                              fill="none" 
+                              xmlns="http://www.w3.org/2000/svg"
+                              className={`transform transition-transform duration-300 ease-in-out ${isPolicyExpanded ? 'rotate-180' : ''}`}
+                            >
+                              <path d="M6 9L12 15L18 9" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        {/* Policy Body - Contains Parameters */}
+                        <div 
+                          className={`bg-gray-50 transition-all duration-300 ease-in-out overflow-hidden ${isPolicyExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}
+                        >
+                          <div className="p-3 pt-2 pl-8 pr-4">
+                            {policy.parameters.length === 0 ? (
+                              <div className="text-sm text-gray-500 italic">No parameters for this policy</div>
+                            ) : (
+                              policy.parameters.map((param) => (
+                                <div key={`${param.toolIndex}-${param.policyIndex}-${param.paramIndex}`}>
+                                  <ParameterInput
+                                    name={param.name}
+                                    type={param.type}
+                                    value={param.value}
+                                    onChange={(value) => handleParameterChange({
+                                      ...param,
+                                      value
+                                    })}
+                                  />
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

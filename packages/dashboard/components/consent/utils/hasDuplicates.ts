@@ -1,12 +1,15 @@
-export const checkForDuplicates = (versionInfo: any) => {
+import { ContractVersionResult } from "../types";
+
+export const checkForDuplicates = (versionInfo: ContractVersionResult | undefined) => {
     if (!versionInfo) return { hasDuplicates: false };
     
-    const toolsData = versionInfo.appVersion?.tools || versionInfo[1]?.[3];
-    if (!toolsData || !Array.isArray(toolsData) || toolsData.length === 0) {
+    const tools = versionInfo.appVersion.tools;
+
+    if (!Array.isArray(tools) || tools.length === 0) {
       return { hasDuplicates: false };
     }
     
-    const toolCids = toolsData.map((tool: any) => tool[0]);
+    const toolCids = tools.map(tool => tool.toolIpfsCid);
     const uniqueToolCids = new Set(toolCids);
     const hasDuplicateTools = uniqueToolCids.size !== toolCids.length;
     
@@ -15,36 +18,24 @@ export const checkForDuplicates = (versionInfo: any) => {
     
     const allParamNames: string[] = [];
     
-    toolsData.forEach((tool: any) => {
-      if (!tool || !Array.isArray(tool)) return;
-      
-      const policies = tool[1];
+    tools.forEach(tool => {
+      const policies = tool.policies;
       if (Array.isArray(policies)) {
-        const policyCids = policies.map((p: any) => p[0]);
+        const policyCids = policies.map(p => p.policyIpfsCid);
         const uniquePolicyCids = new Set(policyCids);
         if (uniquePolicyCids.size !== policyCids.length) {
           hasDuplicatePolicies = true;
         }
         
-        policyCids.forEach((cid: string) => {
+        policyCids.forEach(cid => {
           policyMap.set(cid, (policyMap.get(cid) || 0) + 1);
         });
         
-        policies.forEach((policy: any) => {
-          if (!policy || !Array.isArray(policy)) return;
-          
-          if (Array.isArray(policy[3])) {
-            policy[3].forEach((name: string) => {
+        policies.forEach(policy => {
+          if (Array.isArray(policy.parameterNames)) {
+            policy.parameterNames.forEach(name => {
               if (name) allParamNames.push(name);
             });
-          }
-          else if (typeof policy === 'object' && policy !== null && 'parameterNames' in policy) {
-            const params = (policy as any).parameterNames;
-            if (Array.isArray(params)) {
-              params.forEach((name: string) => {
-                if (name) allParamNames.push(name);
-              });
-            }
           }
         });
       }

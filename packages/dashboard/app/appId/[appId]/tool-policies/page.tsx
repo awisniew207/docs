@@ -9,7 +9,7 @@ import ManageToolPoliciesScreen from '@/components/developer/dashboard/ManageToo
 
 export default function ToolPoliciesPage() {
   const params = useParams();
-  const appIdParam = Array.isArray(params.appId) ? params.appId[0] : params.appId;
+  const appIdParam = params.appId;
   const router = useRouter();
   const { address, isConnected } = useAccount();
   const [dashboard, setDashboard] = useState<AppView | null>(null);

@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 
 import '../styles/parameter-fields.css';
 import VersionParametersForm from './authForm/VersionParametersForm';
 import { useErrorPopup } from '@/providers/error-popup';
+import Image from 'next/image';
 
 import StatusMessage from './authForm/StatusMessage';
 import StatusAnimation from './authForm/StatusAnimation';
@@ -13,6 +14,7 @@ import RedirectMessage from './authForm/RedirectMessage';
 import VersionUpgradePrompt from './authForm/VersionUpgradePrompt';
 import UntrustedUriError from './authForm/UntrustedUriError';
 import DeletedAppError from './DeletedAppError';
+import Loading from './Loading';
 import { useUrlAppId } from '../hooks/useUrlAppId';
 import { useUrlRedirectUri } from '../hooks/useUrlRedirectUri';
 import { useStatusMessage } from '../hooks/useStatusMessage';
@@ -25,7 +27,9 @@ import { useAppPermissionCheck } from '../hooks/useAppPermissionCheck';
 // Import types
 import {
   AuthenticatedConsentFormProps,
-  VersionParameter
+  VersionParameter,
+  AppView,
+  ContractVersionResult
 } from '../types';
 
 /**
@@ -50,7 +54,6 @@ import {
 export default function AuthenticatedConsentForm({
   sessionSigs,
   agentPKP,
-  isSessionValidation,
   userPKP,
 }: AuthenticatedConsentFormProps) {
   const { appId, error: urlError } = useUrlAppId();
@@ -151,9 +154,9 @@ export default function AuthenticatedConsentForm({
 
   // Use the consent approval hook
   const { approveConsent, updateParameters } = useConsentApproval({
-    appId,
-    appInfo,
-    versionInfo,
+    appId: appId as string,
+    appInfo: appInfo as AppView,
+    versionInfo: versionInfo as ContractVersionResult,
     parameters,
     agentPKP,
     userPKP,
@@ -170,18 +173,16 @@ export default function AuthenticatedConsentForm({
   });
 
   const permittedVersionFetchedRef = useRef<number | null>(null);
-  
+
   useEffect(() => {
-    if (useCurrentVersionOnly && permittedVersion !== null && appId && 
-        permittedVersionFetchedRef.current !== permittedVersion) {
-      console.log(`Fetching version data for permitted version ${permittedVersion}`);
+    if (useCurrentVersionOnly && permittedVersion !== null && appId &&
+      permittedVersionFetchedRef.current !== permittedVersion) {
       permittedVersionFetchedRef.current = permittedVersion;
-      
+
       updateState({ isLoading: true });
-      
+
       fetchVersionInfo(permittedVersion)
         .then(() => {
-          console.log(`Successfully fetched data for version ${permittedVersion}`);
           updateState({ isLoading: false });
 
           if (existingParameters.length === 0 && !isLoadingParameters) {
@@ -195,7 +196,7 @@ export default function AuthenticatedConsentForm({
         });
     } else if (!useCurrentVersionOnly) {
       permittedVersionFetchedRef.current = null;
-      
+
       // If we previously used a specific version, we should reload the latest version
       if (permittedVersionFetchedRef.current !== null) {
         updateState({ isLoading: true });
@@ -222,17 +223,16 @@ export default function AuthenticatedConsentForm({
   // Add a dedicated effect to fetch parameters when updating the current version
   useEffect(() => {
     // We only want this to run when useCurrentVersionOnly is true and we don't have existingParameters yet
-    if (useCurrentVersionOnly && 
-        existingParameters.length === 0 && 
-        !isLoadingParameters && 
-        appId && 
-        agentPKP &&
-        permittedVersion !== null &&
-        paramsFetchedForVersionRef.current !== permittedVersion) {
-      
-      console.log(`Fetching existing parameters for current version ${permittedVersion}`);
+    if (useCurrentVersionOnly &&
+      existingParameters.length === 0 &&
+      !isLoadingParameters &&
+      appId &&
+      agentPKP &&
+      permittedVersion !== null &&
+      paramsFetchedForVersionRef.current !== permittedVersion) {
+
       paramsFetchedForVersionRef.current = permittedVersion;
-      
+
       fetchExistingParameters().catch(error => {
         console.error('Error fetching existing parameters:', error);
         paramsFetchedForVersionRef.current = null; // Reset on error to allow retry
@@ -245,18 +245,26 @@ export default function AuthenticatedConsentForm({
    * Makes sure parameter changes are stored for submission.
    */
   const handleParametersChange = useCallback((newParameters: VersionParameter[]) => {
-    console.log('Parameters updated from form:', newParameters);
-    
+
     // Important: Make sure all parameter values are properly set
     const validatedParameters = newParameters.map(param => ({
       ...param,
       // Ensure value is not undefined (prevents errors in contract calls)
       value: param.value === undefined ? '' : param.value
     }));
-    
+
     // Update the parameters state with the new values
     setParameters(validatedParameters);
   }, [setParameters]);
+
+  // Add a check for disabled app version
+  const isAppVersionDisabled = useMemo(() => {
+    if (!versionInfo) return false;
+
+    // Check if version is not enabled (disabled)
+    return !versionInfo.appVersion.enabled;
+  }, [versionInfo]);
+
 
   // ===== Event Handler Functions =====
 
@@ -270,6 +278,14 @@ export default function AuthenticatedConsentForm({
    * 5. Handles errors and displays appropriate messages
    */
   const handleApprove = useCallback(async () => {
+    // Prevent approval for disabled app versions
+    if (isAppVersionDisabled) {
+      const errorMessage = 'This app version has been disabled and cannot be approved.';
+      setError(errorMessage);
+      showErrorWithStatus(errorMessage, 'App Disabled');
+      return;
+    }
+
     if (!appInfo) {
       console.error('Missing version data in handleApprove');
       const errorMessage = 'Missing version data. Please refresh the page and try again.';
@@ -361,11 +377,10 @@ export default function AuthenticatedConsentForm({
 
       const result = await disapproveConsent();
 
-      setTimeout(() => {
-        if (result.redirectUri) {
-          executeRedirect(result.redirectUri);
-        }
-      }, 1000);
+      if (result.redirectUri) {
+        executeRedirect(result.redirectUri);
+      }
+
     } catch (err) {
       console.error('Error in handleDisapprove:', err);
       const errorMessage = 'Failed to disapprove. Please try again.';
@@ -398,7 +413,7 @@ export default function AuthenticatedConsentForm({
     // Reset the refs to ensure we'll fetch the correct version info
     permittedVersionFetchedRef.current = null;
     paramsFetchedForVersionRef.current = null;
-    
+
     updateState({
       showUpdateModal: false,
       showingAuthorizedMessage: false,
@@ -414,28 +429,24 @@ export default function AuthenticatedConsentForm({
     const fetchAndPopulateParameters = async () => {
       try {
         if (existingParameters.length === 0) {
-          console.log('Fetching existing parameters for current version');
           await fetchExistingParameters();
         }
-        
+
         // Ensure we have the parameters before setting them
         if (existingParameters.length > 0) {
-          console.log('Setting form fields with existing parameter values:', existingParameters);
           setParameters(existingParameters);
         }
       } catch (error) {
         console.error('Error loading existing parameters:', error);
       }
     };
-    
+
     // Explicitly force a version refresh if we have permittedVersion
     if (permittedVersion !== null && appId) {
-      console.log(`Explicitly fetching version ${permittedVersion} data for parameter update`);
       fetchVersionInfo(permittedVersion)
         .then(() => {
           fetchAndPopulateParameters().then(() => {
             updateState({ isLoading: false });
-            console.log(`Successfully loaded version ${permittedVersion} data and parameters`);
           });
         })
         .catch(error => {
@@ -457,53 +468,32 @@ export default function AuthenticatedConsentForm({
     }
   }, [error, showErrorWithStatus]);
 
-  /**
-   * Automatically resolves loading state after a timeout period.
-   * This prevents the UI from getting stuck in a loading state if:
-   * 1. Network issues occur
-   * 2. Contract calls fail silently
-   * 3. Permission checking takes too long
-   */
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-
-    if ((checkingPermissions || isLoading) && appInfo) {
-      timer = setTimeout(() => {
-        updateState({
-          checkingPermissions: false,
-          isLoading: false
-        });
-      }, 3000); // 3 seconds timeout with appInfo
-    } else if (checkingPermissions || isLoading) {
-      timer = setTimeout(() => {
-        updateState({
-          checkingPermissions: false,
-          isLoading: false
-        });
-      }, 8000);
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [checkingPermissions, isLoading, appInfo, updateState]);
-
   // ===== Render Logic =====
 
   // Show the parameter update modal - this should take precedence over all other views
-  if (showUpdateModal && appInfo) {
+  if (showUpdateModal && appInfo && permittedVersion !== null) {
     return (
-      <div className='container'>
-        <div className='consent-form-container'>
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
           <StatusMessage message={statusMessage} type={statusType} />
           <ParameterUpdateModal
             isOpen={showUpdateModal && !isLoadingParameters}
             onContinue={handleContinueWithExisting}
             onUpdate={handleUpdateParameters}
             appName={appInfo.name}
+            permittedVersion={permittedVersion}
           />
           {isLoadingParameters && (
-            <p className="text-center mt-4">Loading your existing parameters...</p>
+            <p className="text-center mt-4 text-gray-600">Loading your existing parameters...</p>
           )}
         </div>
       </div>
@@ -513,22 +503,50 @@ export default function AuthenticatedConsentForm({
   // If URL is untrusted, show an error message
   if (isUriUntrusted) {
     return (
-      <UntrustedUriError
-        redirectUri={redirectUri}
-        appInfo={appInfo}
-        statusMessage={statusMessage}
-        statusType={statusType}
-      />
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <StatusMessage message={statusMessage} type={statusType} />
+          <UntrustedUriError
+            redirectUri={redirectUri}
+            appInfo={appInfo}
+            statusMessage={statusMessage}
+            statusType={statusType}
+          />
+        </div>
+      </div>
     );
   }
 
   // If app is deleted, show an error message
   if (isAppDeleted) {
     return (
-      <DeletedAppError
-        statusMessage={statusMessage}
-        statusType={statusType}
-      />
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <StatusMessage message={statusMessage} type={statusType} />
+          <DeletedAppError
+            statusMessage={statusMessage}
+            statusType={statusType}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -536,50 +554,68 @@ export default function AuthenticatedConsentForm({
   // If the app is already permitted, show a brief loading spinner or success animation
   if (showVersionUpgradePrompt && appInfo && permittedVersion !== null) {
     return (
-      <VersionUpgradePrompt
-        appInfo={appInfo}
-        permittedVersion={permittedVersion}
-        agentPKP={agentPKP}
-        onUpgrade={handleUpgrade}
-        onContinue={continueWithExistingPermission}
-        onUpdateParameters={handleUpdateParameters}
-        statusMessage={statusMessage}
-        statusType={statusType}
-      />
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <StatusMessage message={statusMessage} type={statusType} />
+          <VersionUpgradePrompt
+            appInfo={appInfo}
+            permittedVersion={permittedVersion}
+            agentPKP={agentPKP}
+            onUpgrade={handleUpgrade}
+            onContinue={continueWithExistingPermission}
+            onUpdateParameters={handleUpdateParameters}
+            statusMessage={statusMessage}
+            statusType={statusType}
+          />
+        </div>
+      </div>
     );
   }
 
   // Only check this after we've checked for the version upgrade prompt
   if ((isAppAlreadyPermitted && !showUpdateModal) || (showSuccess && !showUpdateModal) || (showingAuthorizedMessage && !showUpdateModal)) {
     return (
-      <RedirectMessage
-        showSuccess={showSuccess}
-        showDisapproval={showDisapproval}
-        statusMessage={statusMessage}
-        statusType={statusType}
-      />
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <StatusMessage message={statusMessage} type={statusType} />
+          <RedirectMessage
+            showSuccess={showSuccess}
+            showDisapproval={showDisapproval}
+            statusMessage={statusMessage}
+            statusType={statusType}
+          />
+        </div>
+      </div>
     );
   }
 
   // Show loading indicator while checking permissions or loading app info
   if (checkingPermissions || isLoading) {
     return (
-      <div className='container'>
-        <div className='consent-form-container'>
-          <StatusMessage message={statusMessage || 'Loading app information...'} type="info" />
-          <div className="text-center mt-4">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            {appInfo && (
-              <div className="mt-3">
-                <h3>{appInfo.name}</h3>
-                <p>{appInfo.description}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <Loading
+        copy={statusMessage || 'Loading app information...'}
+        type="info"
+        appName={appInfo?.name}
+        appDescription={appInfo?.description}
+      />
     );
   }
 
@@ -587,9 +623,20 @@ export default function AuthenticatedConsentForm({
   if (!appId) {
     showErrorWithStatus('Missing appId parameter', 'Invalid Request');
     return (
-      <div className='consent-form-container'>
-        <StatusMessage message="Missing app ID" type="error" />
-        <p>Invalid request. Missing app ID.</p>
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <StatusMessage message="Missing app ID" type="error" />
+          <p className="text-center mt-3 text-gray-700">Invalid request. Missing app ID.</p>
+        </div>
       </div>
     );
   }
@@ -597,8 +644,19 @@ export default function AuthenticatedConsentForm({
   if (urlError) {
     // Use the error popup instead of inline display
     return (
-      <div className='consent-form-container'>
-        <p>Invalid request. Please check your URL parameters.</p>
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <p className="text-center text-gray-700">Invalid request. Please check your URL parameters.</p>
+        </div>
       </div>
     );
   }
@@ -606,49 +664,134 @@ export default function AuthenticatedConsentForm({
   if (redirectError) {
     // Use the error popup instead of inline display
     return (
-      <div className='consent-form-container'>
-        <p>Invalid redirect URI. Please check your URL parameters.</p>
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <p className="text-center text-gray-700">Invalid redirect URI. Please check your URL parameters.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If the app version is disabled, show a full-screen notice instead of the regular content
+  if (versionInfo && isAppVersionDisabled && appInfo) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+          <div className="h-8 w-8 rounded-md flex items-center justify-center">
+            <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+          </div>
+          <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+        </div>
+
+        {/* Content - Disabled App Notice */}
+        <div className="p-6">
+          <div className="text-xl font-semibold text-center mb-2">
+            {appInfo.name} wants to use your Agent Wallet
+          </div>
+
+          {appInfo.description && (
+            <div className="text-center text-gray-600 text-sm mb-4">
+              {appInfo.description}
+              <br></br>
+              Version: {versionInfo ? versionInfo.appVersion.version.toString() : 'No version data'} • 
+              App Mode: {appInfo.deploymentStatus === 0 ? 'DEV' :
+                       appInfo.deploymentStatus === 1 ? 'TEST' :
+                       appInfo.deploymentStatus === 2 ? 'PROD' : 'Unknown'}
+            </div>
+          )}
+
+          <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-6">
+            <p className="text-sm text-gray-700">
+              <span className="font-medium">Notice:</span> This version of {appInfo.name} is currently disabled by the developer and cannot be authorized. Please contact the app developer for assistance or try again later.
+            </p>
+          </div>
+
+          <div className="flex justify-center mt-6">
+            <button
+              className="bg-black text-white rounded-lg py-3 px-8 font-medium text-sm hover:bg-gray-900 transition-colors"
+              onClick={handleDisapprove}
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+
+        <div className="px-6 py-3 text-center border-t border-gray-100">
+          <p className="text-xs text-black flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <a href="https://litprotocol.com" target="_blank" rel="noopener noreferrer" className="flex items-center">
+              Protected by <Image src="/wordmark.svg" alt="Lit" width={15} height={9} className="ml-1" />
+            </a>
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div
-      className={
-        isSessionValidation ? 'session-validator-consent' : 'container'
-      }
-    >
-      <div className='consent-form-container'>
-        <StatusMessage message={statusMessage} type={statusType} />
+    <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+        <div className="h-8 w-8 rounded-md flex items-center justify-center">
+          <Image src="/V.svg" alt="Vincent logo" width={20} height={20} />
+        </div>
+        <div className="ml-3 text-base font-medium text-gray-700">Authorize with Vincent</div>
+      </div>
 
+      {/* Content */}
+      <div className="p-6">
+        <StatusMessage message={statusMessage} type={statusType} />
         {showSuccess && <StatusAnimation type="success" />}
         {showDisapproval && <StatusAnimation type="disapproval" />}
 
-        <h1 className="text-center">Vincent Consent Notice</h1>
-
         {appInfo && (
           <>
-            <AppInfo
-              appInfo={{
-                ...appInfo,
-                // Override the displayed version if we're updating parameters only
-                latestVersion: useCurrentVersionOnly && permittedVersion !== null ? 
-                  permittedVersion : 
-                  appInfo.latestVersion
-              }}
-              agentPKP={agentPKP}
-              versionInfo={versionInfo}
-              showIPFSDetails={true}
-            />
+            <div className="text-xl font-semibold text-center mb-2">
+              {appInfo.name} wants to use your Agent Wallet
+            </div>
+
+            {appInfo.description && (
+              <div className="text-center text-gray-600 text-sm mb-4">
+                {appInfo.description}
+                <br></br>
+                Version: {versionInfo ? versionInfo.appVersion.version.toString() : 'No version data'} • 
+                App Mode: {appInfo.deploymentStatus === 0 ? 'DEV' :
+                         appInfo.deploymentStatus === 1 ? 'TEST' :
+                         appInfo.deploymentStatus === 2 ? 'PROD' : 'Unknown'}
+              </div>
+            )}
+
+            {agentPKP && (
+              <div className="text-center text-gray-500 text-sm font-mono bg-gray-50 py-2 px-3 rounded-md mb-6 border border-gray-100">
+                EVM Address: {agentPKP.ethAddress}
+              </div>
+            )}
+
 
             {versionInfo && (
               <VersionParametersForm
-                versionData={versionInfo}
+                versionInfo={versionInfo}
                 onChange={handleParametersChange}
                 existingParameters={existingParameters}
                 key={`params-form-${useCurrentVersionOnly ? `v${permittedVersion}` : 'latest'}`}
               />
             )}
+
+            <div className="text-xs text-gray-500 mb-6 bg-gray-50 p-3 rounded-lg">
+              You can change your parameters anytime by revisiting this page.
+            </div>
 
             <ConsentActions
               onApprove={handleApprove}
@@ -657,6 +800,16 @@ export default function AuthenticatedConsentForm({
             />
           </>
         )}
+      </div>
+      <div className="px-6 py-3 text-center border-t border-gray-100">
+        <p className="text-xs text-black flex items-center justify-center">
+          <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <a href="https://litprotocol.com" target="_blank" rel="noopener noreferrer" className="flex items-center">
+            Protected by <Image src="/wordmark.svg" alt="Lit" width={15} height={9} className="ml-1" />
+          </a>
+        </p>
       </div>
     </div>
   );
