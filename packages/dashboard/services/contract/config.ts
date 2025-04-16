@@ -80,7 +80,7 @@ export async function estimateGasWithBuffer(
     // Add 10% buffer to the estimated gas
     const buffer = estimatedGas.div(process.env.NEXT_PUBLIC_GAS_BUFFER_DIVISOR!);
     const gasLimitWithBuffer = estimatedGas.add(buffer);
-    
+
     return gasLimitWithBuffer;
   } catch (error) {
     throw new Error('Gas estimation failed');
