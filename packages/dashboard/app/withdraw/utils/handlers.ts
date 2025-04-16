@@ -14,7 +14,7 @@ type ShowStatusFn = (message: string, type: StatusType) => void;
 type ShowErrorFn = (message: string, title: string) => void;
 
 export const handleTokenSelect = (
-  token: TokenBalance, 
+  token: TokenBalance,
   setSelectedToken: (token: TokenBalance | null) => void,
   setWithdrawAmount: (amount: string) => void
 ) => {
@@ -32,9 +32,9 @@ export const handleMaxAmount = async (
     if (selectedToken.symbol === 'ETH') {
       try {
         const provider = new ethers.providers.JsonRpcProvider(BASE_MAINNET_RPC);
-        
+
         const gasPrice = (await provider.getGasPrice()).mul(120).div(100);
-        
+
         if (selectedToken.rawBalance.lte(gasPrice)) {
           setWithdrawAmount('0');
           showStatus('Insufficient balance for gas fees', 'warning');
@@ -59,7 +59,7 @@ export const handleMaxAmount = async (
 };
 
 export const handleToggleHideToken = (
-  address: string, 
+  address: string,
   e: React.MouseEvent,
   hiddenTokens: string[],
   selectedToken: TokenBalance | null,
@@ -69,12 +69,12 @@ export const handleToggleHideToken = (
   setWithdrawAmount: (amount: string) => void
 ) => {
   e.stopPropagation();
-  
+
   if (hiddenTokens.includes(address.toLowerCase())) {
     unhideToken(address);
   } else {
     hideToken(address);
-    
+
     // If the hidden token was selected, clear selection
     if (selectedToken && selectedToken.address.toLowerCase() === address.toLowerCase()) {
       setSelectedToken(null);
@@ -91,12 +91,20 @@ export const handleRefreshBalances = async (
   showError: ShowErrorFn
 ) => {
   if (!ethAddress) return;
-  
+
   try {
     setLoading(true);
-    const tokens = await fetchTokenBalances(ethAddress);
-    setBalances(tokens);
-    showStatus('Token balances fetched successfully', 'success');
+    const result = await fetchTokenBalances(ethAddress);
+
+    if (result.success) {
+      setBalances(result.balances);
+      showStatus('Token balances fetched successfully', 'success');
+    } else {
+      showStatus('Failed to fetch all token balances', 'warning');
+      if (result.error) {
+        showError(result.error, 'Token Balance Error');
+      }
+    }
   } catch (err: any) {
     showStatus('Failed to fetch token balances', 'error');
     showError('Error fetching token balances', 'Error');
@@ -171,14 +179,14 @@ export const handleSubmit = async (
     await pkpWallet.init();
 
     const amount = ethers.utils.parseUnits(withdrawAmount, selectedToken.decimals);
-    
+
     let transactionResult;
-    
+
     if (selectedToken.symbol === 'ETH') {
       // ETH Transfer
       console.log('Preparing ETH transfer');
       showStatus(`Preparing ETH withdrawal of ${withdrawAmount} ETH...`, 'info');
-      
+
       transactionResult = await sendEthTransaction(
         pkpWallet,
         amount,
@@ -189,7 +197,7 @@ export const handleSubmit = async (
       // ERC-20 Token Transfer
       console.log('Preparing ERC-20 token transfer');
       showStatus(`Preparing ${selectedToken.symbol} withdrawal of ${withdrawAmount}...`, 'info');
-      
+
       transactionResult = await sendTokenTransaction(
         pkpWallet,
         selectedToken,
@@ -198,13 +206,13 @@ export const handleSubmit = async (
         agentPKP.ethAddress
       );
     }
-    
+
     if (transactionResult.success) {
       // Create a clickable link to the transaction on Basescan
       const txLink = `${BASE_EXPLORER_URL}${transactionResult.hash}`;
       showStatus(`${selectedToken.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${txLink}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">View transaction</a>`, 'success');
       await new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
-      
+
       // Reset form and balances
       setWithdrawAmount('');
       setWithdrawAddress('');
@@ -217,7 +225,7 @@ export const handleSubmit = async (
         showStatus(transactionResult.error || 'Transaction failed', 'error');
       }
     }
-    
+
   } catch (err: any) {
     console.error('Error submitting withdrawal:', err);
     showStatus('Failed to submit withdrawal', 'error');

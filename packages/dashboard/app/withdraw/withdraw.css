@@ -115,33 +115,118 @@ body {
 
 /* Status Message Styles */
 .status-message {
-  @apply flex items-center p-3 mx-6 mb-4 rounded-md text-sm;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.2s ease;
+  min-height: 48px; /* Set a consistent min-height */
+  opacity: 1;
+  will-change: opacity, background-color;
 }
 
-.status-info {
-  @apply bg-[#f0f7ff] text-[#0969da] border border-[#d8e4fa];
+.status-message--info {
+  background-color: #e8f4fd;
+  color: #0969da;
+  border: 1px solid #c6e1f7;
 }
 
-.status-success {
-  @apply bg-[#f0fff4] text-[#1a7f37] border border-[#d3f9d8];
+.status-message--warning {
+  background-color: #fff8e6;
+  color: #9a6700;
+  border: 1px solid #f9e4a0;
 }
 
-.status-warning {
-  @apply bg-[#fff9e6] text-[#9a6700] border border-[#fff3bf];
+.status-message--success {
+  background-color: #dafbe1;
+  color: #1a7f37;
+  border: 1px solid #b4e6c4;
 }
 
-.status-error {
-  @apply bg-[#fff2f0] text-[#cf222e] border border-[#ffcecb];
+.status-message--error {
+  background-color: #ffebe9;
+  color: #cf222e;
+  border: 1px solid #f7d4d6;
 }
 
+.status-message .status-text {
+  margin-left: 12px;
+  transition: opacity 0.2s ease;
+}
+
+/* Common styles for status icons */
+.status-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.status-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Spinner animation for loading states */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #0969da;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Icon colors for different status types */
+.warning-icon {
+  color: #9a6700;
+}
+
+.success-icon {
+  color: #1a7f37;
+}
+
+.error-icon {
+  color: #cf222e;
+}
+
+/* Fixed height container for loading messages to prevent layout shifts */
+.status-message-container {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Remove the conflicting loading-spinner style */
 /* Loading Spinner */
 .loading-spinner {
-  @apply flex items-center justify-center h-32 text-gray-500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8rem;
+  color: #6b7280;
 }
 
 .loading-spinner::before {
-  content: '';
-  @apply w-7 h-7 mr-3 rounded-full border-2 border-gray-200 border-t-gray-500 animate-spin;
+  content: none;
 }
 
 /* Token Grid Styles */
@@ -246,11 +331,12 @@ body {
 
 /* Authenticating Message */
 .authenticating-message {
-  @apply max-w-2xl mx-auto p-10 flex flex-col items-center justify-center;
+  @apply text-center py-8;
 }
 
-.spinner {
-  @apply w-8 h-8 rounded-full border-2 border-gray-200 border-t-gray-800 animate-spin mb-4;
+/* Make sure we don't have duplicate spinner styles */
+.authenticating-message .spinner {
+  margin: 0 auto 1rem auto;
 }
 
 /* Balances Header */

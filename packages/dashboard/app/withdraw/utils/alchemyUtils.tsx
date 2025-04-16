@@ -13,6 +13,13 @@ interface TokenBalance {
   logoUrl?: string;
 }
 
+export interface TokenBalanceResult {
+  success: boolean;
+  balances: TokenBalance[];
+  error?: string;
+  errorDetails?: string;
+}
+
 interface AlchemyTokenBalance {
   contractAddress: string;
   tokenBalance: string;
@@ -30,7 +37,7 @@ const formatBalance = (balance: ethers.BigNumber, decimals: number): string => {
   return ethers.utils.formatUnits(balance, decimals);
 };
 
-export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalance[]> => {
+export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalanceResult> => {
   try {
     const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
 
@@ -57,9 +64,27 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
       })
     });
 
-    const tokensData = await tokensResponse.json();
-    const tokenBalancesList = tokensData.result?.tokenBalances || [];
+    if (!tokensResponse.ok) {
+      return {
+        success: false,
+        balances: tokenBalances, // Return ETH balance at least
+        error: 'Failed to fetch token balances from Alchemy',
+        errorDetails: `Status: ${tokensResponse.status}, StatusText: ${tokensResponse.statusText}`
+      };
+    }
 
+    const tokensData = await tokensResponse.json();
+    
+    if (tokensData.error) {
+      return {
+        success: false,
+        balances: tokenBalances, // Return ETH balance at least
+        error: 'Alchemy API returned an error',
+        errorDetails: JSON.stringify(tokensData.error)
+      };
+    }
+    
+    const tokenBalancesList = tokensData.result?.tokenBalances || [];
     const nonZeroBalances = tokenBalancesList.filter((token: AlchemyTokenBalance) => {
       if (token.error) return false;
       const balanceBN = ethers.BigNumber.from(token.tokenBalance);
@@ -81,7 +106,18 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
             })
           });
 
+          if (!metadataResponse.ok) {
+            console.warn(`HTTP error for token ${token.contractAddress}: ${metadataResponse.status}`);
+            return null;
+          }
+
           const metadataData = await metadataResponse.json();
+          
+          if (metadataData.error) {
+            console.warn(`API error for token ${token.contractAddress}: ${JSON.stringify(metadataData.error)}`);
+            return null;
+          }
+          
           const metadata: AlchemyTokenMetadata = metadataData.result;
 
           if (!metadata || !metadata.decimals) {
@@ -110,17 +146,26 @@ export const fetchTokenBalances = async (ethAddress: string): Promise<TokenBalan
 
       const tokenDetails = await Promise.all(tokenDetailsPromises);
       const validTokenDetails = tokenDetails.filter(detail => detail !== null) as TokenBalance[];
-      console.log("tokenDetails", tokenDetails);
-      console.log("validTokenDetails", validTokenDetails);
-      console.log("tokenBalances", tokenBalances);
-      const allTokens = [...tokenBalances, ...validTokenDetails];
-      console.log("returning allTokens", allTokens);
-      return allTokens;
+      
+      const allBalances = [...tokenBalances, ...validTokenDetails];    
+      
+      return {
+        success: true,
+        balances: allBalances
+      };
     } else {
-      return tokenBalances; // Just ETH balance
+      return {
+        success: true,
+        balances: tokenBalances // Just ETH balance
+      };
     }
   } catch (err: any) {
     console.error('Error fetching token balances:', err);
-    throw err;
+    return {
+      success: false,
+      balances: [], // Return empty array on critical errors
+      error: 'Failed to fetch token balances',
+      errorDetails: err.message || String(err)
+    };
   }
 };
