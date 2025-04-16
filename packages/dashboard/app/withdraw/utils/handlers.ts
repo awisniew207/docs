@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { TokenBalance, StatusType } from '../../../components/withdraw/types';
-import { sendEthTransaction, sendTokenTransaction } from './transactionService';
+import { sendEthTransaction, sendTokenTransaction, calculateEthGasCosts } from './transactionService';
 import { fetchTokenBalances } from './alchemyUtils';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
@@ -28,24 +28,22 @@ export const handleMaxAmount = async (
   showStatus: ShowStatusFn
 ) => {
   if (selectedToken) {
-    // If ETH, estimate gas dynamically
+    // If ETH, account for both L1 and L2 fees on Base
     if (selectedToken.symbol === 'ETH') {
       try {
-        const provider = new ethers.providers.JsonRpcProvider(BASE_MAINNET_RPC);
+        const gasInfo = await calculateEthGasCosts();
+        const totalCost = gasInfo.totalCost.mul(90).div(100);
 
-        const gasPrice = (await provider.getGasPrice()).mul(120).div(100);
-
-        if (selectedToken.rawBalance.lte(gasPrice)) {
+        if (selectedToken.rawBalance.lte(totalCost)) {
           setWithdrawAmount('0');
           showStatus('Insufficient balance for gas fees', 'warning');
         } else {
-          const maxAmount = selectedToken.rawBalance.sub(gasPrice);
+          const maxAmount = selectedToken.rawBalance.sub(totalCost);
           setWithdrawAmount(ethers.utils.formatEther(maxAmount));
-          showStatus(`Reserved ~${ethers.utils.formatEther(gasPrice)} ETH for gas`, 'info');
+          showStatus(`Reserved ETH for gas fees`, 'info');
         }
       } catch (error) {
-        // Fallback to 90% of balance if estimation fails.
-        // This isn't a critical issue, as the user can always adjust the amount.
+        // Fallback to 90% of balance if estimation fails
         console.error('Error calculating max amount:', error);
         const maxAmount = selectedToken.rawBalance.mul(90).div(100);
         setWithdrawAmount(ethers.utils.formatEther(maxAmount));
@@ -147,14 +145,8 @@ export const handleSubmit = async (
   if (selectedToken) {
     if (selectedToken.symbol === 'ETH') {
       const parsedAmount = ethers.utils.parseUnits(withdrawAmount, selectedToken.decimals);
-      if (parsedAmount.eq(selectedToken.rawBalance)) {
-        showStatus(`You won't be able to withdraw the full amount due to gas fees`, 'warning');
-        return;
-      }
-    } else {
-      const parsedAmount = ethers.utils.parseUnits(withdrawAmount, selectedToken.decimals);
-      if (parsedAmount.gt(selectedToken.rawBalance)) {
-        showStatus(`Insufficient ${selectedToken.symbol} balance`, 'error');
+      if (parsedAmount.gte(selectedToken.rawBalance)) {
+        showStatus(`You have entered an amount greater than or equal to your balance. Please enter a smaller amount.`, 'warning');
         return;
       }
     }
