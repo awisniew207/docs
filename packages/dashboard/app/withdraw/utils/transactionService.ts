@@ -81,13 +81,13 @@ async function sendTransactionWithRetry({
         hash: '',
         error: 'Insufficient funds for transaction. Please add more ETH to your wallet.'
       };
+    } else {
+      return {
+        success: false,
+        hash: '',
+        error: error.message || 'Failed to send transaction'
+      };
     }
-
-    return {
-      success: false,
-      hash: '',
-      error: error.message || 'Failed to send transaction'
-    };
   }
 }
 
