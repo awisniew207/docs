@@ -2,7 +2,7 @@ import * as didJWT from 'did-jwt';
 import { ethers } from 'ethers';
 
 import type { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import type { JWTConfig } from '../types';
+import type { JWTConfig, VincentJWTPayload } from '../types';
 
 /**
  * Creates a signer function compatible with did-jwt that uses a PKP wallet for signing
@@ -90,7 +90,7 @@ export function createPKPSigner(pkpWallet: PKPEthersWallet) {
  * ```
  */
 export async function createPKPSignedJWT(config: JWTConfig): Promise<string> {
-  const { pkpWallet, pkp, payload, expiresInMinutes, audience } = config;
+  const { app, pkpWallet, pkp, payload, expiresInMinutes, audience, authentication } = config;
   const signer = createPKPSigner(pkpWallet);
 
   // iat and exp are expressed in seconds https://datatracker.ietf.org/doc/html/rfc7519
@@ -99,20 +99,18 @@ export async function createPKPSignedJWT(config: JWTConfig): Promise<string> {
 
   const walletAddress = await pkpWallet.getAddress();
 
-  const fullPayload: {
-    iat: number;
-    exp: number;
-    iss: string;
-    pkpPublicKey: string;
-    aud?: string | string[];
-    [key: string]: unknown;
-  } = {
+  const fullPayload: VincentJWTPayload = {
     ...payload,
     aud: audience,
     iat,
     exp,
     iss: `did:ethr:${walletAddress}`,
-    pkpPublicKey: pkp.publicKey,
+    pkp,
+    app,
+    authentication: {
+      type: authentication.type,
+      ...(authentication.value ? { value: authentication.value } : {}),
+    },
   };
 
   const jwt = await didJWT.createJWT(

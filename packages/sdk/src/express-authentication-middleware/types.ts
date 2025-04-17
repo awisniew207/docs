@@ -30,7 +30,6 @@ export interface AuthenticatedRequest<P = any, ResBody = any, ReqBody = any, Req
   extends Request<P, ResBody, ReqBody, ReqQuery> {
   user: {
     decodedJWT: VincentJWT;
-    pkpAddress: string;
     rawJWT: string;
   };
 }

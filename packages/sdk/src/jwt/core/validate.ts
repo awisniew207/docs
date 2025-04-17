@@ -1,9 +1,15 @@
-import { VincentJWT } from '../types';
-import * as didJWT from 'did-jwt';
-import { isJWTExpired, processJWTSignature, splitJWT, validateJWTTime } from './utils';
 import * as secp256k1 from '@noble/secp256k1';
-import { ethers } from 'ethers';
+import * as didJWT from 'did-jwt';
 import { JWT_ERROR } from 'did-jwt';
+import { ethers } from 'ethers';
+import { VincentJWT } from '../types';
+import {
+  isDefinedObject,
+  isJWTExpired,
+  processJWTSignature,
+  splitJWT,
+  validateJWTTime,
+} from './utils';
 
 /**
  * Decodes and verifies an {@link VincentJWT} token in string form
@@ -25,26 +31,25 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
   }
 
   const decoded = decodeJWT(jwt);
+  const { aud, exp, pkp } = decoded.payload;
 
-  if (!decoded.payload.exp) {
+  if (!exp) {
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT does not contain an expiration claim (exp)`);
   }
 
   const isExpired = isJWTExpired(decoded);
   if (isExpired) {
-    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT expired at ${decoded.payload.exp}`);
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT expired at ${exp}`);
   }
 
   validateJWTTime(decoded.payload, Math.floor(Date.now() / 1000));
 
   // Always validate audience - reject if no audience claim or expected audience isn't included
-  if (!decoded.payload.aud) {
+  if (!aud) {
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT does not contain an audience claim (aud)`);
   }
 
-  const audiences = Array.isArray(decoded.payload.aud)
-    ? decoded.payload.aud
-    : [decoded.payload.aud];
+  const audiences = Array.isArray(aud) ? aud : [aud];
 
   if (!audiences.includes(expectedAudience)) {
     throw new Error(
@@ -63,7 +68,7 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
     const s = signatureBytes.slice(32, 64);
 
     // Process public key
-    let publicKey = decoded.payload.pkpPublicKey;
+    let publicKey = pkp.publicKey;
     if (publicKey.startsWith('0x')) {
       publicKey = publicKey.substring(2);
     }
@@ -100,21 +105,19 @@ export function verifyJWT(jwt: string, expectedAudience: string): VincentJWT {
  * @returns The decoded Vincent JWT fields
  */
 export function decodeJWT(jwt: string): VincentJWT {
-  const decoded = didJWT.decodeJWT(jwt);
+  const decodedJwt = didJWT.decodeJWT(jwt);
 
-  // JWT only has the public key, compute and add the address
-  const pkpPublicKey = decoded.payload.pkpPublicKey;
+  const { app, authentication, pkp } = decodedJwt.payload;
 
-  if (!pkpPublicKey) {
-    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT does not contain a PKP public key`);
+  if (!isDefinedObject(app)) {
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "app" field in JWT payload.`);
+  }
+  if (!isDefinedObject(authentication)) {
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "authentication" field in JWT payload.`);
+  }
+  if (!isDefinedObject(pkp)) {
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "pkp" field in JWT payload.`);
   }
 
-  return {
-    ...decoded,
-    payload: {
-      ...decoded.payload,
-      pkpPublicKey,
-      pkpAddress: ethers.utils.computeAddress(pkpPublicKey),
-    },
-  };
+  return decodedJwt as VincentJWT;
 }
