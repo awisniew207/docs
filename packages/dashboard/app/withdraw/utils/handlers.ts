@@ -196,24 +196,24 @@ export const handleSubmit = async (
       console.log('Preparing ETH transfer');
       showStatus(`Preparing ETH withdrawal of ${withdrawAmount} ETH...`, 'info');
 
-      transactionResult = await sendEthTransaction(
+      transactionResult = await sendEthTransaction({
         pkpWallet,
         amount,
-        withdrawAddress,
-        selectedToken.rawBalance
-      );
+        recipientAddress: withdrawAddress,
+        tokenBalance: selectedToken.rawBalance
+      });
     } else {
       // ERC-20 Token Transfer
       console.log('Preparing ERC-20 token transfer');
       showStatus(`Preparing ${selectedToken.symbol} withdrawal of ${withdrawAmount}...`, 'info');
 
-      transactionResult = await sendTokenTransaction(
+      transactionResult = await sendTokenTransaction({
         pkpWallet,
-        selectedToken,
+        tokenDetails: selectedToken,
         amount,
-        withdrawAddress,
-        agentPKP.ethAddress
-      );
+        recipientAddress: withdrawAddress,
+        senderAddress: agentPKP.ethAddress
+      });
     }
 
     if (transactionResult.success) {

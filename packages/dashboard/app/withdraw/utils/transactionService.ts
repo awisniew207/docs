@@ -25,6 +25,21 @@ interface SendTransactionWithRetryParams {
   initialGasPrice: ethers.BigNumber;
 }
 
+interface SendEthTransactionParams {
+  pkpWallet: PKPEthersWallet;
+  amount: ethers.BigNumber;
+  recipientAddress: string;
+  tokenBalance: ethers.BigNumber;
+}
+
+interface SendTokenTransactionParams {
+  pkpWallet: PKPEthersWallet;
+  tokenDetails: TokenDetails;
+  amount: ethers.BigNumber;
+  recipientAddress: string;
+  senderAddress: string;
+}
+
 /**
  * Helper function to send a transaction with automatic retry on "replacement fee too low" error
  */
@@ -110,12 +125,12 @@ export async function calculateEthGasCosts(): Promise<{
 /**
  * Sends an ETH transfer transaction
  */
-export async function sendEthTransaction(
-  pkpWallet: PKPEthersWallet,
-  amount: ethers.BigNumber,
-  recipientAddress: string,
-  tokenBalance: ethers.BigNumber
-): Promise<TransactionResult> {
+export async function sendEthTransaction({
+  pkpWallet,
+  amount,
+  recipientAddress,
+  tokenBalance
+}: SendEthTransactionParams): Promise<TransactionResult> {
   try {
     const provider = new ethers.providers.JsonRpcProvider(BASE_MAINNET_RPC);
 
@@ -174,13 +189,13 @@ export async function sendEthTransaction(
 /**
  * Sends an ERC-20 token transfer transaction
  */
-export async function sendTokenTransaction(
-  pkpWallet: PKPEthersWallet,
-  tokenDetails: TokenDetails,
-  amount: ethers.BigNumber,
-  recipientAddress: string,
-  senderAddress: string
-): Promise<TransactionResult> {
+export async function sendTokenTransaction({
+  pkpWallet,
+  tokenDetails,
+  amount,
+  recipientAddress,
+  senderAddress
+}: SendTokenTransactionParams): Promise<TransactionResult> {
   try {
     const provider = new ethers.providers.JsonRpcProvider(BASE_MAINNET_RPC);
 
