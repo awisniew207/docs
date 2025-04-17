@@ -45,7 +45,9 @@ export const handleMaxAmount = async (
     if (selectedToken.symbol === 'ETH') {
       try {
         const gasInfo = await calculateEthGasCosts();
-        const totalCost = gasInfo.totalCost.mul(90).div(100);
+        // Setting a 50% buffer here for the total cost. Cost is >$.002 and it isn't worth
+        // the potential transaction failure just for the extra $.0015
+        const totalCost = gasInfo.totalCost.mul(150).div(100);
 
         if (selectedToken.rawBalance.lte(totalCost)) {
           setWithdrawAmount('0');
@@ -56,11 +58,11 @@ export const handleMaxAmount = async (
           showStatus(`Reserved ETH for gas fees`, 'info');
         }
       } catch (error) {
-        // Fallback to 90% of balance if estimation fails
+        // Fallback to 80% of balance if estimation fails
         console.error('Error calculating max amount:', error);
-        const maxAmount = selectedToken.rawBalance.mul(90).div(100);
+        const maxAmount = selectedToken.rawBalance.mul(80).div(100);
         setWithdrawAmount(ethers.utils.formatEther(maxAmount));
-        showStatus('Using fallback 90% of balance due to estimation error', 'warning');
+        showStatus('Using fallback 80% of balance due to estimation error', 'warning');
       }
     } else {
       // For tokens, use the full balance
