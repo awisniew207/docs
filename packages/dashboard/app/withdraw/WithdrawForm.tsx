@@ -80,6 +80,7 @@ export default function WithdrawForm({
       setWithdrawAmount,
       setWithdrawAddress,
       showStatus,
+      refreshBalance,
     );
   };
 

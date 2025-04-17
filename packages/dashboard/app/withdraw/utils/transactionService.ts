@@ -25,7 +25,6 @@ interface SendEthTransactionParams {
   pkpWallet: PKPEthersWallet;
   amount: ethers.BigNumber;
   recipientAddress: string;
-  tokenBalance: ethers.BigNumber;
   provider: ethers.providers.JsonRpcProvider;
 }
 
@@ -78,15 +77,15 @@ export async function sendEthTransaction({
   pkpWallet,
   amount,
   recipientAddress,
-  tokenBalance,
   provider
 }: SendEthTransactionParams): Promise<TransactionResult> {
   try {
-    if (amount.gt(tokenBalance)) {
+    const ethBalance = await pkpWallet.getBalance();
+    if (amount.gt(ethBalance)) {
       return {
         success: false,
         hash: '',
-        error: `Insufficient balance for transaction.`
+        error: `Insufficient balance to withdraw specified amount and pay for current gas fees.`
       };
     }
 

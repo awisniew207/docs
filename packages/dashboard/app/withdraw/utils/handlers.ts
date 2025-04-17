@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { StatusType } from '../../../components/withdraw/types';
-import { sendTokenTransaction } from './transactionService';
+import { sendTokenTransaction, sendEthTransaction } from './transactionService';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { SELECTED_LIT_NETWORK } from '@/components/consent/utils/lit';
@@ -43,6 +43,7 @@ export const handleSubmit = async (
   setWithdrawAmount: (amount: string) => void,
   setWithdrawAddress: (address: string) => void,
   showStatus: ShowStatusFn,
+  refreshBalance: () => Promise<void>,
 ) => {
   if (!withdrawAmount || !withdrawAddress) {
     showStatus('Please fill all fields', 'warning');
@@ -87,6 +88,7 @@ export const handleSubmit = async (
       isNative: true
     };
 
+    let transactionResult;
     if (isCustomToken && ethers.utils.isAddress(tokenAddress)) {
       showStatus('Fetching token details...', 'info');
       
@@ -103,40 +105,44 @@ export const handleSubmit = async (
           decimals,
           isNative: false
         };
+
+        const amount = ethers.utils.parseUnits(withdrawAmount, token.decimals);
+
+        transactionResult = await sendTokenTransaction({
+          pkpWallet,
+          tokenDetails: token,
+          amount,
+          recipientAddress: withdrawAddress,
+          provider
+        });
+    
         
         showStatus(`Detected token: ${symbol}`, 'info');
       } catch (error) {
         showStatus('Could not fetch token details.', 'error');
         throw error;
       }
+    } else {
+       transactionResult = await sendEthTransaction({
+        pkpWallet,
+        amount: ethers.utils.parseEther(withdrawAmount),
+        recipientAddress: withdrawAddress,
+        provider
+      });
     }
 
-    const amount = ethers.utils.parseUnits(withdrawAmount, token.decimals);
-
-    const transactionResult = await sendTokenTransaction({
-      pkpWallet,
-      tokenDetails: token,
-      amount,
-      recipientAddress: withdrawAddress,
-      provider
-    });
-
     const explorerUrl = chain.blockExplorerUrls[0];
-    console.log('explorerUrl', explorerUrl);
+    const explorerTxUrl = `${explorerUrl}/tx/${transactionResult.hash}`;
 
     if (transactionResult.success) {
-      // Create a clickable link to the transaction on the explorer
-      const explorerTxUrl = `${explorerUrl}tx/${transactionResult.hash}`
       showStatus(`${token.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">View transaction</a>`, 'success');
       await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds delay
 
       // Reset form
       setWithdrawAmount('');
       setWithdrawAddress('');
-
     } else {
       if (transactionResult.hash) {
-        const explorerTxUrl = `${explorerUrl}tx/${transactionResult.hash}`;
         showStatus(`Transaction may have failed.&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">Check on explorer</a>`, 'warning');
       } else {
         showStatus(transactionResult.error || 'Transaction failed', 'error');
@@ -147,6 +153,7 @@ export const handleSubmit = async (
     console.error('Error submitting withdrawal:', err);
     showStatus('Failed to submit withdrawal', 'error');
   } finally {
+    await refreshBalance();
     setLoading(false);
   }
 }; 
