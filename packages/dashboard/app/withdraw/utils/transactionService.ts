@@ -144,19 +144,11 @@ export async function sendEthTransaction({
     const gasInfo = await calculateEthGasCosts();
 
     // Check if amount is valid (the gas costs are already accounted for in handleMaxAmount)
-    if (amount.gt(tokenBalance)) {
+    if (tokenBalance.lt(amount.add(gasInfo.totalCost))) {
       return {
         success: false,
         hash: '',
-        error: `Insufficient balance for transaction.`
-      };
-    }
-
-    if (amount.lt(gasInfo.totalCost)) {
-      return {
-        success: false,
-        hash: '',
-        error: `Insufficient balance for gas fees.`
+        error: `Insufficient balance to withdraw specified amount and pay for current gas fees.`
       };
     }
 
