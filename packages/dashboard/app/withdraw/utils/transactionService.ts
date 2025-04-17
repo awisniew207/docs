@@ -18,6 +18,58 @@ interface TransactionResult {
   receipt?: ethers.providers.TransactionReceipt;
 }
 
+interface SendTransactionWithRetryParams {
+  pkpWallet: PKPEthersWallet;
+  txOptions: ethers.providers.TransactionRequest;
+  provider: ethers.providers.JsonRpcProvider;
+  initialGasPrice: ethers.BigNumber;
+}
+
+/**
+ * Helper function to send a transaction with automatic retry on "replacement fee too low" error
+ */
+async function sendTransactionWithRetry({
+  pkpWallet,
+  txOptions,
+  provider,
+  initialGasPrice
+}: SendTransactionWithRetryParams): Promise<TransactionResult> {
+  try {
+    const tx = await pkpWallet.sendTransaction(txOptions);
+    const receipt = await provider.waitForTransaction(tx.hash, 1);
+
+    return {
+      success: receipt.status === 1,
+      hash: tx.hash,
+      receipt
+    };
+  } catch (error: any) {
+    if (error.message && error.message.includes('replacement fee too low')) {
+      console.log('Encountered replacement fee too low error. Retrying with 2x gas price...');
+
+      // Double gas for retry
+      txOptions.gasPrice = initialGasPrice.mul(2);
+
+      console.log('Retrying with increased gas price:', ethers.utils.formatUnits(txOptions.gasPrice, 'gwei') + ' gwei');
+
+      const retryTx = await pkpWallet.sendTransaction(txOptions);
+      const retryReceipt = await provider.waitForTransaction(retryTx.hash, 1);
+
+      return {
+        success: retryReceipt.status === 1,
+        hash: retryTx.hash,
+        receipt: retryReceipt
+      };
+    }
+
+    return {
+      success: false,
+      hash: '',
+      error: error.message || 'Failed to send transaction'
+    };
+  }
+}
+
 /**
  * Calculates the gas costs for ETH transactions on Base network
  */
@@ -40,15 +92,16 @@ export async function calculateEthGasCosts(): Promise<{
   // Calculate gas costs
   const l1GasCost = l1GasLimit.mul(l1GasPrice);
   const l2GasCost = l2GasLimit.mul(l2GasPrice);
-  
-  // Add a buffer for price fluctuations (30%)
-  const buffer = l1GasCost.add(l2GasCost).mul(30).div(100);
+  const buffer = l1GasCost.add(l2GasCost).mul(50).div(100);
   
   // Total gas cost includes L1 fee, L2 gas, and buffer
   const totalCost = l1GasCost.add(l2GasCost).add(buffer);
   
+  const fixedBuffer = ethers.utils.parseEther('0.000001'); // 0.000001 ETH additional buffer
+  const finalCost = totalCost.add(fixedBuffer);
+  
   return {
-    totalCost,
+    totalCost: finalCost,
     gasLimit: l2GasLimit,
     gasPrice: l2GasPrice
   };
@@ -65,10 +118,10 @@ export async function sendEthTransaction(
 ): Promise<TransactionResult> {
   try {
     const provider = new ethers.providers.JsonRpcProvider(BASE_MAINNET_RPC);
-    
+
     // Get gas info
     const gasInfo = await calculateEthGasCosts();
-    
+
     // Check if amount is valid (the gas costs are already accounted for in handleMaxAmount)
     if (amount.gt(tokenBalance)) {
       return {
@@ -77,7 +130,7 @@ export async function sendEthTransaction(
         error: `Insufficient balance for transaction.`
       };
     }
-    
+
     if (amount.lt(gasInfo.totalCost)) {
       return {
         success: false,
@@ -85,7 +138,7 @@ export async function sendEthTransaction(
         error: `Insufficient balance for gas fees.`
       };
     }
-    
+
     // Configure ETH transaction options
     const txOptions = {
       to: recipientAddress,
@@ -93,7 +146,7 @@ export async function sendEthTransaction(
       gasLimit: gasInfo.gasLimit,
       gasPrice: gasInfo.gasPrice
     };
-    
+
     console.log('Sending ETH transaction with options:', {
       to: recipientAddress,
       value: ethers.utils.formatEther(amount) + ' ETH',
@@ -101,15 +154,13 @@ export async function sendEthTransaction(
       gasPrice: ethers.utils.formatUnits(gasInfo.gasPrice, 'gwei') + ' gwei',
       totalGasCost: ethers.utils.formatEther(gasInfo.totalCost) + ' ETH'
     });
-    
-    const tx = await pkpWallet.sendTransaction(txOptions);
-    const receipt = await provider.waitForTransaction(tx.hash, 1);
-    
-    return {
-      success: receipt.status === 1,
-      hash: tx.hash,
-      receipt
-    };
+
+    return await sendTransactionWithRetry({
+      pkpWallet,
+      txOptions,
+      provider,
+      initialGasPrice: gasInfo.gasPrice
+    });
   } catch (error: any) {
     console.error('Error sending ETH transaction:', error);
     return {
@@ -132,25 +183,25 @@ export async function sendTokenTransaction(
 ): Promise<TransactionResult> {
   try {
     const provider = new ethers.providers.JsonRpcProvider(BASE_MAINNET_RPC);
-    
+
     const gasPrice = await provider.getGasPrice();
-    
+
     const tokenContract = new ethers.Contract(
       tokenDetails.address,
       ["function transfer(address to, uint256 amount) returns (bool)"],
       provider
     );
-    
+
     let gasLimit;
     try {
       const tokenWithSigner = tokenContract.connect(pkpWallet as unknown as ethers.Signer);
-      
+
       // Estimate gas for the transfe
       const estimatedGas = await tokenWithSigner.estimateGas.transfer(
         recipientAddress,
         amount
       );
-      
+
       // Add 10% buffer to estimated gas for token transfers
       gasLimit = estimatedGas.mul(110).div(100);
       console.log('Estimated gas for token transfer:', gasLimit.toString());
@@ -162,12 +213,12 @@ export async function sendTokenTransaction(
         error: 'Failed to estimate gas for transaction'
       };
     }
-    
+
     const data = tokenContract.interface.encodeFunctionData(
       'transfer',
       [recipientAddress, amount]
     );
-    
+
     // Configure token transaction
     const txOptions = {
       to: tokenDetails.address, // Token contract address
@@ -176,10 +227,10 @@ export async function sendTokenTransaction(
       gasLimit: gasLimit,
       gasPrice: gasPrice
     };
-    
+
     const ethBalance = await provider.getBalance(senderAddress);
     const gasCost = gasLimit.mul(gasPrice);
-    
+
     if (ethBalance.lt(gasCost)) {
       return {
         success: false,
@@ -187,15 +238,13 @@ export async function sendTokenTransaction(
         error: `Insufficient ETH for gas fees. Need ${ethers.utils.formatEther(gasCost)} ETH for gas.`
       };
     }
-    
-    const tx = await pkpWallet.sendTransaction(txOptions);
-    const receipt = await provider.waitForTransaction(tx.hash, 1);
-    
-    return {
-      success: receipt.status === 1,
-      hash: tx.hash,
-      receipt
-    };
+
+    return await sendTransactionWithRetry({
+      pkpWallet,
+      txOptions,
+      provider,
+      initialGasPrice: gasPrice
+    });
   } catch (error: any) {
     console.error('Error sending token transaction:', error);
     return {
