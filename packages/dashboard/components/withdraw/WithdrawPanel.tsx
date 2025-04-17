@@ -1,90 +1,79 @@
 import React from 'react';
-import { TokenBalance } from './types';
 
 interface WithdrawPanelProps {
-  selectedToken: TokenBalance;
   withdrawAddress: string;
+  setWithdrawAddress: (value: string) => void;
   withdrawAmount: string;
-  submitting: boolean;
-  onAddressChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onMaxAmount: () => void;
+  setWithdrawAmount: (value: string) => void;
+  tokenSymbol: string;
+  loading: boolean;
   onSubmit: (e: React.FormEvent) => void;
 }
 
-const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
-  selectedToken,
+export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
   withdrawAddress,
+  setWithdrawAddress,
   withdrawAmount,
-  submitting,
-  onAddressChange,
-  onAmountChange,
-  onMaxAmount,
+  setWithdrawAmount,
+  tokenSymbol,
+  loading,
   onSubmit
 }) => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
-      onAmountChange(e);
+    
+    if (value === '') {
+      setWithdrawAmount('');
+      return;
+    }
+    
+    // Allow inputs that start with digits or with a decimal point
+    if (/^((0|[1-9]\d*)(\.\d*)?|\.\d*)$/.test(value)) {
+      setWithdrawAmount(value);
     }
   };
 
   return (
-    <form className="withdraw-form" onSubmit={onSubmit}>
-      <div className="px-6 pb-6">
-        <h3>Withdraw {selectedToken.symbol}</h3>
-        
-        <div className="form-group">
-          <label htmlFor="withdraw-address">Recipient Address</label>
+    <div className="p-4 border rounded mb-4">
+      <h5 className="font-medium mb-3">Withdrawal Details</h5>
+      <form onSubmit={onSubmit} className="space-y-3">
+        <div>
+          <label className="block text-sm mb-1">
+            Recipient Address
+          </label>
           <input
-            id="withdraw-address"
             type="text"
             value={withdrawAddress}
-            onChange={onAddressChange}
+            onChange={(e) => setWithdrawAddress(e.target.value)}
             placeholder="0x..."
-            disabled={submitting}
-            required
+            className="w-full p-2 border rounded"
           />
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="withdraw-amount">Amount</label>
-          <div className="amount-input-container">
+        <div>
+          <label className="block text-sm mb-1">
+            Amount
+          </label>
+          <div className="flex">
             <input
-              id="withdraw-amount"
               type="text"
               value={withdrawAmount}
               onChange={handleAmountChange}
               placeholder="0.0"
-              disabled={submitting}
-              required
+              className="flex-1 p-2 border rounded-l"
             />
-            <button 
-              type="button" 
-              className="max-button"
-              onClick={onMaxAmount}
-              disabled={submitting}
-            >
-              MAX
-            </button>
-          </div>
-          <div className="balance-info">
-            Available: {selectedToken.balance} {selectedToken.symbol}
+            <span className="p-2 bg-gray-100 border border-l-0 rounded-r">
+              {tokenSymbol || 'ETH'}
+            </span>
           </div>
         </div>
-      </div>
-      
-      <div className="withdraw-button-container">
-        <button 
-          type="submit" 
-          className="withdraw-button"
-          disabled={submitting || !withdrawAmount || !withdrawAddress}
+        <button
+          type="submit"
+          disabled={loading || !withdrawAddress || !withdrawAmount || parseFloat(withdrawAmount) <= 0}
+          className="w-full py-2 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          {submitting ? 'Processing...' : `Withdraw ${selectedToken.symbol}`}
+          {loading ? 'Processing...' : 'Withdraw'}
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
-};
-
-export default WithdrawPanel; 
+}; 

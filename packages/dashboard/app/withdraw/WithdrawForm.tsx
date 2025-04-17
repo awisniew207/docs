@@ -1,25 +1,19 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
+import { LIT_CHAINS } from '@lit-protocol/constants';
 
-import { useErrorPopup } from '@/providers/error-popup';
-import { useHiddenTokens } from './utils/hiddenTokens';
 import {
   FormHeader,
   StatusMessage,
-  TokenList,
   WalletInfo,
+  StatusType,
+  ChainSelector,
+  TokenSelector,
   WithdrawPanel,
-  TokenBalance,
-  StatusType
+  BalanceDisplay
 } from '../../components/withdraw';
-import {
-  handleTokenSelect,
-  handleMaxAmount,
-  handleToggleHideToken,
-  handleRefreshBalances,
-  handleSubmit
-} from './utils/handlers';
-
+import { handleSubmit } from './utils/handlers';
+import { ethers } from 'ethers';
 export interface WithdrawFormProps {
   sessionSigs: SessionSigs;
   agentPKP?: IRelayPKP;
@@ -31,117 +25,61 @@ export interface WithdrawFormProps {
 export default function WithdrawForm({
   sessionSigs,
   agentPKP,
-  shouldRefreshBalances = false,
 }: WithdrawFormProps) {
-  const [balances, setBalances] = useState<TokenBalance[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedChain, setSelectedChain] = useState<string>('ethereum');
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const [withdrawAddress, setWithdrawAddress] = useState<string>('');
-  const [submitting, setSubmitting] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<StatusType>('info');
-  const [showHiddenTokens, setShowHiddenTokens] = useState<boolean>(false);
-  const hasInitializedRef = useRef<boolean>(false);
+  const [isCustomToken, setIsCustomToken] = useState<boolean>(false);
+  const [customTokenAddress, setCustomTokenAddress] = useState<string>('');
+  const [ethBalance, setEthBalance] = useState<string>('0');
   
-  const { showError } = useErrorPopup();
-  
-  // Ensure that we only fetch the balances once
-  useEffect(() => {
-    if (!shouldRefreshBalances) {
-      return;
-    }
-    if (!hasInitializedRef.current) {
-      hasInitializedRef.current = true;
-      refreshBalances();
-    }
-  }, [shouldRefreshBalances]);
-
-  // Auto-select ETH token when balances are loaded, ETH is guaranteed to be in the balances array
-  useEffect(() => {
-    if (balances.length > 0) {
-      const ethToken = balances.find(token => token.symbol === 'ETH');
-      handleTokenSelect(ethToken!, setSelectedToken, setWithdrawAmount);
-    }
-  }, [balances]);
-
-  // Wrapper for refresh balances
-  const refreshBalances = () => {
-    handleRefreshBalances(
-      agentPKP?.ethAddress,
-      setLoading,
-      setBalances,
-      showStatus,
-      showError
-    );
-  };
-  
-  // Use the hidden tokens hook
-  const { hiddenTokens, hideToken, unhideToken, error: hiddenTokensError } = useHiddenTokens();
-
-  useEffect(() => {
-    if (hiddenTokensError) {
-      showStatus(hiddenTokensError, 'error');
-    }
-  }, [hiddenTokensError]);
-
-  // Helper function to set status message
   const showStatus = (message: string, type: StatusType = 'info') => {
     setStatusMessage(message);
     setStatusType(type);
   };
 
-  // Toggle hidden tokens visibility
-  const toggleHiddenTokens = () => {
-    setShowHiddenTokens(!showHiddenTokens);
+  // Function to fetch ETH balance
+  const refreshBalance = async () => {
+    setLoading(true);
+    const chain = LIT_CHAINS[selectedChain]; // Chains are only from the dropdown  
+    const rpcUrl = chain.rpcUrls[0]; // rpcUrl is a require prop for chains
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+
+    try {
+      const result = await provider.getBalance(agentPKP!.ethAddress);
+      setEthBalance(ethers.utils.formatEther(result));
+      showStatus('Balance successfully fetched', 'success');   
+    } catch (error: any) {
+      showStatus(`Error: ${error.message || 'Error fetching balance'}`, 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Instead of state, use useMemo
-  const filteredBalances = useMemo(() => {
-    return showHiddenTokens 
-      ? balances 
-      : balances.filter(token => !hiddenTokens.includes(token.address.toLowerCase()));
-  }, [showHiddenTokens, hiddenTokens, balances]);
+  // Fetch ETH balance when chain changes or component mounts
+  useEffect(() => {
+    refreshBalance();
+  }, [selectedChain]);
 
-  // Wrapper for token selection
-  const onSelectToken = (token: TokenBalance) => {
-    handleTokenSelect(token, setSelectedToken, setWithdrawAmount);
-  };
-
-  // Wrapper for max amount
-  const onMaxAmount = () => {
-    handleMaxAmount(selectedToken, setWithdrawAmount, showStatus);
-  };
-
-  // Wrapper for toggle hide token
-  const onToggleHideToken = (address: string, e: React.MouseEvent) => {
-    handleToggleHideToken(
-      address, 
-      e, 
-      hiddenTokens, 
-      selectedToken, 
-      hideToken, 
-      unhideToken, 
-      setSelectedToken, 
-      setWithdrawAmount
-    );
-  };
-
-  // Wrapper for submit
+  // Handle submission
   const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
     handleSubmit(
-      e,
-      selectedToken,
+      isCustomToken,
+      customTokenAddress,
       withdrawAmount,
       withdrawAddress,
       agentPKP!,
       sessionSigs,
-      setSubmitting,
+      selectedChain,
+      setLoading,
       setWithdrawAmount,
       setWithdrawAddress,
       showStatus,
-      showError,
-      refreshBalances
     );
   };
 
@@ -152,39 +90,36 @@ export default function WithdrawForm({
       
       <StatusMessage message={statusMessage} type={statusType} />
 
-      {loading ? (
-        <div className="px-6 py-4 text-center text-gray-600">
-          Loading tokens...
-        </div>
-      ) : (
-        <>
-          <TokenList 
-            tokens={filteredBalances}
-            selectedToken={selectedToken}
-            hiddenTokens={hiddenTokens}
-            showHiddenTokens={showHiddenTokens}
-            loading={loading}
-            submitting={submitting}
-            onSelectToken={onSelectToken}
-            onToggleHidden={onToggleHideToken}
-            onToggleShowHidden={toggleHiddenTokens}
-            onRefreshBalances={refreshBalances}
-          />
+      <div className="p-6">
+        <ChainSelector 
+          selectedChain={selectedChain}
+          ethAddress={agentPKP!.ethAddress}
+          onChange={setSelectedChain}
+        />
+        
+        <BalanceDisplay 
+          ethBalance={ethBalance}
+          loading={loading}
+          refreshBalance={refreshBalance}
+        />
 
-          {selectedToken && (
-            <WithdrawPanel
-              selectedToken={selectedToken}
-              withdrawAddress={withdrawAddress}
-              withdrawAmount={withdrawAmount}
-              submitting={submitting}
-              onAddressChange={(e) => setWithdrawAddress(e.target.value)}
-              onAmountChange={(e) => setWithdrawAmount(e.target.value)}
-              onMaxAmount={onMaxAmount}
-              onSubmit={onSubmit}
-            />
-          )}
-        </>
-      )}
+        <TokenSelector
+          isCustomToken={isCustomToken}
+          setIsCustomToken={setIsCustomToken}
+          customTokenAddress={customTokenAddress}
+          setCustomTokenAddress={setCustomTokenAddress}
+        />
+
+        <WithdrawPanel
+          withdrawAddress={withdrawAddress}
+          setWithdrawAddress={setWithdrawAddress}
+          withdrawAmount={withdrawAmount}
+          setWithdrawAmount={setWithdrawAmount}
+          tokenSymbol={isCustomToken ? 'TOKEN' : 'ETH'}
+          loading={loading}
+          onSubmit={onSubmit}
+        />
+      </div>
       
       <WalletInfo ethAddress={agentPKP?.ethAddress} />
     </div>

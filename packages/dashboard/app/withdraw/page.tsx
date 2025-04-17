@@ -31,9 +31,6 @@ export default function WithdrawPage() {
 
   // State for loading messages
   const [loadingMessage, setLoadingMessage] = useState<string>('');
-  
-  // State to control when balances should be refreshed
-  const [shouldRefreshBalances, setShouldRefreshBalances] = useState(false);
 
   // ------ EXISTING SESSION HANDLING ------
 
@@ -59,7 +56,6 @@ export default function WithdrawPage() {
   // Handle using existing account
   const handleUseExistingAccount = () => {
     setShowExistingAccount(false);
-    setShouldRefreshBalances(true);
   };
 
   // ------ NEW AUTHENTICATION FLOW ------
@@ -123,8 +119,6 @@ export default function WithdrawPage() {
       try {
         const agentPkpInfo = await getAgentPKP(userPKP.ethAddress);
         setAgentPKP(agentPkpInfo);
-        // For new authentication flow, set should refresh balances to true
-        setShouldRefreshBalances(true);
       } catch (agentError) {
         console.error('Error handling Agent PKP:', agentError);
         showError(agentError as Error, 'Agent PKP Error');
@@ -256,7 +250,6 @@ export default function WithdrawPage() {
               sessionSigs={sessionSigs} 
               agentPKP={agentPKP} 
               userPKP={userPKP}
-              shouldRefreshBalances={shouldRefreshBalances}
             />
           </div>
         </div>
@@ -272,7 +265,6 @@ export default function WithdrawPage() {
               sessionSigs={validatedSessionSigs}
               agentPKP={authInfo.agentPKP}
               userPKP={authInfo.userPKP}
-              shouldRefreshBalances={shouldRefreshBalances}
             />
           </div>
         </div>

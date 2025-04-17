@@ -1,11 +1,11 @@
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { TokenBalance, StatusType } from '../../../components/withdraw/types';
-import { sendEthTransaction, sendTokenTransaction, calculateEthGasCosts } from './transactionService';
-import { fetchERC20TokenBalances, fetchEthBalance } from './tokenUtils';
+import { StatusType } from '../../../components/withdraw/types';
+import { sendTokenTransaction } from './transactionService';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { SELECTED_LIT_NETWORK } from '@/components/consent/utils/lit';
+import { LIT_CHAINS } from '@lit-protocol/constants';
 
 let isLitNodeClientInitialized = false;
 let litNodeClient: LitNodeClient;
@@ -20,135 +20,31 @@ async function initLitNodeClient() {
   return litNodeClient;
 }
 
-const BASE_MAINNET_RPC = process.env.NEXT_PUBLIC_BASE_MAINNET_RPC;
-const BASE_EXPLORER_URL = "https://basescan.org/tx/";
-
 type ShowStatusFn = (message: string, type: StatusType) => void;
-type ShowErrorFn = (message: string, title: string) => void;
 
-export const handleTokenSelect = (
-  token: TokenBalance,
-  setSelectedToken: (token: TokenBalance | null) => void,
-  setWithdrawAmount: (amount: string) => void
-) => {
-  setSelectedToken(token);
-  setWithdrawAmount('');
-};
-
-export const handleMaxAmount = async (
-  selectedToken: TokenBalance | null,
-  setWithdrawAmount: (amount: string) => void,
-  showStatus: ShowStatusFn
-) => {
-  if (selectedToken) {
-    // If ETH, account for both L1 and L2 fees on Base
-    if (selectedToken.symbol === 'ETH') {
-      try {
-        const gasInfo = await calculateEthGasCosts();
-        // Setting a 100% buffer here for the total cost. Cost is >$.002 and it isn't worth
-        // the potential transaction failure just for the extra $.002
-        const totalCost = gasInfo.totalCost.mul(2);
-
-        if (selectedToken.rawBalance.lte(totalCost)) {
-          setWithdrawAmount('0');
-          showStatus('Insufficient balance for gas fees', 'warning');
-        } else {
-          const maxAmount = selectedToken.rawBalance.sub(totalCost);
-          setWithdrawAmount(ethers.utils.formatEther(maxAmount));
-          showStatus(`Reserved ETH for gas fees`, 'info');
-        }
-      } catch (error) {
-        // Fallback to 80% of balance if estimation fails
-        console.error('Error calculating max amount:', error);
-        const maxAmount = selectedToken.rawBalance.mul(80).div(100);
-        setWithdrawAmount(ethers.utils.formatEther(maxAmount));
-        showStatus('Using fallback 80% of balance due to estimation error', 'warning');
-      }
-    } else {
-      // For tokens, use the full balance
-      setWithdrawAmount(selectedToken.balance);
-    }
-  }
-};
-
-export const handleToggleHideToken = (
-  address: string,
-  e: React.MouseEvent,
-  hiddenTokens: string[],
-  selectedToken: TokenBalance | null,
-  hideToken: (address: string) => void,
-  unhideToken: (address: string) => void,
-  setSelectedToken: (token: TokenBalance | null) => void,
-  setWithdrawAmount: (amount: string) => void
-) => {
-  e.stopPropagation();
-
-  if (hiddenTokens.includes(address.toLowerCase())) {
-    unhideToken(address);
-  } else {
-    hideToken(address);
-
-    // If the hidden token was selected, clear selection
-    if (selectedToken && selectedToken.address.toLowerCase() === address.toLowerCase()) {
-      setSelectedToken(null);
-      setWithdrawAmount('');
-    }
-  }
-};
-
-export const handleRefreshBalances = async (
-  ethAddress: string | undefined,
-  setLoading: (loading: boolean) => void,
-  setBalances: (balances: TokenBalance[]) => void,
-  showStatus: ShowStatusFn,
-  showError: ShowErrorFn
-) => {
-  if (!ethAddress) return;
-
-  try {
-    setLoading(true);
-    const ethBalance = await fetchEthBalance(ethAddress);
-    const erc20TokenBalances = await fetchERC20TokenBalances(ethAddress);
-
-    const balances = [ethBalance.balances[0],...erc20TokenBalances.balances];
-
-    if (erc20TokenBalances.success && ethBalance.success) {
-      setBalances(balances);
-      showStatus('Token balances fetched successfully', 'success');
-    } else {
-      showStatus('Failed to fetch all token balances', 'warning');
-      if (erc20TokenBalances.error) {
-        showError(erc20TokenBalances.error, 'Token Balance Error');
-      }
-      if (ethBalance.error) {
-        showError(ethBalance.error, 'Token Balance Error');
-      }
-    }
-  } catch (err: any) {
-    showStatus('Failed to fetch token balances', 'error');
-    showError('Error fetching token balances', 'Error');
-  } finally {
-    setLoading(false);
-  }
-};
+// Standard ERC20 token ABI - just the functions we need
+const ERC20_ABI = [
+  "function name() view returns (string)",
+  "function symbol() view returns (string)",
+  "function decimals() view returns (uint8)",
+  "function balanceOf(address owner) view returns (uint256)",
+  "function transfer(address to, uint amount) returns (bool)"
+];
 
 export const handleSubmit = async (
-  e: React.FormEvent,
-  selectedToken: TokenBalance | null,
+  isCustomToken: boolean,
+  tokenAddress: string,
   withdrawAmount: string,
   withdrawAddress: string,
   agentPKP: IRelayPKP,
   sessionSigs: SessionSigs,
-  setSubmitting: (submitting: boolean) => void,
+  chainId: string,
+  setLoading: (loading: boolean) => void,
   setWithdrawAmount: (amount: string) => void,
   setWithdrawAddress: (address: string) => void,
   showStatus: ShowStatusFn,
-  showError: ShowErrorFn,
-  refreshBalances: () => void
 ) => {
-  e.preventDefault();
-
-  if (!selectedToken || !withdrawAmount || !withdrawAddress) {
+  if (!withdrawAmount || !withdrawAddress) {
     showStatus('Please fill all fields', 'warning');
     return;
   }
@@ -163,73 +59,85 @@ export const handleSubmit = async (
     return;
   }
 
-  if (selectedToken) {
-    if (selectedToken.symbol === 'ETH') {
-      const parsedAmount = ethers.utils.parseUnits(withdrawAmount, selectedToken.decimals);
-      if (parsedAmount.gte(selectedToken.rawBalance)) {
-        showStatus(`You have entered an amount greater than or equal to your balance. Please enter a smaller amount.`, 'warning');
-        return;
-      }
-    }
-  }
-
   try {
-    setSubmitting(true);
+    setLoading(true);
     showStatus('Preparing withdrawal...', 'info');
+    
+    const chain = LIT_CHAINS[chainId];
+    const rpcUrl = chain.rpcUrls?.[0];
+    
     litNodeClient = await initLitNodeClient();
 
     const pkpWallet = new PKPEthersWallet({
       pkpPubKey: agentPKP.publicKey,
       litNodeClient: litNodeClient,
       controllerSessionSigs: sessionSigs,
-      rpc: BASE_MAINNET_RPC
-    })
+      rpc: rpcUrl
+    });
 
     await pkpWallet.init();
+    
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    
+    // Unified token setup
+    let token = {
+      address: isCustomToken ? tokenAddress : ethers.constants.AddressZero,
+      symbol: 'ETH',
+      decimals: 18,
+      isNative: true
+    };
 
-    const amount = ethers.utils.parseUnits(withdrawAmount, selectedToken.decimals);
-
-    let transactionResult;
-
-    if (selectedToken.symbol === 'ETH') {
-      // ETH Transfer
-      console.log('Preparing ETH transfer');
-      showStatus(`Preparing ETH withdrawal of ${withdrawAmount} ETH...`, 'info');
-
-      transactionResult = await sendEthTransaction({
-        pkpWallet,
-        amount,
-        recipientAddress: withdrawAddress,
-        tokenBalance: selectedToken.rawBalance
-      });
-    } else {
-      // ERC-20 Token Transfer
-      console.log('Preparing ERC-20 token transfer');
-      showStatus(`Preparing ${selectedToken.symbol} withdrawal of ${withdrawAmount}...`, 'info');
-
-      transactionResult = await sendTokenTransaction({
-        pkpWallet,
-        tokenDetails: selectedToken,
-        amount,
-        recipientAddress: withdrawAddress,
-        senderAddress: agentPKP.ethAddress
-      });
+    if (isCustomToken && ethers.utils.isAddress(tokenAddress)) {
+      showStatus('Fetching token details...', 'info');
+      
+      try {
+        const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+        const [symbol, decimals] = await Promise.all([
+          tokenContract.symbol(),
+          tokenContract.decimals()
+        ]);
+        
+        token = {
+          address: tokenAddress,
+          symbol,
+          decimals,
+          isNative: false
+        };
+        
+        showStatus(`Detected token: ${symbol}`, 'info');
+      } catch (error) {
+        showStatus('Could not fetch token details.', 'error');
+        throw error;
+      }
     }
 
-    if (transactionResult.success) {
-      // Create a clickable link to the transaction on Basescan
-      const txLink = `${BASE_EXPLORER_URL}${transactionResult.hash}`;
-      showStatus(`${selectedToken.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${txLink}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">View transaction</a>`, 'success');
-      await new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
+    const amount = ethers.utils.parseUnits(withdrawAmount, token.decimals);
 
-      // Reset form and balances
+    const transactionResult = await sendTokenTransaction({
+      pkpWallet,
+      tokenDetails: token,
+      amount,
+      recipientAddress: withdrawAddress,
+      provider
+    });
+
+    const explorerUrl = chain.blockExplorerUrls[0];
+    console.log('explorerUrl', explorerUrl);
+
+    if (transactionResult.success) {
+      // Create a clickable link to the transaction on the explorer
+      const explorerTxUrl = `${explorerUrl}tx/${transactionResult.hash}`
+      showStatus(`${token.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">View transaction</a>`, 'success');
+      await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds delay
+
+      // Reset form
       setWithdrawAmount('');
       setWithdrawAddress('');
-      refreshBalances();
+
     } else {
       if (transactionResult.hash) {
-        const txLink = `${BASE_EXPLORER_URL}${transactionResult.hash}`;
-        showStatus(`Transaction may have failed.&nbsp;&nbsp;<a href="${txLink}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">Check on Basescan</a>`, 'warning');
+        const explorerTxUrl = `${explorerUrl}tx/${transactionResult.hash}`;
+        showStatus(`Transaction may have failed.&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">Check on explorer</a>`, 'warning');
       } else {
         showStatus(transactionResult.error || 'Transaction failed', 'error');
       }
@@ -238,8 +146,7 @@ export const handleSubmit = async (
   } catch (err: any) {
     console.error('Error submitting withdrawal:', err);
     showStatus('Failed to submit withdrawal', 'error');
-    showError(`Error processing withdrawal request: ${err.message}`, 'Transaction Error');
   } finally {
-    setSubmitting(false);
+    setLoading(false);
   }
 }; 
