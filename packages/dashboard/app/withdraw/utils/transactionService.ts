@@ -41,8 +41,8 @@ export async function calculateEthGasCosts(): Promise<{
   const l1GasCost = l1GasLimit.mul(l1GasPrice);
   const l2GasCost = l2GasLimit.mul(l2GasPrice);
   
-  // Add a buffer for price fluctuations (20%)
-  const buffer = l1GasCost.add(l2GasCost).mul(20).div(100);
+  // Add a buffer for price fluctuations (30%)
+  const buffer = l1GasCost.add(l2GasCost).mul(30).div(100);
   
   // Total gas cost includes L1 fee, L2 gas, and buffer
   const totalCost = l1GasCost.add(l2GasCost).add(buffer);
@@ -75,6 +75,14 @@ export async function sendEthTransaction(
         success: false,
         hash: '',
         error: `Insufficient balance for transaction.`
+      };
+    }
+    
+    if (amount.lt(gasInfo.totalCost)) {
+      return {
+        success: false,
+        hash: '',
+        error: `Insufficient balance for gas fees.`
       };
     }
     

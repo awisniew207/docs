@@ -45,9 +45,9 @@ export const handleMaxAmount = async (
     if (selectedToken.symbol === 'ETH') {
       try {
         const gasInfo = await calculateEthGasCosts();
-        // Setting a 50% buffer here for the total cost. Cost is >$.002 and it isn't worth
-        // the potential transaction failure just for the extra $.0015
-        const totalCost = gasInfo.totalCost.mul(150).div(100);
+        // Setting a 100% buffer here for the total cost. Cost is >$.002 and it isn't worth
+        // the potential transaction failure just for the extra $.002
+        const totalCost = gasInfo.totalCost.mul(2);
 
         if (selectedToken.rawBalance.lte(totalCost)) {
           setWithdrawAmount('0');
