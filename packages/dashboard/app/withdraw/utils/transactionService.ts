@@ -75,6 +75,12 @@ async function sendTransactionWithRetry({
         hash: retryTx.hash,
         receipt: retryReceipt
       };
+    } else if (error.message && error.message.includes('insufficient funds for intrinsic transaction cost')) {
+      return {
+        success: false,
+        hash: '',
+        error: 'Insufficient funds for transaction. Please add more ETH to your wallet.'
+      };
     }
 
     return {
