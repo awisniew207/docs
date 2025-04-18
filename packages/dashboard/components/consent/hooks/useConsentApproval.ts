@@ -17,7 +17,8 @@ import {
 } from '../utils/consentArrayUtils';
 import {
   sendTransaction,
-  addPermittedActions
+  addPermittedActions,
+  checkAndRepairPermittedActions,
 } from '../utils/consentTransactionUtils';
 import {
   checkAppPermissionStatus,
@@ -214,10 +215,19 @@ export const useConsentApproval = ({
       hasParametersToSet
     } = prepareParameterUpdateData(parameters, versionInfo);
 
+    const { wallet } = await initializeWallet();
+    await checkAndRepairPermittedActions(
+      agentPKP.tokenId,
+      toolIpfsCids,
+      policyIpfsCids.flat(),
+      wallet,
+      onStatusChange
+    );
+
     // Skip setToolPolicyParameters if there are no parameters to set
     if (!hasParametersToSet) {
       onStatusChange?.('Parameter updates complete', 'success');
-      return;
+      return { success: true, message: 'Parameter updates complete' };
     }
 
     try {
@@ -379,6 +389,14 @@ export const useConsentApproval = ({
           agentPKP.tokenId,
           toolIpfsCids,
           policyIpfsCids,
+          onStatusChange
+        );
+
+        await checkAndRepairPermittedActions(
+          agentPKP.tokenId,
+          toolIpfsCids,
+          policyIpfsCids,
+          wallet,
           onStatusChange
         );
 

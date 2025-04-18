@@ -8,7 +8,6 @@ import Image from 'next/image';
 import StatusMessage from './authForm/StatusMessage';
 import StatusAnimation from './authForm/StatusAnimation';
 import ParameterUpdateModal from './authForm/ParameterUpdateModal';
-import AppInfo from './authForm/AppInfo';
 import ConsentActions from './authForm/ConsentActions';
 import RedirectMessage from './authForm/RedirectMessage';
 import VersionUpgradePrompt from './authForm/VersionUpgradePrompt';
@@ -196,14 +195,6 @@ export default function AuthenticatedConsentForm({
         });
     } else if (!useCurrentVersionOnly) {
       permittedVersionFetchedRef.current = null;
-
-      // If we previously used a specific version, we should reload the latest version
-      if (permittedVersionFetchedRef.current !== null) {
-        updateState({ isLoading: true });
-        fetchVersionInfo()
-          .then(() => updateState({ isLoading: false }))
-          .catch(() => updateState({ isLoading: false }));
-      }
     }
   }, [useCurrentVersionOnly, permittedVersion, appId, fetchVersionInfo, fetchExistingParameters, existingParameters, isLoadingParameters, updateState, showErrorWithStatus]);
 
@@ -324,9 +315,10 @@ export default function AuthenticatedConsentForm({
             result = await approveConsent();
           }
 
+          console.log('result', result);
+          console.log('result.success', result?.success);
           if (!result || !result.success) {
             const errorMessage = result?.message || 'Approval process failed';
-            setError(errorMessage);
             showErrorWithStatus(errorMessage, 'Approval Failed');
             return { success: false };
           }
@@ -574,16 +566,12 @@ export default function AuthenticatedConsentForm({
 
         {/* Content */}
         <div className="p-6">
-          <StatusMessage message={statusMessage} type={statusType} />
           <VersionUpgradePrompt
             appInfo={appInfo}
             permittedVersion={permittedVersion}
-            agentPKP={agentPKP}
             onUpgrade={handleUpgrade}
             onContinue={continueWithExistingPermission}
             onUpdateParameters={handleUpdateParameters}
-            statusMessage={statusMessage}
-            statusType={statusType}
           />
         </div>
       </div>

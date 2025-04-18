@@ -11,7 +11,7 @@ import { ethers } from 'ethers';
  * @param hexCid Hex-encoded IPFS CID
  * @returns Base58-encoded IPFS CID or the original string if conversion fails
  */
-const hexToBase58 = (hexCid: string): string => {
+export const hexToBase58 = (hexCid: string): string => {
   try {
     const bytes = Buffer.from(hexCid.substring(2), 'hex');
     return bs58.encode(bytes);
@@ -29,14 +29,15 @@ const hexToBase58 = (hexCid: string): string => {
  * @param statusCallback Optional callback for status updates
  * @returns An array of missing tools/policies, empty if all required actions are permitted
  */
-export const checkRequiredPermittedActions = async (
+export const checkAddPermittedActions = async (
   agentPKPTokenId: string,
   toolIpfsCids: string[],
   policyIpfsCids: string[],
   statusCallback?: (message: string, type: 'info' | 'warning' | 'success' | 'error') => void
 ) => {
   let missingTools: string[] = [];
-  
+  let missingPolicies: string[] = [];
+
   try {
     console.log('Starting checkRequiredPermittedActions for PKP:', agentPKPTokenId);
     console.log('Tools to check:', toolIpfsCids);
@@ -84,7 +85,7 @@ export const checkRequiredPermittedActions = async (
       }
     } catch (connectionError) {
       console.error('Error connecting to Lit Contracts or fetching permitted actions:', connectionError);
-      return [];
+      return { success: false, message: 'Error connecting to Lit Contracts or fetching permitted actions' };
     }
     
     if (missingTools.length > 0) {
@@ -92,10 +93,10 @@ export const checkRequiredPermittedActions = async (
     }
   } catch (err) {
     console.error('Error checking permitted actions:', err);
-    return [];
+    return { success: false, message: 'Error checking permitted actions' };
   }
   
-  return missingTools;
+  return { success: true, missingTools, missingPolicies };
 };
 
 /**
@@ -176,4 +177,4 @@ export const verifyPermissionGrant = async (
     statusCallback?.('Could not verify permission grant', 'warning');
     return null;
   }
-}; 
+};
