@@ -1,13 +1,16 @@
 import React from 'react';
+import { TokenDetails } from '../../app/withdraw/WithdrawForm';
 
 interface BalanceDisplayProps {
-    ethBalance: string;
+    balance: string;
+    token: TokenDetails;
     loading: boolean;
     refreshBalance: () => void;
 }
 
 export const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ 
-    ethBalance, 
+    balance, 
+    token,
     loading, 
     refreshBalance,
 }) => (
@@ -15,7 +18,7 @@ export const BalanceDisplay: React.FC<BalanceDisplayProps> = ({
         <div className="flex justify-between items-center">
             <div>
                 <h4 className="font-medium">Your Balance</h4>
-                <p className="text-2xl font-bold mt-1">{ethBalance} ETH</p>
+                <p className="text-2xl font-bold mt-1">{balance} {token.symbol}</p>
             </div>
         </div>
         <button

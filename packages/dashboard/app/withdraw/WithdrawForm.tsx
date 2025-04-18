@@ -14,12 +14,19 @@ import {
 } from '../../components/withdraw';
 import { handleSubmit } from './utils/handlers';
 import { ethers } from 'ethers';
+
 export interface WithdrawFormProps {
   sessionSigs: SessionSigs;
   agentPKP?: IRelayPKP;
   isSessionValidation?: boolean;
   userPKP?: IRelayPKP;
   shouldRefreshBalances?: boolean;
+}
+
+export interface TokenDetails {
+  address: string;
+  symbol: string;
+  decimals: number;
 }
 
 export default function WithdrawForm({
@@ -34,8 +41,13 @@ export default function WithdrawForm({
   const [statusType, setStatusType] = useState<StatusType>('info');
   const [isCustomToken, setIsCustomToken] = useState<boolean>(false);
   const [customTokenAddress, setCustomTokenAddress] = useState<string>('');
-  const [ethBalance, setEthBalance] = useState<string>('0');
-  
+  const [nativeBalance, setNativeBalance] = useState<string>('0');
+  const [nativeToken, setNativeToken] = useState<TokenDetails>({
+    address: '',
+    symbol: '',
+    decimals: 18,
+  });
+
   const showStatus = (message: string, type: StatusType = 'info') => {
     setStatusMessage(message);
     setStatusType(type);
@@ -49,7 +61,13 @@ export default function WithdrawForm({
 
     try {
       const result = await provider.getBalance(agentPKP!.ethAddress);
-      setEthBalance(ethers.utils.formatEther(result));
+      setNativeBalance(ethers.utils.formatUnits(result, chain.decimals));
+      const token = {
+        address: chain.contractAddress!,
+        symbol: chain.symbol,
+        decimals: chain.decimals,
+      };
+      setNativeToken(token);
       showStatus('Balance successfully fetched', 'success');   
     } catch (error: any) {
       showStatus(`Error: ${error.message || 'Error fetching balance'}`, 'error');
@@ -100,7 +118,8 @@ export default function WithdrawForm({
         />
         
         <BalanceDisplay 
-          ethBalance={ethBalance}
+          balance={nativeBalance}
+          token={nativeToken}
           loading={loading}
           refreshBalance={refreshBalance}
         />
@@ -117,7 +136,7 @@ export default function WithdrawForm({
           setWithdrawAddress={setWithdrawAddress}
           withdrawAmount={withdrawAmount}
           setWithdrawAmount={setWithdrawAmount}
-          tokenSymbol={isCustomToken ? 'TOKEN' : 'ETH'}
+          tokenSymbol={isCustomToken ? 'TOKEN' : nativeToken.symbol}
           loading={loading}
           onSubmit={onSubmit}
         />

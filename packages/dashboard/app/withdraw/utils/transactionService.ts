@@ -20,7 +20,7 @@ interface SendTransactionWithRetryParams {
   provider: ethers.providers.JsonRpcProvider;
 }
 
-interface SendEthTransactionParams {
+interface SendNativeTransactionParams {
   pkpWallet: PKPEthersWallet;
   amount: ethers.BigNumber;
   recipientAddress: string;
@@ -70,17 +70,17 @@ async function sendTransaction({
 }
 
 /**
- * Sends an ETH transfer transaction
+ * Sends a native asset transfer transaction
  */
-export async function sendEthTransaction({
+export async function sendNativeTransaction({
   pkpWallet,
   amount,
   recipientAddress,
   provider
-}: SendEthTransactionParams): Promise<TransactionResult> {
+}: SendNativeTransactionParams): Promise<TransactionResult> {
   try {
-    const ethBalance = await pkpWallet.getBalance();
-    if (amount.gt(ethBalance)) {
+    const nativeBalance = await pkpWallet.getBalance();
+    if (amount.gt(nativeBalance)) {
       return {
         success: false,
         hash: '',
@@ -99,7 +99,6 @@ export async function sendEthTransaction({
       provider,
     });
   } catch (error: any) {
-    console.error('Error sending ETH transaction:', error);
     return {
       success: false,
       hash: '',
@@ -161,14 +160,14 @@ export async function sendTokenTransaction({
       gasPrice: gasPrice
     };
 
-    const ethBalance = await pkpWallet.getBalance();
+    const nativeBalance = await pkpWallet.getBalance();
     const gasCost = gasLimit.mul(gasPrice);
 
-    if (ethBalance.lt(gasCost)) {
+    if (nativeBalance.lt(gasCost)) {
       return {
         success: false,
         hash: '',
-        error: `Insufficient native balance for gas fees. Need ${ethers.utils.formatEther(gasCost)} native coin for gas.`
+        error: `Insufficient native balance for gas fees. Need ${ethers.utils.formatUnits(gasCost, tokenDetails.decimals)} ${tokenDetails.symbol} for gas.`
       };
     }
 

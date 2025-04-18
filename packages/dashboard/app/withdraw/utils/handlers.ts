@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { StatusType } from '../../../components/withdraw/types';
-import { sendTokenTransaction, sendEthTransaction } from './transactionService';
+import { sendTokenTransaction, sendNativeTransaction } from './transactionService';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { SELECTED_LIT_NETWORK } from '@/components/consent/utils/lit';
@@ -77,9 +77,9 @@ export const handleSubmit = async (
     
     // Default token setup
     let token = {
-      address: '',
-      symbol: '',
-      decimals: 18,
+      address: chain.contractAddress!,
+      symbol: chain.symbol,
+      decimals: chain.decimals,
     };
 
     let transactionResult;
@@ -114,9 +114,9 @@ export const handleSubmit = async (
         return { success: false };
       }
     } else {
-       transactionResult = await sendEthTransaction({
+       transactionResult = await sendNativeTransaction({
         pkpWallet,
-        amount: ethers.utils.parseEther(withdrawAmount),
+        amount: ethers.utils.parseUnits(withdrawAmount, token.decimals),
         recipientAddress: withdrawAddress,
         provider
       });

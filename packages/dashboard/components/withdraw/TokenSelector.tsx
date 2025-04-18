@@ -23,7 +23,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
           onChange={() => setIsCustomToken(false)}
           className="mr-2"
         />
-        <label htmlFor="ethToken">Withdraw ETH</label>
+        <label htmlFor="ethToken">Withdraw Native Asset</label>
       </div>
       
       <div className="flex items-center mb-4">
