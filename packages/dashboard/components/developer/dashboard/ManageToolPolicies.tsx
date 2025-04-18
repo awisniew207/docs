@@ -519,7 +519,7 @@ export default function ManageToolPoliciesScreen({
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back
                     </Button>
-                    <h1 className="text-3xl font-bold">Tool Policies</h1>
+                    <h1 className="text-3xl font-bold">Tools and Policies</h1>
                 </div>
             </div>
 
