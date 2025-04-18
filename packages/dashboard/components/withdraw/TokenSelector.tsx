@@ -50,7 +50,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
               className="w-full p-2 border rounded"
             />
             <p className="text-sm text-gray-500 mt-2">
-              Enter the ERC-20 token contract address. We'll automatically fetch the token details.
+              Enter the ERC-20 token contract address. We&apos;ll automatically fetch the token details.
             </p>
           </div>
         </div>
