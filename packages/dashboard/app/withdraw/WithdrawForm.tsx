@@ -41,7 +41,6 @@ export default function WithdrawForm({
     setStatusType(type);
   };
 
-  // Function to fetch ETH balance
   const refreshBalance = async () => {
     setLoading(true);
     const chain = LIT_CHAINS[selectedChain]; // Chains are only from the dropdown  
@@ -59,16 +58,15 @@ export default function WithdrawForm({
     }
   };
 
-  // Fetch ETH balance when chain changes or component mounts
   useEffect(() => {
     refreshBalance();
   }, [selectedChain]);
 
   // Handle submission
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    handleSubmit(
+    const result = await handleSubmit(
       isCustomToken,
       customTokenAddress,
       withdrawAmount,
@@ -77,11 +75,12 @@ export default function WithdrawForm({
       sessionSigs,
       selectedChain,
       setLoading,
-      setWithdrawAmount,
-      setWithdrawAddress,
-      showStatus,
-      refreshBalance,
+      showStatus
     );
+
+    if (result.success) {
+        refreshBalance();
+    }
   };
 
   return (

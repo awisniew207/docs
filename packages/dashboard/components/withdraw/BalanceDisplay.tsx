@@ -21,7 +21,7 @@ export const BalanceDisplay: React.FC<BalanceDisplayProps> = ({
         <button
             onClick={refreshBalance}
             disabled={loading}
-            className="mt-3 px-4 py-2 text-sm font-medium text-blue-700 border border-blue-500 rounded hover:bg-blue-50 transition-colors flex items-center"
+            className="mt-3 px-4 py-2 text-sm font-medium text-black border border-black rounded hover:bg-gray-100 transition-colors flex items-center"
         >
             {loading ? (
                 <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">

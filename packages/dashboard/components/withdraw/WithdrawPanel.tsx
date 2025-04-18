@@ -69,7 +69,7 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
         <button
           type="submit"
           disabled={loading || !withdrawAddress || !withdrawAmount || parseFloat(withdrawAmount) <= 0}
-          className="w-full py-2 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full py-2 bg-black text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {loading ? 'Processing...' : 'Withdraw'}
         </button>

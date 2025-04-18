@@ -24,11 +24,8 @@ type ShowStatusFn = (message: string, type: StatusType) => void;
 
 // Standard ERC20 token ABI - just the functions we need
 const ERC20_ABI = [
-  "function name() view returns (string)",
   "function symbol() view returns (string)",
   "function decimals() view returns (uint8)",
-  "function balanceOf(address owner) view returns (uint256)",
-  "function transfer(address to, uint amount) returns (bool)"
 ];
 
 export const handleSubmit = async (
@@ -40,24 +37,21 @@ export const handleSubmit = async (
   sessionSigs: SessionSigs,
   chainId: string,
   setLoading: (loading: boolean) => void,
-  setWithdrawAmount: (amount: string) => void,
-  setWithdrawAddress: (address: string) => void,
   showStatus: ShowStatusFn,
-  refreshBalance: () => Promise<void>,
 ) => {
   if (!withdrawAmount || !withdrawAddress) {
     showStatus('Please fill all fields', 'warning');
-    return;
+    return { success: false };
   }
 
   if (parseFloat(withdrawAmount) === 0) {
     showStatus('Withdrawal amount cannot be zero', 'warning');
-    return;
+    return { success: false };
   }
 
   if (!ethers.utils.isAddress(withdrawAddress)) {
     showStatus('Invalid withdrawal address', 'error');
-    return;
+    return { success: false };
   }
 
   try {
@@ -115,8 +109,6 @@ export const handleSubmit = async (
           recipientAddress: withdrawAddress,
           provider
         });
-    
-        
         showStatus(`Detected token: ${symbol}`, 'info');
       } catch (error) {
         showStatus('Could not fetch token details.', 'error');
@@ -132,28 +124,27 @@ export const handleSubmit = async (
     }
 
     const explorerUrl = chain.blockExplorerUrls[0];
-    const explorerTxUrl = `${explorerUrl}/tx/${transactionResult.hash}`;
+    const explorerTxUrl = `${explorerUrl}/tx/${transactionResult.hash}`
 
     if (transactionResult.success) {
-      showStatus(`${token.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">View transaction</a>`, 'success');
-      await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds delay
+      showStatus(`${token.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-black underline">View transaction</a>`, 'success');
 
-      // Reset form
-      setWithdrawAmount('');
-      setWithdrawAddress('');
+      
+      return { success: true };
     } else {
       if (transactionResult.hash) {
-        showStatus(`Transaction may have failed.&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">Check on explorer</a>`, 'warning');
+        showStatus(`Transaction may have failed.&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-black underline">Check on explorer</a>`, 'warning');
       } else {
         showStatus(transactionResult.error || 'Transaction failed', 'error');
       }
+      return { success: false };
     }
 
   } catch (err: any) {
     console.error('Error submitting withdrawal:', err);
     showStatus('Failed to submit withdrawal', 'error');
+    return { success: false };
   } finally {
-    await refreshBalance();
     setLoading(false);
   }
 }; 
