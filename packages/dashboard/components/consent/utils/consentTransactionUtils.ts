@@ -3,7 +3,7 @@ import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { SELECTED_LIT_NETWORK } from './lit';
 import { IPFS_POLICIES_THAT_NEED_SIGNING } from '@/app/config/policyConstants';
-import { checkAddPermittedActions, hexToBase58 } from './consentVerificationUtils';
+import { hexToBase58 } from './consentVerificationUtils';
 
 /**
  * Handles sending a transaction with proper error handling
@@ -135,8 +135,7 @@ export const addPermittedActions = async (
   statusCallback?: (message: string, type: 'info' | 'warning' | 'success' | 'error') => void
 ) => {
   if (!wallet || !agentPKPTokenId || !toolIpfsCids.length) {
-    console.error('Missing required data for adding permitted actions');
-    return;
+    return { success: false, error: 'Missing required data for adding permitted actions' };
   }
 
   statusCallback?.(
@@ -144,116 +143,82 @@ export const addPermittedActions = async (
     'info'
   );
 
-  // Initialize Lit Contracts
-  const litContracts = new LitContracts({
-    network: SELECTED_LIT_NETWORK,
-    signer: wallet,
-  });
-  await litContracts.connect();
-
-  const permittedActions = await litContracts.pkpPermissionsContractUtils.read.getPermittedActions(
-    agentPKPTokenId
-  );
-
-  const permittedActionSet = new Set(
-    permittedActions
-      .map((cid: string) => {
-        const base58Cid = cid.startsWith('0x') ? hexToBase58(cid) : cid;
-        return base58Cid;
-      })
-      .filter(Boolean)
-  );
-
-  for (const ipfsCid of policyIpfsCids) {
-    if (IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid]) {
-      try {
-        const isPolicyPermitted = permittedActionSet.has(ipfsCid);
-
-        if (!isPolicyPermitted) {
-          console.log(`Adding sign permission for policy ${ipfsCid}, ${IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid].description}`);
-          const tx = await litContracts.addPermittedAction({
-            ipfsId: ipfsCid,
-            pkpTokenId: agentPKPTokenId,
-            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-          });
-          console.log(`Added sign permission for policy ${ipfsCid} - Transaction hash: ${tx.transactionHash}`);
-        }
-      } catch (error) {
-        console.error(`Error adding DCA policy permission for ${ipfsCid}:`, error);
-        statusCallback?.(`Failed to add permission for an action`, 'error');
-      }
-    }
-  }
-
-  for (const ipfsCid of toolIpfsCids) {
-    try {
-      // Check if this action is already permitted
-      const isAlreadyPermitted = permittedActionSet.has(ipfsCid);
-      if (isAlreadyPermitted) {
-        console.log(`Permission already exists for IPFS CID: ${ipfsCid}`);
-        statusCallback?.(
-          `Permission already exists for ${ipfsCid.substring(0, 8)}...`,
-          'info'
-        );
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        continue;
-      }
-
-      // Permission doesn't exist, add it
-      statusCallback?.(
-        `Adding permission for ${ipfsCid.substring(0, 8)}...`,
-        'info',
-      );
-
-      const tx = await litContracts.addPermittedAction({
-        ipfsId: ipfsCid,
-        pkpTokenId: agentPKPTokenId,
-        authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-      });
-      console.log(`Added permission for ${ipfsCid} - Transaction hash: ${tx.transactionHash}`);
-
-    } catch (error) {
-      console.error(
-        `Error adding permitted action for IPFS CID ${ipfsCid}:`,
-        error
-      );
-      statusCallback?.(`Failed to add permission for an action`, 'warning');
-    }
-  }
-
-  statusCallback?.('Permission grants successful!', 'success');
-}; 
-
-export async function checkAndRepairPermittedActions(
-  tokenId: string,
-  toolIpfsCids: string[],
-  policyIpfsCids: string[],
-  wallet: any,
-  onStatusChange?: (message: string, type: "info" | "warning" | "success" | "error") => void
-) {
   try {
-    const { success, missingTools, missingPolicies } = await checkAddPermittedActions(
-      tokenId, toolIpfsCids, policyIpfsCids, onStatusChange
+    // Initialize Lit Contracts
+    const litContracts = new LitContracts({
+      network: SELECTED_LIT_NETWORK,
+      signer: wallet,
+    });
+    await litContracts.connect();
+
+    const permittedActions = await litContracts.pkpPermissionsContractUtils.read.getPermittedActions(
+      agentPKPTokenId
     );
 
-  if (success && ((missingTools && missingTools.length > 0) || (missingPolicies && missingPolicies.length > 0))) {
-    onStatusChange?.('Repairing permitted actions...', 'info');
-    
-    await addPermittedActions(
-      wallet,
-      tokenId,
-      missingTools || [],
-      missingPolicies || [],
-      onStatusChange
+    const permittedActionSet = new Set(
+      permittedActions
+        .map((cid: string) => {
+          const base58Cid = cid.startsWith('0x') ? hexToBase58(cid) : cid;
+          return base58Cid;
+        })
+        .filter(Boolean)
     );
-    
-    onStatusChange?.('Permitted actions repaired!', 'success');
-  }
-  
-  return { success };
+
+    // Process policy IPFS CIDs
+    for (const ipfsCid of policyIpfsCids) {
+      if (IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid]) {
+        try {
+          const isPermitted = permittedActionSet.has(ipfsCid);
+          
+          if (!isPermitted) {
+            const tx = await litContracts.addPermittedAction({
+              ipfsId: ipfsCid,
+              pkpTokenId: agentPKPTokenId,
+              authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+            });
+          }
+        } catch (error) {
+          statusCallback?.(`Failed to add permission for an action`, 'error');
+          return { success: false, error: error };
+        }
+      }
+    }
+
+    // Process tool IPFS CIDs
+    for (const ipfsCid of toolIpfsCids) {
+      try {
+        const isPermitted = permittedActionSet.has(ipfsCid);
+        
+        if (isPermitted) {
+          statusCallback?.(
+            `Permission already exists for ${ipfsCid.substring(0, 8)}...`,
+            'info'
+          );
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          continue;
+        }
+
+        // Permission doesn't exist, add it
+        statusCallback?.(
+          `Adding permission for ${ipfsCid.substring(0, 8)}...`,
+          'info',
+        );
+
+        const tx = await litContracts.addPermittedAction({
+          ipfsId: ipfsCid,
+          pkpTokenId: agentPKPTokenId,
+          authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+        });
+      } catch (error) {
+        statusCallback?.(`Failed to add permission for an action`, 'warning');
+        return { success: false, error: error };
+      }
+    }
+
+    statusCallback?.('Permission grants successful!', 'success');
+    return { success: true };
   } catch (error) {
-    console.error('Error checking and repairing permitted actions:', error);
-    onStatusChange?.('Error checking and repairing permitted actions', 'error');
-    return { success: false };
+    statusCallback?.(`Failed to add permitted actions`, 'error');
+    return { success: false, error: error };
   }
-}
+}; 

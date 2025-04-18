@@ -18,7 +18,6 @@ import {
 import {
   sendTransaction,
   addPermittedActions,
-  checkAndRepairPermittedActions,
 } from '../utils/consentTransactionUtils';
 import {
   checkAppPermissionStatus,
@@ -216,13 +215,18 @@ export const useConsentApproval = ({
     } = prepareParameterUpdateData(parameters, versionInfo);
 
     const { wallet } = await initializeWallet();
-    await checkAndRepairPermittedActions(
+    const approvalResult = await addPermittedActions(
+      wallet,
       agentPKP.tokenId,
       toolIpfsCids,
       policyIpfsCids.flat(),
-      wallet,
       onStatusChange
     );
+
+    if (!approvalResult.success) {
+      onStatusChange?.('Failed to add permitted actions', 'error');
+      return { success: false, message: 'Failed to add permitted actions. Please try again and contact suppport if the issue persists.', error: approvalResult.error };
+    }
 
     // Skip setToolPolicyParameters if there are no parameters to set
     if (!hasParametersToSet) {
@@ -384,7 +388,7 @@ export const useConsentApproval = ({
         );
 
         // Add permitted actions for the tools
-        await addPermittedActions(
+        const approvalResult = await addPermittedActions(
           wallet,
           agentPKP.tokenId,
           toolIpfsCids,
@@ -392,13 +396,10 @@ export const useConsentApproval = ({
           onStatusChange
         );
 
-        await checkAndRepairPermittedActions(
-          agentPKP.tokenId,
-          toolIpfsCids,
-          policyIpfsCids,
-          wallet,
-          onStatusChange
-        );
+        if (!approvalResult.success) {
+          onStatusChange?.('Failed to add permitted actions', 'error');
+          return { success: false, message: 'Failed to add permitted actions. Please try again and contact suppport if the issue persists.', error: approvalResult.error };
+        }
 
         onStatusChange?.('Permission grant successful!', 'success');
       }
