@@ -282,76 +282,42 @@ export default function AuthenticatedConsentForm({
       const errorMessage = 'Missing version data. Please refresh the page and try again.';
       setError(errorMessage);
       showErrorWithStatus(errorMessage, 'Missing Data');
-      setSubmitting(false);
       return;
     }
 
     setSubmitting(true);
     showStatus('Processing approval...', 'info');
+    
     try {
-      const handleFormSubmission = async (): Promise<{ success: boolean }> => {
-        try {
-          if (!appInfo) {
-            const errorMessage = 'Missing version data. Please try again.';
-            setError(errorMessage);
-            showErrorWithStatus(errorMessage, 'Missing Data');
-            return { success: false };
-          }
+      const appVersion = permittedVersion || Number(appInfo.latestVersion);
+      if (!agentPKP || !appId || !appVersion) {
+        const errorMessage = 'Missing required data. Please try again.';
+        setError(errorMessage);
+        showErrorWithStatus(errorMessage, 'Missing Data');
+        return;
+      }
 
-          const appVersion = permittedVersion || Number(appInfo.latestVersion);
-          if (!agentPKP || !appId || !appVersion) {
-            const errorMessage = 'Missing required data. Please try again.';
-            setError(errorMessage);
-            showErrorWithStatus(errorMessage, 'Missing Data');
-            return { success: false };
-          }
+      let result;
+      if (useCurrentVersionOnly) {
+        result = await updateParameters();
+      } else {
+        result = await approveConsent();
+      }
 
-          let result;
-          // If we're specifically updating parameters for the current version,
-          // use updateParameters instead of full consent approval
-          if (useCurrentVersionOnly) {
-            result = await updateParameters();
-          } else {
-            result = await approveConsent();
-          }
+      if (!result || !result.success) {
+        const errorMessage = result?.message || 'Approval process failed';
+        showErrorWithStatus(errorMessage, 'Approval Failed');
+        return;
+      }
 
-          console.log('result', result);
-          console.log('result.success', result?.success);
-          if (!result || !result.success) {
-            const errorMessage = result?.message || 'Approval process failed';
-            showErrorWithStatus(errorMessage, 'Approval Failed');
-            return { success: false };
-          }
+      showStatus('Generating authentication token...', 'info');
+      const jwt = await generateJWT(appId, appVersion, appInfo);
+      updateState({ showSuccess: true });
 
-          showStatus('Generating authentication token...', 'info');
-          const jwt = await generateJWT(appId, appVersion, appInfo);
-          updateState({ showSuccess: true });
-
-          showStatus('Approval successful! Redirecting...', 'success');
-          setTimeout(() => {
-            redirectWithJWT(jwt);
-          }, 2000);
-
-          return {
-            success: true,
-          };
-        } catch (error) {
-          // Error details are already handled by approveConsent()
-          // Just log the error here for tracing purposes
-          console.error('Error processing transaction:', {
-            error,
-            errorCode: (error as any).code,
-            errorMessage: (error as any).message,
-            errorReason: (error as any).reason,
-            errorData: (error as any).data,
-          });
-          setError('Failed to process approval. Please try again.');
-          showErrorWithStatus('Failed to process approval. Please try again.', 'Approval Failed');
-          return { success: false };
-        }
-      };
-
-      await handleFormSubmission();
+      showStatus('Approval successful! Redirecting...', 'success');
+      setTimeout(() => {
+        redirectWithJWT(jwt);
+      }, 2000);
     } catch (err) {
       console.error('Error submitting form:', err);
       // Show a user-friendly error message

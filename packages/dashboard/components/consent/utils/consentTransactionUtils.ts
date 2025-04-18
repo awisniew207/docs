@@ -43,7 +43,7 @@ export const sendTransaction = async (
       `Transaction submitted! Hash: ${txResponse.hash.substring(0, 10)}...`,
       'info'
     );
-    
+
     return txResponse;
   } catch (error) {
     console.error(`TRANSACTION FAILED (${methodName}):`, error);
@@ -167,51 +167,25 @@ export const addPermittedActions = async (
     // Process policy IPFS CIDs
     for (const ipfsCid of policyIpfsCids) {
       if (IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid]) {
-        try {
-          const isPermitted = permittedActionSet.has(ipfsCid);
-          
-          if (!isPermitted) {
-            const tx = await litContracts.addPermittedAction({
-              ipfsId: ipfsCid,
-              pkpTokenId: agentPKPTokenId,
-              authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-            });
-          }
-        } catch (error) {
-          statusCallback?.(`Failed to add permission for an action`, 'error');
-          return { success: false, error: error };
+
+        if (!permittedActionSet.has(ipfsCid)) {
+          await litContracts.addPermittedAction({
+            ipfsId: ipfsCid,
+            pkpTokenId: agentPKPTokenId,
+            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+          });
         }
       }
     }
 
     // Process tool IPFS CIDs
     for (const ipfsCid of toolIpfsCids) {
-      try {
-        const isPermitted = permittedActionSet.has(ipfsCid);
-        
-        if (isPermitted) {
-          statusCallback?.(
-            `Permission already exists for ${ipfsCid.substring(0, 8)}...`,
-            'info'
-          );
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          continue;
-        }
-
-        // Permission doesn't exist, add it
-        statusCallback?.(
-          `Adding permission for ${ipfsCid.substring(0, 8)}...`,
-          'info',
-        );
-
-        const tx = await litContracts.addPermittedAction({
+      if (!permittedActionSet.has(ipfsCid)) {
+        await litContracts.addPermittedAction({
           ipfsId: ipfsCid,
           pkpTokenId: agentPKPTokenId,
           authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
         });
-      } catch (error) {
-        statusCallback?.(`Failed to add permission for an action`, 'warning');
-        return { success: false, error: error };
       }
     }
 

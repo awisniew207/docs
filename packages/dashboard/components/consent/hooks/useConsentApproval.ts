@@ -231,7 +231,7 @@ export const useConsentApproval = ({
     // Skip setToolPolicyParameters if there are no parameters to set
     if (!hasParametersToSet) {
       onStatusChange?.('Parameter updates complete', 'success');
-      return { success: true, message: 'Parameter updates complete' };
+      return { success: true };
     }
 
     try {
@@ -261,7 +261,7 @@ export const useConsentApproval = ({
 
       onStatusChange?.('Parameter update transaction confirmed!', 'success');
 
-      return { success: true, txResponse };
+      return { success: true };
     } catch (error) {
       console.error('PARAMETER UPDATE PROCESS FAILED:', error);
       onStatusChange?.('Parameter update process failed', 'error');
