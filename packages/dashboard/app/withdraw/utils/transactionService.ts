@@ -103,7 +103,7 @@ export async function sendEthTransaction({
     return {
       success: false,
       hash: '',
-      error: error.message || 'Failed to send ETH'
+      error: error.message || 'Failed to send native asset'
     };
   }
 }
