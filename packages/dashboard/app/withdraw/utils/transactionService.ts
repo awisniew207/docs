@@ -168,7 +168,7 @@ export async function sendTokenTransaction({
       return {
         success: false,
         hash: '',
-        error: `Insufficient ETH for gas fees. Need ${ethers.utils.formatEther(gasCost)} ETH for gas.`
+        error: `Insufficient native balance for gas fees. Need ${ethers.utils.formatEther(gasCost)} native coin for gas.`
       };
     }
 
