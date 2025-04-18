@@ -40,9 +40,11 @@ export const ChainSelector: React.FC<ChainSelectorProps> = ({
         value={selectedChain}
         onChange={(e) => onChange(e.target.value)}
       >
-        {Object.values(chainOptionsDict).map((chain) => (
-          <option key={chain.value} value={chain.value}>{chain.label}</option>
-        ))}
+        {Object.values(chainOptionsDict)
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .map((chain) => (
+            <option key={chain.value} value={chain.value}>{chain.label}</option>
+          ))}
       </select>
       
       {explorerUrl && ethAddress && (

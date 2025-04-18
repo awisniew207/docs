@@ -5,7 +5,6 @@ interface TokenDetails {
   address: string;
   symbol: string;
   decimals: number;
-  isNative: boolean;
 }
 
 interface TransactionResult {
@@ -89,7 +88,6 @@ export async function sendEthTransaction({
       };
     }
 
-    // Configure ETH transaction options
     const txOptions = {
       to: recipientAddress,
       value: amount
@@ -134,7 +132,6 @@ export async function sendTokenTransaction({
     try {
       const tokenWithSigner = tokenContract.connect(pkpWallet as unknown as ethers.Signer);
 
-      // Estimate gas for the transfe
       const estimatedGas = await tokenWithSigner.estimateGas.transfer(
         recipientAddress,
         amount
@@ -156,11 +153,10 @@ export async function sendTokenTransaction({
       [recipientAddress, amount]
     );
 
-    // Configure token transaction
     const txOptions = {
-      to: tokenDetails.address, // Token contract address
-      value: 0,  // No ETH is being sent
-      data: data, // ERC-20 transfer function call
+      to: tokenDetails.address,
+      value: 0,
+      data: data,
       gasLimit: gasLimit,
       gasPrice: gasPrice
     };

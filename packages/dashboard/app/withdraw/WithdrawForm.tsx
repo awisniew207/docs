@@ -90,6 +90,8 @@ export default function WithdrawForm({
       
       <StatusMessage message={statusMessage} type={statusType} />
 
+      <WalletInfo ethAddress={agentPKP?.ethAddress} />
+
       <div className="p-6">
         <ChainSelector 
           selectedChain={selectedChain}
@@ -121,7 +123,6 @@ export default function WithdrawForm({
         />
       </div>
       
-      <WalletInfo ethAddress={agentPKP?.ethAddress} />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { LIT_CHAINS } from '@lit-protocol/constants';
 
 let isLitNodeClientInitialized = false;
 let litNodeClient: LitNodeClient;
+
 async function initLitNodeClient() {
   if (!isLitNodeClientInitialized) {
     litNodeClient = new LitNodeClient({
@@ -74,12 +75,11 @@ export const handleSubmit = async (
     
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     
-    // Unified token setup
+    // Default token setup
     let token = {
-      address: isCustomToken ? tokenAddress : ethers.constants.AddressZero,
-      symbol: 'ETH',
+      address: '',
+      symbol: '',
       decimals: 18,
-      isNative: true
     };
 
     let transactionResult;
@@ -96,8 +96,7 @@ export const handleSubmit = async (
         token = {
           address: tokenAddress,
           symbol,
-          decimals,
-          isNative: false
+          decimals
         };
 
         const amount = ethers.utils.parseUnits(withdrawAmount, token.decimals);
@@ -112,7 +111,7 @@ export const handleSubmit = async (
         showStatus(`Detected token: ${symbol}`, 'info');
       } catch (error) {
         showStatus('Could not fetch token details.', 'error');
-        throw error;
+        return { success: false };
       }
     } else {
        transactionResult = await sendEthTransaction({
@@ -128,8 +127,6 @@ export const handleSubmit = async (
 
     if (transactionResult.success) {
       showStatus(`${token.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-black underline">View transaction</a>`, 'success');
-
-      
       return { success: true };
     } else {
       if (transactionResult.hash) {

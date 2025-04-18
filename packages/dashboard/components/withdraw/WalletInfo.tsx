@@ -11,9 +11,6 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ ethAddress }) => {
       <div className="wallet-address">
         <strong>EVM Address:</strong> {ethAddress || 'Not available'}
       </div>
-      <div className="wallet-network">
-        <strong>Network:</strong> Base Mainnet
-      </div>
     </div>
   );
 };
