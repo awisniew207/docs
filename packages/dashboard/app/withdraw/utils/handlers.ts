@@ -110,7 +110,7 @@ export const handleSubmit = async (
         });
         showStatus(`Detected token: ${symbol}`, 'info');
       } catch (error) {
-        showStatus('Could not fetch token details.', 'error');
+        showStatus('Could not fetch token details. Check token address and try again.', 'error');
         return { success: false };
       }
     } else {
