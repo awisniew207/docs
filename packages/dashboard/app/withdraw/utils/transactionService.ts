@@ -57,7 +57,7 @@ async function sendTransaction({
       return {
         success: false,
         hash: '',
-        error: 'Insufficient funds for transaction. Please add more ETH to your wallet.'
+        error: 'Insufficient funds to pay for transaction. Please add more funds to your wallet.'
       };
     } else {
       return {
