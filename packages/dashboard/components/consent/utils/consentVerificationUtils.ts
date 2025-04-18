@@ -1,10 +1,5 @@
 import { getUserViewRegistryContract } from './contracts';
-import { IPFS_POLICIES_THAT_NEED_SIGNING } from '@/app/config/policyConstants';
-import { LitContracts } from '@lit-protocol/contracts-sdk';
-import { SELECTED_LIT_NETWORK } from './lit';
 import bs58 from 'bs58';
-import { LIT_RPC } from '@lit-protocol/constants';
-import { ethers } from 'ethers';
 
 /**
  * Converts a hex-encoded IPFS CID to base58 format
