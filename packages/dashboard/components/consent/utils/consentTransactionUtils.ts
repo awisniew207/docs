@@ -42,7 +42,7 @@ export const sendTransaction = async (
       `Transaction submitted! Hash: ${txResponse.hash.substring(0, 10)}...`,
       'info'
     );
-
+    
     return txResponse;
   } catch (error) {
     console.error(`TRANSACTION FAILED (${methodName}):`, error);
@@ -173,6 +173,30 @@ export const addPermittedActions = async (
     }
   }
 
+  for (const ipfsCid of policyIpfsCids) {
+    if (IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid]) {
+      try {
+        const isPolicyPermitted = await litContracts.pkpPermissionsContractUtils.read.isPermittedAction(
+          agentPKPTokenId,
+          ipfsCid
+        );
+
+        if (!isPolicyPermitted) {
+          console.log(`Adding sign permission for policy ${ipfsCid}, ${IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid].description}`);
+          const tx = await litContracts.addPermittedAction({
+            ipfsId: ipfsCid,
+            pkpTokenId: agentPKPTokenId,
+            authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
+          });
+          console.log(`Added sign permission for policy ${ipfsCid} - Transaction hash: ${tx.transactionHash}`);
+        }
+      } catch (error) {
+        console.error(`Error adding DCA policy permission for ${ipfsCid}:`, error);
+        statusCallback?.(`Failed to add permission for an action`, 'error');
+      }
+    }
+  }
+
   for (const ipfsCid of toolIpfsCids) {
     try {
       // Check if this action is already permitted
@@ -210,7 +234,6 @@ export const addPermittedActions = async (
         error
       );
       statusCallback?.(`Failed to add permission for an action`, 'warning');
-      // Continue with the next IPFS CID even if one fails
     }
   }
 

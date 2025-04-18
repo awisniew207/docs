@@ -301,9 +301,6 @@ export default function AuthenticatedConsentForm({
       const handleFormSubmission = async (): Promise<{ success: boolean }> => {
         try {
           if (!appInfo) {
-            console.error(
-              'Missing version data in handleFormSubmission'
-            );
             const errorMessage = 'Missing version data. Please try again.';
             setError(errorMessage);
             showErrorWithStatus(errorMessage, 'Missing Data');
@@ -312,21 +309,26 @@ export default function AuthenticatedConsentForm({
 
           const appVersion = permittedVersion || Number(appInfo.latestVersion);
           if (!agentPKP || !appId || !appVersion) {
-            console.error(
-              'Missing required data for consent approval in handleFormSubmission'
-            );
             const errorMessage = 'Missing required data. Please try again.';
             setError(errorMessage);
             showErrorWithStatus(errorMessage, 'Missing Data');
             return { success: false };
           }
 
+          let result;
           // If we're specifically updating parameters for the current version,
           // use updateParameters instead of full consent approval
           if (useCurrentVersionOnly) {
-            await updateParameters();
+            result = await updateParameters();
           } else {
-            await approveConsent();
+            result = await approveConsent();
+          }
+
+          if (!result || !result.success) {
+            const errorMessage = result?.message || 'Approval process failed';
+            setError(errorMessage);
+            showErrorWithStatus(errorMessage, 'Approval Failed');
+            return { success: false };
           }
 
           showStatus('Generating authentication token...', 'info');
@@ -351,13 +353,19 @@ export default function AuthenticatedConsentForm({
             errorReason: (error as any).reason,
             errorData: (error as any).data,
           });
-          throw error;
+          setError('Failed to process approval. Please try again.');
+          showErrorWithStatus('Failed to process approval. Please try again.', 'Approval Failed');
+          return { success: false };
         }
       };
 
       await handleFormSubmission();
     } catch (err) {
       console.error('Error submitting form:', err);
+      // Show a user-friendly error message
+      const errorMessage = 'Something went wrong. Please try again.';
+      setError(errorMessage);
+      showErrorWithStatus(errorMessage, 'Error');
     } finally {
       setSubmitting(false);
     }

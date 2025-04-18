@@ -111,7 +111,7 @@ export const useConsentApproval = ({
   const updateParameters = useCallback(async () => {
     if (!agentPKP || !appId || !appInfo || !versionInfo) {
       console.error('Missing required data for parameter update');
-      throw new Error('Missing required data for parameter update');
+      return { success: false, message: 'Missing required data for parameter update' };
     }
 
     onStatusChange?.('Preparing to update parameters...', 'info');
@@ -136,7 +136,7 @@ export const useConsentApproval = ({
 
       const toolsAndPolicies = await userViewContract.getAllToolsAndPoliciesForApp(
         agentPKP.tokenId,
-        appIdNum,
+        appIdNum
       );
 
       // Transform the contract data into the VersionParameter format
@@ -247,11 +247,11 @@ export const useConsentApproval = ({
 
       onStatusChange?.('Parameter update transaction confirmed!', 'success');
 
-      return txResponse;
+      return { success: true, txResponse };
     } catch (error) {
-      console.error('PARAMETER UPDATE FAILED:', error);
-      onStatusChange?.('Parameter update failed', 'error');
-      throw error;
+      console.error('PARAMETER UPDATE PROCESS FAILED:', error);
+      onStatusChange?.('Parameter update process failed', 'error');
+      return { success: false, message: 'Parameter update process failed', error };
     }
   }, [
     agentPKP,
@@ -270,7 +270,7 @@ export const useConsentApproval = ({
   const approveConsent = useCallback(async () => {
     if (!agentPKP || !appId || !appInfo || !versionInfo) {
       console.error('Missing required data for consent approval');
-      throw new Error('Missing required data for consent approval');
+      return { success: false, message: 'Missing required data for consent approval' };
     }
 
     // Check if app version is already permitted
@@ -348,30 +348,45 @@ export const useConsentApproval = ({
         onStatusChange,
         onError
       );
+      
+      if (isPermitted) {
+        const userViewContract = getUserViewRegistryContract();
+        const appIdNum = Number(appId);
+        const toolsAndPolicies = await userViewContract.getAllToolsAndPoliciesForApp(
+          agentPKP.tokenId,
+          appIdNum
+        );
+        
+        // Extract tool and policy IPFS CIDs from the toolsAndPolicies array
+        const toolIpfsCids = toolsAndPolicies.map((tool: any) => tool.ipfsCid || tool.toolIpfsCid).filter(Boolean);
+        const policyIpfsCids = toolsAndPolicies.flatMap((tool: any) => 
+          tool.policies.map((policy: any) => policy.ipfsCid || policy.policyIpfsCid)
+        ).filter(Boolean);
 
-      await txResponse.wait(1);
+        await txResponse.wait(1);
 
-      // Verify the permitted version after the transaction
-      await verifyPermissionGrant(
-        agentPKP.tokenId,
-        appId,
-        Number(appInfo.latestVersion),
-        onStatusChange
-      );
+        // Verify the permitted version after the transaction
+        await verifyPermissionGrant(
+          agentPKP.tokenId,
+          appId,
+          Number(appInfo.latestVersion),
+          onStatusChange
+        );
 
-      // Add permitted actions for the tools
-      await addPermittedActions(
-        wallet,
-        agentPKP.tokenId,
-        toolIpfsCids,
-        toolPolicies.flat(),
-        onStatusChange
-      );
+        // Add permitted actions for the tools
+        await addPermittedActions(
+          wallet,
+          agentPKP.tokenId,
+          toolIpfsCids,
+          policyIpfsCids,
+          onStatusChange
+        );
 
-      onStatusChange?.('Permission grant successful!', 'success');
+        onStatusChange?.('Permission grant successful!', 'success');
+      }
     } catch (error) {
-      onStatusChange?.('Permission grant failed!', 'error');
-      throw error;
+      onStatusChange?.('Consent approval process failed!', 'error');
+      return { success: false, message: 'Consent approval process failed', error };
     }
   }, [
     agentPKP,
