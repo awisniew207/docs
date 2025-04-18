@@ -344,10 +344,17 @@ export default function AuthenticatedConsentForm({
 
       const result = await disapproveConsent();
 
+      if (!result || !result.success) {
+        const errorMessage = result?.message || 'Disapproval process failed';
+        setError(errorMessage);
+        showErrorWithStatus(errorMessage, 'Disapproval Failed');
+        updateState({ showDisapproval: false });
+        return;
+      }
+
       if (result.redirectUri) {
         executeRedirect(result.redirectUri);
       }
-
     } catch (err) {
       console.error('Error in handleDisapprove:', err);
       const errorMessage = 'Failed to disapprove. Please try again.';
