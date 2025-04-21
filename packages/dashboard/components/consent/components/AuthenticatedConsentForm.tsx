@@ -297,12 +297,7 @@ export default function AuthenticatedConsentForm({
         return;
       }
 
-      let result;
-      if (useCurrentVersionOnly) {
-        result = await updateParameters();
-      } else {
-        result = await approveConsent();
-      }
+      const result = await (useCurrentVersionOnly ? updateParameters() : approveConsent());
 
       if (!result || !result.success) {
         const errorMessage = result?.message || 'Approval process failed';
