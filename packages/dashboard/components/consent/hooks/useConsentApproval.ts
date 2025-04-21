@@ -210,7 +210,7 @@ export const useConsentApproval = ({
 
       if (!approvalResult.success) {
         onStatusChange?.('Failed to add permitted actions', 'error');
-        return { success: false, message: 'Failed to add permitted actions. Please try again and contact suppport if the issue persists.' };
+        return { success: false, message: 'Failed to add permitted actions. Please try again and contact support if the issue persists.' };
       }
 
       if (!hasParametersToSet) {
