@@ -6,7 +6,7 @@ import bs58 from 'bs58';
  * @param hexCid Hex-encoded IPFS CID
  * @returns Base58-encoded IPFS CID or the original string if conversion fails
  */
-export const hexToBase58 = (hexCid: string): string => {
+export const hexToBase58 = (hexCid: `0x${string}`): string => {
   try {
     const bytes = Buffer.from(hexCid.substring(2), 'hex');
     return bs58.encode(bytes);
