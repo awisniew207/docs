@@ -158,7 +158,7 @@ export const addPermittedActions = async (
     const permittedActionSet = new Set(
       permittedActions
         .map((cid: string) => {
-          const base58Cid = cid.startsWith('0x') ? hexToBase58(cid) : cid;
+          const base58Cid = hexToBase58(cid);
           return base58Cid;
         })
         .filter(Boolean)
