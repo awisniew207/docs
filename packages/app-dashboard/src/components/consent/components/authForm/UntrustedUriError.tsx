@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { AppView } from '../../types';
 import StatusMessage from './StatusMessage';
 
@@ -45,12 +46,12 @@ const UntrustedUriError = ({
         </div>
       )}
 
-      <button
+      <Button
         className="w-full bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => window.history.back()}
       >
         Go Back
-      </button>
+      </Button>
     </div>
   );
 };

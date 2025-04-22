@@ -16,6 +16,7 @@ interface StatusFilterDropdownProps {
   dropdownWidth?: string;
 }
 
+// TODO use select component
 export function StatusFilterDropdown({
   options,
   selectedOptionId,
@@ -25,10 +26,10 @@ export function StatusFilterDropdown({
   dropdownWidth = 'w-48'
 }: StatusFilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // Find the currently selected option
   const selectedOption = options.find(option => option.id === selectedOptionId) || options[0];
-  
+
   return (
     <div className="relative">
       <Button
@@ -39,7 +40,7 @@ export function StatusFilterDropdown({
         {selectedOption.label}
         <ChevronDown className="h-4 w-4" />
       </Button>
-      
+
       {isOpen && (
         <div className={`absolute right-0 mt-2 ${dropdownWidth} bg-white rounded-md shadow-lg z-10 border`}>
           <div className="py-1">
@@ -62,4 +63,4 @@ export function StatusFilterDropdown({
       )}
     </div>
   );
-} 
+}

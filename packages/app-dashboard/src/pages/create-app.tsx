@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { useAccount } from 'wagmi';
 
 import CreateAppScreen from '@/components/developer/CreateApp';
-import { WithHeader } from '@/components/layout/Header';
+import AppLayout from '@/components/layout/AppLayout';
 import { wrap } from '@/utils/components';
 import { AppProviders } from '@/providers';
 
@@ -32,5 +32,5 @@ export function CreateApp() {
   );
 }
 
-const CreateAppPage = wrap(WithHeader(CreateApp), AppProviders);
+const CreateAppPage = wrap(CreateApp, [...AppProviders, AppLayout]);
 export default CreateAppPage;

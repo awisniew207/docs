@@ -102,9 +102,9 @@ export default function WithdrawForm({
   };
 
   return (
-    <div className="withdraw-form-container">
+    <div className="max-w-[550px] w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
       <FormHeader />
-      <h3 className="mt-8 px-6">Account Fund Manager</h3>
+      <h3 className="text-lg font-medium text-black mb-4 mt-8 px-6">Account Fund Manager</h3>
 
       <StatusMessage message={statusMessage} type={statusType} />
 

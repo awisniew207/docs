@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { WithHeader } from '@/components/layout/Header';
+import AppLayout from '@/components/layout/AppLayout';
 import { mapEnumToTypeName } from '@/services/types';
 import { useErrorPopup } from '@/providers/ErrorPopup';
 import { StatusMessage } from '@/utils/statusMessage';
@@ -27,24 +27,35 @@ export function AppDetail() {
   const [app, setApp] = useState<AppView | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState<string>('');
-  const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+  const [statusType, setStatusType] = useState<
+    'info' | 'warning' | 'success' | 'error'
+  >('info');
 
   // Add the error popup hook
   const { showError } = useErrorPopup();
 
   // Helper function to set status messages
-  const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
-    setStatusMessage(message);
-    setStatusType(type);
-  }, []);
+  const showStatus = useCallback(
+    (
+      message: string,
+      type: 'info' | 'warning' | 'success' | 'error' = 'info',
+    ) => {
+      setStatusMessage(message);
+      setStatusType(type);
+    },
+    [],
+  );
 
   // Create enhanced error function that shows both popup and status error
-  const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
-    // Show error in popup
-    showError(errorMessage, title || 'Error', details);
-    // Also show in status message
-    showStatus(errorMessage, 'error');
-  }, [showError, showStatus]);
+  const showErrorWithStatus = useCallback(
+    (errorMessage: string, title?: string, details?: string) => {
+      // Show error in popup
+      showError(errorMessage, title || 'Error', details);
+      // Also show in status message
+      showStatus(errorMessage, 'error');
+    },
+    [showError, showStatus],
+  );
 
   const loadAppData = useCallback(async () => {
     if (!address || !appIdParam) return;
@@ -55,7 +66,9 @@ export function AppDetail() {
 
       if (appData && appData.length > 0) {
         // Find the specific app by appId
-        const foundApp = appData.find(app => app.appId && app.appId.toString() === appIdParam);
+        const foundApp = appData.find(
+          (app) => app.appId && app.appId.toString() === appIdParam,
+        );
         if (foundApp) {
           setApp(foundApp);
         } else {
@@ -67,8 +80,8 @@ export function AppDetail() {
         navigate('/');
       }
     } catch (error) {
-      console.error("Error loading app data:", error);
-      showErrorWithStatus("Failed to load app data", "Error");
+      console.error('Error loading app data:', error);
+      showErrorWithStatus('Failed to load app data', 'Error');
       navigate('/');
     } finally {
       setIsLoading(false);
@@ -99,219 +112,277 @@ export function AppDetail() {
   }
 
   return (
-    <div className="min-h-screen">
-      <main className="max-w-screen-xl min-h-screen mx-auto p-6">
-        <div className="space-y-8">
-          {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
+    <div className="space-y-8">
+      {statusMessage && (
+        <StatusMessage message={statusMessage} type={statusType} />
+      )}
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/')}
-                className="p-0 text-black"
-              >
-                <ArrowRight className="h-4 w-4 rotate-180" />
-              </Button>
-              <h1 className="text-3xl font-bold text-black">{app.appName}</h1>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => navigate('/')}>
+            <ArrowRight className="h-4 w-4 rotate-180" />
+          </Button>
+          <h1 className="text-3xl font-bold text-black">{app.appName}</h1>
+        </div>
+        <div className="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/appId/${app.appId}/delegatee`)}
+          >
+            <Plus className="h-4 w-4 mr-2 font-bold text-black" />
+            Manage Delegatees
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/appId/${app.appId}/tool-policies`)}
+          >
+            <Plus className="h-4 w-4 mr-2 font-bold text-black" />
+            Manage Tool Policies
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/appId/${app.appId}/advanced-functions`)}
+          >
+            <Settings className="h-4 w-4 mr-2 font-bold text-black" />
+            Advanced Functions
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-black">App Details</CardTitle>
+            <CardDescription className="text-black">
+              {app.description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="text-sm text-black">
+                <span className="font-medium">App ID:</span> {app.appId}
+              </div>
+              <div className="text-sm text-black">
+                <span className="font-medium">Management Wallet:</span>{' '}
+                {app.managementWallet}
+              </div>
             </div>
-            <div className="flex gap-2 items-center">
-              <Button
-                variant="default"
-                onClick={() => navigate(`/appId/${app.appId}/delegatee`)}
-                className="text-black"
-              >
-                <Plus className="h-4 w-4 mr-2 font-bold text-black" />
-                Manage Delegatees
-              </Button>
-              <Button
-                variant="default"
-                onClick={() => navigate(`/appId/${app.appId}/tool-policies`)}
-                className="text-black"
-              >
-                <Plus className="h-4 w-4 mr-2 font-bold text-black" />
-                Manage Tool Policies
-              </Button>
-              <Button
-                variant="default"
-                onClick={() => navigate(`/appId/${app.appId}/advanced-functions`)}
-                className="text-black"
-              >
-                <Settings className="h-4 w-4 mr-2 font-bold text-black" />
-                Advanced Functions
-              </Button>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="grid grid-cols-1 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-black">App Details</CardTitle>
-                <CardDescription className="text-black">{app.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-sm text-black">
-                    <span className="font-medium">App ID:</span> {app.appId}
-                  </div>
-                  <div className="text-sm text-black">
-                    <span className="font-medium">Management Wallet:</span>{' '}
-                    {app.managementWallet}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-black">Tool Policies</CardTitle>
+            <CardDescription className="text-black">
+              {app.toolPolicies.length === 0
+                ? 'No tool policies configured yet.'
+                : `${app.toolPolicies.length} app versions with tool policies`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {app.toolPolicies.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-black">No Tool Policies Yet</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {(() => {
+                  return [...app.toolPolicies]
+                    .sort((a, b) => {
+                      // Handle the array-object hybrid format
+                      const versionA = a.version || (a[0] ? a[0] : 0);
+                      const versionB = b.version || (b[0] ? b[0] : 0);
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-black">Tool Policies</CardTitle>
-                <CardDescription className="text-black">
-                  {app.toolPolicies.length === 0
-                    ? 'No tool policies configured yet.'
-                    : `${app.toolPolicies.length} app versions with tool policies`}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {app.toolPolicies.length === 0 ? (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-black">
-                      No Tool Policies Yet
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {(() => {
-                      return [...app.toolPolicies]
-                        .sort((a, b) => {
-                          // Handle the array-object hybrid format
-                          const versionA = a.version || (a[0] ? a[0] : 0);
-                          const versionB = b.version || (b[0] ? b[0] : 0);
+                      return Number(versionB) - Number(versionA);
+                    })
+                    .map((versionData, i) => {
+                      try {
+                        const version = versionData.version;
+                        const enabled = versionData.enabled;
+                        const tools = versionData.tools;
 
-                          return Number(versionB) - Number(versionA);
-                        })
-                        .map((versionData, i) => {
-                          try {
-                            const version = versionData.version;
-                            const enabled = versionData.enabled;
-                            const tools = versionData.tools;
+                        if (!tools || tools.length === 0) {
+                          return (
+                            <div
+                              key={i}
+                              className={`mb-4 ${i === 0 ? 'bg-green-50 p-4 rounded-lg' : ''}`}
+                            >
+                              <div className="font-medium mb-2 text-black">
+                                Version: {version.toString()}{' '}
+                                {enabled ? '(Enabled)' : '(Disabled)'}
+                                {i === 0 && (
+                                  <span className="ml-2 text-xs text-green-600">
+                                    (Latest)
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm italic text-gray-500">
+                                No tools configured
+                              </p>
+                            </div>
+                          );
+                        }
 
-                            if (!tools || tools.length === 0) {
+                        return (
+                          <div
+                            key={i}
+                            className={`mb-4 ${i === 0 ? 'bg-green-50 p-4 rounded-lg' : ''}`}
+                          >
+                            <div className="font-medium mb-2 text-black">
+                              Version: {version.toString()}{' '}
+                              {enabled ? '(Enabled)' : '(Disabled)'}
+                              {i === 0 && (
+                                <span className="ml-2 text-xs text-green-600">
+                                  (Latest)
+                                </span>
+                              )}
+                            </div>
+
+                            {tools.map((tool: any, j: number) => {
                               return (
-                                <div key={i} className={`mb-4 ${i === 0 ? 'bg-green-50 p-4 rounded-lg' : ''}`}>
-                                  <div className="font-medium mb-2 text-black">
-                                    Version: {version.toString()} {enabled ? "(Enabled)" : "(Disabled)"}
-                                    {i === 0 && <span className="ml-2 text-xs text-green-600">(Latest)</span>}
+                                <div
+                                  key={j}
+                                  className="border-b border-gray-100 pb-2 mb-2 ml-4 text-black"
+                                >
+                                  <div className="font-medium mb-1">
+                                    Tool CID:
                                   </div>
-                                  <p className="text-sm italic text-gray-500">No tools configured</p>
+                                  <div className="text-sm truncate">
+                                    {tool.toolIpfsCid}
+                                  </div>
+
+                                  {tool.policies && tool.policies.length > 0 ? (
+                                    <div className="mt-2">
+                                      <div className="font-medium mb-1">
+                                        Policies:
+                                      </div>
+                                      <div className="pl-2 text-sm">
+                                        {tool.policies.map(
+                                          (policy: any, k: number) => {
+                                            return (
+                                              <div key={k} className="mb-1">
+                                                <div className="text-xs">
+                                                  <span className="font-medium">
+                                                    Policy CID:
+                                                  </span>{' '}
+                                                  {policy.policyIpfsCid}
+                                                  <br />
+                                                  {policy.parameterTypes &&
+                                                  policy.parameterNames &&
+                                                  policy.parameterTypes.length >
+                                                    0 &&
+                                                  policy.parameterNames.length >
+                                                    0 ? (
+                                                    <div>
+                                                      <span className="font-medium">
+                                                        Parameters:
+                                                      </span>
+                                                      <ul className="ml-2 mt-1">
+                                                        {policy.parameterNames.map(
+                                                          (
+                                                            name: string,
+                                                            paramIndex: number,
+                                                          ) => (
+                                                            <li
+                                                              key={paramIndex}
+                                                            >
+                                                              {name}:{' '}
+                                                              {mapEnumToTypeName(
+                                                                Number(
+                                                                  policy
+                                                                    .parameterTypes[
+                                                                    paramIndex
+                                                                  ],
+                                                                ),
+                                                              )}
+                                                            </li>
+                                                          ),
+                                                        )}
+                                                      </ul>
+                                                    </div>
+                                                  ) : (
+                                                    <span className="text-xs italic">
+                                                      (No parameters)
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            );
+                                          },
+                                        )}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="mt-2">
+                                      <div className="text-xs italic">
+                                        No policies defined for this tool
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               );
-                            }
+                            })}
+                          </div>
+                        );
+                      } catch (error) {
+                        console.error(`Error rendering item ${i}:`, error);
+                        return (
+                          <div
+                            key={i}
+                            className="mb-4 p-4 bg-red-50 rounded-lg"
+                          >
+                            <div className="text-red-800">
+                              Error rendering version:{' '}
+                              {(error as Error).message}
+                            </div>
+                            <pre className="text-xs overflow-auto mt-2">
+                              {JSON.stringify(versionData, null, 2)}
+                            </pre>
+                          </div>
+                        );
+                      }
+                    });
+                })()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                            return (
-                              <div key={i} className={`mb-4 ${i === 0 ? 'bg-green-50 p-4 rounded-lg' : ''}`}>
-                                <div className="font-medium mb-2 text-black">
-                                  Version: {version.toString()} {enabled ? "(Enabled)" : "(Disabled)"}
-                                  {i === 0 && <span className="ml-2 text-xs text-green-600">(Latest)</span>}
-                                </div>
-
-                                {tools.map((tool: any, j: number) => {
-                                  return (
-                                    <div key={j} className="border-b border-gray-100 pb-2 mb-2 ml-4 text-black">
-                                      <div className="font-medium mb-1">Tool CID:</div>
-                                      <div className="text-sm truncate">
-                                        {tool.toolIpfsCid}
-                                      </div>
-
-                                      {tool.policies && tool.policies.length > 0 ? (
-                                        <div className="mt-2">
-                                          <div className="font-medium mb-1">Policies:</div>
-                                          <div className="pl-2 text-sm">
-                                            {tool.policies.map((policy: any, k: number) => {
-                                              return (
-                                                <div key={k} className="mb-1">
-                                                  <div className="text-xs">
-                                                    <span className="font-medium">Policy CID:</span> {policy.policyIpfsCid}<br/>
-
-                                                    {policy.parameterTypes && policy.parameterNames &&
-                                                    policy.parameterTypes.length > 0 && policy.parameterNames.length > 0 ? (
-                                                      <div>
-                                                        <span className="font-medium">Parameters:</span>
-                                                        <ul className="ml-2 mt-1">
-                                                          {policy.parameterNames.map((name: string, paramIndex: number) => (
-                                                            <li key={paramIndex}>
-                                                              {name}: {mapEnumToTypeName(Number(policy.parameterTypes[paramIndex]))}
-                                                            </li>
-                                                          ))}
-                                                        </ul>
-                                                      </div>
-                                                    ) : (
-                                                      <span className="text-xs italic">(No parameters)</span>
-                                                    )}
-                                                  </div>
-                                                </div>
-                                              );
-                                            })}
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className="mt-2">
-                                          <div className="text-xs italic">No policies defined for this tool</div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            );
-                          } catch (error) {
-                            console.error(`Error rendering item ${i}:`, error);
-                            return (
-                              <div key={i} className="mb-4 p-4 bg-red-50 rounded-lg">
-                                <div className="text-red-800">Error rendering version: {(error as Error).message}</div>
-                                <pre className="text-xs overflow-auto mt-2">{JSON.stringify(versionData, null, 2)}</pre>
-                              </div>
-                            );
-                          }
-                        });
-                    })()}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-black">Delegatees</CardTitle>
+            <CardDescription className="text-black">
+              {app.delegatees.length === 0
+                ? 'No delegatees configured yet.'
+                : `${app.delegatees.length} delegatees configured`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!app.delegatees ||
+            !Array.isArray(app.delegatees) ||
+            app.delegatees.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-black">
+                  Add delegatees to execute your application
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {app.delegatees.map((delegatee, i) => (
+                  <div key={i} className="text-sm text-black">
+                    <code className="bg-gray-50 px-1 py-0.5 rounded text-xs">
+                      {delegatee}
+                    </code>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-black">Delegatees</CardTitle>
-                <CardDescription className="text-black">
-                  {app.delegatees.length === 0
-                    ? 'No delegatees configured yet.'
-                    : `${app.delegatees.length} delegatees configured`}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!app.delegatees || !Array.isArray(app.delegatees) || app.delegatees.length === 0 ? (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-black">
-                      Add delegatees to execute your application
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {app.delegatees.map((delegatee, i) => (
-                      <div key={i} className="text-sm text-black">
-                        <code className="bg-gray-50 px-1 py-0.5 rounded text-xs">{delegatee}</code>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </main>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
 
-const AppDetailPage = wrap(WithHeader(AppDetail), AppProviders);
+const AppDetailPage = wrap(AppDetail, [...AppProviders, AppLayout]);
 export default AppDetailPage;

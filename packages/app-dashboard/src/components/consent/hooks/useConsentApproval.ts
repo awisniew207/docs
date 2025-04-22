@@ -26,20 +26,20 @@ import {
 
 /**
  * Hook for managing application consent approval and parameter management in Lit Protocol
- * 
+ *
  * This hook provides functionality for:
  * - Approving consent for applications and specific versions
  * - Managing tool/policy parameters (adding, updating, removing)
  * - Handling blockchain transactions related to consent management
  * - Verifying permissions and parameter updates
  * - Managing PKP (Programmable Key Pair) wallets and signing
- * 
+ *
  * The hook handles multiple states of consent:
  * - Initial application consent approval
  * - Updating parameters for already consented applications
  * - Upgrading to new application versions
  * - Removing parameters that have been cleared
- * 
+ *
  * It also provides comprehensive status updates during the entire process
  * and handles error cases with user-friendly messaging.
  */
@@ -129,7 +129,7 @@ export const useConsentApproval = ({
     const versionToUse = isPermitted ? permittedVersion : Number(appInfo.latestVersion);
 
     // Fetch existing parameters
-    let existingParameters: VersionParameter[] = [];
+    const existingParameters: VersionParameter[] = [];
     try {
       const userViewContract = getUserViewRegistryContract();
       const appIdNum = Number(appId);
@@ -154,7 +154,8 @@ export const useConsentApproval = ({
           });
         });
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error fetching existing parameters:', error);
       onStatusChange?.('Error fetching existing parameters:', 'error');
       throw new Error('Error fetching existing parameters');
     }
@@ -310,7 +311,7 @@ export const useConsentApproval = ({
     const filteredToolPolicyParameterNames = toolPolicyParameterNames.map(
       (toolParams, toolIndex) =>
         toolParams.map((policyParams, policyIndex) =>
-          policyParams.filter((paramName, paramIndex) => {
+          policyParams.filter((_paramName, paramIndex) => {
             const param = parameters.find(
               (p) =>
                 p.toolIndex === toolIndex &&

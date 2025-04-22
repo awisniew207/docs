@@ -401,8 +401,8 @@ export default function ManageToolPoliciesScreen({
 
             allPolicies.push(
                 <div key={policy._id} className="p-4 border rounded-lg mb-4">
-                    <div className="flex justify-between items-start">
-                        <div className="flex-1 mb-4">
+                    <div className="flex justify-center items-center gap-2 m-2">
+                        <div className="flex-1">
                             <LazyInput
                                 initialValue={policy.policyIpfsCid}
                                 placeholder="Policy IPFS CID"
@@ -423,10 +423,9 @@ export default function ManageToolPoliciesScreen({
                         <div className="flex justify-between items-center mb-2">
                             <h4 className="text-sm font-semibold text-black">Parameters</h4>
                             <Button
-                                variant="default"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => handleAddParameter(tool._id, policy._id)}
-                                className="text-black"
                             >
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Parameter
@@ -450,8 +449,8 @@ export default function ManageToolPoliciesScreen({
 
         allTools.push(
             <div key={tool._id} className="p-4 border rounded-lg mb-4">
-                <div className="flex justify-between items-start">
-                    <div className="grid grid-cols-1 gap-2 flex-1 mb-4">
+                <div className="flex justify-center items-center gap-2 m-2">
+                    <div className="grid grid-cols-1 gap-2 flex-1">
                         <LazyInput
                             initialValue={tool.toolIpfsCid || ""}
                             placeholder="Tool IPFS CID"
@@ -474,10 +473,9 @@ export default function ManageToolPoliciesScreen({
                     <div className="flex justify-between items-center mb-2">
                         <h4 className="text-sm font-semibold text-black">Policies</h4>
                         <Button
-                            variant="default"
+                            variant="outline"
                             size="sm"
                             onClick={() => handleAddPolicy(tool._id)}
-                            className="text-black"
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Add Policy
@@ -503,13 +501,13 @@ export default function ManageToolPoliciesScreen({
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="default" size="sm" onClick={onBack} className="text-black">
+                    <Button variant="outline" size="sm" onClick={onBack}>
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back
                     </Button>
                     <h1 className="text-3xl font-bold">Tool Policies</h1>
                 </div>
-                <Button onClick={handleAddTool} className="text-black">
+                <Button variant="outline" onClick={handleAddTool}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Tool Policy
                 </Button>
@@ -530,7 +528,7 @@ export default function ManageToolPoliciesScreen({
             </Card>
 
             <div className="flex justify-end">
-                <Button onClick={handleSaveToolPolicies} disabled={isSubmitting} className="text-black">
+                <Button variant="outline" onClick={handleSaveToolPolicies} disabled={isSubmitting}>
                     {isSubmitting ? "Publishing..." : "Publish New Version"}
                 </Button>
             </div>

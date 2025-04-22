@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ParameterType, mapEnumToTypeName } from '../../../../services/types/parameterTypes';
 import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 
 // Define Zod schemas for different parameter types
 const zodSchemas: Record<number, z.ZodTypeAny> = {
@@ -12,7 +13,7 @@ const zodSchemas: Record<number, z.ZodTypeAny> = {
     z.number().int(),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.UINT256]: z.union([
     z.string().refine(val => val === '' || (!isNaN(parseInt(val)) && parseInt(val) >= 0), {
       message: "Must be a non-negative integer or empty"
@@ -20,22 +21,22 @@ const zodSchemas: Record<number, z.ZodTypeAny> = {
     z.number().int().nonnegative(),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.BOOL]: z.union([
-    z.boolean(), 
-    z.literal(''), 
+    z.boolean(),
+    z.literal(''),
     z.enum(['true', 'false', 'not_set'])
   ]).optional(),
-  
+
   [ParameterType.ADDRESS]: z.union([
     z.string().regex(/^(0x[a-fA-F0-9]{40}|0x\.\.\.|)$/, {
       message: "Must be a valid Ethereum address, 0x..., or empty"
-    }), 
+    }),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.STRING]: z.string().optional(),
-  
+
   // Array types
   [ParameterType.INT256_ARRAY]: z.union([
     z.string().refine(val => {
@@ -50,7 +51,7 @@ const zodSchemas: Record<number, z.ZodTypeAny> = {
     z.array(z.union([z.number().int(), z.string(), z.literal('')])),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.UINT256_ARRAY]: z.union([
     z.string().refine(val => {
       if (val === '') return true;
@@ -64,13 +65,13 @@ const zodSchemas: Record<number, z.ZodTypeAny> = {
     z.array(z.union([z.number().int().nonnegative(), z.string(), z.literal('')])),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.BOOL_ARRAY]: z.union([
     z.string().refine(val => {
       if (val === '') return true;
       return val.split(',').every(item => {
         const trimmed = item.trim().toLowerCase();
-        return trimmed === '' || 
+        return trimmed === '' ||
                ['true', 'false', 'yes', 'no', '1', '0', 'y', 'n'].includes(trimmed);
       });
     }, {
@@ -79,14 +80,14 @@ const zodSchemas: Record<number, z.ZodTypeAny> = {
     z.array(z.union([z.boolean(), z.string(), z.literal('')])),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.ADDRESS_ARRAY]: z.union([
     z.string().refine(val => {
       if (val === '') return true;
       return val.split(',').every(item => {
         const trimmed = item.trim();
-        return trimmed === '' || 
-               trimmed === '0x...' || 
+        return trimmed === '' ||
+               trimmed === '0x...' ||
                /^0x[a-fA-F0-9]{40}$/.test(trimmed);
       });
     }, {
@@ -95,7 +96,7 @@ const zodSchemas: Record<number, z.ZodTypeAny> = {
     z.array(z.string()),
     z.literal('')
   ]).optional(),
-  
+
   [ParameterType.STRING_ARRAY]: z.union([
     z.string(),
     z.array(z.string()),
@@ -114,10 +115,10 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const [inputValue, setInputValue] = useState<any>(value || '');
   const [error, setError] = useState<string | null>(null);
   const typeName = mapEnumToTypeName(type);
-  
+
 
   const schema = zodSchemas[type] || z.any();
-  
+
   useEffect(() => {
     if (value !== undefined && value !== inputValue) {
       setInputValue(value);
@@ -143,7 +144,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
-    
+
     // Validate the new value
     if (validateValue(newValue)) {
       // Convert value based on type
@@ -191,7 +192,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             parsedValue = newValue.split(',').map(v => {
               const trimmed = v.trim();
               if (trimmed === '' || trimmed === '-') return trimmed;
-              
+
               const num = parseInt(trimmed, 10);
               return isNaN(num) ? '' : num;
             });
@@ -204,7 +205,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             parsedValue = newValue.split(',').map(v => {
               const trimmed = v.trim();
               if (trimmed === '') return trimmed;
-              
+
               const num = parseInt(trimmed, 10);
               return isNaN(num) ? '' : Math.max(0, num);
             });
@@ -217,7 +218,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             parsedValue = newValue.split(',').map(v => {
               const trimmed = v.trim().toLowerCase();
               if (trimmed === '') return '';
-              
+
               return ['true', '1', 'yes', 'y', 'on'].includes(trimmed);
             });
           }
@@ -247,7 +248,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         default:
           parsedValue = newValue;
       }
-      
+
       onChange(parsedValue);
     }
   }, [type, onChange, validateValue]);
@@ -256,7 +257,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const addArrayItem = (defaultValue: any = '') => {
     // Get current array or initialize empty array
     let currentArray: any[] = [];
-    
+
     if (Array.isArray(inputValue)) {
       currentArray = [...inputValue];
     } else if (typeof inputValue === 'string') {
@@ -269,17 +270,17 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
       // Handle any unexpected type by using empty array
       console.warn('Unexpected inputValue type:', typeof inputValue);
     }
-    
+
     if (type === ParameterType.INT256_ARRAY || type === ParameterType.UINT256_ARRAY) {
       defaultValue = ''; // Use empty string instead of 0 for numeric arrays
     }
-    
+
     // Add the new item
     currentArray.push(defaultValue);
-    
+
     // Store the array value directly for rendering
     setInputValue(currentArray);
-    
+
     // Pass to parent
     if (validateValue(currentArray)) {
       onChange(currentArray);
@@ -289,7 +290,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const removeArrayItem = (index: number) => {
     // Get current array or initialize empty array
     let currentArray: any[] = [];
-    
+
     if (Array.isArray(inputValue)) {
       currentArray = [...inputValue];
     } else if (typeof inputValue === 'string') {
@@ -297,21 +298,21 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         currentArray = inputValue.split(',').map(v => v.trim());
       }
     }
-    
+
     // Remove the item at the specified index
     if (index >= 0 && index < currentArray.length) {
       currentArray.splice(index, 1);
-      
+
       // Store the array value directly for rendering
       setInputValue(currentArray);
-      
+
       if (validateValue(currentArray)) {
         // Remove only empty values from end of array
         let trimmedArray = [...currentArray];
         while (trimmedArray.length > 0 && trimmedArray[trimmedArray.length - 1] === '') {
           trimmedArray.pop();
         }
-        
+
         // If all elements were removed or only empty elements remain, return empty string
         if (trimmedArray.length === 0) {
           onChange('');
@@ -325,7 +326,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   const updateArrayItem = (index: number, value: any) => {
     // Get current array or initialize empty array
     let currentArray: any[] = [];
-    
+
     if (Array.isArray(inputValue)) {
       currentArray = [...inputValue];
     } else if (typeof inputValue === 'string') {
@@ -333,14 +334,14 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         currentArray = inputValue.split(',').map(v => v.trim());
       }
     }
-    
+
     // Update the value at the specified index
     if (index >= 0 && index < currentArray.length) {
       currentArray[index] = value;
-      
+
       // Store the array value directly for rendering
       setInputValue(currentArray);
-      
+
       // Pass to parent
       if (validateValue(currentArray)) {
         // Remove only empty values from end of array
@@ -348,7 +349,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         while (trimmedArray.length > 0 && trimmedArray[trimmedArray.length - 1] === '') {
           trimmedArray.pop();
         }
-        
+
         onChange(trimmedArray.length > 0 ? trimmedArray : '');
       }
     }
@@ -357,16 +358,16 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
   // Render array input fields dynamically
   const renderArrayFields = (arrayType: ParameterType) => {
     // Parse the current value into an array
-    const currentArray = Array.isArray(inputValue) ? [...inputValue] : 
-                        (typeof inputValue === 'string' && inputValue.length > 0) ? 
-                          inputValue.split(',').map(v => v.trim()) : 
+    const currentArray = Array.isArray(inputValue) ? [...inputValue] :
+                        (typeof inputValue === 'string' && inputValue.length > 0) ?
+                          inputValue.split(',').map(v => v.trim()) :
                           [];
-    
+
     // Get the appropriate input type based on the array type
     let inputType = 'text';
     let placeholder = '';
     let defaultValue: any = '';
-    
+
     switch (arrayType) {
       case ParameterType.INT256_ARRAY:
         inputType = 'number';
@@ -394,7 +395,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
         defaultValue = '';
         break;
     }
-    
+
     return (
       <div className="array-inputs font-sans">
         {currentArray.length === 0 ? (
@@ -432,27 +433,25 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
                     />
                   )}
                 </div>
-                <button
-                  type="button"
+                <Button
                   onClick={() => removeArrayItem(index)}
                   className="array-item-remove-btn flex-shrink-0 h-full px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
                   aria-label="Remove item"
                 >
                   ✕
-                </button>
+                </Button>
               </div>
             ))}
           </div>
         )}
-        
+
         <div className="array-actions mt-3">
-          <button
-            type="button"
+          <Button
             className="parameter-input btn-add-item py-1 px-3 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg text-sm transition-colors flex items-center font-medium"
             onClick={() => addArrayItem(defaultValue)}
           >
             Add Item +
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -470,7 +469,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             placeholder="Enter an int256 value (can be negative)"
           />
         );
-      
+
       case ParameterType.UINT256:
         return (
           <input
@@ -487,7 +486,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             min="0"
           />
         );
-      
+
       case ParameterType.BOOL:
         return (
           <select
@@ -510,7 +509,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             <option value="false">False</option>
           </select>
         );
-      
+
       case ParameterType.ADDRESS:
         return (
           <input
@@ -521,7 +520,7 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             placeholder="0x..."
           />
         );
-      
+
       case ParameterType.STRING:
         return (
           <input
@@ -532,14 +531,14 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
             placeholder="Enter a string value"
           />
         );
-      
+
       case ParameterType.INT256_ARRAY:
       case ParameterType.UINT256_ARRAY:
       case ParameterType.BOOL_ARRAY:
       case ParameterType.ADDRESS_ARRAY:
       case ParameterType.STRING_ARRAY:
         return renderArrayFields(type);
-      
+
       default:
         return (
           <input
@@ -567,4 +566,4 @@ export default function ParameterInput({ name, type, onChange, value }: Paramete
       </div>
     </div>
   );
-} 
+}

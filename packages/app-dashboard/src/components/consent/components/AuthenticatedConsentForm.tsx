@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 
-import '../styles/parameter-fields.css';
 import VersionParametersForm from './authForm/VersionParametersForm';
 import { useErrorPopup } from '@/providers/ErrorPopup';
+import { Button } from '@/components/ui/button';
 
 import StatusMessage from './authForm/StatusMessage';
 import StatusAnimation from './authForm/StatusAnimation';
@@ -715,12 +715,12 @@ export default function AuthenticatedConsentForm({
           </div>
 
           <div className="flex justify-center mt-6">
-            <button
-              className="bg-black text-white rounded-lg py-3 px-8 font-medium text-sm hover:bg-gray-900 transition-colors"
+            <Button
+              className="rounded-lg py-3 px-8 font-medium text-sm hover:bg-gray-900 transition-colors"
               onClick={handleDisapprove}
             >
               Go Back
-            </button>
+            </Button>
           </div>
         </div>
 

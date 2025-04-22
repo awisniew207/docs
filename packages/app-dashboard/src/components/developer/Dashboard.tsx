@@ -1,14 +1,14 @@
 import { AppView } from '@/services/types';
 import { useEffect, useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../ui/card';
+} from '@/components/ui/card';
 import { StatusFilterDropdown, FilterOption } from '../ui/status-filter-dropdown';
 import { useErrorPopup } from '@/providers/ErrorPopup';
 import { StatusMessage } from '@/utils/statusMessage';
@@ -107,7 +107,7 @@ export default function DashboardScreen({
             onChange={setSortOption}
           />
           <Button
-            variant="default"
+            variant="outline"
             className="text-black"
             onClick={() => window.location.assign('/create-app')}
           >

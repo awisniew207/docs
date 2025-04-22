@@ -11,6 +11,7 @@ import { useErrorPopup } from '@/providers/ErrorPopup';
 import { useSetAuthInfo, useReadAuthInfo, useClearAuthInfo } from '@/components/consent/hooks/useAuthInfo';
 
 import Loading from '@/components/consent/components/Loading';
+import UserLayout from '@/components/layout/UserLayout';
 import WithdrawForm from '@/components/withdraw/WithdrawForm';
 import ExistingAccountView from '@/components/consent/views/ExistingAccountView';
 import SignUpView from '@/components/consent/views/SignUpView';
@@ -243,8 +244,8 @@ export function Withdraw() {
       }
 
       return (
-        <div className="consent-form-overlay">
-          <div className="consent-form-modal">
+        <div className="flex justify-center items-start w-full">
+          <div className="w-[550px] position-relative mt-0">
             <WithdrawForm
               sessionSigs={sessionSigs}
               agentPKP={agentPKP}
@@ -258,8 +259,8 @@ export function Withdraw() {
     // If we're not showing the existing account and have validated session sigs
     if (!showExistingAccount && validatedSessionSigs && authInfo?.userPKP) {
       return (
-        <div className="consent-form-overlay">
-          <div className="consent-form-modal">
+        <div className="flex justify-center items-start w-full">
+          <div className="w-[550px] position-relative mt-0">
             <WithdrawForm
               sessionSigs={validatedSessionSigs}
               agentPKP={authInfo.agentPKP}
@@ -299,5 +300,5 @@ export function Withdraw() {
   );
 }
 
-const WithdrawPage = wrap(Withdraw, UserProviders);
+const WithdrawPage = wrap(Withdraw, [...UserProviders, UserLayout]);
 export default WithdrawPage;

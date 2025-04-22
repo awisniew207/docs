@@ -1,4 +1,5 @@
 import { useConnect } from 'wagmi';
+import { Button } from '@/components/ui/button';
 
 interface WalletMethodsProps {
   authWithEthWallet: (connector: any) => Promise<void>;
@@ -17,9 +18,8 @@ const WalletMethods = ({ authWithEthWallet, setView }: WalletMethodsProps) => {
 
       <div className="space-y-3">
         {connectors.map(connector => (
-          <button
+          <Button
             key={connector.id}
-            type="button"
             className="w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             disabled={!connector.ready}
             onClick={() => authWithEthWallet({ connector })}
@@ -41,17 +41,16 @@ const WalletMethods = ({ authWithEthWallet, setView }: WalletMethodsProps) => {
               </div>
             )}
             <span>Continue with {connector.name}</span>
-          </button>
+          </Button>
         ))}
 
         <div className="mt-6">
-          <button
-            type="button"
+          <Button
             onClick={() => setView('default')}
             className="w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 font-medium text-sm hover:bg-gray-50 transition-colors"
           >
             Back
-          </button>
+          </Button>
         </div>
       </div>
     </>

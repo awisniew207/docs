@@ -317,11 +317,10 @@ export default function ManageAdvancedFunctionsScreen({
           <Button
             variant="ghost"
             onClick={onBack}
-            className="p-0 text-black"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-3xl font-bold text-black">Advanced Functions</h1>
+          <h1 className="text-3xl font-bold">Advanced Functions</h1>
         </div>
       </div>
 
@@ -336,14 +335,16 @@ export default function ManageAdvancedFunctionsScreen({
           <CardContent className="space-y-4">
             <div className="flex gap-2">
               <Button
-                className="text-black w-full"
+                className="grow"
+                variant="outline"
                 onClick={() => setShowAddUriDialog(true)}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Redirect URI
               </Button>
               <Button
-                className="text-black w-full"
+                className="grow"
+                variant="outline"
                 onClick={() => setShowRemoveUriDialog(true)}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
@@ -378,7 +379,8 @@ export default function ManageAdvancedFunctionsScreen({
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              className="text-black w-full"
+              className="grow"
+              variant='outline'
               onClick={() => {
                 if ((dashboard.toolPolicies || []).length === 0) {
                   alert("No app versions available. Create an app version first.");
@@ -416,9 +418,9 @@ export default function ManageAdvancedFunctionsScreen({
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              variant="default"
+              className="grow"
+              variant='outline'
               onClick={() => setShowUpdateDeploymentStatusDialog(true)}
-              className="text-black w-full"
             >
               <Settings className="h-4 w-4 mr-2" />
               Update Status
@@ -494,9 +496,9 @@ export default function ManageAdvancedFunctionsScreen({
                 Cancel
               </Button>
               <Button
+                variant="default"
                 onClick={handleAddRedirectUri}
                 disabled={isProcessing}
-                className="text-black"
               >
                 {isProcessing ? "Adding..." : "Add URI"}
               </Button>
@@ -609,9 +611,9 @@ export default function ManageAdvancedFunctionsScreen({
                 Cancel
               </Button>
               <Button
+                variant="destructive"
                 onClick={handleToggleVersion}
                 disabled={isProcessing}
-                className="text-black"
               >
                 {isProcessing ? "Updating..." : (willEnableVersion ? "Enable Version" : "Disable Version")}
               </Button>
@@ -661,9 +663,9 @@ export default function ManageAdvancedFunctionsScreen({
                 Cancel
               </Button>
               <Button
+                variant="default"
                 onClick={handleUpdateDeploymentStatus}
                 disabled={isProcessing || newDeploymentStatus === dashboard.deploymentStatus}
-                className="text-black"
               >
                 {isProcessing ? "Updating..." : "Update Status"}
               </Button>

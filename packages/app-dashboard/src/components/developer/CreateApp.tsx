@@ -323,7 +323,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
     <div className="space-y-8">
       <div className="flex items-center gap-4 mb-4">
         {onBack && (
-          <Button variant="default" size="sm" onClick={onBack} className="text-black">
+          <Button variant="outline" size="sm" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
@@ -430,16 +430,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                   />
                                   {index > 0 && (
                                     <Button
-                                      type="button"
                                       variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                      const newValues = [...field.value];
-                                      newValues.splice(index, 1);
-                                      field.onChange(newValues);
-                                    }}
-                                    className="text-red-500 hover:text-red-700"
-                                  >
+                                      size="sm"
+                                      onClick={() => {
+                                        const newValues = [...field.value];
+                                        newValues.splice(index, 1);
+                                        field.onChange(newValues);
+                                      }}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
                                   )}
@@ -452,13 +451,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                               </div>
                             ))}
                             <Button
-                              type="button"
-                              variant="default"
+                              variant="outline"
                               size="sm"
                               onClick={() => {
                                 field.onChange([...field.value, '']);
                               }}
-                              className="text-black"
                             >
                               <Plus className="h-4 w-4 mr-2" /> Add Redirect URI
                             </Button>
@@ -477,11 +474,9 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-medium text-black">Tools</h3>
                       <Button
-                        type="button"
-                        variant="default"
+                        variant="outline"
                         size="sm"
                         onClick={addTool}
-                        className="text-black"
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
                       </Button>
@@ -503,7 +498,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                             <h4 className="font-medium text-black">Tool {toolIndex + 1}</h4>
                             {toolIndex > 0 && (
                               <Button
-                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => removeTool(toolIndex)}
@@ -532,11 +526,9 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                             <div className="flex justify-between items-center mb-4">
                               <h5 className="font-medium text-black">Policies</h5>
                               <Button
-                                type="button"
-                                variant="default"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => appendPolicy(toolIndex)}
-                                className="text-black"
                               >
                                 <Plus className="h-4 w-4 mr-2" /> Add Policy
                               </Button>
@@ -556,7 +548,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                   <div className="flex justify-between items-center">
                                     <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
                                     <Button
-                                      type="button"
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => removePolicy(toolIndex, policyIndex)}
@@ -584,11 +575,9 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                     <div className="flex justify-between items-center mb-3">
                                       <h6 className="font-medium text-black">Parameters</h6>
                                       <Button
-                                        type="button"
-                                        variant="default"
+                                        variant="outline"
                                         size="sm"
                                         onClick={() => appendParameter(toolIndex, policyIndex)}
-                                        className="text-black"
                                       >
                                         <Plus className="h-4 w-4 mr-2" /> Add Parameter
                                       </Button>
@@ -645,7 +634,6 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                         />
 
                                         <Button
-                                          type="button"
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
@@ -681,8 +669,8 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                   )}
                 <Button
                   type="submit"
-                  className="w-full text-black"
-                  variant="default"
+                  className="w-full"
+                  variant="outline"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}

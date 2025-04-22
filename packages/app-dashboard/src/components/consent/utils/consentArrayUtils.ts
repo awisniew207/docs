@@ -1,5 +1,8 @@
 import { VersionParameter, VersionInfo } from '../types';
-import { isEmptyParameterValue, decodeParameterValue } from './parameterDecoding';
+import {
+  isEmptyParameterValue,
+  decodeParameterValue,
+} from './parameterDecoding';
 import { encodeParameterValue } from '../../../utils/parameterEncoding';
 
 /**
@@ -8,7 +11,7 @@ import { encodeParameterValue } from '../../../utils/parameterEncoding';
  */
 export const prepareParameterRemovalData = (
   parametersToRemove: VersionParameter[],
-  versionInfo: VersionInfo
+  versionInfo: VersionInfo,
 ) => {
   const removalToolIpfsCids: string[] = [];
   const removalPolicyIpfsCids: string[][] = [];
@@ -109,7 +112,7 @@ export const prepareParameterRemovalData = (
  */
 export const prepareParameterUpdateData = (
   parameters: VersionParameter[],
-  versionInfo: VersionInfo
+  versionInfo: VersionInfo,
 ) => {
   const toolIpfsCids: string[] = [];
   const policyIpfsCids: string[][] = [];
@@ -117,12 +120,12 @@ export const prepareParameterUpdateData = (
   const policyParameterValues: Uint8Array[][][] = [];
 
   if (!versionInfo) {
-    return { 
-      toolIpfsCids, 
-      policyIpfsCids, 
-      policyParameterNames, 
+    return {
+      toolIpfsCids,
+      policyIpfsCids,
+      policyParameterNames,
       policyParameterValues,
-      hasParametersToSet: false 
+      hasParametersToSet: false,
     };
   }
 
@@ -165,7 +168,10 @@ export const prepareParameterUpdateData = (
                 // Only add parameters that have user-provided values and aren't empty
                 if (param && param.value !== undefined) {
                   // Check if parameter is empty using the shared utility
-                  const isEmpty = isEmptyParameterValue(param.value, param.type);
+                  const isEmpty = isEmptyParameterValue(
+                    param.value,
+                    param.type,
+                  );
 
                   // Skip if parameter is empty
                   if (isEmpty) return;
@@ -189,9 +195,9 @@ export const prepareParameterUpdateData = (
   }
 
   // Check if there are any parameters to set
-  const hasParametersToSet = toolIpfsCids.some((toolCid, toolIndex) => {
+  const hasParametersToSet = toolIpfsCids.some((_toolCid, toolIndex) => {
     if (policyIpfsCids[toolIndex]) {
-      return policyIpfsCids[toolIndex].some((policyCid, policyIndex) => {
+      return policyIpfsCids[toolIndex].some((_policyCid, policyIndex) => {
         if (
           policyParameterNames[toolIndex] &&
           policyParameterNames[toolIndex][policyIndex]
@@ -209,7 +215,7 @@ export const prepareParameterUpdateData = (
     policyIpfsCids,
     policyParameterNames,
     policyParameterValues,
-    hasParametersToSet
+    hasParametersToSet,
   };
 };
 
@@ -218,17 +224,20 @@ export const prepareParameterUpdateData = (
  */
 export const identifyParametersToRemove = (
   existingParameters: VersionParameter[],
-  parameters: VersionParameter[]
+  parameters: VersionParameter[],
 ) => {
   const parametersToRemove: VersionParameter[] = [];
-  
+
   existingParameters.forEach((existingParam) => {
     try {
       // Make sure we have a decoded value for comparison
       if (typeof existingParam.value === 'string' && existingParam.type) {
-        existingParam.value = decodeParameterValue(existingParam.value, existingParam.type);
+        existingParam.value = decodeParameterValue(
+          existingParam.value,
+          existingParam.type,
+        );
       }
-      
+
       // Match by name - the most direct approach
       const formParam = parameters.find((p) => p.name === existingParam.name);
 
@@ -244,7 +253,10 @@ export const identifyParametersToRemove = (
         }
       }
     } catch (error) {
-      console.error(`Error checking parameter ${existingParam.name} for removal:`, error);
+      console.error(
+        `Error checking parameter ${existingParam.name} for removal:`,
+        error,
+      );
     }
   });
 
@@ -253,14 +265,14 @@ export const identifyParametersToRemove = (
 
 /**
  * Prepares version permit data from versionInfo for consent approval
- * 
+ *
  * @param versionInfo - The version information containing tools, policies, and parameters
  * @param parameters - User-provided parameter values
  * @returns Formatted arrays for contract call (toolIpfsCids, toolPolicies, toolPolicyParameterNames, toolPolicyParameterTypes)
  */
 export const prepareVersionPermitData = (
   versionInfo: VersionInfo,
-  parameters: VersionParameter[]
+  parameters: VersionParameter[],
 ) => {
   const toolIpfsCids: string[] = [];
   const toolPolicies: string[][] = [];
@@ -298,14 +310,12 @@ export const prepareVersionPermitData = (
 
             if (Array.isArray(paramNames) && Array.isArray(paramTypes)) {
               // Use the actual parameter names from the version info
-              paramNames.forEach((name: any, paramIndex: number) => {
+              paramNames.forEach((name, paramIndex: number) => {
                 // Ensure parameter name is never empty by using a default if it's empty
-                const paramName =
-                  typeof name === 'string' && name.trim() !== ''
-                    ? name.trim()
-                    : `param_${paramIndex}`;
+                const paramName = name.trim() || `param_${paramIndex}`;
 
-                toolPolicyParameterNames[toolIndex][policyIndex][paramIndex] = paramName;
+                toolPolicyParameterNames[toolIndex][policyIndex][paramIndex] =
+                  paramName;
 
                 // Set the parameter type if available
                 if (paramTypes[paramIndex] !== undefined) {
@@ -314,7 +324,8 @@ export const prepareVersionPermitData = (
                       ? paramTypes[paramIndex]
                       : 0;
                 } else {
-                  toolPolicyParameterTypes[toolIndex][policyIndex][paramIndex] = 0;
+                  toolPolicyParameterTypes[toolIndex][policyIndex][paramIndex] =
+                    0;
                 }
               });
             }
@@ -331,7 +342,9 @@ export const prepareVersionPermitData = (
         toolPolicyParameterTypes[param.toolIndex] &&
         toolPolicyParameterTypes[param.toolIndex][param.policyIndex]
       ) {
-        toolPolicyParameterTypes[param.toolIndex][param.policyIndex][param.paramIndex] = param.type;
+        toolPolicyParameterTypes[param.toolIndex][param.policyIndex][
+          param.paramIndex
+        ] = param.type;
       }
     });
   }
@@ -340,6 +353,6 @@ export const prepareVersionPermitData = (
     toolIpfsCids,
     toolPolicies,
     toolPolicyParameterNames,
-    toolPolicyParameterTypes
+    toolPolicyParameterTypes,
   };
-}; 
+};

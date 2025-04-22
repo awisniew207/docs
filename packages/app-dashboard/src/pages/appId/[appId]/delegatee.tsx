@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { formCompleteVincentAppForDev } from '@/services';
 import { useAccount } from 'wagmi';
-import { WithHeader } from '@/components/layout/Header';
+import AppLayout from '@/components/layout/AppLayout';
 import Loading from '@/components/layout/Loading';
 import { AppView } from '@/services/types';
 import DelegateeManagerScreen from '@/components/developer/dashboard/ManageDelegatee';
@@ -69,5 +69,5 @@ export function DelegateeManagement() {
   );
 }
 
-const DelegateeManagementPage = wrap(WithHeader(DelegateeManagement), AppProviders);
+const DelegateeManagementPage = wrap(DelegateeManagement, [...AppProviders, AppLayout]);
 export default DelegateeManagementPage;

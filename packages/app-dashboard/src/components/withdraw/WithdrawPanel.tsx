@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Button } from '@/components/ui/button';
+
 interface WithdrawPanelProps {
   withdrawAddress: string;
   setWithdrawAddress: (value: string) => void;
@@ -21,12 +23,12 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
 }) => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+
     if (value === '') {
       setWithdrawAmount('');
       return;
     }
-    
+
     // Allow inputs that start with digits or with a decimal point
     if (/^((0|[1-9]\d*)(\.\d*)?|\.\d*)$/.test(value)) {
       setWithdrawAmount(value);
@@ -66,14 +68,15 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
             </span>
           </div>
         </div>
-        <button
+        <Button
+          variant="default"
           type="submit"
           disabled={loading || !withdrawAddress || !withdrawAmount || parseFloat(withdrawAmount) <= 0}
-          className="w-full py-2 bg-black text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {loading ? 'Processing...' : 'Withdraw'}
-        </button>
+        </Button>
       </form>
     </div>
   );
-}; 
+};

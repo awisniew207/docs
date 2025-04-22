@@ -198,7 +198,7 @@ export default function IndexView() {
         clearAuthInfo();
       }
     };
-  }, [sessionSigs]);
+  }, [clearAuthInfo, sessionSigs]);
 
   // ------ RENDER CONTENT ------
 

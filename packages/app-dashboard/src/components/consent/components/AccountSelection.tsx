@@ -2,6 +2,7 @@ import * as RadioGroup from '@radix-ui/react-radio-group';
 
 import { IRelayPKP } from '@lit-protocol/types';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface AccountSelectionProp {
   accounts: IRelayPKP[];
@@ -63,9 +64,9 @@ export default function AccountSelection({
               </div>
             ))}
           </RadioGroup.Root>
-          <button type="submit" className="btn btn--primary">
+          <Button type="submit" className="btn btn--primary">
             Continue
-          </button>
+          </Button>
         </form>
       </div>
     </div>

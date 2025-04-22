@@ -6,7 +6,7 @@ import { formCompleteVincentAppForDev } from "@/services";
 import { AppView } from "@/services/types";
 import ConnectWalletScreen from "@/components/developer/ConnectWallet";
 import CreateAppScreen from "@/components/developer/CreateApp";
-import Header from '@/components/layout/Header';
+import AppLayout from '@/components/layout/AppLayout';
 import Loading from '@/components/layout/Loading';
 import { wrap } from '@/utils/components';
 import { AppProviders } from '@/providers';
@@ -58,12 +58,7 @@ function AppHome() {
 
   if (!isConnected) {
     return (
-      <>
-        <Header />
-        <div className="min-h-screen">
-          <ConnectWalletScreen />
-        </div>
-      </>
+        <ConnectWalletScreen />
     );
   }
 
@@ -71,19 +66,12 @@ function AppHome() {
     return <Loading />;
   }
 
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <main className="max-w-screen-xl min-h-screen mx-auto p-6">
-        {hasApp ? (
-          <DashboardScreen vincentApp={app!} />
-        ) : (
-          <CreateAppScreen />
-        )}
-      </main>
-    </div>
-  )
+  return hasApp ? (
+    <DashboardScreen vincentApp={app!} />
+  ) : (
+    <CreateAppScreen />
+  );
 }
 
-const AppHomePage = wrap(AppHome, AppProviders);
+const AppHomePage = wrap(AppHome, [...AppProviders, AppLayout]);
 export default AppHomePage;

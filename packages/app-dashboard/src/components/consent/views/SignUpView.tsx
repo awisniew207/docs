@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import Loading from '../components/Loading';
+import { Button } from '@/components/ui/button';
 
 interface SignUpViewProps {
   authMethodType: typeof AUTH_METHOD_TYPE[keyof typeof AUTH_METHOD_TYPE];
@@ -26,20 +27,18 @@ const SignUpView: FC<SignUpViewProps> = ({
         <h1 className="text-xl font-semibold text-center mb-4">No Accounts Found</h1>
         <p className="text-sm text-gray-600 text-center mb-6">You don&apos;t have any accounts associated with this WebAuthn credential.</p>
         <div className="flex flex-col space-y-3">
-          <button
-            type="button"
+          <Button
             className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleRegisterWithWebAuthn}
           >
             Create New Account
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={authWithWebAuthn}
           >
             Try Sign In Again
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -73,13 +72,12 @@ const SignUpView: FC<SignUpViewProps> = ({
       <div className="p-6">
         <h1 className="text-xl font-semibold text-center mb-4">No Accounts Found</h1>
         <p className="text-sm text-gray-600 text-center mb-6">No accounts were found for this wallet address.</p>
-        <button
-          type="button"
+        <Button
           className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 w-full font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => window.location.reload()}
         >
           Try Again
-        </button>
+        </Button>
       </div>
 
       <div className="px-6 py-3 text-center border-t border-gray-100">
@@ -108,13 +106,12 @@ const SignUpView: FC<SignUpViewProps> = ({
       <div className="p-6">
         <h1 className="text-xl font-semibold text-center mb-4">Unsupported Authentication Method</h1>
         <p className="text-sm text-gray-600 text-center mb-6">The authentication method you&apos;re using is not supported.</p>
-        <button
-          type="button"
+        <Button
           className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 w-full font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => window.location.reload()}
         >
           Start Over
-        </button>
+        </Button>
       </div>
 
       <div className="px-6 py-3 text-center border-t border-gray-100">

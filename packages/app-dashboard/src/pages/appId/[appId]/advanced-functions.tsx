@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { formCompleteVincentAppForDev } from '@/services';
 import { useAccount } from 'wagmi';
-import { WithHeader } from '@/components/layout/Header';
+import AppLayout from '@/components/layout/AppLayout';
 import Loading from '@/components/layout/Loading';
 import { AppView } from '@/services/types';
 import ManageAdvancedFunctionsScreen from '@/components/developer/dashboard/ManageAdvancedFunctions';
@@ -74,5 +74,5 @@ export function AdvancedFunctions() {
   );
 }
 
-const AdvancedFunctionsPage = wrap(WithHeader(AdvancedFunctions), AppProviders);
+const AdvancedFunctionsPage = wrap(AdvancedFunctions, [...AppProviders, AppLayout]);
 export default AdvancedFunctionsPage;

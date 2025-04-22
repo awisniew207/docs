@@ -4,6 +4,7 @@ import { useSetAuthInfo } from '../hooks/useAuthInfo';
 import { z } from 'zod';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
+import { Button } from '@/components/ui/button';
 
 interface StytchOTPProps {
   method: OtpMethod;
@@ -38,10 +39,10 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     event.preventDefault();
     setLoading(true);
     setError('');
-    
+
     try {
       let response: any;
-      
+
       if (method === 'email') {
         response = await stytchClient.otps.email.loginOrCreate(userId, {
           expiration_minutes: 2,
@@ -52,23 +53,23 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
         if (!userId) {
           throw new Error('Please enter a valid phone number in international format (e.g. +12025551234)');
         }
-        
+
         response = await stytchClient.otps.sms.loginOrCreate(userId);
       }
-      
+
       setMethodId(response.method_id);
       setStep('verify');
     } catch (err: any) {
       console.error(`Error sending ${method} OTP:`, err);
-      
+
       let errorMessage = 'Failed to send verification code. Please try again.';
-      
+
       if (err.message?.includes('invalid_phone_number')) {
         errorMessage = 'Please enter a valid phone number in international format (e.g. +12025551234)';
       } else if (typeof err.message === 'string') {
         errorMessage = err.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -79,14 +80,14 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     event.preventDefault();
     setLoading(true);
     setError('');
-    
+
     try {
       codeSchema.parse(code);
-      
+
       const response = await stytchClient.otps.authenticate(code, methodId, {
         session_duration_minutes: 60,
       });
-      
+
       try {
         setAuthInfo({
           type: method,
@@ -97,12 +98,12 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       } catch (storageError) {
         console.error('Error storing auth info in localStorage:', storageError);
       }
-      
+
       await authWithStytch(response.session_jwt, response.user_id, method);
     } catch (err: any) {
       console.error(`Error authenticating with ${method} OTP:`, err);
       let errorMessage = 'Failed to verify code. Please try again.';
-      
+
       if (err instanceof z.ZodError && err.errors.length > 0) {
         errorMessage = err.errors[0].message;
       } else if (err.message?.includes('invalid_code')) {
@@ -110,7 +111,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
       } else if (typeof err.message === 'string') {
         errorMessage = err.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -123,7 +124,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
         <>
           <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Enter your {method}</h1>
           <p className="text-sm text-gray-600 text-center mb-6">A verification code will be sent to your {method}.</p>
-          
+
           <div className="w-full">
             <form className="space-y-4" onSubmit={sendPasscode}>
               {method === 'email' ? (
@@ -156,40 +157,39 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                   </div>
                 </div>
               )}
-              
+
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                   {error}
                 </div>
               )}
-              
+
               <div className="pt-2">
-                <button
+                <Button
                   type="submit"
                   className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send code'}
-                </button>
-                
-                <button
-                  type="button"
+                </Button>
+
+                <Button
                   onClick={() => setView('default')}
                   className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors mt-3"
                 >
                   Back
-                </button>
+                </Button>
               </div>
             </form>
           </div>
         </>
       )}
-      
+
       {step === 'verify' && (
         <>
           <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Check your {method}</h1>
           <p className="text-sm text-gray-600 text-center mb-6">Enter the 6-digit verification code sent to {userId}</p>
-          
+
           <div className="w-full">
             <form className="space-y-4" onSubmit={authenticate}>
               <div className="space-y-2">
@@ -208,29 +208,28 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                   autoComplete="one-time-code"
                 />
               </div>
-              
+
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                   {error}
                 </div>
               )}
-              
+
               <div className="pt-2">
-                <button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? 'Verifying...' : 'Verify code'}
-                </button>
-                
-                <button
-                  type="button"
+                </Button>
+
+                <Button
                   onClick={() => setStep('submit')}
                   className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors mt-3"
                 >
                   Try again
-                </button>
+                </Button>
               </div>
             </form>
           </div>

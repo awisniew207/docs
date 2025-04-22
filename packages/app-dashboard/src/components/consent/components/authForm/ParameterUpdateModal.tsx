@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useVersionEnabledCheck } from '../../hooks/useVersionEnabledCheck';
 
 interface ParameterUpdateModalProps {
@@ -39,20 +40,19 @@ const ParameterUpdateModal = ({
       )}
 
       <div className="flex flex-col space-y-3">
-        <button
-          className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        <Button
+          variant='outline'
           onClick={onUpdate}
           disabled={isVersionEnabled === false}
           title={isVersionEnabled === false ? "This version is disabled and cannot be updated" : "Update policies for this version"}
         >
           Update Policies
-        </button>
-        <button
-          className="bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        </Button>
+        <Button
           onClick={onContinue}
         >
           Continue with Existing Policies
-        </button>
+        </Button>
       </div>
     </div>
   );

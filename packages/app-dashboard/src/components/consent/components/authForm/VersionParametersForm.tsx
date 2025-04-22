@@ -126,7 +126,7 @@ export default function VersionParametersForm({
                 ? name.trim()
                 : `param_${paramIndex}`;
 
-              let existingParam = existingParameters.find(p =>
+              const existingParam = existingParameters.find(p =>
                 typeof p.name === 'string' &&
                 p.name.toLowerCase() === paramName.toLowerCase() &&
                 p.type === paramType
@@ -255,13 +255,13 @@ export default function VersionParametersForm({
   };
 
   // Function to categorize what a tool might be based on its name or IPFS
-  const getToolFriendlyName = (toolCid: string, toolIndex: number) => {
+  const getToolFriendlyName = (_toolCid: string, toolIndex: number) => {
     // This is a placeholder - in a real implementation, you might map known CIDs
     // to friendly names or fetch metadata about the tool
     return `Tool ${toolIndex + 1}`;
   };
 
-  const getPolicyFriendlyName = (policyCid: string, policyIndex: number) => {
+  const getPolicyFriendlyName = (_policyCid: string, policyIndex: number) => {
     // Similar placeholder for policy naming
     return `Policy ${policyIndex + 1}`;
   };
