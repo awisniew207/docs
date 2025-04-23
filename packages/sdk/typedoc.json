@@ -39,5 +39,6 @@
     "@ethersproject/abstract-signer" : {
       "*": "https://docs.ethers.org/v5/api/"
     }
-  }
+  },
+  "customCss": "./docs/src/css/custom.css"
 }

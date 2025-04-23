@@ -5,7 +5,7 @@ title: Contact Us
 
 # Contact Us
 
-If you have any issues with the Vincent SDK, general questions about Vincent or feature requests, please post them here - [Issues](https://github.com/LIT-Protocol/Vincent/issues) GitHub Repo.
+If you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).
 
 ## Join the Community
 
