@@ -91,7 +91,7 @@ importers:
         version: 7.4.0
       '@stytch/nextjs':
         specifier: ^21.4.1
-        version: 21.4.4(@stytch/vanilla-js@5.22.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 21.4.4(@stytch/vanilla-js@5.22.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tanstack/react-query':
         specifier: ^5.66.7
         version: 5.74.3(react@19.1.0)
@@ -267,12 +267,21 @@ importers:
       '@radix-ui/react-separator':
         specifier: ^1.1.4
         version: 1.1.4(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@stytch/react':
+        specifier: ^19.4.4
+        version: 19.4.4(@stytch/vanilla-js@5.22.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@stytch/vanilla-js':
+        specifier: ^5.22.6
+        version: 5.22.6
       '@t3-oss/env-core':
         specifier: ^0.12.0
         version: 0.12.0(typescript@5.7.3)(zod@3.24.2)
       '@tailwindcss/vite':
         specifier: ^4.1.4
         version: 4.1.4(vite@6.3.0(@types/node@20.17.30)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))
+      '@types/react-helmet':
+        specifier: ^6.1.11
+        version: 6.1.11
       lucide-react:
         specifier: ^0.503.0
         version: 0.503.0(react@19.1.0)
@@ -282,6 +291,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.1.0(react@19.1.0)
+      react-helmet:
+        specifier: ^6.1.0
+        version: 6.1.0(react@19.1.0)
       react-router:
         specifier: ^7.5.0
         version: 7.5.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3560,8 +3572,8 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@stytch/core@2.47.2':
-    resolution: {integrity: sha512-clZqJjz3g6CRhgME+gjXu8iYKr2tVVxAleZoouoFYb/+gpHVUl0D/7kcPoEXrln9uGrLN8IjplVs19n7//TC+Q==}
+  '@stytch/core@2.49.0':
+    resolution: {integrity: sha512-nn7W759hRhg4G4ekvDofJBfkekWpABlKhzDb4YyfTKfIk7Jpy+g9i8f+PnWG9Y0M83QkcSrAdJv5vsA6rL3zug==}
 
   '@stytch/nextjs@21.4.4':
     resolution: {integrity: sha512-3xz6X/Cn6pPkmvUdSHDdlb1PDJD1eFozmkf8maNPO1E2U/mEyj7kK9nVlOyicBei96fRwRJQfrvSBkp+SLRmqQ==}
@@ -3570,8 +3582,15 @@ packages:
       react: '>= 17.0.2'
       react-dom: '>= 17.0.2'
 
-  '@stytch/vanilla-js@5.22.3':
-    resolution: {integrity: sha512-1Eb6y+9OKQSMIG+MyxtgVFqpYXK1oHkd0smQ5o6THALfnXF8r6uVucYuaNhkQQogTOYzcPcsKhu2+nOcpjJPIg==}
+  '@stytch/react@19.4.4':
+    resolution: {integrity: sha512-hhNivHn9NeDdwLpC2FAzpIRNSHoPVZ7QnsUaSQPBE42ieDsJAu3u+l42aLLnjjdzZ5hxP7/mRQUXFZAaibAPWw==}
+    peerDependencies:
+      '@stytch/vanilla-js': ^5.0.0
+      react: '>= 17.0.2'
+      react-dom: '>= 17.0.2'
+
+  '@stytch/vanilla-js@5.22.6':
+    resolution: {integrity: sha512-8LdcK2vCWmFuSnHYorxy1T6yeZonPsyiN0n7qqfmrCxd2fxLmkvbD3oF/JdFpKHpsFEJun8dr/Dpcq5b0o5GUA==}
 
   '@swc-node/core@1.13.3':
     resolution: {integrity: sha512-OGsvXIid2Go21kiNqeTIn79jcaX4l0G93X2rAnas4LFoDyA9wAwVK7xZdm+QsKoMn5Mus2yFLCc4OtX2dD/PWA==}
@@ -3900,6 +3919,9 @@ packages:
     resolution: {integrity: sha512-XGJkWF41Qq305SKWEILa1O8vzhb3aOo3ogBlSmiqNko/WmRb6QIaweuZCXjKygVDXpzXb5wyxKTSOsmkuqj+Qw==}
     peerDependencies:
       '@types/react': ^19.0.0
+
+  '@types/react-helmet@6.1.11':
+    resolution: {integrity: sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==}
 
   '@types/react@19.1.2':
     resolution: {integrity: sha512-oxLPMytKchWGbnQM9O7D67uPa9paTNxO7jVoNMXgkkErULBPhPARCfkKL9ytcIJJRGjbsVwW4ugJzyFFvm/Tiw==}
@@ -7606,6 +7628,14 @@ packages:
     peerDependencies:
       react: ^19.1.0
 
+  react-fast-compare@3.2.2:
+    resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
+
+  react-helmet@6.1.0:
+    resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
+    peerDependencies:
+      react: '>=16.3.0'
+
   react-hook-form@7.55.0:
     resolution: {integrity: sha512-XRnjsH3GVMQz1moZTW53MxfoWN7aDpUg/GpVNc4A3eXRVNdGXfbzJ4vM4aLQ8g6XCUh1nIbx70aaNCl7kxnjog==}
     engines: {node: '>=18.0.0'}
@@ -7674,6 +7704,11 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
+
+  react-side-effect@2.1.2:
+    resolution: {integrity: sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==}
+    peerDependencies:
+      react: ^16.3.0 || ^17.0.0 || ^18.0.0
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
@@ -13732,19 +13767,25 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
-  '@stytch/core@2.47.2':
+  '@stytch/core@2.49.0':
     dependencies:
       uuid: 8.3.2
 
-  '@stytch/nextjs@21.4.4(@stytch/vanilla-js@5.22.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@stytch/nextjs@21.4.4(@stytch/vanilla-js@5.22.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@stytch/vanilla-js': 5.22.3
+      '@stytch/vanilla-js': 5.22.6
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@stytch/vanilla-js@5.22.3':
+  '@stytch/react@19.4.4(@stytch/vanilla-js@5.22.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@stytch/core': 2.47.2
+      '@stytch/vanilla-js': 5.22.6
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@stytch/vanilla-js@5.22.6':
+    dependencies:
+      '@stytch/core': 2.49.0
       '@types/google-one-tap': 1.2.6
       type-fest: 4.15.0
 
@@ -14035,6 +14076,10 @@ snapshots:
   '@types/range-parser@1.2.7': {}
 
   '@types/react-dom@19.1.2(@types/react@19.1.2)':
+    dependencies:
+      '@types/react': 19.1.2
+
+  '@types/react-helmet@6.1.11':
     dependencies:
       '@types/react': 19.1.2
 
@@ -19179,6 +19224,16 @@ snapshots:
       react: 19.1.0
       scheduler: 0.26.0
 
+  react-fast-compare@3.2.2: {}
+
+  react-helmet@6.1.0(react@19.1.0):
+    dependencies:
+      object-assign: 4.1.1
+      prop-types: 15.8.1
+      react: 19.1.0
+      react-fast-compare: 3.2.2
+      react-side-effect: 2.1.2(react@19.1.0)
+
   react-hook-form@7.55.0(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -19244,6 +19299,10 @@ snapshots:
       turbo-stream: 2.4.0
     optionalDependencies:
       react-dom: 19.1.0(react@19.1.0)
+
+  react-side-effect@2.1.2(react@19.1.0):
+    dependencies:
+      react: 19.1.0
 
   react-style-singleton@2.2.3(@types/react@19.1.2)(react@19.1.0):
     dependencies:

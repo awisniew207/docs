@@ -6,7 +6,7 @@ Also in this dashboard users can manage their permissions for Vincent apps, cons
 
 ## Structure
 
-Dashbaord is a React App managed by Vite; using React Router, and directory based routing, for navigation and styled with Tailwind and Shadcn components.
+Dashboard is a React App managed by Vite; using React Router, and directory based routing, for navigation and styled with Tailwind and Shadcn components.
 
 # Contributing
 

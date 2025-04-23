@@ -5,8 +5,10 @@ import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { AppView } from '../types';
 import { litNodeClient } from '../utils/lit';
 import { useReadAuthInfo } from './useAuthInfo';
+import { env } from '@/config/env';
 
 const { create } = jwt;
+const { VITE_JWT_EXPIRATION_MINUTES } = env;
 
 interface UseJwtRedirectProps {
   agentPKP?: IRelayPKP;
@@ -72,9 +74,7 @@ export const useJwtRedirect = ({
           pkpWallet: agentPkpWallet,
           pkp: agentPKP,
           payload: {},
-          expiresInMinutes: parseInt(
-            process.env.NEXT_PUBLIC_JWT_EXPIRATION_MINUTES!,
-          ),
+          expiresInMinutes: VITE_JWT_EXPIRATION_MINUTES,
           audience: appInfo.authorizedRedirectUris,
           app: {
             id: appId,

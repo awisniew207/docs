@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useStytch } from '@stytch/nextjs';
+import { useStytch } from '@stytch/react';
 import { useSetAuthInfo } from '../hooks/useAuthInfo';
 import { z } from 'zod';
 import PhoneInput from 'react-phone-number-input';
