@@ -4,6 +4,7 @@
   "entryPoints": [
     "./src/index.ts"
   ],
+  "name": "Vincent API Docs",
   "projectDocuments": [
     "docs/Why-Vincent.md",
     "docs/Developers/Quick-Start.md",
@@ -13,16 +14,16 @@
   ],
   "out": "./sdk-docs",
   "skipErrorChecking": true,
-  "plugin": ["typedoc-material-theme"],
+  "plugin": ["typedoc-material-theme", "typedoc-plugin-extras"],
+  "customTitle": "Vincent API Docs",
+  "includeVersion": false,
   "navigation": {
     "includeCategories": true
   },
   "defaultCategory": "API",
   "categorizeByGroup": false,
   "categoryOrder": ["Intro", "Developers", "Users", "Contact", "Vincent SDK API", "Vincent Web App",  "Vincent Tools"],
-  "router": "category",
   "visibilityFilters": { },
-  "includeVersion": true,
   "externalSymbolLinkMappings": {
     "@lit-protocol/types" : {
       "*": "https://v7-api-doc-lit-js-sdk.vercel.app/modules/types_src.html"
