@@ -35,7 +35,7 @@ export const useJwtRedirect = ({
         throw new Error('Cannot generate JWT: missing agentPKP or redirectUri');
       }
 
-      if (!authInfo) {
+      if (!authInfo || !authInfo.authInfo) {
         onStatusChange?.('Cannot generate JWT: missing authInfo', 'error');
         throw new Error('Cannot generate JWT: missing authInfo');
       }
@@ -70,8 +70,8 @@ export const useJwtRedirect = ({
             version: appVersion,
           },
           authentication: {
-            type: authInfo.type,
-            value: authInfo.value,
+            type: authInfo.authInfo.type,
+            value: authInfo.authInfo.value,
           },
         });
 

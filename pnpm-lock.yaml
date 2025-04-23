@@ -48,8 +48,8 @@ importers:
         specifier: ^7.0.8
         version: 7.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-sdk':
-        specifier: 0.0.2
-        version: 0.0.2(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 0.0.6
+        version: 0.0.6(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@radix-ui/react-dialog':
         specifier: ^1.1.6
         version: 1.1.7(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2109,8 +2109,9 @@ packages:
   '@lit-protocol/vincent-contracts@0.1.1-4':
     resolution: {integrity: sha512-rAEH26hbDfAKOOkZ9qP1gFtJKIiIznE+oc5ivbh1CS41qzCdF2aA+qJx9CaEUF3LfKJRikBfH+vryx9PRo9D0g==}
 
-  '@lit-protocol/vincent-sdk@0.0.2':
-    resolution: {integrity: sha512-dmZ5i0/NaQ1rrqj0NaAY2fs7YOgO8eKe6IushVlvNwmzeDX7RzFbxN3JFTb3iQwq4Xq8UoMKrA2xlapER7HSOw==}
+  '@lit-protocol/vincent-sdk@0.0.6':
+    resolution: {integrity: sha512-oLZEE3REcRuS0N1SO3WTUR9Lstpku0eKuNZ693YaJuRAlu2sMTeodHFUr68D9hPpdhn5G7LCtRkXlbGu4EFpAA==}
+    engines: {node: 20.11.1}
 
   '@lit-protocol/wasm@7.1.0':
     resolution: {integrity: sha512-vvn+Uwn9se/yc69ZY4ChRP+pxi3XvuExNNfuBVJ7nDgqZWd5nFy6kx5whL/cSDicxEtL0O0MIRVkjkDur7gdoA==}
@@ -4699,7 +4700,6 @@ packages:
 
   bun@1.2.9:
     resolution: {integrity: sha512-4l1MnbCk2aEDeyJPs8+St6XsVPwkQvq7XTHG501e7pdFOWvWCy9shfxsHtBwYzmT82gdvx9//AL4qStYfYMO4Q==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -11898,7 +11898,7 @@ snapshots:
 
   '@lit-protocol/vincent-contracts@0.1.1-4': {}
 
-  '@lit-protocol/vincent-sdk@0.0.2(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-sdk@0.0.6(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@lit-protocol/auth-helpers': 7.1.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/constants': 7.1.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -11906,6 +11906,7 @@ snapshots:
       '@noble/secp256k1': 2.2.3
       did-jwt: 8.0.11
       ethers: 5.7.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib: 2.8.1
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
