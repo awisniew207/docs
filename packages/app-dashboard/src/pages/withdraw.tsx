@@ -294,7 +294,7 @@ export function Withdraw() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen pt-2">
+    <div className="grow flex items-center justify-center">
       {renderContent()}
     </div>
   );

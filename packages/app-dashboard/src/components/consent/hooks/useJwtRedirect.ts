@@ -4,9 +4,8 @@ import { jwt } from '@lit-protocol/vincent-sdk';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { AppView } from '../types';
 import { litNodeClient } from '../utils/lit';
-import { env } from '@/config/env';
+import { useReadAuthInfo } from './useAuthInfo';
 
-const { VITE_JWT_EXPIRATION_MINUTES } = env;
 const { create } = jwt;
 
 interface UseJwtRedirectProps {
@@ -26,26 +25,41 @@ export const useJwtRedirect = ({
   onStatusChange,
 }: UseJwtRedirectProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const authInfo = useReadAuthInfo();
 
   // Generate JWT for redirection
   const generateJWT = useCallback(
-    async (appInfo: AppView): Promise<string> => {
+    async (
+      appId: string,
+      appVersion: number,
+      appInfo: AppView,
+    ): Promise<string> => {
       if (!agentPKP || !redirectUri) {
-        onStatusChange?.('Cannot generate JWT: missing agentPKP or redirectUri', 'error');
+        onStatusChange?.(
+          'Cannot generate JWT: missing agentPKP or redirectUri',
+          'error',
+        );
         throw new Error('Cannot generate JWT: missing agentPKP or redirectUri');
       }
 
+      if (!authInfo) {
+        onStatusChange?.('Cannot generate JWT: missing authInfo', 'error');
+        throw new Error('Cannot generate JWT: missing authInfo');
+      }
+
       if (!appInfo.authorizedRedirectUris.includes(redirectUri)) {
-        onStatusChange?.('Cannot generate JWT: redirectUri not in authorizedRedirectUris', 'error');
-        throw new Error('Cannot generate JWT: redirectUri not in authorizedRedirectUris');
+        onStatusChange?.(
+          'Cannot generate JWT: redirectUri not in authorizedRedirectUris',
+          'error',
+        );
+        throw new Error(
+          'Cannot generate JWT: redirectUri not in authorizedRedirectUris',
+        );
       }
 
       try {
         setIsGenerating(true);
-        onStatusChange?.(
-          'Initializing Agent EVM Wallet...',
-          'info',
-        );
+        onStatusChange?.('Initializing Agent EVM Wallet...', 'info');
 
         const agentPkpWallet = new PKPEthersWallet({
           controllerSessionSigs: sessionSigs,
@@ -58,8 +72,18 @@ export const useJwtRedirect = ({
           pkpWallet: agentPkpWallet,
           pkp: agentPKP,
           payload: {},
-          expiresInMinutes: VITE_JWT_EXPIRATION_MINUTES,
+          expiresInMinutes: parseInt(
+            process.env.NEXT_PUBLIC_JWT_EXPIRATION_MINUTES!,
+          ),
           audience: appInfo.authorizedRedirectUris,
+          app: {
+            id: appId,
+            version: appVersion,
+          },
+          authentication: {
+            type: authInfo.type,
+            value: authInfo.value,
+          },
         });
 
         onStatusChange?.('Successfully logged in', 'success');
@@ -72,7 +96,7 @@ export const useJwtRedirect = ({
         setIsGenerating(false);
       }
     },
-    [agentPKP, redirectUri, sessionSigs, onStatusChange],
+    [agentPKP, authInfo, redirectUri, sessionSigs, onStatusChange],
   );
 
   const redirectWithJWT = useCallback(

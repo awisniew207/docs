@@ -194,14 +194,6 @@ export default function AuthenticatedConsentForm({
         });
     } else if (!useCurrentVersionOnly) {
       permittedVersionFetchedRef.current = null;
-
-      // If we previously used a specific version, we should reload the latest version
-      if (permittedVersionFetchedRef.current !== null) {
-        updateState({ isLoading: true });
-        fetchVersionInfo()
-          .then(() => updateState({ isLoading: false }))
-          .catch(() => updateState({ isLoading: false }));
-      }
     }
   }, [useCurrentVersionOnly, permittedVersion, appId, fetchVersionInfo, fetchExistingParameters, existingParameters, isLoadingParameters, updateState, showErrorWithStatus]);
 
@@ -289,76 +281,46 @@ export default function AuthenticatedConsentForm({
       const errorMessage = 'Missing version data. Please refresh the page and try again.';
       setError(errorMessage);
       showErrorWithStatus(errorMessage, 'Missing Data');
-      setSubmitting(false);
       return;
     }
 
     setSubmitting(true);
     showStatus('Processing approval...', 'info');
     try {
-      const handleFormSubmission = async (): Promise<{ success: boolean }> => {
-        try {
-          if (!appInfo) {
-            console.error(
-              'Missing version data in handleFormSubmission'
-            );
-            const errorMessage = 'Missing version data. Please try again.';
-            setError(errorMessage);
-            showErrorWithStatus(errorMessage, 'Missing Data');
-            return { success: false };
-          }
+      const appVersion = permittedVersion || Number(appInfo.latestVersion);
+      if (!agentPKP || !appId || !appVersion) {
+        const errorMessage = 'Missing required data. Please try again.';
+        setError(errorMessage);
+        showErrorWithStatus(errorMessage, 'Missing Data');
+        return;
+      }
 
-          if (!agentPKP || !appId) {
-            console.error(
-              'Missing required data for consent approval in handleFormSubmission'
-            );
-            const errorMessage = 'Missing required data. Please try again.';
-            setError(errorMessage);
-            showErrorWithStatus(errorMessage, 'Missing Data');
-            return { success: false };
-          }
+      const result = await (useCurrentVersionOnly ? updateParameters() : approveConsent());
 
-          // If we're specifically updating parameters for the current version,
-          // use updateParameters instead of full consent approval
-          if (useCurrentVersionOnly) {
-            await updateParameters();
-          } else {
-            await approveConsent();
-          }
+      if (!result || !result.success) {
+        const errorMessage = result?.message || 'Approval process failed';
+        showErrorWithStatus(errorMessage, 'Approval Failed');
+        return;
+      }
 
-          showStatus('Generating authentication token...', 'info');
-          const jwt = await generateJWT(appInfo);
-          updateState({ showSuccess: true });
+      showStatus('Generating authentication token...', 'info');
+      const jwt = await generateJWT(appId, appVersion, appInfo);
+      updateState({ showSuccess: true });
 
-          showStatus('Approval successful! Redirecting...', 'success');
-          setTimeout(() => {
-            redirectWithJWT(jwt);
-          }, 2000);
-
-          return {
-            success: true,
-          };
-        } catch (error) {
-          // Error details are already handled by approveConsent()
-          // Just log the error here for tracing purposes
-          console.error('Error processing transaction:', {
-            error,
-            errorCode: (error as any).code,
-            errorMessage: (error as any).message,
-            errorReason: (error as any).reason,
-            errorData: (error as any).data,
-          });
-          throw error;
-        }
-      };
-
-      await handleFormSubmission();
+      showStatus('Approval successful! Redirecting...', 'success');
+      setTimeout(() => {
+        redirectWithJWT(jwt);
+      }, 2000);
     } catch (err) {
       console.error('Error submitting form:', err);
+      // Show a user-friendly error message
+      const errorMessage = 'Something went wrong. Please try again.';
+      setError(errorMessage);
+      showErrorWithStatus(errorMessage, 'Error');
     } finally {
       setSubmitting(false);
     }
-  }, [approveConsent, isAppVersionDisabled, updateParameters, generateJWT, redirectWithJWT, agentPKP, appId, appInfo, showErrorWithStatus, showStatus, updateState, useCurrentVersionOnly]);
+  }, [isAppVersionDisabled, appInfo, showStatus, showErrorWithStatus, permittedVersion, agentPKP, appId, useCurrentVersionOnly, updateParameters, approveConsent, generateJWT, updateState, redirectWithJWT]);
 
   /**
    * Handles the disapproval action when the user denies permission to the app.
@@ -375,10 +337,17 @@ export default function AuthenticatedConsentForm({
 
       const result = await disapproveConsent();
 
+      if (!result || !result.success) {
+        const errorMessage = result?.message || 'Disapproval process failed';
+        setError(errorMessage);
+        showErrorWithStatus(errorMessage, 'Disapproval Failed');
+        updateState({ showDisapproval: false });
+        return;
+      }
+
       if (result.redirectUri) {
         executeRedirect(result.redirectUri);
       }
-
     } catch (err) {
       console.error('Error in handleDisapprove:', err);
       const errorMessage = 'Failed to disapprove. Please try again.';
@@ -563,16 +532,12 @@ export default function AuthenticatedConsentForm({
 
         {/* Content */}
         <div className="p-6">
-          <StatusMessage message={statusMessage} type={statusType} />
           <VersionUpgradePrompt
             appInfo={appInfo}
             permittedVersion={permittedVersion}
-            agentPKP={agentPKP}
             onUpgrade={handleUpgrade}
             onContinue={continueWithExistingPermission}
             onUpdateParameters={handleUpdateParameters}
-            statusMessage={statusMessage}
-            statusType={statusType}
           />
         </div>
       </div>

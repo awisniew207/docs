@@ -288,7 +288,7 @@ export default function IndexView() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-20">
+    <div className="grow flex items-center justify-center">
       {renderContent()}
     </div>
   );

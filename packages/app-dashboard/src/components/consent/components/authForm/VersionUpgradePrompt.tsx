@@ -1,18 +1,13 @@
 import { AppView } from '../../types';
 import { useVersionEnabledCheck } from '../../hooks/useVersionEnabledCheck';
-import { IRelayPKP } from '@lit-protocol/types';
 import { Button } from '@/components/ui/button';
 
 interface VersionUpgradePromptProps {
   appInfo: AppView;
   permittedVersion: number;
-  agentPKP?: IRelayPKP;
   onUpgrade: () => void;
   onContinue: () => void;
   onUpdateParameters: () => void;
-  statusMessage?: string;
-  statusType?: 'info' | 'warning' | 'success' | 'error';
-  showStatusMessage?: boolean;
 }
 
 const VersionUpgradePrompt = ({

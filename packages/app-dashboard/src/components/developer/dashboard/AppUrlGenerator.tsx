@@ -38,7 +38,7 @@ export function AppUrlGenerator({ app }: AppUrlGeneratorProps) {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="text-black">
+        <Button variant="outline">
           <Link className="h-4 w-4 mr-2 font-bold text-black" />
           Generate App URL
         </Button>
@@ -81,7 +81,6 @@ export function AppUrlGenerator({ app }: AppUrlGeneratorProps) {
               <Button
                 variant="outline"
                 onClick={copyToClipboard}
-                className="text-black"
               >
                 {copied ? "URL Copied!" : "Copy Application URL"}
                 <Copy className="h-4 w-4 ml-2" />

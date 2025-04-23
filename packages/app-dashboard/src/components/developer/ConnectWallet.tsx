@@ -48,7 +48,7 @@ export default function ConnectWalletScreen() {
                                         {(() => {
                                             if (!connected) {
                                                 return (
-                                                    <Button onClick={openConnectModal} className="text-black">
+                                                    <Button variant='outline' onClick={openConnectModal}>
                                                         Connect Wallet
                                                     </Button>
                                                 );
@@ -67,7 +67,6 @@ export default function ConnectWalletScreen() {
                                                     <Button
                                                         onClick={openChainModal}
                                                         variant="outline"
-                                                        className="text-black"
                                                     >
                                                         {chain.name}
                                                     </Button>
@@ -75,7 +74,6 @@ export default function ConnectWalletScreen() {
                                                     <Button
                                                         onClick={openAccountModal}
                                                         variant="outline"
-                                                        className="text-black"
                                                     >
                                                         {account.displayName}
                                                     </Button>

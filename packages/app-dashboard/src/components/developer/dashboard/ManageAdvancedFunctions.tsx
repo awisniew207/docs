@@ -379,7 +379,7 @@ export default function ManageAdvancedFunctionsScreen({
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              className="grow"
+              className="w-full"
               variant='outline'
               onClick={() => {
                 if ((dashboard.toolPolicies || []).length === 0) {
@@ -418,7 +418,7 @@ export default function ManageAdvancedFunctionsScreen({
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              className="grow"
+              className="w-full"
               variant='outline'
               onClick={() => setShowUpdateDeploymentStatusDialog(true)}
             >
@@ -444,8 +444,8 @@ export default function ManageAdvancedFunctionsScreen({
           <CardContent className="space-y-4">
             <Button
               variant="destructive"
-              onClick={() => setShowDeleteAppDialog(true)}
               className="w-full"
+              onClick={() => setShowDeleteAppDialog(true)}
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Delete App
