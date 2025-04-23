@@ -1,4 +1,4 @@
-# OVerview
+# Overview
 
 Vincent is a monorepo that contains the Vincent Dashboard, Contracts and SDK.
 
