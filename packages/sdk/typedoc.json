@@ -4,7 +4,7 @@
   "entryPoints": [
     "./src/index.ts"
   ],
-  "name": "Vincent API Docs",
+  "name": "Vincent Docs",
   "projectDocuments": [
     "docs/Why-Vincent.md",
     "docs/Developers/Quick-Start.md",
@@ -15,7 +15,7 @@
   "out": "./sdk-docs",
   "skipErrorChecking": true,
   "plugin": ["typedoc-material-theme", "typedoc-plugin-extras"],
-  "customTitle": "Vincent API Docs",
+  "customTitle": "Vincent Docs",
   "includeVersion": false,
   "navigation": {
     "includeCategories": true
