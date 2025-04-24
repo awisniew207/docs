@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import VersionParametersForm from './authForm/VersionParametersForm';
 import { useErrorPopup } from '@/providers/ErrorPopup';
 import { Button } from '@/components/ui/button';
+import ProtectedByLit from '@/components/layout/ProtectedByLit';
 
 import StatusMessage from './authForm/StatusMessage';
 import StatusAnimation from './authForm/StatusAnimation';
@@ -27,7 +28,7 @@ import {
   AuthenticatedConsentFormProps,
   VersionParameter,
   AppView,
-  ContractVersionResult
+  ContractVersionResult,
 } from '../types';
 
 /**
@@ -72,7 +73,7 @@ export default function AuthenticatedConsentForm({
     agentPKP,
     sessionSigs,
     redirectUri,
-    onStatusChange: showStatus
+    onStatusChange: showStatus,
   });
 
   const fetchExistingParametersRef = useRef<(() => Promise<void>) | undefined>(undefined);
@@ -93,7 +94,7 @@ export default function AuthenticatedConsentForm({
     handleUpgrade,
     updateState,
     useCurrentVersionOnly,
-    isAppDeleted
+    isAppDeleted,
   } = useAppPermissionCheck({
     appId,
     agentPKP,
@@ -105,7 +106,7 @@ export default function AuthenticatedConsentForm({
         return fetchExistingParametersRef.current();
       }
     }, []),
-    onStatusChange: showStatus
+    onStatusChange: showStatus,
   });
 
   // Use the parameter management hook
@@ -121,7 +122,7 @@ export default function AuthenticatedConsentForm({
     appId,
     agentPKP,
     appInfo,
-    onStatusChange: showStatus
+    onStatusChange: showStatus,
   });
 
   // Set the fetchExistingParameters ref after it's created
@@ -160,21 +161,25 @@ export default function AuthenticatedConsentForm({
     userPKP,
     sessionSigs,
     onStatusChange: showStatus,
-    onError: showErrorWithStatus
+    onError: showErrorWithStatus,
   });
 
   // Add the consent disapproval hook
   const { disapproveConsent, executeRedirect } = useConsentDisapproval({
     redirectUri,
     onStatusChange: showStatus,
-    onError: showErrorWithStatus
+    onError: showErrorWithStatus,
   });
 
   const permittedVersionFetchedRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (useCurrentVersionOnly && permittedVersion !== null && appId &&
-      permittedVersionFetchedRef.current !== permittedVersion) {
+    if (
+      useCurrentVersionOnly &&
+      permittedVersion !== null &&
+      appId &&
+      permittedVersionFetchedRef.current !== permittedVersion
+    ) {
       permittedVersionFetchedRef.current = permittedVersion;
 
       updateState({ isLoading: true });
@@ -187,7 +192,7 @@ export default function AuthenticatedConsentForm({
             fetchExistingParameters();
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(`Error fetching version ${permittedVersion} data:`, error);
           updateState({ isLoading: false });
           showErrorWithStatus('Failed to load version data', 'Error');
@@ -195,7 +200,17 @@ export default function AuthenticatedConsentForm({
     } else if (!useCurrentVersionOnly) {
       permittedVersionFetchedRef.current = null;
     }
-  }, [useCurrentVersionOnly, permittedVersion, appId, fetchVersionInfo, fetchExistingParameters, existingParameters, isLoadingParameters, updateState, showErrorWithStatus]);
+  }, [
+    useCurrentVersionOnly,
+    permittedVersion,
+    appId,
+    fetchVersionInfo,
+    fetchExistingParameters,
+    existingParameters,
+    isLoadingParameters,
+    updateState,
+    showErrorWithStatus,
+  ]);
 
   // Use error popup for URL errors
   useEffect(() => {
@@ -213,39 +228,50 @@ export default function AuthenticatedConsentForm({
   // Add a dedicated effect to fetch parameters when updating the current version
   useEffect(() => {
     // We only want this to run when useCurrentVersionOnly is true and we don't have existingParameters yet
-    if (useCurrentVersionOnly &&
+    if (
+      useCurrentVersionOnly &&
       existingParameters.length === 0 &&
       !isLoadingParameters &&
       appId &&
       agentPKP &&
       permittedVersion !== null &&
-      paramsFetchedForVersionRef.current !== permittedVersion) {
-
+      paramsFetchedForVersionRef.current !== permittedVersion
+    ) {
       paramsFetchedForVersionRef.current = permittedVersion;
 
-      fetchExistingParameters().catch(error => {
+      fetchExistingParameters().catch((error) => {
         console.error('Error fetching existing parameters:', error);
         paramsFetchedForVersionRef.current = null; // Reset on error to allow retry
       });
     }
-  }, [useCurrentVersionOnly, existingParameters.length, isLoadingParameters, appId, agentPKP, fetchExistingParameters, permittedVersion]);
+  }, [
+    useCurrentVersionOnly,
+    existingParameters.length,
+    isLoadingParameters,
+    appId,
+    agentPKP,
+    fetchExistingParameters,
+    permittedVersion,
+  ]);
 
   /**
    * Handles parameter changes from the form.
    * Makes sure parameter changes are stored for submission.
    */
-  const handleParametersChange = useCallback((newParameters: VersionParameter[]) => {
+  const handleParametersChange = useCallback(
+    (newParameters: VersionParameter[]) => {
+      // Important: Make sure all parameter values are properly set
+      const validatedParameters = newParameters.map((param) => ({
+        ...param,
+        // Ensure value is not undefined (prevents errors in contract calls)
+        value: param.value === undefined ? '' : param.value,
+      }));
 
-    // Important: Make sure all parameter values are properly set
-    const validatedParameters = newParameters.map(param => ({
-      ...param,
-      // Ensure value is not undefined (prevents errors in contract calls)
-      value: param.value === undefined ? '' : param.value
-    }));
-
-    // Update the parameters state with the new values
-    setParameters(validatedParameters);
-  }, [setParameters]);
+      // Update the parameters state with the new values
+      setParameters(validatedParameters);
+    },
+    [setParameters],
+  );
 
   // Add a check for disabled app version
   const isAppVersionDisabled = useMemo(() => {
@@ -254,7 +280,6 @@ export default function AuthenticatedConsentForm({
     // Check if version is not enabled (disabled)
     return !versionInfo.appVersion.enabled;
   }, [versionInfo]);
-
 
   // ===== Event Handler Functions =====
 
@@ -320,7 +345,21 @@ export default function AuthenticatedConsentForm({
     } finally {
       setSubmitting(false);
     }
-  }, [isAppVersionDisabled, appInfo, showStatus, showErrorWithStatus, permittedVersion, agentPKP, appId, useCurrentVersionOnly, updateParameters, approveConsent, generateJWT, updateState, redirectWithJWT]);
+  }, [
+    isAppVersionDisabled,
+    appInfo,
+    showStatus,
+    showErrorWithStatus,
+    permittedVersion,
+    agentPKP,
+    appId,
+    useCurrentVersionOnly,
+    updateParameters,
+    approveConsent,
+    generateJWT,
+    updateState,
+    redirectWithJWT,
+  ]);
 
   /**
    * Handles the disapproval action when the user denies permission to the app.
@@ -389,7 +428,7 @@ export default function AuthenticatedConsentForm({
       showVersionUpgradePrompt: false,
       isLoading: true, // Set to true to show loading indicator
       checkingPermissions: false,
-      useCurrentVersionOnly: true
+      useCurrentVersionOnly: true,
     });
 
     // Ensure we load existing parameters if they're not already loaded
@@ -416,7 +455,7 @@ export default function AuthenticatedConsentForm({
             updateState({ isLoading: false });
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching permitted version data:', error);
           updateState({ isLoading: false });
           showErrorWithStatus('Failed to load version data', 'Error');
@@ -426,8 +465,16 @@ export default function AuthenticatedConsentForm({
         updateState({ isLoading: false });
       });
     }
-  }, [existingParameters, setParameters, updateState, permittedVersion, appId, fetchVersionInfo, fetchExistingParameters, showErrorWithStatus]);
-
+  }, [
+    existingParameters,
+    setParameters,
+    updateState,
+    permittedVersion,
+    appId,
+    fetchVersionInfo,
+    fetchExistingParameters,
+    showErrorWithStatus,
+  ]);
 
   useEffect(() => {
     if (error) {
@@ -508,10 +555,7 @@ export default function AuthenticatedConsentForm({
         {/* Content */}
         <div className="p-6">
           <StatusMessage message={statusMessage} type={statusType} />
-          <DeletedAppError
-            statusMessage={statusMessage}
-            statusType={statusType}
-          />
+          <DeletedAppError statusMessage={statusMessage} statusType={statusType} />
         </div>
       </div>
     );
@@ -545,7 +589,11 @@ export default function AuthenticatedConsentForm({
   }
 
   // Only check this after we've checked for the version upgrade prompt
-  if ((isAppAlreadyPermitted && !showUpdateModal) || (showSuccess && !showUpdateModal) || (showingAuthorizedMessage && !showUpdateModal)) {
+  if (
+    (isAppAlreadyPermitted && !showUpdateModal) ||
+    (showSuccess && !showUpdateModal) ||
+    (showingAuthorizedMessage && !showUpdateModal)
+  ) {
     return (
       <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
         {/* Header */}
@@ -618,7 +666,9 @@ export default function AuthenticatedConsentForm({
 
         {/* Content */}
         <div className="p-6">
-          <p className="text-center text-gray-700">Invalid request. Please check your URL parameters.</p>
+          <p className="text-center text-gray-700">
+            Invalid request. Please check your URL parameters.
+          </p>
         </div>
       </div>
     );
@@ -638,7 +688,9 @@ export default function AuthenticatedConsentForm({
 
         {/* Content */}
         <div className="p-6">
-          <p className="text-center text-gray-700">Invalid redirect URI. Please check your URL parameters.</p>
+          <p className="text-center text-gray-700">
+            Invalid redirect URI. Please check your URL parameters.
+          </p>
         </div>
       </div>
     );
@@ -666,16 +718,25 @@ export default function AuthenticatedConsentForm({
             <div className="text-center text-gray-600 text-sm mb-4">
               {appInfo.description}
               <br></br>
-              Version: {versionInfo ? versionInfo.appVersion.version.toString() : 'No version data'} •
-              App Mode: {appInfo.deploymentStatus === 0 ? 'DEV' :
-                       appInfo.deploymentStatus === 1 ? 'TEST' :
-                       appInfo.deploymentStatus === 2 ? 'PROD' : 'Unknown'}
+              Version: {versionInfo
+                ? versionInfo.appVersion.version.toString()
+                : 'No version data'}{' '}
+              • App Mode:{' '}
+              {appInfo.deploymentStatus === 0
+                ? 'DEV'
+                : appInfo.deploymentStatus === 1
+                  ? 'TEST'
+                  : appInfo.deploymentStatus === 2
+                    ? 'PROD'
+                    : 'Unknown'}
             </div>
           )}
 
           <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-6">
             <p className="text-sm text-gray-700">
-              <span className="font-medium">Notice:</span> This version of {appInfo.name} is currently disabled by the developer and cannot be authorized. Please contact the app developer for assistance or try again later.
+              <span className="font-medium">Notice:</span> This version of {appInfo.name} is
+              currently disabled by the developer and cannot be authorized. Please contact the app
+              developer for assistance or try again later.
             </p>
           </div>
 
@@ -689,16 +750,7 @@ export default function AuthenticatedConsentForm({
           </div>
         </div>
 
-        <div className="px-6 py-3 text-center border-t border-gray-100">
-          <p className="text-xs text-black flex items-center justify-center">
-            <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <a href="https://litprotocol.com" target="_blank" rel="noopener noreferrer" className="flex items-center">
-              Protected by <img src="/wordmark.svg" alt="Lit" width={15} height={9} className="ml-1" />
-            </a>
-          </p>
-        </div>
+        <ProtectedByLit />
       </div>
     );
   }
@@ -729,10 +781,16 @@ export default function AuthenticatedConsentForm({
               <div className="text-center text-gray-600 text-sm mb-4">
                 {appInfo.description}
                 <br></br>
-                Version: {versionInfo ? versionInfo.appVersion.version.toString() : 'No version data'} •
-                App Mode: {appInfo.deploymentStatus === 0 ? 'DEV' :
-                         appInfo.deploymentStatus === 1 ? 'TEST' :
-                         appInfo.deploymentStatus === 2 ? 'PROD' : 'Unknown'}
+                Version:{' '}
+                {versionInfo ? versionInfo.appVersion.version.toString() : 'No version data'} • App
+                Mode:{' '}
+                {appInfo.deploymentStatus === 0
+                  ? 'DEV'
+                  : appInfo.deploymentStatus === 1
+                    ? 'TEST'
+                    : appInfo.deploymentStatus === 2
+                      ? 'PROD'
+                      : 'Unknown'}
               </div>
             )}
 
@@ -741,7 +799,6 @@ export default function AuthenticatedConsentForm({
                 EVM Address: {agentPKP.ethAddress}
               </div>
             )}
-
 
             {versionInfo && (
               <VersionParametersForm
@@ -764,16 +821,7 @@ export default function AuthenticatedConsentForm({
           </>
         )}
       </div>
-      <div className="px-6 py-3 text-center border-t border-gray-100">
-        <p className="text-xs text-black flex items-center justify-center">
-          <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <a href="https://litprotocol.com" target="_blank" rel="noopener noreferrer" className="flex items-center">
-            Protected by <img src="/wordmark.svg" alt="Lit" width={15} height={9} className="ml-1" />
-          </a>
-        </p>
-      </div>
+      <ProtectedByLit />
     </div>
   );
 }
