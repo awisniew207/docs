@@ -1,20 +1,29 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+  "readme": "docs/Why-Vincent.md",
   "entryPoints": [
     "./src/index.ts"
   ],
+  "name": "Vincent API Docs",
+  "projectDocuments": [
+    "docs/Why-Vincent.md",
+    "docs/Developers/Quick-Start.md",
+    "docs/Developers/Custom-Tools.md",
+    "docs/Users/Onboarding.md",
+    "docs/Contact-Us.md"
+  ],
   "out": "./sdk-docs",
   "skipErrorChecking": true,
-  "plugin": ["typedoc-github-theme"],
+  "plugin": ["typedoc-material-theme", "typedoc-plugin-extras"],
+  "customTitle": "Vincent API Docs",
+  "includeVersion": false,
   "navigation": {
     "includeCategories": true
   },
-  "defaultCategory": "Types",
+  "defaultCategory": "API",
   "categorizeByGroup": false,
-  "categoryOrder": ["Vincent SDK API", "Vincent Web App",  "Vincent Tools"],
-  "router": "category",
+  "categoryOrder": ["Intro", "Developers", "Users", "Contact", "Vincent SDK API", "Vincent Web App",  "Vincent Tools"],
   "visibilityFilters": { },
-  "includeVersion": true,
   "externalSymbolLinkMappings": {
     "@lit-protocol/types" : {
       "*": "https://v7-api-doc-lit-js-sdk.vercel.app/modules/types_src.html"
@@ -31,5 +40,6 @@
     "@ethersproject/abstract-signer" : {
       "*": "https://docs.ethers.org/v5/api/"
     }
-  }
+  },
+  "customCss": "./docs/src/css/custom.css"
 }
