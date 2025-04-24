@@ -26,11 +26,9 @@ export const env = createEnv({
     VITE_STYTCH_PUBLIC_TOKEN: z.string(),
     VITE_STYTCH_PROJECT_ID: z.string(),
     VITE_LIT_PAYER_SECRET_KEY: z.string(),
-    VITE_DCA_POLICY_IPFS_CID: z.string(),
-    VITE_DCA_TOOL_IPFS_CID: z.string(),
     VITE_JWT_EXPIRATION_MINUTES: z.coerce.number(),
     VITE_GAS_BUFFER_DIVISOR: z.coerce.number(),
     VITE_DOMAIN: z.string().optional(),
     VITE_ENV: z.enum(['development', 'production', 'test']).default('development').optional(),
-  }
+  },
 });
