@@ -14,10 +14,7 @@ interface UseJwtRedirectProps {
   agentPKP?: IRelayPKP;
   sessionSigs: SessionSigs;
   redirectUri: string | null;
-  onStatusChange?: (
-    message: string,
-    type: 'info' | 'warning' | 'success' | 'error',
-  ) => void;
+  onStatusChange?: (message: string, type: 'info' | 'warning' | 'success' | 'error') => void;
 }
 
 export const useJwtRedirect = ({
@@ -31,32 +28,20 @@ export const useJwtRedirect = ({
 
   // Generate JWT for redirection
   const generateJWT = useCallback(
-    async (
-      appId: string,
-      appVersion: number,
-      appInfo: AppView,
-    ): Promise<string> => {
+    async (appId: string, appVersion: number, appInfo: AppView): Promise<string> => {
       if (!agentPKP || !redirectUri) {
-        onStatusChange?.(
-          'Cannot generate JWT: missing agentPKP or redirectUri',
-          'error',
-        );
+        onStatusChange?.('Cannot generate JWT: missing agentPKP or redirectUri', 'error');
         throw new Error('Cannot generate JWT: missing agentPKP or redirectUri');
       }
 
-      if (!authInfo) {
+      if (!authInfo || !authInfo.authInfo) {
         onStatusChange?.('Cannot generate JWT: missing authInfo', 'error');
         throw new Error('Cannot generate JWT: missing authInfo');
       }
 
       if (!appInfo.authorizedRedirectUris.includes(redirectUri)) {
-        onStatusChange?.(
-          'Cannot generate JWT: redirectUri not in authorizedRedirectUris',
-          'error',
-        );
-        throw new Error(
-          'Cannot generate JWT: redirectUri not in authorizedRedirectUris',
-        );
+        onStatusChange?.('Cannot generate JWT: redirectUri not in authorizedRedirectUris', 'error');
+        throw new Error('Cannot generate JWT: redirectUri not in authorizedRedirectUris');
       }
 
       try {
@@ -81,8 +66,8 @@ export const useJwtRedirect = ({
             version: appVersion,
           },
           authentication: {
-            type: authInfo.type,
-            value: authInfo.value,
+            type: authInfo.authInfo.type,
+            value: authInfo.authInfo.value,
           },
         });
 
