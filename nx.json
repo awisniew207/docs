@@ -43,5 +43,15 @@
     "version": {
       "preVersionCommand": "pnpm dlx nx build vincent-sdk"
     }
+  },
+  "targetDefaults": {
+    "nx-release-publish": {
+      "dependsOn": [
+        {
+          "projects": "self",
+          "target": "publish-typedoc"
+        }
+      ]
+    }
   }
 }

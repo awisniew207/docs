@@ -22,6 +22,7 @@
     "test": "nx run-many --target=test --all",
     "lint": "nx run-many --target=lint --all",
     "format": "nx format:write",
+    "release": "nx release",
     "dev:dashboard": "nx serve dashboard",
     "build:dashboard": "nx build dashboard",
     "start:dashboard": "nx serve dashboard --prod",
