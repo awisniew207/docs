@@ -14,7 +14,7 @@ pnpm build
 
 ## Release
 
-Each package handles it own release cycle as they are fundamentally independent and should not be locked to be up to date unless we want to.
+Each package handles its own release cycle as they are fundamentally independent and should not be locked to be up to date unless we want to.
 
 Check each package's README for more information on how each one releases.
 
