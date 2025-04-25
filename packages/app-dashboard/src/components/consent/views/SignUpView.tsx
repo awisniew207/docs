@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useNavigate } from 'react-router';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import Loading from '../components/Loading';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,8 @@ const SignUpView: FC<SignUpViewProps> = ({
   handleRegisterWithWebAuthn,
   authWithWebAuthn,
 }) => {
+  const navigate = useNavigate();
+
   const renderWebAuthnView = () => (
     <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-100 flex items-center">
@@ -67,7 +70,7 @@ const SignUpView: FC<SignUpViewProps> = ({
         </p>
         <Button
           className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 w-full font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={() => window.location.reload()}
+          onClick={() => navigate('.', { replace: true })}
         >
           Try Again
         </Button>
@@ -95,7 +98,7 @@ const SignUpView: FC<SignUpViewProps> = ({
         </p>
         <Button
           className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 w-full font-medium text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={() => window.location.reload()}
+          onClick={() => navigate('.', { replace: true })}
         >
           Start Over
         </Button>

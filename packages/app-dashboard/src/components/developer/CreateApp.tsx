@@ -1,11 +1,6 @@
+import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -28,14 +23,18 @@ import { mapTypeToEnum } from '@/services/types';
 
 // Tool schema
 const toolSchema = z.object({
-  toolIpfsCid: z.string().min(1, "Tool IPFS CID is required"),
-  policies: z.array(z.object({
-    policyIpfsCid: z.string(),
-    parameters: z.array(z.object({
-      name: z.string(),
-      type: z.string().default("string")
-    }))
-  }))
+  toolIpfsCid: z.string().min(1, 'Tool IPFS CID is required'),
+  policies: z.array(
+    z.object({
+      policyIpfsCid: z.string(),
+      parameters: z.array(
+        z.object({
+          name: z.string(),
+          type: z.string().default('string'),
+        }),
+      ),
+    }),
+  ),
 });
 
 const formSchema = z.object({
@@ -49,45 +48,56 @@ const formSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description cannot exceed 500 characters'),
 
-  authorizedRedirectUris: z.array(z.string().min(1, "Redirect URI cannot be empty"))
+  authorizedRedirectUris: z
+    .array(z.string().min(1, 'Redirect URI cannot be empty'))
     .min(1, 'At least one redirect URI is required'),
 
-  tools: z.array(toolSchema).min(1, "At least one tool is required")
-  .refine(tools => {
-    const cids = tools.map(t => t.toolIpfsCid);
-    return new Set(cids).size === cids.length;
-  }, { message: "Tool IPFS CIDs must be unique" })
-  .refine(tools => {
-    // Check that policy CIDs are unique across all tools
-    const allPolicyCids: string[] = [];
+  tools: z
+    .array(toolSchema)
+    .min(1, 'At least one tool is required')
+    .refine(
+      (tools) => {
+        const cids = tools.map((t) => t.toolIpfsCid);
+        return new Set(cids).size === cids.length;
+      },
+      { message: 'Tool IPFS CIDs must be unique' },
+    )
+    .refine(
+      (tools) => {
+        // Check that policy CIDs are unique across all tools
+        const allPolicyCids: string[] = [];
 
-    for (const tool of tools) {
-      for (const policy of tool.policies) {
-        if (policy.policyIpfsCid && policy.policyIpfsCid.trim() !== '') {
-          allPolicyCids.push(policy.policyIpfsCid);
+        for (const tool of tools) {
+          for (const policy of tool.policies) {
+            if (policy.policyIpfsCid && policy.policyIpfsCid.trim() !== '') {
+              allPolicyCids.push(policy.policyIpfsCid);
+            }
+          }
         }
-      }
-    }
 
-    return new Set(allPolicyCids).size === allPolicyCids.length;
-  }, { message: "Policy IPFS CIDs must be unique across all tools" })
-  .refine(tools => {
-    // Check that parameter names are unique across all policies
-    const allParamNames: string[] = [];
+        return new Set(allPolicyCids).size === allPolicyCids.length;
+      },
+      { message: 'Policy IPFS CIDs must be unique across all tools' },
+    )
+    .refine(
+      (tools) => {
+        // Check that parameter names are unique across all policies
+        const allParamNames: string[] = [];
 
-    for (const tool of tools) {
-      for (const policy of tool.policies) {
-        for (const param of policy.parameters) {
-          allParamNames.push(param.name);
+        for (const tool of tools) {
+          for (const policy of tool.policies) {
+            for (const param of policy.parameters) {
+              allParamNames.push(param.name);
+            }
+          }
         }
-      }
-    }
 
-    return new Set(allParamNames).size === allParamNames.length;
-  }, { message: "Parameter names must be unique across all policies" }),
+        return new Set(allParamNames).size === allParamNames.length;
+      },
+      { message: 'Parameter names must be unique across all policies' },
+    ),
 
-   deploymentStatus: z.number().default(0),
-
+  deploymentStatus: z.number().default(0),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -102,6 +112,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
   const chainId = useChainId();
+  const navigate = useNavigate();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -113,16 +124,20 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       tools: [
         {
           toolIpfsCid: '',
-          policies: []
-        }
-      ]
+          policies: [],
+        },
+      ],
     },
     mode: 'onBlur',
   });
 
-  const { fields: toolFields, append: appendTool, remove: removeTool } = useFieldArray({
+  const {
+    fields: toolFields,
+    append: appendTool,
+    remove: removeTool,
+  } = useFieldArray({
     control: form.control,
-    name: "tools",
+    name: 'tools',
   });
 
   const appendPolicy = (toolIndex: number) => {
@@ -135,9 +150,9 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
           ...updatedTools[toolIndex].policies,
           {
             policyIpfsCid: '',
-            parameters: []
-          }
-        ]
+            parameters: [],
+          },
+        ],
       };
       form.setValue('tools', updatedTools);
     }
@@ -151,7 +166,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       policies.splice(policyIndex, 1);
       updatedTools[toolIndex] = {
         ...updatedTools[toolIndex],
-        policies
+        policies,
       };
       form.setValue('tools', updatedTools);
     }
@@ -159,8 +174,12 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
   const appendParameter = (toolIndex: number, policyIndex: number) => {
     const currentTools = form.getValues().tools;
-    if (toolIndex >= 0 && toolIndex < currentTools.length &&
-        policyIndex >= 0 && policyIndex < currentTools[toolIndex].policies.length) {
+    if (
+      toolIndex >= 0 &&
+      toolIndex < currentTools.length &&
+      policyIndex >= 0 &&
+      policyIndex < currentTools[toolIndex].policies.length
+    ) {
       const updatedTools = [...currentTools];
       const updatedPolicies = [...updatedTools[toolIndex].policies];
       const updatedParameters = [...updatedPolicies[policyIndex].parameters];
@@ -168,11 +187,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       updatedParameters.push({ name: '', type: 'string' });
       updatedPolicies[policyIndex] = {
         ...updatedPolicies[policyIndex],
-        parameters: updatedParameters
+        parameters: updatedParameters,
       };
       updatedTools[toolIndex] = {
         ...updatedTools[toolIndex],
-        policies: updatedPolicies
+        policies: updatedPolicies,
       };
 
       form.setValue('tools', updatedTools);
@@ -181,10 +200,14 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
   const removeParameter = (toolIndex: number, policyIndex: number, paramIndex: number) => {
     const currentTools = form.getValues().tools;
-    if (toolIndex >= 0 && toolIndex < currentTools.length &&
-        policyIndex >= 0 && policyIndex < currentTools[toolIndex].policies.length &&
-        paramIndex >= 0 && paramIndex < currentTools[toolIndex].policies[policyIndex].parameters.length) {
-
+    if (
+      toolIndex >= 0 &&
+      toolIndex < currentTools.length &&
+      policyIndex >= 0 &&
+      policyIndex < currentTools[toolIndex].policies.length &&
+      paramIndex >= 0 &&
+      paramIndex < currentTools[toolIndex].policies[policyIndex].parameters.length
+    ) {
       const updatedTools = [...currentTools];
       const updatedPolicies = [...updatedTools[toolIndex].policies];
       const updatedParameters = [...updatedPolicies[policyIndex].parameters];
@@ -192,11 +215,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       updatedParameters.splice(paramIndex, 1);
       updatedPolicies[policyIndex] = {
         ...updatedPolicies[policyIndex],
-        parameters: updatedParameters
+        parameters: updatedParameters,
       };
       updatedTools[toolIndex] = {
         ...updatedTools[toolIndex],
-        policies: updatedPolicies
+        policies: updatedPolicies,
       };
 
       form.setValue('tools', updatedTools);
@@ -205,13 +228,13 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
   const watchTools = useWatch({
     control: form.control,
-    name: 'tools'
+    name: 'tools',
   });
 
   const addTool = () => {
     appendTool({
       toolIpfsCid: '',
-      policies: []
+      policies: [],
     });
   };
 
@@ -229,69 +252,75 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setIsSubmitting(true);
       setError(null);
 
-        // Check for duplicate tool CIDs
-        const toolCids = values.tools.map(tool => tool.toolIpfsCid);
-        if (new Set(toolCids).size !== toolCids.length) {
-          setError("Duplicate Tool IPFS CIDs found. Each tool must have a unique CID.");
+      // Check for duplicate tool CIDs
+      const toolCids = values.tools.map((tool) => tool.toolIpfsCid);
+      if (new Set(toolCids).size !== toolCids.length) {
+        setError('Duplicate Tool IPFS CIDs found. Each tool must have a unique CID.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Check for duplicate policy CIDs within each tool
+      for (let i = 0; i < values.tools.length; i++) {
+        const policyCids = values.tools[i].policies.map((policy) => policy.policyIpfsCid);
+        if (new Set(policyCids).size !== policyCids.length) {
+          setError(
+            `Duplicate Policy IPFS CIDs found in Tool ${i + 1}. Each policy within a tool must have a unique CID.`,
+          );
           setIsSubmitting(false);
           return;
         }
 
-        // Check for duplicate policy CIDs within each tool
-        for (let i = 0; i < values.tools.length; i++) {
-          const policyCids = values.tools[i].policies.map(policy => policy.policyIpfsCid);
-          if (new Set(policyCids).size !== policyCids.length) {
-            setError(`Duplicate Policy IPFS CIDs found in Tool ${i + 1}. Each policy within a tool must have a unique CID.`);
+        // Check for duplicate parameter names within each policy
+        for (let j = 0; j < values.tools[i].policies.length; j++) {
+          const paramNames = values.tools[i].policies[j].parameters.map((param) => param.name);
+          if (new Set(paramNames).size !== paramNames.length) {
+            setError(
+              `Duplicate parameter names found in Tool ${i + 1}, Policy ${j + 1}. Each parameter must have a unique name.`,
+            );
             setIsSubmitting(false);
             return;
           }
-
-          // Check for duplicate parameter names within each policy
-          for (let j = 0; j < values.tools[i].policies.length; j++) {
-            const paramNames = values.tools[i].policies[j].parameters.map(param => param.name);
-            if (new Set(paramNames).size !== paramNames.length) {
-              setError(`Duplicate parameter names found in Tool ${i + 1}, Policy ${j + 1}. Each parameter must have a unique name.`);
-              setIsSubmitting(false);
-              return;
-            }
-          }
         }
+      }
 
-      const toolIpfsCids = values.tools.map(tool => tool.toolIpfsCid);
-      const toolPolicies = values.tools.map(tool =>
-        (tool.policies || []).map(policy => policy.policyIpfsCid)
+      const toolIpfsCids = values.tools.map((tool) => tool.toolIpfsCid);
+      const toolPolicies = values.tools.map((tool) =>
+        (tool.policies || []).map((policy) => policy.policyIpfsCid),
       );
-      const toolPolicyParameterTypes = values.tools.map(tool =>
-        (tool.policies || []).map(policy =>
-          (policy.parameters || []).map(param => mapTypeToEnum(param.type))
-        )
+      const toolPolicyParameterTypes = values.tools.map((tool) =>
+        (tool.policies || []).map((policy) =>
+          (policy.parameters || []).map((param) => mapTypeToEnum(param.type)),
+        ),
       );
-      const toolPolicyParameterNames = values.tools.map(tool =>
-        (tool.policies || []).map(policy =>
-          (policy.parameters || []).map(param => param.name)
-        )
+      const toolPolicyParameterNames = values.tools.map((tool) =>
+        (tool.policies || []).map((policy) => (policy.parameters || []).map((param) => param.name)),
       );
 
       const contracts = new VincentContracts('datil' as Network);
-      const receipt = await contracts.registerApp(
-        values.appName,
-        values.description,
-        values.authorizedRedirectUris,
-        [],
-        toolIpfsCids,
-        toolPolicies,
-        toolPolicyParameterTypes,
-        toolPolicyParameterNames,
-        values.deploymentStatus
-      ).catch((err) => {
-        // Handle user rejection specifically
-        console.error('Transaction rejected:', err);
-        setIsSubmitting(false);
-        setError(err.message && err.message.includes('user rejected')
-          ? 'Transaction was rejected'
-          : 'Failed to create app - rejected the transaction');
-        return null;
-      });
+      const receipt = await contracts
+        .registerApp(
+          values.appName,
+          values.description,
+          values.authorizedRedirectUris,
+          [],
+          toolIpfsCids,
+          toolPolicies,
+          toolPolicyParameterTypes,
+          toolPolicyParameterNames,
+          values.deploymentStatus,
+        )
+        .catch((err) => {
+          // Handle user rejection specifically
+          console.error('Transaction rejected:', err);
+          setIsSubmitting(false);
+          setError(
+            err.message && err.message.includes('user rejected')
+              ? 'Transaction was rejected'
+              : 'Failed to create app - rejected the transaction',
+          );
+          return null;
+        });
 
       // If receipt is null, the transaction was rejected or failed
       if (!receipt) return;
@@ -300,17 +329,16 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
       setError(null);
       setIsSubmitting(false);
 
-      // Force redirect with window.location after a short delay
+      // Force redirect after a short delay
       setTimeout(() => {
         if (onSuccess) {
           onSuccess();
         } else {
           // Force a full page reload to the dashboard
-          window.location.href = '/';
+          navigate('/');
         }
       }, 1000);
       return; // Early return to prevent further processing
-
     } catch (err) {
       console.error('Error submitting form:', err);
       setError(err instanceof Error ? err.message : 'Failed to create app');
@@ -394,7 +422,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                           <select
                             {...field}
                             className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-black ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            onChange={e => field.onChange(parseInt(e.target.value))}
+                            onChange={(e) => field.onChange(parseInt(e.target.value))}
                             value={field.value}
                           >
                             <option value="0">DEV</option>
@@ -473,11 +501,7 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                   <div className="border p-4 rounded-md space-y-4">
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-medium text-black">Tools</h3>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={addTool}
-                      >
+                      <Button variant="outline" size="sm" onClick={addTool}>
                         <Plus className="h-4 w-4 mr-2" /> Add Tool
                       </Button>
                     </div>
@@ -515,7 +539,11 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                               <FormItem>
                                 <FormLabel className="text-black">Tool IPFS CID</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY" {...field} className="text-black" />
+                                  <Input
+                                    placeholder="QmUT4Ke8cPtJYRZiWrkoG9RZc77hmRETNQjvDYfLtrMUEY"
+                                    {...field}
+                                    className="text-black"
+                                  />
                                 </FormControl>
                                 <FormMessage className="text-destructive" />
                               </FormItem>
@@ -544,9 +572,14 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                               const parameters = policy?.parameters || [];
 
                               return (
-                                <div key={`policy-${toolIndex}-${policyIndex}`} className="border p-3 rounded-md mb-4 space-y-3">
+                                <div
+                                  key={`policy-${toolIndex}-${policyIndex}`}
+                                  className="border p-3 rounded-md mb-4 space-y-3"
+                                >
                                   <div className="flex justify-between items-center">
-                                    <h6 className="font-medium text-black">Policy {policyIndex + 1}</h6>
+                                    <h6 className="font-medium text-black">
+                                      Policy {policyIndex + 1}
+                                    </h6>
                                     <Button
                                       variant="ghost"
                                       size="sm"
@@ -562,9 +595,15 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                     name={`tools.${toolIndex}.policies.${policyIndex}.policyIpfsCid`}
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel className="text-black">Policy IPFS CID</FormLabel>
+                                        <FormLabel className="text-black">
+                                          Policy IPFS CID
+                                        </FormLabel>
                                         <FormControl>
-                                          <Input placeholder="policy1" {...field} className="text-black" />
+                                          <Input
+                                            placeholder="policy1"
+                                            {...field}
+                                            className="text-black"
+                                          />
                                         </FormControl>
                                         <FormMessage className="text-destructive" />
                                       </FormItem>
@@ -583,21 +622,34 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                       </Button>
                                     </div>
 
-                                    {form.formState.errors.tools?.[toolIndex]?.policies?.[policyIndex]?.parameters?.message && (
+                                    {form.formState.errors.tools?.[toolIndex]?.policies?.[
+                                      policyIndex
+                                    ]?.parameters?.message && (
                                       <p className="text-sm font-medium text-destructive mb-2">
-                                        {form.formState.errors.tools[toolIndex].policies[policyIndex].parameters.message}
+                                        {
+                                          form.formState.errors.tools[toolIndex].policies[
+                                            policyIndex
+                                          ].parameters.message
+                                        }
                                       </p>
                                     )}
 
                                     {parameters.map((_param, paramIndex: number) => (
-                                      <div key={`param-${toolIndex}-${policyIndex}-${paramIndex}`} className="flex items-center gap-2 mb-2">
+                                      <div
+                                        key={`param-${toolIndex}-${policyIndex}-${paramIndex}`}
+                                        className="flex items-center gap-2 mb-2"
+                                      >
                                         <FormField
                                           control={form.control}
                                           name={`tools.${toolIndex}.policies.${policyIndex}.parameters.${paramIndex}.name`}
                                           render={({ field }) => (
                                             <FormItem className="flex-1">
                                               <FormControl>
-                                                <Input placeholder="Parameter name" {...field} className="text-black" />
+                                                <Input
+                                                  placeholder="Parameter name"
+                                                  {...field}
+                                                  className="text-black"
+                                                />
                                               </FormControl>
                                               <FormMessage className="text-destructive" />
                                             </FormItem>
@@ -636,7 +688,9 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
                                         <Button
                                           variant="ghost"
                                           size="sm"
-                                          onClick={() => removeParameter(toolIndex, policyIndex, paramIndex)}
+                                          onClick={() =>
+                                            removeParameter(toolIndex, policyIndex, paramIndex)
+                                          }
                                           className="text-red-500 hover:text-red-700"
                                         >
                                           <Trash2 className="h-4 w-4" />
@@ -657,22 +711,21 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
 
               <div className="mt-6">
                 {form.getValues().tools.length > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4">
-                      <p className="font-medium">Info:</p>
-                      <ul className="list-disc ml-5 text-sm">
-                        <li>Each Tool IPFS CID must be unique across the entire application</li>
-                        <li>Each Policy IPFS CID must be unique across the entire application</li>
-                        <li>Each Parameter name must be unique across ALL policies in the application</li>
-                      </ul>
-                      <p className="mt-2 text-sm">Duplicate values will prevent the form from submitting.</p>
-                    </div>
-                  )}
-                <Button
-                  type="submit"
-                  className="w-full"
-                  variant="outline"
-                  disabled={isSubmitting}
-                >
+                  <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4">
+                    <p className="font-medium">Info:</p>
+                    <ul className="list-disc ml-5 text-sm">
+                      <li>Each Tool IPFS CID must be unique across the entire application</li>
+                      <li>Each Policy IPFS CID must be unique across the entire application</li>
+                      <li>
+                        Each Parameter name must be unique across ALL policies in the application
+                      </li>
+                    </ul>
+                    <p className="mt-2 text-sm">
+                      Duplicate values will prevent the form from submitting.
+                    </p>
+                  </div>
+                )}
+                <Button type="submit" className="w-full" variant="outline" disabled={isSubmitting}>
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </Button>
               </div>

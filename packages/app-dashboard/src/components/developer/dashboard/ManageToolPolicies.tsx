@@ -30,17 +30,6 @@ export default function ManageToolPoliciesScreen({ onBack, dashboard }: ToolPoli
   // Keep a reference to the form state to avoid re-renders
   const toolPoliciesRef = useRef<ToolPolicyWithId[]>([]);
 
-  // Make sure our ref stays in sync with state
-  useEffect(() => {
-    toolPoliciesRef.current = toolPolicies;
-  }, [toolPolicies]);
-
-  useEffect(() => {
-    if (dashboard?.appId && !isFetching) {
-      fetchAppVersion();
-    }
-  }, [dashboard?.appId]);
-
   const fetchAppVersion = async () => {
     if (!dashboard?.appId) return;
 
@@ -354,6 +343,17 @@ export default function ManageToolPoliciesScreen({ onBack, dashboard }: ToolPoli
       setIsSubmitting(false);
     }
   }
+
+  // Make sure our ref stays in sync with state
+  useEffect(() => {
+    toolPoliciesRef.current = toolPolicies;
+  }, [toolPolicies]);
+
+  useEffect(() => {
+    if (dashboard?.appId && !isFetching) {
+      fetchAppVersion();
+    }
+  }, [dashboard?.appId, fetchAppVersion, isFetching]);
 
   // Simple loading state
   if (isLoading) {

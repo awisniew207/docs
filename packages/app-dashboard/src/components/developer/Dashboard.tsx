@@ -1,14 +1,9 @@
+import { useNavigate } from 'react-router';
 import { AppView } from '@/services/types';
 import { useEffect, useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusFilterDropdown, FilterOption } from '../ui/status-filter-dropdown';
 import { useErrorPopup } from '@/providers/ErrorPopup';
 import { StatusMessage } from '@/utils/statusMessage';
@@ -24,34 +19,36 @@ const statusFilterOptions: FilterOption[] = [
   { id: 'prod', label: 'PROD' },
 ];
 
-export default function DashboardScreen({
-  vincentApp,
-}: {
-  vincentApp: AppView[];
-}) {
+export default function DashboardScreen({ vincentApp }: { vincentApp: AppView[] }) {
   const [dashboard, setDashboard] = useState<AppView[]>([]);
   const [isRefetching, setIsRefetching] = useState(false);
   const [sortOption, setSortOption] = useState<string>('all');
-
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [statusType, setStatusType] = useState<'info' | 'warning' | 'success' | 'error'>('info');
+  const navigate = useNavigate();
 
   // Add the error popup hook
   const { showError } = useErrorPopup();
 
   // Helper function to set status messages
-  const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
-    setStatusMessage(message);
-    setStatusType(type);
-  }, []);
+  const showStatus = useCallback(
+    (message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
+      setStatusMessage(message);
+      setStatusType(type);
+    },
+    [],
+  );
 
   // Create enhanced error function that shows both popup and status error
-  const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
-    // Show error in popup
-    showError(errorMessage, title || 'Error', details);
-    // Also show in status message
-    showStatus(errorMessage, 'error');
-  }, [showError, showStatus]);
+  const showErrorWithStatus = useCallback(
+    (errorMessage: string, title?: string, details?: string) => {
+      // Show error in popup
+      showError(errorMessage, title || 'Error', details);
+      // Also show in status message
+      showStatus(errorMessage, 'error');
+    },
+    [showError, showStatus],
+  );
 
   useEffect(() => {
     if (vincentApp) {
@@ -59,7 +56,10 @@ export default function DashboardScreen({
         setDashboard(vincentApp);
       } catch (error) {
         console.error('Dashboard Error:', error);
-        showErrorWithStatus(error instanceof Error ? error.message : 'Error loading dashboard', 'Dashboard Error');
+        showErrorWithStatus(
+          error instanceof Error ? error.message : 'Error loading dashboard',
+          'Dashboard Error',
+        );
       } finally {
         setIsRefetching(false);
       }
@@ -74,7 +74,7 @@ export default function DashboardScreen({
 
     // Sort based on deployment status (0: DEV, 1: TEST, 2: PROD)
     const statusValue = sortOption === 'dev' ? 0 : sortOption === 'test' ? 1 : 2;
-    return dashboard.filter(app => app.deploymentStatus === statusValue);
+    return dashboard.filter((app) => app.deploymentStatus === statusValue);
   }, [dashboard, sortOption]);
 
   if (!dashboard || isRefetching) {
@@ -82,9 +82,7 @@ export default function DashboardScreen({
       <div className="flex items-center justify-center h-[50vh]">
         <div className="space-y-4 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="text-sm text-gray-600">
-            {isRefetching ? 'Refreshing...' : 'Loading...'}
-          </p>
+          <p className="text-sm text-gray-600">{isRefetching ? 'Refreshing...' : 'Loading...'}</p>
         </div>
       </div>
     );
@@ -106,11 +104,7 @@ export default function DashboardScreen({
             selectedOptionId={sortOption}
             onChange={setSortOption}
           />
-          <Button
-            variant="outline"
-            className="text-black"
-            onClick={() => window.location.assign('/create-app')}
-          >
+          <Button variant="outline" className="text-black" onClick={() => navigate('/create-app')}>
             <Plus className="h-4 w-4 mr-2 font-bold text-black" />
             Create App
           </Button>
@@ -120,18 +114,14 @@ export default function DashboardScreen({
       {filteredApps.length === 0 ? (
         <div className="border rounded-lg p-8 text-center">
           <h2 className="text-xl font-semibold mb-4 text-black">
-            {dashboard.length === 0 ? "No Apps Yet" : "No apps match the selected filter"}
+            {dashboard.length === 0 ? 'No Apps Yet' : 'No apps match the selected filter'}
           </h2>
           <p className="text-gray-600 mb-6">
             {dashboard.length === 0
-              ? "Create your first app to get started with Lit Protocol."
-              : "Try a different filter or create a new app."}
+              ? 'Create your first app to get started with Lit Protocol.'
+              : 'Try a different filter or create a new app.'}
           </p>
-          <Button
-            variant="default"
-            className="text-black"
-            onClick={() => window.location.assign('/create-app')}
-          >
+          <Button variant="default" className="text-black" onClick={() => navigate('/create-app')}>
             <Plus className="h-4 w-4 mr-2 font-bold text-black" />
             Create App
           </Button>
@@ -142,20 +132,20 @@ export default function DashboardScreen({
             <Card
               key={index}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => window.location.assign(`/appId/${app.appId}`)}
+              onClick={() => navigate(`/appId/${app.appId}`)}
             >
               <CardHeader>
                 <CardTitle className="flex justify-between items-center text-black">
                   <span>{app.appName}</span>
                   <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
-                    {app.deploymentStatus !== undefined && app.deploymentStatus >= 0 && app.deploymentStatus < deploymentStatusNames.length
+                    {app.deploymentStatus !== undefined &&
+                    app.deploymentStatus >= 0 &&
+                    app.deploymentStatus < deploymentStatusNames.length
                       ? deploymentStatusNames[app.deploymentStatus]
                       : 'DEV'}
                   </span>
                 </CardTitle>
-                <CardDescription className="text-black">
-                  {app.description}
-                </CardDescription>
+                <CardDescription className="text-black">{app.description}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-black">
@@ -164,10 +154,9 @@ export default function DashboardScreen({
                   </div>
                   <div className="mb-2">
                     <span className="font-medium">Management Wallet:</span>{' '}
-                    {typeof app.managementWallet === 'string' && app.managementWallet ?
-                      `${app.managementWallet.substring(0, 8)}...${app.managementWallet.substring(app.managementWallet.length - 6)}` :
-                      'N/A'
-                    }
+                    {app.managementWallet
+                      ? `${app.managementWallet.substring(0, 8)}...${app.managementWallet.substring(app.managementWallet.length - 6)}`
+                      : 'N/A'}
                   </div>
                   <div>
                     <span className="font-medium">Tool Policies:</span>{' '}
