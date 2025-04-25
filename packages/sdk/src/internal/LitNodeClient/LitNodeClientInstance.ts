@@ -4,7 +4,7 @@ import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 export class LitNodeClientInstance {
   private readonly litNodeClientInstance: LitNodeClient;
 
-  private isConnected: boolean = false;
+  private isConnected = false;
 
   private connectHandle: Promise<boolean> | null = null;
 
