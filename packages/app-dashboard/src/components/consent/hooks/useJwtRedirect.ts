@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { jwt } from '@lit-protocol/vincent-sdk';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
@@ -26,7 +25,6 @@ export const useJwtRedirect = ({
 }: UseJwtRedirectProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const authInfo = useReadAuthInfo();
-  const navigate = useNavigate();
 
   // Generate JWT for redirection
   const generateJWT = useCallback(
@@ -97,12 +95,12 @@ export const useJwtRedirect = ({
       try {
         const redirectUrl = new URL(redirectUri);
         redirectUrl.searchParams.set('jwt', jwt);
-        navigate(redirectUrl.toString());
+        window.location.href = redirectUrl.toString();
       } catch (error) {
         console.error('Error creating redirect URL:', error);
       }
     },
-    [redirectUri, onStatusChange, navigate],
+    [redirectUri, onStatusChange],
   );
 
   return {

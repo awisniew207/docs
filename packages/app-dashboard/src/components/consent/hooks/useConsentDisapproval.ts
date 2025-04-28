@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
 
 interface UseConsentDisapprovalProps {
   redirectUri: string | null;
@@ -14,8 +13,6 @@ export const useConsentDisapproval = ({
   onError,
   redirectDelay = 2000,
 }: UseConsentDisapprovalProps) => {
-  const navigate = useNavigate();
-
   /**
    * Handle the disapproval action
    * @returns A promise that resolves when the disapproval process is complete
@@ -48,12 +45,9 @@ export const useConsentDisapproval = ({
    * Execute the redirect after disapproval
    * @param uri The URI to redirect to
    */
-  const executeRedirect = useCallback(
-    (uri: string) => {
-      navigate(uri);
-    },
-    [navigate],
-  );
+  const executeRedirect = useCallback((uri: string) => {
+    window.location.href = uri;
+  }, []);
 
   return {
     disapproveConsent,
