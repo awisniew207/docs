@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 
@@ -21,7 +20,6 @@ export default function IndexView() {
   const { showError } = useErrorPopup();
   const { updateAuthInfo } = useSetAuthInfo();
   const { clearAuthInfo } = useClearAuthInfo();
-  const navigate = useNavigate();
 
   // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
@@ -197,8 +195,8 @@ export default function IndexView() {
   // ------ CLEANUP ------
 
   const handleSignOut = async () => {
-    clearAuthInfo();
-    navigate('.', { replace: true });
+    await clearAuthInfo();
+    window.location.reload();
   };
 
   useEffect(() => {
