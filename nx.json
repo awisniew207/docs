@@ -33,12 +33,25 @@
     }
   ],
   "release": {
-    "releaseTagPattern": "v{version}",
+    "projects": ["vincent-sdk"],
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "vincent/{projectName}/{version}",
     "changelog": {
-      "automaticFromRef": true
+      "automaticFromRef": true,
+      "projectChangelogs": true
     },
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many -t build"
+      "preVersionCommand": "pnpm dlx nx build vincent-sdk"
+    }
+  },
+  "targetDefaults": {
+    "nx-release-publish": {
+      "dependsOn": [
+        {
+          "projects": "self",
+          "target": "publish-typedoc"
+        }
+      ]
     }
   }
 }

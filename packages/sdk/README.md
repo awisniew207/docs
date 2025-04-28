@@ -191,4 +191,12 @@ When JWT validation fails, descriptive error messages are thrown to help with tr
 - JWTs have an expiration time after which they are no longer valid
 - When a JWT expires, redirect the user to the consent page to obtain a new one using the `VincentWebAppClient`
 
+## Release
 
+Pre-requisites:
+- You will need a valid npm account with access to the `@lit-protocol` organization.
+- Run `pnpm vercel login` at sdk root to get a authentication token for vercel
+- Also you will need to fill the `.env` file with the vercel project and org ids for the [vincent-docs](https://vercel.com/lit-protocol/vincent-docs) project.
+
+Then run `pnpm release` on the repository root. It will prompt you to update the Vincent SDK version and then ask you to confirm the release.
+This process will also generate a `CHANGELOG.md` record with the changes for the release and update typedoc in vercel after publishing the SDK.

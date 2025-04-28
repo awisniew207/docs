@@ -20,5 +20,8 @@
     "sourceRoot": "packages/vincent-tool/src",
     "projectType": "library",
     "name": "vincent-tool"
+  },
+  "devDependencies": {
+    "jsonc-eslint-parser": "^2.4.0"
   }
 }
