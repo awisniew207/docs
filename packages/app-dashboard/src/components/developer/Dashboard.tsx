@@ -121,7 +121,7 @@ export default function DashboardScreen({ vincentApp }: { vincentApp: AppView[] 
               ? 'Create your first app to get started with Lit Protocol.'
               : 'Try a different filter or create a new app.'}
           </p>
-          <Button variant="default" className="text-black" onClick={() => navigate('/create-app')}>
+          <Button variant="outline" className="text-black" onClick={() => navigate('/create-app')}>
             <Plus className="h-4 w-4 mr-2 font-bold text-black" />
             Create App
           </Button>
