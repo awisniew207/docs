@@ -37,7 +37,7 @@ export default function IndexView() {
     authInfo,
     sessionSigs: validatedSessionSigs,
     isProcessing,
-    error: readError
+    error: readError,
   } = useReadAuthInfo();
 
   // State to show existing account option
@@ -109,7 +109,7 @@ export default function IndexView() {
       // Generate session signatures for the user PKP
       const sigs = await getSessionSigs({
         pkpPublicKey: userPKP.publicKey,
-        authMethod
+        authMethod,
       });
       setSessionSigs(sigs);
 
@@ -126,7 +126,15 @@ export default function IndexView() {
     } finally {
       setSessionLoading(false);
     }
-  }, [authMethod, userPKP, setSessionSigs, setAgentPKP, setSessionError, setSessionLoading, showError]);
+  }, [
+    authMethod,
+    userPKP,
+    setSessionSigs,
+    setAgentPKP,
+    setSessionError,
+    setSessionLoading,
+    showError,
+  ]);
 
   // If user is authenticated, fetch accounts
   useEffect(() => {
@@ -187,7 +195,7 @@ export default function IndexView() {
   // ------ CLEANUP ------
 
   const handleSignOut = async () => {
-    clearAuthInfo();
+    await clearAuthInfo();
     window.location.reload();
   };
 
@@ -205,12 +213,7 @@ export default function IndexView() {
   const renderContent = () => {
     // Handle loading states first
     if (authLoading || accountsLoading || sessionLoading || isProcessing) {
-      return (
-        <Loading
-          copy={loadingMessage}
-          isTransitioning={isTransitioning}
-        />
-      );
+      return <Loading copy={loadingMessage} isTransitioning={isTransitioning} />;
     }
 
     // If we have existing auth info, show the option to use it
@@ -230,7 +233,7 @@ export default function IndexView() {
       try {
         updateAuthInfo({
           agentPKP,
-          userPKP
+          userPKP,
         });
       } catch (error) {
         console.error('Error saving PKP info to localStorage:', error);
@@ -246,11 +249,7 @@ export default function IndexView() {
       }
 
       return (
-        <AuthenticatedConsentForm
-          userPKP={userPKP}
-          sessionSigs={sessionSigs}
-          agentPKP={agentPKP}
-        />
+        <AuthenticatedConsentForm userPKP={userPKP} sessionSigs={sessionSigs} agentPKP={agentPKP} />
       );
     }
 
@@ -269,7 +268,9 @@ export default function IndexView() {
     if (authMethod && accounts.length === 0) {
       return (
         <SignUpView
-          authMethodType={authMethod.authMethodType as typeof AUTH_METHOD_TYPE[keyof typeof AUTH_METHOD_TYPE]}
+          authMethodType={
+            authMethod.authMethodType as (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE]
+          }
           handleRegisterWithWebAuthn={handleRegisterWithWebAuthn}
           authWithWebAuthn={authWithWebAuthn}
         />
@@ -287,9 +288,5 @@ export default function IndexView() {
     );
   };
 
-  return (
-    <div className="grow flex items-center justify-center">
-      {renderContent()}
-    </div>
-  );
+  return <div className="grow flex items-center justify-center">{renderContent()}</div>;
 }

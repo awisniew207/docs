@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { AppView } from '@/services/types';
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -37,11 +38,13 @@ export default function ManageAdvancedFunctionsScreen({
   const [showAddUriDialog, setShowAddUriDialog] = useState(false);
   const [showRemoveUriDialog, setShowRemoveUriDialog] = useState(false);
   const [showEnableVersionDialog, setShowEnableVersionDialog] = useState(false);
-  const [redirectUri, setRedirectUri] = useState("");
+  const [redirectUri, setRedirectUri] = useState('');
   const [versionNumber, setVersionNumber] = useState<number>(dashboard.currentVersion || 1);
   const [willEnableVersion, setWillEnableVersion] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [availableVersions, setAvailableVersions] = useState<{version: number, enabled: boolean}[]>([]);
+  const [availableVersions, setAvailableVersions] = useState<
+    { version: number; enabled: boolean }[]
+  >([]);
 
   // Add status message state
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -52,18 +55,25 @@ export default function ManageAdvancedFunctionsScreen({
 
   // Add these new state variables after the other states in the component
   const [showUpdateDeploymentStatusDialog, setShowUpdateDeploymentStatusDialog] = useState(false);
-  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(dashboard.deploymentStatus!);
+  const [newDeploymentStatus, setNewDeploymentStatus] = useState<number>(
+    dashboard.deploymentStatus!,
+  );
   const deploymentStatusNames = ['DEV', 'TEST', 'PROD'];
 
   // Add state for delete app dialog
   const [showDeleteAppDialog, setShowDeleteAppDialog] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
+  const navigate = useNavigate();
+
   // Helper function to set status messages
-  const showStatus = useCallback((message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
-    setStatusMessage(message);
-    setStatusType(type);
-  }, []);
+  const showStatus = useCallback(
+    (message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
+      setStatusMessage(message);
+      setStatusType(type);
+    },
+    [],
+  );
 
   // Clear status message
   const clearStatus = useCallback(() => {
@@ -71,18 +81,21 @@ export default function ManageAdvancedFunctionsScreen({
   }, []);
 
   // Create enhanced error function that shows both popup and status error
-  const showErrorWithStatus = useCallback((errorMessage: string, title?: string, details?: string) => {
-    // Show error in popup
-    showError(errorMessage, title || 'Error', details);
-    // Also show in status message
-    showStatus(errorMessage, 'error');
-  }, [showError, showStatus]);
+  const showErrorWithStatus = useCallback(
+    (errorMessage: string, title?: string, details?: string) => {
+      // Show error in popup
+      showError(errorMessage, title || 'Error', details);
+      // Also show in status message
+      showStatus(errorMessage, 'error');
+    },
+    [showError, showStatus],
+  );
 
   useEffect(() => {
     setVersionNumber(dashboard.currentVersion);
 
     // Extract available versions
-    const versions = (dashboard.toolPolicies || []).map(versionData => {
+    const versions = (dashboard.toolPolicies || []).map((versionData) => {
       const version = versionData.version;
       const enabled = versionData.enabled;
       return { version: parseInt(version.toString()), enabled };
@@ -94,13 +107,13 @@ export default function ManageAdvancedFunctionsScreen({
   // Redirect URI management functions
   async function handleAddRedirectUri() {
     if (!redirectUri || redirectUri.trim() === '') {
-      showErrorWithStatus("Please enter a valid redirect URI", "Invalid URI");
+      showErrorWithStatus('Please enter a valid redirect URI', 'Invalid URI');
       return;
     }
 
     try {
       setIsProcessing(true);
-      showStatus("Adding redirect URI...", "info");
+      showStatus('Adding redirect URI...', 'info');
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
 
@@ -108,25 +121,18 @@ export default function ManageAdvancedFunctionsScreen({
       const args = [dashboard.appId, redirectUri.trim()];
 
       // Estimate gas with buffer
-      showStatus("Estimating gas...", "info");
-      const gasLimit = await estimateGasWithBuffer(
-        contract,
-        'addAuthorizedRedirectUri',
-        args
-      );
+      showStatus('Estimating gas...', 'info');
+      const gasLimit = await estimateGasWithBuffer(contract, 'addAuthorizedRedirectUri', args);
 
-      showStatus("Sending transaction...", "info");
-      const tx = await contract.addAuthorizedRedirectUri(
-        ...args,
-        {gasLimit}
-      );
+      showStatus('Sending transaction...', 'info');
+      const tx = await contract.addAuthorizedRedirectUri(...args, { gasLimit });
 
-      showStatus("Waiting for confirmation...", "info");
+      showStatus('Waiting for confirmation...', 'info');
       await tx.wait();
 
-      showStatus("Redirect URI added successfully", "success");
+      showStatus('Redirect URI added successfully', 'success');
       setShowAddUriDialog(false);
-      setRedirectUri("");
+      setRedirectUri('');
 
       // Refresh app data after a delay
       setTimeout(() => {
@@ -134,8 +140,11 @@ export default function ManageAdvancedFunctionsScreen({
         onSuccess?.();
       }, 2000);
     } catch (error: unknown) {
-      console.error("Error adding redirect URI:", error);
-      showErrorWithStatus(`Failed to add redirect URI: ${(error as Error).message || "Unknown error"}`, "Transaction Error");
+      console.error('Error adding redirect URI:', error);
+      showErrorWithStatus(
+        `Failed to add redirect URI: ${(error as Error).message || 'Unknown error'}`,
+        'Transaction Error',
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -143,13 +152,13 @@ export default function ManageAdvancedFunctionsScreen({
 
   async function handleRemoveRedirectUri() {
     if (!redirectUri || redirectUri.trim() === '') {
-      showErrorWithStatus("Please enter a valid redirect URI", "Invalid URI");
+      showErrorWithStatus('Please enter a valid redirect URI', 'Invalid URI');
       return;
     }
 
     try {
       setIsProcessing(true);
-      showStatus("Removing redirect URI...", "info");
+      showStatus('Removing redirect URI...', 'info');
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
 
@@ -157,25 +166,18 @@ export default function ManageAdvancedFunctionsScreen({
       const args = [dashboard.appId, redirectUri.trim()];
 
       // Estimate gas with buffer
-      showStatus("Estimating gas...", "info");
-      const gasLimit = await estimateGasWithBuffer(
-        contract,
-        'removeAuthorizedRedirectUri',
-        args
-      );
+      showStatus('Estimating gas...', 'info');
+      const gasLimit = await estimateGasWithBuffer(contract, 'removeAuthorizedRedirectUri', args);
 
-      showStatus("Sending transaction...", "info");
-      const tx = await contract.removeAuthorizedRedirectUri(
-        ...args,
-        {gasLimit}
-      );
+      showStatus('Sending transaction...', 'info');
+      const tx = await contract.removeAuthorizedRedirectUri(...args, { gasLimit });
 
-      showStatus("Waiting for confirmation...", "info");
+      showStatus('Waiting for confirmation...', 'info');
       await tx.wait();
 
-      showStatus("Redirect URI removed successfully", "success");
+      showStatus('Redirect URI removed successfully', 'success');
       setShowRemoveUriDialog(false);
-      setRedirectUri("");
+      setRedirectUri('');
 
       // Refresh app data after a delay
       setTimeout(() => {
@@ -183,8 +185,11 @@ export default function ManageAdvancedFunctionsScreen({
         onSuccess?.();
       }, 2000);
     } catch (error: unknown) {
-      console.error("Error removing redirect URI:", error);
-      showErrorWithStatus(`Failed to remove redirect URI: ${(error as Error).message || "Unknown error"}`, "Transaction Error");
+      console.error('Error removing redirect URI:', error);
+      showErrorWithStatus(
+        `Failed to remove redirect URI: ${(error as Error).message || 'Unknown error'}`,
+        'Transaction Error',
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -194,7 +199,10 @@ export default function ManageAdvancedFunctionsScreen({
   async function handleToggleVersion() {
     try {
       setIsProcessing(true);
-      showStatus(`${willEnableVersion ? 'Enabling' : 'Disabling'} version ${versionNumber}...`, "info");
+      showStatus(
+        `${willEnableVersion ? 'Enabling' : 'Disabling'} version ${versionNumber}...`,
+        'info',
+      );
       const { getContract, estimateGasWithBuffer } = await import('@/services/contract/config');
       const contract = await getContract('datil' as Network, 'App' as ContractFacet, true);
 
@@ -202,27 +210,23 @@ export default function ManageAdvancedFunctionsScreen({
       const args = [
         dashboard.appId,
         versionNumber,
-        willEnableVersion // Set to the new state we want
+        willEnableVersion, // Set to the new state we want
       ];
 
       // Estimate gas with buffer
-      showStatus("Estimating gas...", "info");
-      const gasLimit = await estimateGasWithBuffer(
-        contract,
-        'enableAppVersion',
-        args
-      );
+      showStatus('Estimating gas...', 'info');
+      const gasLimit = await estimateGasWithBuffer(contract, 'enableAppVersion', args);
 
-      showStatus("Sending transaction...", "info");
-      const tx = await contract.enableAppVersion(
-        ...args,
-        {gasLimit}
-      );
+      showStatus('Sending transaction...', 'info');
+      const tx = await contract.enableAppVersion(...args, { gasLimit });
 
-      showStatus("Waiting for confirmation...", "info");
+      showStatus('Waiting for confirmation...', 'info');
       await tx.wait();
 
-      showStatus(`Version ${versionNumber} ${willEnableVersion ? 'enabled' : 'disabled'} successfully`, "success");
+      showStatus(
+        `Version ${versionNumber} ${willEnableVersion ? 'enabled' : 'disabled'} successfully`,
+        'success',
+      );
       setShowEnableVersionDialog(false);
 
       // Refresh app data after a delay
@@ -231,8 +235,11 @@ export default function ManageAdvancedFunctionsScreen({
         onSuccess?.();
       }, 2000);
     } catch (error: unknown) {
-      console.error("Error toggling version:", error);
-      showErrorWithStatus(`Failed to ${willEnableVersion ? 'enable' : 'disable'} version: ${(error as Error).message || "Unknown error"}`, "Transaction Error");
+      console.error('Error toggling version:', error);
+      showErrorWithStatus(
+        `Failed to ${willEnableVersion ? 'enable' : 'disable'} version: ${(error as Error).message || 'Unknown error'}`,
+        'Transaction Error',
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -242,18 +249,24 @@ export default function ManageAdvancedFunctionsScreen({
   async function handleUpdateDeploymentStatus() {
     try {
       setIsProcessing(true);
-      showStatus(`Updating deployment status to ${deploymentStatusNames[newDeploymentStatus]}...`, "info");
+      showStatus(
+        `Updating deployment status to ${deploymentStatusNames[newDeploymentStatus]}...`,
+        'info',
+      );
 
       const { VincentContracts } = await import('@/services');
       const contracts = new VincentContracts('datil' as Network);
 
-      showStatus("Sending transaction...", "info");
+      showStatus('Sending transaction...', 'info');
       const tx = await contracts.updateAppDeploymentStatus(dashboard.appId, newDeploymentStatus);
 
-      showStatus("Waiting for confirmation...", "info");
+      showStatus('Waiting for confirmation...', 'info');
       await tx.wait();
 
-      showStatus(`Deployment status updated to ${deploymentStatusNames[newDeploymentStatus]} successfully`, "success");
+      showStatus(
+        `Deployment status updated to ${deploymentStatusNames[newDeploymentStatus]} successfully`,
+        'success',
+      );
       setShowUpdateDeploymentStatusDialog(false);
 
       // Refresh app data after a delay
@@ -262,8 +275,11 @@ export default function ManageAdvancedFunctionsScreen({
         onSuccess?.();
       }, 2000);
     } catch (error: unknown) {
-      console.error("Error updating deployment status:", error);
-      showErrorWithStatus(`Failed to update deployment status: ${(error as Error).message || "Unknown error"}`, "Transaction Error");
+      console.error('Error updating deployment status:', error);
+      showErrorWithStatus(
+        `Failed to update deployment status: ${(error as Error).message || 'Unknown error'}`,
+        'Transaction Error',
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -273,35 +289,41 @@ export default function ManageAdvancedFunctionsScreen({
   async function handleDeleteApp() {
     const appName = dashboard.appName || `App ${dashboard.appId}`;
     if (deleteConfirmText !== appName) {
-      showErrorWithStatus("Please type the app name correctly to confirm deletion", "Confirmation Error");
+      showErrorWithStatus(
+        'Please type the app name correctly to confirm deletion',
+        'Confirmation Error',
+      );
       return;
     }
 
     try {
       setIsProcessing(true);
-      showStatus("Deleting app...", "info");
+      showStatus('Deleting app...', 'info');
 
       const { VincentContracts } = await import('@/services');
       const contracts = new VincentContracts('datil' as Network);
 
-      showStatus("Sending transaction...", "info");
+      showStatus('Sending transaction...', 'info');
       const tx = await contracts.deleteApp(dashboard.appId);
 
-      showStatus("Waiting for confirmation...", "info");
+      showStatus('Waiting for confirmation...', 'info');
       await tx.wait();
 
-      showStatus("App deleted successfully", "success");
+      showStatus('App deleted successfully', 'success');
       setShowDeleteAppDialog(false);
 
       // Refresh app data after a delay
       setTimeout(() => {
         clearStatus();
         // Redirect to apps list after deletion
-        window.location.href = '/';
+        navigate('/');
       }, 2000);
     } catch (error: unknown) {
-      console.error("Error deleting app:", error);
-      showErrorWithStatus(`Failed to delete app: ${(error as Error).message || "Unknown error"}`, "Transaction Error");
+      console.error('Error deleting app:', error);
+      showErrorWithStatus(
+        `Failed to delete app: ${(error as Error).message || 'Unknown error'}`,
+        'Transaction Error',
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -314,10 +336,7 @@ export default function ManageAdvancedFunctionsScreen({
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={onBack}
-          >
+          <Button variant="ghost" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-3xl font-bold">Advanced Functions</h1>
@@ -334,11 +353,7 @@ export default function ManageAdvancedFunctionsScreen({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-2">
-              <Button
-                className="grow"
-                variant="outline"
-                onClick={() => setShowAddUriDialog(true)}
-              >
+              <Button className="grow" variant="outline" onClick={() => setShowAddUriDialog(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Redirect URI
               </Button>
@@ -363,7 +378,9 @@ export default function ManageAdvancedFunctionsScreen({
                     </div>
                   ))
                 ) : (
-                  <div className="text-sm text-muted-foreground p-2">No redirect URIs configured</div>
+                  <div className="text-sm text-muted-foreground p-2">
+                    No redirect URIs configured
+                  </div>
                 )}
               </div>
             </div>
@@ -380,15 +397,15 @@ export default function ManageAdvancedFunctionsScreen({
           <CardContent className="space-y-4">
             <Button
               className="w-full"
-              variant='outline'
+              variant="outline"
               onClick={() => {
                 if ((dashboard.toolPolicies || []).length === 0) {
-                  alert("No app versions available. Create an app version first.");
+                  alert('No app versions available. Create an app version first.');
                   return;
                 }
                 const initialVersion = dashboard.currentVersion || availableVersions[0]?.version;
                 setVersionNumber(initialVersion);
-                const selectedVersion = availableVersions.find(v => v.version === initialVersion);
+                const selectedVersion = availableVersions.find((v) => v.version === initialVersion);
                 setWillEnableVersion(!(selectedVersion?.enabled || false));
                 setShowEnableVersionDialog(true);
               }}
@@ -419,7 +436,7 @@ export default function ManageAdvancedFunctionsScreen({
           <CardContent className="space-y-4">
             <Button
               className="w-full"
-              variant='outline'
+              variant="outline"
               onClick={() => setShowUpdateDeploymentStatusDialog(true)}
             >
               <Settings className="h-4 w-4 mr-2" />
@@ -428,7 +445,9 @@ export default function ManageAdvancedFunctionsScreen({
 
             <div className="p-2 border rounded-md">
               <div className="text-sm font-semibold mb-2 text-black">Current Status:</div>
-              <div className="text-lg font-semibold text-black">{deploymentStatusNames[dashboard.deploymentStatus || 0]}</div>
+              <div className="text-lg font-semibold text-black">
+                {deploymentStatusNames[dashboard.deploymentStatus || 0]}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -437,7 +456,7 @@ export default function ManageAdvancedFunctionsScreen({
         <Card>
           <CardHeader>
             <CardTitle className="text-black">Delete App</CardTitle>
-            <CardDescription className="text-black text-red-500">
+            <CardDescription className="text-red-500">
               Permanently delete this application and all its versions
             </CardDescription>
           </CardHeader>
@@ -489,18 +508,14 @@ export default function ManageAdvancedFunctionsScreen({
                 variant="outline"
                 onClick={() => {
                   setShowAddUriDialog(false);
-                  setRedirectUri("");
+                  setRedirectUri('');
                 }}
                 className="text-black"
               >
                 Cancel
               </Button>
-              <Button
-                variant="default"
-                onClick={handleAddRedirectUri}
-                disabled={isProcessing}
-              >
-                {isProcessing ? "Adding..." : "Add URI"}
+              <Button variant="default" onClick={handleAddRedirectUri} disabled={isProcessing}>
+                {isProcessing ? 'Adding...' : 'Add URI'}
               </Button>
             </div>
           </div>
@@ -534,7 +549,7 @@ export default function ManageAdvancedFunctionsScreen({
                 variant="outline"
                 onClick={() => {
                   setShowRemoveUriDialog(false);
-                  setRedirectUri("");
+                  setRedirectUri('');
                 }}
                 className="text-black"
               >
@@ -543,10 +558,9 @@ export default function ManageAdvancedFunctionsScreen({
               <Button
                 onClick={handleRemoveRedirectUri}
                 disabled={isProcessing}
-                className="text-black"
                 variant="destructive"
               >
-                {isProcessing ? "Removing..." : "Remove URI"}
+                {isProcessing ? 'Removing...' : 'Remove URI'}
               </Button>
             </div>
           </div>
@@ -556,11 +570,11 @@ export default function ManageAdvancedFunctionsScreen({
       <Dialog open={showEnableVersionDialog} onOpenChange={setShowEnableVersionDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{willEnableVersion ? "Enable" : "Disable"} App Version</DialogTitle>
+            <DialogTitle>{willEnableVersion ? 'Enable' : 'Disable'} App Version</DialogTitle>
             <DialogDescription>
               {willEnableVersion
-                ? "Enable this version. This will allow it to be used."
-                : "Disable this version. This will prevent it from being used."}
+                ? 'Enable this version. This will allow it to be used.'
+                : 'Disable this version. This will prevent it from being used.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -575,28 +589,36 @@ export default function ManageAdvancedFunctionsScreen({
                   const versionNum = parseInt(value);
                   setVersionNumber(versionNum);
                   // Update willEnableVersion based on the selected version
-                  const selectedVersion = availableVersions.find(v => v.version === versionNum);
+                  const selectedVersion = availableVersions.find((v) => v.version === versionNum);
                   // If currently disabled, we will enable it and vice versa
                   setWillEnableVersion(!(selectedVersion?.enabled || false));
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={availableVersions.length > 0 ? "Select version" : "No versions available"} />
+                  <SelectValue
+                    placeholder={
+                      availableVersions.length > 0 ? 'Select version' : 'No versions available'
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {availableVersions.length > 0 ? (
                     availableVersions.map((versionData, index) => (
                       <SelectItem key={index} value={versionData.version.toString()}>
-                        Version {versionData.version.toString()} {versionData.enabled ? "(Enabled)" : "(Disabled)"}
+                        Version {versionData.version.toString()}{' '}
+                        {versionData.enabled ? '(Enabled)' : '(Disabled)'}
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="none" disabled>No versions available</SelectItem>
+                    <SelectItem value="none" disabled>
+                      No versions available
+                    </SelectItem>
                   )}
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                Multiple versions can be enabled simultaneously. Enable the versions you want to use.
+                Multiple versions can be enabled simultaneously. Enable the versions you want to
+                use.
               </p>
             </div>
 
@@ -610,12 +632,12 @@ export default function ManageAdvancedFunctionsScreen({
               >
                 Cancel
               </Button>
-              <Button
-                variant="destructive"
-                onClick={handleToggleVersion}
-                disabled={isProcessing}
-              >
-                {isProcessing ? "Updating..." : (willEnableVersion ? "Enable Version" : "Disable Version")}
+              <Button variant="destructive" onClick={handleToggleVersion} disabled={isProcessing}>
+                {isProcessing
+                  ? 'Updating...'
+                  : willEnableVersion
+                    ? 'Enable Version'
+                    : 'Disable Version'}
               </Button>
             </div>
           </div>
@@ -623,12 +645,16 @@ export default function ManageAdvancedFunctionsScreen({
       </Dialog>
 
       {/* Deployment Status Update Dialog */}
-      <Dialog open={showUpdateDeploymentStatusDialog} onOpenChange={setShowUpdateDeploymentStatusDialog}>
+      <Dialog
+        open={showUpdateDeploymentStatusDialog}
+        onOpenChange={setShowUpdateDeploymentStatusDialog}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Update Deployment Status</DialogTitle>
             <DialogDescription>
-              Change the deployment status of your application. This affects how your app appears to users.
+              Change the deployment status of your application. This affects how your app appears to
+              users.
             </DialogDescription>
           </DialogHeader>
 
@@ -667,7 +693,7 @@ export default function ManageAdvancedFunctionsScreen({
                 onClick={handleUpdateDeploymentStatus}
                 disabled={isProcessing || newDeploymentStatus === dashboard.deploymentStatus}
               >
-                {isProcessing ? "Updating..." : "Update Status"}
+                {isProcessing ? 'Updating...' : 'Update Status'}
               </Button>
             </div>
           </div>
@@ -690,7 +716,7 @@ export default function ManageAdvancedFunctionsScreen({
               </label>
               <Input
                 id="confirmText"
-                placeholder={dashboard.appName || "App Name"}
+                placeholder={dashboard.appName || 'App Name'}
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
               />
@@ -710,7 +736,7 @@ export default function ManageAdvancedFunctionsScreen({
                 // className="text-black"
                 variant="destructive"
               >
-                {isProcessing ? "Deleting..." : "Delete App"}
+                {isProcessing ? 'Deleting...' : 'Delete App'}
               </Button>
             </div>
           </div>

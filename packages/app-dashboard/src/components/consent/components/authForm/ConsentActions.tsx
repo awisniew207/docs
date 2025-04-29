@@ -7,22 +7,24 @@ interface ConsentActionsProps {
   disabled?: boolean;
 }
 
-const ConsentActions = ({ onApprove, onDisapprove, submitting, disabled = false }: ConsentActionsProps) => {
+const ConsentActions = ({
+  onApprove,
+  onDisapprove,
+  submitting,
+  disabled = false,
+}: ConsentActionsProps) => {
   return (
-    <div className='flex gap-3 mb-4'>
+    <div className="flex gap-3 mb-4">
       <Button
-        variant='outline'
+        className="grow"
+        variant="default"
         onClick={onApprove}
         disabled={submitting || disabled}
         title={disabled ? 'This app version is disabled' : undefined}
       >
         {submitting ? 'Processing...' : 'Approve'}
       </Button>
-      <Button
-        variant='destructive'
-        onClick={onDisapprove}
-        disabled={submitting}
-      >
+      <Button className="grow" variant="outline" onClick={onDisapprove} disabled={submitting}>
         {submitting ? 'Processing...' : 'Decline'}
       </Button>
     </div>

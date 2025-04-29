@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 
 interface UrlParamsResult {
-    redirectUri: string | null;
-    error: string | null;
+  redirectUri: string | null;
+  error: string | null;
 }
 
 export function useUrlRedirectUri(): UrlParamsResult {
-    const [redirectUri, setRedirectUri] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+  const [redirectUri, setRedirectUri] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [params] = useSearchParams();
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    
     const urlRedirectUri = params.get('redirectUri');
-
 
     if (!urlRedirectUri) {
       setError('No redirectUri provided');
@@ -24,7 +22,7 @@ export function useUrlRedirectUri(): UrlParamsResult {
 
     setRedirectUri(urlRedirectUri);
     setError(null);
-  }, []);
+  }, [params]);
 
   return { redirectUri, error };
-} 
+}

@@ -11,16 +11,9 @@ import { mapEnumToTypeName, ParameterType } from '@/services/types';
 import { StatusMessage } from '@/utils/statusMessage';
 import { LazyInput } from '@/components/lazyInput';
 import { LazySelect } from '@/components/lazySelect';
-import {
-  ToolPolicyWithId,
-  PolicyWithId,
-  ToolPolicyManagerProps,
-} from '@/types';
+import { ToolPolicyWithId, PolicyWithId, ToolPolicyManagerProps } from '@/types';
 
-export default function ManageToolPoliciesScreen({
-  onBack,
-  dashboard,
-}: ToolPolicyManagerProps) {
+export default function ManageToolPoliciesScreen({ onBack, dashboard }: ToolPolicyManagerProps) {
   // Data state
   const [toolPolicies, setToolPolicies] = useState<ToolPolicyWithId[]>([]);
 
@@ -54,10 +47,7 @@ export default function ManageToolPoliciesScreen({
     setIsFetching(true);
     try {
       const contracts = new VincentContracts('datil');
-      const appVersion = await contracts.getAppVersion(
-        dashboard.appId,
-        dashboard.currentVersion,
-      );
+      const appVersion = await contracts.getAppVersion(dashboard.appId, dashboard.currentVersion);
 
       const appVersionInfo = appVersion as VersionInfo;
       const formattedTools = appVersionInfo.appVersion.tools.map((tool) => {
@@ -75,18 +65,14 @@ export default function ManageToolPoliciesScreen({
               parameters: [],
             };
 
-            if (
-              policyData.parameterNames &&
-              policyData.parameterNames.length > 0
-            ) {
+            if (policyData.parameterNames && policyData.parameterNames.length > 0) {
               policyData.parameterNames.forEach((name, index) => {
                 const typeValue =
                   policyData.parameterTypes[index] !== undefined
                     ? policyData.parameterTypes[index]
                     : ParameterType.STRING;
 
-                const typeName =
-                  mapEnumToTypeName(Number(typeValue)) || 'string';
+                const typeName = mapEnumToTypeName(Number(typeValue)) || 'string';
 
                 policy.parameters.push({
                   _id: crypto.randomUUID(),
@@ -140,9 +126,7 @@ export default function ManageToolPoliciesScreen({
 
   const handleRemoveTool = (toolId: string) => {
     if (toolPoliciesRef.current.length <= 1) return;
-    setToolPolicies(
-      toolPoliciesRef.current.filter((tool) => tool._id !== toolId),
-    );
+    setToolPolicies(toolPoliciesRef.current.filter((tool) => tool._id !== toolId));
   };
 
   const handleUpdateTool = (toolId: string, field: string, value: string) => {
@@ -189,12 +173,7 @@ export default function ManageToolPoliciesScreen({
     setToolPolicies(updatedTools);
   };
 
-  const handleUpdatePolicy = (
-    toolId: string,
-    policyId: string,
-    field: string,
-    value: string,
-  ) => {
+  const handleUpdatePolicy = (toolId: string, policyId: string, field: string, value: string) => {
     const updatedTools = toolPoliciesRef.current.map((tool) =>
       tool._id === toolId
         ? {
@@ -234,11 +213,7 @@ export default function ManageToolPoliciesScreen({
     setToolPolicies(updatedTools);
   };
 
-  const handleRemoveParameter = (
-    toolId: string,
-    policyId: string,
-    parameterId: string,
-  ) => {
+  const handleRemoveParameter = (toolId: string, policyId: string, parameterId: string) => {
     const updatedTools = toolPoliciesRef.current.map((tool) =>
       tool._id === toolId
         ? {
@@ -247,9 +222,7 @@ export default function ManageToolPoliciesScreen({
               policy._id === policyId
                 ? {
                     ...policy,
-                    parameters: policy.parameters.filter(
-                      (param) => param._id !== parameterId,
-                    ),
+                    parameters: policy.parameters.filter((param) => param._id !== parameterId),
                   }
                 : policy,
             ),
@@ -275,9 +248,7 @@ export default function ManageToolPoliciesScreen({
                 ? {
                     ...policy,
                     parameters: policy.parameters.map((param) =>
-                      param._id === parameterId
-                        ? { ...param, [field]: value }
-                        : param,
+                      param._id === parameterId ? { ...param, [field]: value } : param,
                     ),
                   }
                 : policy,
@@ -295,12 +266,8 @@ export default function ManageToolPoliciesScreen({
     try {
       const contract = await getContract('datil', 'App', true);
 
-      const validToolPolicies = toolPoliciesRef.current.filter(
-        (tool) => !!tool.toolIpfsCid,
-      );
-      const toolIpfsCids = validToolPolicies.map(
-        (tool) => tool.toolIpfsCid || '',
-      );
+      const validToolPolicies = toolPoliciesRef.current.filter((tool) => !!tool.toolIpfsCid);
+      const toolIpfsCids = validToolPolicies.map((tool) => tool.toolIpfsCid || '');
       const toolPolicyPolicies = validToolPolicies.map((tool) =>
         tool.policies
           .filter((policy) => !!policy.policyIpfsCid)
@@ -335,11 +302,7 @@ export default function ManageToolPoliciesScreen({
 
         try {
           setStatusMessage({ message: 'Estimating gas...', type: 'info' });
-          const gasLimit = await estimateGasWithBuffer(
-            contract,
-            'registerNextAppVersion',
-            args,
-          );
+          const gasLimit = await estimateGasWithBuffer(contract, 'registerNextAppVersion', args);
 
           setStatusMessage({ message: 'Sending transaction...', type: 'info' });
           const tx = await contract.registerNextAppVersion(...args, {
@@ -418,34 +381,20 @@ export default function ManageToolPoliciesScreen({
                 initialValue={param.name}
                 placeholder="Parameter Name"
                 onUpdate={(value) =>
-                  handleUpdateParameter(
-                    tool._id,
-                    policy._id,
-                    param._id,
-                    'name',
-                    value,
-                  )
+                  handleUpdateParameter(tool._id, policy._id, param._id, 'name', value)
                 }
               />
               <LazySelect
                 initialValue={param.type}
                 onUpdate={(value) =>
-                  handleUpdateParameter(
-                    tool._id,
-                    policy._id,
-                    param._id,
-                    'type',
-                    value,
-                  )
+                  handleUpdateParameter(tool._id, policy._id, param._id, 'type', value)
                 }
               />
             </div>
             <Button
               variant="destructive"
               size="sm"
-              onClick={() =>
-                handleRemoveParameter(tool._id, policy._id, param._id)
-              }
+              onClick={() => handleRemoveParameter(tool._id, policy._id, param._id)}
               className="text-white"
             >
               <Trash2 className="h-4 w-4" />
@@ -457,8 +406,7 @@ export default function ManageToolPoliciesScreen({
       const parametersList =
         policy.parameters.length === 0 ? (
           <div className="text-center text-sm text-gray-500 py-2">
-            No parameters defined. Click &quot;Add Parameter&quot; to create
-            one.
+            No parameters defined. Click &quot;Add Parameter&quot; to create one.
           </div>
         ) : (
           <div className="pl-4 space-y-2">{allParameters}</div>
@@ -472,12 +420,7 @@ export default function ManageToolPoliciesScreen({
                 initialValue={policy.policyIpfsCid}
                 placeholder="Policy IPFS CID"
                 onUpdate={(value) =>
-                  handleUpdatePolicy(
-                    tool._id,
-                    policy._id,
-                    'policyIpfsCid',
-                    value,
-                  )
+                  handleUpdatePolicy(tool._id, policy._id, 'policyIpfsCid', value)
                 }
               />
             </div>
@@ -525,9 +468,7 @@ export default function ManageToolPoliciesScreen({
             <LazyInput
               initialValue={tool.toolIpfsCid || ''}
               placeholder="Tool IPFS CID"
-              onUpdate={(value) =>
-                handleUpdateTool(tool._id, 'toolIpfsCid', value)
-              }
+              onUpdate={(value) => handleUpdateTool(tool._id, 'toolIpfsCid', value)}
             />
           </div>
           {toolPolicies.length > 1 && (
@@ -545,11 +486,7 @@ export default function ManageToolPoliciesScreen({
         <div className="space-y-4">
           <div className="flex justify-between items-center mb-2">
             <h4 className="text-sm font-semibold text-black">Policies</h4>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleAddPolicy(tool._id)}
-            >
+            <Button variant="outline" size="sm" onClick={() => handleAddPolicy(tool._id)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Policy
             </Button>
@@ -592,16 +529,13 @@ export default function ManageToolPoliciesScreen({
                 className="ml-2 px-2 py-0"
                 title="Define tools and their parameters. Each tool can have multiple policies with different parameters."
                 onClick={() =>
-                  window.open(
-                    'https://docs.heyvincent.ai/Developers/Custom-Tools',
-                    '_blank',
-                  )
+                  window.open('https://docs.heyvincent.ai/Developers/Custom-Tools', '_blank')
                 }
               >
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <Button onClick={handleAddTool} size="sm" className="text-black">
+            <Button variant="outline" onClick={handleAddTool} size="sm" className="text-black">
               <Plus className="h-4 w-4 mr-2" />
               Add Tool
             </Button>
@@ -611,21 +545,12 @@ export default function ManageToolPoliciesScreen({
       </Card>
 
       <div className="flex justify-end">
-        <Button
-          variant="outline"
-          onClick={handleSaveToolPolicies}
-          disabled={isSubmitting}
-        >
+        <Button variant="outline" onClick={handleSaveToolPolicies} disabled={isSubmitting}>
           {isSubmitting ? 'Publishing...' : 'Publish New Version'}
         </Button>
       </div>
 
-      {statusMessage && (
-        <StatusMessage
-          message={statusMessage.message}
-          type={statusMessage.type}
-        />
-      )}
+      {statusMessage && <StatusMessage message={statusMessage.message} type={statusMessage.type} />}
     </div>
   );
 }

@@ -11,9 +11,8 @@ export const useConsentDisapproval = ({
   redirectUri,
   onStatusChange,
   onError,
-  redirectDelay = 2000
+  redirectDelay = 2000,
 }: UseConsentDisapprovalProps) => {
-
   /**
    * Handle the disapproval action
    * @returns A promise that resolves when the disapproval process is complete
@@ -21,14 +20,14 @@ export const useConsentDisapproval = ({
   const disapproveConsent = useCallback(async () => {
     try {
       onStatusChange?.('Processing disapproval...', 'info');
-      await new Promise(resolve => setTimeout(resolve, redirectDelay));
+      await new Promise((resolve) => setTimeout(resolve, redirectDelay));
 
       if (redirectUri) {
         onStatusChange?.('Redirecting back to app...', 'info');
 
         return {
           success: true,
-          redirectUri
+          redirectUri,
         };
       } else {
         onStatusChange?.('No redirect URI available', 'error');
@@ -52,6 +51,6 @@ export const useConsentDisapproval = ({
 
   return {
     disapproveConsent,
-    executeRedirect
+    executeRedirect,
   };
 };

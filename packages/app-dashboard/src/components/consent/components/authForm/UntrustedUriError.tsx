@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router';
+
 import { Button } from '@/components/ui/button';
 import { AppView } from '../../types';
 import StatusMessage from './StatusMessage';
@@ -15,6 +17,8 @@ const UntrustedUriError = ({
   statusMessage,
   statusType,
 }: UntrustedUriErrorProps) => {
+  const navigate = useNavigate();
+
   return (
     <div className="p-6">
       <StatusMessage message={statusMessage} type={statusType} />
@@ -28,8 +32,8 @@ const UntrustedUriError = ({
           URI: <code className="bg-red-100 px-1 py-0.5 rounded">{redirectUri}</code>
         </p>
         <p className="text-sm text-red-600">
-          This could be a sign of a malicious app trying to steal your data. Please contact the
-          app developer to resolve this issue.
+          This could be a sign of a malicious app trying to steal your data. Please contact the app
+          developer to resolve this issue.
         </p>
       </div>
 
@@ -48,7 +52,7 @@ const UntrustedUriError = ({
 
       <Button
         className="w-full bg-black text-white rounded-lg py-3 font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={() => window.history.back()}
+        onClick={() => navigate(-1)}
       >
         Go Back
       </Button>
