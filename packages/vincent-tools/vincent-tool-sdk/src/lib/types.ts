@@ -29,11 +29,7 @@ export interface PolicyResponseDenyNoResult extends PolicyResponseBase {
   result?: never;
 }
 
-export type PolicyResponse<AllowResult = never, DenyResult = never> =
-  | PolicyResponseAllow<AllowResult>
-  | PolicyResponseDeny<DenyResult>;
-
-// Define PolicyContext with proper overloads
+// Define PolicyContext with properly working overloads
 export interface PolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
@@ -43,20 +39,40 @@ export interface PolicyContext<
 
   addDetails(detail: string): void;
 
-  // Allow overloads with proper conditional typing
+  // For when no schema is defined
   allow(): AllowSchema extends z.ZodType ? never : PolicyResponseAllowNoResult;
-  allow<T extends AllowSchema extends z.ZodType ? z.infer<AllowSchema> : never>(
-    result: T,
-  ): AllowSchema extends z.ZodType ? PolicyResponseAllow<T> : never;
 
-  // Deny overloads with proper conditional typing
+  // For general string cases (including literals) when schema is a string type
+  allow(
+    result: string,
+  ): AllowSchema extends z.ZodType
+    ? z.infer<AllowSchema> extends string
+      ? PolicyResponseAllow<string>
+      : never
+    : never;
+
+  // For all other types
+  allow<T>(
+    result: T,
+  ): AllowSchema extends z.ZodType
+    ? T extends z.infer<AllowSchema>
+      ? PolicyResponseAllow<T>
+      : never
+    : never;
+
+  // Deny overloads
   deny(
     error?: string,
   ): DenySchema extends z.ZodType ? never : PolicyResponseDenyNoResult;
-  deny<T extends DenySchema extends z.ZodType ? z.infer<DenySchema> : never>(
+
+  deny<T>(
     result: T,
     error?: string,
-  ): DenySchema extends z.ZodType ? PolicyResponseDeny<T> : never;
+  ): DenySchema extends z.ZodType
+    ? T extends z.infer<DenySchema>
+      ? PolicyResponseDeny<T>
+      : never
+    : never;
 }
 
 export interface BasicPolicyDef<
@@ -266,12 +282,12 @@ export type VincentPolicyDef =
   | PolicyWithCommit<any, any, any, any, any, any, any>
   | PolicyWithPrecheckAndCommit<any, any, any, any, any, any, any, any, any>;
 
-// Helper type to determine if a policy has commit
-export type HasCommit<P> = P extends { commit: infer CommitFn }
-  ? CommitFn extends Function
-    ? true
-    : false
-  : false;
+export type HasCommit<P> = P extends { commit: Function } ? true : false;
+
+// Type for the wrapped commit function that only requires the args parameter
+export type WrappedCommitFunction<CommitParams, Result> = (
+  args: CommitParams,
+) => Promise<Result>;
 
 // Tool supported policy with proper typing
 export type VincentToolSupportedPolicy<
@@ -286,7 +302,6 @@ export type VincentToolSupportedPolicy<
   }>;
 };
 
-// Policy evaluation results with proper typing for commit
 export type VincentPolicyEvaluationResults<
   Policies extends Record<string, { policyDef: VincentPolicyDef }>,
 > = {
@@ -296,10 +311,17 @@ export type VincentPolicyEvaluationResults<
       result: PolicyResponseAllow<any>;
     } & (HasCommit<Policies[PolicyKey]['policyDef']> extends true
       ? {
-          commit: Extract<
-            Policies[PolicyKey]['policyDef'],
-            { commit: Function }
-          >['commit'];
+          // Use a wrapped commit function type that only requires args
+          commit: Policies[PolicyKey]['policyDef'] extends {
+            commit: infer Commit;
+          }
+            ? Commit extends (
+                args: infer Args,
+                context: any,
+              ) => Promise<infer Result>
+              ? WrappedCommitFunction<Args, Result>
+              : never
+            : never;
         }
       : {});
   };
