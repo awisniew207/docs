@@ -22,10 +22,16 @@ function createPolicyContext<
     ipfsCid,
     details,
 
-    addDetails(detail: string) {
-      details.push(detail);
+    // Updated implementation to handle either string or string[]
+    addDetails(detail: string | string[]) {
+      if (Array.isArray(detail)) {
+        details.push(...detail);
+      } else {
+        details.push(detail);
+      }
     },
 
+    // Rest of the implementation remains the same
     allow(result?: any) {
       // Runtime type checking
       if (allowSchema && result === undefined) {

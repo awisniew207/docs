@@ -29,7 +29,12 @@ export interface PolicyResponseDenyNoResult extends PolicyResponseBase {
   result?: never;
 }
 
-// Define PolicyContext with properly working overloads
+// Define the PolicyResponse union type that combines allow and deny responses
+export type PolicyResponse<AllowResult = never, DenyResult = never> =
+  | PolicyResponseAllow<AllowResult>
+  | PolicyResponseDeny<DenyResult>;
+
+// Updated PolicyContext with new addDetails signature
 export interface PolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
@@ -37,9 +42,10 @@ export interface PolicyContext<
   ipfsCid: string;
   details: string[];
 
-  addDetails(detail: string): void;
+  // Updated to accept either a single string or an array of strings
+  addDetails(detail: string | string[]): void;
 
-  // For when no schema is defined
+  // Allow overloads (unchanged from your previous solution)
   allow(): AllowSchema extends z.ZodType ? never : PolicyResponseAllowNoResult;
 
   // For general string cases (including literals) when schema is a string type
@@ -60,7 +66,7 @@ export interface PolicyContext<
       : never
     : never;
 
-  // Deny overloads
+  // Deny overloads (unchanged)
   deny(
     error?: string,
   ): DenySchema extends z.ZodType ? never : PolicyResponseDenyNoResult;

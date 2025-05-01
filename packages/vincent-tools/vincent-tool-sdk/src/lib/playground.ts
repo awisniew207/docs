@@ -38,36 +38,40 @@ const policy1 = validateVincentPolicyDef({
     commitAllowResultSchema: policy1CommitAllowResult,
     commitDenyResultSchema: policy1CommitDenyResult,
 
-    precheck: async ({ toolParams, userParams }, context) => {
-      context.addDetails('Checking if target is allowed for this action');
+    precheck: async (
+      { toolParams, userParams },
+      { addDetails, allow, deny },
+    ) => {
+      addDetails('Checking if target is allowed for this action');
 
       if (toolParams.targetAllowed) {
-        return context.allow('ALLOWED_BY_PRECHECK');
+        return allow('ALLOWED_BY_PRECHECK');
       } else {
-        return context.deny('Target is not allowed for this action');
+        return deny('Target is not allowed for this action');
       }
     },
 
-    evaluate: async ({ toolParams, userParams }, context) => {
-      context.addDetails('Checking if target is in allowed targets list');
+    evaluate: async (
+      { toolParams, userParams },
+      { addDetails, allow, deny },
+    ) => {
+      addDetails('Checking if target is in allowed targets list');
       const targetIsAllowed = userParams.allowedTargets.includes('example');
 
       if (targetIsAllowed && toolParams.targetAllowed) {
-        return context.allow('APPROVED');
+        return allow('APPROVED');
       } else {
-        return context.deny({ reason: 'Target not in allowed list' });
+        return deny({ reason: 'Target not in allowed list' });
       }
     },
 
-    commit: async (params, context) => {
-      context.addDetails(
-        'Committing with confirmation: ' + params.confirmation,
-      );
+    commit: async (params, { addDetails, allow, deny }) => {
+      addDetails('Committing with confirmation: ' + params.confirmation);
 
       if (params.confirmation) {
-        return context.allow({ success: true });
+        return allow({ success: true });
       } else {
-        return context.deny(
+        return deny(
           { errorCode: 400 },
           'Commit failed due to missing confirmation',
         );
@@ -118,38 +122,41 @@ const policy2 = validateVincentPolicyDef({
     commitAllowResultSchema: policy2CommitAllowResult,
     commitDenyResultSchema: policy2CommitDenyResult,
 
-    precheck: async ({ toolParams, userParams }, context) => {
-      const isWithinLimit = toolParams.maxAmount <= userParams.limit;
-      context.addDetails(
-        `Checking if amount ${toolParams.maxAmount} is within limit ${userParams.limit}`,
+    // For policy2:
+    precheck: async (params, { addDetails, allow, deny }) => {
+      const isWithinLimit =
+        params.toolParams.maxAmount <= params.userParams.limit;
+      addDetails(
+        `Checking if amount ${params.toolParams.maxAmount} is within limit ${params.userParams.limit}`,
       );
 
       if (isWithinLimit) {
-        return context.allow({ validatedAmount: 1983 });
+        return allow({ validatedAmount: 1983 });
       } else {
-        return context.deny({ limitExceeded: true });
+        return deny({ limitExceeded: true });
       }
     },
 
-    evaluate: async ({ toolParams, userParams }, context) => {
+    evaluate: async (params, { addDetails, allow, deny }) => {
       const isValidCurrency = ['USD', 'EUR', 'GBP'].includes(
-        toolParams.currency,
+        params.toolParams.currency,
       );
-      const isWithinLimit = toolParams.maxAmount <= userParams.limit;
+      const isWithinLimit =
+        params.toolParams.maxAmount <= params.userParams.limit;
 
-      context.addDetails(`Validating currency ${toolParams.currency}`);
-      context.addDetails(
-        `Checking amount ${toolParams.maxAmount} against limit ${userParams.limit}`,
-      );
+      addDetails([
+        `Validating currency ${params.toolParams.currency}`,
+        `Checking amount ${params.toolParams.maxAmount} against limit ${params.userParams.limit}`,
+      ]);
 
       if (isValidCurrency && isWithinLimit) {
-        return context.allow({ approvedCurrency: toolParams.currency });
+        return allow({ approvedCurrency: params.toolParams.currency });
       } else {
         const reason = !isValidCurrency
-          ? `Currency ${toolParams.currency} is not supported`
-          : `Amount ${toolParams.maxAmount} exceeds limit ${userParams.limit}`;
+          ? `Currency ${params.toolParams.currency} is not supported`
+          : `Amount ${params.toolParams.maxAmount} exceeds limit ${params.userParams.limit}`;
 
-        return context.deny(
+        return deny(
           {
             reason: reason,
             code: !isValidCurrency ? 415 : 400,
@@ -159,17 +166,17 @@ const policy2 = validateVincentPolicyDef({
       }
     },
 
-    commit: async (params, context) => {
-      context.addDetails(`Processing transaction: ${params.transactionId}`);
+    commit: async (params, { addDetails, allow, deny }) => {
+      addDetails(`Processing transaction: ${params.transactionId}`);
 
       // For demo purposes, let's say transactions with "fail" in the ID will be denied
       if (!params.transactionId.includes('fail')) {
-        return context.allow({
+        return allow({
           transaction: `completed-${params.transactionId}`,
           timestamp: Date.now(),
         });
       } else {
-        return context.deny(
+        return deny(
           { failureReason: 'Invalid transaction ID format' },
           'Transaction failed',
         );
@@ -213,23 +220,31 @@ const policy3 = validateVincentPolicyDef({
     evalAllowResultSchema: policy3EvalAllowResult,
     evalDenyResultSchema: policy3EvalDenyResult,
 
-    // Only has evaluate, no precheck or commit
-    evaluate: async ({ toolParams, userParams }, context) => {
-      context.addDetails(`Checking access level: ${userParams.accessLevel}`);
-      context.addDetails(`Tool: ${toolParams.toolName}`);
+    // For policy3:
+    precheck: async (
+      { toolParams, userParams },
+      { addDetails, allow, deny },
+    ) => {
+      addDetails('Running precheck for policy3');
 
-      // Policy logic: Allow only premium and admin users
-      if (userParams.accessLevel === 'basic') {
-        return context.deny({
-          reason: 'Basic users cannot access this tool',
-          suggestedAccessLevel: 'premium',
-        });
+      if (Math.random() > 0.5) {
+        return allow('ALLOWED_BY_PRECHECK');
+      } else {
+        return deny('DENIED_BY_PRECHECK');
       }
+    },
 
-      return context.allow({
-        message: `Access granted to ${toolParams.toolName}`,
-        timedate: new Date(),
-      });
+    evaluate: async (
+      { toolParams, userParams },
+      { addDetails, allow, deny },
+    ) => {
+      addDetails('Running evaluation for policy3');
+
+      if (Math.random() > 0.5) {
+        return allow('ALLOWED_BY_EVALUATE');
+      } else {
+        return deny('DENIED_BY_EVALUATE');
+      }
     },
     // No commit method!
   },
