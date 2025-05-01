@@ -44,24 +44,25 @@ export interface PolicyContext<
   // Accept either a single string or an array of strings
   addDetails(detail: string | string[]): void;
 
-  // Function overloads for allow:
-  // When no schema is defined, only allow without arguments
-  allow(): AllowSchema extends undefined ? PolicyResponseAllowNoResult : never;
-  // When schema is defined, require argument matching the schema
-  allow<T extends z.infer<NonNullable<AllowSchema>>>(
-    result: AllowSchema extends undefined ? never : T,
-  ): PolicyResponseAllow<T>;
+  // Use branded function types to force TypeScript to check argument presence
+  allow: AllowSchema extends z.ZodType
+    ? {
+        (
+          result: z.infer<AllowSchema>,
+        ): PolicyResponseAllow<z.infer<AllowSchema>>;
+        __brand: 'requires-arg';
+      }
+    : { (): PolicyResponseAllowNoResult; __brand: 'no-arg' };
 
-  // Function overloads for deny:
-  // When no schema is defined, accept string error or no arguments
-  deny(
-    error?: DenySchema extends undefined ? string : never,
-  ): PolicyResponseDenyNoResult;
-  // When schema is defined, require argument matching the schema
-  deny<T extends z.infer<NonNullable<DenySchema>>>(
-    result: DenySchema extends undefined ? never : T,
-    error?: string,
-  ): PolicyResponseDeny<T>;
+  deny: DenySchema extends z.ZodType
+    ? {
+        (
+          result: z.infer<DenySchema>,
+          error?: string,
+        ): PolicyResponseDeny<z.infer<DenySchema>>;
+        __brand: 'requires-arg';
+      }
+    : { (error?: string): PolicyResponseDenyNoResult; __brand: 'no-arg' };
 }
 
 export interface BasicPolicyDef<

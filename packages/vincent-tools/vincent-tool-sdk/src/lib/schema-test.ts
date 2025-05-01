@@ -26,6 +26,7 @@ function testWithSchema() {
   const objSchema = z.object({ id: z.string() });
 
   // Function signature to test types on a PolicyContext
+  // @ts-expect-error
   function testContextSignature(
     context: PolicyContext<typeof objSchema, undefined>,
   ) {
@@ -84,6 +85,7 @@ function testWithSchema() {
  */
 function testWithoutSchema() {
   // Function signature to test types on a PolicyContext
+  // @ts-expect-error
   function testContextSignature(context: PolicyContext<undefined, undefined>) {
     // Valid - no schema means no args
     context.allow();

@@ -289,7 +289,7 @@ function testCommitAllowDeny() {
         } else {
           // Example of what would cause a TypeScript error:
           // @ts-expect-error - Wrong shape
-          // context.deny({ wrong: 'shape' });
+          context.deny({ wrong: 'shape' });
 
           // Valid - matches schema
           return context.deny({ errorCode: 500 }, 'Invalid confirmation ID');
