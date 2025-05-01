@@ -37,10 +37,6 @@ const routes: RouteObject[] = [
         element: <AdvancedFunctions />,
       },
       {
-        path: '/appId/:appId/consent',
-        element: <Consent />,
-      },
-      {
         path: '/appId/:appId/delegatee',
         element: <Delegatee />,
       },
@@ -56,6 +52,10 @@ const routes: RouteObject[] = [
       {
         path: '/withdraw',
         element: <Withdraw />,
+      },
+      {
+        path: '/appId/:appId/consent',
+        element: <Consent />,
       },
     ],
   },
