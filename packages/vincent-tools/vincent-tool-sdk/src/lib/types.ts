@@ -34,7 +34,6 @@ export type PolicyResponse<AllowResult = never, DenyResult = never> =
   | PolicyResponseAllow<AllowResult>
   | PolicyResponseDeny<DenyResult>;
 
-// Updated PolicyContext with new addDetails signature
 export interface PolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
@@ -42,43 +41,27 @@ export interface PolicyContext<
   ipfsCid: string;
   details: string[];
 
-  // Updated to accept either a single string or an array of strings
+  // Accept either a single string or an array of strings
   addDetails(detail: string | string[]): void;
 
-  // Allow overloads (unchanged from your previous solution)
-  allow(): AllowSchema extends z.ZodType ? never : PolicyResponseAllowNoResult;
+  // Function overloads for allow:
+  // When no schema is defined, only allow without arguments
+  allow(): AllowSchema extends undefined ? PolicyResponseAllowNoResult : never;
+  // When schema is defined, require argument matching the schema
+  allow<T extends z.infer<NonNullable<AllowSchema>>>(
+    result: AllowSchema extends undefined ? never : T,
+  ): PolicyResponseAllow<T>;
 
-  // For general string cases (including literals) when schema is a string type
-  allow(
-    result: string,
-  ): AllowSchema extends z.ZodType
-    ? z.infer<AllowSchema> extends string
-      ? PolicyResponseAllow<string>
-      : never
-    : never;
-
-  // For all other types
-  allow<T>(
-    result: T,
-  ): AllowSchema extends z.ZodType
-    ? T extends z.infer<AllowSchema>
-      ? PolicyResponseAllow<T>
-      : never
-    : never;
-
-  // Deny overloads (unchanged)
+  // Function overloads for deny:
+  // When no schema is defined, accept string error or no arguments
   deny(
+    error?: DenySchema extends undefined ? string : never,
+  ): PolicyResponseDenyNoResult;
+  // When schema is defined, require argument matching the schema
+  deny<T extends z.infer<NonNullable<DenySchema>>>(
+    result: DenySchema extends undefined ? never : T,
     error?: string,
-  ): DenySchema extends z.ZodType ? never : PolicyResponseDenyNoResult;
-
-  deny<T>(
-    result: T,
-    error?: string,
-  ): DenySchema extends z.ZodType
-    ? T extends z.infer<DenySchema>
-      ? PolicyResponseDeny<T>
-      : never
-    : never;
+  ): PolicyResponseDeny<T>;
 }
 
 export interface BasicPolicyDef<

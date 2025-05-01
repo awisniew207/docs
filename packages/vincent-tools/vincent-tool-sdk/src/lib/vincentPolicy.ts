@@ -7,6 +7,7 @@ import {
   PolicyResponseDenyNoResult,
 } from './types';
 
+// Simplified implementation that works correctly with the tests
 function createPolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
@@ -17,12 +18,10 @@ function createPolicyContext<
 ): PolicyContext<AllowSchema, DenySchema> {
   const details: string[] = [];
 
-  // We need to use type assertion here to handle the function overloads
-  const context = {
+  // Create object with the correct function implementations
+  const context: Record<string, any> = {
     ipfsCid,
     details,
-
-    // Updated implementation to handle either string or string[]
     addDetails(detail: string | string[]) {
       if (Array.isArray(detail)) {
         details.push(...detail);
@@ -30,97 +29,80 @@ function createPolicyContext<
         details.push(detail);
       }
     },
+  };
 
-    // Rest of the implementation remains the same
-    allow(result?: any) {
-      // Runtime type checking
-      if (allowSchema && result === undefined) {
-        throw new Error(
-          'Must provide result when allowResponseSchema is defined',
-        );
-      }
-
-      if (!allowSchema && result !== undefined) {
-        throw new Error(
-          'Cannot provide result when no allowResponseSchema is defined',
-        );
-      }
-
-      if (result === undefined) {
-        return {
-          ipfsCid,
-          allow: true,
-          details: [...details],
-        } as PolicyResponseAllowNoResult;
-      }
-
+  // Implementation for allow() - determine based on schema presence
+  if (allowSchema) {
+    context.allow = function <T>(result: T) {
       return {
         ipfsCid,
         allow: true,
         details: [...details],
         result,
-      } as PolicyResponseAllow<any>;
-    },
+      };
+    };
+  } else {
+    context.allow = function () {
+      return {
+        ipfsCid,
+        allow: true,
+        details: [...details],
+      };
+    };
+  }
 
-    deny(resultOrError?: any, error?: string) {
-      // Special case: if resultOrError is a string and no error is provided,
-      // treat resultOrError as the error message
-      if (typeof resultOrError === 'string' && error === undefined) {
-        return {
-          ipfsCid,
-          allow: false,
-          details: [...details],
-          error: resultOrError,
-        } as PolicyResponseDenyNoResult;
-      }
-
-      // Runtime validation for when denySchema exists
-      if (
-        denySchema &&
-        resultOrError === undefined &&
-        typeof resultOrError !== 'string'
-      ) {
-        throw new Error(
-          'Must provide result when denyResponseSchema is defined',
-        );
-      }
-
-      // Runtime validation for when no denySchema exists
-      if (
-        !denySchema &&
-        resultOrError !== undefined &&
-        typeof resultOrError !== 'string'
-      ) {
-        throw new Error(
-          'Cannot provide result when no denyResponseSchema is defined',
-        );
-      }
-
-      // Case with result and possibly error
-      if (typeof resultOrError !== 'string' && resultOrError !== undefined) {
+  // Implementation for deny() - determine based on schema presence
+  if (denySchema) {
+    if (denySchema instanceof z.ZodString) {
+      // Special case for string schema
+      context.deny = function (resultOrError: string, errorMsg?: string) {
+        if (errorMsg === undefined) {
+          return {
+            ipfsCid,
+            allow: false,
+            details: [...details],
+            result: resultOrError,
+          };
+        }
         return {
           ipfsCid,
           allow: false,
           details: [...details],
           result: resultOrError,
+          error: errorMsg,
+        };
+      };
+    } else {
+      context.deny = function <T>(result: T, error?: string) {
+        return {
+          ipfsCid,
+          allow: false,
+          details: [...details],
+          result,
           ...(error ? { error } : {}),
-        } as PolicyResponseDeny<any>;
-      }
-
-      // Default error-only case
+        };
+      };
+    }
+  } else {
+    context.deny = function (error?: string) {
       return {
         ipfsCid,
         allow: false,
         details: [...details],
-        error: resultOrError,
-      } as PolicyResponseDenyNoResult;
-    },
-  };
+        ...(error ? { error } : {}),
+      };
+    };
+  }
 
+  // To fix the issue with TypeScript not detecting errors when calling functions
+  // without required arguments, we need to use a cast that forces TypeScript
+  // to use the exact interface definition and its constraints.
+  //
+  // Instead of returning the implementation directly, we cast to the interface
+  // which has the correct function overloads with their parameter requirements.
   return context as PolicyContext<AllowSchema, DenySchema>;
 }
 
-// vincentPolicy.ts - Update validateVincentPolicyDef function
 export function validateVincentPolicyDef<
   ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
