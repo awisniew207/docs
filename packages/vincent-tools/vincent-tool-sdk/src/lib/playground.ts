@@ -1,6 +1,6 @@
 import z from 'zod';
-import { validateVincentPolicyDef } from './vincent-policy';
-import { validateVincentToolDef } from './vincent-tool';
+import { validateVincentPolicyDef } from './vincentPolicy';
+import { validateVincentToolDef } from './vincentTool';
 
 // Define your tool schema
 const myToolSchema = z.object({
@@ -38,57 +38,39 @@ const policy1 = validateVincentPolicyDef({
     commitAllowResultSchema: policy1CommitAllowResult,
     commitDenyResultSchema: policy1CommitDenyResult,
 
-    precheck: async ({ toolParams, userParams }) => {
+    precheck: async ({ toolParams, userParams }, context) => {
+      context.addDetails('Checking if target is allowed for this action');
+
       if (toolParams.targetAllowed) {
-        return {
-          ipfsCid: 'policy1',
-          allow: true,
-          details: ['Target is allowed for this action'],
-        };
+        return context.allow('ALLOWED_BY_PRECHECK');
       } else {
-        return {
-          ipfsCid: 'policy1',
-          allow: false,
-          details: ['Target is not allowed for this action'],
-        };
+        return context.deny('Target is not allowed for this action');
       }
     },
 
-    evaluate: async ({ toolParams, userParams }) => {
+    evaluate: async ({ toolParams, userParams }, context) => {
+      context.addDetails('Checking if target is in allowed targets list');
       const targetIsAllowed = userParams.allowedTargets.includes('example');
 
       if (targetIsAllowed && toolParams.targetAllowed) {
-        return {
-          ipfsCid: 'policy1',
-          allow: true,
-          details: ['Target is in the allowed targets list'],
-          result: 'APPROVED',
-        };
+        return context.allow('APPROVED');
       } else {
-        return {
-          ipfsCid: 'policy1',
-          allow: false,
-          details: ['Target is not in the allowed targets list'],
-          result: { reason: 'Target not in allowed list' },
-        };
+        return context.deny({ reason: 'Target not in allowed list' });
       }
     },
 
-    commit: async (params) => {
+    commit: async (params, context) => {
+      context.addDetails(
+        'Committing with confirmation: ' + params.confirmation,
+      );
+
       if (params.confirmation) {
-        return {
-          ipfsCid: 'policy1',
-          allow: true,
-          details: ['Commit successful'],
-          result: { success: true },
-        };
+        return context.allow({ success: true });
       } else {
-        return {
-          ipfsCid: 'policy1',
-          allow: false,
-          details: ['Commit failed due to missing confirmation'],
-          result: { errorCode: 400 },
-        };
+        return context.deny(
+          { errorCode: 400 },
+          'Commit failed due to missing confirmation',
+        );
       }
     },
   },
@@ -136,83 +118,61 @@ const policy2 = validateVincentPolicyDef({
     commitAllowResultSchema: policy2CommitAllowResult,
     commitDenyResultSchema: policy2CommitDenyResult,
 
-    precheck: async ({ toolParams, userParams }) => {
+    precheck: async ({ toolParams, userParams }, context) => {
       const isWithinLimit = toolParams.maxAmount <= userParams.limit;
+      context.addDetails(
+        `Checking if amount ${toolParams.maxAmount} is within limit ${userParams.limit}`,
+      );
 
       if (isWithinLimit) {
-        return {
-          ipfsCid: 'policy2',
-          allow: true,
-          details: [
-            `Amount ${toolParams.maxAmount} is within limit ${userParams.limit}`,
-          ],
-          result: { validatedAmount: 1983 },
-          // result: { beef: 'meow', quake: 1 },
-        };
+        return context.allow({ validatedAmount: 1983 });
       } else {
-        return {
-          ipfsCid: 'policy2',
-          allow: false,
-          details: [
-            `Amount ${toolParams.maxAmount} exceeds limit ${userParams.limit}`,
-          ],
-          result: { limitExceeded: true },
-        };
+        return context.deny({ limitExceeded: true });
       }
     },
 
-    evaluate: async ({ toolParams, userParams }) => {
+    evaluate: async ({ toolParams, userParams }, context) => {
       const isValidCurrency = ['USD', 'EUR', 'GBP'].includes(
         toolParams.currency,
       );
       const isWithinLimit = toolParams.maxAmount <= userParams.limit;
 
+      context.addDetails(`Validating currency ${toolParams.currency}`);
+      context.addDetails(
+        `Checking amount ${toolParams.maxAmount} against limit ${userParams.limit}`,
+      );
+
       if (isValidCurrency && isWithinLimit) {
-        return {
-          ipfsCid: 'policy2',
-          allow: true,
-          details: [`Currency ${toolParams.currency} is supported`],
-          result: { approvedCurrency: toolParams.currency },
-        };
+        return context.allow({ approvedCurrency: toolParams.currency });
       } else {
         const reason = !isValidCurrency
           ? `Currency ${toolParams.currency} is not supported`
           : `Amount ${toolParams.maxAmount} exceeds limit ${userParams.limit}`;
 
-        return {
-          ipfsCid: 'policy2',
-          allow: false,
-          details: [reason],
-          result: {
+        return context.deny(
+          {
             reason: reason,
             code: !isValidCurrency ? 415 : 400,
           },
-        };
+          reason,
+        );
       }
     },
 
-    commit: async (params) => {
+    commit: async (params, context) => {
+      context.addDetails(`Processing transaction: ${params.transactionId}`);
+
       // For demo purposes, let's say transactions with "fail" in the ID will be denied
       if (!params.transactionId.includes('fail')) {
-        return {
-          ipfsCid: 'policy2',
-          ipfsCid2: 'policy2',
-          allow: true,
-          details: ['Transaction processed successfully'],
-          result: {
-            transaction: `completed-${params.transactionId}`,
-            timestamp: Date.now(),
-          },
-        };
+        return context.allow({
+          transaction: `completed-${params.transactionId}`,
+          timestamp: Date.now(),
+        });
       } else {
-        return {
-          ipfsCid: 'policy2',
-          allow: false,
-          details: ['Transaction failed'],
-          result: {
-            failureReason: 'Invalid transaction ID format',
-          },
-        };
+        return context.deny(
+          { failureReason: 'Invalid transaction ID format' },
+          'Transaction failed',
+        );
       }
     },
   },
@@ -254,27 +214,22 @@ const policy3 = validateVincentPolicyDef({
     evalDenyResultSchema: policy3EvalDenyResult,
 
     // Only has evaluate, no precheck or commit
-    evaluate: async ({ toolParams, userParams }) => {
+    evaluate: async ({ toolParams, userParams }, context) => {
+      context.addDetails(`Checking access level: ${userParams.accessLevel}`);
+      context.addDetails(`Tool: ${toolParams.toolName}`);
+
       // Policy logic: Allow only premium and admin users
       if (userParams.accessLevel === 'basic') {
-        return {
-          ipfsCid: 'policy3ipfscid123',
-          allow: false,
-          result: {
-            reason: 'Basic users cannot access this tool',
-            suggestedAccessLevel: 'premium' as const,
-          },
-        };
+        return context.deny({
+          reason: 'Basic users cannot access this tool',
+          suggestedAccessLevel: 'premium',
+        });
       }
 
-      return {
-        ipfsCid: 'policy3ipfscid123',
-        allow: true,
-        result: {
-          message: `Access granted to ${toolParams.toolName}`,
-          timedate: new Date(),
-        },
-      };
+      return context.allow({
+        message: `Access granted to ${toolParams.toolName}`,
+        timedate: new Date(),
+      });
     },
     // No commit method!
   },
@@ -283,16 +238,7 @@ const policy3 = validateVincentPolicyDef({
   },
 });
 
-// const watTestFunction = async () => {
-//   const wat1 = await policy1.policyDef.commit({
-//     beef: false,
-//   });
-//   const wat2 = await policy2.policyDef.commit({ transactionId: 'test-id' });
-// const wat3 = await policy3.policyDef.commit({ beefcake: 'test-id' });
-// };
-//
 // Create your tool with fully typed policies
-// @ts-expect-error myTool is intentionally never used
 const myTool = validateVincentToolDef({
   toolParamsSchema: myToolSchema,
   supportedPolicies: {
@@ -303,32 +249,33 @@ const myTool = validateVincentToolDef({
   precheck: async (params, policyResults) => {
     // Type-safe access to policies
     if (policyResults.allowPolicyResults.policy1) {
-      await policyResults.allowPolicyResults.policy1.commit({
-        ...params,
-        confirmation: true,
-      });
+      // The commit function has been wrapped to only need the args parameter
+      // No need to pass a context as it's injected by the wrapper
+      const commitResult =
+        await policyResults.allowPolicyResults.policy1.commit({
+          confirmation: true,
+        });
+
+      console.log('Policy1 commit result:', commitResult.allow);
     }
 
     if (policyResults.allowPolicyResults.policy2) {
       const commitResult =
         await policyResults.allowPolicyResults.policy2.commit({
-          ...params,
           transactionId: 'orhfjkjsdfslkjhdf',
         });
 
       if (commitResult.allow === true) {
         const { transaction, timestamp } = commitResult.result;
         console.log(`Transaction ${transaction} processed at ${timestamp}`);
-      } else {
+      } else if (commitResult.allow === false && commitResult.result) {
         console.log('failureReason', commitResult.result.failureReason);
       }
     }
 
+    // Policy3 doesn't have commit, so we don't try to call it
     if (policyResults.allowPolicyResults.policy3) {
-      // FIXME: This should be a type error
-      // await policyResults.allowPolicyResults.policy3.commit({
-      //   beefcake: 'orhfjkjsdfslkjhdf',
-      // });
+      console.log('Policy3 approved but has no commit function');
     }
 
     return true;
@@ -340,3 +287,6 @@ const myTool = validateVincentToolDef({
     };
   },
 });
+
+// Export to avoid unused variable warning
+export { myTool };

@@ -1,131 +1,197 @@
-// types.ts
+// types.ts - Updated interfaces with optional UserParams and CommitParams
 import { z } from 'zod';
 
-interface PolicyResultBase {
+export interface PolicyResponseBase {
   ipfsCid: string;
-  allow: boolean;
-  details?: string[];
+  details: string[];
 }
 
-export type PolicyResultAllow<AllowResult = never> = AllowResult extends never
-  ? Omit<PolicyResultBase, 'allow'> & { allow: true; result?: never }
-  : Omit<PolicyResultBase, 'allow'> & { allow: true; result: AllowResult };
+export type PolicyResponseAllow<AllowResult = never> = AllowResult extends never
+  ? PolicyResponseAllowNoResult
+  : Omit<PolicyResponseBase, 'allow'> & { allow: true; result: AllowResult };
 
-export type PolicyResultDeny<DenyResult = never> = DenyResult extends never
-  ? Omit<PolicyResultBase, 'allow'> & {
-      allow: false;
-      error?: string;
-      result?: never;
-    }
-  : Omit<PolicyResultBase, 'allow'> & {
+export interface PolicyResponseAllowNoResult extends PolicyResponseBase {
+  allow: true;
+  result?: never;
+}
+
+export type PolicyResponseDeny<DenyResult = never> = DenyResult extends never
+  ? PolicyResponseDenyNoResult
+  : Omit<PolicyResponseBase, 'allow'> & {
       allow: false;
       result: DenyResult;
       error?: string;
     };
 
-export type PolicyResult<AllowResult = unknown, DenyResult = unknown> =
-  | PolicyResultAllow<AllowResult>
-  | PolicyResultDeny<DenyResult>;
-
-export interface PolicyResultAllowNoResult extends PolicyResultBase {
-  allow: true;
-  result?: never;
-}
-
-export interface PolicyResultDenyNoResult extends PolicyResultBase {
+export interface PolicyResponseDenyNoResult extends PolicyResponseBase {
   allow: false;
   error?: string;
   result?: never;
 }
 
-export type PolicyResultNoResult =
-  | PolicyResultAllowNoResult
-  | PolicyResultDenyNoResult;
+export type PolicyResponse<AllowResult = never, DenyResult = never> =
+  | PolicyResponseAllow<AllowResult>
+  | PolicyResponseDeny<DenyResult>;
 
-// PolicyDef interfaces are very verbose, but the verbosity is necessary to ensure proper typing for the policy definitions,
-// especially in the context of the VincentPolicyEvaluationResults dictionary, where every value has a different type.
+// Define PolicyContext with proper overloads
+export interface PolicyContext<
+  AllowSchema extends z.ZodType | undefined = undefined,
+  DenySchema extends z.ZodType | undefined = undefined,
+> {
+  ipfsCid: string;
+  details: string[];
+
+  addDetails(detail: string): void;
+
+  // Allow overloads with proper conditional typing
+  allow(): AllowSchema extends z.ZodType ? never : PolicyResponseAllowNoResult;
+  allow<T extends AllowSchema extends z.ZodType ? z.infer<AllowSchema> : never>(
+    result: T,
+  ): AllowSchema extends z.ZodType ? PolicyResponseAllow<T> : never;
+
+  // Deny overloads with proper conditional typing
+  deny(
+    error?: string,
+  ): DenySchema extends z.ZodType ? never : PolicyResponseDenyNoResult;
+  deny<T extends DenySchema extends z.ZodType ? z.infer<DenySchema> : never>(
+    result: T,
+    error?: string,
+  ): DenySchema extends z.ZodType ? PolicyResponseDeny<T> : never;
+}
+
 export interface BasicPolicyDef<
   ToolParams extends z.ZodType,
-  UserParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
   EvalAllowResult extends z.ZodType | undefined = undefined,
   EvalDenyResult extends z.ZodType | undefined = undefined,
 > {
   ipfsCid: string;
   toolParamsSchema: ToolParams;
-  userParamsSchema: UserParams;
+  userParamsSchema?: UserParams;
   evalAllowResultSchema?: EvalAllowResult;
   evalDenyResultSchema?: EvalDenyResult;
-  evaluate: (args: {
-    toolParams: z.infer<ToolParams>;
-    userParams: z.infer<UserParams>;
-  }) => Promise<
-    PolicyResult<
-      EvalAllowResult extends z.ZodType ? z.infer<EvalAllowResult> : never,
-      EvalDenyResult extends z.ZodType ? z.infer<EvalDenyResult> : never
-    >
+
+  evaluate: (
+    args: {
+      toolParams: z.infer<ToolParams>;
+      userParams: UserParams extends z.ZodType
+        ? z.infer<UserParams>
+        : undefined;
+    },
+    context: PolicyContext<EvalAllowResult, EvalDenyResult>,
+  ) => Promise<
+    | (EvalAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (EvalDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+        : PolicyResponseDenyNoResult)
   >;
 }
 
+// Update PolicyWithPrecheck
 export interface PolicyWithPrecheck<
   ToolParams extends z.ZodType,
-  UserParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
   PrecheckAllowResult extends z.ZodType | undefined = undefined,
   PrecheckDenyResult extends z.ZodType | undefined = undefined,
   EvalAllowResult extends z.ZodType | undefined = undefined,
   EvalDenyResult extends z.ZodType | undefined = undefined,
-> extends BasicPolicyDef<
-    ToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
+> extends Omit<
+    BasicPolicyDef<ToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    'evaluate'
   > {
   precheckAllowResultSchema?: PrecheckAllowResult;
   precheckDenyResultSchema?: PrecheckDenyResult;
-  precheck: (args: {
-    toolParams: z.infer<ToolParams>;
-    userParams: z.infer<UserParams>;
-  }) => Promise<
+
+  precheck: (
+    args: {
+      toolParams: z.infer<ToolParams>;
+      userParams: UserParams extends z.ZodType
+        ? z.infer<UserParams>
+        : undefined;
+    },
+    context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
+  ) => Promise<
     | (PrecheckAllowResult extends z.ZodType
-        ? PolicyResultAllow<z.infer<PrecheckAllowResult>>
-        : PolicyResultAllowNoResult)
+        ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
+        : PolicyResponseAllowNoResult)
     | (PrecheckDenyResult extends z.ZodType
-        ? PolicyResultDeny<z.infer<PrecheckDenyResult>>
-        : PolicyResultDenyNoResult)
+        ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
+        : PolicyResponseDenyNoResult)
+  >;
+
+  evaluate: (
+    args: {
+      toolParams: z.infer<ToolParams>;
+      userParams: UserParams extends z.ZodType
+        ? z.infer<UserParams>
+        : undefined;
+    },
+    context: PolicyContext<EvalAllowResult, EvalDenyResult>,
+  ) => Promise<
+    | (EvalAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (EvalDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+        : PolicyResponseDenyNoResult)
   >;
 }
 
+// Update PolicyWithCommit
 export interface PolicyWithCommit<
   ToolParams extends z.ZodType,
-  UserParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
   CommitParams extends z.ZodType | undefined = undefined,
   CommitAllowResult extends z.ZodType | undefined = undefined,
   CommitDenyResult extends z.ZodType | undefined = undefined,
   EvalAllowResult extends z.ZodType | undefined = undefined,
   EvalDenyResult extends z.ZodType | undefined = undefined,
-> extends BasicPolicyDef<
-    ToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
+> extends Omit<
+    BasicPolicyDef<ToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    'evaluate'
   > {
-  commitParamsSchema: NonNullable<CommitParams>;
+  commitParamsSchema?: CommitParams;
   commitAllowResultSchema?: CommitAllowResult;
   commitDenyResultSchema?: CommitDenyResult;
-  commit: (
-    args: CommitParams extends z.ZodType ? z.infer<CommitParams> : never,
+
+  evaluate: (
+    args: {
+      toolParams: z.infer<ToolParams>;
+      userParams: UserParams extends z.ZodType
+        ? z.infer<UserParams>
+        : undefined;
+    },
+    context: PolicyContext<EvalAllowResult, EvalDenyResult>,
   ) => Promise<
-    | (CommitAllowResult extends z.ZodType
-        ? PolicyResultAllow<z.infer<CommitAllowResult>>
-        : PolicyResultAllowNoResult)
-    | (CommitDenyResult extends z.ZodType
-        ? PolicyResultDeny<z.infer<CommitDenyResult>>
-        : PolicyResultDenyNoResult)
+    | (EvalAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (EvalDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+        : PolicyResponseDenyNoResult)
   >;
+
+  commit?: CommitParams extends z.ZodType
+    ? (
+        args: z.infer<CommitParams>,
+        context: PolicyContext<CommitAllowResult, CommitDenyResult>,
+      ) => Promise<
+        | (CommitAllowResult extends z.ZodType
+            ? PolicyResponseAllow<z.infer<CommitAllowResult>>
+            : PolicyResponseAllowNoResult)
+        | (CommitDenyResult extends z.ZodType
+            ? PolicyResponseDeny<z.infer<CommitDenyResult>>
+            : PolicyResponseDenyNoResult)
+      >
+    : undefined;
 }
 
+// Update PolicyWithPrecheckAndCommit
 export interface PolicyWithPrecheckAndCommit<
   ToolParams extends z.ZodType,
-  UserParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
   PrecheckAllowResult extends z.ZodType | undefined = undefined,
   PrecheckDenyResult extends z.ZodType | undefined = undefined,
   CommitParams extends z.ZodType | undefined = undefined,
@@ -133,40 +199,64 @@ export interface PolicyWithPrecheckAndCommit<
   CommitDenyResult extends z.ZodType | undefined = undefined,
   EvalAllowResult extends z.ZodType | undefined = undefined,
   EvalDenyResult extends z.ZodType | undefined = undefined,
-> extends BasicPolicyDef<
-    ToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
+> extends Omit<
+    PolicyWithPrecheck<
+      ToolParams,
+      UserParams,
+      PrecheckAllowResult,
+      PrecheckDenyResult,
+      EvalAllowResult,
+      EvalDenyResult
+    >,
+    'evaluate'
   > {
-  precheckAllowResultSchema?: PrecheckAllowResult;
-  precheckDenyResultSchema?: PrecheckDenyResult;
-  precheck: (args: {
-    toolParams: z.infer<ToolParams>;
-    userParams: z.infer<UserParams>;
-  }) => Promise<
-    | (PrecheckAllowResult extends z.ZodType
-        ? PolicyResultAllow<z.infer<PrecheckAllowResult>>
-        : PolicyResultAllowNoResult)
-    | (PrecheckDenyResult extends z.ZodType
-        ? PolicyResultDeny<z.infer<PrecheckDenyResult>>
-        : PolicyResultDenyNoResult)
-  >;
-
-  commitParamsSchema: NonNullable<CommitParams>;
+  commitParamsSchema?: CommitParams;
   commitAllowResultSchema?: CommitAllowResult;
   commitDenyResultSchema?: CommitDenyResult;
-  commit: (
-    args: CommitParams extends z.ZodType ? z.infer<CommitParams> : never,
+
+  evaluate: (
+    args: {
+      toolParams: z.infer<ToolParams>;
+      userParams: UserParams extends z.ZodType
+        ? z.infer<UserParams>
+        : undefined;
+    },
+    context: PolicyContext<EvalAllowResult, EvalDenyResult>,
   ) => Promise<
-    | (CommitAllowResult extends z.ZodType
-        ? PolicyResultAllow<z.infer<CommitAllowResult>>
-        : PolicyResultAllowNoResult)
-    | (CommitDenyResult extends z.ZodType
-        ? PolicyResultDeny<z.infer<CommitDenyResult>>
-        : PolicyResultDenyNoResult)
+    | (EvalAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (EvalDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+        : PolicyResponseDenyNoResult)
   >;
+
+  commit?: CommitParams extends z.ZodType
+    ? (
+        args: z.infer<CommitParams>,
+        context: PolicyContext<CommitAllowResult, CommitDenyResult>,
+      ) => Promise<
+        | (CommitAllowResult extends z.ZodType
+            ? PolicyResponseAllow<z.infer<CommitAllowResult>>
+            : PolicyResponseAllowNoResult)
+        | (CommitDenyResult extends z.ZodType
+            ? PolicyResponseDeny<z.infer<CommitDenyResult>>
+            : PolicyResponseDenyNoResult)
+      >
+    : undefined;
 }
+
+// Updated evaluation results type
+export type VincentPolicyEvaluationResponse<
+  PrecheckAllowResult = never,
+  PrecheckDenyResult = never,
+  EvalAllowResult = never,
+  EvalDenyResult = never,
+> = {
+  precheckResponse?: PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
+  evaluateResponse?: PolicyResponse<EvalAllowResult, EvalDenyResult>;
+  allowed: boolean;
+};
 
 // Union type for all policy definitions
 // Do not be alarmed by the `any` types here -- the actual policies are still constrained by the types that make up the union
@@ -203,7 +293,7 @@ export type VincentPolicyEvaluationResults<
   evaluatedPolicies: Array<keyof Policies>;
   allowPolicyResults: {
     [PolicyKey in keyof Policies]?: {
-      result: PolicyResultAllow<any>;
+      result: PolicyResponseAllow<any>;
     } & (HasCommit<Policies[PolicyKey]['policyDef']> extends true
       ? {
           commit: Extract<
@@ -218,7 +308,7 @@ export type VincentPolicyEvaluationResults<
   | {
       allow: false;
       denyPolicyResult: {
-        result: PolicyResultDeny<any>;
+        result: PolicyResponseDeny<any>;
         ipfsCid: keyof Policies;
       };
     }

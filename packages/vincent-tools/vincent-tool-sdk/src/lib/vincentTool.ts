@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { VincentToolDef, VincentPolicyDef } from '../types';
+import { VincentToolDef, VincentPolicyDef } from './types';
 
 export function validateVincentToolDef<
   ToolParamsSchema extends z.ZodType,
