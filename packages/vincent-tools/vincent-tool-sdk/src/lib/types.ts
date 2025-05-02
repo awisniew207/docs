@@ -471,7 +471,8 @@ export type OnlyAllowedPolicyEvaluationResults<
         : never;
     };
   };
-  denyPolicyResult?: never;
+} & {
+  readonly denyPolicyResult: never;
 };
 
 // Tool definition
