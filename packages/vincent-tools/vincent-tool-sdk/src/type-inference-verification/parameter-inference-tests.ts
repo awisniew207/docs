@@ -5,7 +5,7 @@
  * on parameters passed to allow() and deny() methods.
  */
 import z from 'zod';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -18,7 +18,7 @@ const baseToolSchema = z.object({
  * Test 1: Basic schema validation for allow/deny
  */
 function testBasicSchemaValidation() {
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'basicSchemaTest',
@@ -55,7 +55,7 @@ function testBasicSchemaValidation() {
  * Test 2: No schema case validation
  */
 function testNoSchemaValidation() {
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'noSchemaTest',
@@ -91,7 +91,7 @@ function testNoSchemaValidation() {
  * Test 3: String schema validation
  */
 function testStringSchemaValidation() {
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'stringSchemaTest',
@@ -127,7 +127,7 @@ function testStringSchemaValidation() {
  * Test 4: Deny parameter validation
  */
 function testDenyValidation() {
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'denyTest',
@@ -163,7 +163,7 @@ function testDenyValidation() {
  * Test 5: Different schemas for different contexts
  */
 function testContextSchemas() {
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'contextTest',

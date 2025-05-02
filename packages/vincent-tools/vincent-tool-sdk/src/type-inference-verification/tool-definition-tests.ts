@@ -5,8 +5,8 @@
  * using a tool with two policies - one simple and one with commit functionality.
  */
 import z from 'zod';
-import { validateVincentToolDef } from '../lib/vincentTool';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentTool } from '../lib/vincentTool';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema
 const baseToolSchema = z.object({
@@ -21,7 +21,7 @@ const baseToolSchema = z.object({
  */
 function testPolicyEvaluationResults() {
   // Policy 1: Simple policy with object result schema
-  const simplePolicy = validateVincentPolicyDef({
+  const simplePolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'simple-policy',
@@ -48,7 +48,7 @@ function testPolicyEvaluationResults() {
   });
 
   // Policy 2: Policy with commit function
-  const commitPolicy = validateVincentPolicyDef({
+  const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'commit-policy',
@@ -124,7 +124,7 @@ function testPolicyEvaluationResults() {
   });
 
   // Create tool with both policies
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: baseToolSchema,
     supportedPolicies: {
       simplePolicy,

@@ -5,8 +5,8 @@
  * policy results, and context manipulation.
  */
 import z from 'zod';
-import { validateVincentToolDef } from '../lib/vincentTool';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentTool } from '../lib/vincentTool';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Define a schema for our test cases
 const testSchema = z.object({
@@ -25,7 +25,7 @@ const testSchema = z.object({
  */
 function testBasicParameterInference() {
   // Create a simple policy for testing
-  const testPolicy = validateVincentPolicyDef({
+  const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test-policy',
@@ -44,7 +44,7 @@ function testBasicParameterInference() {
     },
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -112,7 +112,7 @@ function testBasicParameterInference() {
  */
 function testPolicyResultInference() {
   // Create a policy with complex result type
-  const complexPolicy = validateVincentPolicyDef({
+  const complexPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'complex-policy',
@@ -144,7 +144,7 @@ function testPolicyResultInference() {
   });
 
   // Create policy with commit function
-  const commitPolicy = validateVincentPolicyDef({
+  const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'commit-policy',
@@ -179,7 +179,7 @@ function testPolicyResultInference() {
     },
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: {
       complexPolicy,
@@ -291,7 +291,7 @@ function testPolicyResultInference() {
  */
 function testComplexDestructuring() {
   // Create a simple policy
-  const testPolicy = validateVincentPolicyDef({
+  const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test-policy',
@@ -324,7 +324,7 @@ function testComplexDestructuring() {
     }),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema: successSchema,
@@ -436,7 +436,7 @@ function testAdvancedParameterValidation() {
   });
 
   // Create a policy
-  const testPolicy = validateVincentPolicyDef({
+  const testPolicy = createVincentToolPolicy({
     toolParamsSchema: advancedSchema,
     policyDef: {
       ipfsCid: 'test-policy',
@@ -453,7 +453,7 @@ function testAdvancedParameterValidation() {
     },
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: advancedSchema,
     supportedPolicies: { testPolicy },
 
@@ -538,7 +538,7 @@ function testAdvancedParameterValidation() {
  */
 function testMissingTypes() {
   // Create a policy
-  const testPolicy = validateVincentPolicyDef({
+  const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test',
@@ -557,7 +557,7 @@ function testMissingTypes() {
   });
 
   // Case where success schema is defined but fail schema is not
-  const toolWithOnlySuccessSchema = validateVincentToolDef({
+  const toolWithOnlySuccessSchema = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema: successSchema,
@@ -585,7 +585,7 @@ function testMissingTypes() {
     error: z.string(),
   });
 
-  const toolWithOnlyFailSchema = validateVincentToolDef({
+  const toolWithOnlyFailSchema = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeFailSchema: failSchema,

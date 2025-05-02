@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {
-  VincentPolicyDef,
+  VincentPolicy,
   ToolContext,
   ToolExecutionSuccess,
   ToolExecutionSuccessNoResult,
@@ -12,7 +12,7 @@ import {
   ToolPrecheckFailure,
   ToolPrecheckSuccessNoResult,
   ToolPrecheckSuccess,
-  VincentToolSupportedPolicy,
+  VincentToolPolicy,
   BaseToolContext,
 } from './types';
 
@@ -126,11 +126,11 @@ export function createToolContext<
   return context;
 }
 
-export function validateVincentToolDef<
+export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   Policies extends Record<
     string,
-    VincentToolSupportedPolicy<ToolParamsSchema, VincentPolicyDef>
+    VincentToolPolicy<ToolParamsSchema, VincentPolicy>
   >,
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,

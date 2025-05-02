@@ -5,8 +5,8 @@
  * for tool definitions, focusing on success/failure responses.
  */
 import z from 'zod';
-import { validateVincentToolDef } from '../lib/vincentTool';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentTool } from '../lib/vincentTool';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Define a simple schema for our test cases
 const testSchema = z.object({
@@ -27,7 +27,7 @@ const failSchema = z.object({
 });
 
 // Create a test policy
-const testPolicy = validateVincentPolicyDef({
+const testPolicy = createVincentToolPolicy({
   toolParamsSchema: testSchema,
   policyDef: {
     ipfsCid: 'test-policy',
@@ -51,7 +51,7 @@ const testPolicy = validateVincentPolicyDef({
  * This validates the behavior when no explicit schemas are provided.
  */
 function testNoSchemas() {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -88,7 +88,7 @@ function testNoSchemas() {
  * This validates that TypeScript enforces schema constraints.
  */
 function testWithSchemas() {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema: successSchema,
@@ -167,7 +167,7 @@ function testDifferentSchemas() {
     errorCode: z.number(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     precheckSuccessSchema,
@@ -217,7 +217,7 @@ function testDifferentSchemas() {
  */
 function testPolicyResultTypes() {
   // First test: Precheck with properly typed policyResults
-  const toolWithPrecheck = validateVincentToolDef({
+  const toolWithPrecheck = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -264,7 +264,7 @@ export function assertAllow<T extends { allow: true }>(
 
 // Separate test for execute-specific policy result typing
 export function testExecutePolicyResultTyping() {
-  const toolWithExecute = validateVincentToolDef({
+  const toolWithExecute = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -303,7 +303,7 @@ export function testExecutePolicyResultTyping() {
  */
 function testImproperToolDefinition() {
   // @ts-expect-error - Missing required precheck function
-  const missingPrecheck = validateVincentToolDef({
+  const missingPrecheck = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     execute: async (params, context) => {
@@ -312,7 +312,7 @@ function testImproperToolDefinition() {
   });
 
   // @ts-expect-error - Missing required execute function
-  const missingExecute = validateVincentToolDef({
+  const missingExecute = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     precheck: async (params, context) => {
@@ -321,7 +321,7 @@ function testImproperToolDefinition() {
   });
 
   // @ts-expect-error - Missing required supportedPolicies
-  const missingPolicies = validateVincentToolDef({
+  const missingPolicies = createVincentTool({
     toolParamsSchema: testSchema,
     precheck: async (params, context) => {
       return context.succeed();
@@ -332,7 +332,7 @@ function testImproperToolDefinition() {
   });
 
   // @ts-expect-error - Missing required toolParamsSchema
-  const missingSchema = validateVincentToolDef({
+  const missingSchema = createVincentTool({
     supportedPolicies: { testPolicy },
     precheck: async (params, context) => {
       return context.succeed();
@@ -351,7 +351,7 @@ function testImproperToolDefinition() {
 // Basic tools for tests
 const testReturnNoSchema = () => {
   // This is a good tool with proper returns
-  const goodTool = validateVincentToolDef({
+  const goodTool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -369,7 +369,7 @@ const testReturnNoSchema = () => {
 
 // Test: Precheck with no return
 const testPrecheckNoReturn = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -388,7 +388,7 @@ const testPrecheckNoReturn = () => {
 
 // Test: Execute with no return
 const testExecuteNoReturn = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -407,7 +407,7 @@ const testExecuteNoReturn = () => {
 
 // Test: Precheck returning raw value
 const testPrecheckRawReturn = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -431,7 +431,7 @@ const testExecuteRawReturn = () => {
     message: z.string(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema,
@@ -456,7 +456,7 @@ const testExecuteWrongTypeReturn = () => {
     message: z.string(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema,
@@ -487,7 +487,7 @@ const testPrecheckWrongSchema = () => {
     result: z.string(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     precheckSuccessSchema,
@@ -519,7 +519,7 @@ const testExecuteWrongSchema = () => {
     result: z.string(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     precheckSuccessSchema,
@@ -552,7 +552,7 @@ const testPrecheckSuccessWithFailSchema = () => {
     code: z.number(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     precheckSuccessSchema,
@@ -589,7 +589,7 @@ const testExecuteFailWithSuccessSchema = () => {
     code: z.number(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema,
@@ -617,7 +617,7 @@ const testExecuteFailWithSuccessSchema = () => {
 
 // Test: Tool with void-returning functions inside
 const testReturnWithInnerFunctions = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -649,7 +649,7 @@ const testReturnWithInnerFunctions = () => {
 
 // Test: Conditional returns in precheck
 const testPrecheckConditionalReturns = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -671,7 +671,7 @@ const testPrecheckConditionalReturns = () => {
 
 // Test: Conditional returns in execute
 const testExecuteConditionalReturns = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -693,7 +693,7 @@ const testExecuteConditionalReturns = () => {
 
 // Test: Async precheck without await or return
 const testPrecheckAsyncWithoutAwait = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -719,7 +719,7 @@ const testPrecheckAsyncWithoutAwait = () => {
 
 // Test: Return from try-catch in execute
 const testExecuteTryCatchReturn = () => {
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
 
@@ -770,7 +770,7 @@ function testContextDestructuring() {
     data: z.string(),
   });
 
-  const tool = validateVincentToolDef({
+  const tool = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: { testPolicy },
     executeSuccessSchema,

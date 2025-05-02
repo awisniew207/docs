@@ -251,7 +251,7 @@ export interface PolicyWithPrecheckAndCommit<
 
 // Union type for all policy definitions
 // Do not be alarmed by the `any` types here -- the actual policies are still constrained by the types that make up the union
-export type VincentPolicyDef =
+export type VincentPolicy =
   | BasicPolicyDef<any, any, any, any>
   | PolicyWithPrecheck<any, any, any, any, any, any>
   | PolicyWithCommit<any, any, any, any, any, any, any>
@@ -265,9 +265,9 @@ export type WrappedCommitFunction<CommitParams, Result> = (
 ) => Promise<Result>;
 
 // Tool supported policy with proper typing on the parameter mappings
-export type VincentToolSupportedPolicy<
+export type VincentToolPolicy<
   ToolParamsSchema extends z.ZodType,
-  PolicyDefType extends VincentPolicyDef,
+  PolicyDefType extends VincentPolicy,
 > = {
   policyDef: PolicyDefType;
   toolParameterMappings: Partial<{
@@ -281,7 +281,7 @@ export type VincentPolicyEvaluationResults<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef;
+      policyDef: VincentPolicy;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -368,7 +368,7 @@ export type OnlyAllowedPolicyEvaluationResults<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef;
+      policyDef: VincentPolicy;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -516,7 +516,7 @@ export interface VincentToolDef<
   ToolParamsSchema extends z.ZodType,
   Policies extends Record<
     string,
-    VincentToolSupportedPolicy<ToolParamsSchema, VincentPolicyDef>
+    VincentToolPolicy<ToolParamsSchema, VincentPolicy>
   >,
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,

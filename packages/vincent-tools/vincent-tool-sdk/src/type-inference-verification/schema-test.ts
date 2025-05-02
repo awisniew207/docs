@@ -7,7 +7,7 @@
  */
 import z from 'zod';
 import { PolicyContext } from '../lib/types';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -47,7 +47,7 @@ function testWithSchema() {
   }
 
   // Test in a real policy
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test1',
@@ -106,7 +106,7 @@ function testWithoutSchema() {
   }
 
   // Test in a real policy
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test2',
@@ -150,7 +150,7 @@ function testWithoutSchema() {
  */
 function testStringSchema() {
   // Test in a real policy
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test3',
@@ -203,7 +203,7 @@ function testDifferentContexts() {
   const evalSchema = z.object({ status: z.string() });
   const commitSchema = z.object({ txId: z.string() });
 
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test4',
@@ -270,7 +270,7 @@ function testDifferentContexts() {
  */
 function testPrimitiveSchemas() {
   // Test in a real policy
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test5',

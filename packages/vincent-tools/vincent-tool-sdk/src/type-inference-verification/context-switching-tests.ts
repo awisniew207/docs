@@ -6,7 +6,7 @@
  * (precheck, evaluate, commit) which may have different schemas.
  */
 import z from 'zod';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -26,7 +26,7 @@ function testPrecheckEvaluateContextSwitching() {
   const evalAllowSchema = z.object({ finalStatus: z.string() });
   const evalDenySchema = z.object({ finalReason: z.string() });
 
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'contextSwitchTest1',
@@ -90,7 +90,7 @@ function testEvaluateCommitContextSwitching() {
   const commitAllowSchema = z.object({ transactionHash: z.string() });
   const commitDenySchema = z.object({ failureCode: z.number() });
 
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'contextSwitchTest2',
@@ -162,7 +162,7 @@ function testFullPolicyContextSwitching() {
   const commitAllowSchema = z.object({ completed: z.boolean() });
   const commitDenySchema = z.object({ aborted: z.boolean() });
 
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'fullContextSwitchTest',

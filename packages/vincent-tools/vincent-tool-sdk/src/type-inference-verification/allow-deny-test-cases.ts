@@ -6,7 +6,7 @@
  * arguments to verify TypeScript correctly enforces the type constraints.
  */
 import z from 'zod';
-import { validateVincentPolicyDef } from '../lib/vincentPolicy';
+import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -22,7 +22,7 @@ function testAllowFunctionWithDifferentTypes() {
   // Test with object schema
   const objSchema = z.object({ id: z.string(), success: z.boolean() });
 
-  const test1 = validateVincentPolicyDef({
+  const test1 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest1',
@@ -57,7 +57,7 @@ function testAllowFunctionWithDifferentTypes() {
   });
 
   // Test with string schema
-  const test2 = validateVincentPolicyDef({
+  const test2 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest2',
@@ -84,7 +84,7 @@ function testAllowFunctionWithDifferentTypes() {
   });
 
   // Test with number schema
-  const test3 = validateVincentPolicyDef({
+  const test3 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest3',
@@ -111,7 +111,7 @@ function testAllowFunctionWithDifferentTypes() {
   });
 
   // Test with no schema
-  const test4 = validateVincentPolicyDef({
+  const test4 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest4',
@@ -150,7 +150,7 @@ function testDenyFunctionWithDifferentTypes() {
   // Test with object schema
   const objSchema = z.object({ code: z.number(), message: z.string() });
 
-  const test1 = validateVincentPolicyDef({
+  const test1 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'denyTest1',
@@ -191,7 +191,7 @@ function testDenyFunctionWithDifferentTypes() {
   });
 
   // Test with string schema
-  const test2 = validateVincentPolicyDef({
+  const test2 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'denyTest2',
@@ -219,7 +219,7 @@ function testDenyFunctionWithDifferentTypes() {
   });
 
   // Test with no schema
-  const test3 = validateVincentPolicyDef({
+  const test3 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'denyTest3',
@@ -255,7 +255,7 @@ function testDenyFunctionWithDifferentTypes() {
  * Test Case 3: Test allow/deny in commit function specifically
  */
 function testCommitAllowDeny() {
-  const policy = validateVincentPolicyDef({
+  const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'commitTest',
