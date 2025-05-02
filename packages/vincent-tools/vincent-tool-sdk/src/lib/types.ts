@@ -38,8 +38,10 @@ export interface PolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
 > {
-  ipfsCid: string;
-  details: string[];
+  delegation: {
+    delegatee: string;
+    delegator: string;
+  };
 
   // Accept either a single string or an array of strings
   addDetails(detail: string | string[]): void;

@@ -7,20 +7,41 @@ import {
   PolicyResponseDenyNoResult,
 } from './types';
 
+export interface BaseContext {
+  delegation: {
+    delegatee: string;
+    delegator: string;
+  };
+}
+
+export interface CreatePolicyContextParams<
+  AllowSchema extends z.ZodType | undefined = undefined,
+  DenySchema extends z.ZodType | undefined = undefined,
+> {
+  ipfsCid: string;
+  allowSchema?: AllowSchema;
+  denySchema?: DenySchema;
+  baseContext: BaseContext;
+}
+
 /**
  * Branded functions are used to enforce type safety at compile time for allow/deny calls.
  * The __brand property helps TypeScript distinguish between functions that require arguments
  * (when schemas are defined) and those that don't (when schemas are undefined).
  * This prevents runtime errors by catching incorrect usage during development.
  */
-function createPolicyContext<
+export function createPolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
->(
-  ipfsCid: string,
-  allowSchema?: AllowSchema,
-  denySchema?: DenySchema,
-): PolicyContext<AllowSchema, DenySchema> {
+>({
+  ipfsCid,
+  baseContext,
+  allowSchema,
+  denySchema,
+}: CreatePolicyContextParams<AllowSchema, DenySchema>): PolicyContext<
+  AllowSchema,
+  DenySchema
+> {
   const details: string[] = [];
 
   type AllowFn<S extends z.ZodType | undefined> = S extends z.ZodType
@@ -93,9 +114,8 @@ function createPolicyContext<
   }
 
   // Build our context object
-  const context = {
-    ipfsCid,
-    details,
+  const context: PolicyContext<AllowSchema, DenySchema> = {
+    delegation: baseContext.delegation,
     addDetails(detail: string | string[]) {
       if (Array.isArray(detail)) {
         details.push(...detail);
@@ -108,7 +128,7 @@ function createPolicyContext<
   };
 
   // Cast to expected interface type
-  return context as unknown as PolicyContext<AllowSchema, DenySchema>;
+  return context;
 }
 
 export function validateVincentPolicyDef<
@@ -199,18 +219,22 @@ export function validateVincentPolicyDef<
   // Create wrapper functions that inject the context
   const policyDef = {
     ...originalPolicyDef,
-    evaluate: async (args: {
-      toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
-      userParams: UserParams extends z.ZodType
-        ? z.infer<UserParams>
-        : undefined;
-    }) => {
+    evaluate: async (
+      args: {
+        toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
+        userParams: UserParams extends z.ZodType
+          ? z.infer<UserParams>
+          : undefined;
+      },
+      baseContext: BaseContext,
+    ) => {
       // Create context for evaluation
-      const context = createPolicyContext(
-        originalPolicyDef.ipfsCid,
-        originalPolicyDef.evalAllowResultSchema,
-        originalPolicyDef.evalDenyResultSchema,
-      );
+      const context = createPolicyContext({
+        baseContext,
+        ipfsCid: originalPolicyDef.ipfsCid,
+        allowSchema: originalPolicyDef.evalAllowResultSchema,
+        denySchema: originalPolicyDef.evalDenyResultSchema,
+      });
 
       // Call the original evaluate with the context
       return originalPolicyDef.evaluate(args, context);
@@ -219,18 +243,22 @@ export function validateVincentPolicyDef<
     // Only create precheck wrapper if precheck exists
     ...(originalPolicyDef.precheck
       ? {
-          precheck: async (args: {
-            toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
-            userParams: UserParams extends z.ZodType
-              ? z.infer<UserParams>
-              : undefined;
-          }) => {
+          precheck: async (
+            args: {
+              toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
+              userParams: UserParams extends z.ZodType
+                ? z.infer<UserParams>
+                : undefined;
+            },
+            baseContext: BaseContext,
+          ) => {
             // Create context for precheck
-            const context = createPolicyContext(
-              originalPolicyDef.ipfsCid,
-              originalPolicyDef.precheckAllowResultSchema,
-              originalPolicyDef.precheckDenyResultSchema,
-            );
+            const context = createPolicyContext({
+              ipfsCid: originalPolicyDef.ipfsCid,
+              baseContext,
+              allowSchema: originalPolicyDef.precheckAllowResultSchema,
+              denySchema: originalPolicyDef.precheckDenyResultSchema,
+            });
 
             // Call the original precheck with the context
             return originalPolicyDef.precheck!(args, context);
@@ -243,13 +271,15 @@ export function validateVincentPolicyDef<
       ? {
           commit: async (
             args: CommitParams extends z.ZodType ? z.infer<CommitParams> : any,
+            baseContext: BaseContext,
           ) => {
             // Create context for commit
-            const context = createPolicyContext(
-              originalPolicyDef.ipfsCid,
-              originalPolicyDef.commitAllowResultSchema,
-              originalPolicyDef.commitDenyResultSchema,
-            );
+            const context = createPolicyContext({
+              ipfsCid: originalPolicyDef.ipfsCid,
+              baseContext,
+              denySchema: originalPolicyDef.commitDenyResultSchema,
+              allowSchema: originalPolicyDef.commitAllowResultSchema,
+            });
 
             // Call the original commit with the context
             return originalPolicyDef.commit!(args, context);
