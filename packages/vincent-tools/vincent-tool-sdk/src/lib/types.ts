@@ -475,21 +475,153 @@ export type OnlyAllowedPolicyEvaluationResults<
 };
 
 // Tool definition
+// Tool response types, similar to PolicyResponse
+export interface ToolResponseBase {
+  details: string[];
+}
+
+export type ToolExecutionSuccess<SuccessResult = never> =
+  SuccessResult extends never
+    ? ToolExecutionSuccessNoResult
+    : Omit<ToolResponseBase, 'success'> & {
+        success: true;
+        result: SuccessResult;
+      };
+
+export interface ToolExecutionSuccessNoResult extends ToolResponseBase {
+  success: true;
+  result?: never;
+}
+
+export type ToolExecutionFailure<FailResult = never> = FailResult extends never
+  ? ToolExecutionFailureNoResult
+  : Omit<ToolResponseBase, 'success'> & {
+      success: false;
+      result: FailResult;
+      error?: string;
+    };
+
+export interface ToolExecutionFailureNoResult extends ToolResponseBase {
+  success: false;
+  error?: string;
+  result?: never;
+}
+
+// Define the ToolExecutionResponse union type that combines success and failure responses
+export type ToolExecutionResponse<SuccessResult = never, FailResult = never> =
+  | ToolExecutionSuccess<SuccessResult>
+  | ToolExecutionFailure<FailResult>;
+
+// Similar types for precheck
+export type ToolPrecheckSuccess<SuccessResult = never> =
+  SuccessResult extends never
+    ? ToolPrecheckSuccessNoResult
+    : Omit<ToolResponseBase, 'success'> & {
+        success: true;
+        result: SuccessResult;
+      };
+
+export interface ToolPrecheckSuccessNoResult extends ToolResponseBase {
+  success: true;
+  result?: never;
+}
+
+export type ToolPrecheckFailure<FailResult = never> = FailResult extends never
+  ? ToolPrecheckFailureNoResult
+  : Omit<ToolResponseBase, 'success'> & {
+      success: false;
+      result: FailResult;
+      error?: string;
+    };
+
+export interface ToolPrecheckFailureNoResult extends ToolResponseBase {
+  success: false;
+  error?: string;
+  result?: never;
+}
+
+export type ToolPrecheckResponse<SuccessResult = never, FailResult = never> =
+  | ToolPrecheckSuccess<SuccessResult>
+  | ToolPrecheckFailure<FailResult>;
+
+export interface BaseToolContext<Policies = any> {
+  policyResults: Policies;
+}
+
+export interface ToolContext<
+  SuccessSchema extends z.ZodType | undefined = undefined,
+  FailSchema extends z.ZodType | undefined = undefined,
+  Policies = any,
+> extends BaseToolContext<Policies> {
+  details: string[];
+
+  // Accept either a single string or an array of strings
+  addDetails(detail: string | string[]): void;
+
+  // Use branded function types similar to PolicyContext
+  succeed: SuccessSchema extends z.ZodType
+    ? {
+        (
+          result: z.infer<SuccessSchema>,
+        ): ToolExecutionSuccess<z.infer<SuccessSchema>>;
+        __brand: 'requires-arg';
+      }
+    : { (): ToolExecutionSuccessNoResult; __brand: 'no-arg' };
+
+  fail: FailSchema extends z.ZodType
+    ? {
+        (
+          result: z.infer<FailSchema>,
+          error?: string,
+        ): ToolExecutionFailure<z.infer<FailSchema>>;
+        __brand: 'requires-arg';
+      }
+    : { (error?: string): ToolExecutionFailureNoResult; __brand: 'no-arg' };
+}
+
 export interface VincentToolDef<
   ToolParamsSchema extends z.ZodType,
   Policies extends Record<
     string,
     VincentToolSupportedPolicy<ToolParamsSchema, VincentPolicyDef>
   >,
+  PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
+  PrecheckFailSchema extends z.ZodType | undefined = undefined,
+  ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
+  ExecuteFailSchema extends z.ZodType | undefined = undefined,
 > {
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies: Policies;
+
+  // Schema definitions for precheck and execute response types
+  precheckSuccessSchema?: PrecheckSuccessSchema;
+  precheckFailSchema?: PrecheckFailSchema;
+  executeSuccessSchema?: ExecuteSuccessSchema;
+  executeFailSchema?: ExecuteFailSchema;
+
   precheck: (
     params: z.infer<ToolParamsSchema>,
     policyEvaluationResults: VincentPolicyEvaluationResults<Policies>,
-  ) => Promise<unknown>;
+    context: ToolContext<PrecheckSuccessSchema, PrecheckFailSchema>,
+  ) => Promise<
+    | (PrecheckSuccessSchema extends z.ZodType
+        ? ToolPrecheckSuccess<z.infer<PrecheckSuccessSchema>>
+        : ToolPrecheckSuccessNoResult)
+    | (PrecheckFailSchema extends z.ZodType
+        ? ToolPrecheckFailure<z.infer<PrecheckFailSchema>>
+        : ToolPrecheckFailureNoResult)
+  >;
+
   execute: (
     params: z.infer<ToolParamsSchema>,
     policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<Policies>,
-  ) => Promise<unknown>;
+    context: ToolContext<ExecuteSuccessSchema, ExecuteFailSchema>,
+  ) => Promise<
+    | (ExecuteSuccessSchema extends z.ZodType
+        ? ToolExecutionSuccess<z.infer<ExecuteSuccessSchema>>
+        : ToolExecutionSuccessNoResult)
+    | (ExecuteFailSchema extends z.ZodType
+        ? ToolExecutionFailure<z.infer<ExecuteFailSchema>>
+        : ToolExecutionFailureNoResult)
+  >;
 }

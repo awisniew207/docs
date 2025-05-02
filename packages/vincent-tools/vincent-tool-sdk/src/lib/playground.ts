@@ -233,8 +233,31 @@ const policy3 = validateVincentPolicyDef({
   },
 });
 
+const toolExecuteSuccessSchema = z.object({
+  executedAction: z.string(),
+  targetAddress: z.string(),
+  transactionAmount: z.number(),
+  timestamp: z.number(),
+  txHash: z.string(),
+});
+
+const toolExecuteFailSchema = z.object({
+  errorCode: z.number(),
+  errorMessage: z.string(),
+  suggestion: z.string().optional(),
+});
+
+const toolPrecheckSuccessSchema = z.object({
+  validatedParams: z.boolean(),
+  message: z.string(),
+});
+
+const toolPrecheckFailSchema = z.object({
+  invalidField: z.string(),
+  reason: z.string(),
+});
+
 // Create your tool with fully typed policies
-// @ts-expect-error myTool is intentionally never used
 const myTool = validateVincentToolDef({
   toolParamsSchema: myToolSchema,
   supportedPolicies: {
@@ -242,54 +265,154 @@ const myTool = validateVincentToolDef({
     policy2,
     policy3,
   },
-  precheck: async (params, policyResults) => {
-    // Type-safe access to policies
-    if (policyResults.allow) {
-      if (policyResults.allowPolicyResults.policy1) {
-        const wat = policyResults.allowPolicyResults.policy1.result;
-        console.log('weat', wat);
-        await policyResults.allowPolicyResults.policy1.commit({
-          confirmation: true,
-        });
-      }
 
-      if (policyResults.allowPolicyResults.policy2) {
-        const wat = policyResults.allowPolicyResults.policy2.result;
+  // Add schemas for tool results
+  executeSuccessSchema: toolExecuteSuccessSchema,
+  executeFailSchema: toolExecuteFailSchema,
+  precheckSuccessSchema: toolPrecheckSuccessSchema,
+  precheckFailSchema: toolPrecheckFailSchema,
 
-        const egh = wat.approvedCurrency;
+  precheck: async (
+    params,
+    {
+      addDetails,
+      fail,
+      policyResults: { allow, allowPolicyResults, denyPolicyResult },
+      succeed,
+    },
+  ) => {
+    // Add details about what we're checking
+    addDetails([`Prechecking tool execution for action: ${params.action}`]);
 
-        console.log(egh.length);
-        const commitResult =
-          await policyResults.allowPolicyResults.policy2.commit({
-            transactionId: 'orhfjkjsdfslkjhdf',
-          });
-
-        if (commitResult.allow === true) {
-          const { transaction, timestamp } = commitResult.result;
-          console.log(`Transaction ${transaction} processed at ${timestamp}`);
-        } else {
-          console.log('failureReason', commitResult.result.failureReason);
-        }
-      }
-
-      if (policyResults.allowPolicyResults.policy3) {
-        // FIXME: This should be a type error
-        // await policyResults.allowPolicyResults.policy3.commit({
-        //   beefcake: 'orhfjkjsdfslkjhdf',
-        // });
-      }
-    } else {
-      if (policyResults.allowPolicyResults?.policy2?.result?.approvedCurrency) {
-        console.log('gotit!');
-      }
+    // Basic validation
+    if (!params.action || !params.target) {
+      addDetails(['Missing required parameters']);
+      return fail({
+        invalidField: !params.action ? 'action' : 'target',
+        reason: 'Required field is empty or missing',
+      });
     }
 
-    return true;
+    // Amount validation
+    if (params.amount <= 0) {
+      addDetails([`Invalid amount: ${params.amount}`]);
+      return fail({
+        invalidField: 'amount',
+        reason: 'Amount must be greater than zero',
+      });
+    }
+
+    // Process policy results if needed
+    if (allow) {
+      // Type-safe access to policies
+      if (allowPolicyResults.policy1) {
+        const policy1Result = allowPolicyResults.policy1.result;
+        addDetails([`Policy1 approved with result: ${policy1Result}`]);
+      }
+
+      if (allowPolicyResults.policy2) {
+        const policy2Result = allowPolicyResults.policy2.result;
+        addDetails([
+          `Policy2 approved with currency: ${policy2Result.approvedCurrency}`,
+        ]);
+      }
+
+      if (allowPolicyResults.policy3) {
+        const policy3Result = allowPolicyResults.policy3.result;
+        addDetails([`Policy3 approved with message: ${policy3Result.message}`]);
+      }
+
+      // Return success result
+      return succeed({
+        validatedParams: true,
+        message: `All parameters validated for ${params.action} on ${params.target}`,
+      });
+    } else {
+      // Handle the denial case
+      const denyReason =
+        denyPolicyResult?.result?.error || 'Policy check failed';
+      addDetails([`Policy denied: ${denyReason}`]);
+
+      return fail({
+        invalidField: 'policy',
+        reason: denyReason,
+      });
+    }
   },
-  execute: async (params, policyResults) => {
-    return {
-      status: 'success',
-      details: ['Tool executed successfully'],
-    };
+
+  execute: async (params, { policyResults, addDetails, fail, succeed }) => {
+    // Add details about what we're executing
+    addDetails([
+      `Executing ${params.action} on ${params.target} for amount ${params.amount}`,
+    ]);
+
+    try {
+      // Simulate successful execution
+      if (params.action === 'transfer' && params.amount > 0) {
+        // Execute the transaction
+        const txHash = `0x${Math.random().toString(16).substring(2, 10)}`;
+
+        // Use commit functions from policies if available
+        if (policyResults.allowPolicyResults.policy1) {
+          const commitResult =
+            await policyResults.allowPolicyResults.policy1.commit({
+              confirmation: true,
+            });
+
+          if (commitResult.allow) {
+            addDetails([
+              `Policy1 commit succeeded: ${commitResult.result.success}`,
+            ]);
+          } else {
+            // If policy commit fails, we can still decide to continue or fail the tool execution
+            addDetails([
+              `Policy1 commit failed with code: ${commitResult.result.errorCode}`,
+            ]);
+          }
+        }
+
+        if (policyResults.allowPolicyResults.policy2) {
+          const commitResult =
+            await policyResults.allowPolicyResults.policy2.commit({
+              transactionId: txHash,
+            });
+
+          if (commitResult.allow) {
+            addDetails([
+              `Policy2 commit succeeded: ${commitResult.result.transaction}`,
+              `Timestamp: ${commitResult.result.timestamp}`,
+            ]);
+          }
+        }
+
+        // Return success with typed result
+        return succeed({
+          executedAction: params.action,
+          targetAddress: params.target,
+          transactionAmount: params.amount,
+          timestamp: Date.now(),
+          txHash,
+        });
+      } else {
+        // Simulate a failure case
+        return fail({
+          errorCode: 400,
+          errorMessage: `Cannot perform ${params.action} operation`,
+          suggestion: 'Try a "transfer" action instead',
+        });
+      }
+    } catch (error) {
+      // Handle any unexpected errors
+      addDetails([
+        `Execution error: ${error instanceof Error ? error.message : String(error)}`,
+      ]);
+
+      return fail({
+        errorCode: 500,
+        errorMessage: 'Internal execution error',
+      });
+    }
   },
 });
+
+console.log(Object.keys(myTool));

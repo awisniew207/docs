@@ -100,6 +100,29 @@ function testPolicyEvaluationResults() {
     },
   });
 
+  // Define tool result schemas
+  const executeSuccessSchema = z.object({
+    success: z.boolean(),
+    confirmed: z.boolean().optional(),
+    timestamp: z.number().optional(),
+    message: z.string(),
+  });
+
+  const executeFailSchema = z.object({
+    errorCode: z.number(),
+    errorMessage: z.string(),
+  });
+
+  const precheckSuccessSchema = z.object({
+    valid: z.boolean(),
+    validationMessage: z.string().optional(),
+  });
+
+  const precheckFailSchema = z.object({
+    valid: z.boolean(),
+    issues: z.array(z.string()),
+  });
+
   // Create tool with both policies
   const tool = validateVincentToolDef({
     toolParamsSchema: baseToolSchema,
@@ -108,52 +131,105 @@ function testPolicyEvaluationResults() {
       commitPolicy,
     },
 
-    precheck: async (params, results) => {
-      return { valid: true };
+    // Add schemas for tool results
+    precheckSuccessSchema,
+    precheckFailSchema,
+    executeSuccessSchema,
+    executeFailSchema,
+
+    precheck: async (params, { addDetails, fail, succeed, policyResults }) => {
+      addDetails(['Starting precheck validation']);
+
+      // Perform basic validation
+      if (!params.action || !params.target || params.amount <= 0) {
+        addDetails(['Invalid parameters detected']);
+        const issues = [];
+
+        if (!params.action) issues.push('Missing action');
+        if (!params.target) issues.push('Missing target');
+        if (params.amount <= 0) issues.push('Amount must be positive');
+
+        return fail({
+          valid: false,
+          issues,
+        });
+      }
+
+      addDetails([`Parameters validated for ${params.action}`]);
+      return succeed({
+        valid: true,
+        validationMessage: 'All parameters are valid',
+      });
     },
 
     // Execute function to demonstrate result type inference
-    execute: async (params, results) => {
-      // Verify type inference works correctly when results.allow is true
-      // Access specific policy results - now TypeScript knows this is defined
-      if (results.allowPolicyResults.simplePolicy) {
-        const simpleResult = results.allowPolicyResults.simplePolicy.result;
+    execute: async (params, { addDetails, fail, succeed, policyResults }) => {
+      addDetails([`Executing ${params.action} on ${params.target}`]);
 
-        // TypeScript should now correctly infer the result type
-        const { approved, reason } = simpleResult;
-        console.log(`Simple policy approved: ${approved}, reason: ${reason}`);
-      }
+      try {
+        // Verify type inference works correctly when results.allow is true
+        // Access specific policy results - now TypeScript knows this is defined
+        if (policyResults.allowPolicyResults.simplePolicy) {
+          const simpleResult =
+            policyResults.allowPolicyResults.simplePolicy.result;
 
-      // Type inference should work for the commit policy result
-      if (results.allowPolicyResults.commitPolicy) {
-        const commitPolicyResult =
-          results.allowPolicyResults.commitPolicy.result;
-
-        // No need for type guards anymore
-        const { transactionId, status } = commitPolicyResult;
-        console.log(`Commit policy status: ${status}, txId: ${transactionId}`);
-
-        // The commit function should be available and properly typed
-        const commitFn = results.allowPolicyResults.commitPolicy.commit;
-
-        // Call commit with properly typed parameters
-        const commitResult = await commitFn({
-          transactionId,
-          status: 'complete',
-        });
-
-        // Type inference should work for commit result
-        if (commitResult.allow) {
-          const { confirmed, timestamp } = commitResult.result;
-          return {
-            success: true,
-            confirmed,
-            timestamp,
-          };
+          // TypeScript should now correctly infer the result type
+          const { approved, reason } = simpleResult;
+          addDetails([
+            `Simple policy approved: ${approved}, reason: ${reason}`,
+          ]);
         }
-      }
 
-      return { success: false };
+        // Type inference should work for the commit policy result
+        if (policyResults.allowPolicyResults.commitPolicy) {
+          const commitPolicyResult =
+            policyResults.allowPolicyResults.commitPolicy.result;
+
+          // No need for type guards anymore
+          const { transactionId, status } = commitPolicyResult;
+          addDetails([
+            `Commit policy status: ${status}, txId: ${transactionId}`,
+          ]);
+
+          // The commit function should be available and properly typed
+          const commitFn = policyResults.allowPolicyResults.commitPolicy.commit;
+
+          // Call commit with properly typed parameters
+          const commitResult = await commitFn({
+            transactionId,
+            status: 'complete',
+          });
+
+          // Type inference should work for commit result
+          if (commitResult.allow) {
+            const { confirmed, timestamp } = commitResult.result;
+            addDetails([`Commit confirmed: ${confirmed}, at: ${timestamp}`]);
+
+            return succeed({
+              success: true,
+              confirmed,
+              timestamp,
+              message: 'Operation executed successfully',
+            });
+          }
+        }
+
+        // If we reach here, something went wrong with the commit
+        return fail({
+          errorCode: 400,
+          errorMessage: 'Failed to complete the transaction commit process',
+        });
+      } catch (error) {
+        // Handle any unexpected errors
+        addDetails([
+          `Execution error: ${error instanceof Error ? error.message : String(error)}`,
+        ]);
+
+        return fail({
+          errorCode: 500,
+          errorMessage: 'Internal execution error',
+        });
+      }
     },
   });
 
@@ -161,4 +237,4 @@ function testPolicyEvaluationResults() {
 }
 
 // Export the test function
-export { testPolicyEvaluationResults };
+console.log(testPolicyEvaluationResults);
