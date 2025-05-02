@@ -12,6 +12,14 @@ export function validateVincentToolDef<
   >,
 >(
   vincentToolDef: VincentToolDef<ToolParamsSchema, Policies>,
-): VincentToolDef<ToolParamsSchema, Policies> {
+): VincentToolDef<
+  ToolParamsSchema,
+  {
+    [K in keyof Policies]: {
+      policyDef: Policies[K]['policyDef'];
+      toolParameterMappings: Policies[K]['toolParameterMappings'];
+    };
+  }
+> {
   return vincentToolDef;
 }

@@ -252,6 +252,56 @@ export interface PolicyWithPrecheckAndCommit<
     : undefined;
 }
 
+export type ExtractAllowResultType<P> = P extends {
+  policyDef: {
+    evalAllowResultSchema: infer Schema;
+  };
+}
+  ? Schema extends z.ZodType
+    ? z.infer<Schema>
+    : never
+  : never;
+
+export type ExtractDenyResultType<P> = P extends {
+  policyDef: {
+    evalDenyResultSchema: infer Schema;
+  };
+}
+  ? Schema extends z.ZodType
+    ? z.infer<Schema>
+    : never
+  : never;
+
+export type ExtractCommitParamsType<P> = P extends {
+  policyDef: {
+    commitParamsSchema: infer Schema;
+  };
+}
+  ? Schema extends z.ZodType
+    ? z.infer<Schema>
+    : never
+  : never;
+
+export type ExtractCommitAllowResultType<P> = P extends {
+  policyDef: {
+    commitAllowResultSchema: infer Schema;
+  };
+}
+  ? Schema extends z.ZodType
+    ? z.infer<Schema>
+    : never
+  : never;
+
+export type ExtractCommitDenyResultType<P> = P extends {
+  policyDef: {
+    commitDenyResultSchema: infer Schema;
+  };
+}
+  ? Schema extends z.ZodType
+    ? z.infer<Schema>
+    : never
+  : never;
+
 // Updated evaluation results type
 export type VincentPolicyEvaluationResponse<
   PrecheckAllowResult = never,
@@ -293,38 +343,134 @@ export type VincentToolSupportedPolicy<
 };
 
 export type VincentPolicyEvaluationResults<
-  Policies extends Record<string, { policyDef: VincentPolicyDef }>,
+  Policies extends Record<
+    string,
+    {
+      policyDef: VincentPolicyDef;
+      __schemaTypes?: {
+        evalAllowResultSchema?: z.ZodType;
+        evalDenyResultSchema?: z.ZodType;
+        commitParamsSchema?: z.ZodType;
+        commitAllowResultSchema?: z.ZodType;
+        commitDenyResultSchema?: z.ZodType;
+      };
+    }
+  >,
 > = {
   evaluatedPolicies: Array<keyof Policies>;
-  allowPolicyResults: {
-    [PolicyKey in keyof Policies]?: {
-      result: PolicyResponseAllow<any>;
-    } & (HasCommit<Policies[PolicyKey]['policyDef']> extends true
-      ? {
-          // Use a wrapped commit function type that only requires args
-          commit: Policies[PolicyKey]['policyDef'] extends {
-            commit: infer Commit;
+} & (
+  | {
+      allow: true;
+      allowPolicyResults: {
+        [PolicyKey in keyof Policies]?: {
+          result: Policies[PolicyKey]['__schemaTypes'] extends {
+            evalAllowResultSchema: infer Schema;
           }
-            ? Commit extends (
-                args: infer Args,
-                context: any,
-              ) => Promise<infer Result>
-              ? WrappedCommitFunction<Args, Result>
+            ? Schema extends z.ZodType
+              ? z.infer<Schema>
               : never
             : never;
-        }
-      : {});
-  };
-} & (
-  | { allow: true; denyPolicyResult?: never }
+          commit: HasCommit<Policies[PolicyKey]['policyDef']> extends true
+            ? Policies[PolicyKey]['policyDef'] extends {
+                commit: infer Commit;
+              }
+              ? Commit extends (
+                  args: infer Args,
+                  context: any,
+                ) => Promise<infer Result>
+                ? WrappedCommitFunction<Args, Result>
+                : never
+              : never
+            : never;
+        };
+      };
+      denyPolicyResult?: never;
+    }
   | {
       allow: false;
       denyPolicyResult: {
-        result: PolicyResponseDeny<any>;
         ipfsCid: keyof Policies;
+        result: {
+          error?: string;
+        } & (Policies[Extract<
+          keyof Policies,
+          string
+        >]['__schemaTypes'] extends {
+          evalDenyResultSchema: infer Schema;
+        }
+          ? Schema extends z.ZodType
+            ? z.infer<Schema>
+            : {}
+          : {});
+      };
+      allowPolicyResults?: {
+        [PolicyKey in keyof Policies]?: {
+          result: Policies[PolicyKey]['__schemaTypes'] extends {
+            evalAllowResultSchema: infer Schema;
+          }
+            ? Schema extends z.ZodType
+              ? z.infer<Schema>
+              : never
+            : never;
+          commit: HasCommit<Policies[PolicyKey]['policyDef']> extends true
+            ? Policies[PolicyKey]['policyDef'] extends {
+                commit: infer Commit;
+              }
+              ? Commit extends (
+                  args: infer Args,
+                  context: any,
+                ) => Promise<infer Result>
+                ? WrappedCommitFunction<Args, Result>
+                : never
+              : never
+            : never;
+        };
       };
     }
 );
+
+export type OnlyAllowedPolicyEvaluationResults<
+  Policies extends Record<
+    string,
+    {
+      policyDef: VincentPolicyDef;
+      __schemaTypes?: {
+        evalAllowResultSchema?: z.ZodType;
+        evalDenyResultSchema?: z.ZodType;
+        commitParamsSchema?: z.ZodType;
+        commitAllowResultSchema?: z.ZodType;
+        commitDenyResultSchema?: z.ZodType;
+      };
+    }
+  >,
+> = {
+  evaluatedPolicies: Array<keyof Policies>;
+  allow: true;
+  allowPolicyResults: {
+    [PolicyKey in keyof Policies]?: {
+      result: Policies[PolicyKey]['__schemaTypes'] extends {
+        evalAllowResultSchema: infer Schema;
+      }
+        ? Schema extends z.ZodType
+          ? z.infer<Schema>
+          : never
+        : never;
+      commit: HasCommit<Policies[PolicyKey]['policyDef']> extends true
+        ? Policies[PolicyKey]['policyDef'] extends {
+            commit: infer Commit;
+          }
+          ? Commit extends (
+              args: infer Args,
+              context: any,
+            ) => Promise<infer Result>
+            ? WrappedCommitFunction<Args, Result>
+            : never
+          : never
+        : never;
+    };
+  };
+  denyPolicyResult?: never;
+};
 
 // Tool definition
 export interface VincentToolDef<
@@ -342,6 +488,6 @@ export interface VincentToolDef<
   ) => Promise<unknown>;
   execute: (
     params: z.infer<ToolParamsSchema>,
-    policyEvaluationResults: VincentPolicyEvaluationResults<Policies>,
+    policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<Policies>,
   ) => Promise<unknown>;
 }

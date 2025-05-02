@@ -261,9 +261,17 @@ export function validateVincentPolicyDef<
   const result = {
     policyDef: policyDef,
     toolParameterMappings: config.toolParameterMappings,
+    // Explicitly include schema types in the returned object for type inference
+    __schemaTypes: {
+      evalAllowResultSchema: config.policyDef.evalAllowResultSchema,
+      evalDenyResultSchema: config.policyDef.evalDenyResultSchema,
+      commitParamsSchema: config.policyDef.commitParamsSchema,
+      commitAllowResultSchema: config.policyDef.commitAllowResultSchema,
+      commitDenyResultSchema: config.policyDef.commitDenyResultSchema,
+    },
   };
 
-  // Use the same type assertion as before to maintain type inference
+  // Use the same type assertion as before but include __schemaTypes
   return result as {
     policyDef: typeof policyDef &
       (CommitParams extends z.ZodType
@@ -272,5 +280,12 @@ export function validateVincentPolicyDef<
           }
         : {});
     toolParameterMappings: typeof config.toolParameterMappings;
+    __schemaTypes: {
+      evalAllowResultSchema: EvalAllowResult;
+      evalDenyResultSchema: EvalDenyResult;
+      commitParamsSchema: CommitParams;
+      commitAllowResultSchema: CommitAllowResult;
+      commitDenyResultSchema: CommitDenyResult;
+    };
   };
 }
