@@ -109,7 +109,6 @@ export function createToolContext<
     failFn.__brand = 'no-arg';
   }
 
-  // Build our context object
   const context: ToolContext<SuccessSchema, FailSchema, Policies> = {
     details,
     policyResults: baseToolContext.policyResults,
@@ -180,7 +179,6 @@ export function validateVincentToolDef<
 }) {
   const originalToolDef = toolDef;
 
-  // Create wrapper functions that inject the context
   const wrappedToolDef = {
     ...originalToolDef,
 
@@ -188,14 +186,12 @@ export function validateVincentToolDef<
       params: z.infer<ToolParamsSchema>,
       policyEvaluationResults: VincentPolicyEvaluationResults<Policies>,
     ) => {
-      // Create context for precheck with policy results
       const context = createToolContext({
         successSchema: originalToolDef.precheckSuccessSchema,
         failSchema: originalToolDef.precheckFailSchema,
         baseToolContext: { policyResults: policyEvaluationResults },
       });
 
-      // Call the original precheck with the context
       return originalToolDef.precheck(params, context);
     },
 
@@ -203,14 +199,12 @@ export function validateVincentToolDef<
       params: z.infer<ToolParamsSchema>,
       policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<Policies>,
     ) => {
-      // Create context for execute with policy results
       const context = createToolContext({
         successSchema: originalToolDef.executeSuccessSchema,
         failSchema: originalToolDef.executeFailSchema,
         baseToolContext: { policyResults: policyEvaluationResults },
       });
 
-      // Call the original execute with the context
       return originalToolDef.execute(params, context);
     },
   };
@@ -226,6 +220,7 @@ export function validateVincentToolDef<
     },
   };
 
+  // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
   return result as typeof wrappedToolDef & {
     __schemaTypes: {
       precheckSuccessSchema: PrecheckSuccessSchema;

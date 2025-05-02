@@ -113,7 +113,6 @@ export function createPolicyContext<
     denyFn.__brand = 'no-arg';
   }
 
-  // Build our context object
   const context: PolicyContext<AllowSchema, DenySchema> = {
     delegation: baseContext.delegation,
     addDetails(detail: string | string[]) {
@@ -127,7 +126,6 @@ export function createPolicyContext<
     deny: denyFn,
   };
 
-  // Cast to expected interface type
   return context;
 }
 
@@ -216,7 +214,7 @@ export function validateVincentPolicyDef<
 
   const originalPolicyDef = config.policyDef;
 
-  // Create wrapper functions that inject the context
+  // Create wrapper functions that create a new context and merge baseContext into them
   const policyDef = {
     ...originalPolicyDef,
     evaluate: async (
@@ -228,7 +226,6 @@ export function validateVincentPolicyDef<
       },
       baseContext: BaseContext,
     ) => {
-      // Create context for evaluation
       const context = createPolicyContext({
         baseContext,
         ipfsCid: originalPolicyDef.ipfsCid,
@@ -236,11 +233,10 @@ export function validateVincentPolicyDef<
         denySchema: originalPolicyDef.evalDenyResultSchema,
       });
 
-      // Call the original evaluate with the context
       return originalPolicyDef.evaluate(args, context);
     },
 
-    // Only create precheck wrapper if precheck exists
+    // Only create precheck wrapper if precheck exists; it is optional.
     ...(originalPolicyDef.precheck
       ? {
           precheck: async (
@@ -252,7 +248,6 @@ export function validateVincentPolicyDef<
             },
             baseContext: BaseContext,
           ) => {
-            // Create context for precheck
             const context = createPolicyContext({
               ipfsCid: originalPolicyDef.ipfsCid,
               baseContext,
@@ -260,20 +255,18 @@ export function validateVincentPolicyDef<
               denySchema: originalPolicyDef.precheckDenyResultSchema,
             });
 
-            // Call the original precheck with the context
             return originalPolicyDef.precheck!(args, context);
           },
         }
       : {}),
 
-    // Only create commit wrapper if commit exists
+    // Only create commit wrapper if commit exists; it is optional also
     ...(originalPolicyDef.commit
       ? {
           commit: async (
             args: CommitParams extends z.ZodType ? z.infer<CommitParams> : any,
             baseContext: BaseContext,
           ) => {
-            // Create context for commit
             const context = createPolicyContext({
               ipfsCid: originalPolicyDef.ipfsCid,
               baseContext,
@@ -281,7 +274,6 @@ export function validateVincentPolicyDef<
               allowSchema: originalPolicyDef.commitAllowResultSchema,
             });
 
-            // Call the original commit with the context
             return originalPolicyDef.commit!(args, context);
           },
         }
@@ -301,7 +293,7 @@ export function validateVincentPolicyDef<
     },
   };
 
-  // Use the same type assertion as before but include __schemaTypes
+  // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
   return result as {
     policyDef: typeof policyDef &
       (CommitParams extends z.ZodType

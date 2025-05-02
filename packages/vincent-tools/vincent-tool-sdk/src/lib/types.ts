@@ -1,4 +1,3 @@
-// types.ts - Updated interfaces with optional UserParams and CommitParams
 import { z } from 'zod';
 
 export interface PolicyResponseBase {
@@ -29,7 +28,6 @@ export interface PolicyResponseDenyNoResult extends PolicyResponseBase {
   result?: never;
 }
 
-// Define the PolicyResponse union type that combines allow and deny responses
 export type PolicyResponse<AllowResult = never, DenyResult = never> =
   | PolicyResponseAllow<AllowResult>
   | PolicyResponseDeny<DenyResult>;
@@ -43,10 +41,10 @@ export interface PolicyContext<
     delegator: string;
   };
 
-  // Accept either a single string or an array of strings
   addDetails(detail: string | string[]): void;
 
-  // Use branded function types to force TypeScript to check argument presence
+  // We use 'branded' function types to force TypeScript to check argument presence
+  // Otherwise calling w/ no arguments is not a type error even if a schema was provided (!)
   allow: AllowSchema extends z.ZodType
     ? {
         (
@@ -97,7 +95,6 @@ export interface BasicPolicyDef<
   >;
 }
 
-// Update PolicyWithPrecheck
 export interface PolicyWithPrecheck<
   ToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined = undefined,
@@ -147,7 +144,6 @@ export interface PolicyWithPrecheck<
   >;
 }
 
-// Update PolicyWithCommit
 export interface PolicyWithCommit<
   ToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined = undefined,
@@ -196,7 +192,6 @@ export interface PolicyWithCommit<
     : undefined;
 }
 
-// Update PolicyWithPrecheckAndCommit
 export interface PolicyWithPrecheckAndCommit<
   ToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined = undefined,
@@ -269,7 +264,7 @@ export type WrappedCommitFunction<CommitParams, Result> = (
   args: CommitParams,
 ) => Promise<Result>;
 
-// Tool supported policy with proper typing
+// Tool supported policy with proper typing on the parameter mappings
 export type VincentToolSupportedPolicy<
   ToolParamsSchema extends z.ZodType,
   PolicyDefType extends VincentPolicyDef,
@@ -446,12 +441,10 @@ export interface ToolExecutionFailureNoResult extends ToolResponseBase {
   result?: never;
 }
 
-// Define the ToolExecutionResponse union type that combines success and failure responses
 export type ToolExecutionResponse<SuccessResult = never, FailResult = never> =
   | ToolExecutionSuccess<SuccessResult>
   | ToolExecutionFailure<FailResult>;
 
-// Similar types for precheck
 export type ToolPrecheckSuccess<SuccessResult = never> =
   SuccessResult extends never
     ? ToolPrecheckSuccessNoResult
@@ -494,10 +487,11 @@ export interface ToolContext<
 > extends BaseToolContext<Policies> {
   details: string[];
 
-  // Accept either a single string or an array of strings
   addDetails(detail: string | string[]): void;
 
   // Use branded function types similar to PolicyContext
+  // We use 'branded' function types to force TypeScript to check argument presence
+  // Otherwise calling w/ no arguments is not a type error even if a schema was provided (!)
   succeed: SuccessSchema extends z.ZodType
     ? {
         (
@@ -532,7 +526,7 @@ export interface VincentToolDef<
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies: Policies;
 
-  // Schema definitions for precheck and execute response types
+  // Schema definitions for precheck and execute response types are all optional
   precheckSuccessSchema?: PrecheckSuccessSchema;
   precheckFailSchema?: PrecheckFailSchema;
   executeSuccessSchema?: ExecuteSuccessSchema;
