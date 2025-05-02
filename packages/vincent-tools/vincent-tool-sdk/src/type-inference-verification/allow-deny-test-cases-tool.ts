@@ -4,7 +4,7 @@
  * This file validates that TypeScript correctly enforces type constraints
  * for tool definitions, focusing on success/failure responses.
  */
-import z from 'zod';
+import { z } from 'zod';
 import { createVincentTool } from '../lib/vincentTool';
 import { createVincentToolPolicy } from '../lib/vincentPolicy';
 

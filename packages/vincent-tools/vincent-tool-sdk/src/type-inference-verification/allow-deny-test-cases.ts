@@ -5,7 +5,7 @@
  * in different policy contexts. Each function directly calls these methods with various
  * arguments to verify TypeScript correctly enforces the type constraints.
  */
-import z from 'zod';
+import { z } from 'zod';
 import {
   createVincentPolicy,
   createVincentToolPolicy,

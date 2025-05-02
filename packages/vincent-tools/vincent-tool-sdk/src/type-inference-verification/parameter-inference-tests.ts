@@ -4,7 +4,7 @@
  * Tests to verify TypeScript correctly enforces type constraints
  * on parameters passed to allow() and deny() methods.
  */
-import z from 'zod';
+import { z } from 'zod';
 import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests

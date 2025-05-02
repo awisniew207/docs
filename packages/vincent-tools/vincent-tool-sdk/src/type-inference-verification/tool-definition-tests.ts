@@ -4,7 +4,7 @@
  * A focused test file to verify that VincentPolicyEvaluationResults inference works correctly,
  * using a tool with two policies - one simple and one with commit functionality.
  */
-import z from 'zod';
+import { z } from 'zod';
 import { createVincentTool } from '../lib/vincentTool';
 import { createVincentToolPolicy } from '../lib/vincentPolicy';
 

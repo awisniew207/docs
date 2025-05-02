@@ -5,7 +5,7 @@
  * is working correctly for the allow() and deny() methods with various
  * schema configurations.
  */
-import z from 'zod';
+import { z } from 'zod';
 import { PolicyContext } from '../lib/types';
 import { createVincentToolPolicy } from '../lib/vincentPolicy';
 

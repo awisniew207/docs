@@ -4,7 +4,7 @@
  * This file tests the TypeScript type inference for tool parameters,
  * policy results, and context manipulation.
  */
-import z from 'zod';
+import { z } from 'zod';
 import { createVincentTool } from '../lib/vincentTool';
 import { createVincentToolPolicy } from '../lib/vincentPolicy';
 

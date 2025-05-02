@@ -5,7 +5,7 @@
  * properly enforced when switching between different policy function contexts
  * (precheck, evaluate, commit) which may have different schemas.
  */
-import z from 'zod';
+import { z } from 'zod';
 import { createVincentToolPolicy } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
