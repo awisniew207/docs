@@ -6,7 +6,7 @@
  * (precheck, evaluate, commit) which may have different schemas.
  */
 import z from 'zod';
-import { validateVincentPolicyDef } from './vincentPolicy';
+import { validateVincentPolicyDef } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({

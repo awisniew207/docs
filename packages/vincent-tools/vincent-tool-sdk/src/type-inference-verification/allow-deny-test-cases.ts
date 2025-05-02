@@ -6,7 +6,7 @@
  * arguments to verify TypeScript correctly enforces the type constraints.
  */
 import z from 'zod';
-import { validateVincentPolicyDef } from './vincentPolicy';
+import { validateVincentPolicyDef } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({

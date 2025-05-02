@@ -6,8 +6,8 @@
  * schema configurations.
  */
 import z from 'zod';
-import { PolicyContext } from './types';
-import { validateVincentPolicyDef } from './vincentPolicy';
+import { PolicyContext } from '../lib/types';
+import { validateVincentPolicyDef } from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({

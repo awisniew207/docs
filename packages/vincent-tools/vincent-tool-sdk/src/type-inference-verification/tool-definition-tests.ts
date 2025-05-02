@@ -5,8 +5,8 @@
  * using a tool with two policies - one simple and one with commit functionality.
  */
 import z from 'zod';
-import { validateVincentToolDef } from './vincentTool';
-import { validateVincentPolicyDef } from './vincentPolicy';
+import { validateVincentToolDef } from '../lib/vincentTool';
+import { validateVincentPolicyDef } from '../lib/vincentPolicy';
 
 // Base tool schema
 const baseToolSchema = z.object({
