@@ -282,34 +282,6 @@ export function createVincentPolicy<
       : {
           commit: undefined;
         });
-  // const result = {
-  //   policyDef: wrappedPolicyDef,
-  //   Explicitly include schema types in the returned object for type inference
-  // __schemaTypes: {
-  //   evalAllowResultSchema: policyDef.evalAllowResultSchema,
-  //   evalDenyResultSchema: policyDef.evalDenyResultSchema,
-  //   commitParamsSchema: policyDef.commitParamsSchema,
-  //   commitAllowResultSchema: policyDef.commitAllowResultSchema,
-  //   commitDenyResultSchema: policyDef.commitDenyResultSchema,
-  // },
-  // };
-
-  // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
-  // return result as {
-  //   policyDef: typeof wrappedPolicyDef &
-  //     (CommitParams extends z.ZodType
-  //       ? {
-  //           commit: NonNullable<(typeof policyDef)['commit']>;
-  //         }
-  //       : {});
-  //   __schemaTypes: {
-  //     evalAllowResultSchema: EvalAllowResult;
-  //     evalDenyResultSchema: EvalDenyResult;
-  //     commitParamsSchema: CommitParams;
-  //     commitAllowResultSchema: CommitAllowResult;
-  //     commitDenyResultSchema: CommitDenyResult;
-  //   };
-  // };
 }
 
 export function createVincentToolPolicy<
