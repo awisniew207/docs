@@ -6,7 +6,10 @@
  * arguments to verify TypeScript correctly enforces the type constraints.
  */
 import z from 'zod';
-import { createVincentToolPolicy } from '../lib/vincentPolicy';
+import {
+  createVincentPolicy,
+  createVincentToolPolicy,
+} from '../lib/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -150,41 +153,40 @@ function testDenyFunctionWithDifferentTypes() {
   // Test with object schema
   const objSchema = z.object({ code: z.number(), message: z.string() });
 
+  const testPolicyDef = createVincentPolicy({
+    ipfsCid: 'denyTest1',
+    toolParamsSchema: z.object({ actionType: z.string() }),
+    evalDenyResultSchema: objSchema,
+
+    evaluate: async (params, context) => {
+      // Direct calls to deny with various arguments
+
+      // @ts-expect-error - No object when schema exists
+      context.deny('string only error');
+
+      // @ts-expect-error - Wrong type (number instead of object)
+      context.deny(123);
+
+      // @ts-expect-error - Wrong shape (missing required fields)
+      context.deny({});
+
+      // @ts-expect-error - Wrong shape (missing message field)
+      context.deny({ code: 400 });
+
+      // @ts-expect-error - Wrong shape (missing code field)
+      context.deny({ message: 'Error message' });
+
+      // Valid - matches schema, with additional error message
+      context.deny({ code: 400, message: 'Bad request' }, 'Additional context');
+
+      // Valid - matches schema, without additional error message
+      return context.deny({ code: 403, message: 'Forbidden' });
+    },
+  });
+
   const test1 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'denyTest1',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-      evalDenyResultSchema: objSchema,
-
-      evaluate: async (params, context) => {
-        // Direct calls to deny with various arguments
-
-        // @ts-expect-error - No object when schema exists
-        context.deny('string only error');
-
-        // @ts-expect-error - Wrong type (number instead of object)
-        context.deny(123);
-
-        // @ts-expect-error - Wrong shape (missing required fields)
-        context.deny({});
-
-        // @ts-expect-error - Wrong shape (missing message field)
-        context.deny({ code: 400 });
-
-        // @ts-expect-error - Wrong shape (missing code field)
-        context.deny({ message: 'Error message' });
-
-        // Valid - matches schema, with additional error message
-        context.deny(
-          { code: 400, message: 'Bad request' },
-          'Additional context',
-        );
-
-        // Valid - matches schema, without additional error message
-        return context.deny({ code: 403, message: 'Forbidden' });
-      },
-    },
+    policyDef: testPolicyDef,
     toolParameterMappings: {
       action: 'actionType',
     },
