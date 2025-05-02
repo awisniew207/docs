@@ -254,68 +254,6 @@ export interface PolicyWithPrecheckAndCommit<
     : undefined;
 }
 
-export type ExtractAllowResultType<P> = P extends {
-  policyDef: {
-    evalAllowResultSchema: infer Schema;
-  };
-}
-  ? Schema extends z.ZodType
-    ? z.infer<Schema>
-    : never
-  : never;
-
-export type ExtractDenyResultType<P> = P extends {
-  policyDef: {
-    evalDenyResultSchema: infer Schema;
-  };
-}
-  ? Schema extends z.ZodType
-    ? z.infer<Schema>
-    : never
-  : never;
-
-export type ExtractCommitParamsType<P> = P extends {
-  policyDef: {
-    commitParamsSchema: infer Schema;
-  };
-}
-  ? Schema extends z.ZodType
-    ? z.infer<Schema>
-    : never
-  : never;
-
-export type ExtractCommitAllowResultType<P> = P extends {
-  policyDef: {
-    commitAllowResultSchema: infer Schema;
-  };
-}
-  ? Schema extends z.ZodType
-    ? z.infer<Schema>
-    : never
-  : never;
-
-export type ExtractCommitDenyResultType<P> = P extends {
-  policyDef: {
-    commitDenyResultSchema: infer Schema;
-  };
-}
-  ? Schema extends z.ZodType
-    ? z.infer<Schema>
-    : never
-  : never;
-
-// Updated evaluation results type
-export type VincentPolicyEvaluationResponse<
-  PrecheckAllowResult = never,
-  PrecheckDenyResult = never,
-  EvalAllowResult = never,
-  EvalDenyResult = never,
-> = {
-  precheckResponse?: PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
-  evaluateResponse?: PolicyResponse<EvalAllowResult, EvalDenyResult>;
-  allowed: boolean;
-};
-
 // Union type for all policy definitions
 // Do not be alarmed by the `any` types here -- the actual policies are still constrained by the types that make up the union
 export type VincentPolicyDef =
