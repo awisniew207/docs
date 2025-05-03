@@ -85,29 +85,22 @@ const parsePolicyToolParams = ({ toolParams, toolParamsSchema }: { toolParams: z
     }
 }
 
-const parseEvaluateResult = (
-    { evaluateResult, evalAllowResultSchema, evalDenyResultSchema }:
-        {
-            evaluateResult: z.infer<VincentPolicy['evalAllowResultSchema']> | z.infer<VincentPolicy['evalDenyResultSchema']>,
-            evalAllowResultSchema: z.ZodType<any, any, any>,
-            evalDenyResultSchema: z.ZodType<any, any, any>
-        }
-) => {
-    if (evaluateResult.allow && evalAllowResultSchema) {
-        try {
-            evalAllowResultSchema.parse(evaluateResult);
-        } catch (error) {
-            const errorMessage = error instanceof z.ZodError ? formatZodErrorString(error) : error instanceof Error ? error.message : String(error);
-            throw new Error(`Error parsing evaluateResult using Zod evalAllowResultSchema (vincentPolicyHandler): ${errorMessage}`);
-        }
-    }
+const parseEvaluateResult = ({
+    evaluateResult,
+    evalAllowResultSchema,
+    evalDenyResultSchema
+}: {
+    evaluateResult: z.infer<VincentPolicy['evalAllowResultSchema']> | z.infer<VincentPolicy['evalDenyResultSchema']>,
+    evalAllowResultSchema: z.ZodType<any, any, any>,
+    evalDenyResultSchema: z.ZodType<any, any, any>
+}) => {
+    const schema = evaluateResult.allow ? evalAllowResultSchema : evalDenyResultSchema;
+    if (!schema) return;
 
-    if (!evaluateResult.allow && evalDenyResultSchema) {
-        try {
-            evalDenyResultSchema.parse(evaluateResult);
-        } catch (error) {
-            const errorMessage = error instanceof z.ZodError ? formatZodErrorString(error) : error instanceof Error ? error.message : String(error);
-            throw new Error(`Error parsing evaluateResult using Zod evalDenyResultSchema (vincentPolicyHandler): ${errorMessage}`);
-        }
+    try {
+        schema.parse(evaluateResult);
+    } catch (error) {
+        const errorMessage = error instanceof z.ZodError ? formatZodErrorString(error) : error instanceof Error ? error.message : String(error);
+        throw new Error(`Error parsing evaluateResult using Zod ${evaluateResult.allow ? 'evalAllowResultSchema' : 'evalDenyResultSchema'} (vincentPolicyHandler): ${errorMessage}`);
     }
 }
