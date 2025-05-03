@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 import { z } from "zod";
 
+import type { VincentPolicy } from "../types";
+import type { BaseContext } from "../vincentPolicy";
 import { formatZodErrorString, getOnChainPolicyParams } from "./utils";
 import { LIT_DATIL_VINCENT_ADDRESS } from "./constants";
-import { VincentPolicy } from "../types";
-import { BaseContext, createPolicyContext } from "../vincentPolicy";
 
 declare const Lit: {
     Actions: {
