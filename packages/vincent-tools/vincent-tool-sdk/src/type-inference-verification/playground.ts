@@ -3,7 +3,7 @@ import {
   createVincentPolicy,
   createVincentToolPolicy,
 } from '../lib/vincentPolicy';
-import { createVincentTool } from '../lib/vincentTool';
+import { createVincentTool, createPolicyMap } from '../lib/vincentTool';
 
 // Define your tool schema
 const myToolSchema = z.object({
@@ -29,6 +29,7 @@ const policy1CommitDenyResult = z.object({ errorCode: z.number() });
 // Create policies with full type inference
 const policyDef1 = createVincentPolicy({
   ipfsCid: 'policy1',
+  package: 'extra-rate-limit' as const,
   toolParamsSchema: policy1Schema,
   userParamsSchema: userParams1Schema,
   commitParamsSchema: commitParams1Schema,
@@ -105,6 +106,7 @@ const policy2CommitDenyResult = z.object({ failureReason: z.string() });
 
 const policyDef2 = createVincentPolicy({
   ipfsCid: 'policy2',
+  package: 'rate-limit' as const,
   toolParamsSchema: policy2Schema,
   userParamsSchema: userParams2Schema,
   commitParamsSchema: commitParams2Schema,
@@ -203,6 +205,7 @@ const policy3EvalDenyResult = z.object({
 // Create policy3 without a commit function
 const policyDef3 = createVincentPolicy({
   ipfsCid: 'policy3ipfscid123',
+  package: 'vincent-tool-sdk' as const,
   toolParamsSchema: policy3ToolParams,
   userParamsSchema: policy3UserParams,
   evalAllowResultSchema: policy3EvalAllowResult,
@@ -267,11 +270,7 @@ const toolPrecheckFailSchema = z.object({
 // Create your tool with fully typed policies
 const myTool = createVincentTool({
   toolParamsSchema: myToolSchema,
-  supportedPolicies: {
-    policy1,
-    policy2,
-    policy3,
-  },
+  supportedPolicies: createPolicyMap([policy1, policy2, policy3] as const),
 
   // Add schemas for tool results
   executeSuccessSchema: toolExecuteSuccessSchema,
@@ -312,20 +311,23 @@ const myTool = createVincentTool({
     // Process policy results if needed
     if (allow) {
       // Type-safe access to policies
-      if (allowPolicyResults.policy1) {
-        const policy1Result = allowPolicyResults.policy1.result;
+      const extraRateLimitResults = allowPolicyResults['extra-rate-limit'];
+      if (extraRateLimitResults) {
+        const policy1Result = extraRateLimitResults.result;
         addDetails([`Policy1 approved with result: ${policy1Result}`]);
       }
 
-      if (allowPolicyResults.policy2) {
-        const policy2Result = allowPolicyResults.policy2.result;
+      const rateLimitResults = allowPolicyResults['rate-limit'];
+      if (rateLimitResults) {
+        const policy2Result = rateLimitResults.result;
         addDetails([
           `Policy2 approved with currency: ${policy2Result.approvedCurrency}`,
         ]);
       }
+      const toolSdkResults = allowPolicyResults['vincent-tool-sdk'];
 
-      if (allowPolicyResults.policy3) {
-        const policy3Result = allowPolicyResults.policy3.result;
+      if (toolSdkResults) {
+        const policy3Result = toolSdkResults.result;
         addDetails([`Policy3 approved with message: ${policy3Result.message}`]);
       }
 
@@ -360,11 +362,12 @@ const myTool = createVincentTool({
         const txHash = `0x${Math.random().toString(16).substring(2, 10)}`;
 
         // Use commit functions from policies if available
-        if (policyResults.allowPolicyResults.policy1) {
-          const commitResult =
-            await policyResults.allowPolicyResults.policy1.commit({
-              confirmation: true,
-            });
+        if (policyResults.allowPolicyResults['extra-rate-limit']) {
+          const commitResult = await policyResults.allowPolicyResults[
+            'extra-rate-limit'
+          ].commit({
+            confirmation: true,
+          });
 
           if (commitResult.allow) {
             addDetails([
@@ -378,11 +381,12 @@ const myTool = createVincentTool({
           }
         }
 
-        if (policyResults.allowPolicyResults.policy2) {
-          const commitResult =
-            await policyResults.allowPolicyResults.policy2.commit({
-              transactionId: txHash,
-            });
+        if (policyResults.allowPolicyResults['rate-limit']) {
+          const commitResult = await policyResults.allowPolicyResults[
+            'rate-limit'
+          ].commit({
+            transactionId: txHash,
+          });
 
           if (commitResult.allow) {
             addDetails([

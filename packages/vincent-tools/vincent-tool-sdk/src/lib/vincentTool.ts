@@ -126,6 +126,26 @@ export function createToolContext<
   return context;
 }
 
+export function createPolicyMap<
+  T extends readonly VincentToolPolicy<any, any>[],
+  Pkgs extends
+    T[number]['policyDef']['package'] = T[number]['policyDef']['package'],
+>(
+  policies: T,
+): string extends Pkgs
+  ? [
+      '❌ Each policyDef.package must be a string literal. Use `as const` when passing the array.',
+    ]
+  : {
+      [K in Pkgs]: Extract<T[number], { policyDef: { package: K } }>;
+    } {
+  const result = {} as any;
+  for (const policy of policies) {
+    const name = policy.policyDef.package;
+    result[name] = policy;
+  }
+  return result;
+}
 export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   Policies extends Record<

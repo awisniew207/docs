@@ -25,6 +25,7 @@ function testPolicyEvaluationResults() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'simple-policy',
+      package: 'my-simple-policy',
       toolParamsSchema: z.object({
         actionType: z.string(),
         targetId: z.string(),
@@ -52,6 +53,7 @@ function testPolicyEvaluationResults() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'commit-policy',
+      package: 'my-policy-that-commits',
       toolParamsSchema: z.object({
         operation: z.string(),
         resource: z.string(),

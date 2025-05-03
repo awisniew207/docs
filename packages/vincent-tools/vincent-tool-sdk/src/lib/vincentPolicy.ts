@@ -130,6 +130,7 @@ export function createPolicyContext<
 }
 
 export function createVincentPolicy<
+  PackageName extends string,
   PolicyToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined = undefined,
   PrecheckAllowResult extends z.ZodType | undefined = undefined,
@@ -141,6 +142,7 @@ export function createVincentPolicy<
   CommitDenyResult extends z.ZodType | undefined = undefined,
 >(policyDef: {
   ipfsCid: string;
+  package: PackageName;
   toolParamsSchema: PolicyToolParams;
   userParamsSchema?: UserParams;
   evalAllowResultSchema?: EvalAllowResult;
@@ -211,6 +213,7 @@ export function createVincentPolicy<
   // Create wrapper functions that create a new context and merge baseContext into them
   const wrappedPolicyDef = {
     ...originalPolicyDef,
+    package: originalPolicyDef.package,
     evaluate: async (
       args: {
         toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
@@ -274,8 +277,9 @@ export function createVincentPolicy<
       : { commit: undefined }),
   };
 
-  return wrappedPolicyDef as typeof wrappedPolicyDef &
-    (CommitParams extends z.ZodType
+  return wrappedPolicyDef as typeof wrappedPolicyDef & {
+    package: PackageName;
+  } & (CommitParams extends z.ZodType
       ? {
           commit: NonNullable<(typeof policyDef)['commit']>;
         }
@@ -285,6 +289,7 @@ export function createVincentPolicy<
 }
 
 export function createVincentToolPolicy<
+  PackageName extends string,
   ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined = undefined,
@@ -299,6 +304,7 @@ export function createVincentToolPolicy<
   toolParamsSchema: ToolParamsSchema;
   policyDef: {
     ipfsCid: string;
+    package: PackageName;
     toolParamsSchema: PolicyToolParams;
     userParamsSchema?: UserParams;
     evalAllowResultSchema?: EvalAllowResult;

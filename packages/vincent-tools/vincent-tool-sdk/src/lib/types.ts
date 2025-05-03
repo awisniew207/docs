@@ -70,8 +70,10 @@ export interface BasicPolicyDef<
   UserParams extends z.ZodType | undefined = undefined,
   EvalAllowResult extends z.ZodType | undefined = undefined,
   EvalDenyResult extends z.ZodType | undefined = undefined,
+  Pkg extends string = string,
 > {
   ipfsCid: string;
+  package: Pkg;
   toolParamsSchema: ToolParams;
   userParamsSchema?: UserParams;
   evalAllowResultSchema?: EvalAllowResult;
@@ -268,8 +270,9 @@ export type WrappedCommitFunction<CommitParams, Result> = (
 export type VincentToolPolicy<
   ToolParamsSchema extends z.ZodType,
   PolicyDefType extends VincentPolicy,
+  PackageName extends string = string,
 > = {
-  policyDef: PolicyDefType;
+  policyDef: PolicyDefType & { package: PackageName };
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<
       PolicyDefType['toolParamsSchema']
