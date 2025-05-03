@@ -4,7 +4,7 @@ import { z } from "zod";
 import { formatZodErrorString, getOnChainPolicyParams } from "./utils";
 import { LIT_DATIL_VINCENT_ADDRESS } from "./constants";
 import { VincentPolicy } from "../types";
-import { createPolicyContext } from "../vincentPolicy";
+import { BaseContext, createPolicyContext } from "../vincentPolicy";
 
 declare const Lit: {
     Actions: {
@@ -18,34 +18,24 @@ declare const LitAuth: {
 }
 declare const toolParams: z.infer<VincentPolicy['toolParamsSchema']>
 
-export const vincentPolicyHandler = ({ vincentPolicy }: { vincentPolicy: VincentPolicy }) => {
+export const vincentPolicyHandler = ({ vincentPolicy, context }: { vincentPolicy: VincentPolicy, context: BaseContext }) => {
     return async () => {
         const policyIpfsCid = LitAuth.actionIpfsIds[0];
 
         try {
             const parsedToolParams = parsePolicyToolParams({ toolParams, toolParamsSchema: vincentPolicy.toolParamsSchema });
 
-            const context = createPolicyContext({
-                ipfsCid: policyIpfsCid,
-                baseContext: {
-                    delegation: {
-                        delegatee: ethers.utils.getAddress(LitAuth.authSigAddress),
-                        // TODO Should this be the address, or maybe even pkpInfo object?
-                        delegator: parsedToolParams.userPkpTokenId,
-                    }
-                },
-                allowSchema: vincentPolicy.evalAllowResultSchema,
-                denySchema: vincentPolicy.evalDenyResultSchema,
-            });
-
             const onChainPolicyParams = await getOnChainPolicyParams({
                 yellowstoneRpcUrl: await Lit.Actions.getRpcUrl({
                     chain: 'yellowstone',
                 }),
                 vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
+                appDelegateeAddress: ethers.utils.getAddress(LitAuth.authSigAddress),
+                agentWalletPkpTokenId: parsedToolParams.userPkpTokenId,
                 toolIpfsCid: parsedToolParams.toolIpfsCid,
+                policyIpfsCid,
                 policyUserParamsSchema: vincentPolicy.userParamsSchema,
-            }, context);
+            });
 
             const evaluateResult = await vincentPolicy.evaluate(
                 { toolParams: parsedToolParams, userParams: onChainPolicyParams },

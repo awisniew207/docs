@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { ethers } from "ethers";
 
-import type { PolicyContext, VincentPolicy } from "../../types";
-import type { EthersAbiDecodedValue, Policy } from "../types";
-import { abiDecodePolicyParameters, formatZodErrorString } from ".";
+import type { VincentPolicyDef } from "./types";
+import type { EthersAbiDecodedValue, Policy } from "./lit-actions/types";
+import { abiDecodePolicyParameters } from "./abi-decode-policy-params";
+import { formatZodErrorString } from "./format-zod-error-string";
 
 interface AllOnChainPolicyParams {
     isPermitted: boolean;
@@ -15,30 +16,37 @@ interface AllOnChainPolicyParams {
 export const getOnChainPolicyParams = async ({
     yellowstoneRpcUrl,
     vincentContractAddress,
+    appDelegateeAddress,
+    agentWalletPkpTokenId,
     toolIpfsCid,
+    policyIpfsCid,
     policyUserParamsSchema,
 }: {
     yellowstoneRpcUrl: string,
     vincentContractAddress: string,
+    appDelegateeAddress: string,
+    agentWalletPkpTokenId: string,
     toolIpfsCid: string,
-    policyUserParamsSchema?: z.infer<VincentPolicy['userParamsSchema']>
-}, context: PolicyContext): Promise<z.infer<VincentPolicy['userParamsSchema'] | undefined>> => {
+    policyIpfsCid: string,
+    policyUserParamsSchema?: z.infer<VincentPolicyDef['userParamsSchema']>
+}): Promise<z.infer<VincentPolicyDef['userParamsSchema'] | undefined>> => {
     const allOnChainPolicyParams = await _getAllOnChainPolicyParams({
         yellowstoneRpcUrl,
         vincentContractAddress,
-        context,
+        appDelegateeAddress,
+        agentWalletPkpTokenId,
+        toolIpfsCid,
     });
 
     // We exit early here because !allOnChainPolicyParams.isPermitted means appDelegateeAddress
     // is not permitted to execute toolIpfsCid for the Vincent App on behalf of the agentWalletPkpTokenId
     // and no further processing is needed
     if (!allOnChainPolicyParams.isPermitted) {
-        throw new Error(`App Delegatee: ${context.delegation.delegatee} is not permitted to execute Vincent Tool: ${toolIpfsCid} for App ID: ${allOnChainPolicyParams.appId.toString()} App Version: ${allOnChainPolicyParams.appVersion.toString()} using Agent Wallet PKP Token ID: ${context.delegation.delegator}`);
+        throw new Error(`App Delegatee: ${appDelegateeAddress} is not permitted to execute Vincent Tool: ${toolIpfsCid} for App ID: ${allOnChainPolicyParams.appId.toString()} App Version: ${allOnChainPolicyParams.appVersion.toString()} using Agent Wallet PKP Token ID: ${agentWalletPkpTokenId}`);
     }
 
     const onChainPolicyParams = allOnChainPolicyParams.policies.find(
-        // @ts-expect-error context.ipfsCid should be valid
-        (policy) => policy.policyIpfsCid === context.ipfsCid
+        (policy) => policy.policyIpfsCid === policyIpfsCid
     );
 
     if (!policyUserParamsSchema && !onChainPolicyParams) {
@@ -46,8 +54,7 @@ export const getOnChainPolicyParams = async ({
     }
 
     if (!policyUserParamsSchema && onChainPolicyParams) {
-        // @ts-expect-error context.ipfsCid should be valid
-        throw new Error(`Agent Wallet PKP Token ID: ${context.delegation.delegator} has registered on-chain Policy parameters for Vincent App: ${allOnChainPolicyParams.appId.toString()} App Version: ${allOnChainPolicyParams.appVersion.toString()} Vincent Policy: ${context.ipfsCid} Vincent Tool: ${toolIpfsCid} but no userParamsSchema was defined by the Policy`);
+        throw new Error(`Agent Wallet PKP Token ID: ${agentWalletPkpTokenId} has registered on-chain Policy parameters for Vincent App: ${allOnChainPolicyParams.appId.toString()} App Version: ${allOnChainPolicyParams.appVersion.toString()} Vincent Policy: ${policyIpfsCid} Vincent Tool: ${toolIpfsCid} but no userParamsSchema was defined by the Policy`);
     }
 
     if (policyUserParamsSchema && !onChainPolicyParams) {
@@ -66,11 +73,15 @@ export const getOnChainPolicyParams = async ({
 const _getAllOnChainPolicyParams = async ({
     yellowstoneRpcUrl,
     vincentContractAddress,
-    context,
+    appDelegateeAddress,
+    agentWalletPkpTokenId,
+    toolIpfsCid,
 }: {
     yellowstoneRpcUrl: string,
     vincentContractAddress: string,
-    context: PolicyContext,
+    appDelegateeAddress: string,
+    agentWalletPkpTokenId: string,
+    toolIpfsCid: string,
 }): Promise<AllOnChainPolicyParams> => {
     try {
         const VINCENT_CONTRACT_ABI = [
@@ -86,24 +97,16 @@ const _getAllOnChainPolicyParams = async ({
         );
 
         return vincentContract.validateToolExecutionAndGetPolicies(
-            context.delegation.delegatee,
-            context.delegation.delegator,
-            // @ts-expect-error context.ipfsCid should be valid
-            context.ipfsCid
+            appDelegateeAddress,
+            agentWalletPkpTokenId,
+            toolIpfsCid
         );
     } catch (error) {
-        // @ts-expect-error context.ipfsCid should be valid
-        throw new Error(`Error getting on-chain policy parameters from Vincent contract: ${vincentContractAddress} using App Delegatee: ${context.delegation.delegatee} and Agent Wallet PKP Token ID: ${context.delegation.delegator} and Vincent Tool: ${context.ipfsCid}: ${error instanceof Error ? error.message : String(error)}`);
+        throw new Error(`Error getting on-chain policy parameters from Vincent contract: ${vincentContractAddress} using App Delegatee: ${appDelegateeAddress} and Agent Wallet PKP Token ID: ${agentWalletPkpTokenId} and Vincent Tool: ${toolIpfsCid}: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
-const parseOnChainPolicyParams = (
-    { onChainPolicyParams, policyUserParamsSchema }:
-        {
-            onChainPolicyParams: Record<string, EthersAbiDecodedValue>,
-            policyUserParamsSchema?: z.infer<VincentPolicy['userParamsSchema']>
-        }
-) => {
+const parseOnChainPolicyParams = ({ onChainPolicyParams, policyUserParamsSchema }: { onChainPolicyParams: Record<string, EthersAbiDecodedValue>, policyUserParamsSchema?: z.infer<VincentPolicyDef['userParamsSchema']> }) => {
     try {
         return policyUserParamsSchema.parse(onChainPolicyParams);
     } catch (error) {
