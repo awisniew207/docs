@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { ethers } from "ethers";
 
-import type { VincentPolicyDef } from "./types";
-import type { EthersAbiDecodedValue, Policy } from "./lit-actions/types";
+import type { VincentPolicy } from "../../types";
+import type { EthersAbiDecodedValue, Policy } from "../types";
 import { abiDecodePolicyParameters } from "./abi-decode-policy-params";
 import { formatZodErrorString } from "./format-zod-error-string";
 
@@ -28,8 +28,8 @@ export const getOnChainPolicyParams = async ({
     agentWalletPkpTokenId: string,
     toolIpfsCid: string,
     policyIpfsCid: string,
-    policyUserParamsSchema?: z.infer<VincentPolicyDef['userParamsSchema']>
-}): Promise<z.infer<VincentPolicyDef['userParamsSchema'] | undefined>> => {
+    policyUserParamsSchema?: z.infer<VincentPolicy['userParamsSchema']>
+}): Promise<z.infer<VincentPolicy['userParamsSchema'] | undefined>> => {
     const allOnChainPolicyParams = await _getAllOnChainPolicyParams({
         yellowstoneRpcUrl,
         vincentContractAddress,
@@ -106,7 +106,7 @@ const _getAllOnChainPolicyParams = async ({
     }
 }
 
-const parseOnChainPolicyParams = ({ onChainPolicyParams, policyUserParamsSchema }: { onChainPolicyParams: Record<string, EthersAbiDecodedValue>, policyUserParamsSchema?: z.infer<VincentPolicyDef['userParamsSchema']> }) => {
+const parseOnChainPolicyParams = ({ onChainPolicyParams, policyUserParamsSchema }: { onChainPolicyParams: Record<string, EthersAbiDecodedValue>, policyUserParamsSchema?: z.infer<VincentPolicy['userParamsSchema']> }) => {
     try {
         return policyUserParamsSchema.parse(onChainPolicyParams);
     } catch (error) {
