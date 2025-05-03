@@ -29,7 +29,7 @@ const policy1CommitDenyResult = z.object({ errorCode: z.number() });
 // Create policies with full type inference
 const policyDef1 = createVincentPolicy({
   ipfsCid: 'policy1',
-  package: 'extra-rate-limit' as const,
+  package: 'extra-rate-limit',
   toolParamsSchema: policy1Schema,
   userParamsSchema: userParams1Schema,
   commitParamsSchema: commitParams1Schema,
@@ -106,7 +106,7 @@ const policy2CommitDenyResult = z.object({ failureReason: z.string() });
 
 const policyDef2 = createVincentPolicy({
   ipfsCid: 'policy2',
-  package: 'rate-limit' as const,
+  package: 'rate-limit',
   toolParamsSchema: policy2Schema,
   userParamsSchema: userParams2Schema,
   commitParamsSchema: commitParams2Schema,
@@ -205,7 +205,7 @@ const policy3EvalDenyResult = z.object({
 // Create policy3 without a commit function
 const policyDef3 = createVincentPolicy({
   ipfsCid: 'policy3ipfscid123',
-  package: 'vincent-tool-sdk' as const,
+  package: 'vincent-tool-sdk',
   toolParamsSchema: policy3ToolParams,
   userParamsSchema: policy3UserParams,
   evalAllowResultSchema: policy3EvalAllowResult,
@@ -220,7 +220,7 @@ const policyDef3 = createVincentPolicy({
       ]);
       return context.deny({
         reason: 'Basic users cannot access this tool',
-        suggestedAccessLevel: 'premium' as const,
+        suggestedAccessLevel: 'premium',
       });
     }
 
@@ -270,7 +270,7 @@ const toolPrecheckFailSchema = z.object({
 // Create your tool with fully typed policies
 const myTool = createVincentTool({
   toolParamsSchema: myToolSchema,
-  supportedPolicies: createPolicyMap([policy1, policy2, policy3] as const),
+  supportedPolicies: createPolicyMap([policy1, policy2, policy3]),
 
   // Add schemas for tool results
   executeSuccessSchema: toolExecuteSuccessSchema,

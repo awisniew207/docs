@@ -142,6 +142,9 @@ export function createPolicyMap<
   const result = {} as any;
   for (const policy of policies) {
     const name = policy.policyDef.package;
+    if (result[name]) {
+      throw new Error('Duplicate policy package: ' + name + '');
+    }
     result[name] = policy;
   }
   return result;
