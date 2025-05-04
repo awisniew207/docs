@@ -13,7 +13,7 @@ interface AllOnChainPolicyParams {
     policies: Policy[];
 }
 
-export const getOnChainPolicyParams = async ({
+export const getOnChainParamsForPolicy = async ({
     yellowstoneRpcUrl,
     vincentContractAddress,
     appDelegateeAddress,
@@ -68,6 +68,45 @@ export const getOnChainPolicyParams = async ({
         const decodedPolicyParams = abiDecodePolicyParameters({ params: onChainPolicyParams.parameters });
         return parseOnChainPolicyParams(policyUserParamsSchema.parse(decodedPolicyParams));
     }
+}
+
+export const getAllUserPoliciesRegisteredForTool = async ({
+    yellowstoneRpcUrl,
+    vincentContractAddress,
+    appDelegateeAddress,
+    agentWalletPkpTokenId,
+    toolIpfsCid,
+}: {
+    yellowstoneRpcUrl: string,
+    vincentContractAddress: string,
+    appDelegateeAddress: string,
+    agentWalletPkpTokenId: string,
+    toolIpfsCid: string,
+}): Promise<{
+    registeredUserPolicyIpfsCids: string[];
+    appId: ethers.BigNumber;
+    appVersion: ethers.BigNumber;
+}> => {
+    const allOnChainPolicyParams = await _getAllOnChainPolicyParams({
+        yellowstoneRpcUrl,
+        vincentContractAddress,
+        appDelegateeAddress,
+        agentWalletPkpTokenId,
+        toolIpfsCid,
+    });
+
+    // We exit early here because !allOnChainPolicyParams.isPermitted means appDelegateeAddress
+    // is not permitted to execute toolIpfsCid for the Vincent App on behalf of the agentWalletPkpTokenId
+    // and no further processing is needed
+    if (!allOnChainPolicyParams.isPermitted) {
+        throw new Error(`App Delegatee: ${appDelegateeAddress} is not permitted to execute Vincent Tool: ${toolIpfsCid} for App ID: ${allOnChainPolicyParams.appId.toString()} App Version: ${allOnChainPolicyParams.appVersion.toString()} using Agent Wallet PKP Token ID: ${agentWalletPkpTokenId}`);
+    }
+
+    return {
+        registeredUserPolicyIpfsCids: allOnChainPolicyParams.policies.map((policy) => policy.policyIpfsCid),
+        appId: allOnChainPolicyParams.appId,
+        appVersion: allOnChainPolicyParams.appVersion,
+    };
 }
 
 const _getAllOnChainPolicyParams = async ({

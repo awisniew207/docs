@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import type { VincentPolicy } from "../types";
 import type { BaseContext } from "../vincentPolicy";
-import { formatZodErrorString, getOnChainPolicyParams } from "./utils";
+import { formatZodErrorString, getOnChainParamsForPolicy } from "./utils";
 import { LIT_DATIL_VINCENT_ADDRESS } from "./constants";
 
 declare const Lit: {
@@ -25,7 +25,7 @@ export const vincentPolicyHandler = ({ vincentPolicy, context }: { vincentPolicy
         try {
             const parsedToolParams = parsePolicyToolParams({ toolParams, toolParamsSchema: vincentPolicy.toolParamsSchema });
 
-            const onChainPolicyParams = await getOnChainPolicyParams({
+            const onChainPolicyParams = await getOnChainParamsForPolicy({
                 yellowstoneRpcUrl: await Lit.Actions.getRpcUrl({
                     chain: 'yellowstone',
                 }),
@@ -39,6 +39,8 @@ export const vincentPolicyHandler = ({ vincentPolicy, context }: { vincentPolicy
 
             const evaluateResult = await vincentPolicy.evaluate(
                 { toolParams: parsedToolParams, userParams: onChainPolicyParams },
+                // TODO
+                // @ts-expect-error Argument of type 'BaseContext' is not assignable to parameter of type 'PolicyContext<any, any>'.
                 context
             );
 
