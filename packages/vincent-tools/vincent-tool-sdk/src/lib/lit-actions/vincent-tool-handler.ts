@@ -24,6 +24,10 @@ export const vincentToolHandler = <
     Policies extends Record<string, { policyDef: VincentPolicy; toolParameterMappings: Partial<{ [K in keyof TypeOf<ToolParams>]: string; }> }>,
 >({ vincentToolDef, context }: { vincentToolDef: VincentToolDef<ToolParams, Policies>, context: BaseContext }) => {
     return async () => {
+        const evaluatedPolicies: Array<keyof Policies> = [];
+        const allowPolicyResults: VincentPolicyEvaluationResults<Policies>["allowPolicyResults"] = {};
+        let denyPolicyResult: VincentPolicyEvaluationResults<Policies>["denyPolicyResult"] = undefined;
+
         try {
             const toolIpfsCid = LitAuth.actionIpfsIds[0];
             const parsedToolParams = parseToolParams({ toolParams, toolParamsSchema: vincentToolDef.toolParamsSchema });
@@ -41,10 +45,6 @@ export const vincentToolHandler = <
                 agentWalletPkpTokenId: parsedToolParams.userPkpTokenId,
                 toolIpfsCid,
             });
-
-            const evaluatedPolicies: Array<keyof Policies> = [];
-            const allowPolicyResults: VincentPolicyEvaluationResults<Policies>["allowPolicyResults"] = {};
-            let denyPolicyResult: VincentPolicyEvaluationResults<Policies>["denyPolicyResult"] = undefined;
 
             // Create a reverse mapping of Policy IPFS CIDs to Policy package names
             // to avoid having to loop over toolDef.supportedPolicies for each
@@ -167,6 +167,18 @@ export const vincentToolHandler = <
         } catch (error) {
             Lit.Actions.setResponse({
                 response: JSON.stringify({
+                    policyEvaluationResults: denyPolicyResult
+                        ? {
+                            allow: false,
+                            evaluatedPolicies,
+                            allowPolicyResults,
+                            denyPolicyResult,
+                        } as VincentPolicyEvaluationResults<Policies>
+                        : {
+                            allow: true,
+                            evaluatedPolicies,
+                            allowPolicyResults,
+                        } as OnlyAllowedPolicyEvaluationResults<Policies>,
                     toolExecutionResult: {
                         success: false,
                         error: error instanceof Error ? error.message : String(error),
