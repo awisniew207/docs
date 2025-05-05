@@ -77,17 +77,19 @@ export const vincentToolHandler = <
             for (const { policyPackageName, policyParams } of validatedPolicies) {
                 const policy = vincentToolDef.supportedPolicies[policyPackageName];
 
+                const userPkpInfo = await getPkpInfo({
+                    litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
+                    yellowstoneRpcUrl: await Lit.Actions.getRpcUrl({ chain: 'yellowstone' }),
+                    pkpEthAddress: parsedToolParams.pkpEthAddress
+                });
+
                 const rawLitActionResponse = await Lit.Actions.call({
                     ipfsId: policy.policyDef.ipfsCid,
                     params: {
                         toolParams: {
                             ...policyParams,
                             toolIpfsCid,
-                            userPkpTokenId: (await getPkpInfo({
-                                litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-                                yellowstoneRpcUrl: await Lit.Actions.getRpcUrl({ chain: 'yellowstone' }),
-                                pkpEthAddress: parsedToolParams.pkpEthAddress
-                            })).tokenId,
+                            userPkpTokenId: userPkpInfo.tokenId,
                         }
                     }
                 });
@@ -117,20 +119,17 @@ export const vincentToolHandler = <
                 parsedToolParams: TypeOf<ToolParams>,
             }
         ) => {
-            let toolExecutionResult;
             if (!policyEvaluationResults.allow) {
-                toolExecutionResult = { success: false, reason: "A policy denied execution" };
-            } else {
-                toolExecutionResult = await vincentToolDef.execute(
-                    parsedToolParams,
-                    policyEvaluationResults as OnlyAllowedPolicyEvaluationResults<Policies>,
-                    // TODO
-                    // @ts-expect-error Argument of type 'BaseContext' is not assignable to parameter of type 'ToolContext<undefined, undefined, any>'.
-                    context
-                );
+                return { success: false, reason: "A policy denied execution" };
             }
 
-            return toolExecutionResult;
+            return vincentToolDef.execute(
+                parsedToolParams,
+                policyEvaluationResults as OnlyAllowedPolicyEvaluationResults<Policies>,
+                // TODO
+                // @ts-expect-error Argument of type 'BaseContext' is not assignable to parameter of type 'ToolContext<undefined, undefined, any>'.
+                context
+            );
         }
 
         const executePolicyCommitFunctions = async (
@@ -140,12 +139,12 @@ export const vincentToolHandler = <
                 policyEvaluationResults: VincentPolicyEvaluationResults<Policies> | OnlyAllowedPolicyEvaluationResults<Policies>,
             }
         ) => {
-            if (policyEvaluationResults.allow) {
-                for (const allowPolicyResult of Object.values(allowPolicyResults)) {
-                    if (allowPolicyResult && allowPolicyResult.commit) {
-                        // TODO The result of these commit functions should be returned
-                        await (allowPolicyResult.commit as WrappedCommitFunction<any, any>)(allowPolicyResult.result);
-                    }
+            if (!policyEvaluationResults.allow) return;
+
+            for (const allowPolicyResult of Object.values(allowPolicyResults)) {
+                if (allowPolicyResult?.commit) {
+                    // TODO The result of these commit functions should be returned
+                    await (allowPolicyResult.commit as WrappedCommitFunction<any, any>)(allowPolicyResult.result);
                 }
             }
         }
@@ -161,14 +160,9 @@ export const vincentToolHandler = <
                 allowPolicyResults,
             });
 
-            const toolExecutionResult = await executeTool({
-                policyEvaluationResults,
-                parsedToolParams,
-            });
+            const toolExecutionResult = await executeTool({ policyEvaluationResults, parsedToolParams });
 
-            await executePolicyCommitFunctions({
-                policyEvaluationResults,
-            });
+            await executePolicyCommitFunctions({ policyEvaluationResults });
 
             Lit.Actions.setResponse({
                 response: JSON.stringify({
