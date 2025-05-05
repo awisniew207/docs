@@ -3,8 +3,8 @@ import { ethers } from "ethers";
 
 import type { VincentPolicy, VincentPolicyEvaluationResults, VincentToolDef, WrappedCommitFunction, OnlyAllowedPolicyEvaluationResults } from "../types";
 import type { BaseContext } from "../vincentPolicy";
-import { formatZodErrorString, getAllUserPoliciesRegisteredForTool, getPkpInfo, getPolicyEvalResults, mapPolicyNamesToIfpsCids, parseToolParams, validatePolicies } from "./utils";
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from "./constants";
+import { getPkpInfo, getPolicyEvalResults, parseToolParams, validatePolicies } from "./utils";
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from "./constants";
 
 declare const LitAuth: {
     authSigAddress: string;
