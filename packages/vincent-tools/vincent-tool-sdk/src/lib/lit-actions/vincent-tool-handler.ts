@@ -41,7 +41,13 @@ export const vincentToolHandler = <
                 policy: Policies[keyof Policies]
             }
         ) => {
-            const parsedLitActionResponse = JSON.parse(rawLitActionResponse);
+            let parsedLitActionResponse;
+            try {
+                parsedLitActionResponse = JSON.parse(rawLitActionResponse);
+            } catch (error) {
+                console.log("rawLitActionResponse (parsePolicyExecutionResult)", rawLitActionResponse);
+                throw new Error(`Failed to JSON parse Lit Action Response: ${error instanceof Error ? error.message : String(error)}. rawLitActionResponse in request logs (parsePolicyExecutionResult)`);
+            }
 
             evaluatedPolicies.push(policyPackageName);
 
@@ -141,10 +147,14 @@ export const vincentToolHandler = <
         ) => {
             if (!policyEvaluationResults.allow) return;
 
-            for (const allowPolicyResult of Object.values(allowPolicyResults)) {
-                if (allowPolicyResult?.commit) {
-                    // TODO The result of these commit functions should be returned
-                    await (allowPolicyResult.commit as WrappedCommitFunction<any, any>)(allowPolicyResult.result);
+            for (const [policyPackageName, allowPolicyResult] of Object.entries(allowPolicyResults)) {
+                try {
+                    if (allowPolicyResult?.commit) {
+                        // TODO The result of these commit functions should be returned
+                        await (allowPolicyResult.commit as WrappedCommitFunction<any, any>)(allowPolicyResult.result);
+                    }
+                } catch (error) {
+                    throw new Error(`Error executing policy commit function for policy: ${policyPackageName}: ${error instanceof Error ? error.message : String(error)}`);
                 }
             }
         }
