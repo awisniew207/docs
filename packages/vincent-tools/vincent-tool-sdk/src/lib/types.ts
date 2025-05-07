@@ -1,31 +1,36 @@
 import { z } from 'zod';
 
-export interface PolicyResponseBase {
+export declare const YouMustCallContextAllowOrDeny: unique symbol;
+
+type PhantomPolicyReturnType<T> = T & {
+  [YouMustCallContextAllowOrDeny]: 'PolicyResponse';
+};
+
+export type PolicyResponseAllow<AllowResult> = PhantomPolicyReturnType<{
   ipfsCid: string;
-}
+  allow: true;
+  result: AllowResult;
+}>;
 
-export type PolicyResponseAllow<AllowResult = never> = AllowResult extends never
-  ? PolicyResponseAllowNoResult
-  : Omit<PolicyResponseBase, 'allow'> & { allow: true; result: AllowResult };
-
-export interface PolicyResponseAllowNoResult extends PolicyResponseBase {
+export type PolicyResponseAllowNoResult = PhantomPolicyReturnType<{
+  ipfsCid: string;
   allow: true;
   result?: never;
-}
+}>;
 
-export type PolicyResponseDeny<DenyResult = never> = DenyResult extends never
-  ? PolicyResponseDenyNoResult
-  : Omit<PolicyResponseBase, 'allow'> & {
-      allow: false;
-      result: DenyResult;
-      error?: string;
-    };
+export type PolicyResponseDeny<DenyResult> = PhantomPolicyReturnType<{
+  ipfsCid: string;
+  allow: false;
+  result: DenyResult;
+  error?: string;
+}>;
 
-export interface PolicyResponseDenyNoResult extends PolicyResponseBase {
+export type PolicyResponseDenyNoResult = PhantomPolicyReturnType<{
+  ipfsCid: string;
   allow: false;
   error?: string;
   result: never;
-}
+}>;
 
 export type PolicyResponse<AllowResult = never, DenyResult = never> =
   | PolicyResponseAllow<AllowResult>
@@ -61,6 +66,14 @@ export type WrappedCommitFunction<CommitParams, Result> =
     ? () => Promise<Result> // No arguments version
     : (args: CommitParams) => Promise<Result>; // With arguments version
 
+type EnforcePolicyResponse<T> =
+  typeof YouMustCallContextAllowOrDeny extends keyof T
+    ? T
+    : {
+        ERROR: 'You must return the result of context.allow() or context.deny()';
+        FIX: 'Do not construct the return value manually. Use the injected context helpers.';
+      };
+
 export type EvaluateFunction<
   ToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined,
@@ -73,12 +86,14 @@ export type EvaluateFunction<
   },
   ctx: PolicyContext<AllowResult, DenyResult>,
 ) => Promise<
-  | (AllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<AllowResult>>
-      : PolicyResponseAllowNoResult)
-  | (DenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<DenyResult>>
-      : PolicyResponseDenyNoResult)
+  EnforcePolicyResponse<
+    | (AllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<AllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (DenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<DenyResult>>
+        : PolicyResponseDenyNoResult)
+  >
 >;
 
 export type PrecheckFunction<
@@ -93,13 +108,16 @@ export type PrecheckFunction<
   },
   context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
 ) => Promise<
-  | (PrecheckAllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
-      : PolicyResponseAllowNoResult)
-  | (PrecheckDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
-      : PolicyResponseDenyNoResult)
+  EnforcePolicyResponse<
+    | (PrecheckAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (PrecheckDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
+        : PolicyResponseDenyNoResult)
+  >
 >;
+
 export type CommitFunction<
   CommitParams extends z.ZodType | undefined,
   CommitAllowResult extends z.ZodType | undefined,
@@ -108,12 +126,14 @@ export type CommitFunction<
   args: CommitParams extends z.ZodType ? z.infer<CommitParams> : undefined,
   context: PolicyContext<CommitAllowResult, CommitDenyResult>,
 ) => Promise<
-  | (CommitAllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<CommitAllowResult>>
-      : PolicyResponseAllowNoResult)
-  | (CommitDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<CommitDenyResult>>
-      : PolicyResponseDenyNoResult)
+  EnforcePolicyResponse<
+    | (CommitAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<CommitAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (CommitDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<CommitDenyResult>>
+        : PolicyResponseDenyNoResult)
+  >
 >;
 
 export type VincentPolicyDef<

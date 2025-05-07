@@ -63,7 +63,6 @@ export function createPolicyContext<
       allow: false,
       ...(error ? { error } : {}),
       result: undefined as never,
-      __brand: 'PolicyResponse',
     } as PolicyResponseDenyNoResult;
   }
 
@@ -98,23 +97,6 @@ export function createVincentPolicy<
   CommitParams extends z.ZodType | undefined = undefined,
   CommitAllowResult extends z.ZodType | undefined = undefined,
   CommitDenyResult extends z.ZodType | undefined = undefined,
-  EvaluateFn = EvaluateFunction<
-    PolicyToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
-  >,
-  PrecheckFn =
-    | undefined
-    | PrecheckFunction<
-        PolicyToolParams,
-        UserParams,
-        PrecheckAllowResult,
-        PrecheckDenyResult
-      >,
-  CommitFn =
-    | undefined
-    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 >(
   policyDef: VincentPolicyDef<
     PackageName,
@@ -170,18 +152,11 @@ export function createVincentPolicy<
         denySchema: originalPolicyDef.evalDenyResultSchema,
       });
 
-      return (
-        originalPolicyDef.evaluate as EvaluateFunction<
-          PolicyToolParams,
-          UserParams,
-          EvalAllowResult,
-          EvalDenyResult
-        >
-      )(args, context);
+      return originalPolicyDef.evaluate(args, context);
     },
 
     // Only create precheck wrapper if precheck exists; it is optional.
-    ...(originalPolicyDef.precheck
+    ...(originalPolicyDef.precheck !== undefined
       ? {
           precheck: async (
             args: {
@@ -199,20 +174,19 @@ export function createVincentPolicy<
               denySchema: originalPolicyDef.precheckDenyResultSchema,
             });
 
-            return (
-              originalPolicyDef.precheck as PrecheckFunction<
-                PolicyToolParams,
-                UserParams,
-                PrecheckAllowResult,
-                PrecheckDenyResult
-              >
-            )(args, context);
+            const { precheck: precheckFn } = originalPolicyDef;
+
+            if (!precheckFn) {
+              throw new Error('Commit function unexpectedly missing');
+            }
+
+            return precheckFn(args, context);
           },
         }
       : { precheck: undefined }),
 
     // Only create commit wrapper if commit exists; it is optional also
-    ...(originalPolicyDef.commit
+    ...(originalPolicyDef.commit !== undefined
       ? {
           commit: async (
             args: CommitParams extends z.ZodType
@@ -227,13 +201,12 @@ export function createVincentPolicy<
               allowSchema: originalPolicyDef.commitAllowResultSchema,
             });
 
-            return (
-              originalPolicyDef.commit as CommitFunction<
-                CommitParams,
-                CommitAllowResult,
-                CommitDenyResult
-              >
-            )(args, context);
+            const { commit: commitFn } = originalPolicyDef;
+            if (!commitFn) {
+              throw new Error('Commit function unexpectedly missing');
+            }
+
+            return commitFn(args, context);
           },
         }
       : { commit: undefined }),
@@ -254,23 +227,6 @@ export function createVincentToolPolicy<
   CommitParams extends z.ZodType | undefined = undefined,
   CommitAllowResult extends z.ZodType | undefined = undefined,
   CommitDenyResult extends z.ZodType | undefined = undefined,
-  EvaluateFn = EvaluateFunction<
-    PolicyToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
-  >,
-  PrecheckFn =
-    | undefined
-    | PrecheckFunction<
-        PolicyToolParams,
-        UserParams,
-        PrecheckAllowResult,
-        PrecheckDenyResult
-      >,
-  CommitFn =
-    | undefined
-    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 >(config: {
   toolParamsSchema: ToolParamsSchema;
   policyDef: VincentPolicyDef<
@@ -316,9 +272,9 @@ export function createVincentToolPolicy<
       commitAllowResultSchema: config.policyDef.commitAllowResultSchema,
       commitDenyResultSchema: config.policyDef.commitDenyResultSchema,
       // Explicit function types
-      evaluate: config.policyDef.evaluate as EvaluateFn,
-      precheck: config.policyDef.precheck as PrecheckFn,
-      commit: config.policyDef.commit as CommitFn,
+      evaluate: config.policyDef.evaluate,
+      precheck: config.policyDef.precheck,
+      commit: config.policyDef.commit,
     },
   };
 
@@ -333,9 +289,9 @@ export function createVincentToolPolicy<
       commitAllowResultSchema: CommitAllowResult;
       commitDenyResultSchema: CommitDenyResult;
       // Explicit function types
-      evaluate: EvaluateFn;
-      precheck: PrecheckFn;
-      commit: CommitFn;
+      evaluate: typeof policyDef.evaluate;
+      precheck: typeof policyDef.precheck;
+      commit: typeof policyDef.commit;
     };
   };
 }
