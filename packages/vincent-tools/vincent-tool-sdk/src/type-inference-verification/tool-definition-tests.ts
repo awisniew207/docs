@@ -136,7 +136,7 @@ function testPolicyEvaluationResults() {
     executeSuccessSchema,
     executeFailSchema,
 
-    precheck: async (params, { fail, succeed, policyResults }) => {
+    precheck: async (params, { fail, succeed, policiesContext }) => {
       // Perform basic validation
       if (!params.action || !params.target || params.amount <= 0) {
         const issues = [];
@@ -158,17 +158,16 @@ function testPolicyEvaluationResults() {
     },
 
     // Execute function to demonstrate result type inference
-    execute: async (params, { fail, succeed, policyResults }) => {
+    execute: async (params, { fail, succeed, policiesContext }) => {
       try {
         // Verify type inference works correctly when results.allow is true
         // Access specific policy results - now TypeScript knows this is defined
         if (
-          policyResults.allowPolicyResults['@lit-protocol/simple-policy@1.0.0']
+          policiesContext.allowedPolicies['@lit-protocol/simple-policy@1.0.0']
         ) {
           const simpleResult =
-            policyResults.allowPolicyResults[
-              '@lit-protocol/simple-policy@1.0.0'
-            ].result;
+            policiesContext.allowedPolicies['@lit-protocol/simple-policy@1.0.0']
+              .result;
 
           // TypeScript should now correctly infer the result type
           const { approved, reason } = simpleResult;
@@ -178,12 +177,11 @@ function testPolicyEvaluationResults() {
 
         // Type inference should work for the commit policy result
         if (
-          policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+          policiesContext.allowedPolicies['@lit-protocol/commit-policy@1.0.0']
         ) {
           const commitPolicyResult =
-            policyResults.allowPolicyResults[
-              '@lit-protocol/commit-policy@1.0.0'
-            ].result;
+            policiesContext.allowedPolicies['@lit-protocol/commit-policy@1.0.0']
+              .result;
 
           // No need for type guards anymore
           const { transactionId, status } = commitPolicyResult;
@@ -191,9 +189,8 @@ function testPolicyEvaluationResults() {
 
           // The commit function should be available and properly typed
           const commitFn =
-            policyResults.allowPolicyResults[
-              '@lit-protocol/commit-policy@1.0.0'
-            ].commit;
+            policiesContext.allowedPolicies['@lit-protocol/commit-policy@1.0.0']
+              .commit;
 
           // Call commit with properly typed parameters
           const commitResult = await commitFn({

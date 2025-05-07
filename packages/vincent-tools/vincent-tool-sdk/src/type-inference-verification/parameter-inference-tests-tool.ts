@@ -186,15 +186,15 @@ function testPolicyResultInference() {
     toolParamsSchema: testSchema,
     supportedPolicies: [complexPolicy, commitPolicy],
 
-    precheck: async (params, { policyResults, succeed }) => {
+    precheck: async (params, { policiesContext, succeed }) => {
       // Testing allow/deny branch type inference
-      if (policyResults.allow) {
+      if (policiesContext.allow) {
         // When allowed, policy results should be accessible
         if (
-          policyResults.allowPolicyResults['@lit-protocol/complex-policy@1.0.0']
+          policiesContext.allowedPolicies['@lit-protocol/complex-policy@1.0.0']
         ) {
           const { level, metadata, flags } =
-            policyResults.allowPolicyResults[
+            policiesContext.allowedPolicies[
               '@lit-protocol/complex-policy@1.0.0'
             ].result;
 
@@ -227,29 +227,29 @@ function testPolicyResultInference() {
         }
 
         // @ts-expect-error - denyPolicyResult shouldn't exist when allowed
-        const denyResult = policyResults.denyPolicyResult;
+        const denyResult = policiesContext.deniedPolicy;
       } else {
         // When denied, denyPolicyResult should exist
-        const { ipfsCid, result } = policyResults.denyPolicyResult;
+        const { ipfsCid, result } = policiesContext.deniedPolicy;
         console.log(ipfsCid, result);
       }
 
       return succeed();
     },
 
-    execute: async (params, { policyResults, succeed }) => {
+    execute: async (params, { policiesContext, succeed }) => {
       // Testing commit function type inference
       if (
-        policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+        policiesContext.allowedPolicies['@lit-protocol/commit-policy@1.0.0']
       ) {
         const { transactionId } =
-          policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+          policiesContext.allowedPolicies['@lit-protocol/commit-policy@1.0.0']
             .result;
 
         // Commit function should be correctly typed
         const commitFn =
-          policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
-            .commit;
+          policiesContext.allowedPolicies['@lit-protocol/commit-policy@1.0.0']
+            ?.commit;
 
         // Valid commit parameters
         const commitResult = await commitFn({

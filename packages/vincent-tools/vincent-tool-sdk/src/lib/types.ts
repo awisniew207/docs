@@ -277,7 +277,7 @@ export type VincentToolPolicy<
   }>;
 };
 
-export type VincentPolicyEvaluationResults<
+export type PolicyEvaluationResultContext<
   Policies extends Record<
     string,
     {
@@ -296,7 +296,7 @@ export type VincentPolicyEvaluationResults<
 } & (
   | {
       allow: true;
-      allowPolicyResults: {
+      allowedPolicies: {
         [PolicyKey in keyof Policies]?: {
           result: Policies[PolicyKey]['__schemaTypes'] extends {
             evalAllowResultSchema: infer Schema;
@@ -319,11 +319,11 @@ export type VincentPolicyEvaluationResults<
             : never;
         };
       };
-      denyPolicyResult?: never;
+      deniedPolicy?: never;
     }
   | {
       allow: false;
-      denyPolicyResult: {
+      deniedPolicy: {
         ipfsCid: keyof Policies;
         result: {
           error?: string;
@@ -338,7 +338,7 @@ export type VincentPolicyEvaluationResults<
             : {}
           : {});
       };
-      allowPolicyResults?: {
+      allowedPolicies?: {
         [PolicyKey in keyof Policies]?: {
           result: Policies[PolicyKey]['__schemaTypes'] extends {
             evalAllowResultSchema: infer Schema;
@@ -347,24 +347,12 @@ export type VincentPolicyEvaluationResults<
               ? z.infer<Schema>
               : never
             : never;
-          commit: HasCommit<Policies[PolicyKey]['policyDef']> extends true
-            ? Policies[PolicyKey]['policyDef'] extends {
-                commit: infer Commit;
-              }
-              ? Commit extends (
-                  args: infer Args,
-                  context: any,
-                ) => Promise<infer Result>
-                ? WrappedCommitFunction<Args, Result>
-                : never
-              : never
-            : never;
         };
       };
     }
 );
 
-export type OnlyAllowedPolicyEvaluationResults<
+export type ToolExecutionPolicyContext<
   Policies extends Record<
     string,
     {
@@ -381,7 +369,7 @@ export type OnlyAllowedPolicyEvaluationResults<
 > = {
   evaluatedPolicies: Array<keyof Policies>;
   allow: true;
-  allowPolicyResults: {
+  allowedPolicies: {
     [PolicyKey in keyof Policies]?: {
       result: Policies[PolicyKey]['__schemaTypes'] extends {
         evalAllowResultSchema: infer Schema;
@@ -405,7 +393,7 @@ export type OnlyAllowedPolicyEvaluationResults<
     };
   };
 } & {
-  readonly denyPolicyResult: never;
+  readonly deniedPolicy: never;
 };
 
 // Tool definition
@@ -477,7 +465,7 @@ export type ToolPrecheckResponse<SuccessResult = never, FailResult = never> =
   | ToolPrecheckFailure<FailResult>;
 
 export interface BaseToolContext<Policies = any> {
-  policyResults: Policies;
+  policiesContext: Policies;
 }
 
 export interface ToolContext<
@@ -507,22 +495,39 @@ export interface ToolContext<
       }
     : { (error?: string): ToolExecutionFailureNoResult; __brand: 'no-arg' };
 }
-
 export interface VincentToolDef<
   ToolParamsSchema extends z.ZodType,
-  Policies extends Record<
+  PolicyArray extends readonly VincentToolPolicy<
+    ToolParamsSchema,
+    VincentPolicy
+  >[],
+  PkgNames extends
+    PolicyArray[number]['policyDef']['package'] = PolicyArray[number]['policyDef']['package'],
+  PolicyMapType extends Record<
     string,
-    VincentToolPolicy<ToolParamsSchema, VincentPolicy>
-  >,
+    {
+      policyDef: VincentPolicy;
+      __schemaTypes?: {
+        evalAllowResultSchema?: z.ZodType;
+        evalDenyResultSchema?: z.ZodType;
+        commitParamsSchema?: z.ZodType;
+        commitAllowResultSchema?: z.ZodType;
+        commitDenyResultSchema?: z.ZodType;
+      };
+    }
+  > = {
+    [K in PkgNames]: Extract<
+      PolicyArray[number],
+      { policyDef: { package: K } }
+    >;
+  },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
 > {
   toolParamsSchema: ToolParamsSchema;
-  supportedPolicies: Policies;
-
-  // Schema definitions for precheck and execute response types are all optional
+  supportedPolicies: PolicyArray;
   precheckSuccessSchema?: PrecheckSuccessSchema;
   precheckFailSchema?: PrecheckFailSchema;
   executeSuccessSchema?: ExecuteSuccessSchema;
@@ -530,8 +535,11 @@ export interface VincentToolDef<
 
   precheck: (
     params: z.infer<ToolParamsSchema>,
-    policyEvaluationResults: VincentPolicyEvaluationResults<Policies>,
-    context: ToolContext<PrecheckSuccessSchema, PrecheckFailSchema>,
+    context: ToolContext<
+      PrecheckSuccessSchema,
+      PrecheckFailSchema,
+      PolicyEvaluationResultContext<PolicyMapType>
+    >,
   ) => Promise<
     | (PrecheckSuccessSchema extends z.ZodType
         ? ToolPrecheckSuccess<z.infer<PrecheckSuccessSchema>>
@@ -543,8 +551,11 @@ export interface VincentToolDef<
 
   execute: (
     params: z.infer<ToolParamsSchema>,
-    policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<Policies>,
-    context: ToolContext<ExecuteSuccessSchema, ExecuteFailSchema>,
+    context: ToolContext<
+      ExecuteSuccessSchema,
+      ExecuteFailSchema,
+      ToolExecutionPolicyContext<PolicyMapType>
+    >,
   ) => Promise<
     | (ExecuteSuccessSchema extends z.ZodType
         ? ToolExecutionSuccess<z.infer<ExecuteSuccessSchema>>

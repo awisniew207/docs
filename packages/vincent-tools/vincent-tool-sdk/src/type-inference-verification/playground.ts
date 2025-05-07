@@ -260,7 +260,7 @@ const myTool = createVincentTool({
     params,
     {
       fail,
-      policyResults: { allow, allowPolicyResults, denyPolicyResult },
+      policiesContext: { allow, allowedPolicies, deniedPolicy },
       succeed,
     },
   ) => {
@@ -283,18 +283,18 @@ const myTool = createVincentTool({
     // Process policy results if needed
     if (allow) {
       // Type-safe access to policies
-      const extraRateLimitResults = allowPolicyResults['extra-rate-limit'];
+      const extraRateLimitResults = allowedPolicies['extra-rate-limit'];
       if (extraRateLimitResults) {
         const policy1Result = extraRateLimitResults.result;
         console.log('policy1Result', policy1Result);
       }
 
-      const rateLimitResults = allowPolicyResults['rate-limit'];
+      const rateLimitResults = allowedPolicies['rate-limit'];
       if (rateLimitResults) {
         const policy2Result = rateLimitResults.result;
         console.log(policy2Result);
       }
-      const toolSdkResults = allowPolicyResults['vincent-tool-sdk'];
+      const toolSdkResults = allowedPolicies['vincent-tool-sdk'];
 
       if (toolSdkResults) {
         const policy3Result = toolSdkResults.result;
@@ -308,8 +308,7 @@ const myTool = createVincentTool({
       });
     } else {
       // Handle the denial case
-      const denyReason =
-        denyPolicyResult?.result?.error || 'Policy check failed';
+      const denyReason = deniedPolicy.result?.error || 'Policy check failed';
 
       return fail({
         invalidField: 'policy',
@@ -318,7 +317,7 @@ const myTool = createVincentTool({
     }
   },
 
-  execute: async (params, { policyResults, fail, succeed }) => {
+  execute: async (params, { policiesContext, fail, succeed }) => {
     try {
       // Simulate successful execution
       if (params.action === 'transfer' && params.amount > 0) {
@@ -326,8 +325,8 @@ const myTool = createVincentTool({
         const txHash = `0x${Math.random().toString(16).substring(2, 10)}`;
 
         // Use commit functions from policies if available
-        if (policyResults.allowPolicyResults['extra-rate-limit']) {
-          const commitResult = await policyResults.allowPolicyResults[
+        if (policiesContext.allowedPolicies['extra-rate-limit']) {
+          const commitResult = await policiesContext.allowedPolicies[
             'extra-rate-limit'
           ].commit({
             confirmation: true,
@@ -339,8 +338,8 @@ const myTool = createVincentTool({
           }
         }
 
-        if (policyResults.allowPolicyResults['rate-limit']) {
-          const commitResult = await policyResults.allowPolicyResults[
+        if (policiesContext.allowedPolicies['rate-limit']) {
+          const commitResult = await policiesContext.allowedPolicies[
             'rate-limit'
           ].commit({
             transactionId: txHash,

@@ -1,25 +1,22 @@
 import { z } from 'zod';
 import {
-  VincentPolicy,
+  BaseToolContext,
+  ToolExecutionPolicyContext,
   ToolContext,
-  ToolExecutionSuccess,
-  ToolExecutionSuccessNoResult,
   ToolExecutionFailure,
   ToolExecutionFailureNoResult,
-  OnlyAllowedPolicyEvaluationResults,
-  VincentPolicyEvaluationResults,
-  ToolPrecheckFailureNoResult,
-  ToolPrecheckFailure,
-  ToolPrecheckSuccessNoResult,
-  ToolPrecheckSuccess,
+  ToolExecutionSuccess,
+  ToolExecutionSuccessNoResult,
+  VincentPolicy,
+  PolicyEvaluationResultContext,
+  VincentToolDef,
   VincentToolPolicy,
-  BaseToolContext,
 } from './types';
 
 export interface CreateToolContextParams<
   SuccessSchema extends z.ZodType | undefined = undefined,
   FailSchema extends z.ZodType | undefined = undefined,
-  Policies = any,
+  Policies = Record<string, Record<string, unknown>>,
 > {
   successSchema?: SuccessSchema;
   failSchema?: FailSchema;
@@ -103,13 +100,11 @@ export function createToolContext<
     failFn.__brand = 'no-arg';
   }
 
-  const context: ToolContext<SuccessSchema, FailSchema, Policies> = {
-    policyResults: baseToolContext.policyResults,
+  return {
+    policiesContext: baseToolContext.policiesContext,
     succeed: succeedFn,
     fail: failFn,
   };
-
-  return context;
 }
 
 export function createPolicyMap<
@@ -165,46 +160,18 @@ export function createVincentTool<
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
->(toolDef: {
-  toolParamsSchema: ToolParamsSchema;
-  supportedPolicies: PolicyArray;
-  precheckSuccessSchema?: PrecheckSuccessSchema;
-  precheckFailSchema?: PrecheckFailSchema;
-  executeSuccessSchema?: ExecuteSuccessSchema;
-  executeFailSchema?: ExecuteFailSchema;
-
-  precheck: (
-    params: z.infer<ToolParamsSchema>,
-    context: ToolContext<
-      PrecheckSuccessSchema,
-      PrecheckFailSchema,
-      VincentPolicyEvaluationResults<PolicyMapType>
-    >,
-  ) => Promise<
-    | (PrecheckSuccessSchema extends z.ZodType
-        ? ToolPrecheckSuccess<z.infer<PrecheckSuccessSchema>>
-        : ToolPrecheckSuccessNoResult)
-    | (PrecheckFailSchema extends z.ZodType
-        ? ToolPrecheckFailure<z.infer<PrecheckFailSchema>>
-        : ToolPrecheckFailureNoResult)
-  >;
-
-  execute: (
-    params: z.infer<ToolParamsSchema>,
-    context: ToolContext<
-      ExecuteSuccessSchema,
-      ExecuteFailSchema,
-      OnlyAllowedPolicyEvaluationResults<PolicyMapType>
-    >,
-  ) => Promise<
-    | (ExecuteSuccessSchema extends z.ZodType
-        ? ToolExecutionSuccess<z.infer<ExecuteSuccessSchema>>
-        : ToolExecutionSuccessNoResult)
-    | (ExecuteFailSchema extends z.ZodType
-        ? ToolExecutionFailure<z.infer<ExecuteFailSchema>>
-        : ToolExecutionFailureNoResult)
-  >;
-}) {
+>(
+  toolDef: VincentToolDef<
+    ToolParamsSchema,
+    PolicyArray,
+    PkgNames,
+    PolicyMapType,
+    PrecheckSuccessSchema,
+    PrecheckFailSchema,
+    ExecuteSuccessSchema,
+    ExecuteFailSchema
+  >,
+) {
   // Create the policy map internally
   const policyMap = createPolicyMap(toolDef.supportedPolicies);
 
@@ -218,12 +185,12 @@ export function createVincentTool<
 
     precheck: async (
       params: z.infer<ToolParamsSchema>,
-      policyEvaluationResults: VincentPolicyEvaluationResults<PolicyMapType>,
+      policiesContext: PolicyEvaluationResultContext<PolicyMapType>,
     ) => {
       const context = createToolContext({
         successSchema: originalToolDef.precheckSuccessSchema,
         failSchema: originalToolDef.precheckFailSchema,
-        baseToolContext: { policyResults: policyEvaluationResults },
+        baseToolContext: { policiesContext: policiesContext },
       });
 
       return originalToolDef.precheck(params, context);
@@ -231,12 +198,12 @@ export function createVincentTool<
 
     execute: async (
       params: z.infer<ToolParamsSchema>,
-      policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<PolicyMapType>,
+      policiesContext: ToolExecutionPolicyContext<PolicyMapType>,
     ) => {
       const context = createToolContext({
         successSchema: originalToolDef.executeSuccessSchema,
         failSchema: originalToolDef.executeFailSchema,
-        baseToolContext: { policyResults: policyEvaluationResults },
+        baseToolContext: { policiesContext: policiesContext },
       });
 
       return originalToolDef.execute(params, context);

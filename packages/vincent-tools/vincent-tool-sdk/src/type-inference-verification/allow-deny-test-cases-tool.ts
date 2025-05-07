@@ -208,20 +208,20 @@ function testDifferentSchemas() {
 
 /**
  * Test Case 4: Context type safety with policy results
- * This validates that policyResults are correctly typed.
+ * This validates that policiesContext is correctly typed.
  */
 function testPolicyResultTypes() {
-  // First test: Precheck with properly typed policyResults
+  // First test: Precheck with properly typed policiesContext
   const toolWithPrecheck = createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
-    precheck: async (params, { policyResults, succeed }) => {
+    precheck: async (params, { policiesContext, succeed }) => {
       // Should be able to check if policy evaluation allowed
-      if (policyResults.allow) {
+      if (policiesContext.allow) {
         // Should be able to access the policy result with the correct type
         const result =
-          policyResults.allowPolicyResults['@lit-protocol/test-policy@1.0.0'];
+          policiesContext.allowedPolicies['@lit-protocol/test-policy@1.0.0'];
         if (result) {
           const { approved } = result.result;
           console.log(approved);
@@ -229,11 +229,11 @@ function testPolicyResultTypes() {
 
         const invalid =
           // @ts-expect-error - Property doesn't exist on the result type
-          policyResults.allowPolicyResults.testPolicy?.result.invalid;
+          policiesContext.allowedPolicies.testPolicy?.result.invalid;
         console.log(invalid);
       } else {
         // Should be able to access deny result when not allowed
-        const denyResult = policyResults.denyPolicyResult;
+        const denyResult = policiesContext.deniedPolicy;
         console.log(denyResult.ipfsCid);
       }
 
@@ -266,15 +266,15 @@ export function testExecutePolicyResultTyping() {
       return succeed();
     },
 
-    execute: async (params, { policyResults, succeed }) => {
-      assertAllow(policyResults);
+    execute: async (params, { policiesContext, succeed }) => {
+      assertAllow(policiesContext);
 
       // @ts-expect-error - Cannot negate a property known to be true
-      const allowIsAlwaysTrue: false = !policyResults.allow;
+      const allowIsAlwaysTrue: false = !policiesContext.allow;
 
       // Should have access to test policy result
       const result =
-        policyResults.allowPolicyResults['@lit-protocol/test-policy@1.0.0'];
+        policiesContext.allowedPolicies['@lit-protocol/test-policy@1.0.0'];
       if (result) {
         // Should be able to access properties of the result
         const { approved } = result.result;
@@ -282,7 +282,7 @@ export function testExecutePolicyResultTyping() {
       }
 
       // @ts-expect-error - denyPolicyResult should not exist in execute
-      const denyResult = policyResults.denyPolicyResult[testPolicy];
+      const denyResult = policiesContext.deniedPolicy[testPolicy];
       console.log(denyResult);
 
       return succeed();
