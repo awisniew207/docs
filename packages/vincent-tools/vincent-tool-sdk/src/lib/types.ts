@@ -273,7 +273,7 @@ export type PolicyEvaluationResultContext<
   | {
       allow: false;
       deniedPolicy: {
-        ipfsCid: keyof Policies;
+        package: keyof Policies;
         result: {
           error?: string;
         } & (Policies[Extract<
