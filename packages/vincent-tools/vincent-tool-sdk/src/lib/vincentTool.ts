@@ -39,8 +39,6 @@ export function createToolContext<
   FailSchema,
   Policies
 > {
-  const details: string[] = [];
-
   type SucceedFn<S extends z.ZodType | undefined> = S extends z.ZodType
     ? {
         (result: z.infer<S>): ToolExecutionSuccess<z.infer<S>>;
@@ -58,14 +56,12 @@ export function createToolContext<
   function succeedWithoutSchema(): ToolExecutionSuccessNoResult {
     return {
       success: true,
-      details: [...details],
     };
   }
 
   function succeedWithSchema<T>(result: T): ToolExecutionSuccess<T> {
     return {
       success: true,
-      details: [...details],
       result,
     } as ToolExecutionSuccess<T>;
   }
@@ -73,7 +69,6 @@ export function createToolContext<
   function failWithoutSchema(error?: string): ToolExecutionFailureNoResult {
     return {
       success: false,
-      details: [...details],
       ...(error ? { error } : {}),
     } as ToolExecutionFailureNoResult;
   }
@@ -84,7 +79,6 @@ export function createToolContext<
   ): ToolExecutionFailure<T> {
     return {
       success: false,
-      details: [...details],
       result,
       ...(error ? { error } : {}),
     } as ToolExecutionFailure<T>;
@@ -110,15 +104,7 @@ export function createToolContext<
   }
 
   const context: ToolContext<SuccessSchema, FailSchema, Policies> = {
-    details,
     policyResults: baseToolContext.policyResults,
-    addDetails(detail: string | string[]) {
-      if (Array.isArray(detail)) {
-        details.push(...detail);
-      } else {
-        details.push(detail);
-      }
-    },
     succeed: succeedFn,
     fail: failFn,
   };

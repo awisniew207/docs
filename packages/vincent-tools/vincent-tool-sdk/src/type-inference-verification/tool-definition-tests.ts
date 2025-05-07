@@ -25,7 +25,7 @@ function testPolicyEvaluationResults() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'simple-policy',
-      package: 'my-simple-policy',
+      package: '@lit-protocol/simple-policy@1.0.0',
       toolParamsSchema: z.object({
         actionType: z.string(),
         targetId: z.string(),
@@ -35,8 +35,8 @@ function testPolicyEvaluationResults() {
         reason: z.string(),
       }),
 
-      evaluate: async (params, context) => {
-        return context.allow({
+      evaluate: async (params, { allow }) => {
+        return allow({
           approved: true,
           reason: `Action ${params.toolParams.actionType} approved`,
         });
@@ -53,7 +53,7 @@ function testPolicyEvaluationResults() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'commit-policy',
-      package: 'my-policy-that-commits',
+      package: '@lit-protocol/commit-policy@1.0.0',
       toolParamsSchema: z.object({
         operation: z.string(),
         resource: z.string(),
@@ -76,20 +76,20 @@ function testPolicyEvaluationResults() {
         timestamp: z.number(),
       }),
 
-      evaluate: async (params, context) => {
+      evaluate: async (params, { allow }) => {
         const txId = `tx-${Date.now()}`;
-        return context.allow({
+        return allow({
           transactionId: txId,
           status: 'pending',
         });
       },
 
-      commit: async (params, context) => {
+      commit: async (params, { allow }) => {
         // Access commit parameters
         const { transactionId, status } = params;
 
         console.log(transactionId);
-        return context.allow({
+        return allow({
           confirmed: status === 'complete',
           timestamp: Date.now(),
         });
@@ -128,10 +128,7 @@ function testPolicyEvaluationResults() {
   // Create tool with both policies
   const tool = createVincentTool({
     toolParamsSchema: baseToolSchema,
-    supportedPolicies: {
-      simplePolicy,
-      commitPolicy,
-    },
+    supportedPolicies: [simplePolicy, commitPolicy],
 
     // Add schemas for tool results
     precheckSuccessSchema,
@@ -139,12 +136,9 @@ function testPolicyEvaluationResults() {
     executeSuccessSchema,
     executeFailSchema,
 
-    precheck: async (params, { addDetails, fail, succeed, policyResults }) => {
-      addDetails(['Starting precheck validation']);
-
+    precheck: async (params, { fail, succeed, policyResults }) => {
       // Perform basic validation
       if (!params.action || !params.target || params.amount <= 0) {
-        addDetails(['Invalid parameters detected']);
         const issues = [];
 
         if (!params.action) issues.push('Missing action');
@@ -157,7 +151,6 @@ function testPolicyEvaluationResults() {
         });
       }
 
-      addDetails([`Parameters validated for ${params.action}`]);
       return succeed({
         valid: true,
         validationMessage: 'All parameters are valid',
@@ -165,36 +158,42 @@ function testPolicyEvaluationResults() {
     },
 
     // Execute function to demonstrate result type inference
-    execute: async (params, { addDetails, fail, succeed, policyResults }) => {
-      addDetails([`Executing ${params.action} on ${params.target}`]);
-
+    execute: async (params, { fail, succeed, policyResults }) => {
       try {
         // Verify type inference works correctly when results.allow is true
         // Access specific policy results - now TypeScript knows this is defined
-        if (policyResults.allowPolicyResults.simplePolicy) {
+        if (
+          policyResults.allowPolicyResults['@lit-protocol/simple-policy@1.0.0']
+        ) {
           const simpleResult =
-            policyResults.allowPolicyResults.simplePolicy.result;
+            policyResults.allowPolicyResults[
+              '@lit-protocol/simple-policy@1.0.0'
+            ].result;
 
           // TypeScript should now correctly infer the result type
           const { approved, reason } = simpleResult;
-          addDetails([
-            `Simple policy approved: ${approved}, reason: ${reason}`,
-          ]);
+
+          console.log(approved, reason);
         }
 
         // Type inference should work for the commit policy result
-        if (policyResults.allowPolicyResults.commitPolicy) {
+        if (
+          policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+        ) {
           const commitPolicyResult =
-            policyResults.allowPolicyResults.commitPolicy.result;
+            policyResults.allowPolicyResults[
+              '@lit-protocol/commit-policy@1.0.0'
+            ].result;
 
           // No need for type guards anymore
           const { transactionId, status } = commitPolicyResult;
-          addDetails([
-            `Commit policy status: ${status}, txId: ${transactionId}`,
-          ]);
+          console.log(status);
 
           // The commit function should be available and properly typed
-          const commitFn = policyResults.allowPolicyResults.commitPolicy.commit;
+          const commitFn =
+            policyResults.allowPolicyResults[
+              '@lit-protocol/commit-policy@1.0.0'
+            ].commit;
 
           // Call commit with properly typed parameters
           const commitResult = await commitFn({
@@ -205,7 +204,6 @@ function testPolicyEvaluationResults() {
           // Type inference should work for commit result
           if (commitResult.allow) {
             const { confirmed, timestamp } = commitResult.result;
-            addDetails([`Commit confirmed: ${confirmed}, at: ${timestamp}`]);
 
             return succeed({
               success: true,
@@ -223,9 +221,6 @@ function testPolicyEvaluationResults() {
         });
       } catch (error) {
         // Handle any unexpected errors
-        addDetails([
-          `Execution error: ${error instanceof Error ? error.message : String(error)}`,
-        ]);
 
         return fail({
           errorCode: 500,

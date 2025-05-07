@@ -29,6 +29,7 @@ function testPrecheckEvaluateContextSwitching() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.2.3',
       ipfsCid: 'contextSwitchTest1',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -93,6 +94,7 @@ function testEvaluateCommitContextSwitching() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.23.1',
       ipfsCid: 'contextSwitchTest2',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -165,6 +167,7 @@ function testFullPolicyContextSwitching() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/testpolicyawesome@12.1.10',
       ipfsCid: 'fullContextSwitchTest',
       toolParamsSchema: z.object({
         actionType: z.string(),

@@ -26,7 +26,6 @@ function testWithSchema() {
   const objSchema = z.object({ id: z.string() });
 
   // Function signature to test types on a PolicyContext
-  // @ts-expect-error
   function testContextSignature(
     context: PolicyContext<typeof objSchema, undefined>,
   ) {
@@ -46,27 +45,30 @@ function testWithSchema() {
     return context.allow({ id: 'valid-id' });
   }
 
+  console.log(testContextSignature);
+
   // Test in a real policy
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test1',
+      package: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: objSchema,
 
-      evaluate: async (params, context) => {
+      evaluate: async (params, { allow }) => {
         // These cause TypeScript errors:
         // @ts-expect-error - No args when schema exists
-        context.allow();
+        allow();
 
         // @ts-expect-error - Wrong type
-        context.allow(123);
+        allow(123);
 
         // @ts-expect-error - Wrong shape
-        context.allow({ wrong: 'field' });
+        allow({ wrong: 'field' });
 
         // Valid case:
-        return context.allow({ id: 'test-id' });
+        return allow({ id: 'test-id' });
       },
     },
     toolParameterMappings: {
@@ -110,28 +112,29 @@ function testWithoutSchema() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test2',
+      package: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       // No schemas defined
 
-      evaluate: async (params, context) => {
+      evaluate: async (params, { allow, deny }) => {
         // These cause TypeScript errors:
         // @ts-expect-error - Cannot accept arguments when no schema
-        context.allow('not allowed');
+        allow('not allowed');
 
         // @ts-expect-error - Cannot accept arguments when no schema
-        context.allow(123);
+        allow(123);
 
         // @ts-expect-error - Cannot accept object when no schema
-        context.allow({ not: 'allowed' });
+        allow({ not: 'allowed' });
 
         // @ts-expect-error - Object not allowed for deny without schema
-        context.deny({ not: 'allowed' });
+        deny({ not: 'allowed' });
 
         // Valid cases - only one will be returned
         if (Math.random() > 0.5) {
-          return context.allow();
+          return allow();
         } else {
-          return context.deny('Error message');
+          return deny('Error message');
         }
       },
     },
@@ -154,32 +157,33 @@ function testStringSchema() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test3',
+      package: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.string(),
       evalDenyResultSchema: z.string(),
 
-      evaluate: async (params, context) => {
+      evaluate: async (params, { allow, deny }) => {
         // These cause TypeScript errors:
         // @ts-expect-error - No args when schema exists
-        context.allow();
+        allow();
 
         // @ts-expect-error - Wrong type (number not string)
-        context.allow(123);
+        allow(123);
 
         // @ts-expect-error - Wrong type (object not string)
-        context.allow({ not: 'a string' });
+        allow({ not: 'a string' });
 
         // @ts-expect-error - No args when schema exists
-        context.deny();
+        deny();
 
         // @ts-expect-error - Wrong type (object not string)
-        context.deny({ not: 'a string' });
+        deny({ not: 'a string' });
 
         // Valid cases - only one will be returned
         if (Math.random() > 0.5) {
-          return context.allow('Success message');
+          return allow('Success message');
         } else {
-          return context.deny('Error message');
+          return deny('Error message');
         }
       },
     },
@@ -207,6 +211,7 @@ function testDifferentContexts() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test4',
+      package: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Define different schemas for different contexts
@@ -216,43 +221,43 @@ function testDifferentContexts() {
       commitParamsSchema: z.object({ confirmation: z.string() }),
       commitAllowResultSchema: commitSchema,
 
-      precheck: async (params, context) => {
+      precheck: async (params, { allow }) => {
         // These cause TypeScript errors:
         // @ts-expect-error - Wrong schema (using evaluate schema)
-        context.allow({ status: 'wrong context' });
+        allow({ status: 'wrong context' });
 
         // @ts-expect-error - Wrong schema (using commit schema)
-        context.allow({ txId: 'wrong context' });
+        allow({ txId: 'wrong context' });
 
         // Valid for precheck
-        return context.allow({ validCheck: true });
+        return allow({ validCheck: true });
       },
 
-      evaluate: async (params, context) => {
+      evaluate: async (params, { allow }) => {
         // These cause TypeScript errors:
         // @ts-expect-error - Wrong schema (using precheck schema)
-        context.allow({ validCheck: true });
+        allow({ validCheck: true });
 
         // @ts-expect-error - Wrong schema (using commit schema)
-        context.allow({ txId: 'wrong context' });
+        allow({ txId: 'wrong context' });
 
         // Valid for evaluate
-        return context.allow({ status: 'approved' });
+        return allow({ status: 'approved' });
       },
 
-      commit: async (params, context) => {
+      commit: async (params, { allow }) => {
         // Should have the right parameter type
         const confirmation = params.confirmation;
 
         // These cause TypeScript errors:
         // @ts-expect-error - Wrong schema (using precheck schema)
-        context.allow({ validCheck: true });
+        allow({ validCheck: true });
 
         // @ts-expect-error - Wrong schema (using evaluate schema)
-        context.allow({ status: 'wrong context' });
+        allow({ status: 'wrong context' });
 
         // Valid for commit
-        return context.allow({ txId: `tx-${confirmation}` });
+        return allow({ txId: `tx-${confirmation}` });
       },
     },
     toolParameterMappings: {
@@ -274,32 +279,33 @@ function testPrimitiveSchemas() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test5',
+      package: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.number(),
       evalDenyResultSchema: z.boolean(),
 
-      evaluate: async (params, context) => {
+      evaluate: async (params, { allow, deny }) => {
         // These cause TypeScript errors:
         // @ts-expect-error - No args when schema exists
-        context.allow();
+        allow();
 
         // @ts-expect-error - Wrong type (string not number)
-        context.allow('not a number');
+        allow('not a number');
 
         // @ts-expect-error - Wrong type (object not number)
-        context.allow({ value: 123 });
+        allow({ value: 123 });
 
         // @ts-expect-error - No args when schema exists (except string error)
-        context.deny();
+        deny();
 
         // @ts-expect-error - Wrong type (number not boolean)
-        context.deny(123);
+        deny(123);
 
         // Valid cases - only one will be executed
         if (Math.random() > 0.5) {
-          return context.allow(123);
+          return allow(123);
         } else {
-          return context.deny(false, 'Operation failed');
+          return deny(false, 'Operation failed');
         }
       },
     },

@@ -29,14 +29,15 @@ function testBasicParameterInference() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test-policy',
+      package: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({
         operation: z.string(),
       }),
       evalAllowResultSchema: z.object({
         allowed: z.boolean(),
       }),
-      evaluate: async (params, context) => {
-        return context.allow({ allowed: true });
+      evaluate: async (params, { allow }) => {
+        return allow({ allowed: true });
       },
     },
     toolParameterMappings: {
@@ -46,9 +47,9 @@ function testBasicParameterInference() {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // Params should have the correct types
       const { action, target, options } = params;
 
@@ -81,10 +82,10 @@ function testBasicParameterInference() {
         }
       }
 
-      return context.succeed();
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // Same parameter validation in execute
       const { action, target, options } = params;
       console.log(target);
@@ -100,7 +101,7 @@ function testBasicParameterInference() {
         options.priority.toFixed(2);
       }
 
-      return context.succeed();
+      return succeed();
     },
   });
 
@@ -116,6 +117,7 @@ function testPolicyResultInference() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'complex-policy',
+      package: '@lit-protocol/complex-policy@1.0.0',
       toolParamsSchema: z.object({
         command: z.string(),
       }),
@@ -127,8 +129,8 @@ function testPolicyResultInference() {
         }),
         flags: z.array(z.string()),
       }),
-      evaluate: async (params, context) => {
-        return context.allow({
+      evaluate: async (params, { allow }) => {
+        return allow({
           level: 'medium',
           metadata: {
             timestamp: Date.now(),
@@ -148,6 +150,7 @@ function testPolicyResultInference() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'commit-policy',
+      package: '@lit-protocol/commit-policy@1.0.0',
       toolParamsSchema: z.object({
         resource: z.string(),
       }),
@@ -162,13 +165,13 @@ function testPolicyResultInference() {
         success: z.boolean(),
         timestamp: z.number(),
       }),
-      evaluate: async (params, context) => {
-        return context.allow({
+      evaluate: async (params, { allow }) => {
+        return allow({
           transactionId: 'tx123',
         });
       },
-      commit: async (params, context) => {
-        return context.allow({
+      commit: async (params, { allow }) => {
+        return allow({
           success: params.status === 'complete',
           timestamp: Date.now(),
         });
@@ -181,20 +184,19 @@ function testPolicyResultInference() {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: {
-      complexPolicy,
-      commitPolicy,
-    },
+    supportedPolicies: [complexPolicy, commitPolicy],
 
-    precheck: async (params, context) => {
-      const { policyResults } = context;
-
+    precheck: async (params, { policyResults, succeed }) => {
       // Testing allow/deny branch type inference
       if (policyResults.allow) {
         // When allowed, policy results should be accessible
-        if (policyResults.allowPolicyResults.complexPolicy) {
+        if (
+          policyResults.allowPolicyResults['@lit-protocol/complex-policy@1.0.0']
+        ) {
           const { level, metadata, flags } =
-            policyResults.allowPolicyResults.complexPolicy.result;
+            policyResults.allowPolicyResults[
+              '@lit-protocol/complex-policy@1.0.0'
+            ].result;
 
           // Enum type should be correctly inferred
           switch (level) {
@@ -232,19 +234,22 @@ function testPolicyResultInference() {
         console.log(ipfsCid, result);
       }
 
-      return context.succeed();
+      return succeed();
     },
 
-    execute: async (params, context) => {
-      const { policyResults } = context;
-
+    execute: async (params, { policyResults, succeed }) => {
       // Testing commit function type inference
-      if (policyResults.allowPolicyResults.commitPolicy) {
+      if (
+        policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+      ) {
         const { transactionId } =
-          policyResults.allowPolicyResults.commitPolicy.result;
+          policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+            .result;
 
         // Commit function should be correctly typed
-        const commitFn = policyResults.allowPolicyResults.commitPolicy.commit;
+        const commitFn =
+          policyResults.allowPolicyResults['@lit-protocol/commit-policy@1.0.0']
+            .commit;
 
         // Valid commit parameters
         const commitResult = await commitFn({
@@ -279,7 +284,7 @@ function testPolicyResultInference() {
         }
       }
 
-      return context.succeed();
+      return succeed();
     },
   });
 
@@ -295,14 +300,15 @@ function testComplexDestructuring() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test-policy',
+      package: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({
         action: z.string(),
       }),
       evalAllowResultSchema: z.object({
         data: z.any(),
       }),
-      evaluate: async (params, context) => {
-        return context.allow({ data: {} });
+      evaluate: async (params, { allow }) => {
+        return allow({ data: {} });
       },
     },
     toolParameterMappings: {
@@ -320,29 +326,21 @@ function testComplexDestructuring() {
     error: z.object({
       code: z.number(),
       message: z.string(),
-      details: z.array(z.string()).optional(),
     }),
   });
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema: successSchema,
     executeFailSchema: failSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
-      // Destructure deeply
-      const { addDetails, succeed, fail } = context;
-
+    execute: async (params, { succeed, fail }) => {
       // Validate that types are preserved through destructuring
-      addDetails(['Test details']);
-
-      // @ts-expect-error - Wrong argument type
-      addDetails(123);
 
       // Check complex union type handling
       succeed({
@@ -380,7 +378,6 @@ function testComplexDestructuring() {
         error: {
           code: 500,
           message: 'Internal error',
-          details: ['detail1', 'detail2'],
         },
       });
 
@@ -388,7 +385,6 @@ function testComplexDestructuring() {
         error: {
           code: 400,
           message: 'Bad request',
-          // details is optional, can be omitted
         },
       });
 
@@ -440,12 +436,13 @@ function testAdvancedParameterValidation() {
     toolParamsSchema: advancedSchema,
     policyDef: {
       ipfsCid: 'test-policy',
+      package: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({
         op: z.string(),
       }),
       evalAllowResultSchema: z.boolean(),
-      evaluate: async (params, context) => {
-        return context.allow(true);
+      evaluate: async (params, { allow }) => {
+        return allow(true);
       },
     },
     toolParameterMappings: {
@@ -455,9 +452,9 @@ function testAdvancedParameterValidation() {
 
   const tool = createVincentTool({
     toolParamsSchema: advancedSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // Test enum type inference
       const { action } = params;
 
@@ -501,10 +498,10 @@ function testAdvancedParameterValidation() {
         }
       }
 
-      return context.succeed();
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // Further test discriminated union handling
       if (params.data) {
         const { type, value } = params.data;
@@ -526,7 +523,7 @@ function testAdvancedParameterValidation() {
         }
       }
 
-      return context.succeed();
+      return succeed();
     },
   });
 
@@ -542,10 +539,11 @@ function testMissingTypes() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test',
+      package: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({ op: z.string() }),
       evalAllowResultSchema: z.object({ data: z.string() }),
-      evaluate: async (params, context) => {
-        return context.allow({ data: 'test' });
+      evaluate: async (params, { allow }) => {
+        return allow({ data: 'test' });
       },
     },
     toolParameterMappings: { action: 'op' },
@@ -559,24 +557,24 @@ function testMissingTypes() {
   // Case where success schema is defined but fail schema is not
   const toolWithOnlySuccessSchema = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema: successSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed, fail }) => {
       // Should be able to succeed with schema
-      context.succeed({ result: 'test' });
+      succeed({ result: 'test' });
 
       // Should be able to fail with just an error string since no fail schema
-      context.fail('Error message');
+      fail('Error message');
 
       // @ts-expect-error - Can't fail with an object when no fail schema defined
-      context.fail({ error: 'message' });
+      fail({ error: 'message' });
 
-      return context.succeed({ result: 'final' });
+      return succeed({ result: 'final' });
     },
   });
 
@@ -587,24 +585,24 @@ function testMissingTypes() {
 
   const toolWithOnlyFailSchema = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeFailSchema: failSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed, fail }) => {
       // Should be able to succeed with no args since no success schema
-      context.succeed();
+      succeed();
 
       // Should be able to fail with schema
-      context.fail({ error: 'test error' });
+      fail({ error: 'test error' });
 
       // @ts-expect-error - Can't succeed with an object when no success schema defined
-      context.succeed({ result: 'success' });
+      succeed({ result: 'success' });
 
-      return context.succeed();
+      return succeed();
     },
   });
 

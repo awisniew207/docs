@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 export interface PolicyResponseBase {
   ipfsCid: string;
-  details: string[];
 }
 
 export type PolicyResponseAllow<AllowResult = never> = AllowResult extends never
@@ -40,8 +39,6 @@ export interface PolicyContext<
     delegatee: string;
     delegator: string;
   };
-
-  addDetails(detail: string | string[]): void;
 
   // We use 'branded' function types to force TypeScript to check argument presence
   // Otherwise calling w/ no arguments is not a type error even if a schema was provided (!)
@@ -414,7 +411,7 @@ export type OnlyAllowedPolicyEvaluationResults<
 // Tool definition
 // Tool response types, similar to PolicyResponse
 export interface ToolResponseBase {
-  details: string[];
+  success: boolean;
 }
 
 export type ToolExecutionSuccess<SuccessResult = never> =
@@ -488,10 +485,6 @@ export interface ToolContext<
   FailSchema extends z.ZodType | undefined = undefined,
   Policies = any,
 > extends BaseToolContext<Policies> {
-  details: string[];
-
-  addDetails(detail: string | string[]): void;
-
   // Use branded function types similar to PolicyContext
   // We use 'branded' function types to force TypeScript to check argument presence
   // Otherwise calling w/ no arguments is not a type error even if a schema was provided (!)

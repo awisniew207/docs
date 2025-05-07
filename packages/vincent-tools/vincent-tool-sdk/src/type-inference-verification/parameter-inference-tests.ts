@@ -21,6 +21,7 @@ function testBasicSchemaValidation() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.34.2',
       ipfsCid: 'basicSchemaTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -58,6 +59,7 @@ function testNoSchemaValidation() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.34.2',
       ipfsCid: 'noSchemaTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -94,6 +96,7 @@ function testStringSchemaValidation() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.34.2',
       ipfsCid: 'stringSchemaTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -130,6 +133,7 @@ function testDenyValidation() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.34.2',
       ipfsCid: 'denyTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -166,6 +170,7 @@ function testContextSchemas() {
   const policy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
+      package: '@lit-protocol/test-policy@1.34.2',
       ipfsCid: 'contextTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 

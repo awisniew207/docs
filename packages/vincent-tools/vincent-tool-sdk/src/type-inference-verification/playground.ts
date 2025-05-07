@@ -42,10 +42,8 @@ const policyDef1 = createVincentPolicy({
 
   precheck: async ({ toolParams, userParams }, context) => {
     if (toolParams.targetAllowed) {
-      context.addDetails(['Target is allowed for this action']);
       return context.allow();
     } else {
-      context.addDetails(['Target is not allowed for this action']);
       return context.deny();
     }
   },
@@ -54,20 +52,16 @@ const policyDef1 = createVincentPolicy({
     const targetIsAllowed = userParams.allowedTargets.includes('example');
 
     if (targetIsAllowed && toolParams.targetAllowed) {
-      context.addDetails(['Target is in the allowed targets list']);
       return context.allow('APPROVED');
     } else {
-      context.addDetails(['Target is not in the allowed targets list']);
       return context.deny({ reason: 'Target not in allowed list' });
     }
   },
 
   commit: async (params, context) => {
     if (params.confirmation) {
-      context.addDetails(['Commit successful']);
       return context.allow({ success: true });
     } else {
-      context.addDetails(['Commit failed due to missing confirmation']);
       return context.deny({ errorCode: 400 });
     }
   },
@@ -123,14 +117,8 @@ const policyDef2 = createVincentPolicy({
     const isWithinLimit = toolParams.maxAmount <= userParams.limit;
 
     if (isWithinLimit) {
-      context.addDetails([
-        `Amount ${toolParams.maxAmount} is within limit ${userParams.limit}`,
-      ]);
       return context.allow({ validatedAmount: 1983 });
     } else {
-      context.addDetails([
-        `Amount ${toolParams.maxAmount} exceeds limit ${userParams.limit}`,
-      ]);
       return context.deny({ limitExceeded: true });
     }
   },
@@ -140,14 +128,12 @@ const policyDef2 = createVincentPolicy({
     const isWithinLimit = toolParams.maxAmount <= userParams.limit;
 
     if (isValidCurrency && isWithinLimit) {
-      context.addDetails([`Currency ${toolParams.currency} is supported`]);
       return context.allow({ approvedCurrency: toolParams.currency });
     } else {
       const reason = !isValidCurrency
         ? `Currency ${toolParams.currency} is not supported`
         : `Amount ${toolParams.maxAmount} exceeds limit ${userParams.limit}`;
 
-      context.addDetails([reason]);
       return context.deny({
         reason: reason,
         code: !isValidCurrency ? 415 : 400,
@@ -158,13 +144,11 @@ const policyDef2 = createVincentPolicy({
   commit: async (params, context) => {
     // For demo purposes, let's say transactions with "fail" in the ID will be denied
     if (!params.transactionId.includes('fail')) {
-      context.addDetails(['Transaction processed successfully']);
       return context.allow({
         transaction: `completed-${params.transactionId}`,
         timestamp: Date.now(),
       });
     } else {
-      context.addDetails(['Transaction failed']);
       return context.deny({
         failureReason: 'Invalid transaction ID format',
       });
@@ -215,18 +199,12 @@ const policyDef3 = createVincentPolicy({
   evaluate: async ({ toolParams, userParams }, context) => {
     // Policy logic: Allow only premium and admin users
     if (userParams.accessLevel === 'basic') {
-      context.addDetails([
-        `User with access level ${userParams.accessLevel} cannot access this tool`,
-      ]);
       return context.deny({
         reason: 'Basic users cannot access this tool',
         suggestedAccessLevel: 'premium',
       });
     }
 
-    context.addDetails([
-      `Access granted to ${toolParams.toolName} for ${userParams.accessLevel} user`,
-    ]);
     return context.allow({
       message: `Access granted to ${toolParams.toolName}`,
       timedate: new Date(),
@@ -281,18 +259,13 @@ const myTool = createVincentTool({
   precheck: async (
     params,
     {
-      addDetails,
       fail,
       policyResults: { allow, allowPolicyResults, denyPolicyResult },
       succeed,
     },
   ) => {
-    // Add details about what we're checking
-    addDetails([`Prechecking tool execution for action: ${params.action}`]);
-
     // Basic validation
     if (!params.action || !params.target) {
-      addDetails(['Missing required parameters']);
       return fail({
         invalidField: !params.action ? 'action' : 'target',
         reason: 'Required field is empty or missing',
@@ -301,7 +274,6 @@ const myTool = createVincentTool({
 
     // Amount validation
     if (params.amount <= 0) {
-      addDetails([`Invalid amount: ${params.amount}`]);
       return fail({
         invalidField: 'amount',
         reason: 'Amount must be greater than zero',
@@ -314,21 +286,19 @@ const myTool = createVincentTool({
       const extraRateLimitResults = allowPolicyResults['extra-rate-limit'];
       if (extraRateLimitResults) {
         const policy1Result = extraRateLimitResults.result;
-        addDetails([`Policy1 approved with result: ${policy1Result}`]);
+        console.log('policy1Result', policy1Result);
       }
 
       const rateLimitResults = allowPolicyResults['rate-limit'];
       if (rateLimitResults) {
         const policy2Result = rateLimitResults.result;
-        addDetails([
-          `Policy2 approved with currency: ${policy2Result.approvedCurrency}`,
-        ]);
+        console.log(policy2Result);
       }
       const toolSdkResults = allowPolicyResults['vincent-tool-sdk'];
 
       if (toolSdkResults) {
         const policy3Result = toolSdkResults.result;
-        addDetails([`Policy3 approved with message: ${policy3Result.message}`]);
+        console.log(policy3Result);
       }
 
       // Return success result
@@ -340,7 +310,6 @@ const myTool = createVincentTool({
       // Handle the denial case
       const denyReason =
         denyPolicyResult?.result?.error || 'Policy check failed';
-      addDetails([`Policy denied: ${denyReason}`]);
 
       return fail({
         invalidField: 'policy',
@@ -349,12 +318,7 @@ const myTool = createVincentTool({
     }
   },
 
-  execute: async (params, { policyResults, addDetails, fail, succeed }) => {
-    // Add details about what we're executing
-    addDetails([
-      `Executing ${params.action} on ${params.target} for amount ${params.amount}`,
-    ]);
-
+  execute: async (params, { policyResults, fail, succeed }) => {
     try {
       // Simulate successful execution
       if (params.action === 'transfer' && params.amount > 0) {
@@ -370,14 +334,8 @@ const myTool = createVincentTool({
           });
 
           if (commitResult.allow) {
-            addDetails([
-              `Policy1 commit succeeded: ${commitResult.result.success}`,
-            ]);
           } else {
             // If policy commit fails, we can still decide to continue or fail the tool execution
-            addDetails([
-              `Policy1 commit failed with code: ${commitResult.result.errorCode}`,
-            ]);
           }
         }
 
@@ -389,10 +347,6 @@ const myTool = createVincentTool({
           });
 
           if (commitResult.allow) {
-            addDetails([
-              `Policy2 commit succeeded: ${commitResult.result.transaction}`,
-              `Timestamp: ${commitResult.result.timestamp}`,
-            ]);
           }
         }
 
@@ -414,10 +368,6 @@ const myTool = createVincentTool({
       }
     } catch (error) {
       // Handle any unexpected errors
-      addDetails([
-        `Execution error: ${error instanceof Error ? error.message : String(error)}`,
-      ]);
-
       return fail({
         errorCode: 500,
         errorMessage: 'Internal execution error',

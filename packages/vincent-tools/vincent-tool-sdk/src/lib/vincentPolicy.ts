@@ -42,8 +42,6 @@ export function createPolicyContext<
   AllowSchema,
   DenySchema
 > {
-  const details: string[] = [];
-
   type AllowFn<S extends z.ZodType | undefined> = S extends z.ZodType
     ? {
         (result: z.infer<S>): PolicyResponseAllow<z.infer<S>>;
@@ -62,7 +60,6 @@ export function createPolicyContext<
     return {
       ipfsCid,
       allow: true,
-      details: [...details],
     };
   }
 
@@ -70,7 +67,6 @@ export function createPolicyContext<
     return {
       ipfsCid,
       allow: true,
-      details: [...details],
       result,
     } as PolicyResponseAllow<T>;
   }
@@ -79,7 +75,6 @@ export function createPolicyContext<
     return {
       ipfsCid,
       allow: false,
-      details: [...details],
       ...(error ? { error } : {}),
     } as PolicyResponseDenyNoResult;
   }
@@ -88,7 +83,6 @@ export function createPolicyContext<
     return {
       ipfsCid,
       allow: false,
-      details: [...details],
       result,
       ...(error ? { error } : {}),
     } as PolicyResponseDeny<T>;
@@ -115,13 +109,6 @@ export function createPolicyContext<
 
   const context: PolicyContext<AllowSchema, DenySchema> = {
     delegation: baseContext.delegation,
-    addDetails(detail: string | string[]) {
-      if (Array.isArray(detail)) {
-        details.push(...detail);
-      } else {
-        details.push(detail);
-      }
-    },
     allow: allowFn,
     deny: denyFn,
   };

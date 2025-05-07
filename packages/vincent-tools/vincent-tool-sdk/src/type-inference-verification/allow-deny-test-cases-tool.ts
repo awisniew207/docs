@@ -17,7 +17,6 @@ const testSchema = z.object({
 
 // Define result schemas for different test cases
 const successSchema = z.object({
-  success: z.boolean(),
   message: z.string(),
 });
 
@@ -31,14 +30,15 @@ const testPolicy = createVincentToolPolicy({
   toolParamsSchema: testSchema,
   policyDef: {
     ipfsCid: 'test-policy',
+    package: '@lit-protocol/test-policy@1.0.0',
     toolParamsSchema: z.object({
       actionType: z.string(),
     }),
     evalAllowResultSchema: z.object({
       approved: z.boolean(),
     }),
-    evaluate: async (params, context) => {
-      return context.allow({ approved: true });
+    evaluate: async (params, { allow }) => {
+      return allow({ approved: true });
     },
   },
   toolParameterMappings: {
@@ -53,30 +53,30 @@ const testPolicy = createVincentToolPolicy({
 function testNoSchemas() {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      // Should allow context.succeed() with no arguments
-      context.succeed();
-
-      // Should allow context.fail() with string error
-      context.fail('Error message');
-
-      // @ts-expect-error - Should not allow context.succeed() with arguments when no schema
-      context.succeed({ message: 'test' });
-
-      // @ts-expect-error - Should not allow context.fail() with object when no schema
-      context.fail({ error: 'test' });
-
-      return context.succeed();
-    },
-
-    execute: async (params, context) => {
+    precheck: async (params, { succeed, fail }) => {
       // Should allow succeed() with no arguments
-      return context.succeed();
+      succeed();
+
+      // Should allow fail() with string error
+      fail('Error message');
 
       // @ts-expect-error - Should not allow succeed() with arguments when no schema
-      return context.succeed({ data: 'test' });
+      succeed({ message: 'test' });
+
+      // @ts-expect-error - Should not allow fail() with object when no schema
+      fail({ error: 'test' });
+
+      return succeed();
+    },
+
+    execute: async (params, { succeed }) => {
+      // Should allow succeed() with no arguments
+      return succeed();
+
+      // @ts-expect-error - Should not allow succeed() with arguments when no schema
+      return succeed({ data: 'test' });
     },
   });
 
@@ -90,53 +90,48 @@ function testNoSchemas() {
 function testWithSchemas() {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema: successSchema,
     executeFailSchema: failSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed, fail }) => {
       // Should allow succeed() with valid schema
-      context.succeed({
-        success: true,
+      succeed({
         message: 'Operation completed',
       });
 
       // Should allow fail() with valid schema
-      context.fail({
+      fail({
         error: 'Something went wrong',
         code: 400,
       });
 
       // @ts-expect-error - Missing required fields
-      context.succeed({
-        success: true,
-      });
+      succeed({});
 
-      context.succeed({
+      succeed({
         success: true,
         // @ts-expect-error - Wrong type for message
         message: 123,
       });
 
-      context.succeed({
-        success: true,
+      succeed({
         message: 'test',
         // @ts-expect-error - Extra unexpected fields
         extra: 'field',
       });
 
-      context.fail({
+      fail({
         error: 'Error message',
         // @ts-expect-error - Wrong type for error code
         code: '400',
       });
 
-      return context.succeed({
-        success: true,
+      return succeed({
         message: 'Success',
       });
     },
@@ -169,42 +164,42 @@ function testDifferentSchemas() {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     precheckSuccessSchema,
     precheckFailSchema,
     executeSuccessSchema,
     executeFailSchema,
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed, fail }) => {
       // Valid precheck schema
-      context.succeed({ valid: true });
+      succeed({ valid: true });
 
       // Valid precheck fail schema
-      context.fail({ reason: 'Invalid parameters' });
+      fail({ reason: 'Invalid parameters' });
 
       // @ts-expect-error - Using execute success schema in precheck
-      context.succeed({ result: 'test', timestamp: 123 });
+      succeed({ result: 'test', timestamp: 123 });
 
       // @ts-expect-error - Using execute fail schema in precheck
-      context.fail({ errorCode: 400 });
+      fail({ errorCode: 400 });
 
-      return context.succeed({ valid: true });
+      return succeed({ valid: true });
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed, fail }) => {
       // Valid execute schema
-      context.succeed({ result: 'success', timestamp: Date.now() });
+      succeed({ result: 'success', timestamp: Date.now() });
 
       // Valid execute fail schema
-      context.fail({ errorCode: 500 });
+      fail({ errorCode: 500 });
 
       // @ts-expect-error - Using precheck success schema in execute
-      context.succeed({ valid: true });
+      succeed({ valid: true });
 
       // @ts-expect-error - Using precheck fail schema in execute
-      context.fail({ reason: 'Error' });
+      fail({ reason: 'Error' });
 
-      return context.succeed({ result: 'data', timestamp: Date.now() });
+      return succeed({ result: 'data', timestamp: Date.now() });
     },
   });
 
@@ -219,17 +214,16 @@ function testPolicyResultTypes() {
   // First test: Precheck with properly typed policyResults
   const toolWithPrecheck = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      const { policyResults } = context;
-
+    precheck: async (params, { policyResults, succeed }) => {
       // Should be able to check if policy evaluation allowed
       if (policyResults.allow) {
         // Should be able to access the policy result with the correct type
-        const result = policyResults.allowPolicyResults.testPolicy?.result;
+        const result =
+          policyResults.allowPolicyResults['@lit-protocol/test-policy@1.0.0'];
         if (result) {
-          const { approved } = result;
+          const { approved } = result.result;
           console.log(approved);
         }
 
@@ -243,11 +237,11 @@ function testPolicyResultTypes() {
         console.log(denyResult.ipfsCid);
       }
 
-      return context.succeed();
+      return succeed();
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -266,24 +260,24 @@ export function assertAllow<T extends { allow: true }>(
 export function testExecutePolicyResultTyping() {
   const toolWithExecute = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
-      const { policyResults } = context;
+    execute: async (params, { policyResults, succeed }) => {
       assertAllow(policyResults);
 
       // @ts-expect-error - Cannot negate a property known to be true
       const allowIsAlwaysTrue: false = !policyResults.allow;
 
       // Should have access to test policy result
-      const result = policyResults.allowPolicyResults.testPolicy?.result;
+      const result =
+        policyResults.allowPolicyResults['@lit-protocol/test-policy@1.0.0'];
       if (result) {
         // Should be able to access properties of the result
-        const { approved } = result;
+        const { approved } = result.result;
         console.log(approved);
       }
 
@@ -291,7 +285,7 @@ export function testExecutePolicyResultTyping() {
       const denyResult = policyResults.denyPolicyResult[testPolicy];
       console.log(denyResult);
 
-      return context.succeed();
+      return succeed();
     },
   });
 
@@ -305,40 +299,40 @@ function testImproperToolDefinition() {
   // @ts-expect-error - Missing required precheck function
   const missingPrecheck = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
-    execute: async (params, context) => {
-      return context.succeed();
+    supportedPolicies: [testPolicy],
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
   // @ts-expect-error - Missing required execute function
   const missingExecute = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
-    precheck: async (params, context) => {
-      return context.succeed();
+    supportedPolicies: [testPolicy],
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
   // @ts-expect-error - Missing required supportedPolicies
   const missingPolicies = createVincentTool({
     toolParamsSchema: testSchema,
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
   // @ts-expect-error - Missing required toolParamsSchema
   const missingSchema = createVincentTool({
-    supportedPolicies: { testPolicy },
-    precheck: async (params, context) => {
-      return context.succeed();
+    supportedPolicies: [testPolicy],
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 }
@@ -353,14 +347,14 @@ const testReturnNoSchema = () => {
   // This is a good tool with proper returns
   const goodTool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -371,15 +365,15 @@ const testReturnNoSchema = () => {
 const testPrecheckNoReturn = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
     // @ts-expect-error - Function doesn't return anything
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // No return statement
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -390,14 +384,14 @@ const testPrecheckNoReturn = () => {
 const testExecuteNoReturn = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
     // @ts-expect-error - Function doesn't return anything
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // No return statement
     },
   });
@@ -409,15 +403,15 @@ const testExecuteNoReturn = () => {
 const testPrecheckRawReturn = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
     // @ts-expect-error - Returning raw value instead of ToolPrecheckResponse
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       return true;
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -433,15 +427,15 @@ const testExecuteRawReturn = () => {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
     // @ts-expect-error - Returning raw object instead of ToolExecutionResponse
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       return { success: true, message: 'test' };
     },
   });
@@ -458,19 +452,19 @@ const testExecuteWrongTypeReturn = () => {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // This is correct
       // return context.succeed({ success: true, message: "test" });
 
       // @ts-expect-error - Wrong type of return object
-      return context.succeed({ wrongField: 'test' });
+      return succeed({ wrongField: 'test' });
     },
   });
 
@@ -489,20 +483,20 @@ const testPrecheckWrongSchema = () => {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     precheckSuccessSchema,
     executeSuccessSchema,
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // This would be correct
       // return context.succeed({ valid: true });
 
       // @ts-expect-error - Using execute schema for precheck return
-      return context.succeed({ result: 'test' });
+      return succeed({ result: 'test' });
     },
 
-    execute: async (params, context) => {
-      return context.succeed({ result: 'test' });
+    execute: async (params, { succeed }) => {
+      return succeed({ result: 'test' });
     },
   });
 
@@ -521,20 +515,20 @@ const testExecuteWrongSchema = () => {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     precheckSuccessSchema,
     executeSuccessSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed({ valid: true });
+    precheck: async (params, { succeed }) => {
+      return succeed({ valid: true });
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // This would be correct
       // return context.succeed({ result: "test" });
 
       // @ts-expect-error - Using precheck schema for execute return
-      return context.succeed({ valid: true });
+      return succeed({ valid: true });
     },
   });
 
@@ -554,24 +548,24 @@ const testPrecheckSuccessWithFailSchema = () => {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     precheckSuccessSchema,
     precheckFailSchema,
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed, fail }) => {
       if (Math.random() > 0.5) {
-        return context.succeed({ valid: true });
+        return succeed({ valid: true });
       } else {
         // This would be correct
         // return context.fail({ reason: "test", code: 400 });
 
         // @ts-expect-error - Using success schema for fail return
-        return context.fail({ valid: false });
+        return fail({ valid: false });
       }
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -591,23 +585,23 @@ const testExecuteFailWithSuccessSchema = () => {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema,
     executeFailSchema,
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed, fail }) => {
       if (Math.random() > 0.5) {
-        return context.succeed({ result: 'test' });
+        return succeed({ result: 'test' });
       } else {
         // This would be correct
         // return context.fail({ error: "test", code: 400 });
 
         // @ts-expect-error - Using success schema for fail return
-        return context.fail({ result: 'error' });
+        return fail({ result: 'error' });
       }
     },
   });
@@ -619,9 +613,9 @@ const testExecuteFailWithSuccessSchema = () => {
 const testReturnWithInnerFunctions = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // Internal function that doesn't return anything shouldn't affect the overall return type
       const logDetails = () => {
         console.log('Details:', params);
@@ -629,10 +623,10 @@ const testReturnWithInnerFunctions = () => {
       };
 
       logDetails();
-      return context.succeed();
+      return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // Internal async function with no return
       const processData = async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -640,7 +634,7 @@ const testReturnWithInnerFunctions = () => {
       };
 
       await processData();
-      return context.succeed();
+      return succeed();
     },
   });
 
@@ -651,18 +645,18 @@ const testReturnWithInnerFunctions = () => {
 const testPrecheckConditionalReturns = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
     // @ts-expect-error - Missing return in one code path
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       if (params.action === 'test') {
-        return context.succeed();
+        return succeed();
       }
       // Missing return in this path
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -673,16 +667,16 @@ const testPrecheckConditionalReturns = () => {
 const testExecuteConditionalReturns = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
     // @ts-expect-error - Missing return in one code path
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       if (params.action === 'test') {
-        return context.succeed();
+        return succeed();
       }
       // Missing return in this path
     },
@@ -695,22 +689,22 @@ const testExecuteConditionalReturns = () => {
 const testPrecheckAsyncWithoutAwait = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
     // @ts-expect-error - Missing return from async function that calls other async functions
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // Call async function without await or using its result
       fetchData();
 
       async function fetchData() {
-        return context.succeed();
+        return succeed();
       }
 
       // No return here
     },
 
-    execute: async (params, context) => {
-      return context.succeed();
+    execute: async (params, { succeed }) => {
+      return succeed();
     },
   });
 
@@ -721,20 +715,20 @@ const testPrecheckAsyncWithoutAwait = () => {
 const testExecuteTryCatchReturn = () => {
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
 
-    precheck: async (params, context) => {
-      return context.succeed();
+    precheck: async (params, { succeed }) => {
+      return succeed();
     },
 
     // @ts-expect-error - Missing return in catch block
-    execute: async (params, context) => {
+    execute: async (params, { succeed, fail }) => {
       try {
         // This is fine
-        return context.succeed();
+        return succeed();
       } catch (error) {
         // Missing return here
-        context.fail('Error occurred');
+        fail('Error occurred');
       }
     },
   });
@@ -772,15 +766,12 @@ function testContextDestructuring() {
 
   const tool = createVincentTool({
     toolParamsSchema: testSchema,
-    supportedPolicies: { testPolicy },
+    supportedPolicies: [testPolicy],
     executeSuccessSchema,
 
-    precheck: async (params, context) => {
+    precheck: async (params, { succeed }) => {
       // Destructuring should maintain type safety
-      const { addDetails, succeed } = context;
-
-      // These should all work
-      addDetails(['Testing']);
+      // This should all work
       succeed();
 
       // @ts-expect-error - Wrong parameter type for succeed
@@ -789,10 +780,8 @@ function testContextDestructuring() {
       return succeed();
     },
 
-    execute: async (params, context) => {
+    execute: async (params, { succeed }) => {
       // Destructuring with type-specific functions
-      const { succeed } = context;
-
       // Should be type safe
       succeed({ data: 'result' });
 
