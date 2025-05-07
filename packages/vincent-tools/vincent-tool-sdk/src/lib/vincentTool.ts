@@ -4,9 +4,7 @@ import {
   ToolExecutionPolicyContext,
   ToolContext,
   ToolExecutionFailure,
-  ToolExecutionFailureNoResult,
   ToolExecutionSuccess,
-  ToolExecutionSuccessNoResult,
   PolicyEvaluationResultContext,
   VincentToolDef,
   VincentToolPolicy,
@@ -27,34 +25,12 @@ export function createToolContext<
   SuccessSchema extends z.ZodType | undefined = undefined,
   FailSchema extends z.ZodType | undefined = undefined,
   Policies = any,
->({
-  successSchema,
-  failSchema,
-  baseToolContext,
-}: CreateToolContextParams<SuccessSchema, FailSchema, Policies>): ToolContext<
-  SuccessSchema,
-  FailSchema,
-  Policies
-> {
-  type SucceedFn<S extends z.ZodType | undefined> = S extends z.ZodType
-    ? {
-        (result: z.infer<S>): ToolExecutionSuccess<z.infer<S>>;
-        __brand: 'requires-arg';
-      }
-    : { (): ToolExecutionSuccessNoResult; __brand: 'no-arg' };
-
-  type FailFn<S extends z.ZodType | undefined> = S extends z.ZodType
-    ? {
-        (result: z.infer<S>, error?: string): ToolExecutionFailure<z.infer<S>>;
-        __brand: 'requires-arg';
-      }
-    : { (error?: string): ToolExecutionFailureNoResult; __brand: 'no-arg' };
-
-  function succeedWithoutSchema(): ToolExecutionSuccessNoResult {
-    return {
-      success: true,
-    };
-  }
+>(params: {
+  baseContext: BaseToolContext<Policies>;
+  successSchema?: SuccessSchema;
+  failSchema?: FailSchema;
+}): ToolContext<SuccessSchema, FailSchema, Policies> {
+  const { baseContext, successSchema, failSchema } = params;
 
   function succeedWithSchema<T>(result: T): ToolExecutionSuccess<T> {
     return {
@@ -63,11 +39,10 @@ export function createToolContext<
     } as ToolExecutionSuccess<T>;
   }
 
-  function failWithoutSchema(error?: string): ToolExecutionFailureNoResult {
+  function succeedWithoutSchema(): ToolExecutionSuccess<never> {
     return {
-      success: false,
-      ...(error ? { error } : {}),
-    } as ToolExecutionFailureNoResult;
+      success: true,
+    } as ToolExecutionSuccess<never>;
   }
 
   function failWithSchema<T>(
@@ -81,30 +56,21 @@ export function createToolContext<
     } as ToolExecutionFailure<T>;
   }
 
-  let succeedFn: any;
-  let failFn: any;
-
-  if (successSchema) {
-    succeedFn = succeedWithSchema as SucceedFn<NonNullable<SuccessSchema>>;
-    succeedFn.__brand = 'requires-arg';
-  } else {
-    succeedFn = succeedWithoutSchema as SucceedFn<undefined>;
-    succeedFn.__brand = 'no-arg';
+  function failWithoutSchema(error?: string): ToolExecutionFailure<never> {
+    return {
+      success: false,
+      ...(error ? { error } : {}),
+    } as ToolExecutionFailure<never>;
   }
 
-  if (failSchema) {
-    failFn = failWithSchema as FailFn<NonNullable<FailSchema>>;
-    failFn.__brand = 'requires-arg';
-  } else {
-    failFn = failWithoutSchema as FailFn<undefined>;
-    failFn.__brand = 'no-arg';
-  }
+  const succeed = successSchema ? succeedWithSchema : succeedWithoutSchema;
+  const fail = failSchema ? failWithSchema : failWithoutSchema;
 
   return {
-    policiesContext: baseToolContext.policiesContext,
-    succeed: succeedFn,
-    fail: failFn,
-  };
+    ...baseContext,
+    succeed,
+    fail,
+  } as ToolContext<SuccessSchema, FailSchema, Policies>;
 }
 
 export function createPolicyMap<
@@ -200,8 +166,9 @@ export function createVincentTool<
     ExecuteFailSchema
   >,
 ) {
-  // Create the policy map internally
-  const policyMap = createPolicyMap(toolDef.supportedPolicies);
+  const policyMap = toolDef.supportedPolicies
+    ? createPolicyMap(toolDef.supportedPolicies)
+    : {};
 
   const originalToolDef = {
     ...toolDef,
@@ -218,7 +185,7 @@ export function createVincentTool<
       const context = createToolContext({
         successSchema: originalToolDef.precheckSuccessSchema,
         failSchema: originalToolDef.precheckFailSchema,
-        baseToolContext: { policiesContext: policiesContext },
+        baseContext: { policiesContext: policiesContext },
       });
 
       return originalToolDef.precheck(params, context);
@@ -231,7 +198,7 @@ export function createVincentTool<
       const context = createToolContext({
         successSchema: originalToolDef.executeSuccessSchema,
         failSchema: originalToolDef.executeFailSchema,
-        baseToolContext: { policiesContext: policiesContext },
+        baseContext: { policiesContext: policiesContext },
       });
 
       return originalToolDef.execute(params, context);

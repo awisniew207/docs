@@ -50,8 +50,8 @@ const testPolicy = createVincentToolPolicy({
  * Test Case 1: Basic tool with no schemas
  * This validates the behavior when no explicit schemas are provided.
  */
-function testNoSchemas() {
-  const tool = createVincentTool({
+export function testNoSchemas() {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -73,22 +73,20 @@ function testNoSchemas() {
 
     execute: async (params, { succeed }) => {
       // Should allow succeed() with no arguments
-      return succeed();
+      succeed();
 
       // @ts-expect-error - Should not allow succeed() with arguments when no schema
       return succeed({ data: 'test' });
     },
   });
-
-  return tool;
 }
 
 /**
  * Test Case 2: Tool with explicit success/fail schemas
  * This validates that TypeScript enforces schema constraints.
  */
-function testWithSchemas() {
-  const tool = createVincentTool({
+export function tesWithSchemas() {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     executeSuccessSchema: successSchema,
@@ -136,15 +134,13 @@ function testWithSchemas() {
       });
     },
   });
-
-  return tool;
 }
 
 /**
  * Test Case 3: Tool with different precheck and execute schemas
  * This validates that different schema types are correctly enforced.
  */
-function testDifferentSchemas() {
+export function testDifferentSchemas() {
   const precheckSuccessSchema = z.object({
     valid: z.boolean(),
   });
@@ -162,7 +158,7 @@ function testDifferentSchemas() {
     errorCode: z.number(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     precheckSuccessSchema,
@@ -202,17 +198,15 @@ function testDifferentSchemas() {
       return succeed({ result: 'data', timestamp: Date.now() });
     },
   });
-
-  return tool;
 }
 
 /**
  * Test Case 4: Context type safety with policy results
  * This validates that policiesContext is correctly typed.
  */
-function testPolicyResultTypes() {
+export function testPolicyResultTypes() {
   // First test: Precheck with properly typed policiesContext
-  const toolWithPrecheck = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -244,8 +238,6 @@ function testPolicyResultTypes() {
       return succeed();
     },
   });
-
-  return toolWithPrecheck;
 }
 
 export function assertAllow<T extends { allow: true }>(
@@ -258,7 +250,7 @@ export function assertAllow<T extends { allow: true }>(
 
 // Separate test for execute-specific policy result typing
 export function testExecutePolicyResultTyping() {
-  const toolWithExecute = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -288,54 +280,40 @@ export function testExecutePolicyResultTyping() {
       return succeed();
     },
   });
-
-  return toolWithExecute;
 }
 
 /**
  * Test Case 5: Testing improper tool definition should fail
  */
-function testImproperToolDefinition() {
-  // @ts-expect-error - Missing required precheck function
-  const missingPrecheck = createVincentTool({
-    toolParamsSchema: testSchema,
-    supportedPolicies: [testPolicy],
-    execute: async (params, { succeed }) => {
-      return succeed();
-    },
-  });
 
-  // @ts-expect-error - Missing required execute function
-  const missingExecute = createVincentTool({
-    toolParamsSchema: testSchema,
-    supportedPolicies: [testPolicy],
-    precheck: async (params, { succeed }) => {
-      return succeed();
-    },
-  });
+// @ts-expect-error - Missing required precheck function
+export const missingPrecheck = createVincentTool({
+  toolParamsSchema: testSchema,
+  supportedPolicies: [testPolicy],
+  execute: async (params, { succeed }) => {
+    return succeed();
+  },
+});
 
-  // @ts-expect-error - Missing required supportedPolicies
-  const missingPolicies = createVincentTool({
-    toolParamsSchema: testSchema,
-    precheck: async (params, { succeed }) => {
-      return succeed();
-    },
-    execute: async (params, { succeed }) => {
-      return succeed();
-    },
-  });
+// @ts-expect-error - Missing required execute function
+export const missingExecute = createVincentTool({
+  toolParamsSchema: testSchema,
+  supportedPolicies: [testPolicy],
+  precheck: async (params, { succeed }) => {
+    return succeed();
+  },
+});
 
-  // @ts-expect-error - Missing required toolParamsSchema
-  const missingSchema = createVincentTool({
-    supportedPolicies: [testPolicy],
-    precheck: async (params, { succeed }) => {
-      return succeed();
-    },
-    execute: async (params, { succeed }) => {
-      return succeed();
-    },
-  });
-}
+// @ts-expect-error - Missing required toolParamsSchema
+export const missingSchema = createVincentTool({
+  supportedPolicies: [testPolicy],
+  precheck: async (params, { succeed }) => {
+    return succeed();
+  },
+  execute: async (params, { succeed }) => {
+    return succeed();
+  },
+});
 
 /**
  * Test Case 6: Testing return types are enforced
@@ -343,9 +321,9 @@ function testImproperToolDefinition() {
  */
 
 // Basic tools for tests
-const testReturnNoSchema = () => {
+export const testReturnNoSchema = () => {
   // This is a good tool with proper returns
-  const goodTool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -357,13 +335,11 @@ const testReturnNoSchema = () => {
       return succeed();
     },
   });
-
-  return goodTool;
 };
 
 // Test: Precheck with no return
-const testPrecheckNoReturn = () => {
-  const tool = createVincentTool({
+export const testPrecheckNoReturn = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -376,13 +352,11 @@ const testPrecheckNoReturn = () => {
       return succeed();
     },
   });
-
-  return tool;
 };
 
 // Test: Execute with no return
-const testExecuteNoReturn = () => {
-  const tool = createVincentTool({
+export const testExecuteNoReturn = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -395,13 +369,11 @@ const testExecuteNoReturn = () => {
       // No return statement
     },
   });
-
-  return tool;
 };
 
 // Test: Precheck returning raw value
-const testPrecheckRawReturn = () => {
-  const tool = createVincentTool({
+export const testPrecheckRawReturn = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -414,18 +386,16 @@ const testPrecheckRawReturn = () => {
       return succeed();
     },
   });
-
-  return tool;
 };
 
 // Test: Execute returning raw value
-const testExecuteRawReturn = () => {
+export const testExecuteRawReturn = () => {
   const executeSuccessSchema = z.object({
     success: z.boolean(),
     message: z.string(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     executeSuccessSchema,
@@ -439,18 +409,16 @@ const testExecuteRawReturn = () => {
       return { success: true, message: 'test' };
     },
   });
-
-  return tool;
 };
 
 // Test: Execute returning wrong type object
-const testExecuteWrongTypeReturn = () => {
+export const testExecuteWrongTypeReturn = () => {
   const executeSuccessSchema = z.object({
     success: z.boolean(),
     message: z.string(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     executeSuccessSchema,
@@ -467,12 +435,10 @@ const testExecuteWrongTypeReturn = () => {
       return succeed({ wrongField: 'test' });
     },
   });
-
-  return tool;
 };
 
 // Test: Precheck returning wrong schema
-const testPrecheckWrongSchema = () => {
+export const testPrecheckWrongSchema = () => {
   const precheckSuccessSchema = z.object({
     valid: z.boolean(),
   });
@@ -481,7 +447,7 @@ const testPrecheckWrongSchema = () => {
     result: z.string(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     precheckSuccessSchema,
@@ -499,12 +465,10 @@ const testPrecheckWrongSchema = () => {
       return succeed({ result: 'test' });
     },
   });
-
-  return tool;
 };
 
 // Test: Execute returning precheck schema
-const testExecuteWrongSchema = () => {
+export const testExecuteWrongSchema = () => {
   const precheckSuccessSchema = z.object({
     valid: z.boolean(),
   });
@@ -513,7 +477,7 @@ const testExecuteWrongSchema = () => {
     result: z.string(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     precheckSuccessSchema,
@@ -531,12 +495,10 @@ const testExecuteWrongSchema = () => {
       return succeed({ valid: true });
     },
   });
-
-  return tool;
 };
 
 // Test: Precheck returning fail from success schema
-const testPrecheckSuccessWithFailSchema = () => {
+export const testPrecheckSuccessWithFailSchema = () => {
   const precheckSuccessSchema = z.object({
     valid: z.boolean(),
   });
@@ -546,7 +508,7 @@ const testPrecheckSuccessWithFailSchema = () => {
     code: z.number(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     precheckSuccessSchema,
@@ -568,12 +530,10 @@ const testPrecheckSuccessWithFailSchema = () => {
       return succeed();
     },
   });
-
-  return tool;
 };
 
 // Test: Execute returning fail with success schema
-const testExecuteFailWithSuccessSchema = () => {
+export const testExecuteFailWithSuccessSchema = () => {
   const executeSuccessSchema = z.object({
     result: z.string(),
   });
@@ -583,7 +543,7 @@ const testExecuteFailWithSuccessSchema = () => {
     code: z.number(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     executeSuccessSchema,
@@ -605,13 +565,11 @@ const testExecuteFailWithSuccessSchema = () => {
       }
     },
   });
-
-  return tool;
 };
 
 // Test: Tool with void-returning functions inside
-const testReturnWithInnerFunctions = () => {
-  const tool = createVincentTool({
+export const testReturnWithInnerFunctions = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -637,19 +595,17 @@ const testReturnWithInnerFunctions = () => {
       return succeed();
     },
   });
-
-  return tool;
 };
 
 // Test: Conditional returns in precheck
-const testPrecheckConditionalReturns = () => {
-  const tool = createVincentTool({
+export const testPrecheckConditionalReturns = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
     // @ts-expect-error - Missing return in one code path
-    precheck: async (params, { succeed }) => {
-      if (params.action === 'test') {
+    precheck: async ({ toolParams }, { succeed }) => {
+      if (toolParams.action === 'test') {
         return succeed();
       }
       // Missing return in this path
@@ -659,35 +615,31 @@ const testPrecheckConditionalReturns = () => {
       return succeed();
     },
   });
-
-  return tool;
 };
 
 // Test: Conditional returns in execute
-const testExecuteConditionalReturns = () => {
-  const tool = createVincentTool({
+export const testExecuteConditionalReturns = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
-    precheck: async (params, { succeed }) => {
+    precheck: async (_, { succeed }) => {
       return succeed();
     },
 
     // @ts-expect-error - Missing return in one code path
-    execute: async (params, { succeed }) => {
-      if (params.action === 'test') {
+    execute: async ({ toolParams }, { succeed }) => {
+      if (toolParams.action === 'test') {
         return succeed();
       }
       // Missing return in this path
     },
   });
-
-  return tool;
 };
 
 // Test: Async precheck without await or return
-const testPrecheckAsyncWithoutAwait = () => {
-  const tool = createVincentTool({
+export const testPrecheckAsyncWithoutAwait = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -707,13 +659,11 @@ const testPrecheckAsyncWithoutAwait = () => {
       return succeed();
     },
   });
-
-  return tool;
 };
 
 // Test: Return from try-catch in execute
-const testExecuteTryCatchReturn = () => {
-  const tool = createVincentTool({
+export const testExecuteTryCatchReturn = () => {
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
@@ -732,39 +682,17 @@ const testExecuteTryCatchReturn = () => {
       }
     },
   });
-
-  return tool;
 };
-
-export function testReturnTypeEnforcement() {
-  return {
-    testReturnNoSchema,
-    testPrecheckNoReturn,
-    testExecuteNoReturn,
-    testPrecheckRawReturn,
-    testExecuteRawReturn,
-    testExecuteWrongTypeReturn,
-    testPrecheckWrongSchema,
-    testExecuteWrongSchema,
-    testPrecheckSuccessWithFailSchema,
-    testExecuteFailWithSuccessSchema,
-    testReturnWithInnerFunctions,
-    testPrecheckConditionalReturns,
-    testExecuteConditionalReturns,
-    testPrecheckAsyncWithoutAwait,
-    testExecuteTryCatchReturn,
-  };
-}
 
 /**
  * Test Case 7: Context destructuring maintains type safety
  */
-function testContextDestructuring() {
+export function testContextDestructuring() {
   const executeSuccessSchema = z.object({
     data: z.string(),
   });
 
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
     executeSuccessSchema,
@@ -794,16 +722,4 @@ function testContextDestructuring() {
       return succeed({ data: 'final result' });
     },
   });
-
-  return tool;
 }
-
-export const toolTypeValidation = {
-  testNoSchemas,
-  testWithSchemas,
-  testDifferentSchemas,
-  testPolicyResultTypes,
-  testImproperToolDefinition,
-  testReturnTypeEnforcement,
-  testContextDestructuring,
-};

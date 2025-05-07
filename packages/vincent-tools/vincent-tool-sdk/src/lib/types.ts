@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
-export declare const YouMustCallContextAllowOrDeny: unique symbol;
+export const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
+  'PolicyResponses must come from calling context.allow() or context.deny()',
+);
 
-type PhantomPolicyReturnType<T> = T & {
+export type PhantomPolicyReturnType<T> = T & {
   [YouMustCallContextAllowOrDeny]: 'PolicyResponse';
 };
 
@@ -399,73 +401,126 @@ export type ToolExecutionPolicyContext<
   readonly deniedPolicy: never;
 };
 
-// Tool definition
-// Tool response types, similar to PolicyResponse
-export interface ToolResponseBase {
-  success: boolean;
-}
+/**
+ * Enforces that tool results (success/failure) must come from context helpers like `context.succeed()` or `context.fail()`.
+ */
+export const YouMustCallContextSucceedOrFail: unique symbol = Symbol(
+  'ExecuteToolResult must come from context.succeed() or context.fail()',
+);
+
+export type PhantomToolReturnType<T> = T & {
+  [YouMustCallContextSucceedOrFail]: 'ToolResponse';
+};
+
+export type EnforceToolResponse<T> =
+  typeof YouMustCallContextSucceedOrFail extends keyof T
+    ? T
+    : {
+        ERROR: 'You must return the result of context.succeed() or context.fail()';
+        FIX: 'Do not construct tool result objects manually.';
+      };
 
 export type ToolExecutionSuccess<SuccessResult = never> =
   SuccessResult extends never
     ? ToolExecutionSuccessNoResult
-    : Omit<ToolResponseBase, 'success'> & {
+    : PhantomToolReturnType<{
         success: true;
         result: SuccessResult;
-      };
+      }>;
 
-export interface ToolExecutionSuccessNoResult extends ToolResponseBase {
-  success: true;
-  result?: never;
-}
+export interface ToolExecutionSuccessNoResult
+  extends PhantomToolReturnType<{
+    success: true;
+    result?: never;
+  }> {}
 
 export type ToolExecutionFailure<FailResult = never> = FailResult extends never
   ? ToolExecutionFailureNoResult
-  : Omit<ToolResponseBase, 'success'> & {
+  : PhantomToolReturnType<{
       success: false;
       result: FailResult;
       error?: string;
-    };
+    }>;
 
-export interface ToolExecutionFailureNoResult extends ToolResponseBase {
-  success: false;
-  error?: string;
-  result?: never;
-}
-
-export type ToolExecutionResponse<SuccessResult = never, FailResult = never> =
-  | ToolExecutionSuccess<SuccessResult>
-  | ToolExecutionFailure<FailResult>;
+export interface ToolExecutionFailureNoResult
+  extends PhantomToolReturnType<{
+    success: false;
+    error?: string;
+    result?: never;
+  }> {}
 
 export type ToolPrecheckSuccess<SuccessResult = never> =
   SuccessResult extends never
     ? ToolPrecheckSuccessNoResult
-    : Omit<ToolResponseBase, 'success'> & {
+    : PhantomToolReturnType<{
         success: true;
         result: SuccessResult;
-      };
+      }>;
 
-export interface ToolPrecheckSuccessNoResult extends ToolResponseBase {
-  success: true;
-  result?: never;
-}
+export interface ToolPrecheckSuccessNoResult
+  extends PhantomToolReturnType<{
+    success: true;
+    result?: never;
+  }> {}
 
 export type ToolPrecheckFailure<FailResult = never> = FailResult extends never
   ? ToolPrecheckFailureNoResult
-  : Omit<ToolResponseBase, 'success'> & {
+  : PhantomToolReturnType<{
       success: false;
       result: FailResult;
       error?: string;
-    };
+    }>;
 
-export interface ToolPrecheckFailureNoResult extends ToolResponseBase {
-  success: false;
-  error?: string;
-  result?: never;
-}
+export interface ToolPrecheckFailureNoResult
+  extends PhantomToolReturnType<{
+    success: false;
+    error?: string;
+    result?: never;
+  }> {}
 
-export type ToolPrecheckResponse<SuccessResult = never, FailResult = never> =
-  | ToolPrecheckSuccess<SuccessResult>
-  | ToolPrecheckFailure<FailResult>;
+export type ToolPrecheckFunction<
+  ToolParams extends z.ZodType,
+  Policies,
+  PrecheckSuccessSchema extends z.ZodType | undefined,
+  PrecheckFailSchema extends z.ZodType | undefined,
+> = (
+  args: {
+    toolParams: z.infer<ToolParams>;
+    policiesContext: Policies;
+  },
+  context: ToolContext<PrecheckSuccessSchema, PrecheckFailSchema, Policies>,
+) => Promise<
+  EnforceToolResponse<
+    | (PrecheckSuccessSchema extends z.ZodType
+        ? ToolPrecheckSuccess<z.infer<PrecheckSuccessSchema>>
+        : ToolPrecheckSuccessNoResult)
+    | (PrecheckFailSchema extends z.ZodType
+        ? ToolPrecheckFailure<z.infer<PrecheckFailSchema>>
+        : ToolPrecheckFailureNoResult)
+  >
+>;
+
+export type ToolExecuteFunction<
+  ToolParams extends z.ZodType,
+  Policies,
+  ExecuteSuccessSchema extends z.ZodType | undefined,
+  ExecuteFailSchema extends z.ZodType | undefined,
+> = (
+  args: {
+    toolParams: z.infer<ToolParams>;
+    policiesContext: Policies;
+  },
+  context: ToolContext<ExecuteSuccessSchema, ExecuteFailSchema, Policies>,
+) => Promise<
+  EnforceToolResponse<
+    | (ExecuteSuccessSchema extends z.ZodType
+        ? ToolExecutionSuccess<z.infer<ExecuteSuccessSchema>>
+        : ToolExecutionSuccessNoResult)
+    | (ExecuteFailSchema extends z.ZodType
+        ? ToolExecutionFailure<z.infer<ExecuteFailSchema>>
+        : ToolExecutionFailureNoResult)
+  >
+>;
 
 export interface BaseToolContext<Policies = any> {
   policiesContext: Policies;
@@ -476,28 +531,20 @@ export interface ToolContext<
   FailSchema extends z.ZodType | undefined = undefined,
   Policies = any,
 > extends BaseToolContext<Policies> {
-  // Use branded function types similar to PolicyContext
-  // We use 'branded' function types to force TypeScript to check argument presence
-  // Otherwise calling w/ no arguments is not a type error even if a schema was provided (!)
   succeed: SuccessSchema extends z.ZodType
-    ? {
-        (
-          result: z.infer<SuccessSchema>,
-        ): ToolExecutionSuccess<z.infer<SuccessSchema>>;
-        __brand: 'requires-arg';
-      }
-    : { (): ToolExecutionSuccessNoResult; __brand: 'no-arg' };
+    ? (
+        result: z.infer<SuccessSchema>,
+      ) => ToolExecutionSuccess<z.infer<SuccessSchema>>
+    : () => ToolExecutionSuccess;
 
   fail: FailSchema extends z.ZodType
-    ? {
-        (
-          result: z.infer<FailSchema>,
-          error?: string,
-        ): ToolExecutionFailure<z.infer<FailSchema>>;
-        __brand: 'requires-arg';
-      }
-    : { (error?: string): ToolExecutionFailureNoResult; __brand: 'no-arg' };
+    ? (
+        result: z.infer<FailSchema>,
+        error?: string,
+      ) => ToolExecutionFailure<z.infer<FailSchema>>
+    : (error?: string) => ToolExecutionFailure;
 }
+
 export interface VincentToolDef<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
@@ -558,42 +605,24 @@ export interface VincentToolDef<
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
 > {
   toolParamsSchema: ToolParamsSchema;
-  supportedPolicies: PolicyArray;
+  supportedPolicies?: PolicyArray;
   precheckSuccessSchema?: PrecheckSuccessSchema;
   precheckFailSchema?: PrecheckFailSchema;
   executeSuccessSchema?: ExecuteSuccessSchema;
   executeFailSchema?: ExecuteFailSchema;
 
-  precheck: (
-    params: z.infer<ToolParamsSchema>,
-    context: ToolContext<
-      PrecheckSuccessSchema,
-      PrecheckFailSchema,
-      PolicyEvaluationResultContext<PolicyMapType>
-    >,
-  ) => Promise<
-    | (PrecheckSuccessSchema extends z.ZodType
-        ? ToolPrecheckSuccess<z.infer<PrecheckSuccessSchema>>
-        : ToolPrecheckSuccessNoResult)
-    | (PrecheckFailSchema extends z.ZodType
-        ? ToolPrecheckFailure<z.infer<PrecheckFailSchema>>
-        : ToolPrecheckFailureNoResult)
+  precheck: ToolPrecheckFunction<
+    ToolParamsSchema,
+    PolicyEvaluationResultContext<PolicyMapType>,
+    PrecheckSuccessSchema,
+    PrecheckFailSchema
   >;
 
-  execute: (
-    params: z.infer<ToolParamsSchema>,
-    context: ToolContext<
-      ExecuteSuccessSchema,
-      ExecuteFailSchema,
-      ToolExecutionPolicyContext<PolicyMapType>
-    >,
-  ) => Promise<
-    | (ExecuteSuccessSchema extends z.ZodType
-        ? ToolExecutionSuccess<z.infer<ExecuteSuccessSchema>>
-        : ToolExecutionSuccessNoResult)
-    | (ExecuteFailSchema extends z.ZodType
-        ? ToolExecutionFailure<z.infer<ExecuteFailSchema>>
-        : ToolExecutionFailureNoResult)
+  execute: ToolExecuteFunction<
+    ToolParamsSchema,
+    ToolExecutionPolicyContext<PolicyMapType>,
+    ExecuteSuccessSchema,
+    ExecuteFailSchema
   >;
 }
 

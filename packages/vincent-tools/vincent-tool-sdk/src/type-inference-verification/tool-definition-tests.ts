@@ -19,7 +19,7 @@ const baseToolSchema = z.object({
  * Simple test to verify inference of policy evaluation results
  * with a focus on the commit function type inference.
  */
-function testPolicyEvaluationResults() {
+export function testPolicyEvaluationResults() {
   // Policy 1: Simple policy with object result schema
   const simplePolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
@@ -126,7 +126,7 @@ function testPolicyEvaluationResults() {
   });
 
   // Create tool with both policies
-  const tool = createVincentTool({
+  return createVincentTool({
     toolParamsSchema: baseToolSchema,
     supportedPolicies: [simplePolicy, commitPolicy],
 
@@ -136,14 +136,14 @@ function testPolicyEvaluationResults() {
     executeSuccessSchema,
     executeFailSchema,
 
-    precheck: async (params, { fail, succeed, policiesContext }) => {
+    precheck: async ({ toolParams }, { fail, succeed }) => {
       // Perform basic validation
-      if (!params.action || !params.target || params.amount <= 0) {
+      if (!toolParams.action || !toolParams.target || toolParams.amount <= 0) {
         const issues = [];
 
-        if (!params.action) issues.push('Missing action');
-        if (!params.target) issues.push('Missing target');
-        if (params.amount <= 0) issues.push('Amount must be positive');
+        if (!toolParams.action) issues.push('Missing action');
+        if (!toolParams.target) issues.push('Missing target');
+        if (toolParams.amount <= 0) issues.push('Amount must be positive');
 
         return fail({
           valid: false,
@@ -158,7 +158,7 @@ function testPolicyEvaluationResults() {
     },
 
     // Execute function to demonstrate result type inference
-    execute: async (params, { fail, succeed, policiesContext }) => {
+    execute: async (_, { fail, succeed, policiesContext }) => {
       try {
         // Verify type inference works correctly when results.allow is true
         // Access specific policy results - now TypeScript knows this is defined
@@ -226,9 +226,4 @@ function testPolicyEvaluationResults() {
       }
     },
   });
-
-  return tool;
 }
-
-// Export the test function
-console.log(testPolicyEvaluationResults);

@@ -249,7 +249,7 @@ const toolPrecheckFailSchema = z.object({
 });
 
 // Create your tool with fully typed policies
-const myTool = createVincentTool({
+export const myTool = createVincentTool({
   toolParamsSchema: myToolSchema,
   supportedPolicies: [policy1, policy2, policy3],
 
@@ -260,7 +260,7 @@ const myTool = createVincentTool({
   precheckFailSchema: toolPrecheckFailSchema,
 
   precheck: async (
-    params,
+    { toolParams },
     {
       fail,
       policiesContext: { allow, allowedPolicies, deniedPolicy },
@@ -268,15 +268,15 @@ const myTool = createVincentTool({
     },
   ) => {
     // Basic validation
-    if (!params.action || !params.target) {
+    if (!toolParams.action || !toolParams.target) {
       return fail({
-        invalidField: !params.action ? 'action' : 'target',
+        invalidField: !toolParams.action ? 'action' : 'target',
         reason: 'Required field is empty or missing',
       });
     }
 
     // Amount validation
-    if (params.amount <= 0) {
+    if (toolParams.amount <= 0) {
       return fail({
         invalidField: 'amount',
         reason: 'Amount must be greater than zero',
@@ -307,7 +307,7 @@ const myTool = createVincentTool({
       // Return success result
       return succeed({
         validatedParams: true,
-        message: `All parameters validated for ${params.action} on ${params.target}`,
+        message: `All parameters validated for ${toolParams.action} on ${toolParams.target}`,
       });
     } else {
       // Handle the denial case
@@ -320,10 +320,10 @@ const myTool = createVincentTool({
     }
   },
 
-  execute: async (params, { policiesContext, fail, succeed }) => {
+  execute: async ({ toolParams }, { policiesContext, fail, succeed }) => {
     try {
       // Simulate successful execution
-      if (params.action === 'transfer' && params.amount > 0) {
+      if (toolParams.action === 'transfer' && toolParams.amount > 0) {
         // Execute the transaction
         const txHash = `0x${Math.random().toString(16).substring(2, 10)}`;
 
@@ -363,9 +363,9 @@ const myTool = createVincentTool({
 
         // Return success with typed result
         return succeed({
-          executedAction: params.action,
-          targetAddress: params.target,
-          transactionAmount: params.amount,
+          executedAction: toolParams.action,
+          targetAddress: toolParams.target,
+          transactionAmount: toolParams.amount,
           timestamp: Date.now(),
           txHash,
         });
@@ -373,7 +373,7 @@ const myTool = createVincentTool({
         // Simulate a failure case
         return fail({
           errorCode: 400,
-          errorMessage: `Cannot perform ${params.action} operation`,
+          errorMessage: `Cannot perform ${toolParams.action} operation`,
           suggestion: 'Try a "transfer" action instead',
         });
       }

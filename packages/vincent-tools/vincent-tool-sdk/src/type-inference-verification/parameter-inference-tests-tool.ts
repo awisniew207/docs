@@ -36,7 +36,7 @@ function testBasicParameterInference() {
       evalAllowResultSchema: z.object({
         allowed: z.boolean(),
       }),
-      evaluate: async (params, { allow }) => {
+      evaluate: async (_, { allow }) => {
         return allow({ allowed: true });
       },
     },
@@ -49,9 +49,9 @@ function testBasicParameterInference() {
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
 
-    precheck: async (params, { succeed }) => {
+    precheck: async ({ toolParams }, { succeed }) => {
       // Params should have the correct types
-      const { action, target, options } = params;
+      const { action, target, options } = toolParams;
 
       // String operations should work on string fields
       action.toUpperCase();
@@ -85,9 +85,9 @@ function testBasicParameterInference() {
       return succeed();
     },
 
-    execute: async (params, { succeed }) => {
+    execute: async ({ toolParams }, { succeed }) => {
       // Same parameter validation in execute
-      const { action, target, options } = params;
+      const { action, target, options } = toolParams;
       console.log(target);
 
       // String operations should work
@@ -454,9 +454,9 @@ function testAdvancedParameterValidation() {
     toolParamsSchema: advancedSchema,
     supportedPolicies: [testPolicy],
 
-    precheck: async (params, { succeed }) => {
+    precheck: async ({ toolParams }, { succeed }) => {
       // Test enum type inference
-      const { action } = params;
+      const { action } = toolParams;
 
       // Valid enum values should be allowed
       switch (action) {
@@ -471,26 +471,26 @@ function testAdvancedParameterValidation() {
       }
 
       // Test discriminated union type inference
-      if (params.data) {
+      if (toolParams.data) {
         // TypeScript should narrow based on the 'type' field
-        switch (params.data.type) {
+        switch (toolParams.data.type) {
           case 'string':
             // Value should be a string when type is 'string'
-            params.data.value.toUpperCase();
+            toolParams.data.value.toUpperCase();
             // @ts-expect-error - Not a number operation
-            params.data.value.toFixed(2);
+            toolParams.data.value.toFixed(2);
             break;
 
           case 'number':
             // Value should be a number when type is 'number'
-            params.data.value.toFixed(2);
+            toolParams.data.value.toFixed(2);
             // @ts-expect-error - Not a string operation
-            params.data.value.toUpperCase();
+            toolParams.data.value.toUpperCase();
             break;
 
           case 'boolean':
             // Value should be a boolean when type is 'boolean'
-            const isTrue = params.data.value === true;
+            const isTrue = toolParams.data.value === true;
             console.log(isTrue);
             // @ts-expect-error - Not a string operation
             params.data.value.toUpperCase();
@@ -501,10 +501,10 @@ function testAdvancedParameterValidation() {
       return succeed();
     },
 
-    execute: async (params, { succeed }) => {
+    execute: async ({ toolParams }, { succeed }) => {
       // Further test discriminated union handling
-      if (params.data) {
-        const { type, value } = params.data;
+      if (toolParams.data) {
+        const { type, value } = toolParams.data;
 
         if (type === 'string') {
           // String operations
@@ -542,7 +542,7 @@ function testMissingTypes() {
       packageName: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({ op: z.string() }),
       evalAllowResultSchema: z.object({ data: z.string() }),
-      evaluate: async (params, { allow }) => {
+      evaluate: async (_, { allow }) => {
         return allow({ data: 'test' });
       },
     },
@@ -560,11 +560,11 @@ function testMissingTypes() {
     supportedPolicies: [testPolicy],
     executeSuccessSchema: successSchema,
 
-    precheck: async (params, { succeed }) => {
+    precheck: async (_, { succeed }) => {
       return succeed();
     },
 
-    execute: async (params, { succeed, fail }) => {
+    execute: async (_, { succeed, fail }) => {
       // Should be able to succeed with schema
       succeed({ result: 'test' });
 
@@ -610,7 +610,7 @@ function testMissingTypes() {
 }
 
 // Export all test cases
-export const toolParameterTests = {
+export {
   testBasicParameterInference,
   testPolicyResultInference,
   testComplexDestructuring,

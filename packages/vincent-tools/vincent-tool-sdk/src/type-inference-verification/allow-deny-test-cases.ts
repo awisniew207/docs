@@ -20,7 +20,7 @@ const baseToolSchema = z.object({
 /**
  * Test Case 1: Testing allow() with different result types
  */
-function testAllowFunctionWithDifferentTypes() {
+export function testAllowFunctionWithDifferentTypes() {
   // Test with object schema
   const objSchema = z.object({ id: z.string(), success: z.boolean() });
 
@@ -116,80 +116,81 @@ function testAllowFunctionWithDifferentTypes() {
   });
 
   // Test with no schema
-  const test4 = createVincentToolPolicy({
-    toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'allowTest4',
-      packageName: '@lit-protocol/test-policy-no-schema@1.0.0',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-      // No schema defined
+  return {
+    test1,
+    test2,
+    test3,
+    test4: createVincentToolPolicy({
+      toolParamsSchema: baseToolSchema,
+      policyDef: {
+        ipfsCid: 'allowTest4',
+        packageName: '@lit-protocol/test-policy-no-schema@1.0.0',
+        toolParamsSchema: z.object({ actionType: z.string() }),
+        // No schema defined
 
-      evaluate: async (params, { allow, deny, delegation }) => {
-        // Valid - no schema means no args
-        allow();
+        evaluate: async (params, { allow, deny, delegation }) => {
+          // Valid - no schema means no args
+          allow();
 
-        // @ts-expect-error - Any arg should error when no schema
-        allow('should error');
+          // @ts-expect-error - Any arg should error when no schema
+          allow('should error');
 
-        // @ts-expect-error - Any arg should error when no schema
-        allow(123);
+          // @ts-expect-error - Any arg should error when no schema
+          allow(123);
 
-        // @ts-expect-error - Any arg should error when no schema
-        allow({ should: 'error' });
+          // @ts-expect-error - Any arg should error when no schema
+          allow({ should: 'error' });
 
-        // Valid case to return
-        return allow();
+          // Valid case to return
+          return allow();
+        },
       },
-    },
-    toolParameterMappings: {
-      action: 'actionType',
-    },
-  });
-
-  return { test1, test2, test3, test4 };
+      toolParameterMappings: {
+        action: 'actionType',
+      },
+    }),
+  };
 }
 /**
  * Test Case 2: Testing deny() with different result types
  */
-function testDenyFunctionWithDifferentTypes() {
+export function testDenyFunctionWithDifferentTypes() {
   // Test with object schema
   const objSchema = z.object({ code: z.number(), message: z.string() });
 
-  const testPolicyDef = createVincentPolicy({
-    ipfsCid: 'denyTest1',
-    packageName: '@lit-protocol/test-policy-deny@1.0.0',
-    toolParamsSchema: z.object({ actionType: z.string() }),
-    evalDenyResultSchema: objSchema,
-
-    evaluate: async (params, { deny }) => {
-      // Direct calls to deny with various arguments
-
-      // @ts-expect-error - No object when schema exists
-      deny('string only error');
-
-      // @ts-expect-error - Wrong type (number instead of object)
-      deny(123);
-
-      // @ts-expect-error - Wrong shape (missing required fields)
-      deny({});
-
-      // @ts-expect-error - Wrong shape (missing message field)
-      deny({ code: 400 });
-
-      // @ts-expect-error - Wrong shape (missing code field)
-      deny({ message: 'Error message' });
-
-      // Valid - matches schema, with additional error message
-      deny({ code: 400, message: 'Bad request' }, 'Additional context');
-
-      // Valid - matches schema, without additional error message
-      return deny({ code: 403, message: 'Forbidden' });
-    },
-  });
-
   const test1 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: testPolicyDef,
+    policyDef: createVincentPolicy({
+      ipfsCid: 'denyTest1',
+      packageName: '@lit-protocol/test-policy-deny@1.0.0',
+      toolParamsSchema: z.object({ actionType: z.string() }),
+      evalDenyResultSchema: objSchema,
+
+      evaluate: async (params, { deny }) => {
+        // Direct calls to deny with various arguments
+
+        // @ts-expect-error - No object when schema exists
+        deny('string only error');
+
+        // @ts-expect-error - Wrong type (number instead of object)
+        deny(123);
+
+        // @ts-expect-error - Wrong shape (missing required fields)
+        deny({});
+
+        // @ts-expect-error - Wrong shape (missing message field)
+        deny({ code: 400 });
+
+        // @ts-expect-error - Wrong shape (missing code field)
+        deny({ message: 'Error message' });
+
+        // Valid - matches schema, with additional error message
+        deny({ code: 400, message: 'Bad request' }, 'Additional context');
+
+        // Valid - matches schema, without additional error message
+        return deny({ code: 403, message: 'Forbidden' });
+      },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -261,8 +262,8 @@ function testDenyFunctionWithDifferentTypes() {
 /**
  * Test Case 3: Test allow/deny in commit function specifically
  */
-function testCommitAllowDeny() {
-  const policy = createVincentToolPolicy({
+export function testCommitAllowDeny() {
+  return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'commitTest',
@@ -308,13 +309,4 @@ function testCommitAllowDeny() {
       action: 'actionType',
     },
   });
-
-  return policy;
 }
-
-// Export test functions
-export {
-  testAllowFunctionWithDifferentTypes,
-  testDenyFunctionWithDifferentTypes,
-  testCommitAllowDeny,
-};
