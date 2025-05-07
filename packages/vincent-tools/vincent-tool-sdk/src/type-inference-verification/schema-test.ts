@@ -52,7 +52,7 @@ function testWithSchema() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test1',
-      package: '@lit-protocol/schema-test-policy@1.0.0',
+      packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: objSchema,
 
@@ -112,7 +112,7 @@ function testWithoutSchema() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test2',
-      package: '@lit-protocol/schema-test-policy@1.0.0',
+      packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       // No schemas defined
 
@@ -157,7 +157,7 @@ function testStringSchema() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test3',
-      package: '@lit-protocol/schema-test-policy@1.0.0',
+      packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.string(),
       evalDenyResultSchema: z.string(),
@@ -211,7 +211,7 @@ function testDifferentContexts() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test4',
-      package: '@lit-protocol/schema-test-policy@1.0.0',
+      packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Define different schemas for different contexts
@@ -279,7 +279,7 @@ function testPrimitiveSchemas() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'test5',
-      package: '@lit-protocol/schema-test-policy@1.0.0',
+      packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.number(),
       evalDenyResultSchema: z.boolean(),

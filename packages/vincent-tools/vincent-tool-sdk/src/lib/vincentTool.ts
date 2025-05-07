@@ -110,21 +110,21 @@ export function createToolContext<
 export function createPolicyMap<
   T extends readonly VincentToolPolicy<any, any>[],
   Pkgs extends
-    T[number]['policyDef']['package'] = T[number]['policyDef']['package'],
+    T[number]['policyDef']['packageName'] = T[number]['policyDef']['packageName'],
 >(
   policies: T,
 ): string extends Pkgs
   ? [
-      '❌ Each policyDef.package must be a string literal. Use `as const` when passing the array.',
+      '❌ Each policyDef.packageName must be a string literal. Use `as const` when passing the array.',
     ]
   : {
-      [K in Pkgs]: Extract<T[number], { policyDef: { package: K } }>;
+      [K in Pkgs]: Extract<T[number], { policyDef: { packageName: K } }>;
     } {
   const result = {} as any;
   for (const policy of policies) {
-    const name = policy.policyDef.package;
+    const name = policy.policyDef.packageName;
     if (result[name]) {
-      throw new Error('Duplicate policy package: ' + name + '');
+      throw new Error('Duplicate policy packageName: ' + name + '');
     }
     result[name] = policy;
   }
@@ -151,7 +151,7 @@ export function createVincentTool<
     >
   >[],
   PkgNames extends
-    PolicyArray[number]['policyDef']['package'] = PolicyArray[number]['policyDef']['package'],
+    PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
   PolicyMapType extends Record<
     string,
     {
@@ -181,7 +181,7 @@ export function createVincentTool<
   > = {
     [K in PkgNames]: Extract<
       PolicyArray[number],
-      { policyDef: { package: K } }
+      { policyDef: { packageName: K } }
     >;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,

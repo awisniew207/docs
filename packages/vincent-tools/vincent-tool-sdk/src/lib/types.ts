@@ -148,7 +148,7 @@ export type VincentPolicyDef<
 > = {
   // Schema properties
   ipfsCid: string;
-  package: PackageName;
+  packageName: PackageName;
   toolParamsSchema: PolicyToolParams;
   userParamsSchema?: UserParams;
   evalAllowResultSchema?: EvalAllowResult;
@@ -184,7 +184,7 @@ export type VincentToolPolicy<
   >,
   PackageName extends string = string,
 > = {
-  policyDef: PolicyDefType & { package: PackageName };
+  policyDef: PolicyDefType & { packageName: PackageName };
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<
       PolicyDefType['toolParamsSchema']
@@ -273,7 +273,7 @@ export type PolicyEvaluationResultContext<
   | {
       allow: false;
       deniedPolicy: {
-        package: keyof Policies;
+        packageName: keyof Policies;
         result: {
           error?: string;
         } & (Policies[Extract<
@@ -499,7 +499,7 @@ export interface VincentToolDef<
     >
   >[],
   PkgNames extends
-    PolicyArray[number]['policyDef']['package'] = PolicyArray[number]['policyDef']['package'],
+    PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
   PolicyMapType extends Record<
     string,
     {
@@ -529,7 +529,7 @@ export interface VincentToolDef<
   > = {
     [K in PkgNames]: Extract<
       PolicyArray[number],
-      { policyDef: { package: K } }
+      { policyDef: { packageName: K } }
     >;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,

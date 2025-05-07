@@ -30,7 +30,7 @@ const testPolicy = createVincentToolPolicy({
   toolParamsSchema: testSchema,
   policyDef: {
     ipfsCid: 'test-policy',
-    package: '@lit-protocol/test-policy@1.0.0',
+    packageName: '@lit-protocol/test-policy@1.0.0',
     toolParamsSchema: z.object({
       actionType: z.string(),
     }),
@@ -234,7 +234,7 @@ function testPolicyResultTypes() {
       } else {
         // Should be able to access deny result when not allowed
         const denyResult = policiesContext.deniedPolicy;
-        console.log(denyResult.ipfsCid);
+        console.log(denyResult.packageName);
       }
 
       return succeed();

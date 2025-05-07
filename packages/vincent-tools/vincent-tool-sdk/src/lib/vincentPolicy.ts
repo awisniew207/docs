@@ -157,7 +157,7 @@ export function createVincentPolicy<
   // Create wrapper functions that create a new context and merge baseContext into them
   const wrappedPolicyDef = {
     ...originalPolicyDef,
-    package: originalPolicyDef.package,
+    packageName: originalPolicyDef.packageName,
     evaluate: async (
       args: {
         toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;

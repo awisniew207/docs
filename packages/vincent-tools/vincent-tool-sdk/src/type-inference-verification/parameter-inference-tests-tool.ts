@@ -29,7 +29,7 @@ function testBasicParameterInference() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test-policy',
-      package: '@lit-protocol/test-policy@1.0.0',
+      packageName: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({
         operation: z.string(),
       }),
@@ -117,7 +117,7 @@ function testPolicyResultInference() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'complex-policy',
-      package: '@lit-protocol/complex-policy@1.0.0',
+      packageName: '@lit-protocol/complex-policy@1.0.0',
       toolParamsSchema: z.object({
         command: z.string(),
       }),
@@ -150,7 +150,7 @@ function testPolicyResultInference() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'commit-policy',
-      package: '@lit-protocol/commit-policy@1.0.0',
+      packageName: '@lit-protocol/commit-policy@1.0.0',
       toolParamsSchema: z.object({
         resource: z.string(),
       }),
@@ -230,8 +230,8 @@ function testPolicyResultInference() {
         const denyResult = policiesContext.deniedPolicy;
       } else {
         // When denied, denyPolicyResult should exist
-        const { ipfsCid, result } = policiesContext.deniedPolicy;
-        console.log(ipfsCid, result);
+        const { packageName, result } = policiesContext.deniedPolicy;
+        console.log(packageName, result);
       }
 
       return succeed();
@@ -300,7 +300,7 @@ function testComplexDestructuring() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test-policy',
-      package: '@lit-protocol/test-policy@1.0.0',
+      packageName: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({
         action: z.string(),
       }),
@@ -436,7 +436,7 @@ function testAdvancedParameterValidation() {
     toolParamsSchema: advancedSchema,
     policyDef: {
       ipfsCid: 'test-policy',
-      package: '@lit-protocol/test-policy@1.0.0',
+      packageName: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({
         op: z.string(),
       }),
@@ -539,7 +539,7 @@ function testMissingTypes() {
     toolParamsSchema: testSchema,
     policyDef: {
       ipfsCid: 'test',
-      package: '@lit-protocol/test-policy@1.0.0',
+      packageName: '@lit-protocol/test-policy@1.0.0',
       toolParamsSchema: z.object({ op: z.string() }),
       evalAllowResultSchema: z.object({ data: z.string() }),
       evaluate: async (params, { allow }) => {

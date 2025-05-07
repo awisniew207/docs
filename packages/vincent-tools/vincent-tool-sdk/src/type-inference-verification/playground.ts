@@ -29,7 +29,7 @@ const policy1CommitDenyResult = z.object({ errorCode: z.number() });
 // Create policies with full type inference
 const policyDef1 = createVincentPolicy({
   ipfsCid: 'policy1',
-  package: 'extra-rate-limit',
+  packageName: 'extra-rate-limit',
   toolParamsSchema: policy1Schema,
   userParamsSchema: userParams1Schema,
   commitParamsSchema: commitParams1Schema,
@@ -100,7 +100,7 @@ const policy2CommitDenyResult = z.object({ failureReason: z.string() });
 
 const policyDef2 = createVincentPolicy({
   ipfsCid: 'policy2',
-  package: 'rate-limit',
+  packageName: 'rate-limit',
   toolParamsSchema: policy2Schema,
   userParamsSchema: userParams2Schema,
   commitParamsSchema: commitParams2Schema,
@@ -189,7 +189,7 @@ const policy3EvalDenyResult = z.object({
 // Create policy3 without a commit function
 const policyDef3 = createVincentPolicy({
   ipfsCid: 'policy3ipfscid123',
-  package: 'vincent-tool-sdk',
+  packageName: 'vincent-tool-sdk',
   toolParamsSchema: policy3ToolParams,
   userParamsSchema: policy3UserParams,
   evalAllowResultSchema: policy3EvalAllowResult,

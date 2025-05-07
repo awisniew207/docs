@@ -28,7 +28,7 @@ function testAllowFunctionWithDifferentTypes() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest1',
-      package: '@lit-protocol/test-policy-allow@1.0.0',
+      packageName: '@lit-protocol/test-policy-allow@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: objSchema,
 
@@ -64,7 +64,7 @@ function testAllowFunctionWithDifferentTypes() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest2',
-      package: '@lit-protocol/test-policy-allow-string@1.0.0',
+      packageName: '@lit-protocol/test-policy-allow-string@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.string(),
 
@@ -92,7 +92,7 @@ function testAllowFunctionWithDifferentTypes() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest3',
-      package: '@lit-protocol/test-policy-allow-number@1.0.0',
+      packageName: '@lit-protocol/test-policy-allow-number@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.number(),
 
@@ -120,7 +120,7 @@ function testAllowFunctionWithDifferentTypes() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'allowTest4',
-      package: '@lit-protocol/test-policy-no-schema@1.0.0',
+      packageName: '@lit-protocol/test-policy-no-schema@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       // No schema defined
 
@@ -157,7 +157,7 @@ function testDenyFunctionWithDifferentTypes() {
 
   const testPolicyDef = createVincentPolicy({
     ipfsCid: 'denyTest1',
-    package: '@lit-protocol/test-policy-deny@1.0.0',
+    packageName: '@lit-protocol/test-policy-deny@1.0.0',
     toolParamsSchema: z.object({ actionType: z.string() }),
     evalDenyResultSchema: objSchema,
 
@@ -200,7 +200,7 @@ function testDenyFunctionWithDifferentTypes() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'denyTest2',
-      package: '@lit-protocol/test-policy-deny-string@1.0.0',
+      packageName: '@lit-protocol/test-policy-deny-string@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalDenyResultSchema: z.string(),
 
@@ -229,7 +229,7 @@ function testDenyFunctionWithDifferentTypes() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'denyTest3',
-      package: '@lit-protocol/test-policy-deny-no-schema@1.0.0',
+      packageName: '@lit-protocol/test-policy-deny-no-schema@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       // No schema defined
 
@@ -266,7 +266,7 @@ function testCommitAllowDeny() {
     toolParamsSchema: baseToolSchema,
     policyDef: {
       ipfsCid: 'commitTest',
-      package: '@lit-protocol/test-policy-commit@1.0.0',
+      packageName: '@lit-protocol/test-policy-commit@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Commit requires a params schema
