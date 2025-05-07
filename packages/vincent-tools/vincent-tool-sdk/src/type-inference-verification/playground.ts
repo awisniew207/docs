@@ -3,7 +3,7 @@ import {
   createVincentPolicy,
   createVincentToolPolicy,
 } from '../lib/vincentPolicy';
-import { createVincentTool, createPolicyMap } from '../lib/vincentTool';
+import { createVincentTool } from '../lib/vincentTool';
 
 // Define your tool schema
 const myToolSchema = z.object({
@@ -270,7 +270,7 @@ const toolPrecheckFailSchema = z.object({
 // Create your tool with fully typed policies
 const myTool = createVincentTool({
   toolParamsSchema: myToolSchema,
-  supportedPolicies: createPolicyMap([policy1, policy2, policy3]),
+  supportedPolicies: [policy1, policy2, policy3],
 
   // Add schemas for tool results
   executeSuccessSchema: toolExecuteSuccessSchema,

@@ -151,18 +151,37 @@ export function createPolicyMap<
 }
 export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
-  Policies extends Record<
+  PolicyArray extends readonly VincentToolPolicy<
+    ToolParamsSchema,
+    VincentPolicy
+  >[],
+  PkgNames extends
+    PolicyArray[number]['policyDef']['package'] = PolicyArray[number]['policyDef']['package'],
+  PolicyMapType extends Record<
     string,
-    VincentToolPolicy<ToolParamsSchema, VincentPolicy>
-  >,
+    {
+      policyDef: VincentPolicy;
+      __schemaTypes?: {
+        evalAllowResultSchema?: z.ZodType;
+        evalDenyResultSchema?: z.ZodType;
+        commitParamsSchema?: z.ZodType;
+        commitAllowResultSchema?: z.ZodType;
+        commitDenyResultSchema?: z.ZodType;
+      };
+    }
+  > = {
+    [K in PkgNames]: Extract<
+      PolicyArray[number],
+      { policyDef: { package: K } }
+    >;
+  },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
 >(toolDef: {
   toolParamsSchema: ToolParamsSchema;
-  supportedPolicies: Policies;
-
+  supportedPolicies: PolicyArray;
   precheckSuccessSchema?: PrecheckSuccessSchema;
   precheckFailSchema?: PrecheckFailSchema;
   executeSuccessSchema?: ExecuteSuccessSchema;
@@ -173,7 +192,7 @@ export function createVincentTool<
     context: ToolContext<
       PrecheckSuccessSchema,
       PrecheckFailSchema,
-      VincentPolicyEvaluationResults<Policies>
+      VincentPolicyEvaluationResults<PolicyMapType>
     >,
   ) => Promise<
     | (PrecheckSuccessSchema extends z.ZodType
@@ -189,7 +208,7 @@ export function createVincentTool<
     context: ToolContext<
       ExecuteSuccessSchema,
       ExecuteFailSchema,
-      OnlyAllowedPolicyEvaluationResults<Policies>
+      OnlyAllowedPolicyEvaluationResults<PolicyMapType>
     >,
   ) => Promise<
     | (ExecuteSuccessSchema extends z.ZodType
@@ -200,14 +219,20 @@ export function createVincentTool<
         : ToolExecutionFailureNoResult)
   >;
 }) {
-  const originalToolDef = toolDef;
+  // Create the policy map internally
+  const policyMap = createPolicyMap(toolDef.supportedPolicies);
+
+  const originalToolDef = {
+    ...toolDef,
+    supportedPolicies: policyMap,
+  };
 
   const wrappedToolDef = {
     ...originalToolDef,
 
     precheck: async (
       params: z.infer<ToolParamsSchema>,
-      policyEvaluationResults: VincentPolicyEvaluationResults<Policies>,
+      policyEvaluationResults: VincentPolicyEvaluationResults<PolicyMapType>,
     ) => {
       const context = createToolContext({
         successSchema: originalToolDef.precheckSuccessSchema,
@@ -220,7 +245,7 @@ export function createVincentTool<
 
     execute: async (
       params: z.infer<ToolParamsSchema>,
-      policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<Policies>,
+      policyEvaluationResults: OnlyAllowedPolicyEvaluationResults<PolicyMapType>,
     ) => {
       const context = createToolContext({
         successSchema: originalToolDef.executeSuccessSchema,
