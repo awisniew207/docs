@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  BasePolicyContext,
   CommitFunction,
   EvaluateFunction,
   PolicyContext,
@@ -11,29 +12,16 @@ import {
   VincentPolicyDef,
 } from './types';
 
-export interface BaseContext {
-  delegation: {
-    delegatee: string;
-    delegator: string;
-  };
-}
-
-export interface CreatePolicyContextParams<
+interface CreatePolicyContextParams<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
 > {
   ipfsCid: string;
   allowSchema?: AllowSchema;
   denySchema?: DenySchema;
-  baseContext: BaseContext;
+  baseContext: BasePolicyContext;
 }
 
-/**
- * Branded functions are used to enforce type safety at compile time for allow/deny calls.
- * The __brand property helps TypeScript distinguish between functions that require arguments
- * (when schemas are defined) and those that don't (when schemas are undefined).
- * This prevents runtime errors by catching incorrect usage during development.
- */
 export function createPolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
@@ -46,8 +34,6 @@ export function createPolicyContext<
   AllowSchema,
   DenySchema
 > {
-  // Define type-safe functions without using brands
-  // Instead, we'll use function overloads to enforce correct parameter usage
   function allowWithoutSchema(): PolicyResponseAllowNoResult {
     return {
       ipfsCid,
@@ -145,7 +131,6 @@ export function createVincentPolicy<
     CommitFn
   >,
 ) {
-  // Implementation stays exactly the same as current validateVincentPolicyDef
   if (policyDef.commitParamsSchema && !policyDef.commit) {
     throw new Error(
       'Policy defines commitParamsSchema but is missing commit function',
@@ -165,7 +150,7 @@ export function createVincentPolicy<
           ? z.infer<UserParams>
           : undefined;
       },
-      baseContext: BaseContext,
+      baseContext: BasePolicyContext,
     ) => {
       const context = createPolicyContext({
         baseContext,
@@ -194,7 +179,7 @@ export function createVincentPolicy<
                 ? z.infer<UserParams>
                 : undefined;
             },
-            baseContext: BaseContext,
+            baseContext: BasePolicyContext,
           ) => {
             const context = createPolicyContext({
               ipfsCid: originalPolicyDef.ipfsCid,
@@ -222,7 +207,7 @@ export function createVincentPolicy<
             args: CommitParams extends z.ZodType
               ? z.infer<CommitParams>
               : undefined,
-            baseContext: BaseContext,
+            baseContext: BasePolicyContext,
           ) => {
             const context = createPolicyContext({
               ipfsCid: originalPolicyDef.ipfsCid,

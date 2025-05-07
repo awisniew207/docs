@@ -576,3 +576,10 @@ export interface VincentToolDef<
         : ToolExecutionFailureNoResult)
   >;
 }
+
+export interface BasePolicyContext {
+  delegation: {
+    delegatee: string;
+    delegator: string;
+  };
+}
