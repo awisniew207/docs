@@ -7,10 +7,10 @@ import {
   ToolExecutionFailureNoResult,
   ToolExecutionSuccess,
   ToolExecutionSuccessNoResult,
-  VincentPolicy,
   PolicyEvaluationResultContext,
   VincentToolDef,
   VincentToolPolicy,
+  VincentPolicyDef,
 } from './types';
 
 export interface CreateToolContextParams<
@@ -134,14 +134,42 @@ export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
     ToolParamsSchema,
-    VincentPolicy
+    VincentPolicyDef<
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >
   >[],
   PkgNames extends
     PolicyArray[number]['policyDef']['package'] = PolicyArray[number]['policyDef']['package'],
   PolicyMapType extends Record<
     string,
     {
-      policyDef: VincentPolicy;
+      policyDef: VincentPolicyDef<
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any
+      >;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;

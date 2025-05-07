@@ -1,10 +1,14 @@
 import { z } from 'zod';
 import {
+  CommitFunction,
+  EvaluateFunction,
   PolicyContext,
   PolicyResponseAllow,
   PolicyResponseAllowNoResult,
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
+  PrecheckFunction,
+  VincentPolicyDef,
 } from './types';
 
 export interface BaseContext {
@@ -95,111 +99,6 @@ export function createPolicyContext<
       : (error?: string) => PolicyResponseDenyNoResult,
   };
 }
-
-type EvaluateFunction<
-  PolicyToolParams extends z.ZodType,
-  UserParams extends z.ZodType | undefined,
-  EvalAllowResult extends z.ZodType | undefined,
-  EvalDenyResult extends z.ZodType | undefined,
-> = (
-  args: {
-    toolParams: z.infer<PolicyToolParams>;
-    userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
-  },
-  context: PolicyContext<EvalAllowResult, EvalDenyResult>,
-) => Promise<
-  | (EvalAllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<EvalAllowResult>>
-      : PolicyResponseAllowNoResult)
-  | (EvalDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<EvalDenyResult>>
-      : PolicyResponseDenyNoResult)
->;
-
-type PrecheckFunction<
-  PolicyToolParams extends z.ZodType,
-  UserParams extends z.ZodType | undefined,
-  PrecheckAllowResult extends z.ZodType | undefined,
-  PrecheckDenyResult extends z.ZodType | undefined,
-> = (
-  args: {
-    toolParams: z.infer<PolicyToolParams>;
-    userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
-  },
-  context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
-) => Promise<
-  | (PrecheckAllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
-      : PolicyResponseAllowNoResult)
-  | (PrecheckDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
-      : PolicyResponseDenyNoResult)
->;
-
-type CommitFunction<
-  CommitParams extends z.ZodType | undefined,
-  CommitAllowResult extends z.ZodType | undefined,
-  CommitDenyResult extends z.ZodType | undefined,
-> = (
-  args: CommitParams extends z.ZodType ? z.infer<CommitParams> : undefined,
-  context: PolicyContext<CommitAllowResult, CommitDenyResult>,
-) => Promise<
-  | (CommitAllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<CommitAllowResult>>
-      : PolicyResponseAllowNoResult)
-  | (CommitDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<CommitDenyResult>>
-      : PolicyResponseDenyNoResult)
->;
-
-export type VincentPolicyDef<
-  PackageName extends string,
-  PolicyToolParams extends z.ZodType,
-  // Schema generics
-  UserParams extends z.ZodType | undefined = undefined,
-  PrecheckAllowResult extends z.ZodType | undefined = undefined,
-  PrecheckDenyResult extends z.ZodType | undefined = undefined,
-  EvalAllowResult extends z.ZodType | undefined = undefined,
-  EvalDenyResult extends z.ZodType | undefined = undefined,
-  CommitParams extends z.ZodType | undefined = undefined,
-  CommitAllowResult extends z.ZodType | undefined = undefined,
-  CommitDenyResult extends z.ZodType | undefined = undefined,
-  EvaluateFn = EvaluateFunction<
-    PolicyToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
-  >,
-  PrecheckFn =
-    | undefined
-    | PrecheckFunction<
-        PolicyToolParams,
-        UserParams,
-        PrecheckAllowResult,
-        PrecheckDenyResult
-      >,
-  CommitFn =
-    | undefined
-    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
-> = {
-  // Schema properties
-  ipfsCid: string;
-  package: PackageName;
-  toolParamsSchema: PolicyToolParams;
-  userParamsSchema?: UserParams;
-  evalAllowResultSchema?: EvalAllowResult;
-  evalDenyResultSchema?: EvalDenyResult;
-  precheckAllowResultSchema?: PrecheckAllowResult;
-  precheckDenyResultSchema?: PrecheckDenyResult;
-  commitParamsSchema?: CommitParams;
-  commitAllowResultSchema?: CommitAllowResult;
-  commitDenyResultSchema?: CommitDenyResult;
-
-  // Function properties - now directly using the function generic types
-  evaluate: EvaluateFn;
-  precheck?: PrecheckFn;
-  commit?: CommitFn;
-};
 
 export function createVincentPolicy<
   PackageName extends string,
