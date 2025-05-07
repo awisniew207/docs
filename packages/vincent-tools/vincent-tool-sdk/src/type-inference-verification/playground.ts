@@ -195,10 +195,6 @@ const policyDef3 = createVincentPolicy({
   evalAllowResultSchema: policy3EvalAllowResult,
   evalDenyResultSchema: policy3EvalDenyResult,
 
-  commit: async () => {
-    return true;
-  },
-
   // Only has evaluate, no precheck or commit
   evaluate: async ({ toolParams, userParams }, context) => {
     // Policy logic: Allow only premium and admin users
@@ -268,6 +264,7 @@ const myTool = createVincentTool({
       succeed,
     },
   ) => {
+    // return { allow: true };
     // Basic validation
     if (!params.action || !params.target) {
       return fail({

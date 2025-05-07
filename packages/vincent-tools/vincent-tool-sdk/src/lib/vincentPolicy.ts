@@ -34,13 +34,6 @@ export function createPolicyContext<
   AllowSchema,
   DenySchema
 > {
-  function allowWithoutSchema(): PolicyResponseAllowNoResult {
-    return {
-      ipfsCid,
-      allow: true,
-    };
-  }
-
   function allowWithSchema<T>(result: T): PolicyResponseAllow<T> {
     return {
       ipfsCid,
@@ -49,12 +42,11 @@ export function createPolicyContext<
     } as PolicyResponseAllow<T>;
   }
 
-  function denyWithoutSchema(error?: string): PolicyResponseDenyNoResult {
+  function allowWithoutSchema(): PolicyResponseAllowNoResult {
     return {
       ipfsCid,
-      allow: false,
-      ...(error ? { error } : {}),
-    } as PolicyResponseDenyNoResult;
+      allow: true,
+    } as PolicyResponseAllowNoResult;
   }
 
   function denyWithSchema<T>(result: T, error?: string): PolicyResponseDeny<T> {
@@ -62,8 +54,17 @@ export function createPolicyContext<
       ipfsCid,
       allow: false,
       result,
-      ...(error ? { error } : {}),
     } as PolicyResponseDeny<T>;
+  }
+
+  function denyWithoutSchema(error?: string): PolicyResponseDenyNoResult {
+    return {
+      ipfsCid,
+      allow: false,
+      ...(error ? { error } : {}),
+      result: undefined as never,
+      __brand: 'PolicyResponse',
+    } as PolicyResponseDenyNoResult;
   }
 
   // Select the appropriate function implementation based on schema presence
@@ -126,9 +127,19 @@ export function createVincentPolicy<
     CommitParams,
     CommitAllowResult,
     CommitDenyResult,
-    EvaluateFn,
-    PrecheckFn,
-    CommitFn
+    EvaluateFunction<
+      PolicyToolParams,
+      UserParams,
+      EvalAllowResult,
+      EvalDenyResult
+    >,
+    PrecheckFunction<
+      PolicyToolParams,
+      UserParams,
+      PrecheckAllowResult,
+      PrecheckDenyResult
+    >,
+    CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >,
 ) {
   if (policyDef.commitParamsSchema && !policyDef.commit) {
@@ -273,9 +284,19 @@ export function createVincentToolPolicy<
     CommitParams,
     CommitAllowResult,
     CommitDenyResult,
-    EvaluateFn,
-    PrecheckFn,
-    CommitFn
+    EvaluateFunction<
+      PolicyToolParams,
+      UserParams,
+      EvalAllowResult,
+      EvalDenyResult
+    >,
+    PrecheckFunction<
+      PolicyToolParams,
+      UserParams,
+      PrecheckAllowResult,
+      PrecheckDenyResult
+    >,
+    CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >;
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;

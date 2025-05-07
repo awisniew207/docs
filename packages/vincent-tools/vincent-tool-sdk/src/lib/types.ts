@@ -62,22 +62,22 @@ export type WrappedCommitFunction<CommitParams, Result> =
     : (args: CommitParams) => Promise<Result>; // With arguments version
 
 export type EvaluateFunction<
-  PolicyToolParams extends z.ZodType,
+  ToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined,
-  EvalAllowResult extends z.ZodType | undefined,
-  EvalDenyResult extends z.ZodType | undefined,
+  AllowResult extends z.ZodType | undefined,
+  DenyResult extends z.ZodType | undefined,
 > = (
   args: {
-    toolParams: z.infer<PolicyToolParams>;
+    toolParams: z.infer<ToolParams>;
     userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
   },
-  context: PolicyContext<EvalAllowResult, EvalDenyResult>,
+  ctx: PolicyContext<AllowResult, DenyResult>,
 ) => Promise<
-  | (EvalAllowResult extends z.ZodType
-      ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+  | (AllowResult extends z.ZodType
+      ? PolicyResponseAllow<z.infer<AllowResult>>
       : PolicyResponseAllowNoResult)
-  | (EvalDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+  | (DenyResult extends z.ZodType
+      ? PolicyResponseDeny<z.infer<DenyResult>>
       : PolicyResponseDenyNoResult)
 >;
 
