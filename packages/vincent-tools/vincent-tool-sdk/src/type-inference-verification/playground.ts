@@ -195,6 +195,10 @@ const policyDef3 = createVincentPolicy({
   evalAllowResultSchema: policy3EvalAllowResult,
   evalDenyResultSchema: policy3EvalDenyResult,
 
+  commit: async () => {
+    return true;
+  },
+
   // Only has evaluate, no precheck or commit
   evaluate: async ({ toolParams, userParams }, context) => {
     // Policy logic: Allow only premium and admin users
@@ -308,7 +312,7 @@ const myTool = createVincentTool({
       });
     } else {
       // Handle the denial case
-      const denyReason = deniedPolicy.result?.error || 'Policy check failed';
+      const denyReason = deniedPolicy.result.error || 'Policy check failed';
 
       return fail({
         invalidField: 'policy',
@@ -325,10 +329,10 @@ const myTool = createVincentTool({
         const txHash = `0x${Math.random().toString(16).substring(2, 10)}`;
 
         // Use commit functions from policies if available
-        if (policiesContext.allowedPolicies['extra-rate-limit']) {
-          const commitResult = await policiesContext.allowedPolicies[
-            'extra-rate-limit'
-          ].commit({
+        const extraRateLimitPolicyContext =
+          policiesContext.allowedPolicies['extra-rate-limit'];
+        if (extraRateLimitPolicyContext) {
+          const commitResult = await extraRateLimitPolicyContext.commit({
             confirmation: true,
           });
 
@@ -338,14 +342,23 @@ const myTool = createVincentTool({
           }
         }
 
-        if (policiesContext.allowedPolicies['rate-limit']) {
-          const commitResult = await policiesContext.allowedPolicies[
-            'rate-limit'
-          ].commit({
+        const rateLimitPolicyContext =
+          policiesContext.allowedPolicies['rate-limit'];
+        if (rateLimitPolicyContext) {
+          const commitResult = await rateLimitPolicyContext.commit({
             transactionId: txHash,
           });
 
           if (commitResult.allow) {
+          }
+        }
+        const toolSdkPolicyContext =
+          policiesContext.allowedPolicies['vincent-tool-sdk'];
+        if (toolSdkPolicyContext) {
+          const commitResult = await toolSdkPolicyContext.commit();
+
+          if (commitResult.allow) {
+            console.log(commitResult.result);
           }
         }
 

@@ -124,7 +124,7 @@ function testAllowFunctionWithDifferentTypes() {
       toolParamsSchema: z.object({ actionType: z.string() }),
       // No schema defined
 
-      evaluate: async (params, { allow }) => {
+      evaluate: async (params, { allow, deny, delegation }) => {
         // Valid - no schema means no args
         allow();
 

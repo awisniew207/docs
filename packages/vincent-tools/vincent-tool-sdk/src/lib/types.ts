@@ -24,7 +24,7 @@ export type PolicyResponseDeny<DenyResult = never> = DenyResult extends never
 export interface PolicyResponseDenyNoResult extends PolicyResponseBase {
   allow: false;
   error?: string;
-  result?: never;
+  result: never;
 }
 
 export type PolicyResponse<AllowResult = never, DenyResult = never> =
@@ -40,26 +40,19 @@ export interface PolicyContext<
     delegator: string;
   };
 
-  // We use 'branded' function types to force TypeScript to check argument presence
-  // Otherwise calling w/ no arguments is not a type error even if a schema was provided (!)
+  // Instead of branded types, we use conditional types directly
   allow: AllowSchema extends z.ZodType
-    ? {
-        (
-          result: z.infer<AllowSchema>,
-        ): PolicyResponseAllow<z.infer<AllowSchema>>;
-        __brand: 'requires-arg';
-      }
-    : { (): PolicyResponseAllowNoResult; __brand: 'no-arg' };
+    ? (
+        result: z.infer<AllowSchema>,
+      ) => PolicyResponseAllow<z.infer<AllowSchema>>
+    : () => PolicyResponseAllowNoResult;
 
   deny: DenySchema extends z.ZodType
-    ? {
-        (
-          result: z.infer<DenySchema>,
-          error?: string,
-        ): PolicyResponseDeny<z.infer<DenySchema>>;
-        __brand: 'requires-arg';
-      }
-    : { (error?: string): PolicyResponseDenyNoResult; __brand: 'no-arg' };
+    ? (
+        result: z.infer<DenySchema>,
+        error?: string,
+      ) => PolicyResponseDeny<z.infer<DenySchema>>
+    : (error?: string) => PolicyResponseDenyNoResult;
 }
 
 export interface BasicPolicyDef<
@@ -256,12 +249,11 @@ export type VincentPolicy =
   | PolicyWithCommit<any, any, any, any, any, any, any>
   | PolicyWithPrecheckAndCommit<any, any, any, any, any, any, any, any, any>;
 
-export type HasCommit<P> = P extends { commit: Function } ? true : false;
-
-// Type for the wrapped commit function that only requires the args parameter
-export type WrappedCommitFunction<CommitParams, Result> = (
-  args: CommitParams,
-) => Promise<Result>;
+// Type for the wrapped commit function that handles both with and without args
+export type WrappedCommitFunction<CommitParams, Result> =
+  CommitParams extends void
+    ? () => Promise<Result> // No arguments version
+    : (args: CommitParams) => Promise<Result>; // With arguments version
 
 // Tool supported policy with proper typing on the parameter mappings
 export type VincentToolPolicy<
@@ -288,6 +280,9 @@ export type PolicyEvaluationResultContext<
         commitParamsSchema?: z.ZodType;
         commitAllowResultSchema?: z.ZodType;
         commitDenyResultSchema?: z.ZodType;
+        evaluate?: Function;
+        precheck?: Function;
+        commit?: Function;
       };
     }
   >,
@@ -305,18 +300,35 @@ export type PolicyEvaluationResultContext<
               ? z.infer<Schema>
               : never
             : never;
-          commit: HasCommit<Policies[PolicyKey]['policyDef']> extends true
-            ? Policies[PolicyKey]['policyDef'] extends {
-                commit: infer Commit;
-              }
-              ? Commit extends (
-                  args: infer Args,
-                  context: any,
-                ) => Promise<infer Result>
-                ? WrappedCommitFunction<Args, Result>
-                : never
+          commit: Policies[PolicyKey]['__schemaTypes'] extends {
+            commit: infer CommitFn;
+          }
+            ? CommitFn extends Function
+              ? WrappedCommitFunction<
+                  Policies[PolicyKey]['__schemaTypes'] extends {
+                    commitParamsSchema: infer CommitParams;
+                  }
+                    ? CommitParams extends z.ZodType
+                      ? z.infer<CommitParams>
+                      : never
+                    : never,
+                  | (Policies[PolicyKey]['__schemaTypes'] extends {
+                      commitAllowResultSchema: infer CommitAllowSchema;
+                    }
+                      ? CommitAllowSchema extends z.ZodType
+                        ? PolicyResponseAllow<z.infer<CommitAllowSchema>>
+                        : PolicyResponseAllowNoResult
+                      : PolicyResponseAllowNoResult)
+                  | (Policies[PolicyKey]['__schemaTypes'] extends {
+                      commitDenyResultSchema: infer CommitDenySchema;
+                    }
+                      ? CommitDenySchema extends z.ZodType
+                        ? PolicyResponseDeny<z.infer<CommitDenySchema>>
+                        : PolicyResponseDenyNoResult
+                      : PolicyResponseDenyNoResult)
+                >
               : never
-            : never;
+            : undefined;
         };
       };
       deniedPolicy?: never;
@@ -363,6 +375,9 @@ export type ToolExecutionPolicyContext<
         commitParamsSchema?: z.ZodType;
         commitAllowResultSchema?: z.ZodType;
         commitDenyResultSchema?: z.ZodType;
+        evaluate?: Function;
+        precheck?: Function;
+        commit?: Function;
       };
     }
   >,
@@ -378,18 +393,35 @@ export type ToolExecutionPolicyContext<
           ? z.infer<Schema>
           : never
         : never;
-      commit: HasCommit<Policies[PolicyKey]['policyDef']> extends true
-        ? Policies[PolicyKey]['policyDef'] extends {
-            commit: infer Commit;
-          }
-          ? Commit extends (
-              args: infer Args,
-              context: any,
-            ) => Promise<infer Result>
-            ? WrappedCommitFunction<Args, Result>
-            : never
+      commit: Policies[PolicyKey]['__schemaTypes'] extends {
+        commit: infer CommitFn;
+      }
+        ? CommitFn extends Function
+          ? WrappedCommitFunction<
+              Policies[PolicyKey]['__schemaTypes'] extends {
+                commitParamsSchema: infer CommitParams;
+              }
+                ? CommitParams extends z.ZodType
+                  ? z.infer<CommitParams>
+                  : void
+                : never, // Use 'void' instead of 'never' for no-params case
+              | (Policies[PolicyKey]['__schemaTypes'] extends {
+                  commitAllowResultSchema: infer CommitAllowSchema;
+                }
+                  ? CommitAllowSchema extends z.ZodType
+                    ? PolicyResponseAllow<z.infer<CommitAllowSchema>>
+                    : PolicyResponseAllowNoResult
+                  : PolicyResponseAllowNoResult)
+              | (Policies[PolicyKey]['__schemaTypes'] extends {
+                  commitDenyResultSchema: infer CommitDenySchema;
+                }
+                  ? CommitDenySchema extends z.ZodType
+                    ? PolicyResponseDeny<z.infer<CommitDenySchema>>
+                    : PolicyResponseDenyNoResult
+                  : PolicyResponseDenyNoResult)
+            >
           : never
-        : never;
+        : undefined;
     };
   };
 } & {

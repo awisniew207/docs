@@ -42,20 +42,8 @@ export function createPolicyContext<
   AllowSchema,
   DenySchema
 > {
-  type AllowFn<S extends z.ZodType | undefined> = S extends z.ZodType
-    ? {
-        (result: z.infer<S>): PolicyResponseAllow<z.infer<S>>;
-        __brand: 'requires-arg';
-      }
-    : { (): PolicyResponseAllowNoResult; __brand: 'no-arg' };
-
-  type DenyFn<S extends z.ZodType | undefined> = S extends z.ZodType
-    ? {
-        (result: z.infer<S>, error?: string): PolicyResponseDeny<z.infer<S>>;
-        __brand: 'requires-arg';
-      }
-    : { (error?: string): PolicyResponseDenyNoResult; __brand: 'no-arg' };
-
+  // Define type-safe functions without using brands
+  // Instead, we'll use function overloads to enforce correct parameter usage
   function allowWithoutSchema(): PolicyResponseAllowNoResult {
     return {
       ipfsCid,
@@ -88,37 +76,86 @@ export function createPolicyContext<
     } as PolicyResponseDeny<T>;
   }
 
-  let allowFn: any;
-  let denyFn: any;
+  // Select the appropriate function implementation based on schema presence
+  const allow = allowSchema ? allowWithSchema : allowWithoutSchema;
+  const deny = denySchema ? denyWithSchema : denyWithoutSchema;
 
-  if (allowSchema) {
-    allowFn = allowWithSchema as AllowFn<NonNullable<AllowSchema>>;
-    allowFn.__brand = 'requires-arg';
-  } else {
-    allowFn = allowWithoutSchema as AllowFn<undefined>;
-    allowFn.__brand = 'no-arg';
-  }
-
-  if (denySchema) {
-    denyFn = denyWithSchema as DenyFn<NonNullable<DenySchema>>;
-    denyFn.__brand = 'requires-arg';
-  } else {
-    denyFn = denyWithoutSchema as DenyFn<undefined>;
-    denyFn.__brand = 'no-arg';
-  }
-
-  const context: PolicyContext<AllowSchema, DenySchema> = {
+  return {
     delegation: baseContext.delegation,
-    allow: allowFn,
-    deny: denyFn,
+    allow: allow as AllowSchema extends z.ZodType
+      ? (
+          result: z.infer<AllowSchema>,
+        ) => PolicyResponseAllow<z.infer<AllowSchema>>
+      : () => PolicyResponseAllowNoResult,
+    deny: deny as DenySchema extends z.ZodType
+      ? (
+          result: z.infer<DenySchema>,
+          error?: string,
+        ) => PolicyResponseDeny<z.infer<DenySchema>>
+      : (error?: string) => PolicyResponseDenyNoResult,
   };
-
-  return context;
 }
 
-export function createVincentPolicy<
+type EvaluateFunction<
+  PolicyToolParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined,
+  EvalAllowResult extends z.ZodType | undefined,
+  EvalDenyResult extends z.ZodType | undefined,
+> = (
+  args: {
+    toolParams: z.infer<PolicyToolParams>;
+    userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
+  },
+  context: PolicyContext<EvalAllowResult, EvalDenyResult>,
+) => Promise<
+  | (EvalAllowResult extends z.ZodType
+      ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+      : PolicyResponseAllowNoResult)
+  | (EvalDenyResult extends z.ZodType
+      ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+      : PolicyResponseDenyNoResult)
+>;
+
+type PrecheckFunction<
+  PolicyToolParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined,
+  PrecheckAllowResult extends z.ZodType | undefined,
+  PrecheckDenyResult extends z.ZodType | undefined,
+> = (
+  args: {
+    toolParams: z.infer<PolicyToolParams>;
+    userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
+  },
+  context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
+) => Promise<
+  | (PrecheckAllowResult extends z.ZodType
+      ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
+      : PolicyResponseAllowNoResult)
+  | (PrecheckDenyResult extends z.ZodType
+      ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
+      : PolicyResponseDenyNoResult)
+>;
+
+type CommitFunction<
+  CommitParams extends z.ZodType | undefined,
+  CommitAllowResult extends z.ZodType | undefined,
+  CommitDenyResult extends z.ZodType | undefined,
+> = (
+  args: CommitParams extends z.ZodType ? z.infer<CommitParams> : undefined,
+  context: PolicyContext<CommitAllowResult, CommitDenyResult>,
+) => Promise<
+  | (CommitAllowResult extends z.ZodType
+      ? PolicyResponseAllow<z.infer<CommitAllowResult>>
+      : PolicyResponseAllowNoResult)
+  | (CommitDenyResult extends z.ZodType
+      ? PolicyResponseDeny<z.infer<CommitDenyResult>>
+      : PolicyResponseDenyNoResult)
+>;
+
+export type VincentPolicyDef<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
+  // Schema generics
   UserParams extends z.ZodType | undefined = undefined,
   PrecheckAllowResult extends z.ZodType | undefined = undefined,
   PrecheckDenyResult extends z.ZodType | undefined = undefined,
@@ -127,7 +164,25 @@ export function createVincentPolicy<
   CommitParams extends z.ZodType | undefined = undefined,
   CommitAllowResult extends z.ZodType | undefined = undefined,
   CommitDenyResult extends z.ZodType | undefined = undefined,
->(policyDef: {
+  EvaluateFn = EvaluateFunction<
+    PolicyToolParams,
+    UserParams,
+    EvalAllowResult,
+    EvalDenyResult
+  >,
+  PrecheckFn =
+    | undefined
+    | PrecheckFunction<
+        PolicyToolParams,
+        UserParams,
+        PrecheckAllowResult,
+        PrecheckDenyResult
+      >,
+  CommitFn =
+    | undefined
+    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
+> = {
+  // Schema properties
   ipfsCid: string;
   package: PackageName;
   toolParamsSchema: PolicyToolParams;
@@ -140,54 +195,57 @@ export function createVincentPolicy<
   commitAllowResultSchema?: CommitAllowResult;
   commitDenyResultSchema?: CommitDenyResult;
 
-  evaluate: (
-    args: {
-      toolParams: z.infer<PolicyToolParams>;
-      userParams: UserParams extends z.ZodType
-        ? z.infer<UserParams>
-        : undefined;
-    },
-    context: PolicyContext<EvalAllowResult, EvalDenyResult>,
-  ) => Promise<
-    | (EvalAllowResult extends z.ZodType
-        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
-        : PolicyResponseAllowNoResult)
-    | (EvalDenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<EvalDenyResult>>
-        : PolicyResponseDenyNoResult)
-  >;
+  // Function properties - now directly using the function generic types
+  evaluate: EvaluateFn;
+  precheck?: PrecheckFn;
+  commit?: CommitFn;
+};
 
-  precheck?: (
-    args: {
-      toolParams: z.infer<PolicyToolParams>;
-      userParams: UserParams extends z.ZodType
-        ? z.infer<UserParams>
-        : undefined;
-    },
-    context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
-  ) => Promise<
-    | (PrecheckAllowResult extends z.ZodType
-        ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
-        : PolicyResponseAllowNoResult)
-    | (PrecheckDenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
-        : PolicyResponseDenyNoResult)
-  >;
-
-  commit?: CommitParams extends z.ZodType
-    ? (
-        args: z.infer<CommitParams>,
-        context: PolicyContext<CommitAllowResult, CommitDenyResult>,
-      ) => Promise<
-        | (CommitAllowResult extends z.ZodType
-            ? PolicyResponseAllow<z.infer<CommitAllowResult>>
-            : PolicyResponseAllowNoResult)
-        | (CommitDenyResult extends z.ZodType
-            ? PolicyResponseDeny<z.infer<CommitDenyResult>>
-            : PolicyResponseDenyNoResult)
-      >
-    : undefined;
-}) {
+export function createVincentPolicy<
+  PackageName extends string,
+  PolicyToolParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
+  PrecheckAllowResult extends z.ZodType | undefined = undefined,
+  PrecheckDenyResult extends z.ZodType | undefined = undefined,
+  EvalAllowResult extends z.ZodType | undefined = undefined,
+  EvalDenyResult extends z.ZodType | undefined = undefined,
+  CommitParams extends z.ZodType | undefined = undefined,
+  CommitAllowResult extends z.ZodType | undefined = undefined,
+  CommitDenyResult extends z.ZodType | undefined = undefined,
+  EvaluateFn = EvaluateFunction<
+    PolicyToolParams,
+    UserParams,
+    EvalAllowResult,
+    EvalDenyResult
+  >,
+  PrecheckFn =
+    | undefined
+    | PrecheckFunction<
+        PolicyToolParams,
+        UserParams,
+        PrecheckAllowResult,
+        PrecheckDenyResult
+      >,
+  CommitFn =
+    | undefined
+    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
+>(
+  policyDef: VincentPolicyDef<
+    PackageName,
+    PolicyToolParams,
+    UserParams,
+    PrecheckAllowResult,
+    PrecheckDenyResult,
+    EvalAllowResult,
+    EvalDenyResult,
+    CommitParams,
+    CommitAllowResult,
+    CommitDenyResult,
+    EvaluateFn,
+    PrecheckFn,
+    CommitFn
+  >,
+) {
   // Implementation stays exactly the same as current validateVincentPolicyDef
   if (policyDef.commitParamsSchema && !policyDef.commit) {
     throw new Error(
@@ -217,7 +275,14 @@ export function createVincentPolicy<
         denySchema: originalPolicyDef.evalDenyResultSchema,
       });
 
-      return originalPolicyDef.evaluate(args, context);
+      return (
+        originalPolicyDef.evaluate as EvaluateFunction<
+          PolicyToolParams,
+          UserParams,
+          EvalAllowResult,
+          EvalDenyResult
+        >
+      )(args, context);
     },
 
     // Only create precheck wrapper if precheck exists; it is optional.
@@ -239,16 +304,25 @@ export function createVincentPolicy<
               denySchema: originalPolicyDef.precheckDenyResultSchema,
             });
 
-            return originalPolicyDef.precheck!(args, context);
+            return (
+              originalPolicyDef.precheck as PrecheckFunction<
+                PolicyToolParams,
+                UserParams,
+                PrecheckAllowResult,
+                PrecheckDenyResult
+              >
+            )(args, context);
           },
         }
-      : {}),
+      : { precheck: undefined }),
 
     // Only create commit wrapper if commit exists; it is optional also
     ...(originalPolicyDef.commit
       ? {
           commit: async (
-            args: CommitParams extends z.ZodType ? z.infer<CommitParams> : any,
+            args: CommitParams extends z.ZodType
+              ? z.infer<CommitParams>
+              : undefined,
             baseContext: BaseContext,
           ) => {
             const context = createPolicyContext({
@@ -258,21 +332,19 @@ export function createVincentPolicy<
               allowSchema: originalPolicyDef.commitAllowResultSchema,
             });
 
-            return originalPolicyDef.commit!(args, context);
+            return (
+              originalPolicyDef.commit as CommitFunction<
+                CommitParams,
+                CommitAllowResult,
+                CommitDenyResult
+              >
+            )(args, context);
           },
         }
       : { commit: undefined }),
   };
 
-  return wrappedPolicyDef as typeof wrappedPolicyDef & {
-    package: PackageName;
-  } & (CommitParams extends z.ZodType
-      ? {
-          commit: NonNullable<(typeof policyDef)['commit']>;
-        }
-      : {
-          commit: undefined;
-        });
+  return wrappedPolicyDef;
 }
 
 export function createVincentToolPolicy<
@@ -287,149 +359,49 @@ export function createVincentToolPolicy<
   CommitParams extends z.ZodType | undefined = undefined,
   CommitAllowResult extends z.ZodType | undefined = undefined,
   CommitDenyResult extends z.ZodType | undefined = undefined,
+  EvaluateFn = EvaluateFunction<
+    PolicyToolParams,
+    UserParams,
+    EvalAllowResult,
+    EvalDenyResult
+  >,
+  PrecheckFn =
+    | undefined
+    | PrecheckFunction<
+        PolicyToolParams,
+        UserParams,
+        PrecheckAllowResult,
+        PrecheckDenyResult
+      >,
+  CommitFn =
+    | undefined
+    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 >(config: {
   toolParamsSchema: ToolParamsSchema;
-  policyDef: {
-    ipfsCid: string;
-    package: PackageName;
-    toolParamsSchema: PolicyToolParams;
-    userParamsSchema?: UserParams;
-    evalAllowResultSchema?: EvalAllowResult;
-    evalDenyResultSchema?: EvalDenyResult;
-    precheckAllowResultSchema?: PrecheckAllowResult;
-    precheckDenyResultSchema?: PrecheckDenyResult;
-    commitParamsSchema?: CommitParams;
-    commitAllowResultSchema?: CommitAllowResult;
-    commitDenyResultSchema?: CommitDenyResult;
-
-    evaluate: (
-      args: {
-        toolParams: z.infer<PolicyToolParams>;
-        userParams: UserParams extends z.ZodType
-          ? z.infer<UserParams>
-          : undefined;
-      },
-      context: PolicyContext<EvalAllowResult, EvalDenyResult>,
-    ) => Promise<
-      | (EvalAllowResult extends z.ZodType
-          ? PolicyResponseAllow<z.infer<EvalAllowResult>>
-          : PolicyResponseAllowNoResult)
-      | (EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult>>
-          : PolicyResponseDenyNoResult)
-    >;
-
-    precheck?: (
-      args: {
-        toolParams: z.infer<PolicyToolParams>;
-        userParams: UserParams extends z.ZodType
-          ? z.infer<UserParams>
-          : undefined;
-      },
-      context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
-    ) => Promise<
-      | (PrecheckAllowResult extends z.ZodType
-          ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
-          : PolicyResponseAllowNoResult)
-      | (PrecheckDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
-          : PolicyResponseDenyNoResult)
-    >;
-
-    commit?: CommitParams extends z.ZodType
-      ? (
-          args: z.infer<CommitParams>,
-          context: PolicyContext<CommitAllowResult, CommitDenyResult>,
-        ) => Promise<
-          | (CommitAllowResult extends z.ZodType
-              ? PolicyResponseAllow<z.infer<CommitAllowResult>>
-              : PolicyResponseAllowNoResult)
-          | (CommitDenyResult extends z.ZodType
-              ? PolicyResponseDeny<z.infer<CommitDenyResult>>
-              : PolicyResponseDenyNoResult)
-        >
-      : undefined;
-  };
+  policyDef: VincentPolicyDef<
+    PackageName,
+    PolicyToolParams,
+    UserParams,
+    PrecheckAllowResult,
+    PrecheckDenyResult,
+    EvalAllowResult,
+    EvalDenyResult,
+    CommitParams,
+    CommitAllowResult,
+    CommitDenyResult,
+    EvaluateFn,
+    PrecheckFn,
+    CommitFn
+  >;
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;
   }>;
 }) {
-  if (config.policyDef.commitParamsSchema && !config.policyDef.commit) {
-    throw new Error(
-      'Policy defines commitParamsSchema but is missing commit function',
-    );
-  }
-
-  const originalPolicyDef = config.policyDef;
-
-  // Create wrapper functions that create a new context and merge baseContext into them
-  const policyDef = {
-    ...originalPolicyDef,
-    evaluate: async (
-      args: {
-        toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
-        userParams: UserParams extends z.ZodType
-          ? z.infer<UserParams>
-          : undefined;
-      },
-      baseContext: BaseContext,
-    ) => {
-      const context = createPolicyContext({
-        baseContext,
-        ipfsCid: originalPolicyDef.ipfsCid,
-        allowSchema: originalPolicyDef.evalAllowResultSchema,
-        denySchema: originalPolicyDef.evalDenyResultSchema,
-      });
-
-      return originalPolicyDef.evaluate(args, context);
-    },
-
-    // Only create precheck wrapper if precheck exists; it is optional.
-    ...(originalPolicyDef.precheck
-      ? {
-          precheck: async (
-            args: {
-              toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
-              userParams: UserParams extends z.ZodType
-                ? z.infer<UserParams>
-                : undefined;
-            },
-            baseContext: BaseContext,
-          ) => {
-            const context = createPolicyContext({
-              ipfsCid: originalPolicyDef.ipfsCid,
-              baseContext,
-              allowSchema: originalPolicyDef.precheckAllowResultSchema,
-              denySchema: originalPolicyDef.precheckDenyResultSchema,
-            });
-
-            return originalPolicyDef.precheck!(args, context);
-          },
-        }
-      : {}),
-
-    // Only create commit wrapper if commit exists; it is optional also
-    ...(originalPolicyDef.commit
-      ? {
-          commit: async (
-            args: CommitParams extends z.ZodType ? z.infer<CommitParams> : any,
-            baseContext: BaseContext,
-          ) => {
-            const context = createPolicyContext({
-              ipfsCid: originalPolicyDef.ipfsCid,
-              baseContext,
-              denySchema: originalPolicyDef.commitDenyResultSchema,
-              allowSchema: originalPolicyDef.commitAllowResultSchema,
-            });
-
-            return originalPolicyDef.commit!(args, context);
-          },
-        }
-      : {}),
-  };
+  // Use createVincentPolicy to create the wrapped policy
+  const policyDef = createVincentPolicy(config.policyDef);
 
   const result = {
-    policyDef: policyDef,
+    policyDef,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
     __schemaTypes: {
@@ -438,17 +410,16 @@ export function createVincentToolPolicy<
       commitParamsSchema: config.policyDef.commitParamsSchema,
       commitAllowResultSchema: config.policyDef.commitAllowResultSchema,
       commitDenyResultSchema: config.policyDef.commitDenyResultSchema,
+      // Explicit function types
+      evaluate: config.policyDef.evaluate as EvaluateFn,
+      precheck: config.policyDef.precheck as PrecheckFn,
+      commit: config.policyDef.commit as CommitFn,
     },
   };
 
   // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
   return result as {
-    policyDef: typeof policyDef &
-      (CommitParams extends z.ZodType
-        ? {
-            commit: NonNullable<(typeof policyDef)['commit']>;
-          }
-        : {});
+    policyDef: typeof policyDef;
     toolParameterMappings: typeof config.toolParameterMappings;
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;
@@ -456,6 +427,10 @@ export function createVincentToolPolicy<
       commitParamsSchema: CommitParams;
       commitAllowResultSchema: CommitAllowResult;
       commitDenyResultSchema: CommitDenyResult;
+      // Explicit function types
+      evaluate: EvaluateFn;
+      precheck: PrecheckFn;
+      commit: CommitFn;
     };
   };
 }
