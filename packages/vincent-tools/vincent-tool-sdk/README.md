@@ -252,7 +252,4 @@ typedTool.execute(
 ---
 
 ## 🧠 Tip
-
-Tool and policy authors should export:
-- `tool.__vincentToolDef` for consumers to rewrap with full inference
-- `tool.__supportedPolicies[i].__vincentPolicyDef` for reusing underlying policy definitions
+Tool and policy authors should export the result of `createVincentPolicy` / `createVincentTool()`
