@@ -11,15 +11,12 @@ import {
   ToolExecutionPolicyEvaluationResult,
 } from './types';
 
-export interface CreateToolContextParams<
-  SuccessSchema extends z.ZodType | undefined = undefined,
-  FailSchema extends z.ZodType | undefined = undefined,
-  Policies = Record<string, Record<string, unknown>>,
-> {
-  successSchema?: SuccessSchema;
-  failSchema?: FailSchema;
-  baseToolContext: BaseToolContext<Policies>;
-}
+/**
+ * Builds an execution-time ToolContext for use inside `execute()` lifecycle methods.
+ * It upgrades the incoming external policy context with `commit()` methods derived
+ * from the tool's supported policies and schema definitions. Ensures commit calls
+ * are fully typed and validated internally.
+ */
 export function createExecutionToolContext<
   SuccessSchema extends z.ZodType | undefined,
   FailSchema extends z.ZodType | undefined,
@@ -100,6 +97,11 @@ export function createExecutionToolContext<
   };
 }
 
+/**
+ * Builds a precheck-time ToolContext for use inside `precheck()` lifecycle methods.
+ * It includes only the evaluated policy metadata and denies commit access,
+ * ensuring developers don’t call commit prematurely. Enforces policy result typing.
+ */
 export function createPrecheckToolContext<
   SuccessSchema extends z.ZodType | undefined,
   FailSchema extends z.ZodType | undefined,
@@ -165,6 +167,17 @@ export function createPrecheckToolContext<
   };
 }
 
+/**
+ * Converts a `supportedPolicies` array into a keyed map of policies,
+ * where each key is the `packageName` of the corresponding policyDef.
+ *
+ * This enables tools to perform fast lookups by package name,
+ * enforce key-precise access to `allowedPolicies`, and inject `commit`
+ * logic into evaluated policy contexts.
+ *
+ * ⚠️ Requires all `packageName` values in the input array to be `as const`
+ * string literals in order to preserve exact key inference.
+ */
 export function createPolicyMap<
   T extends readonly VincentToolPolicy<any, any, any>[],
   Pkgs extends
@@ -189,6 +202,12 @@ export function createPolicyMap<
   return result;
 }
 
+/**
+ * Wraps a VincentToolDef object and returns a fully typed tool with
+ * standard lifecycle entrypoints (`precheck`, `execute`) and strong inference
+ * based on schemas and supported policies. The original definition is available
+ * via `__vincentToolDef`, and `__supportedPolicies` exposes the exact policy array.
+ */
 export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<

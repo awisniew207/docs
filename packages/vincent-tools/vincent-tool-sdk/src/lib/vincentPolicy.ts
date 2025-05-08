@@ -22,6 +22,12 @@ interface CreatePolicyContextParams<
   baseContext: BaseContext;
 }
 
+/**
+ * Creates a policy execution context to be passed into lifecycle methods
+ * like `evaluate`, `precheck`, and `commit`. This context includes strongly
+ * typed `allow()` and `deny()` helpers based on optional Zod schemas, and is used
+ * internally by VincentPolicyDef wrappers to standardize response structure.
+ */
 export function createPolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
@@ -86,6 +92,12 @@ export function createPolicyContext<
   };
 }
 
+/**
+ * Wraps a raw VincentPolicyDef with internal logic and returns a fully typed
+ * policy object, preserving inference for all lifecycle methods (`evaluate`, `precheck`, `commit`)
+ * and providing metadata such as `ipfsCid` and `packageName`. Also includes
+ * the original definition on `__vincentPolicyDef` for consumer-side re-wrapping.
+ */
 export function createVincentPolicy<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
@@ -220,6 +232,11 @@ export function createVincentPolicy<
   };
 }
 
+/**
+ * Adapts a single policy to a specific tool by applying parameter mappings.
+ * This allows the policy's schema-defined params to be inferred and automatically
+ * extracted from the tool's input params. Also attaches schema metadata for result typing.
+ */
 export function createVincentToolPolicy<
   PackageName extends string,
   ToolParamsSchema extends z.ZodType,
