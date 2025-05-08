@@ -408,22 +408,22 @@ export const gogoPolicy = async function () {
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
     },
   );
-  return policy2.policyDef.commit(
-    {
-      toolParams: {
-        toolName: 'wat',
-        maxUsage: 2383,
+
+  if (policy2.policyDef.commit) {
+    return policy2.policyDef.commit(
+      {
+        transactionId: '10981328981279487',
       },
-      userParams: { userAddress: 'meow', accessLevel: 'basic' },
-    },
-    {
-      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
-    },
-  );
+      {
+        delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+      },
+    );
+  }
+  return true;
 };
 
 export const gogo = async function () {
-  const wat = await myTool.execute(
+  const toolExecuteResult = await myTool.execute(
     { action: 'wat', target: 'meow', amount: 23098123 },
     {
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
@@ -446,8 +446,10 @@ export const gogo = async function () {
     },
   );
 
+  console.log(toolExecuteResult);
+
   if (myTool.precheck) {
-    const wat = await myTool.precheck(
+    return myTool.precheck(
       { action: 'wat', target: 'meow', amount: 23098123 },
       {
         delegation: { delegatee: 'meow', delegator: 'meowmeow' },
@@ -471,6 +473,6 @@ export const gogo = async function () {
         },
       },
     );
-    console.log(wat);
   }
+  return true;
 };
