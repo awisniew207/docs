@@ -387,4 +387,29 @@ export const myTool = createVincentTool({
   },
 });
 
-console.log(Object.keys(myTool));
+export const gogoPolicy = async function () {
+  return policy3.policyDef.evaluate(
+    {
+      toolParams: {
+        toolName: 'wat',
+        maxUsage: 2383,
+      },
+      userParams: { userAddress: 'meow', accessLevel: 'basic' },
+    },
+    {
+      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+    },
+  );
+};
+
+export const gogo = async function () {
+  const wat = await myTool.execute(
+    { action: 'wat', target: 'meow', amount: 23098123 },
+    {
+      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+      policiesContext: {},
+    },
+  );
+  console.log(wat);
+  return wat;
+};

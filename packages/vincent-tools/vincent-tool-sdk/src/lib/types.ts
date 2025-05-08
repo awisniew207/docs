@@ -522,7 +522,7 @@ export type ToolExecuteFunction<
   >
 >;
 
-export interface BaseToolContext<Policies = any> {
+export interface BaseToolContext<Policies = any> extends BaseContext {
   policiesContext: Policies;
 }
 
@@ -603,6 +603,20 @@ export interface VincentToolDef<
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
+  PrecheckFn =
+    | undefined
+    | ToolPrecheckFunction<
+        ToolParamsSchema,
+        PolicyEvaluationResultContext<PolicyMapType>,
+        PrecheckSuccessSchema,
+        PrecheckFailSchema
+      >,
+  ExecuteFn = ToolExecuteFunction<
+    ToolParamsSchema,
+    ToolExecutionPolicyContext<PolicyMapType>,
+    ExecuteSuccessSchema,
+    ExecuteFailSchema
+  >,
 > {
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies?: PolicyArray;
@@ -611,22 +625,11 @@ export interface VincentToolDef<
   executeSuccessSchema?: ExecuteSuccessSchema;
   executeFailSchema?: ExecuteFailSchema;
 
-  precheck: ToolPrecheckFunction<
-    ToolParamsSchema,
-    PolicyEvaluationResultContext<PolicyMapType>,
-    PrecheckSuccessSchema,
-    PrecheckFailSchema
-  >;
-
-  execute: ToolExecuteFunction<
-    ToolParamsSchema,
-    ToolExecutionPolicyContext<PolicyMapType>,
-    ExecuteSuccessSchema,
-    ExecuteFailSchema
-  >;
+  precheck?: PrecheckFn;
+  execute: ExecuteFn;
 }
 
-export interface BasePolicyContext {
+export interface BaseContext {
   delegation: {
     delegatee: string;
     delegator: string;

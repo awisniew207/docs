@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {
-  BasePolicyContext,
+  BaseContext,
   CommitFunction,
   EvaluateFunction,
   PolicyContext,
@@ -19,7 +19,7 @@ interface CreatePolicyContextParams<
   ipfsCid: string;
   allowSchema?: AllowSchema;
   denySchema?: DenySchema;
-  baseContext: BasePolicyContext;
+  baseContext: BaseContext;
 }
 
 export function createPolicyContext<
@@ -143,7 +143,7 @@ export function createVincentPolicy<
           ? z.infer<UserParams>
           : undefined;
       },
-      baseContext: BasePolicyContext,
+      baseContext: BaseContext,
     ) => {
       const context = createPolicyContext({
         baseContext,
@@ -165,7 +165,7 @@ export function createVincentPolicy<
                 ? z.infer<UserParams>
                 : undefined;
             },
-            baseContext: BasePolicyContext,
+            baseContext: BaseContext,
           ) => {
             const context = createPolicyContext({
               ipfsCid: originalPolicyDef.ipfsCid,
@@ -192,7 +192,7 @@ export function createVincentPolicy<
             args: CommitParams extends z.ZodType
               ? z.infer<CommitParams>
               : undefined,
-            baseContext: BasePolicyContext,
+            baseContext: BaseContext,
           ) => {
             const context = createPolicyContext({
               ipfsCid: originalPolicyDef.ipfsCid,

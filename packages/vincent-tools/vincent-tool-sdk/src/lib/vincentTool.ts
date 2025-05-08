@@ -1,14 +1,12 @@
 import { z } from 'zod';
 import {
   BaseToolContext,
-  ToolExecutionPolicyContext,
   ToolContext,
   ToolExecutionFailure,
   ToolExecutionSuccess,
-  PolicyEvaluationResultContext,
-  VincentToolDef,
   VincentToolPolicy,
   VincentPolicyDef,
+  VincentToolDef,
 } from './types';
 
 export interface CreateToolContextParams<
@@ -178,27 +176,37 @@ export function createVincentTool<
   const wrappedToolDef = {
     ...originalToolDef,
 
-    precheck: async (
-      params: z.infer<ToolParamsSchema>,
-      policiesContext: PolicyEvaluationResultContext<PolicyMapType>,
-    ) => {
-      const context = createToolContext({
-        successSchema: originalToolDef.precheckSuccessSchema,
-        failSchema: originalToolDef.precheckFailSchema,
-        baseContext: { policiesContext: policiesContext },
-      });
+    ...(originalToolDef.precheck !== undefined
+      ? {
+          precheck: async (
+            params: z.infer<ToolParamsSchema>,
+            baseToolContext: BaseToolContext,
+          ) => {
+            const context = createToolContext({
+              successSchema: originalToolDef.precheckSuccessSchema,
+              failSchema: originalToolDef.precheckFailSchema,
+              baseContext: baseToolContext,
+            });
 
-      return originalToolDef.precheck(params, context);
-    },
+            const { precheck: precheckFn } = originalToolDef;
+
+            if (!precheckFn) {
+              throw new Error('Commit function unexpectedly missing');
+            }
+
+            return precheckFn(params, context);
+          },
+        }
+      : { precheck: undefined }),
 
     execute: async (
       params: z.infer<ToolParamsSchema>,
-      policiesContext: ToolExecutionPolicyContext<PolicyMapType>,
+      baseToolContext: BaseToolContext,
     ) => {
       const context = createToolContext({
         successSchema: originalToolDef.executeSuccessSchema,
         failSchema: originalToolDef.executeFailSchema,
-        baseContext: { policiesContext: policiesContext },
+        baseContext: baseToolContext,
       });
 
       return originalToolDef.execute(params, context);

@@ -282,19 +282,6 @@ export function testExecutePolicyResultTyping() {
   });
 }
 
-/**
- * Test Case 5: Testing improper tool definition should fail
- */
-
-// @ts-expect-error - Missing required precheck function
-export const missingPrecheck = createVincentTool({
-  toolParamsSchema: testSchema,
-  supportedPolicies: [testPolicy],
-  execute: async (params, { succeed }) => {
-    return succeed();
-  },
-});
-
 // @ts-expect-error - Missing required execute function
 export const missingExecute = createVincentTool({
   toolParamsSchema: testSchema,
