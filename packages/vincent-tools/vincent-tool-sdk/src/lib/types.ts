@@ -138,6 +138,29 @@ export type CommitFunction<
   >
 >;
 
+export type VincentPolicy = {
+  ipfsCid: string;
+  packageName: string;
+  evaluate?: EvaluateFunction<any, any, any, any>;
+  commit?: CommitFunction<any, any, any>;
+  precheck?: PrecheckFunction<any, any, any, any>;
+  __vincentPolicyDef: VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >;
+};
+
 export type VincentPolicyDef<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,

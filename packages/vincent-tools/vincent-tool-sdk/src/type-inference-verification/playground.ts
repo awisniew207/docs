@@ -396,7 +396,19 @@ export const myTool = createVincentTool({
 });
 
 export const gogoPolicy = async function () {
-  return policy3.policyDef.evaluate(
+  await policy3.policyDef.evaluate(
+    {
+      toolParams: {
+        toolName: 'wat',
+        maxUsage: 2383,
+      },
+      userParams: { userAddress: 'meow', accessLevel: 'basic' },
+    },
+    {
+      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+    },
+  );
+  return policy2.policyDef.commit(
     {
       toolParams: {
         toolName: 'wat',
@@ -416,11 +428,14 @@ export const gogo = async function () {
     {
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
       policiesContext: {
-        evaluatedPolicies: ['extra-rate-limit', 'rate-limit'],
+        evaluatedPolicies: [
+          // 'extra-rate-limit',
+          'rate-limit',
+        ],
         allowedPolicies: {
-          'extra-rate-limit': {
-            result: { yes: true },
-          },
+          // 'extra-rate-limit': {
+          //   result: { yes: true },
+          // },
           'rate-limit': {
             result: {
               approvedCurrency: 'USD',
@@ -431,30 +446,31 @@ export const gogo = async function () {
     },
   );
 
-  const wat = await myTool.precheck(
-    { action: 'wat', target: 'meow', amount: 23098123 },
-    {
-      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
-      policiesContext: {
-        allow: false,
-        deniedPolicy: {
-          packageName: 'extra-rate-limit',
-          result: { reason: 'wth', numTries: 1 },
-        },
-        evaluatedPolicies: ['extra-rate-limit', 'rate-limit'],
-        allowedPolicies: {
-          'extra-rate-limit': {
-            result: 'wat',
+  if (myTool.precheck) {
+    const wat = await myTool.precheck(
+      { action: 'wat', target: 'meow', amount: 23098123 },
+      {
+        delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+        policiesContext: {
+          allow: false,
+          deniedPolicy: {
+            packageName: 'extra-rate-limit',
+            result: { reason: 'wth', numTries: 1 },
           },
-          'rate-limit': {
-            result: {
-              approvedCurrency: 'USD',
+          evaluatedPolicies: ['extra-rate-limit', 'rate-limit'],
+          allowedPolicies: {
+            'extra-rate-limit': {
+              result: 'wat',
+            },
+            'rate-limit': {
+              result: {
+                approvedCurrency: 'USD',
+              },
             },
           },
         },
       },
-    },
-  );
-  console.log(wat);
-  return wat;
+    );
+    console.log(wat);
+  }
 };

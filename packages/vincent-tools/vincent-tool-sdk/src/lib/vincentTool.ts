@@ -315,6 +315,7 @@ export function createVincentTool<
 
   return {
     ...wrappedToolDef,
+    __vincentToolDef: originalToolDef,
     __schemaTypes: {
       precheckSuccessSchema: toolDef.precheckSuccessSchema,
       precheckFailSchema: toolDef.precheckFailSchema,
@@ -322,6 +323,7 @@ export function createVincentTool<
       executeFailSchema: toolDef.executeFailSchema,
     },
   } as typeof wrappedToolDef & {
+    __vincentToolDef: typeof originalToolDef;
     __schemaTypes: {
       precheckSuccessSchema: PrecheckSuccessSchema;
       precheckFailSchema: PrecheckFailSchema;

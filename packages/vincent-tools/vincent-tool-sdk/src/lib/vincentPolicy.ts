@@ -212,7 +212,12 @@ export function createVincentPolicy<
       : { commit: undefined }),
   };
 
-  return wrappedPolicyDef;
+  return {
+    ...wrappedPolicyDef,
+    __vincentPolicyDef: originalPolicyDef,
+  } as typeof wrappedPolicyDef & {
+    __vincentPolicyDef: typeof originalPolicyDef;
+  };
 }
 
 export function createVincentToolPolicy<
@@ -263,6 +268,7 @@ export function createVincentToolPolicy<
 
   const result = {
     policyDef,
+    __vincentPolicyDef: config.policyDef,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
     __schemaTypes: {
@@ -280,6 +286,7 @@ export function createVincentToolPolicy<
 
   // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
   return result as {
+    __vincentPolicyDef: typeof config.policyDef;
     policyDef: typeof policyDef;
     toolParameterMappings: typeof config.toolParameterMappings;
     __schemaTypes: {
