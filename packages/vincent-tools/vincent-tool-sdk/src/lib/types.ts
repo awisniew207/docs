@@ -259,35 +259,6 @@ export type PolicyEvaluationResultContext<
               ? z.infer<Schema>
               : never
             : never;
-          commit: Policies[PolicyKey]['__schemaTypes'] extends {
-            commit: infer CommitFn;
-          }
-            ? CommitFn extends Function
-              ? WrappedCommitFunction<
-                  Policies[PolicyKey]['__schemaTypes'] extends {
-                    commitParamsSchema: infer CommitParams;
-                  }
-                    ? CommitParams extends z.ZodType
-                      ? z.infer<CommitParams>
-                      : never
-                    : never,
-                  | (Policies[PolicyKey]['__schemaTypes'] extends {
-                      commitAllowResultSchema: infer CommitAllowSchema;
-                    }
-                      ? CommitAllowSchema extends z.ZodType
-                        ? PolicyResponseAllow<z.infer<CommitAllowSchema>>
-                        : PolicyResponseAllowNoResult
-                      : PolicyResponseAllowNoResult)
-                  | (Policies[PolicyKey]['__schemaTypes'] extends {
-                      commitDenyResultSchema: infer CommitDenySchema;
-                    }
-                      ? CommitDenySchema extends z.ZodType
-                        ? PolicyResponseDeny<z.infer<CommitDenySchema>>
-                        : PolicyResponseDenyNoResult
-                      : PolicyResponseDenyNoResult)
-                >
-              : never
-            : undefined;
         };
       };
       deniedPolicy?: never;
@@ -322,6 +293,52 @@ export type PolicyEvaluationResultContext<
       };
     }
 );
+
+export type ToolExecutionPolicyEvaluationResult<
+  Policies extends Record<
+    string,
+    {
+      policyDef: VincentPolicyDef<
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any
+      >;
+      __schemaTypes?: {
+        evalAllowResultSchema?: z.ZodType;
+        evalDenyResultSchema?: z.ZodType;
+        commitParamsSchema?: z.ZodType;
+        commitAllowResultSchema?: z.ZodType;
+        commitDenyResultSchema?: z.ZodType;
+        evaluate?: Function;
+        precheck?: Function;
+        commit?: Function;
+      };
+    }
+  >,
+> = {
+  evaluatedPolicies: Array<keyof Policies>;
+  allowedPolicies: {
+    [PolicyKey in keyof Policies]?: {
+      result: Policies[PolicyKey]['__schemaTypes'] extends {
+        evalAllowResultSchema: infer Schema;
+      }
+        ? Schema extends z.ZodType
+          ? z.infer<Schema>
+          : never
+        : never;
+    };
+  };
+};
 
 export type ToolExecutionPolicyContext<
   Policies extends Record<
@@ -522,7 +539,7 @@ export type ToolExecuteFunction<
   >
 >;
 
-export interface BaseToolContext<Policies = any> extends BaseContext {
+export interface BaseToolContext<Policies> extends BaseContext {
   policiesContext: Policies;
 }
 
@@ -619,7 +636,7 @@ export interface VincentToolDef<
   >,
 > {
   toolParamsSchema: ToolParamsSchema;
-  supportedPolicies?: PolicyArray;
+  supportedPolicies: PolicyArray;
   precheckSuccessSchema?: PrecheckSuccessSchema;
   precheckFailSchema?: PrecheckFailSchema;
   executeSuccessSchema?: ExecuteSuccessSchema;

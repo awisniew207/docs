@@ -2,11 +2,13 @@ import { z } from 'zod';
 import {
   BaseToolContext,
   ToolContext,
-  ToolExecutionFailure,
-  ToolExecutionSuccess,
   VincentToolPolicy,
   VincentPolicyDef,
   VincentToolDef,
+  PolicyEvaluationResultContext,
+  ToolExecutionPolicyContext,
+  YouMustCallContextSucceedOrFail,
+  ToolExecutionPolicyEvaluationResult,
 } from './types';
 
 export interface CreateToolContextParams<
@@ -18,61 +20,153 @@ export interface CreateToolContextParams<
   failSchema?: FailSchema;
   baseToolContext: BaseToolContext<Policies>;
 }
-
-export function createToolContext<
-  SuccessSchema extends z.ZodType | undefined = undefined,
-  FailSchema extends z.ZodType | undefined = undefined,
-  Policies = any,
+export function createExecutionToolContext<
+  SuccessSchema extends z.ZodType | undefined,
+  FailSchema extends z.ZodType | undefined,
+  PolicyArray extends readonly VincentToolPolicy<any, any, any>[],
+  PolicyMapType extends Record<string, any>,
 >(params: {
-  baseContext: BaseToolContext<Policies>;
+  baseContext: BaseToolContext<
+    ToolExecutionPolicyEvaluationResult<PolicyMapType>
+  >;
   successSchema?: SuccessSchema;
   failSchema?: FailSchema;
-}): ToolContext<SuccessSchema, FailSchema, Policies> {
+  supportedPolicies: unknown;
+}): ToolContext<
+  SuccessSchema,
+  FailSchema,
+  ToolExecutionPolicyContext<PolicyMapType>
+> {
+  const { baseContext, successSchema, failSchema, supportedPolicies } = params;
+
+  const succeed = successSchema
+    ? (((result) => ({
+        success: true,
+        result,
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['succeed'])
+    : ((() => ({
+        success: true,
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['succeed']);
+
+  const fail = failSchema
+    ? (((result, error) => ({
+        success: false,
+        result,
+        ...(error ? { error } : {}),
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['fail'])
+    : (((error?: string) => ({
+        success: false,
+        ...(error ? { error } : {}),
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['fail']);
+
+  const map = supportedPolicies as PolicyMapType;
+
+  const upgradedPoliciesContext: ToolExecutionPolicyContext<PolicyMapType> = {
+    evaluatedPolicies: baseContext.policiesContext.evaluatedPolicies,
+    allow: true,
+    deniedPolicy: undefined as never,
+    allowedPolicies: (Object.keys(map) as (keyof PolicyMapType)[]).reduce(
+      (acc, key) => {
+        const entry = baseContext.policiesContext.allowedPolicies[key] as
+          | ToolExecutionPolicyContext<PolicyMapType>['allowedPolicies'][typeof key]
+          | undefined;
+
+        const policyDef = map[key]?.policyDef;
+
+        if (entry && policyDef?.commit) {
+          acc[key] = {
+            ...entry,
+            commit: policyDef.commit,
+          };
+        } else if (entry) {
+          acc[key] = entry;
+        }
+
+        return acc;
+      },
+      {} as ToolExecutionPolicyContext<PolicyMapType>['allowedPolicies'],
+    ),
+  };
+
+  return {
+    ...baseContext,
+    policiesContext: upgradedPoliciesContext,
+    succeed,
+    fail,
+  };
+}
+
+export function createPrecheckToolContext<
+  SuccessSchema extends z.ZodType | undefined,
+  FailSchema extends z.ZodType | undefined,
+  PolicyMap extends Record<
+    string,
+    {
+      policyDef: VincentPolicyDef<
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any
+      >;
+    }
+  >,
+>(params: {
+  baseContext: BaseToolContext<PolicyEvaluationResultContext<PolicyMap>>;
+  successSchema?: SuccessSchema;
+  failSchema?: FailSchema;
+}): ToolContext<
+  SuccessSchema,
+  FailSchema,
+  PolicyEvaluationResultContext<PolicyMap>
+> {
   const { baseContext, successSchema, failSchema } = params;
 
-  function succeedWithSchema<T>(result: T): ToolExecutionSuccess<T> {
-    return {
-      success: true,
-      result,
-    } as ToolExecutionSuccess<T>;
-  }
+  const succeed = successSchema
+    ? (((result) => ({
+        success: true,
+        result,
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['succeed'])
+    : ((() => ({
+        success: true,
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['succeed']);
 
-  function succeedWithoutSchema(): ToolExecutionSuccess<never> {
-    return {
-      success: true,
-    } as ToolExecutionSuccess<never>;
-  }
-
-  function failWithSchema<T>(
-    result: T,
-    error?: string,
-  ): ToolExecutionFailure<T> {
-    return {
-      success: false,
-      result,
-      ...(error ? { error } : {}),
-    } as ToolExecutionFailure<T>;
-  }
-
-  function failWithoutSchema(error?: string): ToolExecutionFailure<never> {
-    return {
-      success: false,
-      ...(error ? { error } : {}),
-    } as ToolExecutionFailure<never>;
-  }
-
-  const succeed = successSchema ? succeedWithSchema : succeedWithoutSchema;
-  const fail = failSchema ? failWithSchema : failWithoutSchema;
+  const fail = failSchema
+    ? (((result, error) => ({
+        success: false,
+        result,
+        ...(error ? { error } : {}),
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['fail'])
+    : (((error?: string) => ({
+        success: false,
+        ...(error ? { error } : {}),
+        [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+      })) as ToolContext<SuccessSchema, FailSchema, any>['fail']);
 
   return {
     ...baseContext,
     succeed,
     fail,
-  } as ToolContext<SuccessSchema, FailSchema, Policies>;
+  };
 }
 
 export function createPolicyMap<
-  T extends readonly VincentToolPolicy<any, any>[],
+  T extends readonly VincentToolPolicy<any, any, any>[],
   Pkgs extends
     T[number]['policyDef']['packageName'] = T[number]['policyDef']['packageName'],
 >(
@@ -94,6 +188,7 @@ export function createPolicyMap<
   }
   return result;
 }
+
 export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
@@ -164,10 +259,7 @@ export function createVincentTool<
     ExecuteFailSchema
   >,
 ) {
-  const policyMap = toolDef.supportedPolicies
-    ? createPolicyMap(toolDef.supportedPolicies)
-    : {};
-
+  const policyMap = createPolicyMap(toolDef.supportedPolicies);
   const originalToolDef = {
     ...toolDef,
     supportedPolicies: policyMap,
@@ -180,52 +272,56 @@ export function createVincentTool<
       ? {
           precheck: async (
             params: z.infer<ToolParamsSchema>,
-            baseToolContext: BaseToolContext,
+            baseToolContext: BaseToolContext<
+              PolicyEvaluationResultContext<PolicyMapType>
+            >,
           ) => {
-            const context = createToolContext({
+            const context = createPrecheckToolContext<
+              PrecheckSuccessSchema,
+              PrecheckFailSchema,
+              PolicyMapType
+            >({
+              baseContext: baseToolContext,
               successSchema: originalToolDef.precheckSuccessSchema,
               failSchema: originalToolDef.precheckFailSchema,
-              baseContext: baseToolContext,
             });
 
-            const { precheck: precheckFn } = originalToolDef;
-
-            if (!precheckFn) {
-              throw new Error('Commit function unexpectedly missing');
-            }
-
-            return precheckFn(params, context);
+            return originalToolDef.precheck!(params, context);
           },
         }
       : { precheck: undefined }),
 
     execute: async (
       params: z.infer<ToolParamsSchema>,
-      baseToolContext: BaseToolContext,
+      baseToolContext: BaseToolContext<
+        ToolExecutionPolicyEvaluationResult<PolicyMapType>
+      >,
     ) => {
-      const context = createToolContext({
+      const context = createExecutionToolContext<
+        ExecuteSuccessSchema,
+        ExecuteFailSchema,
+        PolicyArray,
+        PolicyMapType
+      >({
+        baseContext: baseToolContext,
         successSchema: originalToolDef.executeSuccessSchema,
         failSchema: originalToolDef.executeFailSchema,
-        baseContext: baseToolContext,
+        supportedPolicies: policyMap,
       });
 
       return originalToolDef.execute(params, context);
     },
   };
 
-  const result = {
+  return {
     ...wrappedToolDef,
-    // Explicitly include schema types for type inference
     __schemaTypes: {
       precheckSuccessSchema: toolDef.precheckSuccessSchema,
       precheckFailSchema: toolDef.precheckFailSchema,
       executeSuccessSchema: toolDef.executeSuccessSchema,
       executeFailSchema: toolDef.executeFailSchema,
     },
-  };
-
-  // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
-  return result as typeof wrappedToolDef & {
+  } as typeof wrappedToolDef & {
     __schemaTypes: {
       precheckSuccessSchema: PrecheckSuccessSchema;
       precheckFailSchema: PrecheckFailSchema;

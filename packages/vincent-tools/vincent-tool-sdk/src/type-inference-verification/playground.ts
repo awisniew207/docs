@@ -22,14 +22,17 @@ const commitParams1Schema = z.object({ confirmation: z.boolean() });
 
 // Define the result schemas for policy1
 const policy1EvalAllowResult = z.string(); // Result when allowed
-const policy1EvalDenyResult = z.object({ reason: z.string() }); // Result when denied
+const policy1EvalDenyResult = z.object({
+  reason: z.string(),
+  numTries: z.number(),
+}); // Result when denied
 const policy1CommitAllowResult = z.object({ success: z.boolean() });
 const policy1CommitDenyResult = z.object({ errorCode: z.number() });
 
 // Create policies with full type inference
 const policyDef1 = createVincentPolicy({
   ipfsCid: 'policy1',
-  packageName: 'extra-rate-limit',
+  packageName: 'extra-rate-limit' as const,
   toolParamsSchema: policy1Schema,
   userParamsSchema: userParams1Schema,
   commitParamsSchema: commitParams1Schema,
@@ -54,7 +57,10 @@ const policyDef1 = createVincentPolicy({
     if (targetIsAllowed && toolParams.targetAllowed) {
       return context.allow('APPROVED');
     } else {
-      return context.deny({ reason: 'Target not in allowed list' });
+      return context.deny({
+        reason: 'Target not in allowed list',
+        numTries: 1,
+      });
     }
   },
 
@@ -100,7 +106,7 @@ const policy2CommitDenyResult = z.object({ failureReason: z.string() });
 
 const policyDef2 = createVincentPolicy({
   ipfsCid: 'policy2',
-  packageName: 'rate-limit',
+  packageName: 'rate-limit' as const,
   toolParamsSchema: policy2Schema,
   userParamsSchema: userParams2Schema,
   commitParamsSchema: commitParams2Schema,
@@ -183,13 +189,14 @@ const policy3EvalAllowResult = z.object({
 
 const policy3EvalDenyResult = z.object({
   reason: z.string(),
+  numberOfTries: z.number(),
   suggestedAccessLevel: z.enum(['basic', 'premium', 'admin']).optional(),
 });
 
 // Create policy3 without a commit function
 const policyDef3 = createVincentPolicy({
   ipfsCid: 'policy3ipfscid123',
-  packageName: 'vincent-tool-sdk',
+  packageName: 'vincent-tool-sdk' as const,
   toolParamsSchema: policy3ToolParams,
   userParamsSchema: policy3UserParams,
   evalAllowResultSchema: policy3EvalAllowResult,
@@ -206,6 +213,7 @@ const policyDef3 = createVincentPolicy({
       return context.deny({
         reason: 'Basic users cannot access this tool',
         suggestedAccessLevel: 'premium',
+        numberOfTries: 1,
       });
     }
 
@@ -251,7 +259,7 @@ const toolPrecheckFailSchema = z.object({
 // Create your tool with fully typed policies
 export const myTool = createVincentTool({
   toolParamsSchema: myToolSchema,
-  supportedPolicies: [policy1, policy2, policy3],
+  supportedPolicies: [policy1, policy2, policy3] as const,
 
   // Add schemas for tool results
   executeSuccessSchema: toolExecuteSuccessSchema,
@@ -407,7 +415,44 @@ export const gogo = async function () {
     { action: 'wat', target: 'meow', amount: 23098123 },
     {
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
-      policiesContext: {},
+      policiesContext: {
+        evaluatedPolicies: ['extra-rate-limit', 'rate-limit'],
+        allowedPolicies: {
+          'extra-rate-limit': {
+            result: { yes: true },
+          },
+          'rate-limit': {
+            result: {
+              approvedCurrency: 'USD',
+            },
+          },
+        },
+      },
+    },
+  );
+
+  const wat = await myTool.precheck(
+    { action: 'wat', target: 'meow', amount: 23098123 },
+    {
+      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+      policiesContext: {
+        allow: false,
+        deniedPolicy: {
+          packageName: 'extra-rate-limit',
+          result: { reason: 'wth', numTries: 1 },
+        },
+        evaluatedPolicies: ['extra-rate-limit', 'rate-limit'],
+        allowedPolicies: {
+          'extra-rate-limit': {
+            result: 'wat',
+          },
+          'rate-limit': {
+            result: {
+              approvedCurrency: 'USD',
+            },
+          },
+        },
+      },
     },
   );
   console.log(wat);
