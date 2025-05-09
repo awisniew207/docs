@@ -1,47 +1,95 @@
 // src/lib/policyCore/precheck.ts
 
 import { z } from 'zod';
-import { PolicyResponse, VincentToolPolicy } from '../types';
+import { PolicyResponse, VincentPolicyDef } from '../types';
 import { createDenyResult } from './helpers';
 import { isPolicyDenyResponse } from './helpers';
 import { getValidatedParamsOrDeny, validateOrDeny } from './helpers';
 import { getSchemaForPolicyResponseResult } from './helpers';
+import { createVincentPolicy } from './vincentPolicy';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * Executes the `precheck` method on a wrapped VincentToolPolicy, with runtime validation
+ * Executes the `precheck` method on a wrapped VincentPolicyDef, with runtime validation
  * on input and output using the Zod schemas defined by the policy.
  */
 export async function precheck<
-  ToolParamsSchema extends VincentToolPolicy<any, any>['policyDef']['toolParamsSchema'],
-  UserParamsSchema extends VincentToolPolicy<
+  UserParamsSchema extends z.ZodType<any, any, any> = VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any
-  >['policyDef']['userParamsSchema'] = VincentToolPolicy<any, any>['policyDef']['userParamsSchema'],
-  PrecheckAllowResult extends z.ZodType<any, any, any> | undefined = VincentToolPolicy<
+  >['userParamsSchema'],
+  PrecheckAllowResult extends z.ZodType<any, any, any> | undefined = VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any
-  >['policyDef']['precheckAllowResultSchema'],
-  PrecheckDenyResult extends z.ZodType<any, any, any> | undefined = VincentToolPolicy<
+  >['precheckAllowResultSchema'],
+  PrecheckDenyResult extends z.ZodType<any, any, any> | undefined = VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any
-  >['policyDef']['precheckDenyResultSchema'],
+  >['precheckDenyResultSchema'],
 >(
-  policy: VincentToolPolicy<any, any>,
+  policyDef: VincentPolicyDef<
+    any,
+    any,
+    UserParamsSchema,
+    PrecheckAllowResult,
+    PrecheckDenyResult,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >,
   args: {
     toolParams: unknown;
     userParams: unknown;
     delegation: { delegatee: string; delegator: string };
   },
 ): Promise<PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>> {
-  const { policyDef } = policy;
   const { toolParams, userParams, delegation } = args;
   const { ipfsCid } = policyDef;
+
   try {
+    const vincentPolicy = createVincentPolicy(policyDef);
+
     const validated = getValidatedParamsOrDeny({
-      policy,
+      policyDef,
       rawToolParams: toolParams,
       rawUserParams: userParams,
       ipfsCid,
@@ -52,10 +100,16 @@ export async function precheck<
       return validated as PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
     }
 
-    const result = await policyDef.precheck(
+    if (!vincentPolicy.precheck) {
+      throw new Error('Expected precheck function, but none was defined!');
+    }
+
+    const result = await vincentPolicy.precheck(
       {
         toolParams: validated.toolParams,
-        userParams: validated.userParams,
+        userParams: validated.userParams as UserParamsSchema extends z.ZodType
+          ? z.infer<UserParamsSchema>
+          : undefined,
       },
       { delegation },
     );
@@ -74,7 +128,7 @@ export async function precheck<
 
     return {
       ipfsCid,
-      allow: result.allow,
+      allow: true,
       result: parsedResult as PrecheckAllowResult,
     };
   } catch (err) {

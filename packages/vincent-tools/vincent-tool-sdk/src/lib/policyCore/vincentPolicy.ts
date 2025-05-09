@@ -1,12 +1,6 @@
 // src/lib/policyCore/vincentPolicy.ts
 import { z } from 'zod';
-import {
-  BaseContext,
-  CommitFunction,
-  EvaluateFunction,
-  PrecheckFunction,
-  VincentPolicyDef,
-} from '../types';
+import { BaseContext, CommitFunction, PolicyLifecycleFunction, VincentPolicyDef } from '../types';
 import { createPolicyContext } from './policyContext/policyContext';
 
 /**
@@ -38,8 +32,8 @@ export function createVincentPolicy<
     CommitParams,
     CommitAllowResult,
     CommitDenyResult,
-    EvaluateFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
-    PrecheckFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
     CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >,
 ) {
@@ -161,8 +155,8 @@ export function createVincentToolPolicy<
     CommitParams,
     CommitAllowResult,
     CommitDenyResult,
-    EvaluateFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
-    PrecheckFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
     CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >;
   toolParameterMappings: Partial<{

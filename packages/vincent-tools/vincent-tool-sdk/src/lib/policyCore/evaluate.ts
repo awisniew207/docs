@@ -1,50 +1,96 @@
 // src/lib/policyCore/evaluate.ts
 
-import { z } from 'zod';
-import { PolicyResponse, VincentToolPolicy } from '../types';
+import { PolicyResponse, VincentPolicyDef } from '../types';
 import {
   createDenyResult,
-  isPolicyDenyResponse,
-  getValidatedParamsOrDeny,
-  validateOrDeny,
   getSchemaForPolicyResponseResult,
+  getValidatedParamsOrDeny,
+  isPolicyDenyResponse,
+  validateOrDeny,
 } from './helpers';
+import { createVincentPolicy } from './vincentPolicy';
+import { z } from 'zod';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
  * Executes the `evaluate` method on a wrapped VincentToolPolicy, with runtime validation
  * on input and output using the Zod schemas defined by the policy.
  */
 export async function evaluate<
-  ToolParamsSchema extends VincentToolPolicy<any, any>['policyDef']['toolParamsSchema'],
-  UserParamsSchema extends VincentToolPolicy<
+  UserParamsSchema extends z.ZodType<any, any, any> = VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any
-  >['policyDef']['userParamsSchema'] = VincentToolPolicy<any, any>['policyDef']['userParamsSchema'],
-  EvalAllowResult extends z.ZodType<any, any, any> | undefined = VincentToolPolicy<
+  >['userParamsSchema'],
+  EvalDenyResult extends z.ZodType<any, any, any> | undefined = VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any
-  >['policyDef']['evalAllowResultSchema'],
-  EvalDenyResult extends z.ZodType<any, any, any> | undefined = VincentToolPolicy<
+  >['evalDenyResultSchema'],
+  EvalAllowResult extends z.ZodType<any, any, any> | undefined = VincentPolicyDef<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any
-  >['policyDef']['evalDenyResultSchema'],
+  >['evalAllowResultSchema'],
 >(
-  policy: VincentToolPolicy<any, any>,
+  policyDef: VincentPolicyDef<
+    any,
+    any,
+    UserParamsSchema,
+    any,
+    any,
+    EvalAllowResult,
+    EvalDenyResult,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >,
   args: {
     toolParams: unknown;
     userParams: unknown;
     delegation: { delegatee: string; delegator: string };
   },
 ): Promise<PolicyResponse<EvalAllowResult, EvalDenyResult>> {
-  const { policyDef } = policy;
   const { toolParams, userParams, delegation } = args;
   const { ipfsCid } = policyDef;
+
   try {
     const validated = getValidatedParamsOrDeny({
-      policy,
+      policyDef,
       rawToolParams: toolParams,
       rawUserParams: userParams,
       ipfsCid,
@@ -55,10 +101,14 @@ export async function evaluate<
       return validated as PolicyResponse<EvalAllowResult, EvalDenyResult>;
     }
 
-    const result = await policyDef.evaluate(
+    const vincentPolicy = createVincentPolicy(policyDef);
+
+    const result = await vincentPolicy.evaluate(
       {
         toolParams: validated.toolParams,
-        userParams: validated.userParams,
+        userParams: validated.userParams as UserParamsSchema extends z.ZodType
+          ? z.infer<UserParamsSchema>
+          : undefined,
       },
       { delegation },
     );
@@ -77,7 +127,7 @@ export async function evaluate<
 
     return {
       ipfsCid,
-      allow: result.allow,
+      allow: true,
       result: parsedResult as EvalAllowResult,
     };
   } catch (err) {
