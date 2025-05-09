@@ -5,7 +5,7 @@
  * using a tool with two policies - one simple and one with commit functionality.
  */
 import { z } from 'zod';
-import { createVincentTool } from '../lib/vincentTool';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 // Base tool schema

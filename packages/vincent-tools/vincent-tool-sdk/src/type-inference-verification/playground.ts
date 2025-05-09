@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
-import { createVincentTool } from '../lib/vincentTool';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 
 // Define your tool schema
 const myToolSchema = z.object({

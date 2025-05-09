@@ -5,7 +5,7 @@
  * policy results, and context manipulation.
  */
 import { z } from 'zod';
-import { createVincentTool } from '../lib/vincentTool';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 // Define a schema for our test cases

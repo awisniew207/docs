@@ -40,3 +40,10 @@ export interface PolicyContext<
     ? (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>
     : (error?: string) => ContextDenyResponseNoResult;
 }
+
+export type EnforcePolicyResponse<T> = typeof YouMustCallContextAllowOrDeny extends keyof T
+  ? T
+  : {
+      ERROR: 'You must return the result of context.allow() or context.deny()';
+      FIX: 'Do not construct the return value manually. Use the injected context helpers.';
+    };

@@ -5,7 +5,7 @@
  * for tool definitions, focusing on success/failure responses.
  */
 import { z } from 'zod';
-import { createVincentTool } from '../lib/vincentTool';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */

@@ -5,7 +5,7 @@ import { z, ZodType } from 'zod';
 import {
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
-  VincentToolPolicy,
+  VincentPolicyDef,
   ZodValidationDenyResult,
 } from '../../types';
 import { createDenyResult } from './resultCreators';
@@ -58,14 +58,18 @@ export function validateOrDeny<T extends ZodType<any, any, any>>(
   return parsed.data;
 }
 
-type InferToolParams<TPolicy extends VincentToolPolicy<any, any>> = z.infer<
-  TPolicy['policyDef']['toolParamsSchema']
->;
-type InferUserParams<TPolicy extends VincentToolPolicy<any, any>> =
-  TPolicy['policyDef']['userParamsSchema'] extends z.ZodType<any, any, any>
-    ? z.infer<TPolicy['policyDef']['userParamsSchema']>
+type InferToolParams<
+  TPolicy extends VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+> = z.infer<TPolicy['toolParamsSchema']>;
+type InferUserParams<
+  TPolicy extends VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+> =
+  TPolicy['userParamsSchema'] extends z.ZodType<any, any, any>
+    ? z.infer<TPolicy['userParamsSchema']>
     : undefined;
-type ParamResult<TPolicy extends VincentToolPolicy<any, any>> =
+type ParamResult<
+  TPolicy extends VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+> =
   | {
       toolParams: InferToolParams<TPolicy>;
       userParams: InferUserParams<TPolicy>;
@@ -73,16 +77,20 @@ type ParamResult<TPolicy extends VincentToolPolicy<any, any>> =
   | PolicyResponseDeny<ZodValidationDenyResult>
   | PolicyResponseDenyNoResult;
 
-interface ValidatedParamsOrDeny<TPolicy extends VincentToolPolicy<any, any>> {
-  policy: TPolicy;
+interface ValidatedParamsOrDeny<
+  TPolicy extends VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+> {
+  policyDef: TPolicy;
   rawToolParams: unknown;
   rawUserParams: unknown;
   ipfsCid: string;
   phase: 'evaluate' | 'precheck' | 'commit';
 }
 
-export function getValidatedParamsOrDeny<TPolicy extends VincentToolPolicy<any, any>>({
-  policy,
+export function getValidatedParamsOrDeny<
+  TPolicy extends VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+>({
+  policyDef,
   rawToolParams,
   rawUserParams,
   ipfsCid,
@@ -90,7 +98,7 @@ export function getValidatedParamsOrDeny<TPolicy extends VincentToolPolicy<any, 
 }: ValidatedParamsOrDeny<TPolicy>): ParamResult<TPolicy> {
   const toolParams = validateOrDeny(
     rawToolParams,
-    policy.policyDef.toolParamsSchema,
+    policyDef.toolParamsSchema,
     ipfsCid,
     phase,
     'input',
@@ -100,7 +108,7 @@ export function getValidatedParamsOrDeny<TPolicy extends VincentToolPolicy<any, 
 
   const userParams = validateOrDeny(
     rawUserParams,
-    policy.policyDef.userParamsSchema,
+    policyDef.userParamsSchema,
     ipfsCid,
     phase,
     'input',
