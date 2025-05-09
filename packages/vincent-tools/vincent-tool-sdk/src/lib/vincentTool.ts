@@ -12,6 +12,7 @@ import {
   ToolExecutionPolicyEvaluationResult,
 } from './types';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Builds an execution-time ToolContext for use inside `execute()` lifecycle methods.
  * It upgrades the incoming external policy context with `commit()` methods derived
@@ -247,7 +248,13 @@ export function createVincentTool<
               failSchema: originalToolDef.precheckFailSchema,
             });
 
-            return originalToolDef.precheck!(params, context);
+            const { precheck: precheckFn } = originalToolDef;
+
+            if (!precheckFn) {
+              throw new Error('precheck function unexpectedly missing');
+            }
+
+            return precheckFn(params, context);
           },
         }
       : { precheck: undefined }),

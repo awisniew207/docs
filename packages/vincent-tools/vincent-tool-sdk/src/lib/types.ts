@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { z } from 'zod';
+import { z, type ZodError } from 'zod';
 import {
   ContextAllowResponse,
   ContextAllowResponseNoResult,
@@ -10,8 +10,7 @@ import {
   ContextDenyResponseNoResult,
   PolicyContext,
   YouMustCallContextAllowOrDeny,
-} from './policyContext/types';
-
+} from './policyCore/policyContext/types';
 export interface PolicyResponseAllow<AllowResult> {
   ipfsCid: string;
   allow: true;
@@ -24,11 +23,15 @@ export interface PolicyResponseAllowNoResult {
   result?: never;
 }
 
+export interface ZodValidationDenyResult {
+  zodError: ZodError<unknown>;
+}
+
 export interface PolicyResponseDeny<DenyResult> {
   ipfsCid: string;
   allow: false;
-  result: DenyResult;
   error?: string;
+  result: DenyResult | ZodValidationDenyResult;
 }
 
 export interface PolicyResponseDenyNoResult {

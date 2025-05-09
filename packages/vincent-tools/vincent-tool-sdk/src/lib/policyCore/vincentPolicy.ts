@@ -90,7 +90,7 @@ export function createVincentPolicy<
             const { precheck: precheckFn } = originalPolicyDef;
 
             if (!precheckFn) {
-              throw new Error('Commit function unexpectedly missing');
+              throw new Error('precheck function unexpectedly missing');
             }
 
             return precheckFn(args, context);
@@ -114,7 +114,7 @@ export function createVincentPolicy<
 
             const { commit: commitFn } = originalPolicyDef;
             if (!commitFn) {
-              throw new Error('Commit function unexpectedly missing');
+              throw new Error('commit function unexpectedly missing');
             }
 
             return commitFn(args, context);

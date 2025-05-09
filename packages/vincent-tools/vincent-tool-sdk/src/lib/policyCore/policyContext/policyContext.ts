@@ -1,6 +1,6 @@
 // src/lib/policyContext/policyContext.ts
 import { z } from 'zod';
-import { BaseContext } from '../types';
+import { BaseContext } from '../../types';
 import {
   ContextAllowResponse,
   ContextAllowResponseNoResult,
@@ -18,6 +18,8 @@ interface CreatePolicyContextParams<
   denySchema?: DenySchema;
   baseContext: BaseContext;
 }
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
  * Creates a policy execution context to be passed into lifecycle methods

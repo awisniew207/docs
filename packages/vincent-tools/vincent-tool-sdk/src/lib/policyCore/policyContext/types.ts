@@ -5,7 +5,7 @@ import {
   PolicyResponseAllowNoResult,
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
-} from '../types';
+} from '../../types';
 
 export const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
   'PolicyResponses must come from calling context.allow() or context.deny()',
