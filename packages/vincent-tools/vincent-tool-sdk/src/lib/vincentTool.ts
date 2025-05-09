@@ -1,3 +1,4 @@
+// src/lib/vincentTool.ts
 import { z } from 'zod';
 import {
   BaseToolContext,
@@ -20,20 +21,13 @@ import {
 export function createExecutionToolContext<
   SuccessSchema extends z.ZodType | undefined,
   FailSchema extends z.ZodType | undefined,
-  PolicyArray extends readonly VincentToolPolicy<any, any, any>[],
   PolicyMapType extends Record<string, any>,
 >(params: {
-  baseContext: BaseToolContext<
-    ToolExecutionPolicyEvaluationResult<PolicyMapType>
-  >;
+  baseContext: BaseToolContext<ToolExecutionPolicyEvaluationResult<PolicyMapType>>;
   successSchema?: SuccessSchema;
   failSchema?: FailSchema;
   supportedPolicies: unknown;
-}): ToolContext<
-  SuccessSchema,
-  FailSchema,
-  ToolExecutionPolicyContext<PolicyMapType>
-> {
+}): ToolContext<SuccessSchema, FailSchema, ToolExecutionPolicyContext<PolicyMapType>> {
   const { baseContext, successSchema, failSchema, supportedPolicies } = params;
 
   const succeed = successSchema
@@ -108,32 +102,14 @@ export function createPrecheckToolContext<
   PolicyMap extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
     }
   >,
 >(params: {
   baseContext: BaseToolContext<PolicyEvaluationResultContext<PolicyMap>>;
   successSchema?: SuccessSchema;
   failSchema?: FailSchema;
-}): ToolContext<
-  SuccessSchema,
-  FailSchema,
-  PolicyEvaluationResultContext<PolicyMap>
-> {
+}): ToolContext<SuccessSchema, FailSchema, PolicyEvaluationResultContext<PolicyMap>> {
   const { baseContext, successSchema, failSchema } = params;
 
   const succeed = successSchema
@@ -180,8 +156,7 @@ export function createPrecheckToolContext<
  */
 export function createPolicyMap<
   T extends readonly VincentToolPolicy<any, any, any>[],
-  Pkgs extends
-    T[number]['policyDef']['packageName'] = T[number]['policyDef']['packageName'],
+  Pkgs extends T[number]['policyDef']['packageName'] = T[number]['policyDef']['packageName'],
 >(
   policies: T,
 ): string extends Pkgs
@@ -212,42 +187,14 @@ export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
     ToolParamsSchema,
-    VincentPolicyDef<
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any
-    >
+    VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
   >[],
   PkgNames extends
     PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
   PolicyMapType extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -257,10 +204,7 @@ export function createVincentTool<
       };
     }
   > = {
-    [K in PkgNames]: Extract<
-      PolicyArray[number],
-      { policyDef: { packageName: K } }
-    >;
+    [K in PkgNames]: Extract<PolicyArray[number], { policyDef: { packageName: K } }>;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
@@ -291,9 +235,7 @@ export function createVincentTool<
       ? {
           precheck: async (
             params: z.infer<ToolParamsSchema>,
-            baseToolContext: BaseToolContext<
-              PolicyEvaluationResultContext<PolicyMapType>
-            >,
+            baseToolContext: BaseToolContext<PolicyEvaluationResultContext<PolicyMapType>>,
           ) => {
             const context = createPrecheckToolContext<
               PrecheckSuccessSchema,
@@ -312,14 +254,11 @@ export function createVincentTool<
 
     execute: async (
       params: z.infer<ToolParamsSchema>,
-      baseToolContext: BaseToolContext<
-        ToolExecutionPolicyEvaluationResult<PolicyMapType>
-      >,
+      baseToolContext: BaseToolContext<ToolExecutionPolicyEvaluationResult<PolicyMapType>>,
     ) => {
       const context = createExecutionToolContext<
         ExecuteSuccessSchema,
         ExecuteFailSchema,
-        PolicyArray,
         PolicyMapType
       >({
         baseContext: baseToolContext,
