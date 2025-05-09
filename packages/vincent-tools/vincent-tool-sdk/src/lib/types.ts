@@ -1,80 +1,58 @@
+// src/lib/types.ts
+
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from 'zod';
+import {
+  ContextAllowResponse,
+  ContextAllowResponseNoResult,
+  ContextDenyResponse,
+  ContextDenyResponseNoResult,
+  PolicyContext,
+  YouMustCallContextAllowOrDeny,
+} from './policyContext/types';
 
-export const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
-  'PolicyResponses must come from calling context.allow() or context.deny()',
-);
-
-export type PhantomPolicyReturnType<T> = T & {
-  [YouMustCallContextAllowOrDeny]: 'PolicyResponse';
-};
-
-export type PolicyResponseAllow<AllowResult> = PhantomPolicyReturnType<{
+export interface PolicyResponseAllow<AllowResult> {
   ipfsCid: string;
   allow: true;
   result: AllowResult;
-}>;
+}
 
-export type PolicyResponseAllowNoResult = PhantomPolicyReturnType<{
+export interface PolicyResponseAllowNoResult {
   ipfsCid: string;
   allow: true;
   result?: never;
-}>;
+}
 
-export type PolicyResponseDeny<DenyResult> = PhantomPolicyReturnType<{
+export interface PolicyResponseDeny<DenyResult> {
   ipfsCid: string;
   allow: false;
   result: DenyResult;
   error?: string;
-}>;
+}
 
-export type PolicyResponseDenyNoResult = PhantomPolicyReturnType<{
+export interface PolicyResponseDenyNoResult {
   ipfsCid: string;
   allow: false;
   error?: string;
   result: never;
-}>;
-
-export type PolicyResponse<AllowResult = never, DenyResult = never> =
-  | PolicyResponseAllow<AllowResult>
-  | PolicyResponseDeny<DenyResult>;
-
-export interface PolicyContext<
-  AllowSchema extends z.ZodType | undefined = undefined,
-  DenySchema extends z.ZodType | undefined = undefined,
-> {
-  delegation: {
-    delegatee: string;
-    delegator: string;
-  };
-
-  // Instead of branded types, we use conditional types directly
-  allow: AllowSchema extends z.ZodType
-    ? (
-        result: z.infer<AllowSchema>,
-      ) => PolicyResponseAllow<z.infer<AllowSchema>>
-    : () => PolicyResponseAllowNoResult;
-
-  deny: DenySchema extends z.ZodType
-    ? (
-        result: z.infer<DenySchema>,
-        error?: string,
-      ) => PolicyResponseDeny<z.infer<DenySchema>>
-    : (error?: string) => PolicyResponseDenyNoResult;
 }
 
-// Type for the wrapped commit function that handles both with and without args
-export type WrappedCommitFunction<CommitParams, Result> =
-  CommitParams extends void
-    ? () => Promise<Result> // No arguments version
-    : (args: CommitParams) => Promise<Result>; // With arguments version
+export type PolicyResponse<AllowResult, DenyResults> =
+  | (PolicyResponseAllow<AllowResult> | PolicyResponseAllowNoResult)
+  | (PolicyResponseDeny<DenyResults> | PolicyResponseDenyNoResult);
 
-type EnforcePolicyResponse<T> =
-  typeof YouMustCallContextAllowOrDeny extends keyof T
-    ? T
-    : {
-        ERROR: 'You must return the result of context.allow() or context.deny()';
-        FIX: 'Do not construct the return value manually. Use the injected context helpers.';
-      };
+// Type for the wrapped commit function that handles both with and without args
+export type WrappedCommitFunction<CommitParams, Result> = CommitParams extends void
+  ? () => Promise<Result> // No arguments version
+  : (args: CommitParams) => Promise<Result>; // With arguments version
+
+type EnforcePolicyResponse<T> = typeof YouMustCallContextAllowOrDeny extends keyof T
+  ? T
+  : {
+      ERROR: 'You must return the result of context.allow() or context.deny()';
+      FIX: 'Do not construct the return value manually. Use the injected context helpers.';
+    };
 
 export type EvaluateFunction<
   ToolParams extends z.ZodType,
@@ -90,11 +68,11 @@ export type EvaluateFunction<
 ) => Promise<
   EnforcePolicyResponse<
     | (AllowResult extends z.ZodType
-        ? PolicyResponseAllow<z.infer<AllowResult>>
-        : PolicyResponseAllowNoResult)
+        ? ContextAllowResponse<z.infer<AllowResult>>
+        : ContextAllowResponseNoResult)
     | (DenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<DenyResult>>
-        : PolicyResponseDenyNoResult)
+        ? ContextDenyResponse<z.infer<DenyResult>>
+        : ContextDenyResponseNoResult)
   >
 >;
 
@@ -112,11 +90,11 @@ export type PrecheckFunction<
 ) => Promise<
   EnforcePolicyResponse<
     | (PrecheckAllowResult extends z.ZodType
-        ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
-        : PolicyResponseAllowNoResult)
+        ? ContextAllowResponse<z.infer<PrecheckAllowResult>>
+        : ContextAllowResponseNoResult)
     | (PrecheckDenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
-        : PolicyResponseDenyNoResult)
+        ? ContextDenyResponse<z.infer<PrecheckDenyResult>>
+        : ContextDenyResponseNoResult)
   >
 >;
 
@@ -130,11 +108,11 @@ export type CommitFunction<
 ) => Promise<
   EnforcePolicyResponse<
     | (CommitAllowResult extends z.ZodType
-        ? PolicyResponseAllow<z.infer<CommitAllowResult>>
-        : PolicyResponseAllowNoResult)
+        ? ContextAllowResponse<z.infer<CommitAllowResult>>
+        : ContextAllowResponseNoResult)
     | (CommitDenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<CommitDenyResult>>
-        : PolicyResponseDenyNoResult)
+        ? ContextDenyResponse<z.infer<CommitDenyResult>>
+        : ContextDenyResponseNoResult)
   >
 >;
 
@@ -173,23 +151,11 @@ export type VincentPolicyDef<
   CommitParams extends z.ZodType | undefined = undefined,
   CommitAllowResult extends z.ZodType | undefined = undefined,
   CommitDenyResult extends z.ZodType | undefined = undefined,
-  EvaluateFn = EvaluateFunction<
-    PolicyToolParams,
-    UserParams,
-    EvalAllowResult,
-    EvalDenyResult
-  >,
+  EvaluateFn = EvaluateFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
   PrecheckFn =
     | undefined
-    | PrecheckFunction<
-        PolicyToolParams,
-        UserParams,
-        PrecheckAllowResult,
-        PrecheckDenyResult
-      >,
-  CommitFn =
-    | undefined
-    | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
+    | PrecheckFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
+  CommitFn = undefined | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 > = {
   // Schema properties
   ipfsCid: string;
@@ -231,9 +197,7 @@ export type VincentToolPolicy<
 > = {
   policyDef: PolicyDefType & { packageName: PackageName };
   toolParameterMappings: Partial<{
-    [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<
-      PolicyDefType['toolParamsSchema']
-    >;
+    [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyDefType['toolParamsSchema']>;
   }>;
 };
 
@@ -241,21 +205,7 @@ export type PolicyEvaluationResultContext<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -292,16 +242,13 @@ export type PolicyEvaluationResultContext<
         packageName: keyof Policies;
         result: {
           error?: string;
-        } & (Policies[Extract<
-          keyof Policies,
-          string
-        >]['__schemaTypes'] extends {
+        } & (Policies[Extract<keyof Policies, string>]['__schemaTypes'] extends {
           evalDenyResultSchema: infer Schema;
         }
           ? Schema extends z.ZodType
             ? z.infer<Schema>
-            : {}
-          : {});
+            : undefined
+          : undefined);
       };
       allowedPolicies?: {
         [PolicyKey in keyof Policies]?: {
@@ -321,21 +268,7 @@ export type ToolExecutionPolicyEvaluationResult<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -367,21 +300,7 @@ export type ToolExecutionPolicyContext<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -422,16 +341,16 @@ export type ToolExecutionPolicyContext<
                   commitAllowResultSchema: infer CommitAllowSchema;
                 }
                   ? CommitAllowSchema extends z.ZodType
-                    ? PolicyResponseAllow<z.infer<CommitAllowSchema>>
-                    : PolicyResponseAllowNoResult
-                  : PolicyResponseAllowNoResult)
+                    ? ContextAllowResponse<z.infer<CommitAllowSchema>>
+                    : ContextAllowResponseNoResult
+                  : ContextAllowResponseNoResult)
               | (Policies[PolicyKey]['__schemaTypes'] extends {
                   commitDenyResultSchema: infer CommitDenySchema;
                 }
                   ? CommitDenySchema extends z.ZodType
-                    ? PolicyResponseDeny<z.infer<CommitDenySchema>>
-                    : PolicyResponseDenyNoResult
-                  : PolicyResponseDenyNoResult)
+                    ? ContextDenyResponse<z.infer<CommitDenySchema>>
+                    : ContextDenyResponseNoResult
+                  : ContextDenyResponseNoResult)
             >
           : never
         : undefined;
@@ -452,27 +371,24 @@ export type PhantomToolReturnType<T> = T & {
   [YouMustCallContextSucceedOrFail]: 'ToolResponse';
 };
 
-export type EnforceToolResponse<T> =
-  typeof YouMustCallContextSucceedOrFail extends keyof T
-    ? T
-    : {
-        ERROR: 'You must return the result of context.succeed() or context.fail()';
-        FIX: 'Do not construct tool result objects manually.';
-      };
+export type EnforceToolResponse<T> = typeof YouMustCallContextSucceedOrFail extends keyof T
+  ? T
+  : {
+      ERROR: 'You must return the result of context.succeed() or context.fail()';
+      FIX: 'Do not construct tool result objects manually.';
+    };
 
-export type ToolExecutionSuccess<SuccessResult = never> =
-  SuccessResult extends never
-    ? ToolExecutionSuccessNoResult
-    : PhantomToolReturnType<{
-        success: true;
-        result: SuccessResult;
-      }>;
+export type ToolExecutionSuccess<SuccessResult = never> = SuccessResult extends never
+  ? ToolExecutionSuccessNoResult
+  : PhantomToolReturnType<{
+      success: true;
+      result: SuccessResult;
+    }>;
 
-export interface ToolExecutionSuccessNoResult
-  extends PhantomToolReturnType<{
-    success: true;
-    result?: never;
-  }> {}
+export type ToolExecutionSuccessNoResult = PhantomToolReturnType<{
+  success: true;
+  result?: never;
+}>;
 
 export type ToolExecutionFailure<FailResult = never> = FailResult extends never
   ? ToolExecutionFailureNoResult
@@ -482,26 +398,23 @@ export type ToolExecutionFailure<FailResult = never> = FailResult extends never
       error?: string;
     }>;
 
-export interface ToolExecutionFailureNoResult
-  extends PhantomToolReturnType<{
-    success: false;
-    error?: string;
-    result?: never;
-  }> {}
+export type ToolExecutionFailureNoResult = PhantomToolReturnType<{
+  success: false;
+  error?: string;
+  result?: never;
+}>;
 
-export type ToolPrecheckSuccess<SuccessResult = never> =
-  SuccessResult extends never
-    ? ToolPrecheckSuccessNoResult
-    : PhantomToolReturnType<{
-        success: true;
-        result: SuccessResult;
-      }>;
+export type ToolPrecheckSuccess<SuccessResult = never> = SuccessResult extends never
+  ? ToolPrecheckSuccessNoResult
+  : PhantomToolReturnType<{
+      success: true;
+      result: SuccessResult;
+    }>;
 
-export interface ToolPrecheckSuccessNoResult
-  extends PhantomToolReturnType<{
-    success: true;
-    result?: never;
-  }> {}
+export type ToolPrecheckSuccessNoResult = PhantomToolReturnType<{
+  success: true;
+  result?: never;
+}>;
 
 export type ToolPrecheckFailure<FailResult = never> = FailResult extends never
   ? ToolPrecheckFailureNoResult
@@ -511,12 +424,11 @@ export type ToolPrecheckFailure<FailResult = never> = FailResult extends never
       error?: string;
     }>;
 
-export interface ToolPrecheckFailureNoResult
-  extends PhantomToolReturnType<{
-    success: false;
-    error?: string;
-    result?: never;
-  }> {}
+export type ToolPrecheckFailureNoResult = PhantomToolReturnType<{
+  success: false;
+  error?: string;
+  result?: never;
+}>;
 
 export type ToolPrecheckFunction<
   ToolParams extends z.ZodType,
@@ -572,16 +484,11 @@ export interface ToolContext<
   Policies = any,
 > extends BaseToolContext<Policies> {
   succeed: SuccessSchema extends z.ZodType
-    ? (
-        result: z.infer<SuccessSchema>,
-      ) => ToolExecutionSuccess<z.infer<SuccessSchema>>
+    ? (result: z.infer<SuccessSchema>) => ToolExecutionSuccess<z.infer<SuccessSchema>>
     : () => ToolExecutionSuccess;
 
   fail: FailSchema extends z.ZodType
-    ? (
-        result: z.infer<FailSchema>,
-        error?: string,
-      ) => ToolExecutionFailure<z.infer<FailSchema>>
+    ? (result: z.infer<FailSchema>, error?: string) => ToolExecutionFailure<z.infer<FailSchema>>
     : (error?: string) => ToolExecutionFailure;
 }
 
@@ -589,42 +496,14 @@ export interface VincentToolDef<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
     ToolParamsSchema,
-    VincentPolicyDef<
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      any
-    >
+    VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
   >[],
   PkgNames extends
     PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
   PolicyMapType extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -634,10 +513,7 @@ export interface VincentToolDef<
       };
     }
   > = {
-    [K in PkgNames]: Extract<
-      PolicyArray[number],
-      { policyDef: { packageName: K } }
-    >;
+    [K in PkgNames]: Extract<PolicyArray[number], { policyDef: { packageName: K } }>;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
