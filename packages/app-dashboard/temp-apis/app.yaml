@@ -1,0 +1,531 @@
+openapi: 3.0.4
+info:
+  title: Vincent Registry
+  description: Vincent Registry APIs!
+  contact:
+    email: andrew@litprotocol.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.12
+tags:
+  - name: App
+    description: Everything about the Applications
+    externalDocs:
+      description: Find out more
+      url: https://www.notion.so/litprotocol/Vincent-Off-chain-Service-Tech-Spec-API-Specifics-1ed6f449b041803facf2f7148c52c815?showMoveTo=true&saveParent=true
+paths:
+  /app:
+    post:
+      tags:
+        - app
+      summary: Creates a new application.
+      operationId: createApp
+      requestBody:
+        description: Developer-defined application information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreateAppDef'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      
+  /app/{identity}:
+    get:
+      tags:
+        - app
+      summary: Fetches an application.
+      operationId: getApp
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application to retrieve
+          required: true
+          schema:
+            type: string
+            example: "AppDef|5"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppDef'
+        '404':
+          description: Application not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    put:
+      tags:
+        - app
+      summary: Edits an application.
+      operationId: editApp
+      requestBody:
+        description: Developer-defined updated application details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreateAppDef'
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application to edit
+          required: true
+          schema:
+            type: string
+            example: "AppDef|5"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - app
+      summary: Deletes an application.
+      operationId: deleteApp
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application to delete
+          required: true
+          schema:
+            type: string
+            example: "AppDef|5"
+      responses:
+        '200':
+          description: OK - Resource successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Application successfully deleted"
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /app/{identity}/versions:
+    get:
+      tags:
+        - app
+      summary: Fetches all versions of an application.
+      operationId: getVersions
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application whose versions will be fetched
+          required: true
+          schema: 
+            type: string
+            example: "AppDef|5"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IAppVersionDef'
+        '404':
+          description: Application not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+                
+  /app/version/{identity}:
+    post:
+      tags:
+        - app/version
+      summary: Creates an application version.
+      operationId: createAppVersion
+      requestBody:
+        description: Developer-defined version details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreateAppVersionDef'
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application to create a new version for
+          required: true
+          schema:
+            type: string
+            example: "AppDef|5"
+      responses:
+        '200':
+          description: Successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppVersionDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+    get:
+      tags:
+        - app/version
+      summary: Fetches an application version.
+      operationId: getAppVersion
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application version to retrieve
+          required: true
+          schema:
+            type: string
+            example: "AppVersionDef|5@2"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppVersionWithToolsDef'
+        '404':
+          description: Application not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - app/version
+      summary: Edits an application version.
+      operationId: editAppVersion
+      requestBody:
+        description: Update version changes field
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                changes:
+                  type: string
+                  example: "Updated changelog information"
+              required:
+                - changes
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application version to edit
+          required: true
+          schema:
+            type: string
+            example: "AppVersionDef|5@2"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppVersionDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /app/version/{identity}/toggle:
+    post:
+      tags:
+        - app/version
+      summary: Toggles enabled/disabled for an application version.
+      operationId: disableAppVersion
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the application version to toggle
+          required: true
+          schema:
+            type: string
+            example: "AppVersionDef|5@2"
+      responses:
+        '200':
+          description: Successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IAppVersionDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      
+
+components:
+  schemas:
+    IAppDef:
+      type: object
+      required:
+        - name
+        - description
+        - contactEmail
+        - appUserUrl
+        - logo
+        - redirectUris
+        - deploymentStatus
+        - managerAddress
+        - identity
+        - appId
+        - activeVersion
+        - lastUpdated
+      properties:
+        name:
+          type: string
+          example: Memecoin DCA App
+        description:
+          type: string
+          example: This is a memecoin DCA App
+        contactEmail:
+          type: string
+          example: andrew@litprotocol.com
+          format: email
+        appUserUrl:
+          type: string
+          example: https://uniswap.com
+          format: url
+        logo:
+          type: string
+          example: "Imagine this is a base64 string"
+        redirectUris:
+          type: array
+          example: ["https://google.com", "https://litprotocol.com"]
+          items:
+            type: string
+            format: uri
+        deploymentStatus:
+          type: string
+          enum: ["dev", "test", "prod"]
+        managerAddress:
+          type: string
+          example: "0xa723407AdB396a55aCd843D276daEa0d787F8db5"
+        identity:
+          type: string
+          description: "Unique composite identifier in the format AppDef|<appId>"
+          example: "AppDef|5"
+          readOnly: true
+        appId:
+          type: number
+          example: 5
+          readOnly: true
+        activeVersion:
+          type: number
+          example: 2
+        lastUpdated:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ICreateAppDef:
+      type: object
+      required:
+        - name
+        - description
+        - contactEmail
+        - appUserUrl
+        - logo
+        - redirectUris
+        - deploymentStatus
+        - managerAddress
+      properties:
+        name:
+          type: string
+          example: Memecoin DCA App
+        description:
+          type: string
+          example: This is a memecoin DCA App
+        contactEmail:
+          type: string
+          example: andrew@litprotocol.com
+          format: email
+        appUserUrl:
+          type: string
+          example: https://uniswap.com
+          format: url
+        logo:
+          type: string
+        redirectUris:
+          type: array
+          items:
+            type: string
+            format: uri
+        deploymentStatus:
+          type: string
+          enum: ["dev", "test", "prod"]
+        managerAddress:
+          type: string
+        activeVersion:
+          type: number
+          example: 2
+              
+    IAppVersionDef:
+      type: object
+      required:
+        - appId
+        - versionNumber
+        - identity
+        - enabled
+        - changes
+      properties:
+        appId:
+          type: number
+          example: 5
+          readOnly: true
+        versionNumber:
+          type: number
+          example: 2
+        identity:
+          type: string
+          example: "AppVersionDef|5@2"
+          readOnly: true
+        enabled:
+          type: boolean
+          example: true
+        changes:
+          type: string
+          example: "I am a changelog trapped in a computer!"
+          
+    ICreateAppVersionDef:
+      type: object
+      required:
+        - tools
+        - changes
+      properties:
+        tools:
+          type: array
+          items:
+            type: string
+            example: "@vincent/foo-bar@1.0.0"
+        changes:
+          type: string
+          example: "I am a changelog trapped in a computer!"
+          
+    IAppToolDef:
+      type: object
+      required:
+        - appId
+        - appVersionNumber
+        - toolPackageName
+        - toolVersion
+        - toolIdentity
+        - identity
+      properties:
+        appId:
+          type: number
+          example: 5
+          readOnly: true
+        appVersionNumber:
+          type: number
+          example: 2
+        toolPackageName:
+          type: string
+          example: "@vincent/foo-bar"
+        toolVersion:
+          type: string
+          example: "1.0.0"
+        #appVersionIdentity:
+        #  type: string
+        #  example: "5@2" <- Why not include version number in the overall identity?
+        toolIdentity:
+          type: string
+          example: "@vincent/foo-bar@1.0.0"
+        identity:
+          type: string
+          example: "AppToolDef|AppDef|5/@vincent/foo-bar@1.0.0"
+          
+    IAppVersionWithToolsDef:
+      type: object
+      required:
+        - version
+        - tools
+      properties:
+        version:
+          $ref: '#/components/schemas/IAppVersionDef'
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/IAppToolDef'
+      
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
