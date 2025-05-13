@@ -121,6 +121,8 @@ export type CommitFunction<
   >
 >;
 
+export type InferOrUndefined<T> = T extends z.ZodType ? z.infer<T> : undefined;
+
 export type VincentPolicyDef<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,

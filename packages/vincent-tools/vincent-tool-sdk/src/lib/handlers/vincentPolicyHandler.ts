@@ -2,14 +2,17 @@
 
 import { ethers } from 'ethers';
 
-import { evaluate } from '../policyCore';
-
-import type { VincentPolicyDef } from '../types';
+import {
+  CommitFunction,
+  InferOrUndefined,
+  PolicyLifecycleFunction,
+  VincentPolicyDef,
+} from '../types';
 import { getOnchainPolicyParams } from '../policyCore/policyParameters/getOnchainPolicyParams';
 import { LIT_DATIL_VINCENT_ADDRESS } from './constants';
 import { createDenyResult } from '../policyCore/helpers';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createVincentPolicy } from '../policyCore';
+import { z } from 'zod';
 
 declare const Lit: {
   Actions: {
@@ -22,33 +25,45 @@ declare const LitAuth: {
   actionIpfsIds: string[];
 };
 
-export const vincentPolicyHandler = async ({
+export async function vincentPolicyHandler<
+  PackageName extends string,
+  ToolParamsSchema extends z.ZodType,
+  PolicyToolParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
+  PrecheckAllowResult extends z.ZodType | undefined = undefined,
+  PrecheckDenyResult extends z.ZodType | undefined = undefined,
+  EvalAllowResult extends z.ZodType | undefined = undefined,
+  EvalDenyResult extends z.ZodType | undefined = undefined,
+  CommitParams extends z.ZodType | undefined = undefined,
+  CommitAllowResult extends z.ZodType | undefined = undefined,
+  CommitDenyResult extends z.ZodType | undefined = undefined,
+>({
   vincentPolicyDef,
   context,
   toolParams,
 }: {
   vincentPolicyDef: VincentPolicyDef<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
+    PackageName,
+    PolicyToolParams,
+    UserParams,
+    PrecheckAllowResult,
+    PrecheckDenyResult,
+    EvalAllowResult,
+    EvalDenyResult,
+    CommitParams,
+    CommitAllowResult,
+    CommitDenyResult,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
+    CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >;
-  toolParams: unknown;
+  toolParams: ToolParamsSchema;
   context: {
     userPkpTokenId: string;
     toolIpfsCid: string;
     rpcUrl: string;
   };
-}) => {
+}) {
   const { userPkpTokenId, toolIpfsCid } = context;
   const policyIpfsCid = LitAuth.actionIpfsIds[0];
 
@@ -66,14 +81,19 @@ export const vincentPolicyHandler = async ({
       policyIpfsCid,
     });
 
-    const evaluateResult = await evaluate(vincentPolicyDef, {
-      toolParams,
-      userParams: onChainPolicyParams,
-      delegation: {
-        delegatee: ethers.utils.getAddress(LitAuth.authSigAddress),
-        delegator: userPkpTokenId,
+    const vincentPolicy = createVincentPolicy(vincentPolicyDef);
+    const evaluateResult = await vincentPolicy.evaluate(
+      {
+        toolParams,
+        userParams: onChainPolicyParams as InferOrUndefined<UserParams>,
       },
-    });
+      {
+        delegation: {
+          delegatee: ethers.utils.getAddress(LitAuth.authSigAddress),
+          delegator: userPkpTokenId,
+        },
+      },
+    );
 
     Lit.Actions.setResponse({
       response: JSON.stringify({
@@ -91,4 +111,4 @@ export const vincentPolicyHandler = async ({
       ),
     });
   }
-};
+}

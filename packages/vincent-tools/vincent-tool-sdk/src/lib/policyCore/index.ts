@@ -1,4 +1,3 @@
-export { evaluate } from './evaluate';
-export { commit } from './commit';
-export { precheck } from './precheck';
+// src/lib/policyCore/index.ts
+
 export { createVincentToolPolicy, createVincentPolicy } from './vincentPolicy';

@@ -187,7 +187,7 @@ export function testDenyFunctionWithDifferentTypes() {
         // Valid - matches schema, without additional error message
         return deny({ code: 403, message: 'Forbidden' });
       },
-    }),
+    }).__vincentPolicyDef,
     toolParameterMappings: {
       action: 'actionType',
     },

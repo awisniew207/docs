@@ -73,7 +73,7 @@ const policyDef1 = createVincentPolicy({
 
 const policy1 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
-  policyDef: policyDef1,
+  policyDef: policyDef1.__vincentPolicyDef,
   toolParameterMappings: {
     target: 'targetAllowed',
     action: 'actionType',
@@ -162,7 +162,7 @@ const policyDef2 = createVincentPolicy({
 
 const policy2 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
-  policyDef: policyDef2,
+  policyDef: policyDef2.__vincentPolicyDef,
   toolParameterMappings: {
     amount: 'maxAmount',
     action: 'currency',
@@ -224,7 +224,7 @@ const policyDef3 = createVincentPolicy({
 
 const policy3 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
-  policyDef: policyDef3,
+  policyDef: policyDef3.__vincentPolicyDef,
   toolParameterMappings: {
     amount: 'toolName',
   },

@@ -1,7 +1,21 @@
 // src/lib/policyCore/vincentPolicy.ts
 import { z } from 'zod';
-import { BaseContext, CommitFunction, PolicyLifecycleFunction, VincentPolicyDef } from '../types';
+import {
+  BaseContext,
+  CommitFunction,
+  InferOrUndefined,
+  PolicyLifecycleFunction,
+  PolicyResponse,
+  VincentPolicyDef,
+} from '../types';
 import { createPolicyContext } from './policyContext/policyContext';
+import {
+  createDenyResult,
+  getSchemaForPolicyResponseResult,
+  getValidatedParamsOrDeny,
+  isPolicyDenyResponse,
+  validateOrDeny,
+} from './helpers';
 
 /**
  * Wraps a raw VincentPolicyDef with internal logic and returns a fully typed
@@ -49,19 +63,54 @@ export function createVincentPolicy<
     packageName: originalPolicyDef.packageName,
     evaluate: async (
       args: {
-        toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
-        userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
+        toolParams: z.infer<PolicyToolParams>;
+        userParams: InferOrUndefined<UserParams>;
       },
       baseContext: BaseContext,
-    ) => {
-      const context = createPolicyContext({
-        baseContext,
-        ipfsCid: originalPolicyDef.ipfsCid,
-        allowSchema: originalPolicyDef.evalAllowResultSchema,
-        denySchema: originalPolicyDef.evalDenyResultSchema,
-      });
+    ): Promise<PolicyResponse<EvalAllowResult, EvalDenyResult>> => {
+      try {
+        const context = createPolicyContext({
+          baseContext,
+          ipfsCid: originalPolicyDef.ipfsCid,
+          allowSchema: originalPolicyDef.evalAllowResultSchema,
+          denySchema: originalPolicyDef.evalDenyResultSchema,
+        });
 
-      return originalPolicyDef.evaluate(args, context);
+        const paramsOrDeny = getValidatedParamsOrDeny({
+          policyDef,
+          rawToolParams: args.toolParams,
+          rawUserParams: args.userParams,
+          ipfsCid: originalPolicyDef.ipfsCid,
+          phase: 'evaluate',
+        });
+
+        if (isPolicyDenyResponse(paramsOrDeny)) {
+          return paramsOrDeny as PolicyResponse<EvalAllowResult, EvalDenyResult>;
+        }
+
+        const result = await originalPolicyDef.evaluate(args, context);
+
+        const { schemaToUse } = getSchemaForPolicyResponseResult({
+          value: result,
+          allowResultSchema: policyDef.evalAllowResultSchema,
+          denyResultSchema: policyDef.evalDenyResultSchema,
+        });
+
+        const resultOrDeny = validateOrDeny(
+          result,
+          schemaToUse,
+          originalPolicyDef.ipfsCid,
+          'evaluate',
+          'output',
+        );
+
+        return resultOrDeny as PolicyResponse<EvalAllowResult, EvalDenyResult>;
+      } catch (err) {
+        return createDenyResult({
+          ipfsCid: originalPolicyDef.ipfsCid,
+          message: err instanceof Error ? err.message : 'Unknown error',
+        });
+      }
     },
 
     // Only create precheck wrapper if precheck exists; it is optional.
@@ -69,25 +118,60 @@ export function createVincentPolicy<
       ? {
           precheck: async (
             args: {
-              toolParams: z.infer<typeof originalPolicyDef.toolParamsSchema>;
-              userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
+              toolParams: z.infer<PolicyToolParams>;
+              userParams: InferOrUndefined<UserParams>;
             },
             baseContext: BaseContext,
-          ) => {
-            const context = createPolicyContext({
-              ipfsCid: originalPolicyDef.ipfsCid,
-              baseContext,
-              allowSchema: originalPolicyDef.precheckAllowResultSchema,
-              denySchema: originalPolicyDef.precheckDenyResultSchema,
-            });
+          ): Promise<PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>> => {
+            try {
+              const context = createPolicyContext({
+                ipfsCid: originalPolicyDef.ipfsCid,
+                baseContext,
+                allowSchema: originalPolicyDef.precheckAllowResultSchema,
+                denySchema: originalPolicyDef.precheckDenyResultSchema,
+              });
 
-            const { precheck: precheckFn } = originalPolicyDef;
+              const { precheck: precheckFn } = originalPolicyDef;
 
-            if (!precheckFn) {
-              throw new Error('precheck function unexpectedly missing');
+              if (!precheckFn) {
+                throw new Error('precheck function unexpectedly missing');
+              }
+
+              const paramsOrDeny = getValidatedParamsOrDeny({
+                policyDef,
+                rawToolParams: args.toolParams,
+                rawUserParams: args.userParams,
+                ipfsCid: originalPolicyDef.ipfsCid,
+                phase: 'precheck',
+              });
+
+              if (isPolicyDenyResponse(paramsOrDeny)) {
+                return paramsOrDeny as PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
+              }
+
+              const result = await precheckFn(args, context);
+
+              const { schemaToUse } = getSchemaForPolicyResponseResult({
+                value: result,
+                allowResultSchema: policyDef.precheckAllowResultSchema,
+                denyResultSchema: policyDef.precheckDenyResultSchema,
+              });
+
+              const resultOrDeny = validateOrDeny(
+                result,
+                schemaToUse,
+                originalPolicyDef.ipfsCid,
+                'precheck',
+                'output',
+              );
+
+              return resultOrDeny as PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
+            } catch (err) {
+              return createDenyResult({
+                ipfsCid: originalPolicyDef.ipfsCid,
+                message: err instanceof Error ? err.message : 'Unknown error',
+              });
             }
-
-            return precheckFn(args, context);
           },
         }
       : { precheck: undefined }),
@@ -96,22 +180,58 @@ export function createVincentPolicy<
     ...(originalPolicyDef.commit !== undefined
       ? {
           commit: async (
-            args: CommitParams extends z.ZodType ? z.infer<CommitParams> : undefined,
+            args: InferOrUndefined<CommitParams>,
             baseContext: BaseContext,
-          ) => {
-            const context = createPolicyContext({
-              ipfsCid: originalPolicyDef.ipfsCid,
-              baseContext,
-              denySchema: originalPolicyDef.commitDenyResultSchema,
-              allowSchema: originalPolicyDef.commitAllowResultSchema,
-            });
+          ): Promise<PolicyResponse<CommitAllowResult, CommitDenyResult>> => {
+            try {
+              const context = createPolicyContext({
+                ipfsCid: originalPolicyDef.ipfsCid,
+                baseContext,
+                denySchema: originalPolicyDef.commitDenyResultSchema,
+                allowSchema: originalPolicyDef.commitAllowResultSchema,
+              });
 
-            const { commit: commitFn } = originalPolicyDef;
-            if (!commitFn) {
-              throw new Error('commit function unexpectedly missing');
+              const { commit: commitFn } = originalPolicyDef;
+
+              if (!commitFn) {
+                throw new Error('commit function unexpectedly missing');
+              }
+
+              const paramsOrDeny = getValidatedParamsOrDeny({
+                policyDef,
+                rawToolParams: args.toolParams,
+                rawUserParams: args.userParams,
+                ipfsCid: originalPolicyDef.ipfsCid,
+                phase: 'commit',
+              });
+
+              if (isPolicyDenyResponse(paramsOrDeny)) {
+                return paramsOrDeny as PolicyResponse<CommitAllowResult, CommitDenyResult>;
+              }
+
+              const result = await commitFn(args, context);
+
+              const { schemaToUse } = getSchemaForPolicyResponseResult({
+                value: result,
+                allowResultSchema: policyDef.commitAllowResultSchema,
+                denyResultSchema: policyDef.commitDenyResultSchema,
+              });
+
+              const resultOrDeny = validateOrDeny(
+                result,
+                schemaToUse,
+                originalPolicyDef.ipfsCid,
+                'commit',
+                'output',
+              );
+
+              return resultOrDeny as PolicyResponse<CommitAllowResult, CommitDenyResult>;
+            } catch (err) {
+              return createDenyResult({
+                ipfsCid: originalPolicyDef.ipfsCid,
+                message: err instanceof Error ? err.message : 'Unknown error',
+              });
             }
-
-            return commitFn(args, context);
           },
         }
       : { commit: undefined }),
@@ -175,12 +295,14 @@ export function createVincentToolPolicy<
       evalAllowResultSchema: config.policyDef.evalAllowResultSchema,
       evalDenyResultSchema: config.policyDef.evalDenyResultSchema,
       commitParamsSchema: config.policyDef.commitParamsSchema,
+      precheckAllowResultSchema: config.policyDef.precheckAllowResultSchema,
+      precheckDenyResultSchema: config.policyDef.precheckDenyResultSchema,
       commitAllowResultSchema: config.policyDef.commitAllowResultSchema,
       commitDenyResultSchema: config.policyDef.commitDenyResultSchema,
       // Explicit function types
-      evaluate: config.policyDef.evaluate,
-      precheck: config.policyDef.precheck,
-      commit: config.policyDef.commit,
+      evaluate: policyDef.evaluate,
+      precheck: policyDef.precheck,
+      commit: policyDef.commit,
     },
   };
 
@@ -192,6 +314,8 @@ export function createVincentToolPolicy<
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;
       evalDenyResultSchema: EvalDenyResult;
+      precheckAllowResultSchema: PrecheckAllowResult;
+      precheckDenyResultSchema: PrecheckDenyResult;
       commitParamsSchema: CommitParams;
       commitAllowResultSchema: CommitAllowResult;
       commitDenyResultSchema: CommitDenyResult;
