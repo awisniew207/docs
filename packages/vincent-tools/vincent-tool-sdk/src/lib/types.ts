@@ -19,6 +19,7 @@ import {
   EnforceToolResponse,
   ToolContext,
 } from './toolCore/toolContext/types';
+import { EnrichedVincentToolPolicy } from './toolCore/vincentTool';
 
 export interface PolicyResponseAllow<AllowResult> {
   ipfsCid: string;
@@ -350,7 +351,7 @@ export type ToolExecutionPolicyContext<
     };
   };
 } & {
-  readonly deniedPolicy: never;
+  readonly deniedPolicy?: never;
 };
 
 export interface ToolResponseSuccess<SuccessResult = never> {
@@ -406,19 +407,7 @@ export interface VincentToolDef<
   >[],
   PkgNames extends
     PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
-  PolicyMapType extends Record<
-    string,
-    {
-      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
-      __schemaTypes?: {
-        evalAllowResultSchema?: z.ZodType;
-        evalDenyResultSchema?: z.ZodType;
-        commitParamsSchema?: z.ZodType;
-        commitAllowResultSchema?: z.ZodType;
-        commitDenyResultSchema?: z.ZodType;
-      };
-    }
-  > = {
+  PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
     [K in PkgNames]: Extract<PolicyArray[number], { policyDef: { packageName: K } }>;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
@@ -426,13 +415,13 @@ export interface VincentToolDef<
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
   PrecheckFn =
-    | undefined
     | ToolLifecycleFunction<
         ToolParamsSchema,
         PolicyEvaluationResultContext<PolicyMapType>,
         PrecheckSuccessSchema,
         PrecheckFailSchema
-      >,
+      >
+    | undefined,
   ExecuteFn = ToolLifecycleFunction<
     ToolParamsSchema,
     ToolExecutionPolicyContext<PolicyMapType>,

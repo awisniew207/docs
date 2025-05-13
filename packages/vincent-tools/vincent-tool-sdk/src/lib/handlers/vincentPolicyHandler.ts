@@ -2,12 +2,7 @@
 
 import { ethers } from 'ethers';
 
-import {
-  CommitFunction,
-  InferOrUndefined,
-  PolicyLifecycleFunction,
-  VincentPolicyDef,
-} from '../types';
+import { InferOrUndefined, VincentPolicyDef } from '../types';
 import { getOnchainPolicyParams } from '../policyCore/policyParameters/getOnchainPolicyParams';
 import { LIT_DATIL_VINCENT_ADDRESS } from './constants';
 import { createDenyResult } from '../policyCore/helpers';
@@ -25,18 +20,14 @@ declare const LitAuth: {
   actionIpfsIds: string[];
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export async function vincentPolicyHandler<
   PackageName extends string,
-  ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
   UserParams extends z.ZodType | undefined = undefined,
-  PrecheckAllowResult extends z.ZodType | undefined = undefined,
-  PrecheckDenyResult extends z.ZodType | undefined = undefined,
   EvalAllowResult extends z.ZodType | undefined = undefined,
   EvalDenyResult extends z.ZodType | undefined = undefined,
-  CommitParams extends z.ZodType | undefined = undefined,
-  CommitAllowResult extends z.ZodType | undefined = undefined,
-  CommitDenyResult extends z.ZodType | undefined = undefined,
 >({
   vincentPolicyDef,
   context,
@@ -46,18 +37,18 @@ export async function vincentPolicyHandler<
     PackageName,
     PolicyToolParams,
     UserParams,
-    PrecheckAllowResult,
-    PrecheckDenyResult,
+    any, // PrecheckAllowResult
+    any, // PrecheckDenyResult
     EvalAllowResult,
     EvalDenyResult,
-    CommitParams,
-    CommitAllowResult,
-    CommitDenyResult,
-    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
-    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
-    CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
+    any, // CommitParams
+    any, // CommitAllowResult
+    any, // CommitDenyResult
+    any, // evaluate
+    any, // precheck
+    any // commit
   >;
-  toolParams: ToolParamsSchema;
+  toolParams: PolicyToolParams;
   context: {
     userPkpTokenId: string;
     toolIpfsCid: string;

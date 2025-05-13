@@ -43,6 +43,10 @@ export type ContextFailure<FailResult = never> = FailResult extends never
 
 export type ContextFailureNoResult = MustCallContextSucceedOrFail<ToolResponseFailureNoResult>;
 
+export type ContextResult<SuccessResult, FailResult> =
+  | ContextSuccess<SuccessResult>
+  | ContextFailure<FailResult>;
+
 export interface ToolContext<
   SuccessSchema extends z.ZodType | undefined = undefined,
   FailSchema extends z.ZodType | undefined = undefined,

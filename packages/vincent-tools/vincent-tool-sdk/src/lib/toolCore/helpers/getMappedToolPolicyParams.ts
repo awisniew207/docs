@@ -1,15 +1,13 @@
 // src/lib/toolCore/helpers/getMappedToolPolicyParams.ts
-
-import { z } from 'zod';
-
-export const getMappedToolPolicyParams = ({
+export function getMappedToolPolicyParams({
   toolParameterMappings,
   parsedToolParams,
 }: {
-  toolParameterMappings: Record<string, string>;
-  parsedToolParams: z.infer<any>;
-}) => {
+  toolParameterMappings: Partial<Record<string, string>>;
+  parsedToolParams: Record<string, unknown>;
+}): Record<string, unknown> {
   const mappedToolParams: Record<string, unknown> = {};
+
   for (const [toolParamKey, policyParamKey] of Object.entries(toolParameterMappings)) {
     if (!policyParamKey) {
       throw new Error(
@@ -21,9 +19,8 @@ export const getMappedToolPolicyParams = ({
       throw new Error(`Tool param "${toolParamKey}" expected in toolParams but was not provided`);
     }
 
-    mappedToolParams[policyParamKey as string] =
-      parsedToolParams[toolParamKey as keyof typeof parsedToolParams];
+    mappedToolParams[policyParamKey] = parsedToolParams[toolParamKey];
   }
 
   return mappedToolParams;
-};
+}

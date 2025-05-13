@@ -419,7 +419,7 @@ export const gogo = async function () {
         ],
         allowedPolicies: {
           // 'extra-rate-limit': {
-          //   result: { yes: true },
+          //   result: { this_is_wrong: true },
           // },
           'rate-limit': {
             result: {
