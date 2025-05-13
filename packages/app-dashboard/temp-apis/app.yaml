@@ -8,12 +8,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.12
-tags:
-  - name: App
-    description: Everything about the Applications
-    externalDocs:
-      description: Find out more
-      url: https://www.notion.so/litprotocol/Vincent-Off-chain-Service-Tech-Spec-API-Specifics-1ed6f449b041803facf2f7148c52c815?showMoveTo=true&saveParent=true
+    
 paths:
   /app:
     post:
@@ -153,7 +148,7 @@ paths:
       tags:
         - app
       summary: Fetches all versions of an application.
-      operationId: getVersions
+      operationId: getAppVersions
       parameters:
         - name: identity
           in: path
@@ -323,7 +318,328 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    
+  /tool:
+    post:
+      tags:
+        - tool
+      summary: Creates a new tool.
+      operationId: createTool
+      requestBody:
+        description: Developer-defined tool details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreateToolDef'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /tool/{identity}:
+    get:
+      tags:
+        - tool
+      summary: Fetches a tool.
+      operationId: getTool
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool to retrieve
+          required: true
+          schema:
+            type: string
+            example: "ToolDef|@vincent/foo-bar"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolDef'
+        '404':
+          description: Tool not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    put:
+      tags:
+        - tool
+      summary: Edits a tool.
+      operationId: editTool
+      requestBody:
+        description: Developer-defined updated tool details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IEditToolDef'
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool to edit
+          required: true
+          schema:
+            type: string
+            example: "ToolDef|@vincent/foo-bar"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - tool
+      summary: Deletes a tool
+      operationId: deleteTool
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool to delete
+          required: true
+          schema:
+            type: string
+            example: "ToolDef|@vincent/foo-bar"
+      responses:
+        '200':
+          description: OK - Resource successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Tool successfully deleted"
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /tool/{identity}/versions:
+    get:
+      tags:
+        - tool
+      summary: Fetches all versions of a tool.
+      operationId: getToolVersions
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool whose versions will be fetched
+          required: true
+          schema: 
+            type: string
+            example: "ToolDef|@vincent/foo-bar"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IToolVersionDef'
+        '404':
+          description: Tool not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       
+                
+  /tool/{identity}/owner:
+    put:
+      tags:
+        - tool
+      summary: Changes a tool owner.
+      operationId: changeToolOwner
+      requestBody:
+        description: Provide the new tool owner address
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authorWalletAddress:
+                  type: string
+                  example: "0x1582F4E36154f2EC442a2B3425d4C2520704096E"
+              required:
+                - authorWalletAddress
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool to edit
+          required: true
+          schema:
+            type: string
+            example: "ToolDef|@vincent/foo-bar"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tool/version/{identity}:
+    post:
+      tags:
+        - tool/version
+      summary: Creates a new tool version.
+      operationId: createToolVersion
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool to create a new version for
+          required: true
+          schema:
+            type: string
+            example: "ToolDef|@vincent/foo-bar"
+      requestBody:
+        description: Developer-defined tool version details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreateToolVersionDef'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolVersionDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      tags:
+        - tool/version
+      summary: Fetches a tool version.
+      operationId: getToolVersion
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool version to retrieve
+          required: true
+          schema:
+            type: string
+            example: "ToolVersionDef|@vincent/foo-bar@1.0.0"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolVersionDef'
+        '404':
+          description: Application not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - tool/version
+      summary: Edits an tool version.
+      operationId: editToolVersion
+      requestBody:
+        description: Update version changes field
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                changes:
+                  type: string
+                  example: "Updated changelog information"
+              required:
+                - changes
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the tool version to edit
+          required: true
+          schema:
+            type: string
+            example: "ToolVersionDef|@vincent/foo-bar@1.0.0"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IToolVersionDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        
 
 components:
   schemas:
@@ -518,7 +834,159 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IAppToolDef'
-      
+            
+    IToolDef:
+      type: object
+      required:
+        - packageName
+        - identity
+        - authorWalletAddress
+        - description
+        - activeVersion
+      properties:
+        packageName: 
+          type: string
+          example: "@vincent/foo-bar"
+        toolTitle:
+          type: string
+          example: "The Greatest Foo Bar Tool"
+        identity: 
+          type: string
+          example: "ToolDef|@vincent/foo-bar"
+        authorWalletAddress: 
+          type: string
+          example: "0xa723407AdB396a55aCd843D276daEa0d787F8db5"
+        description: 
+          type: string
+          example: "When we foo, our complex tool will also bar."
+        activeVersion: 
+          type: string
+          example: "1.0.0"
+          
+    ICreateToolDef:
+      type: object
+      required:
+        - packageName
+        - toolTitle
+        - description
+      properties:
+        packageName:
+          type: string
+          example: "@vincent/foo-bar"
+        toolTitle:
+          type: string
+          example: "The Greatest Foo Bar Tool"
+        description:
+          type: string
+          example: "When we foo, our complex tool will also bar."
+        # Anything else?
+        
+    IEditToolDef:
+      type: object
+      required:
+        - toolTitle
+        - description
+      properties:
+        toolTitle:
+          type: string
+          example: "The Greatest Foo Bar Tool"
+        description:
+          type: string
+          example: "When we foo, our complex tool will also bar."
+    
+    IToolVersionDef:
+      type: object
+      required:
+        - packageName
+        - version
+        - identity
+        - changes
+        - repository
+        - keywords
+        - dependencies
+        - author
+        - contributors
+        - status
+        - supportedPolicies
+        - ipfsCid
+      properties:
+        packageName:
+          type: string
+          example: "@vincent/foo-bar"
+        version:
+          type: string
+          example: "1.0.0"
+        identity:
+          type: string
+          example: "ToolVersionDef|@vincent/foo-bar@1.0.0"
+        changes:
+          type: string
+          example: "Initial release"
+        repository:
+          type: array
+          items:
+            type: string
+          example: ["https://github.com/org/repo"]
+        keywords:
+          type: array
+          items:
+            type: string
+          example: ["defi", "memecoin"]
+        dependencies:
+          type: array
+          items:
+            type: string
+          example: ["@vincent/sdk"]
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Developer Name"
+            email:
+              type: string
+              example: "dev@example.com"
+            url:
+              type: string
+              example: "https://example.com"
+        contributors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Contributor Name"
+              email:
+                type: string
+                example: "contributor@example.com"
+              url:
+                type: string
+                example: "https://contributor-site.com"
+        homepage:
+          type: string
+          example: "https://example-vincent-homepage.com"
+        status:
+          type: string
+          enum: ["invalid", "validating", "valid", "error"]
+          example: "valid"
+        supportedPolicies:
+          type: array
+          items:
+            type: string
+          example: ["@vincent/foo-bar-policy-1", "@vincent/foo-bar-policy-2"]
+        ipfsCid:
+          type: string
+          example: "QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo"
+          
+    ICreateToolVersionDef:
+      type: object
+      properties:
+        changes:
+          type: string
+          example: "Extra foo on the bar!" # Is changes the only property we need?
+                                           # I'm not sure how much is provided by our BE
+        
     Error:
       type: object
       properties:

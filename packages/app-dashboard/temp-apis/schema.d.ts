@@ -48,7 +48,7 @@ export interface paths {
       cookie?: never;
     };
     /** Fetches all versions of an application. */
-    get: operations['getVersions'];
+    get: operations['getAppVersions'];
     put?: never;
     post?: never;
     delete?: never;
@@ -87,6 +87,95 @@ export interface paths {
     put?: never;
     /** Toggles enabled/disabled for an application version. */
     post: operations['disableAppVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/tool': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Creates a new tool. */
+    post: operations['createTool'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/tool/{identity}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Fetches a tool. */
+    get: operations['getTool'];
+    /** Edits a tool. */
+    put: operations['editTool'];
+    post?: never;
+    /** Deletes a tool */
+    delete: operations['deleteTool'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/tool/{identity}/versions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Fetches all versions of a tool. */
+    get: operations['getToolVersions'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/tool/{identity}/owner': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Changes a tool owner. */
+    put: operations['changeToolOwner'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/tool/version/{identity}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Fetches a tool version. */
+    get: operations['getToolVersion'];
+    /** Edits an tool version. */
+    put: operations['editToolVersion'];
+    /** Creates a new tool version. */
+    post: operations['createToolVersion'];
     delete?: never;
     options?: never;
     head?: never;
@@ -192,6 +281,91 @@ export interface components {
     IAppVersionWithToolsDef: {
       version: components['schemas']['IAppVersionDef'];
       tools: components['schemas']['IAppToolDef'][];
+    };
+    IToolDef: {
+      /** @example @vincent/foo-bar */
+      packageName: string;
+      /** @example The Greatest Foo Bar Tool */
+      toolTitle?: string;
+      /** @example ToolDef|@vincent/foo-bar */
+      identity: string;
+      /** @example 0xa723407AdB396a55aCd843D276daEa0d787F8db5 */
+      authorWalletAddress: string;
+      /** @example When we foo, our complex tool will also bar. */
+      description: string;
+      /** @example 1.0.0 */
+      activeVersion: string;
+    };
+    ICreateToolDef: {
+      /** @example @vincent/foo-bar */
+      packageName: string;
+      /** @example The Greatest Foo Bar Tool */
+      toolTitle: string;
+      /** @example When we foo, our complex tool will also bar. */
+      description: string;
+    };
+    IEditToolDef: {
+      /** @example The Greatest Foo Bar Tool */
+      toolTitle: string;
+      /** @example When we foo, our complex tool will also bar. */
+      description: string;
+    };
+    IToolVersionDef: {
+      /** @example @vincent/foo-bar */
+      packageName: string;
+      /** @example 1.0.0 */
+      version: string;
+      /** @example ToolVersionDef|@vincent/foo-bar@1.0.0 */
+      identity: string;
+      /** @example Initial release */
+      changes: string;
+      /** @example [
+       *       "https://github.com/org/repo"
+       *     ] */
+      repository: string[];
+      /** @example [
+       *       "defi",
+       *       "memecoin"
+       *     ] */
+      keywords: string[];
+      /** @example [
+       *       "@vincent/sdk"
+       *     ] */
+      dependencies: string[];
+      author: {
+        /** @example Developer Name */
+        name?: string;
+        /** @example dev@example.com */
+        email?: string;
+        /** @example https://example.com */
+        url?: string;
+      };
+      contributors: {
+        /** @example Contributor Name */
+        name?: string;
+        /** @example contributor@example.com */
+        email?: string;
+        /** @example https://contributor-site.com */
+        url?: string;
+      }[];
+      /** @example https://example-vincent-homepage.com */
+      homepage?: string;
+      /**
+       * @example valid
+       * @enum {string}
+       */
+      status: 'invalid' | 'validating' | 'valid' | 'error';
+      /** @example [
+       *       "@vincent/foo-bar-policy-1",
+       *       "@vincent/foo-bar-policy-2"
+       *     ] */
+      supportedPolicies: string[];
+      /** @example QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo */
+      ipfsCid: string;
+    };
+    ICreateToolVersionDef: {
+      /** @example Extra foo on the bar! */
+      changes?: string;
     };
     Error: {
       code: string;
@@ -393,7 +567,7 @@ export interface operations {
       };
     };
   };
-  getVersions: {
+  getAppVersions: {
     parameters: {
       query?: never;
       header?: never;
@@ -595,6 +769,430 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['IAppVersionDef'];
+        };
+      };
+      /** @description Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation exception */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  createTool: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Developer-defined tool details */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ICreateToolDef'];
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolDef'];
+        };
+      };
+      /** @description Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation exception */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  getTool: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool to retrieve */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolDef'];
+        };
+      };
+      /** @description Tool not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  editTool: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool to edit */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    /** @description Developer-defined updated tool details */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['IEditToolDef'];
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolDef'];
+        };
+      };
+      /** @description Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation exception */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  deleteTool: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool to delete */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK - Resource successfully deleted */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @example Tool successfully deleted */
+            message?: string;
+          };
+        };
+      };
+      /** @description Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation exception */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  getToolVersions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool whose versions will be fetched */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolVersionDef'][];
+        };
+      };
+      /** @description Tool not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  changeToolOwner: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool to edit */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    /** @description Provide the new tool owner address */
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @example 0x1582F4E36154f2EC442a2B3425d4C2520704096E */
+          authorWalletAddress: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolDef'];
+        };
+      };
+      /** @description Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation exception */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  getToolVersion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool version to retrieve */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolVersionDef'];
+        };
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  editToolVersion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool version to edit */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    /** @description Update version changes field */
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @example Updated changelog information */
+          changes: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolVersionDef'];
+        };
+      };
+      /** @description Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation exception */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unexpected error */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  createToolVersion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Identity of the tool to create a new version for */
+        identity: string;
+      };
+      cookie?: never;
+    };
+    /** @description Developer-defined tool version details */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ICreateToolVersionDef'];
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IToolVersionDef'];
         };
       };
       /** @description Invalid input */
