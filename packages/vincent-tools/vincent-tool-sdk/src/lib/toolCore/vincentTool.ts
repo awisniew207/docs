@@ -238,7 +238,7 @@ export function createVincentTool<
         });
 
         const parsed = validateOrFail(
-          result as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema>,
+          result as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema>,
           schemaToUse,
           'execute',
           'output',
@@ -249,7 +249,7 @@ export function createVincentTool<
         }
 
         return createToolFailureResult({
-          message: 'Tool returned invalid result shape from precheck()',
+          message: 'Tool returned invalid result shape from execute()',
         });
       } catch (err) {
         return createToolFailureResult({

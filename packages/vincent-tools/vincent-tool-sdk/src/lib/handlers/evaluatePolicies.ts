@@ -1,9 +1,9 @@
 // src/lib/toolCore/helpers/evaluatePolicies.ts
 
 import { z } from 'zod';
-import { ValidatedPolicyMap } from './validatePolicies';
-import { getPkpInfo } from './getPkpInfo';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from '../../handlers/constants';
+import { ValidatedPolicyMap } from '../toolCore/helpers/validatePolicies';
+import { getPkpInfo } from '../toolCore/helpers/getPkpInfo';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import {
   PolicyEvaluationResultContext,
   PolicyResponse,
@@ -11,18 +11,18 @@ import {
   VincentPolicyDef,
   VincentToolDef,
   VincentToolPolicy,
-} from '../../types';
-import { createVincentTool, EnrichedVincentToolPolicy } from '../vincentTool';
+} from '../types';
+import { createVincentTool, EnrichedVincentToolPolicy } from '../toolCore/vincentTool';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
   isPolicyDenyResponse,
   validateOrDeny,
-} from '../../policyCore/helpers';
+} from '../policyCore/helpers';
 import {
   createAllowEvaluationResult,
   createDenyEvaluationResult,
-} from '../../policyCore/helpers/resultCreators';
+} from '../policyCore/helpers/resultCreators';
 
 declare const Lit: {
   Actions: {
@@ -33,7 +33,6 @@ declare const Lit: {
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 export async function evaluatePolicies<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
@@ -70,7 +69,6 @@ export async function evaluatePolicies<
 
   const userPkpInfo = await getPkpInfo({
     litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-    // FIXME: Parameterize so services can use private RPC?
     yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
     pkpEthAddress: parsedToolParams.pkpEthAddress,
   });
@@ -103,7 +101,6 @@ export async function evaluatePolicies<
         policyDef: policy.policyDef,
       });
 
-      // We exit as soon as _any_ policy denies.
       if (isPolicyDenyResponse(result)) {
         policyDeniedResult = {
           ...(result as PolicyResponseDeny<typeof policy.policyDef.evalDenyResultSchema>),

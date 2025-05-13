@@ -256,6 +256,8 @@ const toolPrecheckFailSchema = z.object({
 
 // Create your tool with fully typed policies
 export const myTool = createVincentTool({
+  ipfsCid: 'boogabooga',
+  packageName: '@lit-protocol/awesome-tool@1.0.2',
   toolParamsSchema: myToolSchema,
   supportedPolicies: [policy1, policy2, policy3] as const,
 

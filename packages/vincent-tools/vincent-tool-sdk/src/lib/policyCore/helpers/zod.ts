@@ -37,7 +37,7 @@ const mustBeUndefinedSchema = z.undefined();
  */
 export function validateOrDeny<T extends ZodType<any, any, any>>(
   value: unknown,
-  schema: T,
+  schema: T | undefined,
   ipfsCid: string,
   phase: 'evaluate' | 'precheck' | 'commit',
   stage: 'input' | 'output',

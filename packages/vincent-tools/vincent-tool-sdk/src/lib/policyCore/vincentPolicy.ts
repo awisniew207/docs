@@ -197,13 +197,13 @@ export function createVincentPolicy<
                 throw new Error('commit function unexpectedly missing');
               }
 
-              const paramsOrDeny = getValidatedParamsOrDeny({
-                policyDef,
-                rawToolParams: args.toolParams,
-                rawUserParams: args.userParams,
-                ipfsCid: originalPolicyDef.ipfsCid,
-                phase: 'commit',
-              });
+              const paramsOrDeny = validateOrDeny(
+                args,
+                originalPolicyDef.commitParamsSchema,
+                originalPolicyDef.ipfsCid,
+                'commit',
+                'input',
+              );
 
               if (isPolicyDenyResponse(paramsOrDeny)) {
                 return paramsOrDeny as PolicyResponse<CommitAllowResult, CommitDenyResult>;

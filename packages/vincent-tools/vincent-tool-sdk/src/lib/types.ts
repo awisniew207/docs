@@ -151,7 +151,6 @@ export type VincentPolicyDef<
       >,
   CommitFn = undefined | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 > = {
-  // Schema properties
   ipfsCid: string;
   packageName: PackageName;
   toolParamsSchema: PolicyToolParams;
@@ -429,6 +428,8 @@ export interface VincentToolDef<
     ExecuteFailSchema
   >,
 > {
+  ipfsCid: string;
+  packageName: string;
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies: PolicyArray;
   precheckSuccessSchema?: PrecheckSuccessSchema;

@@ -10,7 +10,7 @@ import {
 import type { BaseContext } from '../types';
 import { createVincentTool } from '../toolCore/vincentTool';
 import { validatePolicies } from '../toolCore/helpers';
-import { evaluatePolicies } from '../toolCore/helpers/evaluatePolicies';
+import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
 import { isToolFailureResponse } from '../toolCore/helpers/typeGuards';
 import { createVincentPolicy } from '../policyCore';
@@ -76,6 +76,7 @@ export function createToolExecutionContext<
       result: entry.result,
     };
 
+    // TODO: Collect results of commit calls and add to the execution context result
     if (policy.commit) {
       resultWrapper.commit = (commitParams) => {
         const executionContext = {
@@ -150,6 +151,18 @@ export const vincentToolHandler = <
       });
 
       policyEvalResults = policyEvaluationResults;
+
+      if (policyEvalResults.allow === false) {
+        Lit.Actions.setResponse({
+          response: JSON.stringify({
+            policyEvaluationResults: policyEvalResults,
+            toolExecutionResult: {
+              success: false,
+            },
+          }),
+        });
+        return;
+      }
 
       const executeContext = createToolExecutionContext({
         vincentToolDef,

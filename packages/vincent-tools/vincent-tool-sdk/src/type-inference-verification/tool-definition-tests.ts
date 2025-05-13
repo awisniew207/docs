@@ -129,6 +129,8 @@ export function testPolicyEvaluationResults() {
 
   // Create tool with both policies
   return createVincentTool({
+    ipfsCid: 'theCid',
+    packageName: '@lit-protocol/mahTool@1.0.0',
     toolParamsSchema: baseToolSchema,
     supportedPolicies: [simplePolicy, commitPolicy],
 

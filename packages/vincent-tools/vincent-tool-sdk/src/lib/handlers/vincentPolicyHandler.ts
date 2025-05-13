@@ -3,7 +3,7 @@
 import { ethers } from 'ethers';
 
 import { InferOrUndefined, VincentPolicyDef } from '../types';
-import { getOnchainPolicyParams } from '../policyCore/policyParameters/getOnchainPolicyParams';
+import { getOnePolicysOnChainParams } from '../policyCore/policyParameters/getOnchainPolicyParams';
 import { LIT_DATIL_VINCENT_ADDRESS } from './constants';
 import { createDenyResult } from '../policyCore/helpers';
 import { createVincentPolicy } from '../policyCore';
@@ -63,7 +63,7 @@ export async function vincentPolicyHandler<
       chain: 'yellowstone',
     });
 
-    const onChainPolicyParams = await getOnchainPolicyParams({
+    const onChainPolicyParams = await getOnePolicysOnChainParams({
       delegationRpcUrl,
       vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
       appDelegateeAddress: ethers.utils.getAddress(LitAuth.authSigAddress),
