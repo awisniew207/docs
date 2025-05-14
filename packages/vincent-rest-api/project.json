@@ -1,0 +1,30 @@
+{
+  "name": "@lit-protocol/vincent-rest-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/vincent-rest-api",
+  "projectType": "application",
+  "targets": {
+    "generate-api": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/vincent-rest-api",
+        "command": "ts-node src/utils/generate-openapi.ts && ts-node src/utils/generateOpenAPIClient.ts"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/vincent-rest-api",
+        "command": "./scripts/run-tests.sh"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/vincent-rest-api",
+        "command": "tsc --noEmit"
+      }
+    }
+  },
+  "tags": []
+} 
