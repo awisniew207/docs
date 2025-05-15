@@ -7,12 +7,16 @@ import type { OpenAPIConfig } from './core/OpenAPI';
 import { FetchHttpRequest } from './core/FetchHttpRequest';
 import { AppApi } from './services/AppApi';
 import { AppVersionApi } from './services/AppVersionApi';
+import { PolicyApi } from './services/PolicyApi';
+import { PolicyVersionApi } from './services/PolicyVersionApi';
 import { ToolApi } from './services/ToolApi';
 import { ToolVersionApi } from './services/ToolVersionApi';
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 export class Api {
   public readonly app: AppApi;
   public readonly appVersion: AppVersionApi;
+  public readonly policy: PolicyApi;
+  public readonly policyVersion: PolicyVersionApi;
   public readonly tool: ToolApi;
   public readonly toolVersion: ToolVersionApi;
   public readonly request: BaseHttpRequest;
@@ -33,6 +37,8 @@ export class Api {
     });
     this.app = new AppApi(this.request);
     this.appVersion = new AppVersionApi(this.request);
+    this.policy = new PolicyApi(this.request);
+    this.policyVersion = new PolicyVersionApi(this.request);
     this.tool = new ToolApi(this.request);
     this.toolVersion = new ToolVersionApi(this.request);
   }

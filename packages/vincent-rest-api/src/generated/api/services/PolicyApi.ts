@@ -3,30 +3,24 @@
 /* tslint:disable */
  
 import type { Error } from '../models/Error';
-import type { IToolVersionDef } from '../models/IToolVersionDef';
-import type { VersionChanges } from '../models/VersionChanges';
+import type { ICreatePolicyDef } from '../models/ICreatePolicyDef';
+import type { IEditPolicyDef } from '../models/IEditPolicyDef';
+import type { IPolicyDef } from '../models/IPolicyDef';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-export class ToolVersionApi {
+export class PolicyApi {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
-   * Creates a tool version
-   * @param identity Identity of the tool to create a new version for
-   * @param requestBody Developer-defined version details
-   * @returns IToolVersionDef Successful operation
+   * Creates a new policy
+   * @param requestBody Developer-defined policy details
+   * @returns IPolicyDef Successful operation
    * @returns Error Unexpected error
    * @throws ApiError
    */
-  public createToolVersion(
-    identity: string,
-    requestBody: VersionChanges,
-  ): CancelablePromise<IToolVersionDef | Error> {
+  public createPolicy(requestBody: ICreatePolicyDef): CancelablePromise<IPolicyDef | Error> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/tool/version/{identity}',
-      path: {
-        identity: identity,
-      },
+      url: '/policy',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -36,39 +30,39 @@ export class ToolVersionApi {
     });
   }
   /**
-   * Fetches a tool version
-   * @param identity Identity of the tool version to retrieve
-   * @returns IToolVersionDef Successful operation
+   * Fetches a policy
+   * @param identity Identity of the policy to retrieve
+   * @returns IPolicyDef Successful operation
    * @returns Error Unexpected error
    * @throws ApiError
    */
-  public getToolVersion(identity: string): CancelablePromise<IToolVersionDef | Error> {
+  public getPolicy(identity: string): CancelablePromise<IPolicyDef | Error> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/tool/version/{identity}',
+      url: '/policy/{identity}',
       path: {
         identity: identity,
       },
       errors: {
-        404: `Tool version not found`,
+        404: `Policy not found`,
       },
     });
   }
   /**
-   * Edits a tool version
-   * @param identity Identity of the tool version to edit
-   * @param requestBody Update version changes field
-   * @returns IToolVersionDef Successful operation
+   * Edits a policy
+   * @param identity Identity of the policy to edit
+   * @param requestBody Developer-defined updated policy details
+   * @returns IPolicyDef Successful operation
    * @returns Error Unexpected error
    * @throws ApiError
    */
-  public editToolVersion(
+  public editPolicy(
     identity: string,
-    requestBody: VersionChanges,
-  ): CancelablePromise<IToolVersionDef | Error> {
+    requestBody: IEditPolicyDef,
+  ): CancelablePromise<IPolicyDef | Error> {
     return this.httpRequest.request({
       method: 'PUT',
-      url: '/tool/version/{identity}',
+      url: '/policy/{identity}',
       path: {
         identity: identity,
       },

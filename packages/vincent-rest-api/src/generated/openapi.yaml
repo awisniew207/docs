@@ -299,9 +299,14 @@ components:
           type: string
           description: Tool description
           example: When we foo, our complex tool will also bar.
+        activeVersion:
+          type: string
+          description: Active version of the tool
+          example: 1.0.0
       required:
         - toolTitle
         - description
+        - activeVersion
     IToolDef:
       type: object
       properties:
@@ -335,15 +340,6 @@ components:
         - authorWalletAddress
         - description
         - activeVersion
-    ICreateToolVersionDef:
-      type: object
-      properties:
-        changes:
-          type: string
-          description: Changelog information for this version
-          example: Extra foo on the bar!
-      required:
-        - changes
     IToolVersionDef:
       type: object
       properties:
@@ -468,6 +464,205 @@ components:
         - status
         - supportedPolicies
         - ipfsCid
+    ICreatePolicyDef:
+      type: object
+      properties:
+        packageName:
+          type: string
+          description: Policy package name
+          example: '@vincent/foo-bar-policy'
+        policyTitle:
+          type: string
+          description: Policy title
+          example: The Greatest Foo Bar Policy
+        description:
+          type: string
+          description: Policy description
+          example: This policy is a foo bar policy
+      required:
+        - packageName
+        - policyTitle
+        - description
+    IEditPolicyDef:
+      type: object
+      properties:
+        policyTitle:
+          type: string
+          description: Policy title
+          example: The Greatest Foo Bar Policy
+        description:
+          type: string
+          description: Policy description
+          example: This policy is a foo bar policy
+        activeVersion:
+          type: string
+          description: Active version of the policy
+          example: 1.0.0
+      required:
+        - policyTitle
+        - description
+        - activeVersion
+    IPolicyDef:
+      type: object
+      properties:
+        packageName:
+          type: string
+          description: Policy package name
+          example: '@vincent/foo-bar-policy'
+        identity:
+          type: string
+          description: Unique composite identifier
+          example: PolicyDef|@vincent/foo-bar-policy
+        authorWalletAddress:
+          type: string
+          description: Author wallet address
+          example: '0xa723407AdB396a55aCd843D276daEa0d787F8db5'
+        description:
+          type: string
+          description: Policy description
+          example: This policy is a foo bar policy
+        activeVersion:
+          type: string
+          description: Active version of the policy
+          example: 1.0.0
+      required:
+        - packageName
+        - identity
+        - authorWalletAddress
+        - description
+        - activeVersion
+    IPolicyVersionDef:
+      type: object
+      properties:
+        packageName:
+          type: string
+          description: Policy package name
+          example: '@vincent/foo-bar-policy'
+        version:
+          type: string
+          description: Policy version
+          example: 1.0.0
+        identity:
+          type: string
+          description: Unique composite identifier
+          example: PolicyVersionDef|@vincent/foo-bar-policy@1.0.0
+        changes:
+          type: string
+          description: Changelog information for this version
+          example: Initial release
+        repository:
+          type: array
+          items:
+            type: string
+          description: Repository URLs
+        description:
+          type: string
+          description: Policy description
+          example: This policy is a foo bar policy
+        keywords:
+          type: array
+          items:
+            type: string
+          description: Keywords for the policy
+          example:
+            - defi
+            - memecoin
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Dependencies of the policy
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the author
+              example: Developer Name
+            email:
+              type: string
+              format: email
+              description: Email of the author
+              example: dev@example.com
+            url:
+              type: string
+              format: uri
+              description: URL of the author's website
+              example: https://example.com
+          required:
+            - name
+            - email
+          description: Author information
+        contributors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the contributor
+                example: Contributor Name
+              email:
+                type: string
+                format: email
+                description: Email of the contributor
+                example: contributor@example.com
+              url:
+                type: string
+                format: uri
+                description: URL of the contributor's website
+                example: https://contributor-site.com
+            required:
+              - name
+              - email
+          description: Contributors information
+        homepage:
+          type: string
+          format: uri
+          description: Policy homepage
+          example: https://example-vincent-homepage.com
+        status:
+          type: string
+          enum:
+            - invalid
+            - validating
+            - valid
+            - error
+          description: Policy status
+          example: valid
+        ipfsCid:
+          type: string
+          description: IPFS CID
+          example: QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo
+        parameters:
+          type: object
+          properties:
+            uiSchema:
+              type: string
+              description: UI Schema for parameter display
+              example: '{"type":"object","properties":{}}'
+            jsonSchema:
+              type: string
+              description: JSON Schema for parameter validation
+              example: '{"type":"object","required":[],"properties":{}}'
+          required:
+            - uiSchema
+            - jsonSchema
+          description: Schema parameters
+      required:
+        - packageName
+        - version
+        - identity
+        - changes
+        - repository
+        - description
+        - keywords
+        - dependencies
+        - author
+        - contributors
+        - status
+        - ipfsCid
+        - parameters
     Error:
       type: object
       properties:
@@ -482,15 +677,6 @@ components:
       required:
         - code
         - message
-    VersionChanges:
-      type: object
-      properties:
-        changes:
-          type: string
-          description: Updated changelog information
-          example: Updated changelog information
-      required:
-        - changes
     DeleteResponse:
       type: object
       properties:
@@ -500,6 +686,15 @@ components:
           example: Application successfully deleted
       required:
         - message
+    VersionChanges:
+      type: object
+      properties:
+        changes:
+          type: string
+          description: Updated changelog information
+          example: Updated changelog information
+      required:
+        - changes
     AppVersionsArray:
       type: array
       items:
@@ -535,6 +730,10 @@ components:
           - identity
           - enabled
           - changes
+    PolicyVersionsArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/IPolicyVersionDef'
   parameters: {}
 paths:
   /app:
@@ -1048,7 +1247,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ICreateToolVersionDef'
+              $ref: '#/components/schemas/VersionChanges'
       responses:
         '200':
           description: Successful operation
@@ -1125,6 +1324,197 @@ paths:
           description: Invalid input
         '422':
           description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /policy:
+    post:
+      tags:
+        - policy
+      summary: Creates a new policy
+      operationId: createPolicy
+      requestBody:
+        description: Developer-defined policy details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreatePolicyDef'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPolicyDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /policy/{identity}:
+    get:
+      tags:
+        - policy
+      summary: Fetches a policy
+      operationId: getPolicy
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the policy to retrieve
+          required: true
+          schema:
+            type: string
+            example: PolicyDef|@vincent/foo-bar-policy
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPolicyDef'
+        '404':
+          description: Policy not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - policy
+      summary: Edits a policy
+      operationId: editPolicy
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the policy to edit
+          required: true
+          schema:
+            type: string
+            example: PolicyDef|@vincent/foo-bar-policy
+      requestBody:
+        description: Developer-defined updated policy details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IEditPolicyDef'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPolicyDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /policy/version/{identity}:
+    post:
+      tags:
+        - policy/version
+      summary: Creates a new policy version
+      operationId: createPolicyVersion
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the policy to create a new version for
+          required: true
+          schema:
+            type: string
+            example: PolicyDef|@vincent/foo-bar-policy
+      requestBody:
+        description: Developer-defined version details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionChanges'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPolicyVersionDef'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - policy/version
+      summary: Fetches a policy version
+      operationId: getPolicyVersion
+      parameters:
+        - name: identity
+          in: path
+          description: Identity of the policy version to retrieve
+          required: true
+          schema:
+            type: string
+            example: PolicyVersionDef|@vincent/foo-bar-policy@1.0.0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPolicyVersionDef'
+        '404':
+          description: Policy version not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /policy/versions:
+    get:
+      tags:
+        - policy/version
+      summary: Fetches all versions of a policy
+      operationId: getPolicyVersions
+      parameters:
+        - name: identity
+          in: query
+          description: Identity of the policy to fetch versions for
+          required: true
+          schema:
+            type: string
+            example: PolicyDef|@vincent/foo-bar-policy
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyVersionsArray'
+        '404':
+          description: Policy not found
         default:
           description: Unexpected error
           content:

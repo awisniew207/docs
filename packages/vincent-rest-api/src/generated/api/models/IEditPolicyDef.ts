@@ -2,17 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-export type IEditToolDef = {
+export type IEditPolicyDef = {
   /**
-   * Tool title
+   * Policy title
    */
-  toolTitle: string;
+  policyTitle: string;
   /**
-   * Tool description
+   * Policy description
    */
   description: string;
   /**
-   * Active version of the tool
+   * Active version of the policy
    */
   activeVersion: string;
 };

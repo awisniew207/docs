@@ -175,6 +175,10 @@ export const EditToolDef = z.object({
     description: 'Tool description',
     example: 'When we foo, our complex tool will also bar.',
   }),
+  activeVersion: z.string().openapi({
+    description: 'Active version of the tool',
+    example: '1.0.0',
+  }),
 });
 
 // The response body when fetching a tool
@@ -299,6 +303,132 @@ export const ToolVersionDef = z.object({
   }),
 });
 
+export const PolicyDef = z.object({
+  packageName: z.string().openapi({
+    description: 'Policy package name',
+    example: '@vincent/foo-bar-policy',
+  }),
+  identity: z.string().openapi({
+    description: 'Unique composite identifier',
+    example: 'PolicyDef|@vincent/foo-bar-policy',
+  }),
+  authorWalletAddress: z.string().openapi({
+    description: 'Author wallet address',
+    example: '0xa723407AdB396a55aCd843D276daEa0d787F8db5',
+  }),
+  description: z.string().openapi({
+    description: 'Policy description',
+    example: 'This policy is a foo bar policy',
+  }),
+  activeVersion: z.string().openapi({
+    description: 'Active version of the policy',
+    example: '1.0.0',
+  }),
+});
+
+export const CreatePolicyDef = z.object({
+  packageName: z.string().openapi({
+    description: 'Policy package name',
+    example: '@vincent/foo-bar-policy',
+  }),
+  policyTitle: z.string().openapi({
+    description: 'Policy title',
+    example: 'The Greatest Foo Bar Policy',
+  }),
+  description: z.string().openapi({
+    description: 'Policy description',
+    example: 'This policy is a foo bar policy',
+  }),
+});
+
+export const PolicyVersionDef = z.object({
+  packageName: z.string().openapi({
+    description: 'Policy package name',
+    example: '@vincent/foo-bar-policy',
+  }),
+  version: z.string().openapi({
+    description: 'Policy version',
+    example: '1.0.0',
+  }),
+  identity: z.string().openapi({
+    description: 'Unique composite identifier',
+    example: 'PolicyVersionDef|@vincent/foo-bar-policy@1.0.0',
+  }),
+  changes: z.string().openapi({
+    description: 'Changelog information for this version',
+    example: 'Initial release',
+  }),
+  repository: z.array(z.string()).openapi({
+    description: 'Repository URLs',
+  }),
+  description: z.string().openapi({
+    description: 'Policy description',
+    example: 'This policy is a foo bar policy',
+  }),
+  keywords: z.array(z.string()).openapi({
+    description: 'Keywords for the policy',
+    example: ['defi', 'memecoin'],
+  }),
+  dependencies: z.array(z.string()).openapi({
+    description: 'Dependencies of the policy',
+  }),
+  author: Author.openapi({
+    description: 'Author information',
+  }),
+  contributors: z.array(Contributor).openapi({
+    description: 'Contributors information',
+  }),
+  homepage: z.string().url().optional().openapi({
+    description: 'Policy homepage',
+    example: 'https://example-vincent-homepage.com',
+  }),
+  status: z.enum(['invalid', 'validating', 'valid', 'error']).openapi({
+    description: 'Policy status',
+    example: 'valid',
+  }),
+  ipfsCid: z.string().openapi({
+    description: 'IPFS CID',
+    example: 'QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo',
+  }),
+  parameters: z
+    .object({
+      uiSchema: z.string().openapi({
+        description: 'UI Schema for parameter display',
+        example: '{"type":"object","properties":{}}',
+      }),
+      jsonSchema: z.string().openapi({
+        description: 'JSON Schema for parameter validation',
+        example: '{"type":"object","required":[],"properties":{}}',
+      }),
+    })
+    .openapi({
+      description: 'Schema parameters',
+    }),
+});
+
+export const EditPolicyDef = z.object({
+  policyTitle: z.string().openapi({
+    description: 'Policy title',
+    example: 'The Greatest Foo Bar Policy',
+  }),
+  description: z.string().openapi({
+    description: 'Policy description',
+    example: 'This policy is a foo bar policy',
+  }),
+  activeVersion: z.string().openapi({
+    description: 'Active version of the policy',
+    example: '1.0.0',
+  }),
+});
+
+// Request body for creating a new policy version
+export const CreatePolicyVersionDef = z.object({
+  changes: z.string().openapi({
+    description: 'Changelog information for this version',
+    example: 'Extra foo on the bar!',
+  }),
+});
+
 // Error response
 export const Error = z.object({
   code: z.string().openapi({
@@ -339,11 +469,16 @@ const AppVersionWithToolsDefSchema = registry.register(
 const CreateToolDefSchema = registry.register('ICreateToolDef', CreateToolDef);
 const EditToolDefSchema = registry.register('IEditToolDef', EditToolDef);
 const ToolDefSchema = registry.register('IToolDef', ToolDef);
-const CreateToolVersionDefSchema = registry.register('ICreateToolVersionDef', CreateToolVersionDef);
 const ToolVersionDefSchema = registry.register('IToolVersionDef', ToolVersionDef);
+
+const CreatePolicyDefSchema = registry.register('ICreatePolicyDef', CreatePolicyDef);
+const EditPolicyDefSchema = registry.register('IEditPolicyDef', EditPolicyDef);
+const PolicyDefSchema = registry.register('IPolicyDef', PolicyDef);
+const PolicyVersionDefSchema = registry.register('IPolicyVersionDef', PolicyVersionDef);
+
 const ErrorSchema = registry.register('Error', Error);
-const VersionChangesSchema = registry.register('VersionChanges', VersionChanges);
 const DeleteResponseSchema = registry.register('DeleteResponse', DeleteResponse);
+const VersionChangesSchema = registry.register('VersionChanges', VersionChanges);
 
 // Register all the paths
 
@@ -1088,7 +1223,7 @@ registry.registerPath({
     body: {
       content: {
         'application/json': {
-          schema: CreateToolVersionDefSchema,
+          schema: VersionChangesSchema,
         },
       },
       description: 'Developer-defined version details',
@@ -1199,6 +1334,349 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: ToolVersionDefSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Invalid input',
+    },
+    422: {
+      description: 'Validation exception',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// POST /policy - Create a new policy
+registry.registerPath({
+  method: 'post',
+  path: '/policy',
+  tags: ['policy'],
+  summary: 'Creates a new policy',
+  operationId: 'createPolicy',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: CreatePolicyDefSchema,
+        },
+      },
+      description: 'Developer-defined policy details',
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyDefSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Invalid input',
+    },
+    422: {
+      description: 'Validation exception',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// GET /policy/{identity} - Fetch a policy
+registry.registerPath({
+  method: 'get',
+  path: '/policy/{identity}',
+  tags: ['policy'],
+  summary: 'Fetches a policy',
+  operationId: 'getPolicy',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'path',
+      description: 'Identity of the policy to retrieve',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyDef|@vincent/foo-bar-policy',
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyDefSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Policy not found',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// PUT /policy/{identity} - Edit a policy
+registry.registerPath({
+  method: 'put',
+  path: '/policy/{identity}',
+  tags: ['policy'],
+  summary: 'Edits a policy',
+  operationId: 'editPolicy',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'path',
+      description: 'Identity of the policy to edit',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyDef|@vincent/foo-bar-policy',
+      },
+    },
+  ],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: EditPolicyDefSchema,
+        },
+      },
+      description: 'Developer-defined updated policy details',
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyDefSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Invalid input',
+    },
+    422: {
+      description: 'Validation exception',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// POST /policy/version/{identity} - Create a new policy version
+registry.registerPath({
+  method: 'post',
+  path: '/policy/version/{identity}',
+  tags: ['policy/version'],
+  summary: 'Creates a new policy version',
+  operationId: 'createPolicyVersion',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'path',
+      description: 'Identity of the policy to create a new version for',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyDef|@vincent/foo-bar-policy',
+      },
+    },
+  ],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: VersionChangesSchema,
+        },
+      },
+      description: 'Developer-defined version details',
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyVersionDefSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Invalid input',
+    },
+    422: {
+      description: 'Validation exception',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// GET /policy/version/{identity} - Fetch a policy version
+registry.registerPath({
+  method: 'get',
+  path: '/policy/version/{identity}',
+  tags: ['policy/version'],
+  summary: 'Fetches a policy version',
+  operationId: 'getPolicyVersion',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'path',
+      description: 'Identity of the policy version to retrieve',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyVersionDef|@vincent/foo-bar-policy@1.0.0',
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyVersionDefSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Policy version not found',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// GET /policy/versions - Fetch all versions of a policy
+registry.registerPath({
+  method: 'get',
+  path: '/policy/versions',
+  tags: ['policy/version'],
+  summary: 'Fetches all versions of a policy',
+  operationId: 'getPolicyVersions',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'query',
+      description: 'Identity of the policy to fetch versions for',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyDef|@vincent/foo-bar-policy',
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: z.array(PolicyVersionDefSchema).openapi('PolicyVersionsArray'),
+        },
+      },
+    },
+    404: {
+      description: 'Policy not found',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// PUT /policy/{identity}/owner - Changes a policy's owner
+registry.registerPath({
+  method: 'put',
+  path: '/policy/{identity}/owner',
+  tags: ['policy'],
+  summary: "Changes a policy's owner",
+  operationId: 'changePolicyOwner',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'path',
+      description: 'Identity of the policy to change the owner of',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyDef|@vincent/foo-bar-policy',
+      },
+    },
+  ],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            authorWalletAddress: z.string().openapi({
+              description: 'New author wallet address',
+              example: '0x1234567890123456789012345678901234567890',
+            }),
+          }),
+        },
+      },
+      description: 'Developer-defined updated policy details',
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyDefSchema,
         },
       },
     },
