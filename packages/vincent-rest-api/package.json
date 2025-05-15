@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.7.0",
   "scripts": {
     "generate-openapi": "pnpx ts-node src/utils/generate-openapi.ts",
-    "generate-client": "pnpx openapi-typescript-codegen --input src/api/generated-openapi.yaml --name Api --postfixServices Api --indent 2 --output ../common/api",
+    "generate-client": "pnpx openapi-typescript-codegen --input src/generated/openapi.yaml --name Api --postfixServices Api --indent 2 --output src/generated/api",
     "generate-api": "run-s generate-openapi generate-client"
   },
   "devDependencies": {

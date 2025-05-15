@@ -1,17 +1,10 @@
-import { Api, ApiError } from '../common/api/index';
-import { ICreateAppDef } from '../common/api/models/ICreateAppDef';
-import { VersionChanges } from '../common/api/models/VersionChanges';
-import { ICreateAppVersionDef } from '../common/api/models/ICreateAppVersionDef';
-
-const fail = (message: string) => {
-  expect(message).toBeFalsy();
-};
-
-type ValidationErrors = Array<{
-  path: string[];
-  message: string;
-}>;
-
+import { Api, ApiError } from '../generated/api';
+import { ICreateAppDef } from '../generated/api/models/ICreateAppDef';
+import { VersionChanges } from '../generated/api/models/VersionChanges';
+import { ICreateAppVersionDef } from '../generated/api/models/ICreateAppVersionDef';
+import { IAppDef } from '../generated/api/models/IAppDef';
+import { IAppVersionDef } from '../generated/api/models/IAppVersionDef';
+import { IAppVersionWithToolsDef } from '../generated/api/models/IAppVersionWithToolsDef';
 const waitBetweenRequests = () => new Promise((r) => setTimeout(r, 100));
 
 describe('Integration tests', () => {
@@ -36,19 +29,17 @@ describe('Integration tests', () => {
         managerAddress: '0xa723407AdB396a55aCd843D276daEa0d787F8db5',
       };
 
-      const response = await apiClient.app.createApp(app);
+      const response = (await apiClient.app.createApp(app)) as IAppDef;
 
-      if ('appId' in response) {
-        expect(response).toHaveProperty('identity');
-        expect(response).toHaveProperty('appId');
-        expect(response.name).toBe(app.name);
-        expect(response.description).toBe(app.description);
+      expect(response).toMatchObject({
+        name: app.name,
+        description: app.description,
+        appId: expect.any(Number),
+        identity: expect.any(String),
+      });
 
-        appIdentity = response.identity;
-        console.log('Created app with identity:', appIdentity);
-      } else {
-        fail('Expected AppDef response but got Error');
-      }
+      appIdentity = response.identity;
+      console.log('Created app with identity:', appIdentity);
 
       await waitBetweenRequests();
     });
@@ -58,21 +49,17 @@ describe('Integration tests', () => {
         name: 'Invalid Test App',
       };
 
-      try {
-        await apiClient.app.createApp(invalidApp as any);
-        fail('Expected API call to fail but it succeeded');
-      } catch (e: any) {
-        if (e instanceof ApiError) {
-          expect(e.status).toBe(422);
-          const errors = e.body as ValidationErrors;
-          expect(Array.isArray(errors)).toBe(true);
-
-          expect(errors.some((err) => err.path.includes('description'))).toBe(true);
-          expect(errors.some((err) => err.path.includes('contactEmail'))).toBe(true);
-        } else {
-          throw e;
-        }
-      }
+      await expect(apiClient.app.createApp(invalidApp as any)).rejects.toMatchObject({
+        status: 422,
+        body: expect.arrayContaining([
+          expect.objectContaining({
+            path: expect.arrayContaining(['description']),
+          }),
+          expect.objectContaining({
+            path: expect.arrayContaining(['contactEmail']),
+          }),
+        ]),
+      });
 
       await waitBetweenRequests();
     });
@@ -83,15 +70,14 @@ describe('Integration tests', () => {
         return;
       }
 
-      const response = await apiClient.app.getApp(appIdentity);
+      const response = (await apiClient.app.getApp(appIdentity)) as IAppDef;
 
-      if ('appId' in response) {
-        expect(response).toHaveProperty('identity', appIdentity);
-        expect(response).toHaveProperty('name', 'Integration Test App');
-        expect(response).toHaveProperty('description', 'An app for integration testing');
-      } else {
-        fail('Expected AppDef response but got Error');
-      }
+      expect(response).toMatchObject({
+        identity: appIdentity,
+        name: 'Integration Test App',
+        description: 'An app for integration testing',
+        appId: expect.any(Number),
+      });
 
       await waitBetweenRequests();
     });
@@ -113,18 +99,14 @@ describe('Integration tests', () => {
         managerAddress: '0xa723407AdB396a55aCd843D276daEa0d787F8db5',
       };
 
-      const response = await apiClient.app.editApp(appIdentity, updatedApp);
+      const response = (await apiClient.app.editApp(appIdentity, updatedApp)) as IAppDef;
 
-      if ('appId' in response) {
-        expect(response).toHaveProperty('identity', appIdentity);
-        expect(response).toHaveProperty('name', 'Updated Integration Test App');
-        expect(response).toHaveProperty(
-          'description',
-          'Updated description for integration testing',
-        );
-      } else {
-        fail('Expected AppDef response but got Error');
-      }
+      expect(response).toMatchObject({
+        identity: appIdentity,
+        name: 'Updated Integration Test App',
+        description: 'Updated description for integration testing',
+        appId: expect.any(Number),
+      });
 
       await waitBetweenRequests();
     });
@@ -133,30 +115,25 @@ describe('Integration tests', () => {
   // App Version endpoint tests
   describe('App Version endpoints', () => {
     beforeAll(async () => {
-      try {
-        if (!appIdentity) {
-          console.warn('Skipping version setup - no app identity available');
-          return;
-        }
-
-        const versionData: ICreateAppVersionDef = {
-          tools: ['@vincent/foo-bar@1.0.0'],
-          changes: 'Initial version',
-        };
-
-        const versionResponse = await apiClient.appVersion.createAppVersion(
-          appIdentity,
-          versionData,
-        );
-        if ('identity' in versionResponse) {
-          versionIdentity = versionResponse.identity;
-          console.log('Created version with identity:', versionIdentity);
-        }
-
-        await waitBetweenRequests();
-      } catch (error) {
-        console.error('Version setup failed:', error);
+      if (!appIdentity) {
+        console.warn('Skipping version setup - no app identity available');
+        return;
       }
+
+      const versionData: ICreateAppVersionDef = {
+        tools: ['@vincent/foo-bar@1.0.0'],
+        changes: 'Initial version',
+      };
+
+      const versionResponse = (await apiClient.appVersion.createAppVersion(
+        appIdentity,
+        versionData,
+      )) as IAppVersionDef;
+
+      versionIdentity = versionResponse.identity;
+      console.log('Created version with identity:', versionIdentity);
+
+      await waitBetweenRequests();
     });
 
     test('get app versions - valid', async () => {
@@ -165,16 +142,15 @@ describe('Integration tests', () => {
         return;
       }
 
-      const response = await apiClient.app.getAppVersions(appIdentity);
+      const response = (await apiClient.app.getAppVersions(appIdentity)) as IAppVersionDef[];
 
-      if (Array.isArray(response)) {
-        expect(response.length).toBeGreaterThan(0);
-        expect(response[0]).toHaveProperty('identity');
-        expect(response[0]).toHaveProperty('appId');
-        expect(response[0]).toHaveProperty('changes', 'Initial version');
-      } else {
-        fail('Expected array of app versions but got Error');
-      }
+      expect(Array.isArray(response)).toBe(true);
+      expect(response.length).toBeGreaterThan(0);
+      expect(response[0]).toMatchObject({
+        identity: expect.any(String),
+        appId: expect.any(Number),
+        changes: 'Initial version',
+      });
 
       await waitBetweenRequests();
     });
@@ -185,17 +161,20 @@ describe('Integration tests', () => {
         return;
       }
 
-      const response = await apiClient.appVersion.getAppVersion(versionIdentity);
+      const response = (await apiClient.appVersion.getAppVersion(
+        versionIdentity,
+      )) as IAppVersionWithToolsDef;
 
-      if ('version' in response) {
-        expect(response.version).toHaveProperty('identity', versionIdentity);
-        expect(response).toHaveProperty('tools');
-        expect(Array.isArray(response.tools)).toBe(true);
-        expect(response.tools.length).toBe(1);
-        expect(response.tools[0].toolIdentity).toBe('@vincent/foo-bar@1.0.0');
-      } else {
-        fail('Expected app version with tools but got Error');
-      }
+      expect(response).toMatchObject({
+        version: {
+          identity: versionIdentity,
+        },
+        tools: expect.arrayContaining([
+          expect.objectContaining({
+            toolIdentity: '@vincent/foo-bar@1.0.0',
+          }),
+        ]),
+      });
 
       await waitBetweenRequests();
     });
@@ -210,14 +189,15 @@ describe('Integration tests', () => {
         changes: 'Updated changelog',
       };
 
-      const response = await apiClient.appVersion.editAppVersion(versionIdentity, updateData);
+      const response = (await apiClient.appVersion.editAppVersion(
+        versionIdentity,
+        updateData,
+      )) as IAppVersionDef;
 
-      if ('identity' in response) {
-        expect(response).toHaveProperty('identity', versionIdentity);
-        expect(response).toHaveProperty('changes', 'Updated changelog');
-      } else {
-        fail('Expected updated app version but got Error');
-      }
+      expect(response).toMatchObject({
+        identity: versionIdentity,
+        changes: 'Updated changelog',
+      });
 
       await waitBetweenRequests();
     });
@@ -228,26 +208,21 @@ describe('Integration tests', () => {
         return;
       }
 
-      const originalVersionResponse = await apiClient.appVersion.getAppVersion(versionIdentity);
-      let originalEnabled = false;
-
-      if ('version' in originalVersionResponse) {
-        originalEnabled = originalVersionResponse.version.enabled;
-      } else {
-        fail('Expected app version but got Error');
-        return;
-      }
+      const originalVersionResponse = (await apiClient.appVersion.getAppVersion(
+        versionIdentity,
+      )) as IAppVersionWithToolsDef;
+      const originalEnabled = originalVersionResponse.version.enabled;
 
       await waitBetweenRequests();
 
-      const response = await apiClient.appVersion.toggleAppVersion(versionIdentity);
+      const response = (await apiClient.appVersion.toggleAppVersion(
+        versionIdentity,
+      )) as IAppVersionDef;
 
-      if ('identity' in response) {
-        expect(response).toHaveProperty('identity', versionIdentity);
-        expect(response.enabled).toBe(!originalEnabled);
-      } else {
-        fail('Expected updated app version but got Error');
-      }
+      expect(response).toMatchObject({
+        identity: versionIdentity,
+        enabled: !originalEnabled,
+      });
 
       await waitBetweenRequests();
     });

@@ -24,7 +24,7 @@ const openApiDocument = generator.generateDocument({
 
 const openApiYaml = yaml.dump(openApiDocument);
 
-const outputPath = path.join(__dirname, '../api/generated-openapi.yaml');
+const outputPath = path.join(__dirname, '../generated/openapi.yaml');
 fs.writeFileSync(outputPath, openApiYaml, 'utf8');
 
 console.log(`OpenAPI YAML generated at: ${outputPath}`);
