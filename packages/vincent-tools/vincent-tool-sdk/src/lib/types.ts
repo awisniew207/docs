@@ -22,13 +22,11 @@ import {
 import { EnrichedVincentToolPolicy } from './toolCore/vincentTool';
 
 export interface PolicyResponseAllow<AllowResult> {
-  ipfsCid: string;
   allow: true;
   result: AllowResult;
 }
 
 export interface PolicyResponseAllowNoResult {
-  ipfsCid: string;
   allow: true;
   result?: never;
 }
@@ -38,14 +36,12 @@ export interface ZodValidationDenyResult {
 }
 
 export interface PolicyResponseDeny<DenyResult> {
-  ipfsCid: string;
   allow: false;
   error?: string;
   result: DenyResult | ZodValidationDenyResult;
 }
 
 export interface PolicyResponseDenyNoResult {
-  ipfsCid: string;
   allow: false;
   error?: string;
   result: never;
@@ -78,28 +74,6 @@ export type PolicyLifecycleFunction<
         : ContextAllowResponseNoResult)
     | (DenyResult extends z.ZodType
         ? ContextDenyResponse<z.infer<DenyResult>>
-        : ContextDenyResponseNoResult)
-  >
->;
-
-export type PrecheckFunction<
-  PolicyToolParams extends z.ZodType,
-  UserParams extends z.ZodType | undefined,
-  PrecheckAllowResult extends z.ZodType | undefined,
-  PrecheckDenyResult extends z.ZodType | undefined,
-> = (
-  args: {
-    toolParams: z.infer<PolicyToolParams>;
-    userParams: UserParams extends z.ZodType ? z.infer<UserParams> : undefined;
-  },
-  context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult>,
-) => Promise<
-  EnforcePolicyResponse<
-    | (PrecheckAllowResult extends z.ZodType
-        ? ContextAllowResponse<z.infer<PrecheckAllowResult>>
-        : ContextAllowResponseNoResult)
-    | (PrecheckDenyResult extends z.ZodType
-        ? ContextDenyResponse<z.infer<PrecheckDenyResult>>
         : ContextDenyResponseNoResult)
   >
 >;
@@ -151,7 +125,6 @@ export type VincentPolicyDef<
       >,
   CommitFn = undefined | CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 > = {
-  ipfsCid: string;
   packageName: PackageName;
   toolParamsSchema: PolicyToolParams;
   userParamsSchema?: UserParams;
@@ -171,34 +144,86 @@ export type VincentPolicyDef<
 // Tool supported policy with proper typing on the parameter mappings
 export type VincentToolPolicy<
   ToolParamsSchema extends z.ZodType,
-  PolicyDefType extends VincentPolicyDef<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >,
+  PolicyDefType extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
   PackageName extends string = string,
 > = {
-  policyDef: PolicyDefType & { packageName: PackageName };
+  vincentPolicy: PolicyDefType & { packageName: PackageName };
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyDefType['toolParamsSchema']>;
   }>;
+};
+
+export type VincentPolicy<
+  PackageName extends string,
+  PolicyToolParams extends z.ZodType,
+  UserParams extends z.ZodType | undefined = undefined,
+  PrecheckAllowResult extends z.ZodType | undefined = undefined,
+  PrecheckDenyResult extends z.ZodType | undefined = undefined,
+  EvalAllowResult extends z.ZodType | undefined = undefined,
+  EvalDenyResult extends z.ZodType | undefined = undefined,
+  CommitParams extends z.ZodType | undefined = undefined,
+  CommitAllowResult extends z.ZodType | undefined = undefined,
+  CommitDenyResult extends z.ZodType | undefined = undefined,
+> = {
+  packageName: PackageName;
+  toolParamsSchema: PolicyToolParams;
+  userParamsSchema?: UserParams;
+  precheckAllowResultSchema?: PrecheckAllowResult;
+  precheckDenyResultSchema?: PrecheckDenyResult;
+  evalAllowResultSchema?: EvalAllowResult;
+  evalDenyResultSchema?: EvalDenyResult;
+  commitParamsSchema?: CommitParams;
+  commitAllowResultSchema?: CommitAllowResult;
+  commitDenyResultSchema?: CommitDenyResult;
+
+  precheck?: (
+    args: {
+      toolParams: z.infer<PolicyToolParams>;
+      userParams: InferOrUndefined<UserParams>;
+    },
+    baseContext: BaseContext,
+  ) => Promise<
+    | (PrecheckAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<PrecheckAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (PrecheckDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<PrecheckDenyResult>>
+        : PolicyResponseDenyNoResult)
+  >;
+
+  evaluate: (
+    args: {
+      toolParams: z.infer<PolicyToolParams>;
+      userParams: InferOrUndefined<UserParams>;
+    },
+    baseContext: BaseContext,
+  ) => Promise<
+    | (EvalAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (EvalDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<EvalDenyResult>>
+        : PolicyResponseDenyNoResult)
+  >;
+
+  commit?: (
+    args: InferOrUndefined<CommitParams>,
+    baseContext: BaseContext,
+  ) => Promise<
+    | (CommitAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<CommitAllowResult>>
+        : PolicyResponseAllowNoResult)
+    | (CommitDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<CommitDenyResult>>
+        : PolicyResponseDenyNoResult)
+  >;
 };
 
 export type PolicyEvaluationResultContext<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
+      vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -261,7 +286,7 @@ export type ToolExecutionPolicyEvaluationResult<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
+      vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -293,7 +318,7 @@ export type ToolExecutionPolicyContext<
   Policies extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
+      vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any>;
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -405,9 +430,9 @@ export interface VincentToolDef<
     VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
   >[],
   PkgNames extends
-    PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
+    PolicyArray[number]['vincentPolicy']['packageName'] = PolicyArray[number]['vincentPolicy']['packageName'],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PkgNames]: Extract<PolicyArray[number], { policyDef: { packageName: K } }>;
+    [K in PkgNames]: Extract<PolicyArray[number], { vincentPolicy: { packageName: K } }>;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
@@ -428,7 +453,6 @@ export interface VincentToolDef<
     ExecuteFailSchema
   >,
 > {
-  ipfsCid: string;
   packageName: string;
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies: PolicyArray;

@@ -100,7 +100,21 @@ export function createPrecheckToolContext<
   PolicyMap extends Record<
     string,
     {
-      policyDef: VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>;
+      vincentPolicy: VincentPolicyDef<
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any
+      >;
     }
   >,
 >(params: {

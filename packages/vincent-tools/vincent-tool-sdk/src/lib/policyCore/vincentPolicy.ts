@@ -6,6 +6,7 @@ import {
   InferOrUndefined,
   PolicyLifecycleFunction,
   PolicyResponse,
+  VincentPolicy,
   VincentPolicyDef,
 } from '../types';
 import { createPolicyContext } from './policyContext/policyContext';
@@ -67,11 +68,10 @@ export function createVincentPolicy<
         userParams: InferOrUndefined<UserParams>;
       },
       baseContext: BaseContext,
-    ): Promise<PolicyResponse<EvalAllowResult, EvalDenyResult>> => {
+    ) => {
       try {
         const context = createPolicyContext({
           baseContext,
-          ipfsCid: originalPolicyDef.ipfsCid,
           allowSchema: originalPolicyDef.evalAllowResultSchema,
           denySchema: originalPolicyDef.evalDenyResultSchema,
         });
@@ -80,7 +80,6 @@ export function createVincentPolicy<
           policyDef,
           rawToolParams: args.toolParams,
           rawUserParams: args.userParams,
-          ipfsCid: originalPolicyDef.ipfsCid,
           phase: 'evaluate',
         });
 
@@ -96,18 +95,11 @@ export function createVincentPolicy<
           denyResultSchema: policyDef.evalDenyResultSchema,
         });
 
-        const resultOrDeny = validateOrDeny(
-          result,
-          schemaToUse,
-          originalPolicyDef.ipfsCid,
-          'evaluate',
-          'output',
-        );
+        const resultOrDeny = validateOrDeny(result, schemaToUse, 'evaluate', 'output');
 
         return resultOrDeny as PolicyResponse<EvalAllowResult, EvalDenyResult>;
       } catch (err) {
         return createDenyResult({
-          ipfsCid: originalPolicyDef.ipfsCid,
           message: err instanceof Error ? err.message : 'Unknown error',
         });
       }
@@ -122,10 +114,9 @@ export function createVincentPolicy<
               userParams: InferOrUndefined<UserParams>;
             },
             baseContext: BaseContext,
-          ): Promise<PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>> => {
+          ) => {
             try {
               const context = createPolicyContext({
-                ipfsCid: originalPolicyDef.ipfsCid,
                 baseContext,
                 allowSchema: originalPolicyDef.precheckAllowResultSchema,
                 denySchema: originalPolicyDef.precheckDenyResultSchema,
@@ -141,7 +132,6 @@ export function createVincentPolicy<
                 policyDef,
                 rawToolParams: args.toolParams,
                 rawUserParams: args.userParams,
-                ipfsCid: originalPolicyDef.ipfsCid,
                 phase: 'precheck',
               });
 
@@ -157,18 +147,11 @@ export function createVincentPolicy<
                 denyResultSchema: policyDef.precheckDenyResultSchema,
               });
 
-              const resultOrDeny = validateOrDeny(
-                result,
-                schemaToUse,
-                originalPolicyDef.ipfsCid,
-                'precheck',
-                'output',
-              );
+              const resultOrDeny = validateOrDeny(result, schemaToUse, 'precheck', 'output');
 
               return resultOrDeny as PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
             } catch (err) {
               return createDenyResult({
-                ipfsCid: originalPolicyDef.ipfsCid,
                 message: err instanceof Error ? err.message : 'Unknown error',
               });
             }
@@ -179,13 +162,9 @@ export function createVincentPolicy<
     // Only create commit wrapper if commit exists; it is optional also
     ...(originalPolicyDef.commit !== undefined
       ? {
-          commit: async (
-            args: InferOrUndefined<CommitParams>,
-            baseContext: BaseContext,
-          ): Promise<PolicyResponse<CommitAllowResult, CommitDenyResult>> => {
+          commit: async (args: InferOrUndefined<CommitParams>, baseContext: BaseContext) => {
             try {
               const context = createPolicyContext({
-                ipfsCid: originalPolicyDef.ipfsCid,
                 baseContext,
                 denySchema: originalPolicyDef.commitDenyResultSchema,
                 allowSchema: originalPolicyDef.commitAllowResultSchema,
@@ -200,7 +179,6 @@ export function createVincentPolicy<
               const paramsOrDeny = validateOrDeny(
                 args,
                 originalPolicyDef.commitParamsSchema,
-                originalPolicyDef.ipfsCid,
                 'commit',
                 'input',
               );
@@ -217,18 +195,11 @@ export function createVincentPolicy<
                 denyResultSchema: policyDef.commitDenyResultSchema,
               });
 
-              const resultOrDeny = validateOrDeny(
-                result,
-                schemaToUse,
-                originalPolicyDef.ipfsCid,
-                'commit',
-                'output',
-              );
+              const resultOrDeny = validateOrDeny(result, schemaToUse, 'commit', 'output');
 
               return resultOrDeny as PolicyResponse<CommitAllowResult, CommitDenyResult>;
             } catch (err) {
               return createDenyResult({
-                ipfsCid: originalPolicyDef.ipfsCid,
                 message: err instanceof Error ? err.message : 'Unknown error',
               });
             }
@@ -240,7 +211,18 @@ export function createVincentPolicy<
   return {
     ...wrappedPolicyDef,
     __vincentPolicyDef: originalPolicyDef,
-  } as typeof wrappedPolicyDef & {
+  } as unknown as VincentPolicy<
+    PackageName,
+    PolicyToolParams,
+    UserParams,
+    PrecheckAllowResult,
+    PrecheckDenyResult,
+    EvalAllowResult,
+    EvalDenyResult,
+    CommitParams,
+    CommitAllowResult,
+    CommitDenyResult
+  > & {
     __vincentPolicyDef: typeof originalPolicyDef;
   };
 }
@@ -264,7 +246,7 @@ export function createVincentToolPolicy<
   CommitDenyResult extends z.ZodType | undefined = undefined,
 >(config: {
   toolParamsSchema: ToolParamsSchema;
-  policyDef: VincentPolicyDef<
+  vincentPolicy: VincentPolicy<
     PackageName,
     PolicyToolParams,
     UserParams,
@@ -274,42 +256,53 @@ export function createVincentToolPolicy<
     EvalDenyResult,
     CommitParams,
     CommitAllowResult,
-    CommitDenyResult,
-    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
-    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
-    CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
-  >;
+    CommitDenyResult
+  > & {
+    __vincentPolicyDef: VincentPolicyDef<
+      PackageName,
+      PolicyToolParams,
+      UserParams,
+      PrecheckAllowResult,
+      PrecheckDenyResult,
+      EvalAllowResult,
+      EvalDenyResult,
+      CommitParams,
+      CommitAllowResult,
+      CommitDenyResult,
+      any,
+      any,
+      any
+    >;
+  };
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;
   }>;
 }) {
-  // Use createVincentPolicy to create the wrapped policy
-  const policyDef = createVincentPolicy(config.policyDef);
-
+  const { vincentPolicy } = config;
   const result = {
-    policyDef,
-    __vincentPolicyDef: config.policyDef,
+    vincentPolicy: vincentPolicy,
+    __vincentPolicyDef: vincentPolicy.__vincentPolicyDef,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
     __schemaTypes: {
-      evalAllowResultSchema: config.policyDef.evalAllowResultSchema,
-      evalDenyResultSchema: config.policyDef.evalDenyResultSchema,
-      commitParamsSchema: config.policyDef.commitParamsSchema,
-      precheckAllowResultSchema: config.policyDef.precheckAllowResultSchema,
-      precheckDenyResultSchema: config.policyDef.precheckDenyResultSchema,
-      commitAllowResultSchema: config.policyDef.commitAllowResultSchema,
-      commitDenyResultSchema: config.policyDef.commitDenyResultSchema,
+      evalAllowResultSchema: config.vincentPolicy.evalAllowResultSchema,
+      evalDenyResultSchema: config.vincentPolicy.evalDenyResultSchema,
+      commitParamsSchema: config.vincentPolicy.commitParamsSchema,
+      precheckAllowResultSchema: config.vincentPolicy.precheckAllowResultSchema,
+      precheckDenyResultSchema: config.vincentPolicy.precheckDenyResultSchema,
+      commitAllowResultSchema: config.vincentPolicy.commitAllowResultSchema,
+      commitDenyResultSchema: config.vincentPolicy.commitDenyResultSchema,
       // Explicit function types
-      evaluate: policyDef.evaluate,
-      precheck: policyDef.precheck,
-      commit: policyDef.commit,
+      evaluate: vincentPolicy.evaluate,
+      precheck: vincentPolicy.precheck,
+      commit: vincentPolicy.commit,
     },
   };
 
   // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
   return result as {
-    __vincentPolicyDef: typeof config.policyDef;
-    policyDef: typeof policyDef;
+    __vincentPolicyDef: typeof vincentPolicy.__vincentPolicyDef;
+    vincentPolicy: typeof vincentPolicy;
     toolParameterMappings: typeof config.toolParameterMappings;
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;
@@ -320,9 +313,9 @@ export function createVincentToolPolicy<
       commitAllowResultSchema: CommitAllowResult;
       commitDenyResultSchema: CommitDenyResult;
       // Explicit function types
-      evaluate: typeof policyDef.evaluate;
-      precheck: typeof policyDef.precheck;
-      commit: typeof policyDef.commit;
+      evaluate: typeof vincentPolicy.evaluate;
+      precheck: typeof vincentPolicy.precheck;
+      commit: typeof vincentPolicy.commit;
     };
   };
 }

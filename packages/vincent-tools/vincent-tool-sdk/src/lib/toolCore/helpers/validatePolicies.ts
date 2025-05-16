@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 
-import { VincentPolicyDef, VincentToolDef, VincentToolPolicy } from '../../types';
+import { VincentPolicy, VincentToolDef, VincentToolPolicy } from '../../types';
 import { LIT_DATIL_VINCENT_ADDRESS } from '../../handlers/constants';
 import { getPoliciesAndAppVersion } from '../../policyCore/policyParameters/getOnchainPolicyParams';
 import { mapPolicyIpfsCidToPackageNames } from './mapPolicyIpfsCidToPackageNames';
@@ -38,10 +38,10 @@ export async function validatePolicies<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
     ToolParamsSchema,
-    VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
+    VincentPolicy<any, any, any, any, any, any, any, any, any, any>
   >[],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PolicyArray[number]['policyDef']['packageName']]: Extract<
+    [K in PolicyArray[number]['vincentPolicy']['packageName']]: Extract<
       PolicyArray[number],
       { policyDef: { packageName: K } }
     >;
@@ -59,7 +59,7 @@ export async function validatePolicies<
   vincentToolDef: VincentToolDef<
     ToolParamsSchema,
     PolicyArray,
-    PolicyArray[number]['policyDef']['packageName'],
+    PolicyArray[number]['vincentPolicy']['packageName'],
     PolicyMapType,
     any,
     any,

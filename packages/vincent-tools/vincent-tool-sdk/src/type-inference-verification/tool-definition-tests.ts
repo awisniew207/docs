@@ -6,7 +6,7 @@
  */
 import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 // Base tool schema
 const baseToolSchema = z.object({
@@ -25,8 +25,7 @@ export function testPolicyEvaluationResults() {
   // Policy 1: Simple policy with object result schema
   const simplePolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'simple-policy',
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/simple-policy@1.0.0',
       toolParamsSchema: z.object({
         actionType: z.string(),
@@ -43,7 +42,7 @@ export function testPolicyEvaluationResults() {
           reason: `Action ${params.toolParams.actionType} approved`,
         });
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
       target: 'targetId',
@@ -53,8 +52,7 @@ export function testPolicyEvaluationResults() {
   // Policy 2: Policy with commit function
   const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'commit-policy',
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/commit-policy@1.0.0',
       toolParamsSchema: z.object({
         operation: z.string(),
@@ -96,7 +94,7 @@ export function testPolicyEvaluationResults() {
           timestamp: Date.now(),
         });
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'operation',
       target: 'resource',
@@ -129,7 +127,6 @@ export function testPolicyEvaluationResults() {
 
   // Create tool with both policies
   return createVincentTool({
-    ipfsCid: 'theCid',
     packageName: '@lit-protocol/mahTool@1.0.0',
     toolParamsSchema: baseToolSchema,
     supportedPolicies: [simplePolicy, commitPolicy],

@@ -1,4 +1,4 @@
-// src/lib/toolCore/helpers/evaluatePolicies.ts
+// src/lib/handlers/evaluatePolicies.ts
 
 import { z } from 'zod';
 import { ValidatedPolicyMap } from '../toolCore/helpers/validatePolicies';
@@ -8,6 +8,7 @@ import {
   PolicyEvaluationResultContext,
   PolicyResponse,
   PolicyResponseDeny,
+  VincentPolicy,
   VincentPolicyDef,
   VincentToolDef,
   VincentToolPolicy,
@@ -40,7 +41,7 @@ export async function evaluatePolicies<
     VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
   >[],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PolicyArray[number]['policyDef']['packageName']]: Extract<
+    [K in PolicyArray[number]['vincentPolicy']['packageName']]: Extract<
       PolicyArray[number],
       { policyDef: { packageName: K } }
     >;
@@ -53,7 +54,7 @@ export async function evaluatePolicies<
   vincentToolDef: VincentToolDef<
     ToolParamsSchema,
     PolicyArray,
-    PolicyArray[number]['policyDef']['packageName'],
+    PolicyArray[number]['vincentPolicy']['packageName'],
     PolicyMapType,
     any,
     any,
@@ -87,7 +88,7 @@ export async function evaluatePolicies<
     const policy = vincentTool.supportedPolicies[policyPackageName];
     try {
       const litActionResponse = await Lit.Actions.call({
-        ipfsId: policy.policyDef.ipfsCid,
+        ipfsId: policy.vincentPolicy.ipfsCid,
         params: {
           toolParams: toolPolicyParams,
           context: {
@@ -98,12 +99,12 @@ export async function evaluatePolicies<
 
       const result = parseAndValidateEvaluateResult({
         litActionResponse,
-        policyDef: policy.policyDef,
+        vincentPolicy: policy.vincentPolicy,
       });
 
       if (isPolicyDenyResponse(result)) {
         policyDeniedResult = {
-          ...(result as PolicyResponseDeny<typeof policy.policyDef.evalDenyResultSchema>),
+          ...(result as PolicyResponseDeny<typeof policy.vincentPolicy.evalDenyResultSchema>),
           packageName: policyPackageName,
         };
       } else {
@@ -113,7 +114,6 @@ export async function evaluatePolicies<
       }
     } catch (err) {
       const denyResult = createDenyResult({
-        ipfsCid: policy.policyDef.ipfsCid,
         message: err instanceof Error ? err.message : 'Unknown error',
       });
       policyDeniedResult = { ...denyResult, packageName: policyPackageName };
@@ -140,10 +140,10 @@ function parseAndValidateEvaluateResult<
   EvalDenyResult extends z.ZodType | undefined = undefined,
 >({
   litActionResponse,
-  policyDef,
+  vincentPolicy,
 }: {
   litActionResponse: string;
-  policyDef: VincentPolicyDef<
+  vincentPolicy: VincentPolicy<
     string,
     z.ZodType,
     any,
@@ -151,9 +151,6 @@ function parseAndValidateEvaluateResult<
     any,
     EvalAllowResult,
     EvalDenyResult,
-    any,
-    any,
-    any,
     any,
     any,
     any
@@ -172,20 +169,18 @@ function parseAndValidateEvaluateResult<
   try {
     const { schemaToUse } = getSchemaForPolicyResponseResult({
       value: parsedLitActionResponse,
-      denyResultSchema: policyDef.evalDenyResultSchema,
-      allowResultSchema: policyDef.evalAllowResultSchema,
+      denyResultSchema: vincentPolicy.evalDenyResultSchema,
+      allowResultSchema: vincentPolicy.evalAllowResultSchema,
     });
 
     return validateOrDeny(
       parsedLitActionResponse,
       schemaToUse,
-      policyDef.ipfsCid,
       'evaluate',
       'output',
     ) as PolicyResponse<EvalAllowResult, EvalDenyResult>;
   } catch (err) {
     return createDenyResult({
-      ipfsCid: policyDef.ipfsCid,
       message: err instanceof Error ? err.message : 'Unknown error',
     });
   }

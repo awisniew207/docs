@@ -89,14 +89,12 @@ export async function vincentPolicyHandler<
     Lit.Actions.setResponse({
       response: JSON.stringify({
         ...evaluateResult,
-        ipfsCid: policyIpfsCid,
       }),
     });
   } catch (error) {
     Lit.Actions.setResponse({
       response: JSON.stringify(
         createDenyResult({
-          ipfsCid: policyIpfsCid,
           message: error instanceof Error ? error.message : String(error),
         }),
       ),

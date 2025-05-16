@@ -5,7 +5,7 @@
  * on parameters passed to allow() and deny() methods.
  */
 import { z } from 'zod';
-import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -20,9 +20,8 @@ const baseToolSchema = z.object({
 function testBasicSchemaValidation() {
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.34.2',
-      ipfsCid: 'basicSchemaTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Define schemas
@@ -43,7 +42,7 @@ function testBasicSchemaValidation() {
         // Valid call - matches schema
         return context.allow({ success: true });
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -56,9 +55,8 @@ function testBasicSchemaValidation() {
 function testNoSchemaValidation() {
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.34.2',
-      ipfsCid: 'noSchemaTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // No schemas defined
@@ -78,7 +76,7 @@ function testNoSchemaValidation() {
           return context.deny('Error message');
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -91,9 +89,8 @@ function testNoSchemaValidation() {
 function testStringSchemaValidation() {
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.34.2',
-      ipfsCid: 'stringSchemaTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // String schema
@@ -113,7 +110,7 @@ function testStringSchemaValidation() {
         // Valid - matches string schema
         return context.allow('Success message');
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -126,9 +123,8 @@ function testStringSchemaValidation() {
 function testDenyValidation() {
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.34.2',
-      ipfsCid: 'denyTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Define deny schema
@@ -148,7 +144,7 @@ function testDenyValidation() {
         // Valid - matches schema
         return context.deny({ code: 403, message: 'Forbidden' });
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -161,9 +157,8 @@ function testDenyValidation() {
 function testContextSchemas() {
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.34.2',
-      ipfsCid: 'contextTest',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Different schemas for precheck and evaluate
@@ -187,7 +182,7 @@ function testContextSchemas() {
         // Valid for evaluate
         return context.allow({ approved: true });
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },

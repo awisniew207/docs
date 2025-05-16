@@ -167,13 +167,7 @@ async function runToolPolicyPrechecks<
         denyResultSchema: toolPolicy.policyDef.precheckDenyResultSchema,
       });
 
-      const validated = validateOrDeny(
-        result,
-        schemaToUse,
-        toolPolicy.policyDef.ipfsCid,
-        'precheck',
-        'output',
-      );
+      const validated = validateOrDeny(result, schemaToUse, 'precheck', 'output');
 
       if (isPolicyDenyResponse(validated)) {
         deniedPolicy = {
@@ -188,7 +182,6 @@ async function runToolPolicyPrechecks<
       deniedPolicy = {
         packageName: policyPackageName,
         ...createDenyResult({
-          ipfsCid: toolPolicy.policyDef.ipfsCid,
           message: err instanceof Error ? err.message : 'Unknown error in precheck()',
         }),
       };
@@ -219,9 +212,9 @@ export function createVincentToolClient<
     VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
   >[],
   PkgNames extends
-    PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
+    PolicyArray[number]['vincentPolicy']['packageName'] = PolicyArray[number]['vincentPolicy']['packageName'],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PkgNames]: Extract<PolicyArray[number], { policyDef: { packageName: K } }>;
+    [K in PkgNames]: Extract<PolicyArray[number], { vincentPolicy: { packageName: K } }>;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,

@@ -6,7 +6,7 @@
  * (precheck, evaluate, commit) which may have different schemas.
  */
 import { z } from 'zod';
-import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -28,9 +28,8 @@ function testPrecheckEvaluateContextSwitching() {
 
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.2.3',
-      ipfsCid: 'contextSwitchTest1',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Different schemas for each context
@@ -70,7 +69,7 @@ function testPrecheckEvaluateContextSwitching() {
           return context.deny({ finalReason: 'denied-final' });
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -91,9 +90,8 @@ function testEvaluateCommitContextSwitching() {
 
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.23.1',
-      ipfsCid: 'contextSwitchTest2',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
       // Different schemas for each context
@@ -138,7 +136,7 @@ function testEvaluateCommitContextSwitching() {
           return context.deny({ failureCode: 500 }, 'Transaction failed');
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -162,9 +160,8 @@ function testFullPolicyContextSwitching() {
 
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/testpolicyawesome@12.1.10',
-      ipfsCid: 'fullContextSwitchTest',
       toolParamsSchema: z.object({
         actionType: z.string(),
         amount: z.number(),
@@ -251,7 +248,7 @@ function testFullPolicyContextSwitching() {
           return context.deny({ aborted: true });
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
       amount: 'amount',

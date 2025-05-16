@@ -13,7 +13,6 @@ interface CreatePolicyContextParams<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
 > {
-  ipfsCid: string;
   allowSchema?: AllowSchema;
   denySchema?: DenySchema;
   baseContext: BaseContext;
@@ -31,14 +30,12 @@ export function createPolicyContext<
   AllowSchema extends z.ZodType | undefined = undefined,
   DenySchema extends z.ZodType | undefined = undefined,
 >({
-  ipfsCid,
   baseContext,
   allowSchema,
   denySchema,
 }: CreatePolicyContextParams<AllowSchema, DenySchema>): PolicyContext<AllowSchema, DenySchema> {
   function allowWithSchema<T>(result: T): ContextAllowResponse<T> {
     return {
-      ipfsCid,
       allow: true,
       result,
     } as ContextAllowResponse<T>;
@@ -46,14 +43,12 @@ export function createPolicyContext<
 
   function allowWithoutSchema(): ContextAllowResponseNoResult {
     return {
-      ipfsCid,
       allow: true,
     } as ContextAllowResponseNoResult;
   }
 
   function denyWithSchema<T>(result: T, error?: string): ContextDenyResponse<T> {
     return {
-      ipfsCid,
       allow: false,
       result,
     } as ContextDenyResponse<T>;
@@ -61,7 +56,6 @@ export function createPolicyContext<
 
   function denyWithoutSchema(error?: string): ContextDenyResponseNoResult {
     return {
-      ipfsCid,
       allow: false,
       ...(error ? { error } : {}),
       result: undefined as never,

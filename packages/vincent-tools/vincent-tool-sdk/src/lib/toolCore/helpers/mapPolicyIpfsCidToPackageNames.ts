@@ -16,9 +16,9 @@ export function mapPolicyIpfsCidToPackageNames<
     VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
   >[],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PolicyArray[number]['policyDef']['packageName']]: Extract<
+    [K in PolicyArray[number]['vincentPolicy']['packageName']]: Extract<
       PolicyArray[number],
-      { policyDef: { packageName: K } }
+      { vincentPolicy: { packageName: K } }
     >;
   },
 >({
@@ -27,7 +27,7 @@ export function mapPolicyIpfsCidToPackageNames<
   vincentToolDef: VincentToolDef<
     z.ZodType,
     PolicyArray,
-    PolicyArray[number]['policyDef']['packageName'],
+    PolicyArray[number]['vincentPolicy']['packageName'],
     PolicyMapType,
     any,
     any,
@@ -36,15 +36,18 @@ export function mapPolicyIpfsCidToPackageNames<
     any,
     any
   >;
-}): Record<PolicyMapType[keyof PolicyMapType]['policyDef']['ipfsCid'], keyof PolicyMapType> {
+}): Record<PolicyMapType[keyof PolicyMapType]['vincentPolicy']['ipfsCid'], keyof PolicyMapType> {
   const vincentTool = createVincentTool(vincentToolDef);
   return Object.entries(vincentTool.supportedPolicies).reduce(
     (acc, [key, policy]) => {
-      const ipfsCid = policy.policyDef
-        .ipfsCid as PolicyMapType[keyof PolicyMapType]['policyDef']['ipfsCid'];
+      const ipfsCid = policy.vincentPolicy
+        .ipfsCid as PolicyMapType[keyof PolicyMapType]['vincentPolicy']['ipfsCid'];
       acc[ipfsCid] = key;
       return acc;
     },
-    {} as Record<PolicyMapType[keyof PolicyMapType]['policyDef']['ipfsCid'], keyof PolicyMapType>,
+    {} as Record<
+      PolicyMapType[keyof PolicyMapType]['vincentPolicy']['ipfsCid'],
+      keyof PolicyMapType
+    >,
   );
 }

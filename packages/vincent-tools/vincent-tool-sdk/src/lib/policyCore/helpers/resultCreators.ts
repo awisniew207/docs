@@ -11,79 +11,58 @@ import {
 /**
  * Overload: return a fully-typed deny response with a result
  */
-export function createDenyResult<T>(params: {
-  ipfsCid: string;
-  message: string;
-  result: T;
-}): PolicyResponseDeny<T>;
+export function createDenyResult<T>(params: { message: string; result: T }): PolicyResponseDeny<T>;
 /**
  * Overload: return a deny response with no result
  */
-export function createDenyResult(params: {
-  ipfsCid: string;
-  message: string;
-}): PolicyResponseDenyNoResult;
+export function createDenyResult(params: { message: string }): PolicyResponseDenyNoResult;
 /**
  * Implementation
  */
 export function createDenyResult<T>(params: {
-  ipfsCid: string;
   message: string;
   result?: T;
 }): PolicyResponseDeny<T> | PolicyResponseDenyNoResult {
-  const { ipfsCid, message, result } = params;
-
-  if (result === undefined) {
+  if (params.result === undefined) {
     return {
-      ipfsCid,
       allow: false,
-      error: message,
+      error: params.message,
       result: undefined as never,
     };
   }
 
   return {
-    ipfsCid,
     allow: false,
-    error: message,
-    result,
+    error: params.message,
+    result: params.result,
   };
 }
 
 /**
  * Overload: return a fully-typed allow response with a result
  */
-export function createAllowResult<T>(params: {
-  ipfsCid: string;
-  result: T;
-}): PolicyResponseAllow<T>;
+export function createAllowResult<T>(params: { result: T }): PolicyResponseAllow<T>;
 
 /**
  * Overload: return an allow response with no result
  */
-export function createAllowResult(params: { ipfsCid: string }): PolicyResponseAllowNoResult;
 
 /**
  * Implementation
  */
 export function createAllowResult<T>(params: {
-  ipfsCid: string;
   result?: T;
 }): PolicyResponseAllow<T> | PolicyResponseAllowNoResult {
-  const { ipfsCid, result } = params;
-
-  if (result === undefined) {
+  if (params.result === undefined) {
     return {
-      ipfsCid,
       allow: true,
       result: undefined as never,
     };
   }
 
   return {
-    ipfsCid,
     allow: true,
-    result,
+    result: params.result,
   };
 }
 

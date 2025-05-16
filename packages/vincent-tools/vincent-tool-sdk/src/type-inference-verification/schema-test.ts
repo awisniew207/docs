@@ -6,7 +6,7 @@
  * schema configurations.
  */
 import { z } from 'zod';
-import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { PolicyContext } from '../lib/policyCore/policyContext/types';
 
 // Base tool schema for all tests
@@ -42,8 +42,7 @@ export function testContextSignature(context: PolicyContext<typeof objSchema, un
 // Test in a real policy
 export const testRealPolicy = createVincentToolPolicy({
   toolParamsSchema: baseToolSchema,
-  policyDef: {
-    ipfsCid: 'test1',
+  vincentPolicy: createVincentPolicy({
     packageName: '@lit-protocol/schema-test-policy@1.0.0',
     toolParamsSchema: z.object({ actionType: z.string() }),
     evalAllowResultSchema: objSchema,
@@ -62,7 +61,7 @@ export const testRealPolicy = createVincentToolPolicy({
       // Valid case:
       return allow({ id: 'test-id' });
     },
-  },
+  }),
   toolParameterMappings: {
     action: 'actionType',
   },
@@ -97,8 +96,7 @@ export function testWithoutSchema() {
   // Test in a real policy
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'test2',
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       // No schemas defined
@@ -124,7 +122,7 @@ export function testWithoutSchema() {
           return deny('Error message');
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -140,8 +138,7 @@ export function testStringSchema() {
   // Test in a real policy
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'test3',
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.string(),
@@ -171,7 +168,7 @@ export function testStringSchema() {
           return deny('Error message');
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -192,8 +189,7 @@ export function testDifferentContexts() {
 
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'test4',
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
 
@@ -242,7 +238,7 @@ export function testDifferentContexts() {
         // Valid for commit
         return allow({ txId: `tx-${confirmation}` });
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -258,8 +254,7 @@ export function testPrimitiveSchemas() {
   // Test in a real policy
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    policyDef: {
-      ipfsCid: 'test5',
+    vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/schema-test-policy@1.0.0',
       toolParamsSchema: z.object({ actionType: z.string() }),
       evalAllowResultSchema: z.number(),
@@ -289,7 +284,7 @@ export function testPrimitiveSchemas() {
           return deny(false, 'Operation failed');
         }
       },
-    },
+    }),
     toolParameterMappings: {
       action: 'actionType',
     },

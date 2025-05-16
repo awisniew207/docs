@@ -6,7 +6,7 @@
  */
 import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Define a simple schema for our test cases
@@ -29,8 +29,7 @@ const failSchema = z.object({
 // Create a test policy
 const testPolicy = createVincentToolPolicy({
   toolParamsSchema: testSchema,
-  policyDef: {
-    ipfsCid: 'test-policy',
+  vincentPolicy: createVincentPolicy({
     packageName: '@lit-protocol/test-policy@1.0.0',
     toolParamsSchema: z.object({
       actionType: z.string(),
@@ -41,7 +40,7 @@ const testPolicy = createVincentToolPolicy({
     evaluate: async (params, { allow }) => {
       return allow({ approved: true });
     },
-  },
+  }),
   toolParameterMappings: {
     action: 'actionType',
   },
@@ -53,7 +52,6 @@ const testPolicy = createVincentToolPolicy({
  */
 export function testNoSchemas() {
   return createVincentTool({
-    ipfsCid: 'extracid',
     packageName: '@lit-protocol/yestool@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -90,7 +88,6 @@ export function testNoSchemas() {
  */
 export function tesWithSchemas() {
   return createVincentTool({
-    ipfsCid: 'extracid2',
     packageName: '@lit-protocol/yestool2@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -164,7 +161,6 @@ export function testDifferentSchemas() {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid3',
     packageName: '@lit-protocol/yestool3@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -214,7 +210,6 @@ export function testDifferentSchemas() {
 export function testPolicyResultTypes() {
   // First test: Precheck with properly typed policiesContext
   return createVincentTool({
-    ipfsCid: 'extracid4',
     packageName: '@lit-protocol/yestool4@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -257,7 +252,6 @@ export function assertAllow<T extends { allow: true }>(obj: T): asserts obj is T
 // Separate test for execute-specific policy result typing
 export function testExecutePolicyResultTyping() {
   return createVincentTool({
-    ipfsCid: 'extracid5',
     packageName: '@lit-protocol/yestool5@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -318,7 +312,6 @@ export const missingSchema = createVincentTool({
 export const testReturnNoSchema = () => {
   // This is a good tool with proper returns
   return createVincentTool({
-    ipfsCid: 'extracid6',
     packageName: '@lit-protocol/yestool6@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -415,7 +408,6 @@ export const testExecuteWrongTypeReturn = () => {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid7',
     packageName: '@lit-protocol/yestool7@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -446,7 +438,6 @@ export const testPrecheckWrongSchema = () => {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid7',
     packageName: '@lit-protocol/yestool7@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -478,7 +469,6 @@ export const testExecuteWrongSchema = () => {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid8',
     packageName: '@lit-protocol/yestool8@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -511,7 +501,6 @@ export const testPrecheckSuccessWithFailSchema = () => {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid9',
     packageName: '@lit-protocol/yestool9@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -548,7 +537,6 @@ export const testExecuteFailWithSuccessSchema = () => {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid10',
     packageName: '@lit-protocol/yestool10@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -576,7 +564,6 @@ export const testExecuteFailWithSuccessSchema = () => {
 // Test: Tool with void-returning functions inside
 export const testReturnWithInnerFunctions = () => {
   return createVincentTool({
-    ipfsCid: 'extracid11',
     packageName: '@lit-protocol/yestool11@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],
@@ -701,7 +688,6 @@ export function testContextDestructuring() {
   });
 
   return createVincentTool({
-    ipfsCid: 'extracid12',
     packageName: '@lit-protocol/yestool12@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: [testPolicy],

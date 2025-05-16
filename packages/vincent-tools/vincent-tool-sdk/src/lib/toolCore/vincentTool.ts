@@ -7,7 +7,7 @@ import {
   ToolExecutionPolicyEvaluationResult,
   ToolLifecycleFunction,
   ToolResponse,
-  VincentPolicyDef,
+  VincentPolicy,
   VincentToolDef,
   VincentToolPolicy,
 } from '../types';
@@ -31,7 +31,8 @@ import { isToolFailureResponse, isToolResponse } from './helpers/typeGuards';
  */
 function createPolicyMap<
   T extends readonly VincentToolPolicy<any, any, any>[],
-  Pkgs extends T[number]['policyDef']['packageName'] = T[number]['policyDef']['packageName'],
+  Pkgs extends
+    T[number]['vincentPolicy']['packageName'] = T[number]['vincentPolicy']['packageName'],
 >(
   policies: T,
 ): string extends Pkgs
@@ -39,11 +40,11 @@ function createPolicyMap<
       '❌ Each policyDef.packageName must be a string literal. Use `as const` when passing the array.',
     ]
   : {
-      [K in Pkgs]: Extract<T[number], { policyDef: { packageName: K } }>;
+      [K in Pkgs]: Extract<T[number], { vincentPolicy: { packageName: K } }>;
     } {
   const result = {} as any;
   for (const policy of policies) {
-    const name = policy.policyDef.packageName;
+    const name = policy.vincentPolicy.packageName;
     if (result[name]) {
       throw new Error('Duplicate policy packageName: ' + name + '');
     }
@@ -72,12 +73,12 @@ export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
     ToolParamsSchema,
-    VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
+    VincentPolicy<any, any, any, any, any, any, any, any, any, any>
   >[],
   PkgNames extends
-    PolicyArray[number]['policyDef']['packageName'] = PolicyArray[number]['policyDef']['packageName'],
+    PolicyArray[number]['vincentPolicy']['packageName'] = PolicyArray[number]['vincentPolicy']['packageName'],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PkgNames]: Extract<PolicyArray[number], { policyDef: { packageName: K } }>;
+    [K in PkgNames]: Extract<PolicyArray[number], { vincentPolicy: { packageName: K } }>;
   },
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
