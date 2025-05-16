@@ -91,12 +91,12 @@ export const AppVersionDef = z.object({
     example: 5,
     readOnly: true,
   }),
-  versionNumber: z.number().openapi({
+  version: z.number().openapi({
     description: 'Version number',
     example: 2,
   }),
   identity: z.string().openapi({
-    description: 'Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber>',
+    description: 'Unique composite identifier in the format AppVersionDef|<appId>@<version>',
     example: 'AppVersionDef|5@2',
     readOnly: true,
   }),
@@ -117,8 +117,8 @@ export const AppToolDef = z.object({
     example: 5,
     readOnly: true,
   }),
-  appVersionNumber: z.number().openapi({
-    description: 'Application version number',
+  appVersion: z.number().openapi({
+    description: 'Application version',
     example: 2,
   }),
   toolPackageName: z.string().openapi({
@@ -526,22 +526,22 @@ registry.registerPath({
   },
 });
 
-// GET /app/{identity} - Fetch an application
+// GET /app/{appId} - Fetch an application
 registry.registerPath({
   method: 'get',
-  path: '/app/{identity}',
+  path: '/app/{appId}',
   tags: ['app'],
   summary: 'Fetches an application',
   operationId: 'getApp',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application to retrieve',
+      description: 'ID of the application to retrieve',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppDef|5',
+        type: 'number',
+        example: 5,
       },
     },
   ],
@@ -568,22 +568,22 @@ registry.registerPath({
   },
 });
 
-// PUT /app/{identity} - Edit an application
+// PUT /app/{appId} - Edit an application
 registry.registerPath({
   method: 'put',
-  path: '/app/{identity}',
+  path: '/app/{appId}',
   tags: ['app'],
   summary: 'Edits an application',
   operationId: 'editApp',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application to edit',
+      description: 'ID of the application to edit',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppDef|5',
+        type: 'number',
+        example: 5,
       },
     },
   ],
@@ -624,22 +624,22 @@ registry.registerPath({
   },
 });
 
-// DELETE /app/{identity} - Delete an application
+// DELETE /app/{appId} - Delete an application
 registry.registerPath({
   method: 'delete',
-  path: '/app/{identity}',
+  path: '/app/{appId}',
   tags: ['app'],
   summary: 'Deletes an application',
   operationId: 'deleteApp',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application to delete',
+      description: 'ID of the application to delete',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppDef|5',
+        type: 'number',
+        example: 5,
       },
     },
   ],
@@ -669,22 +669,22 @@ registry.registerPath({
   },
 });
 
-// GET /app/{identity}/versions - Fetch all versions of an application
+// GET /app/{appId}/versions - Fetch all versions of an application
 registry.registerPath({
   method: 'get',
-  path: '/app/{identity}/versions',
+  path: '/app/{appId}/versions',
   tags: ['app'],
   summary: 'Fetches all versions of an application',
   operationId: 'getAppVersions',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application whose versions will be fetched',
+      description: 'ID of the application whose versions will be fetched',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppDef|5',
+        type: 'number',
+        example: 5,
       },
     },
   ],
@@ -711,22 +711,22 @@ registry.registerPath({
   },
 });
 
-// POST /app/version/{identity} - Create an application version
+// POST /app/{appId}/version - Create an application version
 registry.registerPath({
   method: 'post',
-  path: '/app/version/{identity}',
+  path: '/app/{appId}/version',
   tags: ['app/version'],
   summary: 'Creates an application version',
   operationId: 'createAppVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application to create a new version for',
+      description: 'ID of the application to create a new version for',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppDef|5',
+        type: 'number',
+        example: 5,
       },
     },
   ],
@@ -767,22 +767,32 @@ registry.registerPath({
   },
 });
 
-// GET /app/version/{identity} - Fetch an application version
+// GET /app/{appId}/version/{version} - Fetch an application version
 registry.registerPath({
   method: 'get',
-  path: '/app/version/{identity}',
+  path: '/app/{appId}/version/{version}',
   tags: ['app/version'],
   summary: 'Fetches an application version',
   operationId: 'getAppVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application version to retrieve',
+      description: 'ID of the application to retrieve a version for',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppVersionDef|5@2',
+        type: 'number',
+        example: 5,
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to retrieve',
+      required: true,
+      schema: {
+        type: 'number',
+        example: 2,
       },
     },
   ],
@@ -809,22 +819,32 @@ registry.registerPath({
   },
 });
 
-// PUT /app/version/{identity} - Edit an application version
+// PUT /app/{appId}/version/{version} - Edit an application version
 registry.registerPath({
   method: 'put',
-  path: '/app/version/{identity}',
+  path: '/app/{appId}/version/{version}',
   tags: ['app/version'],
   summary: 'Edits an application version',
   operationId: 'editAppVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application version to edit',
+      description: 'ID of the application to edit a version for',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppVersionDef|5@2',
+        type: 'number',
+        example: 5,
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to edit',
+      required: true,
+      schema: {
+        type: 'number',
+        example: 2,
       },
     },
   ],
@@ -865,22 +885,32 @@ registry.registerPath({
   },
 });
 
-// POST /app/version/{identity}/toggle - Toggle enabled/disabled for an application version
+// POST /app/{appId}/version/{version}/toggle - Toggle enabled/disabled for an application version
 registry.registerPath({
   method: 'post',
-  path: '/app/version/{identity}/toggle',
+  path: '/app/{appId}/version/{version}/toggle',
   tags: ['app/version'],
   summary: 'Toggles enabled/disabled for an application version',
   operationId: 'toggleAppVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'appId',
       in: 'path',
-      description: 'Identity of the application version to toggle',
+      description: 'ID of the application to toggle a version for',
       required: true,
       schema: {
-        type: 'string',
-        example: 'AppVersionDef|5@2',
+        type: 'number',
+        example: 5,
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to toggle',
+      required: true,
+      schema: {
+        type: 'number',
+        example: 2,
       },
     },
   ],
