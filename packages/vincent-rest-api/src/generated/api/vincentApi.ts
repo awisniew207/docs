@@ -107,7 +107,12 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({ url: `/policy/version/${queryArg.identity}` }),
     }),
     getPolicyVersions: build.query<GetPolicyVersionsApiResponse, GetPolicyVersionsApiArg>({
-      query: (queryArg) => ({ url: `/policy/versions`, params: { identity: queryArg.identity } }),
+      query: (queryArg) => ({
+        url: `/policy/versions`,
+        params: {
+          identity: queryArg.identity,
+        },
+      }),
     }),
     changePolicyOwner: build.mutation<ChangePolicyOwnerApiResponse, ChangePolicyOwnerApiArg>({
       query: (queryArg) => ({

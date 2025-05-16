@@ -1,30 +1,26 @@
+import fs from 'fs';
+import path from 'path';
 import { registry } from '../api/api';
 import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as yaml from 'js-yaml';
 
 const generator = new OpenApiGeneratorV3(registry.definitions);
 
 const openApiDocument = generator.generateDocument({
-  openapi: '3.0.4',
+  openapi: '3.0.0',
   info: {
-    title: 'Vincent Registry',
-    description: 'Vincent Registry APIs!',
-    contact: {
-      email: 'andrew@litprotocol.com',
-    },
-    license: {
-      name: 'Apache 2.0',
-      url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
-    },
-    version: '1.0.12',
+    title: 'Vincent API',
+    version: '1.0.0',
+    description: 'API for Vincent SDK',
   },
+  servers: [{ url: '/api/v1' }],
 });
 
-const openApiYaml = yaml.dump(openApiDocument);
+const outputDir = path.resolve(__dirname, '../generated');
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 
-const outputPath = path.join(__dirname, '../generated/openapi.yaml');
-fs.writeFileSync(outputPath, openApiYaml, 'utf8');
+const outputFile = path.join(outputDir, 'openapi.json');
+fs.writeFileSync(outputFile, JSON.stringify(openApiDocument, null, 2));
 
-console.log(`OpenAPI YAML generated at: ${outputPath}`);
+console.log(`OpenAPI document generated at ${outputFile}`);
