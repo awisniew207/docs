@@ -984,22 +984,22 @@ registry.registerPath({
   },
 });
 
-// GET /tool/{identity} - Fetch a tool
+// GET /tool/{packageName} - Fetch a tool
 registry.registerPath({
   method: 'get',
-  path: '/tool/{identity}',
+  path: '/tool/{packageName}',
   tags: ['tool'],
   summary: 'Fetches a tool',
   operationId: 'getTool',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool to retrieve',
+      description: 'Package name of the tool to retrieve',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolDef|@vincent/foo-bar',
+        example: '@vincent/foo-bar',
       },
     },
   ],
@@ -1026,22 +1026,22 @@ registry.registerPath({
   },
 });
 
-// PUT /tool/{identity} - Edit a tool
+// PUT /tool/{packageName} - Edit a tool
 registry.registerPath({
   method: 'put',
-  path: '/tool/{identity}',
+  path: '/tool/{packageName}',
   tags: ['tool'],
   summary: 'Edits a tool',
   operationId: 'editTool',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool to edit',
+      description: 'Package name of the tool to edit',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolDef|@vincent/foo-bar',
+        example: '@vincent/foo-bar',
       },
     },
   ],
@@ -1082,22 +1082,22 @@ registry.registerPath({
   },
 });
 
-// GET /tool/{identity}/versions - Fetch all versions of a tool
+// GET /tool/{packageName}/versions - Fetch all versions of a tool
 registry.registerPath({
   method: 'get',
-  path: '/tool/{identity}/versions',
+  path: '/tool/{packageName}/versions',
   tags: ['tool'],
   summary: 'Fetches all versions of a tool',
   operationId: 'getToolVersions',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool to fetch versions for',
+      description: 'Package name of the tool to fetch versions for',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolDef|@vincent/foo-bar',
+        example: '@vincent/foo-bar',
       },
     },
   ],
@@ -1124,22 +1124,22 @@ registry.registerPath({
   },
 });
 
-// PUT /tool/{identity}/owner - Changes a tool's owner
+// PUT /tool/{packageName}/owner - Changes a tool's owner
 registry.registerPath({
   method: 'put',
-  path: '/tool/{identity}/owner',
+  path: '/tool/{packageName}/owner',
   tags: ['tool'],
   summary: "Changes a tool's owner",
   operationId: 'changeToolOwner',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool to change the owner of',
+      description: 'Package name of the tool to change the owner of',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolDef|@vincent/foo-bar',
+        example: '@vincent/foo-bar',
       },
     },
   ],
@@ -1185,22 +1185,22 @@ registry.registerPath({
   },
 });
 
-// POST /tool/version/{identity} - Create a tool version
+// POST /tool/{packageName}/version - Create a tool version
 registry.registerPath({
   method: 'post',
-  path: '/tool/version/{identity}',
+  path: '/tool/{packageName}/version',
   tags: ['tool/version'],
   summary: 'Creates a tool version',
   operationId: 'createToolVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool to create a new version for',
+      description: 'Package name of the tool to create a new version for',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolDef|@vincent/foo-bar',
+        example: '@vincent/foo-bar',
       },
     },
   ],
@@ -1241,22 +1241,32 @@ registry.registerPath({
   },
 });
 
-// GET /tool/version/{identity} - Fetch a tool version
+// GET /tool/{packageName}/version/{version} - Fetch a tool version
 registry.registerPath({
   method: 'get',
-  path: '/tool/version/{identity}',
+  path: '/tool/{packageName}/version/{version}',
   tags: ['tool/version'],
   summary: 'Fetches a tool version',
   operationId: 'getToolVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool version to retrieve',
+      description: 'Package name of the tool to retrieve a version for',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolVersionDef|@vincent/foo-bar@1.0.0',
+        example: '@vincent/foo-bar',
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to retrieve',
+      required: true,
+      schema: {
+        type: 'string',
+        example: '1.0.0',
       },
     },
   ],
@@ -1283,22 +1293,32 @@ registry.registerPath({
   },
 });
 
-// PUT /tool/version/{identity} - Edit a tool version
+// PUT /tool/{packageName}/version/{version} - Edit a tool version
 registry.registerPath({
   method: 'put',
-  path: '/tool/version/{identity}',
+  path: '/tool/{packageName}/version/{version}',
   tags: ['tool/version'],
   summary: 'Edits a tool version',
   operationId: 'editToolVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the tool version to edit',
+      description: 'Package name of the tool to edit a version for',
       required: true,
       schema: {
         type: 'string',
-        example: 'ToolVersionDef|@vincent/foo-bar@1.0.0',
+        example: '@vincent/foo-bar',
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to edit',
+      required: true,
+      schema: {
+        type: 'string',
+        example: '1.0.0',
       },
     },
   ],
@@ -1383,22 +1403,22 @@ registry.registerPath({
   },
 });
 
-// GET /policy/{identity} - Fetch a policy
+// GET /policy/{packageName} - Fetch a policy
 registry.registerPath({
   method: 'get',
-  path: '/policy/{identity}',
+  path: '/policy/{packageName}',
   tags: ['policy'],
   summary: 'Fetches a policy',
   operationId: 'getPolicy',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy to retrieve',
+      description: 'Package name of the policy to retrieve',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyDef|@vincent/foo-bar-policy',
+        example: '@vincent/foo-bar-policy',
       },
     },
   ],
@@ -1425,22 +1445,22 @@ registry.registerPath({
   },
 });
 
-// PUT /policy/{identity} - Edit a policy
+// PUT /policy/{packageName} - Edit a policy
 registry.registerPath({
   method: 'put',
-  path: '/policy/{identity}',
+  path: '/policy/{packageName}',
   tags: ['policy'],
   summary: 'Edits a policy',
   operationId: 'editPolicy',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy to edit',
+      description: 'Package name of the policy to edit',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyDef|@vincent/foo-bar-policy',
+        example: '@vincent/foo-bar-policy',
       },
     },
   ],
@@ -1481,22 +1501,22 @@ registry.registerPath({
   },
 });
 
-// POST /policy/version/{identity} - Create a new policy version
+// POST /policy/{packageName}/version - Create a new policy version
 registry.registerPath({
   method: 'post',
-  path: '/policy/version/{identity}',
+  path: '/policy/{packageName}/version',
   tags: ['policy/version'],
   summary: 'Creates a new policy version',
   operationId: 'createPolicyVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy to create a new version for',
+      description: 'Package name of the policy to create a new version for',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyDef|@vincent/foo-bar-policy',
+        example: '@vincent/foo-bar-policy',
       },
     },
   ],
@@ -1537,22 +1557,32 @@ registry.registerPath({
   },
 });
 
-// GET /policy/version/{identity} - Fetch a policy version
+// GET /policy/{packageName}/version/{version} - Fetch a policy version
 registry.registerPath({
   method: 'get',
-  path: '/policy/version/{identity}',
+  path: '/policy/{packageName}/version/{version}',
   tags: ['policy/version'],
   summary: 'Fetches a policy version',
   operationId: 'getPolicyVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy version to retrieve',
+      description: 'Package name of the policy to retrieve a version for',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyVersionDef|@vincent/foo-bar-policy@1.0.0',
+        example: '@vincent/foo-bar-policy',
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to retrieve',
+      required: true,
+      schema: {
+        type: 'string',
+        example: '1.0.0',
       },
     },
   ],
@@ -1579,22 +1609,22 @@ registry.registerPath({
   },
 });
 
-// GET /policy/{identity}/versions - Fetch all versions of a policy
+// GET /policy/{packageName}/versions - Fetch all versions of a policy
 registry.registerPath({
   method: 'get',
-  path: '/policy/{identity}/versions',
+  path: '/policy/{packageName}/versions',
   tags: ['policy'],
   summary: 'Fetches all versions of a policy',
   operationId: 'getPolicyVersions',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy to fetch versions for',
+      description: 'Package name of the policy to fetch versions for',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyDef|@vincent/foo-bar-policy',
+        example: '@vincent/foo-bar-policy',
       },
     },
   ],
@@ -1621,22 +1651,22 @@ registry.registerPath({
   },
 });
 
-// PUT /policy/{identity}/owner - Changes a policy's owner
+// PUT /policy/{packageName}/owner - Changes a policy's owner
 registry.registerPath({
   method: 'put',
-  path: '/policy/{identity}/owner',
+  path: '/policy/{packageName}/owner',
   tags: ['policy'],
   summary: "Changes a policy's owner",
   operationId: 'changePolicyOwner',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy to change the owner of',
+      description: 'Package name of the policy to change the owner of',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyDef|@vincent/foo-bar-policy',
+        example: '@vincent/foo-bar-policy',
       },
     },
   ],
@@ -1682,22 +1712,32 @@ registry.registerPath({
   },
 });
 
-// PUT /policy/version/{identity} - Edit a policy version
+// PUT /policy/{packageName}/version/{version} - Edit a policy version
 registry.registerPath({
   method: 'put',
-  path: '/policy/version/{identity}',
+  path: '/policy/{packageName}/version/{version}',
   tags: ['policy/version'],
   summary: 'Edits a policy version',
   operationId: 'editPolicyVersion',
   parameters: [
     {
-      name: 'identity',
+      name: 'packageName',
       in: 'path',
-      description: 'Identity of the policy version to edit',
+      description: 'Package name of the policy to edit a version for',
       required: true,
       schema: {
         type: 'string',
-        example: 'PolicyVersionDef|@vincent/foo-bar-policy@1.0.0',
+        example: '@vincent/foo-bar-policy',
+      },
+    },
+    {
+      name: 'version',
+      in: 'path',
+      description: 'Version number to edit',
+      required: true,
+      schema: {
+        type: 'string',
+        example: '1.0.0',
       },
     },
   ],
