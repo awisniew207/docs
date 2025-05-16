@@ -1052,51 +1052,6 @@ registry.registerPath({
   },
 });
 
-// DELETE /tool/{identity} - Delete a tool
-registry.registerPath({
-  method: 'delete',
-  path: '/tool/{identity}',
-  tags: ['tool'],
-  summary: 'Deletes a tool',
-  operationId: 'deleteTool',
-  parameters: [
-    {
-      name: 'identity',
-      in: 'path',
-      description: 'Identity of the tool to delete',
-      required: true,
-      schema: {
-        type: 'string',
-        example: 'ToolDef|@vincent/foo-bar',
-      },
-    },
-  ],
-  responses: {
-    200: {
-      description: 'Successful operation',
-      content: {
-        'application/json': {
-          schema: DeleteResponseSchema,
-        },
-      },
-    },
-    400: {
-      description: 'Invalid input',
-    },
-    422: {
-      description: 'Validation exception',
-    },
-    default: {
-      description: 'Unexpected error',
-      content: {
-        'application/json': {
-          schema: ErrorSchema,
-        },
-      },
-    },
-  },
-});
-
 // GET /tool/{identity}/versions - Fetch all versions of a tool
 registry.registerPath({
   method: 'get',
@@ -1594,17 +1549,17 @@ registry.registerPath({
   },
 });
 
-// GET /policy/versions - Fetch all versions of a policy
+// GET /policy/{identity}/versions - Fetch all versions of a policy
 registry.registerPath({
   method: 'get',
-  path: '/policy/versions',
-  tags: ['policy/version'],
+  path: '/policy/{identity}/versions',
+  tags: ['policy'],
   summary: 'Fetches all versions of a policy',
   operationId: 'getPolicyVersions',
   parameters: [
     {
       name: 'identity',
-      in: 'query',
+      in: 'path',
       description: 'Identity of the policy to fetch versions for',
       required: true,
       schema: {
@@ -1677,6 +1632,62 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: PolicyDefSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Invalid input',
+    },
+    422: {
+      description: 'Validation exception',
+    },
+    default: {
+      description: 'Unexpected error',
+      content: {
+        'application/json': {
+          schema: ErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+// PUT /policy/version/{identity} - Edit a policy version
+registry.registerPath({
+  method: 'put',
+  path: '/policy/version/{identity}',
+  tags: ['policy/version'],
+  summary: 'Edits a policy version',
+  operationId: 'editPolicyVersion',
+  parameters: [
+    {
+      name: 'identity',
+      in: 'path',
+      description: 'Identity of the policy version to edit',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'PolicyVersionDef|@vincent/foo-bar-policy@1.0.0',
+      },
+    },
+  ],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: VersionChangesSchema,
+        },
+      },
+      description: 'Update version changes field',
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: 'Successful operation',
+      content: {
+        'application/json': {
+          schema: PolicyVersionDefSchema,
         },
       },
     },

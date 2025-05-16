@@ -1552,53 +1552,6 @@
             }
           }
         }
-      },
-      "delete": {
-        "tags": [
-          "tool"
-        ],
-        "summary": "Deletes a tool",
-        "operationId": "deleteTool",
-        "parameters": [
-          {
-            "name": "identity",
-            "in": "path",
-            "description": "Identity of the tool to delete",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ToolDef|@vincent/foo-bar"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/tool/{identity}/versions": {
@@ -2136,19 +2089,77 @@
             }
           }
         }
-      }
-    },
-    "/policy/versions": {
-      "get": {
+      },
+      "put": {
         "tags": [
           "policy/version"
+        ],
+        "summary": "Edits a policy version",
+        "operationId": "editPolicyVersion",
+        "parameters": [
+          {
+            "name": "identity",
+            "in": "path",
+            "description": "Identity of the policy version to edit",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "PolicyVersionDef|@vincent/foo-bar-policy@1.0.0"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update version changes field",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionChanges"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IPolicyVersionDef"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policy/{identity}/versions": {
+      "get": {
+        "tags": [
+          "policy"
         ],
         "summary": "Fetches all versions of a policy",
         "operationId": "getPolicyVersions",
         "parameters": [
           {
             "name": "identity",
-            "in": "query",
+            "in": "path",
             "description": "Identity of the policy to fetch versions for",
             "required": true,
             "schema": {

@@ -53,9 +53,6 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.iEditToolDef,
       }),
     }),
-    deleteTool: build.mutation<DeleteToolApiResponse, DeleteToolApiArg>({
-      query: (queryArg) => ({ url: `/tool/${queryArg.identity}`, method: 'DELETE' }),
-    }),
     getToolVersions: build.query<GetToolVersionsApiResponse, GetToolVersionsApiArg>({
       query: (queryArg) => ({ url: `/tool/${queryArg.identity}/versions` }),
     }),
@@ -106,13 +103,15 @@ const injectedRtkApi = api.injectEndpoints({
     getPolicyVersion: build.query<GetPolicyVersionApiResponse, GetPolicyVersionApiArg>({
       query: (queryArg) => ({ url: `/policy/version/${queryArg.identity}` }),
     }),
-    getPolicyVersions: build.query<GetPolicyVersionsApiResponse, GetPolicyVersionsApiArg>({
+    editPolicyVersion: build.mutation<EditPolicyVersionApiResponse, EditPolicyVersionApiArg>({
       query: (queryArg) => ({
-        url: `/policy/versions`,
-        params: {
-          identity: queryArg.identity,
-        },
+        url: `/policy/version/${queryArg.identity}`,
+        method: 'PUT',
+        body: queryArg.versionChanges,
       }),
+    }),
+    getPolicyVersions: build.query<GetPolicyVersionsApiResponse, GetPolicyVersionsApiArg>({
+      query: (queryArg) => ({ url: `/policy/${queryArg.identity}/versions` }),
     }),
     changePolicyOwner: build.mutation<ChangePolicyOwnerApiResponse, ChangePolicyOwnerApiArg>({
       query: (queryArg) => ({
@@ -195,11 +194,6 @@ export type EditToolApiArg = {
   /** Developer-defined updated tool details */
   iEditToolDef: IEditToolDef;
 };
-export type DeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
-export type DeleteToolApiArg = {
-  /** Identity of the tool to delete */
-  identity: string;
-};
 export type GetToolVersionsApiResponse = /** status 200 Successful operation */ IToolVersionDef[];
 export type GetToolVersionsApiArg = {
   /** Identity of the tool to fetch versions for */
@@ -263,6 +257,13 @@ export type GetPolicyVersionApiResponse = /** status 200 Successful operation */
 export type GetPolicyVersionApiArg = {
   /** Identity of the policy version to retrieve */
   identity: string;
+};
+export type EditPolicyVersionApiResponse = /** status 200 Successful operation */ IPolicyVersionDef;
+export type EditPolicyVersionApiArg = {
+  /** Identity of the policy version to edit */
+  identity: string;
+  /** Update version changes field */
+  versionChanges: VersionChanges;
 };
 export type GetPolicyVersionsApiResponse =
   /** status 200 Successful operation */ PolicyVersionsArray;
@@ -598,7 +599,6 @@ export const {
   useCreateToolMutation,
   useGetToolQuery,
   useEditToolMutation,
-  useDeleteToolMutation,
   useGetToolVersionsQuery,
   useChangeToolOwnerMutation,
   useCreateToolVersionMutation,
@@ -609,6 +609,7 @@ export const {
   useEditPolicyMutation,
   useCreatePolicyVersionMutation,
   useGetPolicyVersionQuery,
+  useEditPolicyVersionMutation,
   useGetPolicyVersionsQuery,
   useChangePolicyOwnerMutation,
 } = injectedRtkApi;
