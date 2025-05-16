@@ -215,14 +215,14 @@
             "example": 5,
             "readOnly": true
           },
-          "versionNumber": {
+          "version": {
             "type": "number",
             "description": "Version number",
             "example": 2
           },
           "identity": {
             "type": "string",
-            "description": "Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber>",
+            "description": "Unique composite identifier in the format AppVersionDef|<appId>@<version>",
             "example": "AppVersionDef|5@2",
             "readOnly": true
           },
@@ -239,7 +239,7 @@
         },
         "required": [
           "appId",
-          "versionNumber",
+          "version",
           "identity",
           "enabled",
           "changes"
@@ -257,14 +257,14 @@
                 "example": 5,
                 "readOnly": true
               },
-              "versionNumber": {
+              "version": {
                 "type": "number",
                 "description": "Version number",
                 "example": 2
               },
               "identity": {
                 "type": "string",
-                "description": "Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber>",
+                "description": "Unique composite identifier in the format AppVersionDef|<appId>@<version>",
                 "example": "AppVersionDef|5@2",
                 "readOnly": true
               },
@@ -281,7 +281,7 @@
             },
             "required": [
               "appId",
-              "versionNumber",
+              "version",
               "identity",
               "enabled",
               "changes"
@@ -298,9 +298,9 @@
                   "example": 5,
                   "readOnly": true
                 },
-                "appVersionNumber": {
+                "appVersion": {
                   "type": "number",
-                  "description": "Application version number",
+                  "description": "Application version",
                   "example": 2
                 },
                 "toolPackageName": {
@@ -326,7 +326,7 @@
               },
               "required": [
                 "appId",
-                "appVersionNumber",
+                "appVersion",
                 "toolPackageName",
                 "toolVersion",
                 "toolIdentity",
@@ -905,14 +905,14 @@
               "example": 5,
               "readOnly": true
             },
-            "versionNumber": {
+            "version": {
               "type": "number",
               "description": "Version number",
               "example": 2
             },
             "identity": {
               "type": "string",
-              "description": "Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber>",
+              "description": "Unique composite identifier in the format AppVersionDef|<appId>@<version>",
               "example": "AppVersionDef|5@2",
               "readOnly": true
             },
@@ -929,7 +929,7 @@
           },
           "required": [
             "appId",
-            "versionNumber",
+            "version",
             "identity",
             "enabled",
             "changes"
@@ -994,7 +994,7 @@
         }
       }
     },
-    "/app/{identity}": {
+    "/app/{appId}": {
       "get": {
         "tags": [
           "app"
@@ -1003,13 +1003,13 @@
         "operationId": "getApp",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application to retrieve",
+            "description": "ID of the application to retrieve",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppDef|5"
+              "type": "number",
+              "example": 5
             }
           }
         ],
@@ -1047,13 +1047,13 @@
         "operationId": "editApp",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application to edit",
+            "description": "ID of the application to edit",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppDef|5"
+              "type": "number",
+              "example": 5
             }
           }
         ],
@@ -1105,13 +1105,13 @@
         "operationId": "deleteApp",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application to delete",
+            "description": "ID of the application to delete",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppDef|5"
+              "type": "number",
+              "example": 5
             }
           }
         ],
@@ -1145,7 +1145,7 @@
         }
       }
     },
-    "/app/{identity}/versions": {
+    "/app/{appId}/versions": {
       "get": {
         "tags": [
           "app"
@@ -1154,13 +1154,13 @@
         "operationId": "getAppVersions",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application whose versions will be fetched",
+            "description": "ID of the application whose versions will be fetched",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppDef|5"
+              "type": "number",
+              "example": 5
             }
           }
         ],
@@ -1191,7 +1191,7 @@
         }
       }
     },
-    "/app/version/{identity}": {
+    "/app/{appId}/version": {
       "post": {
         "tags": [
           "app/version"
@@ -1200,13 +1200,13 @@
         "operationId": "createAppVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application to create a new version for",
+            "description": "ID of the application to create a new version for",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppDef|5"
+              "type": "number",
+              "example": 5
             }
           }
         ],
@@ -1249,7 +1249,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/app/{appId}/version/{version}": {
       "get": {
         "tags": [
           "app/version"
@@ -1258,13 +1260,23 @@
         "operationId": "getAppVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application version to retrieve",
+            "description": "ID of the application to retrieve a version for",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppVersionDef|5@2"
+              "type": "number",
+              "example": 5
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to retrieve",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "example": 2
             }
           }
         ],
@@ -1302,13 +1314,23 @@
         "operationId": "editAppVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application version to edit",
+            "description": "ID of the application to edit a version for",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppVersionDef|5@2"
+              "type": "number",
+              "example": 5
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to edit",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "example": 2
             }
           }
         ],
@@ -1353,7 +1375,7 @@
         }
       }
     },
-    "/app/version/{identity}/toggle": {
+    "/app/{appId}/version/{version}/toggle": {
       "post": {
         "tags": [
           "app/version"
@@ -1362,13 +1384,23 @@
         "operationId": "toggleAppVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "appId",
             "in": "path",
-            "description": "Identity of the application version to toggle",
+            "description": "ID of the application to toggle a version for",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "AppVersionDef|5@2"
+              "type": "number",
+              "example": 5
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to toggle",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "example": 2
             }
           }
         ],
@@ -1450,7 +1482,7 @@
         }
       }
     },
-    "/tool/{identity}": {
+    "/tool/{packageName}": {
       "get": {
         "tags": [
           "tool"
@@ -1459,13 +1491,13 @@
         "operationId": "getTool",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool to retrieve",
+            "description": "Package name of the tool to retrieve",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolDef|@vincent/foo-bar"
+              "example": "@vincent/foo-bar"
             }
           }
         ],
@@ -1503,13 +1535,13 @@
         "operationId": "editTool",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool to edit",
+            "description": "Package name of the tool to edit",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolDef|@vincent/foo-bar"
+              "example": "@vincent/foo-bar"
             }
           }
         ],
@@ -1554,7 +1586,7 @@
         }
       }
     },
-    "/tool/{identity}/versions": {
+    "/tool/{packageName}/versions": {
       "get": {
         "tags": [
           "tool"
@@ -1563,13 +1595,13 @@
         "operationId": "getToolVersions",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool to fetch versions for",
+            "description": "Package name of the tool to fetch versions for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolDef|@vincent/foo-bar"
+              "example": "@vincent/foo-bar"
             }
           }
         ],
@@ -1603,7 +1635,7 @@
         }
       }
     },
-    "/tool/{identity}/owner": {
+    "/tool/{packageName}/owner": {
       "put": {
         "tags": [
           "tool"
@@ -1612,13 +1644,13 @@
         "operationId": "changeToolOwner",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool to change the owner of",
+            "description": "Package name of the tool to change the owner of",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolDef|@vincent/foo-bar"
+              "example": "@vincent/foo-bar"
             }
           }
         ],
@@ -1673,7 +1705,7 @@
         }
       }
     },
-    "/tool/version/{identity}": {
+    "/tool/{packageName}/version": {
       "post": {
         "tags": [
           "tool/version"
@@ -1682,13 +1714,13 @@
         "operationId": "createToolVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool to create a new version for",
+            "description": "Package name of the tool to create a new version for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolDef|@vincent/foo-bar"
+              "example": "@vincent/foo-bar"
             }
           }
         ],
@@ -1731,7 +1763,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/tool/{packageName}/version/{version}": {
       "get": {
         "tags": [
           "tool/version"
@@ -1740,13 +1774,23 @@
         "operationId": "getToolVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool version to retrieve",
+            "description": "Package name of the tool to retrieve a version for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolVersionDef|@vincent/foo-bar@1.0.0"
+              "example": "@vincent/foo-bar"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.0.0"
             }
           }
         ],
@@ -1784,13 +1828,23 @@
         "operationId": "editToolVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the tool version to edit",
+            "description": "Package name of the tool to edit a version for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "ToolVersionDef|@vincent/foo-bar@1.0.0"
+              "example": "@vincent/foo-bar"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to edit",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.0.0"
             }
           }
         ],
@@ -1883,7 +1937,7 @@
         }
       }
     },
-    "/policy/{identity}": {
+    "/policy/{packageName}": {
       "get": {
         "tags": [
           "policy"
@@ -1892,13 +1946,13 @@
         "operationId": "getPolicy",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy to retrieve",
+            "description": "Package name of the policy to retrieve",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyDef|@vincent/foo-bar-policy"
+              "example": "@vincent/foo-bar-policy"
             }
           }
         ],
@@ -1936,13 +1990,13 @@
         "operationId": "editPolicy",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy to edit",
+            "description": "Package name of the policy to edit",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyDef|@vincent/foo-bar-policy"
+              "example": "@vincent/foo-bar-policy"
             }
           }
         ],
@@ -1987,7 +2041,7 @@
         }
       }
     },
-    "/policy/version/{identity}": {
+    "/policy/{packageName}/version": {
       "post": {
         "tags": [
           "policy/version"
@@ -1996,13 +2050,13 @@
         "operationId": "createPolicyVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy to create a new version for",
+            "description": "Package name of the policy to create a new version for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyDef|@vincent/foo-bar-policy"
+              "example": "@vincent/foo-bar-policy"
             }
           }
         ],
@@ -2045,7 +2099,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/policy/{packageName}/version/{version}": {
       "get": {
         "tags": [
           "policy/version"
@@ -2054,13 +2110,23 @@
         "operationId": "getPolicyVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy version to retrieve",
+            "description": "Package name of the policy to retrieve a version for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyVersionDef|@vincent/foo-bar-policy@1.0.0"
+              "example": "@vincent/foo-bar-policy"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.0.0"
             }
           }
         ],
@@ -2098,13 +2164,23 @@
         "operationId": "editPolicyVersion",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy version to edit",
+            "description": "Package name of the policy to edit a version for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyVersionDef|@vincent/foo-bar-policy@1.0.0"
+              "example": "@vincent/foo-bar-policy"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Version number to edit",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.0.0"
             }
           }
         ],
@@ -2149,7 +2225,7 @@
         }
       }
     },
-    "/policy/{identity}/versions": {
+    "/policy/{packageName}/versions": {
       "get": {
         "tags": [
           "policy"
@@ -2158,13 +2234,13 @@
         "operationId": "getPolicyVersions",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy to fetch versions for",
+            "description": "Package name of the policy to fetch versions for",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyDef|@vincent/foo-bar-policy"
+              "example": "@vincent/foo-bar-policy"
             }
           }
         ],
@@ -2195,7 +2271,7 @@
         }
       }
     },
-    "/policy/{identity}/owner": {
+    "/policy/{packageName}/owner": {
       "put": {
         "tags": [
           "policy"
@@ -2204,13 +2280,13 @@
         "operationId": "changePolicyOwner",
         "parameters": [
           {
-            "name": "identity",
+            "name": "packageName",
             "in": "path",
-            "description": "Identity of the policy to change the owner of",
+            "description": "Package name of the policy to change the owner of",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "PolicyDef|@vincent/foo-bar-policy"
+              "example": "@vincent/foo-bar-policy"
             }
           }
         ],

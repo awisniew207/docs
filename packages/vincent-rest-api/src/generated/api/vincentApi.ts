@@ -5,77 +5,80 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({ url: `/app`, method: 'POST', body: queryArg.iCreateAppDef }),
     }),
     getApp: build.query<GetAppApiResponse, GetAppApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.identity}` }),
+      query: (queryArg) => ({ url: `/app/${queryArg.appId}` }),
     }),
     editApp: build.mutation<EditAppApiResponse, EditAppApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.identity}`,
+        url: `/app/${queryArg.appId}`,
         method: 'PUT',
         body: queryArg.iCreateAppDef,
       }),
     }),
     deleteApp: build.mutation<DeleteAppApiResponse, DeleteAppApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.identity}`, method: 'DELETE' }),
+      query: (queryArg) => ({ url: `/app/${queryArg.appId}`, method: 'DELETE' }),
     }),
     getAppVersions: build.query<GetAppVersionsApiResponse, GetAppVersionsApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.identity}/versions` }),
+      query: (queryArg) => ({ url: `/app/${queryArg.appId}/versions` }),
     }),
     createAppVersion: build.mutation<CreateAppVersionApiResponse, CreateAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/version/${queryArg.identity}`,
+        url: `/app/${queryArg.appId}/version`,
         method: 'POST',
         body: queryArg.iCreateAppVersionDef,
       }),
     }),
     getAppVersion: build.query<GetAppVersionApiResponse, GetAppVersionApiArg>({
-      query: (queryArg) => ({ url: `/app/version/${queryArg.identity}` }),
+      query: (queryArg) => ({ url: `/app/${queryArg.appId}/version/${queryArg.version}` }),
     }),
     editAppVersion: build.mutation<EditAppVersionApiResponse, EditAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/version/${queryArg.identity}`,
+        url: `/app/${queryArg.appId}/version/${queryArg.version}`,
         method: 'PUT',
         body: queryArg.versionChanges,
       }),
     }),
     toggleAppVersion: build.mutation<ToggleAppVersionApiResponse, ToggleAppVersionApiArg>({
-      query: (queryArg) => ({ url: `/app/version/${queryArg.identity}/toggle`, method: 'POST' }),
+      query: (queryArg) => ({
+        url: `/app/${queryArg.appId}/version/${queryArg.version}/toggle`,
+        method: 'POST',
+      }),
     }),
     createTool: build.mutation<CreateToolApiResponse, CreateToolApiArg>({
       query: (queryArg) => ({ url: `/tool`, method: 'POST', body: queryArg.iCreateToolDef }),
     }),
     getTool: build.query<GetToolApiResponse, GetToolApiArg>({
-      query: (queryArg) => ({ url: `/tool/${queryArg.identity}` }),
+      query: (queryArg) => ({ url: `/tool/${queryArg.packageName}` }),
     }),
     editTool: build.mutation<EditToolApiResponse, EditToolApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.identity}`,
+        url: `/tool/${queryArg.packageName}`,
         method: 'PUT',
         body: queryArg.iEditToolDef,
       }),
     }),
     getToolVersions: build.query<GetToolVersionsApiResponse, GetToolVersionsApiArg>({
-      query: (queryArg) => ({ url: `/tool/${queryArg.identity}/versions` }),
+      query: (queryArg) => ({ url: `/tool/${queryArg.packageName}/versions` }),
     }),
     changeToolOwner: build.mutation<ChangeToolOwnerApiResponse, ChangeToolOwnerApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.identity}/owner`,
+        url: `/tool/${queryArg.packageName}/owner`,
         method: 'PUT',
         body: queryArg.body,
       }),
     }),
     createToolVersion: build.mutation<CreateToolVersionApiResponse, CreateToolVersionApiArg>({
       query: (queryArg) => ({
-        url: `/tool/version/${queryArg.identity}`,
+        url: `/tool/${queryArg.packageName}/version`,
         method: 'POST',
         body: queryArg.versionChanges,
       }),
     }),
     getToolVersion: build.query<GetToolVersionApiResponse, GetToolVersionApiArg>({
-      query: (queryArg) => ({ url: `/tool/version/${queryArg.identity}` }),
+      query: (queryArg) => ({ url: `/tool/${queryArg.packageName}/version/${queryArg.version}` }),
     }),
     editToolVersion: build.mutation<EditToolVersionApiResponse, EditToolVersionApiArg>({
       query: (queryArg) => ({
-        url: `/tool/version/${queryArg.identity}`,
+        url: `/tool/${queryArg.packageName}/version/${queryArg.version}`,
         method: 'PUT',
         body: queryArg.versionChanges,
       }),
@@ -84,38 +87,38 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({ url: `/policy`, method: 'POST', body: queryArg.iCreatePolicyDef }),
     }),
     getPolicy: build.query<GetPolicyApiResponse, GetPolicyApiArg>({
-      query: (queryArg) => ({ url: `/policy/${queryArg.identity}` }),
+      query: (queryArg) => ({ url: `/policy/${queryArg.packageName}` }),
     }),
     editPolicy: build.mutation<EditPolicyApiResponse, EditPolicyApiArg>({
       query: (queryArg) => ({
-        url: `/policy/${queryArg.identity}`,
+        url: `/policy/${queryArg.packageName}`,
         method: 'PUT',
         body: queryArg.iEditPolicyDef,
       }),
     }),
     createPolicyVersion: build.mutation<CreatePolicyVersionApiResponse, CreatePolicyVersionApiArg>({
       query: (queryArg) => ({
-        url: `/policy/version/${queryArg.identity}`,
+        url: `/policy/${queryArg.packageName}/version`,
         method: 'POST',
         body: queryArg.versionChanges,
       }),
     }),
     getPolicyVersion: build.query<GetPolicyVersionApiResponse, GetPolicyVersionApiArg>({
-      query: (queryArg) => ({ url: `/policy/version/${queryArg.identity}` }),
+      query: (queryArg) => ({ url: `/policy/${queryArg.packageName}/version/${queryArg.version}` }),
     }),
     editPolicyVersion: build.mutation<EditPolicyVersionApiResponse, EditPolicyVersionApiArg>({
       query: (queryArg) => ({
-        url: `/policy/version/${queryArg.identity}`,
+        url: `/policy/${queryArg.packageName}/version/${queryArg.version}`,
         method: 'PUT',
         body: queryArg.versionChanges,
       }),
     }),
     getPolicyVersions: build.query<GetPolicyVersionsApiResponse, GetPolicyVersionsApiArg>({
-      query: (queryArg) => ({ url: `/policy/${queryArg.identity}/versions` }),
+      query: (queryArg) => ({ url: `/policy/${queryArg.packageName}/versions` }),
     }),
     changePolicyOwner: build.mutation<ChangePolicyOwnerApiResponse, ChangePolicyOwnerApiArg>({
       query: (queryArg) => ({
-        url: `/policy/${queryArg.identity}/owner`,
+        url: `/policy/${queryArg.packageName}/owner`,
         method: 'PUT',
         body: queryArg.body,
       }),
@@ -131,51 +134,57 @@ export type CreateAppApiArg = {
 };
 export type GetAppApiResponse = /** status 200 Successful operation */ IAppDefRead;
 export type GetAppApiArg = {
-  /** Identity of the application to retrieve */
-  identity: string;
+  /** ID of the application to retrieve */
+  appId: number;
 };
 export type EditAppApiResponse = /** status 200 Successful operation */ IAppDefRead;
 export type EditAppApiArg = {
-  /** Identity of the application to edit */
-  identity: string;
+  /** ID of the application to edit */
+  appId: number;
   /** Developer-defined updated application details */
   iCreateAppDef: ICreateAppDef;
 };
 export type DeleteAppApiResponse =
   /** status 200 OK - Resource successfully deleted */ DeleteResponse;
 export type DeleteAppApiArg = {
-  /** Identity of the application to delete */
-  identity: string;
+  /** ID of the application to delete */
+  appId: number;
 };
 export type GetAppVersionsApiResponse = /** status 200 Successful operation */ AppVersionsArrayRead;
 export type GetAppVersionsApiArg = {
-  /** Identity of the application whose versions will be fetched */
-  identity: string;
+  /** ID of the application whose versions will be fetched */
+  appId: number;
 };
 export type CreateAppVersionApiResponse = /** status 200 Successful operation */ IAppVersionDefRead;
 export type CreateAppVersionApiArg = {
-  /** Identity of the application to create a new version for */
-  identity: string;
+  /** ID of the application to create a new version for */
+  appId: number;
   /** Developer-defined version details */
   iCreateAppVersionDef: ICreateAppVersionDef;
 };
 export type GetAppVersionApiResponse =
   /** status 200 Successful operation */ IAppVersionWithToolsDefRead;
 export type GetAppVersionApiArg = {
-  /** Identity of the application version to retrieve */
-  identity: string;
+  /** ID of the application to retrieve a version for */
+  appId: number;
+  /** Version number to retrieve */
+  version: number;
 };
 export type EditAppVersionApiResponse = /** status 200 Successful operation */ IAppVersionDefRead;
 export type EditAppVersionApiArg = {
-  /** Identity of the application version to edit */
-  identity: string;
+  /** ID of the application to edit a version for */
+  appId: number;
+  /** Version number to edit */
+  version: number;
   /** Update version changes field */
   versionChanges: VersionChanges;
 };
 export type ToggleAppVersionApiResponse = /** status 200 Successful operation */ IAppVersionDefRead;
 export type ToggleAppVersionApiArg = {
-  /** Identity of the application version to toggle */
-  identity: string;
+  /** ID of the application to toggle a version for */
+  appId: number;
+  /** Version number to toggle */
+  version: number;
 };
 export type CreateToolApiResponse = /** status 200 Successful operation */ IToolDef;
 export type CreateToolApiArg = {
@@ -184,25 +193,25 @@ export type CreateToolApiArg = {
 };
 export type GetToolApiResponse = /** status 200 Successful operation */ IToolDef;
 export type GetToolApiArg = {
-  /** Identity of the tool to retrieve */
-  identity: string;
+  /** Package name of the tool to retrieve */
+  packageName: string;
 };
 export type EditToolApiResponse = /** status 200 Successful operation */ IToolDef;
 export type EditToolApiArg = {
-  /** Identity of the tool to edit */
-  identity: string;
+  /** Package name of the tool to edit */
+  packageName: string;
   /** Developer-defined updated tool details */
   iEditToolDef: IEditToolDef;
 };
 export type GetToolVersionsApiResponse = /** status 200 Successful operation */ IToolVersionDef[];
 export type GetToolVersionsApiArg = {
-  /** Identity of the tool to fetch versions for */
-  identity: string;
+  /** Package name of the tool to fetch versions for */
+  packageName: string;
 };
 export type ChangeToolOwnerApiResponse = /** status 200 Successful operation */ IToolDef;
 export type ChangeToolOwnerApiArg = {
-  /** Identity of the tool to change the owner of */
-  identity: string;
+  /** Package name of the tool to change the owner of */
+  packageName: string;
   /** Developer-defined updated tool details */
   body: {
     /** New author wallet address */
@@ -211,20 +220,24 @@ export type ChangeToolOwnerApiArg = {
 };
 export type CreateToolVersionApiResponse = /** status 200 Successful operation */ IToolVersionDef;
 export type CreateToolVersionApiArg = {
-  /** Identity of the tool to create a new version for */
-  identity: string;
+  /** Package name of the tool to create a new version for */
+  packageName: string;
   /** Developer-defined version details */
   versionChanges: VersionChanges;
 };
 export type GetToolVersionApiResponse = /** status 200 Successful operation */ IToolVersionDef;
 export type GetToolVersionApiArg = {
-  /** Identity of the tool version to retrieve */
-  identity: string;
+  /** Package name of the tool to retrieve a version for */
+  packageName: string;
+  /** Version number to retrieve */
+  version: string;
 };
 export type EditToolVersionApiResponse = /** status 200 Successful operation */ IToolVersionDef;
 export type EditToolVersionApiArg = {
-  /** Identity of the tool version to edit */
-  identity: string;
+  /** Package name of the tool to edit a version for */
+  packageName: string;
+  /** Version number to edit */
+  version: string;
   /** Update version changes field */
   versionChanges: VersionChanges;
 };
@@ -235,46 +248,50 @@ export type CreatePolicyApiArg = {
 };
 export type GetPolicyApiResponse = /** status 200 Successful operation */ IPolicyDef;
 export type GetPolicyApiArg = {
-  /** Identity of the policy to retrieve */
-  identity: string;
+  /** Package name of the policy to retrieve */
+  packageName: string;
 };
 export type EditPolicyApiResponse = /** status 200 Successful operation */ IPolicyDef;
 export type EditPolicyApiArg = {
-  /** Identity of the policy to edit */
-  identity: string;
+  /** Package name of the policy to edit */
+  packageName: string;
   /** Developer-defined updated policy details */
   iEditPolicyDef: IEditPolicyDef;
 };
 export type CreatePolicyVersionApiResponse =
   /** status 200 Successful operation */ IPolicyVersionDef;
 export type CreatePolicyVersionApiArg = {
-  /** Identity of the policy to create a new version for */
-  identity: string;
+  /** Package name of the policy to create a new version for */
+  packageName: string;
   /** Developer-defined version details */
   versionChanges: VersionChanges;
 };
 export type GetPolicyVersionApiResponse = /** status 200 Successful operation */ IPolicyVersionDef;
 export type GetPolicyVersionApiArg = {
-  /** Identity of the policy version to retrieve */
-  identity: string;
+  /** Package name of the policy to retrieve a version for */
+  packageName: string;
+  /** Version number to retrieve */
+  version: string;
 };
 export type EditPolicyVersionApiResponse = /** status 200 Successful operation */ IPolicyVersionDef;
 export type EditPolicyVersionApiArg = {
-  /** Identity of the policy version to edit */
-  identity: string;
+  /** Package name of the policy to edit a version for */
+  packageName: string;
+  /** Version number to edit */
+  version: string;
   /** Update version changes field */
   versionChanges: VersionChanges;
 };
 export type GetPolicyVersionsApiResponse =
   /** status 200 Successful operation */ PolicyVersionsArray;
 export type GetPolicyVersionsApiArg = {
-  /** Identity of the policy to fetch versions for */
-  identity: string;
+  /** Package name of the policy to fetch versions for */
+  packageName: string;
 };
 export type ChangePolicyOwnerApiResponse = /** status 200 Successful operation */ IPolicyDef;
 export type ChangePolicyOwnerApiArg = {
-  /** Identity of the policy to change the owner of */
-  identity: string;
+  /** Package name of the policy to change the owner of */
+  packageName: string;
   /** Developer-defined updated policy details */
   body: {
     /** New author wallet address */
@@ -359,7 +376,7 @@ export type DeleteResponse = {
 };
 export type AppVersionsArray = {
   /** Version number */
-  versionNumber: number;
+  version: number;
   /** Whether this version is enabled */
   enabled: boolean;
   /** Changelog information for this version */
@@ -369,8 +386,8 @@ export type AppVersionsArrayRead = {
   /** Application ID */
   appId: number;
   /** Version number */
-  versionNumber: number;
-  /** Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber> */
+  version: number;
+  /** Unique composite identifier in the format AppVersionDef|<appId>@<version> */
   identity: string;
   /** Whether this version is enabled */
   enabled: boolean;
@@ -379,7 +396,7 @@ export type AppVersionsArrayRead = {
 }[];
 export type IAppVersionDef = {
   /** Version number */
-  versionNumber: number;
+  version: number;
   /** Whether this version is enabled */
   enabled: boolean;
   /** Changelog information for this version */
@@ -389,8 +406,8 @@ export type IAppVersionDefRead = {
   /** Application ID */
   appId: number;
   /** Version number */
-  versionNumber: number;
-  /** Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber> */
+  version: number;
+  /** Unique composite identifier in the format AppVersionDef|<appId>@<version> */
   identity: string;
   /** Whether this version is enabled */
   enabled: boolean;
@@ -409,8 +426,8 @@ export type IAppVersionWithToolsDefRead = {
     /** Application ID */
     appId: number;
     /** Version number */
-    versionNumber: number;
-    /** Unique composite identifier in the format AppVersionDef|<appId>@<versionNumber> */
+    version: number;
+    /** Unique composite identifier in the format AppVersionDef|<appId>@<version> */
     identity: string;
     /** Whether this version is enabled */
     enabled: boolean;
@@ -420,8 +437,8 @@ export type IAppVersionWithToolsDefRead = {
   tools: {
     /** Application ID */
     appId: number;
-    /** Application version number */
-    appVersionNumber: number;
+    /** Application version */
+    appVersion: number;
     /** Tool package name */
     toolPackageName: string;
     /** Tool version */
