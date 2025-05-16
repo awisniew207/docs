@@ -15,7 +15,7 @@ const ParameterType = [
 const ParameterTypeEnum = z.enum(ParameterType);
 export type ParameterType = z.infer<typeof ParameterTypeEnum>;
 
-const ZodSchemmaMap: Record<ParameterType, z.ZodTypeAny> = {
+const ZodSchemaMap: Record<ParameterType, z.ZodTypeAny> = {
   number: z.string().refine((val) => val === '' || val === '-' || !isNaN(parseInt(val)), {
     message: 'Must be a valid integer or empty',
   }),
@@ -66,7 +66,7 @@ const ZodSchemmaMap: Record<ParameterType, z.ZodTypeAny> = {
 
 export function buildParamDefinitions(params: VincentParameter[]) {
   return params.reduce((acc, param) => {
-    const zodSchema = ZodSchemmaMap[param.type] || z.string();
+    const zodSchema = ZodSchemaMap[param.type] || z.string();
     acc[param.name] = zodSchema.describe(param.description);
     return acc;
   }, {} as ZodRawShape);
