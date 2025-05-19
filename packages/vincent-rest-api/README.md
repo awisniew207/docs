@@ -1,6 +1,6 @@
 # Vincent Registry API
 
-This package contains a mock implementation and integration tests for the Vincent Registry API. It includes API definitions using Zod with OpenAPI extensions, a generated TypeScript client using RTK Query.
+This package contains the Vincent Registry API. It includes API definitions using Zod with OpenAPI extensions, a generated TypeScript client using RTK Query.
 
 ## Getting Started
 
@@ -17,29 +17,6 @@ This command:
 2. Generates the OpenAPI JSON file in `src/generated/openapi.json`
 3. Creates a TypeScript client with RTK Query in the `src/generated/api` directory
 
-### Running Tests
-
-To run the integration tests:
-
-```bash
-pnpm test
-```
-
-The integration tests verify the API functionality by:
-1. Creating and managing application records
-2. Retrieving and validating application data
-3. Testing application version management
-4. Validating request/response handling
-5. Testing toggling functionality for application versions
-
-## API Structure
-
-The API is defined using Zod schemas with OpenAPI extensions. These schemas are used to:
-- Validate API requests and responses
-- Generate OpenAPI documentation
-- Generate TypeScript client code with RTK Query
-- Provide type safety throughout the application
-
 ## Directory Structure
 
 ```
@@ -50,8 +27,11 @@ vincent-rest-api/
 │   │   ├── api/                # RTK Query API client
 │   │   └── openapi.json        # Generated OpenAPI specification
 │   ├── tests/                  # Integration tests
-│   │   └── integration.test.ts # API integration tests
+│   │   └── integration.test.ts # API integration tests (WIP)
 │   └── utils/                  # Utility scripts for API generation
+│       └── generate-openapi.ts # Script to generate OpenAPI specs from Zod schemas
+├── docs/                       # API documentation
+│   └── api.html                # API documentation viewer using RapiDoc
 ├── openapi-config.js           # RTK Query codegen configuration
 ├── package.json                # Project dependencies and scripts
 └── README.md                   # Project documentation
