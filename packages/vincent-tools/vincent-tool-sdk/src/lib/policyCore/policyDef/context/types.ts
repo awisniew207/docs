@@ -1,11 +1,12 @@
-// src/lib/policyContext/types.ts
+// src/lib/policyDef/context/types.ts
+
 import { z } from 'zod';
-import {
+import type {
   PolicyResponseAllow,
   PolicyResponseAllowNoResult,
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
-} from '../../types';
+} from '../../../types';
 
 export const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
   'PolicyResponses must come from calling context.allow() or context.deny()',
@@ -23,8 +24,8 @@ export type ContextDenyResponse<DenyResult> = MustCallContextAllowOrDeny<
 export type ContextDenyResponseNoResult = MustCallContextAllowOrDeny<PolicyResponseDenyNoResult>;
 
 export interface PolicyContext<
-  AllowSchema extends z.ZodType | undefined = undefined,
-  DenySchema extends z.ZodType | undefined = undefined,
+  AllowSchema extends z.ZodType = z.ZodUndefined,
+  DenySchema extends z.ZodType = z.ZodUndefined,
 > {
   delegation: {
     delegatee: string;
@@ -32,13 +33,13 @@ export interface PolicyContext<
   };
 
   // Instead of branded types, we use conditional types directly
-  allow: AllowSchema extends z.ZodType
-    ? (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>
-    : () => ContextAllowResponseNoResult;
+  allow: AllowSchema extends z.ZodUndefined
+    ? () => ContextAllowResponseNoResult
+    : (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>;
 
-  deny: DenySchema extends z.ZodType
-    ? (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>
-    : (error?: string) => ContextDenyResponseNoResult;
+  deny: DenySchema extends z.ZodUndefined
+    ? (error?: string) => ContextDenyResponseNoResult
+    : (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>;
 }
 
 export type EnforcePolicyResponse<T> = typeof YouMustCallContextAllowOrDeny extends keyof T

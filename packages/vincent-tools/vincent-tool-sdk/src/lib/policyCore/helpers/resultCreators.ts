@@ -1,5 +1,6 @@
 // src/lib/policyCore/helpers/resultCreators.ts
 
+import { z, ZodType } from 'zod';
 import {
   PolicyResponseAllow,
   PolicyResponseAllowNoResult,
@@ -36,6 +37,10 @@ export function createDenyResult<T>(params: {
     error: params.message,
     result: params.result,
   };
+}
+
+export function createDenyNoResult(message: string): PolicyResponseDenyNoResult {
+  return createDenyResult({ message });
 }
 
 /**
@@ -89,4 +94,33 @@ export function createDenyEvaluationResult<PolicyMapType extends Record<string, 
     allowedPolicies: params.allowedPolicies,
     deniedPolicy: params.deniedPolicy,
   } as PolicyEvaluationResultContext<PolicyMapType>;
+}
+
+// Wraps a validated value as a typed allow result
+export function wrapAllow<T extends ZodType<any, any, any>>(
+  value: z.infer<T>,
+): PolicyResponseAllow<z.infer<T>> {
+  return createAllowResult({ result: value });
+}
+
+// Wraps a deny result as fully typed (for schema-defined denials)
+export function wrapDeny<T extends ZodType<any, any, any>>(
+  message: string,
+  result: z.infer<T>,
+): PolicyResponseDeny<z.infer<T>> {
+  return createDenyResult({ message, result });
+}
+
+// Wraps a schema-less denial into a conditionally valid deny return
+export function returnNoResultDeny<T extends ZodType<any, any, any> | undefined>(
+  message: string,
+): T extends ZodType<any, any, any> ? PolicyResponseDeny<z.infer<T>> : PolicyResponseDenyNoResult {
+  return createDenyNoResult(message) as any;
+}
+
+// Optionally: type guard if needed
+export function isTypedAllowResponse<T extends ZodType<any, any, any>>(
+  val: unknown,
+): val is PolicyResponseAllow<z.infer<T>> {
+  return typeof val === 'object' && val !== null && (val as any).allow === true;
 }

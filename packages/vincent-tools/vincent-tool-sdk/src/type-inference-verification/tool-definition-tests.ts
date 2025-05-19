@@ -23,26 +23,27 @@ const baseToolSchema = z.object({
  */
 export function testPolicyEvaluationResults() {
   // Policy 1: Simple policy with object result schema
+  const evalResultsPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/simple-policy@1.0.0',
+    toolParamsSchema: z.object({
+      actionType: z.string(),
+      targetId: z.string(),
+    }),
+    evalAllowResultSchema: z.object({
+      approved: z.boolean(),
+      reason: z.string(),
+    }),
+
+    evaluate: async (params, { allow }) => {
+      return allow({
+        approved: true,
+        reason: `Action ${params.toolParams.actionType} approved`,
+      });
+    },
+  });
   const simplePolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/simple-policy@1.0.0',
-      toolParamsSchema: z.object({
-        actionType: z.string(),
-        targetId: z.string(),
-      }),
-      evalAllowResultSchema: z.object({
-        approved: z.boolean(),
-        reason: z.string(),
-      }),
-
-      evaluate: async (params, { allow }) => {
-        return allow({
-          approved: true,
-          reason: `Action ${params.toolParams.actionType} approved`,
-        });
-      },
-    }),
+    vincentPolicy: evalResultsPolicy,
     toolParameterMappings: {
       action: 'actionType',
       target: 'targetId',
@@ -50,51 +51,52 @@ export function testPolicyEvaluationResults() {
   });
 
   // Policy 2: Policy with commit function
+  const commitResultsPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/commit-policy@1.0.0',
+    toolParamsSchema: z.object({
+      operation: z.string(),
+      resource: z.string(),
+      value: z.number(),
+    }),
+
+    // Evaluation schema
+    evalAllowResultSchema: z.object({
+      transactionId: z.string(),
+      status: z.string(),
+    }),
+
+    // Commit phase schemas
+    commitParamsSchema: z.object({
+      transactionId: z.string(),
+      status: z.enum(['complete', 'reject']),
+    }),
+    commitAllowResultSchema: z.object({
+      confirmed: z.boolean(),
+      timestamp: z.number(),
+    }),
+
+    evaluate: async (params, { allow }) => {
+      const txId = `tx-${Date.now()}`;
+      return allow({
+        transactionId: txId,
+        status: 'pending',
+      });
+    },
+
+    commit: async (params, { allow }) => {
+      // Access commit parameters
+      const { transactionId, status } = params;
+
+      console.log(transactionId);
+      return allow({
+        confirmed: status === 'complete',
+        timestamp: Date.now(),
+      });
+    },
+  });
   const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/commit-policy@1.0.0',
-      toolParamsSchema: z.object({
-        operation: z.string(),
-        resource: z.string(),
-        value: z.number(),
-      }),
-
-      // Evaluation schema
-      evalAllowResultSchema: z.object({
-        transactionId: z.string(),
-        status: z.string(),
-      }),
-
-      // Commit phase schemas
-      commitParamsSchema: z.object({
-        transactionId: z.string(),
-        status: z.enum(['complete', 'reject']),
-      }),
-      commitAllowResultSchema: z.object({
-        confirmed: z.boolean(),
-        timestamp: z.number(),
-      }),
-
-      evaluate: async (params, { allow }) => {
-        const txId = `tx-${Date.now()}`;
-        return allow({
-          transactionId: txId,
-          status: 'pending',
-        });
-      },
-
-      commit: async (params, { allow }) => {
-        // Access commit parameters
-        const { transactionId, status } = params;
-
-        console.log(transactionId);
-        return allow({
-          confirmed: status === 'complete',
-          timestamp: Date.now(),
-        });
-      },
-    }),
+    vincentPolicy: commitResultsPolicy,
     toolParameterMappings: {
       action: 'operation',
       target: 'resource',

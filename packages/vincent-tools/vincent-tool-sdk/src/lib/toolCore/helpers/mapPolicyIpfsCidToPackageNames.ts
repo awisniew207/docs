@@ -2,8 +2,9 @@
 
 import { z } from 'zod';
 
-import { VincentPolicyDef, VincentToolDef, VincentToolPolicy } from '../../types';
+import { VincentToolDef, VincentToolPolicy } from '../../types';
 import { createVincentTool, EnrichedVincentToolPolicy } from '../vincentTool';
+import { VincentPolicyDef } from '../../policyCore';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

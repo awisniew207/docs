@@ -41,6 +41,8 @@ const policyDef1 = createVincentPolicy({
   commitDenyResultSchema: policy1CommitDenyResult,
 
   precheck: async ({ toolParams, userParams }, context) => {
+    const wat = userParams.allowedTargets;
+    console.log(wat);
     if (toolParams.targetAllowed) {
       return context.allow();
     } else {

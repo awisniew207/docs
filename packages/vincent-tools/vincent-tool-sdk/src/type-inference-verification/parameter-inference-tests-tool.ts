@@ -26,20 +26,21 @@ const testSchema = z.object({
  */
 function testBasicParameterInference() {
   // Create a simple policy for testing
+  const basicParamInferPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.0.0',
+    toolParamsSchema: z.object({
+      operation: z.string(),
+    }),
+    evalAllowResultSchema: z.object({
+      allowed: z.boolean(),
+    }),
+    evaluate: async (_, { allow }) => {
+      return allow({ allowed: true });
+    },
+  });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.0.0',
-      toolParamsSchema: z.object({
-        operation: z.string(),
-      }),
-      evalAllowResultSchema: z.object({
-        allowed: z.boolean(),
-      }),
-      evaluate: async (_, { allow }) => {
-        return allow({ allowed: true });
-      },
-    }),
+    vincentPolicy: basicParamInferPolicy,
     toolParameterMappings: {
       action: 'operation',
     },
@@ -112,68 +113,70 @@ function testBasicParameterInference() {
  */
 function testPolicyResultInference() {
   // Create a policy with complex result type
+  const resultInferPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/complex-policy@1.0.0',
+    toolParamsSchema: z.object({
+      command: z.string(),
+    }),
+    evalAllowResultSchema: z.object({
+      level: z.enum(['low', 'medium', 'high']),
+      metadata: z.object({
+        timestamp: z.number(),
+        signature: z.string(),
+      }),
+      flags: z.array(z.string()),
+    }),
+    evaluate: async (params, { allow }) => {
+      return allow({
+        level: 'medium',
+        metadata: {
+          timestamp: Date.now(),
+          signature: 'sig123',
+        },
+        flags: ['verbose', 'secure'],
+      });
+    },
+  });
   const complexPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/complex-policy@1.0.0',
-      toolParamsSchema: z.object({
-        command: z.string(),
-      }),
-      evalAllowResultSchema: z.object({
-        level: z.enum(['low', 'medium', 'high']),
-        metadata: z.object({
-          timestamp: z.number(),
-          signature: z.string(),
-        }),
-        flags: z.array(z.string()),
-      }),
-      evaluate: async (params, { allow }) => {
-        return allow({
-          level: 'medium',
-          metadata: {
-            timestamp: Date.now(),
-            signature: 'sig123',
-          },
-          flags: ['verbose', 'secure'],
-        });
-      },
-    }),
+    vincentPolicy: resultInferPolicy,
     toolParameterMappings: {
       action: 'command',
     },
   });
 
   // Create policy with commit function
+  const commitResultPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/commit-policy@1.0.0',
+    toolParamsSchema: z.object({
+      resource: z.string(),
+    }),
+    evalAllowResultSchema: z.object({
+      transactionId: z.string(),
+    }),
+    commitParamsSchema: z.object({
+      transactionId: z.string(),
+      status: z.enum(['complete', 'abort']),
+    }),
+    commitAllowResultSchema: z.object({
+      success: z.boolean(),
+      timestamp: z.number(),
+    }),
+    evaluate: async (params, { allow }) => {
+      return allow({
+        transactionId: 'tx123',
+      });
+    },
+    commit: async (params, { allow }) => {
+      return allow({
+        success: params.status === 'complete',
+        timestamp: Date.now(),
+      });
+    },
+  });
   const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/commit-policy@1.0.0',
-      toolParamsSchema: z.object({
-        resource: z.string(),
-      }),
-      evalAllowResultSchema: z.object({
-        transactionId: z.string(),
-      }),
-      commitParamsSchema: z.object({
-        transactionId: z.string(),
-        status: z.enum(['complete', 'abort']),
-      }),
-      commitAllowResultSchema: z.object({
-        success: z.boolean(),
-        timestamp: z.number(),
-      }),
-      evaluate: async (params, { allow }) => {
-        return allow({
-          transactionId: 'tx123',
-        });
-      },
-      commit: async (params, { allow }) => {
-        return allow({
-          success: params.status === 'complete',
-          timestamp: Date.now(),
-        });
-      },
-    }),
+    vincentPolicy: commitResultPolicy,
     toolParameterMappings: {
       target: 'resource',
     },
@@ -284,20 +287,21 @@ function testPolicyResultInference() {
  */
 function testComplexDestructuring() {
   // Create a simple policy
+  const complexDestructurePolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.0.0',
+    toolParamsSchema: z.object({
+      action: z.string(),
+    }),
+    evalAllowResultSchema: z.object({
+      data: z.any(),
+    }),
+    evaluate: async (params, { allow }) => {
+      return allow({ data: {} });
+    },
+  });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.0.0',
-      toolParamsSchema: z.object({
-        action: z.string(),
-      }),
-      evalAllowResultSchema: z.object({
-        data: z.any(),
-      }),
-      evaluate: async (params, { allow }) => {
-        return allow({ data: {} });
-      },
-    }),
+    vincentPolicy: complexDestructurePolicy,
     toolParameterMappings: {
       action: 'action',
     },
@@ -418,18 +422,19 @@ function testAdvancedParameterValidation() {
   });
 
   // Create a policy
+  const advancedParamPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.0.0',
+    toolParamsSchema: z.object({
+      op: z.string(),
+    }),
+    evalAllowResultSchema: z.boolean(),
+    evaluate: async (params, { allow }) => {
+      return allow(true);
+    },
+  });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: advancedSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.0.0',
-      toolParamsSchema: z.object({
-        op: z.string(),
-      }),
-      evalAllowResultSchema: z.boolean(),
-      evaluate: async (params, { allow }) => {
-        return allow(true);
-      },
-    }),
+    vincentPolicy: advancedParamPolicy,
     toolParameterMappings: {
       action: 'op',
     },
@@ -520,16 +525,17 @@ function testAdvancedParameterValidation() {
  */
 function testMissingTypes() {
   // Create a policy
+  const missingTypesPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.0.0',
+    toolParamsSchema: z.object({ op: z.string() }),
+    evalAllowResultSchema: z.object({ data: z.string() }),
+    evaluate: async (_, { allow }) => {
+      return allow({ data: 'test' });
+    },
+  });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.0.0',
-      toolParamsSchema: z.object({ op: z.string() }),
-      evalAllowResultSchema: z.object({ data: z.string() }),
-      evaluate: async (_, { allow }) => {
-        return allow({ data: 'test' });
-      },
-    }),
+    vincentPolicy: missingTypesPolicy,
     toolParameterMappings: { action: 'op' },
   });
 

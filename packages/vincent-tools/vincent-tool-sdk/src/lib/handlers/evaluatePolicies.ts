@@ -8,10 +8,11 @@ import {
   PolicyEvaluationResultContext,
   PolicyResponse,
   PolicyResponseDeny,
+  PolicyResponseDenyNoResult,
   VincentPolicy,
-  VincentPolicyDef,
   VincentToolDef,
   VincentToolPolicy,
+  ZodValidationDenyResult,
 } from '../types';
 import { createVincentTool, EnrichedVincentToolPolicy } from '../toolCore/vincentTool';
 import {
@@ -23,6 +24,7 @@ import {
 import {
   createAllowEvaluationResult,
   createDenyEvaluationResult,
+  returnNoResultDeny,
 } from '../policyCore/helpers/resultCreators';
 
 declare const Lit: {
@@ -38,12 +40,12 @@ export async function evaluatePolicies<
   ToolParamsSchema extends z.ZodType,
   PolicyArray extends readonly VincentToolPolicy<
     ToolParamsSchema,
-    VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>
+    VincentPolicy<any, any, any, any, any, any, any, any, any, any>
   >[],
   PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
     [K in PolicyArray[number]['vincentPolicy']['packageName']]: Extract<
       PolicyArray[number],
-      { policyDef: { packageName: K } }
+      { vincentPolicy: { packageName: K } }
     >;
   },
 >({
@@ -169,8 +171,8 @@ function parseAndValidateEvaluateResult<
   try {
     const { schemaToUse } = getSchemaForPolicyResponseResult({
       value: parsedLitActionResponse,
-      denyResultSchema: vincentPolicy.evalDenyResultSchema,
-      allowResultSchema: vincentPolicy.evalAllowResultSchema,
+      denyResultSchema: vincentPolicy.evalDenyResultSchema || z.undefined(),
+      allowResultSchema: vincentPolicy.evalAllowResultSchema || z.undefined(),
     });
 
     return validateOrDeny(
@@ -180,8 +182,10 @@ function parseAndValidateEvaluateResult<
       'output',
     ) as PolicyResponse<EvalAllowResult, EvalDenyResult>;
   } catch (err) {
-    return createDenyResult({
-      message: err instanceof Error ? err.message : 'Unknown error',
-    });
+    return returnNoResultDeny<EvalDenyResult>(
+      err instanceof Error ? err.message : 'Unknown error',
+    ) as unknown as EvalDenyResult extends z.ZodType
+      ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+      : PolicyResponseDenyNoResult;
   }
 }

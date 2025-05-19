@@ -1,6 +1,7 @@
-// src/lib/policyContext/policyContext.ts
+// src/lib/policyDef/context/policyDefContext.ts
+
 import { z } from 'zod';
-import { BaseContext } from '../../types';
+import { BaseContext } from '../../../types';
 import {
   ContextAllowResponse,
   ContextAllowResponseNoResult,
@@ -10,11 +11,11 @@ import {
 } from './types';
 
 interface CreatePolicyContextParams<
-  AllowSchema extends z.ZodType | undefined = undefined,
-  DenySchema extends z.ZodType | undefined = undefined,
+  AllowSchema extends z.ZodType = z.ZodUndefined,
+  DenySchema extends z.ZodType = z.ZodUndefined,
 > {
-  allowSchema?: AllowSchema;
-  denySchema?: DenySchema;
+  allowSchema: AllowSchema;
+  denySchema: DenySchema;
   baseContext: BaseContext;
 }
 
@@ -27,8 +28,8 @@ interface CreatePolicyContextParams<
  * internally by VincentPolicyDef wrappers to standardize response structure.
  */
 export function createPolicyContext<
-  AllowSchema extends z.ZodType | undefined = undefined,
-  DenySchema extends z.ZodType | undefined = undefined,
+  AllowSchema extends z.ZodType = z.ZodUndefined,
+  DenySchema extends z.ZodType = z.ZodUndefined,
 >({
   baseContext,
   allowSchema,
@@ -68,11 +69,11 @@ export function createPolicyContext<
 
   return {
     delegation: baseContext.delegation,
-    allow: allow as AllowSchema extends z.ZodType
-      ? (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>
-      : () => ContextAllowResponseNoResult,
-    deny: deny as DenySchema extends z.ZodType
-      ? (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>
-      : (error?: string) => ContextDenyResponseNoResult,
+    allow: allow as AllowSchema extends z.ZodUndefined
+      ? () => ContextAllowResponseNoResult
+      : (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>,
+    deny: deny as DenySchema extends z.ZodUndefined
+      ? (error?: string) => ContextDenyResponseNoResult
+      : (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>,
   };
 }

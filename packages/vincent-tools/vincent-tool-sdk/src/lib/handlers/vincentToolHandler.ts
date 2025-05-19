@@ -78,6 +78,7 @@ export function createToolExecutionContext<
 
     // TODO: Collect results of commit calls and add to the execution context result
     if (policy.commit) {
+      const commitFn = policy.commit;
       resultWrapper.commit = (commitParams) => {
         const executionContext = {
           delegation: {
@@ -85,7 +86,7 @@ export function createToolExecutionContext<
             delegator: userPkpTokenId,
           },
         };
-        return policy.commit(commitParams, executionContext);
+        return commitFn(commitParams, executionContext);
       };
     }
 

@@ -2,13 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z, ZodType } from 'zod';
-import {
-  PolicyResponseDeny,
-  PolicyResponseDenyNoResult,
-  VincentPolicy,
-  VincentPolicyDef,
-  ZodValidationDenyResult,
-} from '../../types';
+import { PolicyResponseDeny, ZodValidationDenyResult } from '../../types';
 import { createDenyResult } from './resultCreators';
 import { isPolicyDenyResponse, isPolicyResponse } from './typeGuards';
 
@@ -20,8 +14,6 @@ export const PolicyResponseShape = z.object({
   allow: z.boolean(),
   result: z.unknown(),
 });
-
-const mustBeUndefinedSchema = z.undefined();
 
 /**
  * Validates a value using a Zod schema (or requires undefined if none given).
@@ -36,12 +28,11 @@ const mustBeUndefinedSchema = z.undefined();
  */
 export function validateOrDeny<T extends ZodType<any, any, any>>(
   value: unknown,
-  schema: T | undefined,
+  schema: T,
   phase: 'evaluate' | 'precheck' | 'commit',
   stage: 'input' | 'output',
-): T | PolicyResponseDeny<ZodValidationDenyResult> | PolicyResponseDenyNoResult {
-  const effectiveSchema = schema ?? mustBeUndefinedSchema;
-  const parsed = effectiveSchema.safeParse(value);
+): z.infer<T> | PolicyResponseDeny<ZodValidationDenyResult> {
+  const parsed = schema.safeParse(value);
 
   if (!parsed.success) {
     const descriptor = stage === 'input' ? 'parameters' : 'result';
@@ -55,47 +46,36 @@ export function validateOrDeny<T extends ZodType<any, any, any>>(
   return parsed.data;
 }
 
-type InferToolParams<
-  TPolicy extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
-> = z.infer<TPolicy['toolParamsSchema']>;
-type InferUserParams<
-  TPolicy extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
-> =
-  TPolicy['userParamsSchema'] extends z.ZodType<any, any, any>
-    ? z.infer<TPolicy['userParamsSchema']>
-    : undefined;
-type ParamResult<TPolicy extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>> =
-  | {
-      toolParams: InferToolParams<TPolicy>;
-      userParams: InferUserParams<TPolicy>;
-    }
-  | PolicyResponseDeny<ZodValidationDenyResult>
-  | PolicyResponseDenyNoResult;
-
-interface ValidatedParamsOrDeny<
-  TPolicy extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
-> {
-  policyDef: TPolicy;
-  rawToolParams: unknown;
-  rawUserParams: unknown;
-  phase: 'evaluate' | 'precheck' | 'commit';
-}
-
 export function getValidatedParamsOrDeny<
-  TPolicy extends VincentPolicyDef<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+  TToolParams extends z.ZodType<any, any, any>,
+  TUserParams extends z.ZodType<any, any, any>,
 >({
-  policyDef,
   rawToolParams,
   rawUserParams,
+  toolParamsSchema,
+  userParamsSchema,
   phase,
-}: ValidatedParamsOrDeny<TPolicy>): ParamResult<TPolicy> {
-  const toolParams = validateOrDeny(rawToolParams, policyDef.toolParamsSchema, phase, 'input');
-  if (isPolicyDenyResponse(toolParams))
-    return toolParams as PolicyResponseDeny<ZodValidationDenyResult>;
+}: {
+  rawToolParams: unknown;
+  rawUserParams: unknown;
+  toolParamsSchema: TToolParams;
+  userParamsSchema: TUserParams;
+  phase: 'evaluate' | 'precheck';
+}):
+  | PolicyResponseDeny<ZodValidationDenyResult>
+  | {
+      toolParams: z.infer<TToolParams>;
+      userParams: z.infer<TUserParams>;
+    } {
+  const toolParams = validateOrDeny(rawToolParams, toolParamsSchema, phase, 'input');
+  if (isPolicyDenyResponse(toolParams)) {
+    return toolParams;
+  }
 
-  const userParams = validateOrDeny(rawUserParams, policyDef.userParamsSchema, phase, 'input');
-  if (isPolicyDenyResponse(userParams))
-    return userParams as PolicyResponseDeny<ZodValidationDenyResult>;
+  const userParams = validateOrDeny(rawUserParams, userParamsSchema, phase, 'input');
+  if (isPolicyDenyResponse(userParams)) {
+    return userParams;
+  }
 
   return {
     toolParams,
@@ -116,10 +96,10 @@ export function getSchemaForPolicyResponseResult({
   denyResultSchema,
 }: {
   value: unknown;
-  allowResultSchema?: ZodType;
-  denyResultSchema?: ZodType;
+  allowResultSchema: z.ZodType<any, any, any>;
+  denyResultSchema: z.ZodType<any, any, any>;
 }): {
-  schemaToUse: ZodType;
+  schemaToUse: z.ZodType<any, any, any>;
   parsedType: 'allow' | 'deny' | 'unknown';
 } {
   if (!isPolicyResponse(value)) {
@@ -129,12 +109,8 @@ export function getSchemaForPolicyResponseResult({
     };
   }
 
-  const schemaToUse = value.allow
-    ? (allowResultSchema ?? z.undefined())
-    : (denyResultSchema ?? z.undefined());
-
   return {
-    schemaToUse,
+    schemaToUse: value.allow ? allowResultSchema : denyResultSchema,
     parsedType: value.allow ? 'allow' : 'deny',
   };
 }

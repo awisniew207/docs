@@ -1,15 +1,16 @@
 // src/lib/policyCore/vincentPolicy.ts
 import { z } from 'zod';
 import {
-  BaseContext,
-  CommitFunction,
-  InferOrUndefined,
+  CommitLifecycleFunction,
   PolicyLifecycleFunction,
-  PolicyResponse,
+  PolicyResponseAllow,
+  PolicyResponseAllowNoResult,
+  PolicyResponseDeny,
+  PolicyResponseDenyNoResult,
   VincentPolicy,
-  VincentPolicyDef,
+  ZodValidationDenyResult,
 } from '../types';
-import { createPolicyContext } from './policyContext/policyContext';
+import { createPolicyContext } from './policyDef/context/policyDefContext';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
@@ -17,6 +18,12 @@ import {
   isPolicyDenyResponse,
   validateOrDeny,
 } from './helpers';
+import {
+  PolicyDefCommitFunction,
+  PolicyDefLifecycleFunction,
+  VincentPolicyDef,
+} from './policyDef/types';
+import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resultCreators';
 
 /**
  * Wraps a raw VincentPolicyDef with internal logic and returns a fully typed
@@ -27,14 +34,14 @@ import {
 export function createVincentPolicy<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
-  UserParams extends z.ZodType | undefined = undefined,
-  PrecheckAllowResult extends z.ZodType | undefined = undefined,
-  PrecheckDenyResult extends z.ZodType | undefined = undefined,
-  EvalAllowResult extends z.ZodType | undefined = undefined,
-  EvalDenyResult extends z.ZodType | undefined = undefined,
-  CommitParams extends z.ZodType | undefined = undefined,
-  CommitAllowResult extends z.ZodType | undefined = undefined,
-  CommitDenyResult extends z.ZodType | undefined = undefined,
+  UserParams extends z.ZodType = z.ZodUndefined,
+  PrecheckAllowResult extends z.ZodType = z.ZodUndefined,
+  PrecheckDenyResult extends z.ZodType = z.ZodUndefined,
+  EvalAllowResult extends z.ZodType = z.ZodUndefined,
+  EvalDenyResult extends z.ZodType = z.ZodUndefined,
+  CommitParams extends z.ZodType = z.ZodUndefined,
+  CommitAllowResult extends z.ZodType = z.ZodUndefined,
+  CommitDenyResult extends z.ZodType = z.ZodUndefined,
 >(
   policyDef: VincentPolicyDef<
     PackageName,
@@ -47,171 +54,189 @@ export function createVincentPolicy<
     CommitParams,
     CommitAllowResult,
     CommitDenyResult,
-    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
-    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
-    CommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
+    PolicyDefLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    PolicyDefLifecycleFunction<
+      PolicyToolParams,
+      UserParams,
+      PrecheckAllowResult,
+      PrecheckDenyResult
+    >,
+    PolicyDefCommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >,
 ) {
   if (policyDef.commitParamsSchema && !policyDef.commit) {
     throw new Error('Policy defines commitParamsSchema but is missing commit function');
   }
 
-  const originalPolicyDef = policyDef;
+  const userParamsSchema = (policyDef.userParamsSchema ?? z.undefined()) as UserParams;
+  const evalAllowSchema = (policyDef.evalAllowResultSchema ?? z.undefined()) as EvalAllowResult;
+  const evalDenySchema = (policyDef.evalDenyResultSchema ?? z.undefined()) as EvalDenyResult;
+  const precheckAllowSchema = (policyDef.precheckAllowResultSchema ??
+    z.undefined()) as PrecheckAllowResult;
+  const precheckDenySchema = (policyDef.precheckDenyResultSchema ??
+    z.undefined()) as PrecheckDenyResult;
+  const commitAllowSchema = (policyDef.commitAllowResultSchema ??
+    z.undefined()) as CommitAllowResult;
+  const commitDenySchema = (policyDef.commitDenyResultSchema ?? z.undefined()) as CommitDenyResult;
+  const commitParamsSchema = (policyDef.commitParamsSchema ?? z.undefined()) as CommitParams;
 
-  // Create wrapper functions that create a new context and merge baseContext into them
-  const wrappedPolicyDef = {
-    ...originalPolicyDef,
-    packageName: originalPolicyDef.packageName,
-    evaluate: async (
-      args: {
-        toolParams: z.infer<PolicyToolParams>;
-        userParams: InferOrUndefined<UserParams>;
-      },
-      baseContext: BaseContext,
-    ) => {
-      try {
-        const context = createPolicyContext({
-          baseContext,
-          allowSchema: originalPolicyDef.evalAllowResultSchema,
-          denySchema: originalPolicyDef.evalDenyResultSchema,
-        });
+  const evaluate: PolicyLifecycleFunction<
+    PolicyToolParams,
+    UserParams,
+    EvalAllowResult,
+    EvalDenyResult
+  > = async (args, baseContext) => {
+    try {
+      const context = createPolicyContext({
+        baseContext,
+        allowSchema: evalAllowSchema,
+        denySchema: evalDenySchema,
+      });
 
-        const paramsOrDeny = getValidatedParamsOrDeny({
-          policyDef,
-          rawToolParams: args.toolParams,
-          rawUserParams: args.userParams,
-          phase: 'evaluate',
-        });
+      const paramsOrDeny = getValidatedParamsOrDeny({
+        rawToolParams: args.toolParams,
+        rawUserParams: args.userParams,
+        toolParamsSchema: policyDef.toolParamsSchema,
+        userParamsSchema: userParamsSchema,
+        phase: 'evaluate',
+      });
 
-        if (isPolicyDenyResponse(paramsOrDeny)) {
-          return paramsOrDeny as PolicyResponse<EvalAllowResult, EvalDenyResult>;
-        }
-
-        const result = await originalPolicyDef.evaluate(args, context);
-
-        const { schemaToUse } = getSchemaForPolicyResponseResult({
-          value: result,
-          allowResultSchema: policyDef.evalAllowResultSchema,
-          denyResultSchema: policyDef.evalDenyResultSchema,
-        });
-
-        const resultOrDeny = validateOrDeny(result, schemaToUse, 'evaluate', 'output');
-
-        return resultOrDeny as PolicyResponse<EvalAllowResult, EvalDenyResult>;
-      } catch (err) {
-        return createDenyResult({
-          message: err instanceof Error ? err.message : 'Unknown error',
-        });
+      if (isPolicyDenyResponse(paramsOrDeny)) {
+        return paramsOrDeny as EvalDenyResult extends z.ZodType
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          : PolicyResponseDenyNoResult;
       }
-    },
 
-    // Only create precheck wrapper if precheck exists; it is optional.
-    ...(originalPolicyDef.precheck !== undefined
-      ? {
-          precheck: async (
-            args: {
-              toolParams: z.infer<PolicyToolParams>;
-              userParams: InferOrUndefined<UserParams>;
-            },
-            baseContext: BaseContext,
-          ) => {
-            try {
-              const context = createPolicyContext({
-                baseContext,
-                allowSchema: originalPolicyDef.precheckAllowResultSchema,
-                denySchema: originalPolicyDef.precheckDenyResultSchema,
-              });
+      const { toolParams, userParams } = paramsOrDeny;
 
-              const { precheck: precheckFn } = originalPolicyDef;
+      const result = await policyDef.evaluate({ toolParams, userParams }, context);
 
-              if (!precheckFn) {
-                throw new Error('precheck function unexpectedly missing');
-              }
+      const { schemaToUse } = getSchemaForPolicyResponseResult({
+        value: result,
+        allowResultSchema: evalAllowSchema,
+        denyResultSchema: evalDenySchema,
+      });
 
-              const paramsOrDeny = getValidatedParamsOrDeny({
-                policyDef,
-                rawToolParams: args.toolParams,
-                rawUserParams: args.userParams,
-                phase: 'precheck',
-              });
+      const resultOrDeny = validateOrDeny(result, schemaToUse, 'evaluate', 'output');
 
-              if (isPolicyDenyResponse(paramsOrDeny)) {
-                return paramsOrDeny as PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
-              }
+      if (isPolicyDenyResponse(resultOrDeny)) {
+        return resultOrDeny as EvalDenyResult extends z.ZodType
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          : PolicyResponseDenyNoResult;
+      }
 
-              const result = await precheckFn(args, context);
-
-              const { schemaToUse } = getSchemaForPolicyResponseResult({
-                value: result,
-                allowResultSchema: policyDef.precheckAllowResultSchema,
-                denyResultSchema: policyDef.precheckDenyResultSchema,
-              });
-
-              const resultOrDeny = validateOrDeny(result, schemaToUse, 'precheck', 'output');
-
-              return resultOrDeny as PolicyResponse<PrecheckAllowResult, PrecheckDenyResult>;
-            } catch (err) {
-              return createDenyResult({
-                message: err instanceof Error ? err.message : 'Unknown error',
-              });
-            }
-          },
-        }
-      : { precheck: undefined }),
-
-    // Only create commit wrapper if commit exists; it is optional also
-    ...(originalPolicyDef.commit !== undefined
-      ? {
-          commit: async (args: InferOrUndefined<CommitParams>, baseContext: BaseContext) => {
-            try {
-              const context = createPolicyContext({
-                baseContext,
-                denySchema: originalPolicyDef.commitDenyResultSchema,
-                allowSchema: originalPolicyDef.commitAllowResultSchema,
-              });
-
-              const { commit: commitFn } = originalPolicyDef;
-
-              if (!commitFn) {
-                throw new Error('commit function unexpectedly missing');
-              }
-
-              const paramsOrDeny = validateOrDeny(
-                args,
-                originalPolicyDef.commitParamsSchema,
-                'commit',
-                'input',
-              );
-
-              if (isPolicyDenyResponse(paramsOrDeny)) {
-                return paramsOrDeny as PolicyResponse<CommitAllowResult, CommitDenyResult>;
-              }
-
-              const result = await commitFn(args, context);
-
-              const { schemaToUse } = getSchemaForPolicyResponseResult({
-                value: result,
-                allowResultSchema: policyDef.commitAllowResultSchema,
-                denyResultSchema: policyDef.commitDenyResultSchema,
-              });
-
-              const resultOrDeny = validateOrDeny(result, schemaToUse, 'commit', 'output');
-
-              return resultOrDeny as PolicyResponse<CommitAllowResult, CommitDenyResult>;
-            } catch (err) {
-              return createDenyResult({
-                message: err instanceof Error ? err.message : 'Unknown error',
-              });
-            }
-          },
-        }
-      : { commit: undefined }),
+      return wrapAllow<EvalAllowResult>(resultOrDeny) as EvalAllowResult extends z.ZodType
+        ? PolicyResponseAllow<z.infer<EvalAllowResult>>
+        : PolicyResponseAllowNoResult;
+    } catch (err) {
+      return returnNoResultDeny<EvalDenyResult>(
+        err instanceof Error ? err.message : 'Unknown error',
+      ) as unknown as EvalDenyResult extends z.ZodType
+        ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+        : PolicyResponseDenyNoResult;
+    }
   };
 
-  return {
-    ...wrappedPolicyDef,
-    __vincentPolicyDef: originalPolicyDef,
-  } as unknown as VincentPolicy<
+  const precheck = policyDef.precheck
+    ? ((async (args, baseContext) => {
+        try {
+          const context = createPolicyContext({
+            baseContext,
+            allowSchema: precheckAllowSchema,
+            denySchema: precheckDenySchema,
+          });
+
+          const { precheck: precheckFn } = policyDef;
+
+          if (!precheckFn) {
+            throw new Error('precheck function unexpectedly missing');
+          }
+
+          const paramsOrDeny = getValidatedParamsOrDeny({
+            rawToolParams: args.toolParams,
+            rawUserParams: args.userParams,
+            toolParamsSchema: policyDef.toolParamsSchema,
+            userParamsSchema,
+            phase: 'precheck',
+          });
+
+          if (isPolicyDenyResponse(paramsOrDeny)) {
+            return paramsOrDeny;
+          }
+
+          const result = await precheckFn(args, context);
+
+          const { schemaToUse } = getSchemaForPolicyResponseResult({
+            value: result,
+            allowResultSchema: precheckAllowSchema,
+            denyResultSchema: precheckDenySchema,
+          });
+
+          const resultOrDeny = validateOrDeny(result, schemaToUse, 'precheck', 'output');
+
+          if (isPolicyDenyResponse(resultOrDeny)) {
+            return resultOrDeny;
+          }
+
+          return createAllowResult({ result: resultOrDeny });
+        } catch (err) {
+          return createDenyResult({
+            message: err instanceof Error ? err.message : 'Unknown error',
+          });
+        }
+      }) as PolicyLifecycleFunction<
+        PolicyToolParams,
+        UserParams,
+        PrecheckAllowResult,
+        PrecheckDenyResult
+      >)
+    : undefined;
+
+  const commit = policyDef.commit
+    ? ((async (args, baseContext) => {
+        try {
+          const context = createPolicyContext({
+            baseContext,
+            denySchema: commitDenySchema,
+            allowSchema: commitAllowSchema,
+          });
+
+          const { commit: commitFn } = policyDef;
+
+          if (!commitFn) {
+            throw new Error('commit function unexpectedly missing');
+          }
+
+          const paramsOrDeny = validateOrDeny(args, commitParamsSchema, 'commit', 'input');
+
+          if (isPolicyDenyResponse(paramsOrDeny)) {
+            return paramsOrDeny;
+          }
+
+          const result = await commitFn(args, context);
+
+          const { schemaToUse } = getSchemaForPolicyResponseResult({
+            value: result,
+            allowResultSchema: commitAllowSchema,
+            denyResultSchema: commitDenySchema,
+          });
+
+          const resultOrDeny = validateOrDeny(result, schemaToUse, 'commit', 'output');
+
+          if (isPolicyDenyResponse(resultOrDeny)) {
+            return resultOrDeny;
+          }
+
+          return createAllowResult({ result: resultOrDeny });
+        } catch (err) {
+          return createDenyResult({
+            message: err instanceof Error ? err.message : 'Unknown error',
+          });
+        }
+      }) as CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>)
+    : undefined;
+
+  const vincentPolicy: VincentPolicy<
     PackageName,
     PolicyToolParams,
     UserParams,
@@ -221,10 +246,19 @@ export function createVincentPolicy<
     EvalDenyResult,
     CommitParams,
     CommitAllowResult,
-    CommitDenyResult
-  > & {
-    __vincentPolicyDef: typeof originalPolicyDef;
+    CommitDenyResult,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
+    CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>
+  > & { __vincentPolicyDef: typeof policyDef } = {
+    ...policyDef,
+    evaluate,
+    precheck,
+    commit,
+    __vincentPolicyDef: policyDef,
   };
+
+  return vincentPolicy;
 }
 
 /**
@@ -236,14 +270,14 @@ export function createVincentToolPolicy<
   PackageName extends string,
   ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
-  UserParams extends z.ZodType | undefined = undefined,
-  PrecheckAllowResult extends z.ZodType | undefined = undefined,
-  PrecheckDenyResult extends z.ZodType | undefined = undefined,
-  EvalAllowResult extends z.ZodType | undefined = undefined,
-  EvalDenyResult extends z.ZodType | undefined = undefined,
-  CommitParams extends z.ZodType | undefined = undefined,
-  CommitAllowResult extends z.ZodType | undefined = undefined,
-  CommitDenyResult extends z.ZodType | undefined = undefined,
+  UserParams extends z.ZodType = z.ZodUndefined,
+  PrecheckAllowResult extends z.ZodType = z.ZodUndefined,
+  PrecheckDenyResult extends z.ZodType = z.ZodUndefined,
+  EvalAllowResult extends z.ZodType = z.ZodUndefined,
+  EvalDenyResult extends z.ZodType = z.ZodUndefined,
+  CommitParams extends z.ZodType = z.ZodUndefined,
+  CommitAllowResult extends z.ZodType = z.ZodUndefined,
+  CommitDenyResult extends z.ZodType = z.ZodUndefined,
 >(config: {
   toolParamsSchema: ToolParamsSchema;
   vincentPolicy: VincentPolicy<

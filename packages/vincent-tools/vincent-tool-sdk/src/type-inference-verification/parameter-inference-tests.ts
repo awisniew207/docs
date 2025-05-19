@@ -18,7 +18,7 @@ const baseToolSchema = z.object({
  * Test 1: Basic schema validation for allow/deny
  */
 function testBasicSchemaValidation() {
-  return createVincentToolPolicy({
+  const basicSchemaPolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
     vincentPolicy: createVincentPolicy({
       packageName: '@lit-protocol/test-policy@1.34.2',
@@ -47,36 +47,38 @@ function testBasicSchemaValidation() {
       action: 'actionType',
     },
   });
+  return basicSchemaPolicy;
 }
 
 /**
  * Test 2: No schema case validation
  */
 function testNoSchemaValidation() {
+  const noSchemaPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.34.2',
+    toolParamsSchema: z.object({ actionType: z.string() }),
+
+    // No schemas defined
+    evaluate: async (params, context) => {
+      // Test TypeScript errors first
+      // @ts-expect-error - No schema means no args allowed
+      context.allow('should error');
+
+      // @ts-expect-error - No schema means no object allowed
+      context.allow({ shouldError: true });
+
+      // Valid calls - no args for allow with no schema
+      // And string error for deny with no schema
+      if (Math.random() > 0.5) {
+        return context.allow();
+      } else {
+        return context.deny('Error message');
+      }
+    },
+  });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.34.2',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-
-      // No schemas defined
-      evaluate: async (params, context) => {
-        // Test TypeScript errors first
-        // @ts-expect-error - No schema means no args allowed
-        context.allow('should error');
-
-        // @ts-expect-error - No schema means no object allowed
-        context.allow({ shouldError: true });
-
-        // Valid calls - no args for allow with no schema
-        // And string error for deny with no schema
-        if (Math.random() > 0.5) {
-          return context.allow();
-        } else {
-          return context.deny('Error message');
-        }
-      },
-    }),
+    vincentPolicy: noSchemaPolicy,
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -87,30 +89,31 @@ function testNoSchemaValidation() {
  * Test 3: String schema validation
  */
 function testStringSchemaValidation() {
+  const stringSchemaPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.34.2',
+    toolParamsSchema: z.object({ actionType: z.string() }),
+
+    // String schema
+    evalAllowResultSchema: z.string(),
+
+    evaluate: async (params, context) => {
+      // Test TypeScript errors first
+      // @ts-expect-error - No arguments when schema exists
+      context.allow();
+
+      // @ts-expect-error - Wrong type (number not matching string schema)
+      context.allow(123);
+
+      // @ts-expect-error - Wrong type (object not matching string schema)
+      context.allow({ notAString: true });
+
+      // Valid - matches string schema
+      return context.allow('Success message');
+    },
+  });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.34.2',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-
-      // String schema
-      evalAllowResultSchema: z.string(),
-
-      evaluate: async (params, context) => {
-        // Test TypeScript errors first
-        // @ts-expect-error - No arguments when schema exists
-        context.allow();
-
-        // @ts-expect-error - Wrong type (number not matching string schema)
-        context.allow(123);
-
-        // @ts-expect-error - Wrong type (object not matching string schema)
-        context.allow({ notAString: true });
-
-        // Valid - matches string schema
-        return context.allow('Success message');
-      },
-    }),
+    vincentPolicy: stringSchemaPolicy,
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -121,30 +124,31 @@ function testStringSchemaValidation() {
  * Test 4: Deny parameter validation
  */
 function testDenyValidation() {
+  const denyValidationPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.34.2',
+    toolParamsSchema: z.object({ actionType: z.string() }),
+
+    // Define deny schema
+    evalDenyResultSchema: z.object({ code: z.number(), message: z.string() }),
+
+    evaluate: async (params, context) => {
+      // Test TypeScript errors first
+      // @ts-expect-error - String only when schema exists
+      context.deny('string only error');
+
+      // @ts-expect-error - Wrong shape (missing required field)
+      context.deny({ code: 400 });
+
+      // @ts-expect-error - Wrong shape (missing required field)
+      context.deny({ message: 'Error message' });
+
+      // Valid - matches schema
+      return context.deny({ code: 403, message: 'Forbidden' });
+    },
+  });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.34.2',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-
-      // Define deny schema
-      evalDenyResultSchema: z.object({ code: z.number(), message: z.string() }),
-
-      evaluate: async (params, context) => {
-        // Test TypeScript errors first
-        // @ts-expect-error - String only when schema exists
-        context.deny('string only error');
-
-        // @ts-expect-error - Wrong shape (missing required field)
-        context.deny({ code: 400 });
-
-        // @ts-expect-error - Wrong shape (missing required field)
-        context.deny({ message: 'Error message' });
-
-        // Valid - matches schema
-        return context.deny({ code: 403, message: 'Forbidden' });
-      },
-    }),
+    vincentPolicy: denyValidationPolicy,
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -155,34 +159,35 @@ function testDenyValidation() {
  * Test 5: Different schemas for different contexts
  */
 function testContextSchemas() {
+  const contextSchemasPolicy = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.34.2',
+    toolParamsSchema: z.object({ actionType: z.string() }),
+
+    // Different schemas for precheck and evaluate
+    precheckAllowResultSchema: z.object({ valid: z.boolean() }),
+    evalAllowResultSchema: z.object({ approved: z.boolean() }),
+
+    precheck: async (params, context) => {
+      // TypeScript error test
+      // @ts-expect-error - Using eval schema in precheck
+      context.allow({ approved: true });
+
+      // Valid for precheck
+      return context.allow({ valid: true });
+    },
+
+    evaluate: async (params, context) => {
+      // TypeScript error test
+      // @ts-expect-error - Using precheck schema in eval
+      context.allow({ valid: true });
+
+      // Valid for evaluate
+      return context.allow({ approved: true });
+    },
+  });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.34.2',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-
-      // Different schemas for precheck and evaluate
-      precheckAllowResultSchema: z.object({ valid: z.boolean() }),
-      evalAllowResultSchema: z.object({ approved: z.boolean() }),
-
-      precheck: async (params, context) => {
-        // TypeScript error test
-        // @ts-expect-error - Using eval schema in precheck
-        context.allow({ approved: true });
-
-        // Valid for precheck
-        return context.allow({ valid: true });
-      },
-
-      evaluate: async (params, context) => {
-        // TypeScript error test
-        // @ts-expect-error - Using precheck schema in eval
-        context.allow({ valid: true });
-
-        // Valid for evaluate
-        return context.allow({ approved: true });
-      },
-    }),
+    vincentPolicy: contextSchemasPolicy,
     toolParameterMappings: {
       action: 'actionType',
     },

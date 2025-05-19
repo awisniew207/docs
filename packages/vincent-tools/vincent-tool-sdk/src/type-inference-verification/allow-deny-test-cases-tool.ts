@@ -27,20 +27,21 @@ const failSchema = z.object({
 });
 
 // Create a test policy
+const baseTestPolicy = createVincentPolicy({
+  packageName: '@lit-protocol/test-policy@1.0.0',
+  toolParamsSchema: z.object({
+    actionType: z.string(),
+  }),
+  evalAllowResultSchema: z.object({
+    approved: z.boolean(),
+  }),
+  evaluate: async (params, { allow }) => {
+    return allow({ approved: true });
+  },
+});
 const testPolicy = createVincentToolPolicy({
   toolParamsSchema: testSchema,
-  vincentPolicy: createVincentPolicy({
-    packageName: '@lit-protocol/test-policy@1.0.0',
-    toolParamsSchema: z.object({
-      actionType: z.string(),
-    }),
-    evalAllowResultSchema: z.object({
-      approved: z.boolean(),
-    }),
-    evaluate: async (params, { allow }) => {
-      return allow({ approved: true });
-    },
-  }),
+  vincentPolicy: baseTestPolicy,
   toolParameterMappings: {
     action: 'actionType',
   },

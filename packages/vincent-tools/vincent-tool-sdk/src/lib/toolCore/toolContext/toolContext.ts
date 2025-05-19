@@ -6,9 +6,9 @@ import {
   PolicyEvaluationResultContext,
   ToolExecutionPolicyContext,
   ToolExecutionPolicyEvaluationResult,
-  VincentPolicyDef,
 } from '../../types';
 import { BaseToolContext, ToolContext, YouMustCallContextSucceedOrFail } from './types';
+import { VincentPolicyDef } from '../../policyCore';
 
 /**
  * Builds an execution-time ToolContext for use inside `execute()` lifecycle methods.
