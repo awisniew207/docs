@@ -1,3 +1,18 @@
+/**
+ * Server extensions for Vincent MCP
+ *
+ * This module provides functionality to extend an MCP server with additional tools
+ * for Vincent applications. These tools enable the server to provide information
+ * about delegators, PKP balances, tokens, and token allowances.
+ *
+ * The extensions enhance the base MCP server with blockchain-specific capabilities
+ * that are useful for Vincent applications interacting with the Lit Network to act
+ * on behalf of their delegators.
+ *
+ * @module extensions
+ * @category Vincent MCP
+ */
+
 import { LIT_EVM_CHAINS } from '@lit-protocol/constants';
 import { mcp } from '@lit-protocol/vincent-sdk';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -33,6 +48,17 @@ const NETWORK_CONFIG = {
   },
 } as const;
 
+/**
+ * Gets information about a Lit-supported blockchain by its chain ID
+ *
+ * This function looks up a blockchain in the list of Lit-supported chains
+ * and returns its configuration data.
+ *
+ * @param chainId - The chain ID as a string
+ * @returns The chain configuration data
+ * @throws Error if Lit does not support the chain
+ * @internal
+ */
 function getLitSupportedChainData(chainId: string) {
   const chainIdNum = parseInt(chainId);
   const litSupportedChain = Object.values(LIT_EVM_CHAINS).find(
@@ -45,6 +71,16 @@ function getLitSupportedChainData(chainId: string) {
   return litSupportedChain;
 }
 
+/**
+ * Retrieves information about a PKP token
+ *
+ * This function queries the PKP Router contract to get the Ethereum address
+ * and public key associated with a PKP token ID.
+ *
+ * @param pkpTokenId - The PKP token ID as an ethers.BigNumber
+ * @returns An object containing the token ID (as a hex string), Ethereum address, and public key
+ * @internal
+ */
 const getPkpInfo = async (
   pkpTokenId: ethers.BigNumber,
 ): Promise<{
@@ -73,6 +109,55 @@ const getPkpInfo = async (
   };
 };
 
+/**
+ * Extends an MCP server with additional tools for Vincent applications
+ *
+ * This function adds several tools to an MCP server that provide blockchain-specific
+ * capabilities useful for Vincent applications:
+ *
+ * 1. `get-delegators-info`: Gets information about the delegators for the Vincent app
+ * 2. `native-balance`: Gets the native token balance for a PKP address on a specific chain
+ * 3. `token-info`: Gets information about an ERC20 token on a specific chain
+ * 4. `token-allowance`: Gets information about token allowances for a PKP address
+ *
+ * These tools enhance the base MCP server with capabilities that allow LLMs to
+ * query and interact with blockchain data.
+ *
+ * @param server - The MCP server to extend
+ * @param vincentAppDefinition - The Vincent application definition
+ * @param delegateeSigner - The Ethereum signer used to execute the tools
+ *
+ * @example
+ * ```typescript
+ * import { mcp } from '@lit-protocol/vincent-sdk';
+ * import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+ * import { ethers } from 'ethers';
+ * import { extendVincentServer } from '@lit-protocol/vincent-mcp';
+ *
+ * // Create a base MCP server
+ * const server = new McpServer({
+ *   name: 'My Vincent App',
+ *   version: '1',
+ * });
+ *
+ * // Define your Vincent application
+ * const appDef: mcp.VincentAppDef = {
+ *   id: '8462368',
+ *   name: 'My Vincent App',
+ *   version: '1',
+ *   tools: {
+ *     // Your tools here
+ *   }
+ * };
+ *
+ * // Create a signer
+ * const delegateeSigner = new ethers.Wallet('YOUR_PRIVATE_KEY');
+ *
+ * // Extend the server with additional tools
+ * extendVincentServer(server, appDef, delegateeSigner);
+ * // Now the server has additional tools to query blockchain data
+ * ```
+ */
 export function extendVincentServer(
   server: McpServer,
   vincentAppDefinition: mcp.VincentAppDef,
