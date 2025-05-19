@@ -14,7 +14,31 @@ It leverages the `mcp` utils in `@lit-protocol/vincent-sdk` to build a server fr
 ## STUDIO mode
 
 - Build the package: `pnpm build`
-- Trigger your LLM client to run `pnpm dev:stdio` to start the server in STDIO mode.
+- Add a config in your LLM client MCP config file to run the following command to run the server: `node /<ABSOLUTE_PATH_TO_VINCENT_MCP>/bin/stdio.js`.
+
+# Local Development Configuration
+
+## STDIO mode
+
+When integrating with LLM tools or frameworks, you can configure the Vincent MCP server as a local development option. Here's an example configuration:
+
+```json
+{
+    "mcpServers": {
+        "uniswapSwap": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "tsx",
+            "--env-file=/<ABSOLUTE_PATH_TO_VINCENT_MCP>/vincent-mcp/.env",
+            "/<ABSOLUTE_PATH_TO_VINCENT_MCP>/vincent-mcp/src/stdio.ts"
+          ]
+        }
+    }
+}
+```
+
+This configuration launches the Vincent MCP server in STDIO mode using the `tsx` runtime with a specified environment file. You have to adjust the paths to match your local development environment.
 
 ## HTTP mode
 
