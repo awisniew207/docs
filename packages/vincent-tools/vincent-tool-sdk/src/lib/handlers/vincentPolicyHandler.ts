@@ -2,11 +2,12 @@
 
 import { ethers } from 'ethers';
 
-import { InferOrUndefined, VincentPolicy } from '../types';
+import { BaseContext, InferOrUndefined, VincentPolicy } from '../types';
 import { getOnePolicysOnChainParams } from '../policyCore/policyParameters/getOnchainPolicyParams';
-import { LIT_DATIL_VINCENT_ADDRESS } from './constants';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
 import { createDenyResult } from '../policyCore/helpers';
 import { z } from 'zod';
+import { getPkpInfo } from '../toolCore/helpers';
 
 declare const Lit: {
   Actions: {
@@ -44,12 +45,12 @@ export async function vincentPolicyHandler<
     any, // CommitAllowResult
     any // CommitDenyResult
   >;
-  toolParams: PolicyToolParams;
-  context: {
-    userPkpTokenId: string;
-  };
+  toolParams: unknown;
+  context: BaseContext;
 }) {
-  const { userPkpTokenId } = context;
+  const {
+    delegation: { delegator },
+  } = context;
   const policyIpfsCid = LitAuth.actionIpfsIds[0];
   const toolIpfsCid = LitAuth.actionIpfsIds[1];
 
@@ -58,11 +59,17 @@ export async function vincentPolicyHandler<
       chain: 'yellowstone',
     });
 
+    const { tokenId } = await getPkpInfo({
+      litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
+      yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+      pkpEthAddress: delegator,
+    });
+
     const onChainPolicyParams = await getOnePolicysOnChainParams({
       delegationRpcUrl,
       vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
       appDelegateeAddress: ethers.utils.getAddress(LitAuth.authSigAddress),
-      agentWalletPkpTokenId: userPkpTokenId,
+      agentWalletPkpTokenId: tokenId,
       toolIpfsCid,
       policyIpfsCid,
     });
@@ -75,7 +82,7 @@ export async function vincentPolicyHandler<
       {
         delegation: {
           delegatee: ethers.utils.getAddress(LitAuth.authSigAddress),
-          delegator: userPkpTokenId,
+          delegator,
         },
       },
     );

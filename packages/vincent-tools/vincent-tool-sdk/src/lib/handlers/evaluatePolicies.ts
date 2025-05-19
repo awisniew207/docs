@@ -2,9 +2,8 @@
 
 import { z } from 'zod';
 import { ValidatedPolicyMap } from '../toolCore/helpers/validatePolicies';
-import { getPkpInfo } from '../toolCore/helpers/getPkpInfo';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import {
+  BaseContext,
   PolicyEvaluationResultContext,
   PolicyResponse,
   PolicyResponseDeny,
@@ -50,7 +49,7 @@ export async function evaluatePolicies<
   },
 >({
   vincentToolDef,
-  parsedToolParams,
+  context,
   validatedPolicies,
 }: {
   vincentToolDef: VincentToolDef<
@@ -65,16 +64,10 @@ export async function evaluatePolicies<
     any,
     any
   >;
-  parsedToolParams: z.infer<ToolParamsSchema>;
+  context: BaseContext;
   validatedPolicies: ValidatedPolicyMap<z.infer<ToolParamsSchema>, PolicyMapType>;
 }): Promise<PolicyEvaluationResultContext<PolicyMapType>> {
   const vincentTool = createVincentTool(vincentToolDef);
-
-  const userPkpInfo = await getPkpInfo({
-    litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-    yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
-    pkpEthAddress: parsedToolParams.pkpEthAddress,
-  });
 
   const evaluatedPolicies: PolicyEvaluationResultContext<PolicyMapType>['evaluatedPolicies'] = [];
   const policyEvaluationResults: PolicyEvaluationResultContext<PolicyMapType>['allowedPolicies'] =
@@ -93,9 +86,7 @@ export async function evaluatePolicies<
         ipfsId: policy.vincentPolicy.ipfsCid,
         params: {
           toolParams: toolPolicyParams,
-          context: {
-            userPkpTokenId: userPkpInfo.tokenId,
-          },
+          context,
         },
       });
 

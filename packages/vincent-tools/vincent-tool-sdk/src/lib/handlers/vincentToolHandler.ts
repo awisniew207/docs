@@ -9,11 +9,12 @@ import {
 } from '../types';
 import type { BaseContext } from '../types';
 import { createVincentTool } from '../toolCore/vincentTool';
-import { validatePolicies } from '../toolCore/helpers';
+import { getPkpInfo, validatePolicies } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
 import { isToolFailureResponse } from '../toolCore/helpers/typeGuards';
 import { createVincentPolicy } from '../policyCore';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -39,11 +40,11 @@ export function createToolExecutionContext<
 >({
   vincentToolDef,
   policyEvaluationResults,
-  userPkpTokenId,
+  baseContext,
 }: {
   vincentToolDef: Def;
   policyEvaluationResults: PolicyEvaluationResultContext<ExtractPolicyMapType<Def>>;
-  userPkpTokenId: string;
+  baseContext: BaseContext;
 }): ToolExecutionPolicyContext<ExtractPolicyMapType<Def>> {
   const policyMap = createVincentTool(vincentToolDef)
     .supportedPolicies as ExtractPolicyMapType<Def>;
@@ -52,7 +53,7 @@ export function createToolExecutionContext<
     throw new Error('Received denied policies to createToolExecutionContext()');
   }
 
-  const context: ToolExecutionPolicyContext<ExtractPolicyMapType<Def>> = {
+  const newContext: ToolExecutionPolicyContext<ExtractPolicyMapType<Def>> = {
     allow: true,
     evaluatedPolicies: policyEvaluationResults.evaluatedPolicies,
     allowedPolicies: {} as ToolExecutionPolicyContext<ExtractPolicyMapType<Def>>['allowedPolicies'],
@@ -80,22 +81,16 @@ export function createToolExecutionContext<
     if (policy.commit) {
       const commitFn = policy.commit;
       resultWrapper.commit = (commitParams) => {
-        const executionContext = {
-          delegation: {
-            delegatee: ethers.utils.getAddress(LitAuth.authSigAddress),
-            delegator: userPkpTokenId,
-          },
-        };
-        return commitFn(commitParams, executionContext);
+        return commitFn(commitParams, baseContext);
       };
     }
 
-    context.allowedPolicies[packageName] = resultWrapper as ToolExecutionPolicyContext<
+    newContext.allowedPolicies[packageName] = resultWrapper as ToolExecutionPolicyContext<
       ExtractPolicyMapType<Def>
     >['allowedPolicies'][typeof packageName];
   }
 
-  return context;
+  return newContext;
 }
 
 export const vincentToolHandler = <
@@ -103,10 +98,10 @@ export const vincentToolHandler = <
 >({
   vincentToolDef,
   toolParams,
-  context,
+  baseContext,
 }: {
   vincentToolDef: Def;
-  context: BaseContext & { pkpTokenId: string };
+  baseContext: BaseContext;
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
@@ -136,19 +131,25 @@ export const vincentToolHandler = <
         return;
       }
 
+      const userPkpInfo = await getPkpInfo({
+        litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
+        yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+        pkpEthAddress: baseContext.delegation.delegator,
+      });
+
       const validatedPolicies = await validatePolicies({
         delegationRpcUrl,
         appDelegateeAddress,
         vincentToolDef,
         parsedToolParams: parsedOrFail,
         toolIpfsCid,
-        pkpTokenId: context.pkpTokenId,
+        pkpTokenId: userPkpInfo.tokenId,
       });
 
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
         vincentToolDef,
-        parsedToolParams: parsedOrFail,
+        context: baseContext,
       });
 
       policyEvalResults = policyEvaluationResults;
@@ -168,11 +169,11 @@ export const vincentToolHandler = <
       const executeContext = createToolExecutionContext({
         vincentToolDef,
         policyEvaluationResults,
-        userPkpTokenId: context.pkpTokenId,
+        baseContext: baseContext,
       });
 
       const toolExecutionResult = await vincentTool.execute(parsedOrFail, {
-        ...context,
+        ...baseContext,
         policiesContext: executeContext,
       });
 
