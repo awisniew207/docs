@@ -11,16 +11,59 @@ It leverages the `mcp` utils in `@lit-protocol/vincent-sdk` to build a server fr
 
 # Running
 
-## STUDIO mode
+The recommended way to run the Vincent MCP server is using the npx commands below.
+
+But if you want to run it locally, you can build the package and run the server directly. Or run locally in development mode which will enable hot reloading, source code updates, etc.
+
+## Using NPX Commands
+
+You can run the Vincent MCP server directly using npx without downloading the repository:
+
+### STDIO mode
+```bash
+npx @lit-protocol/vincent-mcp stdio
+```
+
+When setting this in the LLM client, pass it the necessary environment variables.
+
+### HTTP mode
+```bash
+npx @lit-protocol/vincent-mcp http
+```
+
+These commands require the following environment variables to be set:
+- `VINCENT_APP_JSON_DEFINITION`: Path to your Vincent App definition JSON file
+- `PUBKEY_ROUTER_DATIL_CONTRACT`: The public key router Datil contract address
+- `VINCENT_DELEGATEE_PRIVATE_KEY`: The private key of the delegatee
+- `VINCENT_DATIL_CONTRACT`: The Vincent Datil contract address
+- `HTTP_PORT` (for HTTP mode only): The port to run the HTTP server on (defaults to 3000)
+
+You can set these environment variables in your shell before running the commands, or use a tool like `dotenv-cli`:
+```bash
+npx dotenv-cli -e /path/to/.env -- npx @lit-protocol/vincent-mcp http
+```
+
+## Local Running
+
+### STDIO mode
 
 - Build the package: `pnpm build`
 - Add a config in your LLM client MCP config file to run the following command to run the server: `node /<ABSOLUTE_PATH_TO_VINCENT_MCP>/bin/stdio.js`.
+- Add the environment variables in your LLM client config.
+- Run your LLM Client and trigger it to connect to the Vincent MCP server.
 
-# Local Development Configuration
+### HTTP mode
+
+- Build the package: `pnpm build`
+- Run `node /<ABSOLUTE_PATH_TO_VINCENT_MCP>/bin/http.js`. Remember to set the environment variables before running the command.
+- The server will be available at `http://localhost:3000/mcp` (or the port you specified in the `.env` file)
+- Connect your LLM client to `http://localhost:3000/mcp` to connect to the server.
+
+# Development
 
 ## STDIO mode
 
-When integrating with LLM tools or frameworks, you can configure the Vincent MCP server as a local development option. Here's an example configuration:
+When integrating with LLM tools or frameworks, you can configure the Vincent MCP server to run `typescript` directly with `tsx`. Here's an example configuration:
 
 ```json
 {
@@ -31,7 +74,7 @@ When integrating with LLM tools or frameworks, you can configure the Vincent MCP
             "-y",
             "tsx",
             "--env-file=/<ABSOLUTE_PATH_TO_VINCENT_MCP>/vincent-mcp/.env",
-            "/<ABSOLUTE_PATH_TO_VINCENT_MCP>/vincent-mcp/src/stdio.ts"
+            "/<ABSOLUTE_PATH_TO_VINCENT_MCP>/vincent/packages/mcp/src/stdio.ts"
           ]
         }
     }

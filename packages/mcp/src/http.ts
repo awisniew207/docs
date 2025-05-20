@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * HTTP server implementation for Vincent MCP
  *

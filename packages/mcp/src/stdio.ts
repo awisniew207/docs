@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Standard I/O server implementation for Vincent MCP
  *

@@ -17,10 +17,11 @@
     "agents"
   ],
   "files": [
-    "build"
+    "build/**"
   ],
   "bin": {
-    "mcp": "./build/stdio.js"
+    "http": "./build/http.js",
+    "stdio": "./build/stdio.js"
   },
   "main": "./build/stdio.js",
   "scripts": {
