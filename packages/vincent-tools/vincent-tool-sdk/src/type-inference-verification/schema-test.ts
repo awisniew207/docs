@@ -7,6 +7,7 @@
  */
 import { z, ZodUndefined } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 import { PolicyContext } from '../lib/policyCore/policyDef/context/types';
 
 // Base tool schema for all tests
@@ -62,7 +63,7 @@ const realPolicy = createVincentPolicy({
 });
 export const testRealPolicy = createVincentToolPolicy({
   toolParamsSchema: baseToolSchema,
-  vincentPolicy: realPolicy,
+  bundledVincentPolicy: asBundledVincentPolicy(realPolicy, '1091jkfn2039j802jf' as const),
   toolParameterMappings: {
     action: 'actionType',
   },
@@ -125,7 +126,7 @@ export function testWithoutSchema() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: thePolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(thePolicy, '1091jkfn2039j802jf' as const),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -172,7 +173,7 @@ export function testStringSchema() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: stringSchemaPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(stringSchemaPolicy, '1091jkfn2039j802jf' as const),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -244,7 +245,10 @@ export function testDifferentContexts() {
 
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: differentContextsPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      differentContextsPolicy,
+      '1091jkfn2039j802jf' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -291,7 +295,7 @@ export function testPrimitiveSchemas() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: primitivePolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(primitivePolicy, '1091jkfn2039j802jf' as const),
     toolParameterMappings: {
       action: 'actionType',
     },

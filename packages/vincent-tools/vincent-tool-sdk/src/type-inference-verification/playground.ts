@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 // Define your tool schema
 const myToolSchema = z.object({
@@ -74,7 +75,10 @@ const policyDef1 = createVincentPolicy({
 
 const policy1 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
-  vincentPolicy: policyDef1,
+  bundledVincentPolicy: asBundledVincentPolicy(
+    policyDef1,
+    'QmX7Dqn4zYhJVvXYwKr8cFX5Xp7gVpqK5r8QHwvF8zYjXa' as const,
+  ),
   toolParameterMappings: {
     target: 'targetAllowed',
     action: 'actionType',
@@ -162,7 +166,10 @@ const policyDef2 = createVincentPolicy({
 
 const policy2 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
-  vincentPolicy: policyDef2,
+  bundledVincentPolicy: asBundledVincentPolicy(
+    policyDef2,
+    'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' as const,
+  ),
   toolParameterMappings: {
     amount: 'maxAmount',
     action: 'currency',
@@ -223,7 +230,10 @@ const policyDef3 = createVincentPolicy({
 
 const policy3 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
-  vincentPolicy: policyDef3,
+  bundledVincentPolicy: asBundledVincentPolicy(
+    policyDef3,
+    'QmYwAasdPJzv5CZA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' as const,
+  ),
   toolParameterMappings: {
     amount: 'toolName',
   },

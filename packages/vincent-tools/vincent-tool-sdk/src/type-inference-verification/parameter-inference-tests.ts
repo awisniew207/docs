@@ -6,6 +6,7 @@
  */
 import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -18,31 +19,32 @@ const baseToolSchema = z.object({
  * Test 1: Basic schema validation for allow/deny
  */
 function testBasicSchemaValidation() {
+  const basicSchemaPolicyValid = createVincentPolicy({
+    packageName: '@lit-protocol/test-policy@1.34.2',
+    toolParamsSchema: z.object({ actionType: z.string() }),
+
+    // Define schemas
+    evalAllowResultSchema: z.object({ success: z.boolean() }),
+    evalDenyResultSchema: z.object({ errorCode: z.number() }),
+
+    evaluate: async (params, context) => {
+      // Test TypeScript errors first
+      // @ts-expect-error - No arguments when schema exists
+      context.allow();
+
+      // @ts-expect-error - Wrong type (string not matching schema)
+      context.allow('not an object');
+
+      // @ts-expect-error - Wrong shape (missing required field)
+      context.allow({});
+
+      // Valid call - matches schema
+      return context.allow({ success: true });
+    },
+  });
   const basicSchemaPolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: createVincentPolicy({
-      packageName: '@lit-protocol/test-policy@1.34.2',
-      toolParamsSchema: z.object({ actionType: z.string() }),
-
-      // Define schemas
-      evalAllowResultSchema: z.object({ success: z.boolean() }),
-      evalDenyResultSchema: z.object({ errorCode: z.number() }),
-
-      evaluate: async (params, context) => {
-        // Test TypeScript errors first
-        // @ts-expect-error - No arguments when schema exists
-        context.allow();
-
-        // @ts-expect-error - Wrong type (string not matching schema)
-        context.allow('not an object');
-
-        // @ts-expect-error - Wrong shape (missing required field)
-        context.allow({});
-
-        // Valid call - matches schema
-        return context.allow({ success: true });
-      },
-    }),
+    bundledVincentPolicy: asBundledVincentPolicy(basicSchemaPolicyValid, 'oi3wjfn9048w2j' as const),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -78,7 +80,7 @@ function testNoSchemaValidation() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: noSchemaPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(noSchemaPolicy, '1098jwsdoifosdji' as const),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -113,7 +115,7 @@ function testStringSchemaValidation() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: stringSchemaPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(stringSchemaPolicy, '082u0fij0w9jf0sjdf' as const),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -148,7 +150,10 @@ function testDenyValidation() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: denyValidationPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      denyValidationPolicy,
+      '198hf0298w3hfo9idfjh' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -187,7 +192,10 @@ function testContextSchemas() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: contextSchemasPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      contextSchemasPolicy,
+      'swmfd08238rhjdskjfn' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },

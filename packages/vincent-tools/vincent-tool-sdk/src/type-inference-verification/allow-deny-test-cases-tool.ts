@@ -7,6 +7,7 @@
 import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Define a simple schema for our test cases
@@ -41,7 +42,7 @@ const baseTestPolicy = createVincentPolicy({
 });
 const testPolicy = createVincentToolPolicy({
   toolParamsSchema: testSchema,
-  vincentPolicy: baseTestPolicy,
+  bundledVincentPolicy: asBundledVincentPolicy(baseTestPolicy, 'j298jhodf9024j4jfg' as const),
   toolParameterMappings: {
     action: 'actionType',
   },

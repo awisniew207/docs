@@ -7,6 +7,7 @@
  */
 import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -50,7 +51,10 @@ export function testAllowFunctionWithDifferentTypes() {
   });
   const test1 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: allowFuncDiffTypesPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      allowFuncDiffTypesPolicy,
+      '19ofnsfoj908r21on' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -78,7 +82,10 @@ export function testAllowFunctionWithDifferentTypes() {
   });
   const test2 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: allowFuncDiffTypesStringPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      allowFuncDiffTypesStringPolicy,
+      'asdjlkajsda' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -106,7 +113,10 @@ export function testAllowFunctionWithDifferentTypes() {
   });
   const test3 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: allowFuncNumberTypes,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      allowFuncNumberTypes,
+      '0398109sfawrt2-itxzdkvj3810938123' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -142,7 +152,10 @@ export function testAllowFunctionWithDifferentTypes() {
     test3,
     test4: createVincentToolPolicy({
       toolParamsSchema: baseToolSchema,
-      vincentPolicy: allowFuncNoSchema,
+      bundledVincentPolicy: asBundledVincentPolicy(
+        allowFuncNoSchema,
+        '094821ksjf8u2nuif908j2' as const,
+      ),
       toolParameterMappings: {
         action: 'actionType',
       },
@@ -188,7 +201,10 @@ export function testDenyFunctionWithDifferentTypes() {
   });
   const test1 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: denyFuncDifferentTypes,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      denyFuncDifferentTypes,
+      '01943fnjksf9843nr' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -217,7 +233,10 @@ export function testDenyFunctionWithDifferentTypes() {
   });
   const test2 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: denyFuncDifferentTypesString,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      denyFuncDifferentTypesString,
+      'asdkfjofs2' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -248,7 +267,10 @@ export function testDenyFunctionWithDifferentTypes() {
   });
   const test3 = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: denyFuncDifferentTypesNoSchema,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      denyFuncDifferentTypesNoSchema,
+      'oi2jsldkfjsdfijsdflkj' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -302,7 +324,10 @@ export function testCommitAllowDeny() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: testCommitAllowDenyPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      testCommitAllowDenyPolicy,
+      'owijfiuhwf98234j' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },

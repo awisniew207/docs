@@ -24,6 +24,7 @@ import {
   VincentPolicyDef,
 } from './policyDef/types';
 import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resultCreators';
+import { BundledVincentPolicy } from './bundledPolicy/types';
 
 /**
  * Wraps a raw VincentPolicyDef with internal logic and returns a fully typed
@@ -280,19 +281,8 @@ export function createVincentToolPolicy<
   CommitDenyResult extends z.ZodType = z.ZodUndefined,
 >(config: {
   toolParamsSchema: ToolParamsSchema;
-  vincentPolicy: VincentPolicy<
-    PackageName,
-    PolicyToolParams,
-    UserParams,
-    PrecheckAllowResult,
-    PrecheckDenyResult,
-    EvalAllowResult,
-    EvalDenyResult,
-    CommitParams,
-    CommitAllowResult,
-    CommitDenyResult
-  > & {
-    __vincentPolicyDef: VincentPolicyDef<
+  bundledVincentPolicy: BundledVincentPolicy<
+    VincentPolicy<
       PackageName,
       PolicyToolParams,
       UserParams,
@@ -306,26 +296,48 @@ export function createVincentToolPolicy<
       any,
       any,
       any
-    >;
+    >
+  > & {
+    vincentPolicy: {
+      __vincentPolicyDef: VincentPolicyDef<
+        PackageName,
+        PolicyToolParams,
+        UserParams,
+        PrecheckAllowResult,
+        PrecheckDenyResult,
+        EvalAllowResult,
+        EvalDenyResult,
+        CommitParams,
+        CommitAllowResult,
+        CommitDenyResult,
+        any,
+        any,
+        any
+      >;
+    };
   };
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;
   }>;
 }) {
-  const { vincentPolicy } = config;
+  const {
+    bundledVincentPolicy: { vincentPolicy, ipfsCid },
+  } = config;
+
   const result = {
     vincentPolicy: vincentPolicy,
+    ipfsCid,
     __vincentPolicyDef: vincentPolicy.__vincentPolicyDef,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
     __schemaTypes: {
-      evalAllowResultSchema: config.vincentPolicy.evalAllowResultSchema,
-      evalDenyResultSchema: config.vincentPolicy.evalDenyResultSchema,
-      commitParamsSchema: config.vincentPolicy.commitParamsSchema,
-      precheckAllowResultSchema: config.vincentPolicy.precheckAllowResultSchema,
-      precheckDenyResultSchema: config.vincentPolicy.precheckDenyResultSchema,
-      commitAllowResultSchema: config.vincentPolicy.commitAllowResultSchema,
-      commitDenyResultSchema: config.vincentPolicy.commitDenyResultSchema,
+      evalAllowResultSchema: vincentPolicy.evalAllowResultSchema,
+      evalDenyResultSchema: vincentPolicy.evalDenyResultSchema,
+      commitParamsSchema: vincentPolicy.commitParamsSchema,
+      precheckAllowResultSchema: vincentPolicy.precheckAllowResultSchema,
+      precheckDenyResultSchema: vincentPolicy.precheckDenyResultSchema,
+      commitAllowResultSchema: vincentPolicy.commitAllowResultSchema,
+      commitDenyResultSchema: vincentPolicy.commitDenyResultSchema,
       // Explicit function types
       evaluate: vincentPolicy.evaluate,
       precheck: vincentPolicy.precheck,
@@ -335,8 +347,9 @@ export function createVincentToolPolicy<
 
   // Use the same type assertion -- but include __schemaTypes to fix generic inference issues
   return result as {
-    __vincentPolicyDef: typeof vincentPolicy.__vincentPolicyDef;
     vincentPolicy: typeof vincentPolicy;
+    ipfsCid: typeof ipfsCid;
+    __vincentPolicyDef: typeof vincentPolicy.__vincentPolicyDef;
     toolParameterMappings: typeof config.toolParameterMappings;
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;

@@ -7,6 +7,7 @@
 import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 // Define a schema for our test cases
 const testSchema = z.object({
@@ -40,7 +41,7 @@ function testBasicParameterInference() {
   });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: basicParamInferPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(basicParamInferPolicy, '209oifusfdj' as const),
     toolParameterMappings: {
       action: 'operation',
     },
@@ -139,7 +140,7 @@ function testPolicyResultInference() {
   });
   const complexPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: resultInferPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(resultInferPolicy, '-0932i0fjs0jfd' as const),
     toolParameterMappings: {
       action: 'command',
     },
@@ -176,7 +177,7 @@ function testPolicyResultInference() {
   });
   const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: commitResultPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(commitResultPolicy, '1098u2098qjfn' as const),
     toolParameterMappings: {
       target: 'resource',
     },
@@ -301,7 +302,10 @@ function testComplexDestructuring() {
   });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: complexDestructurePolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      complexDestructurePolicy,
+      '1-093iofijn209j' as const,
+    ),
     toolParameterMappings: {
       action: 'action',
     },
@@ -434,7 +438,7 @@ function testAdvancedParameterValidation() {
   });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: advancedSchema,
-    vincentPolicy: advancedParamPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(advancedParamPolicy, '1-093iofijn209j' as const),
     toolParameterMappings: {
       action: 'op',
     },
@@ -535,7 +539,7 @@ function testMissingTypes() {
   });
   const testPolicy = createVincentToolPolicy({
     toolParamsSchema: testSchema,
-    vincentPolicy: missingTypesPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(missingTypesPolicy, '20198jfgnfj' as const),
     toolParameterMappings: { action: 'op' },
   });
 

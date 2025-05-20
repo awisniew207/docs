@@ -7,6 +7,7 @@
  */
 import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({
@@ -70,7 +71,10 @@ function testPrecheckEvaluateContextSwitching() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: precheckEvalContextSwitchPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      precheckEvalContextSwitchPolicy,
+      '02u3kjwdsnfs2890hf' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -138,7 +142,10 @@ function testEvaluateCommitContextSwitching() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: evalCommitContextSwitchPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      evalCommitContextSwitchPolicy,
+      '048oifjnwfoij3208h' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
     },
@@ -251,7 +258,10 @@ function testFullPolicyContextSwitching() {
   });
   return createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: fullPolicyContext,
+    bundledVincentPolicy: asBundledVincentPolicy(
+      fullPolicyContext,
+      '908joiun2f928q1hjbfn' as const,
+    ),
     toolParameterMappings: {
       action: 'actionType',
       amount: 'amount',

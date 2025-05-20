@@ -7,6 +7,7 @@
 import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 // Base tool schema
 const baseToolSchema = z.object({
@@ -43,7 +44,7 @@ export function testPolicyEvaluationResults() {
   });
   const simplePolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: evalResultsPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(evalResultsPolicy, '109i0ifj' as const),
     toolParameterMappings: {
       action: 'actionType',
       target: 'targetId',
@@ -96,7 +97,7 @@ export function testPolicyEvaluationResults() {
   });
   const commitPolicy = createVincentToolPolicy({
     toolParamsSchema: baseToolSchema,
-    vincentPolicy: commitResultsPolicy,
+    bundledVincentPolicy: asBundledVincentPolicy(commitResultsPolicy, 'ajialkjads' as const),
     toolParameterMappings: {
       action: 'operation',
       target: 'resource',
