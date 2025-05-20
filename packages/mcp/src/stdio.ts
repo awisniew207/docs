@@ -15,6 +15,8 @@
  * @category Vincent MCP
  */
 
+import './bootstrap'; // Bootstrap console.log to a log file
+
 import fs from 'node:fs';
 
 import { mcp } from '@lit-protocol/vincent-sdk';
