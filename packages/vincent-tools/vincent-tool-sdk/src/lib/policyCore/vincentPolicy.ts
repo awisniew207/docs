@@ -29,8 +29,7 @@ import { BundledVincentPolicy } from './bundledPolicy/types';
 /**
  * Wraps a raw VincentPolicyDef with internal logic and returns a fully typed
  * policy object, preserving inference for all lifecycle methods (`evaluate`, `precheck`, `commit`)
- * and providing metadata such as `ipfsCid` and `packageName`. Also includes
- * the original definition on `__vincentPolicyDef` for consumer-side re-wrapping.
+ * and providing metadata such as `ipfsCid` and `packageName`.
  */
 export function createVincentPolicy<
   PackageName extends string,
@@ -251,12 +250,11 @@ export function createVincentPolicy<
     PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
     PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
     CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>
-  > & { __vincentPolicyDef: typeof policyDef } = {
+  > = {
     ...policyDef,
     evaluate,
     precheck,
     commit,
-    __vincentPolicyDef: policyDef,
   };
 
   return vincentPolicy;
@@ -297,25 +295,7 @@ export function createVincentToolPolicy<
       any,
       any
     >
-  > & {
-    vincentPolicy: {
-      __vincentPolicyDef: VincentPolicyDef<
-        PackageName,
-        PolicyToolParams,
-        UserParams,
-        PrecheckAllowResult,
-        PrecheckDenyResult,
-        EvalAllowResult,
-        EvalDenyResult,
-        CommitParams,
-        CommitAllowResult,
-        CommitDenyResult,
-        any,
-        any,
-        any
-      >;
-    };
-  };
+  >;
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;
   }>;
@@ -327,7 +307,6 @@ export function createVincentToolPolicy<
   const result = {
     vincentPolicy: vincentPolicy,
     ipfsCid,
-    __vincentPolicyDef: vincentPolicy.__vincentPolicyDef,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
     __schemaTypes: {
@@ -349,7 +328,6 @@ export function createVincentToolPolicy<
   return result as {
     vincentPolicy: typeof vincentPolicy;
     ipfsCid: typeof ipfsCid;
-    __vincentPolicyDef: typeof vincentPolicy.__vincentPolicyDef;
     toolParameterMappings: typeof config.toolParameterMappings;
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;
