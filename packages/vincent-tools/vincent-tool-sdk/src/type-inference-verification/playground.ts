@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
+import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
 
 // Define your tool schema
 const myToolSchema = z.object({
@@ -265,9 +266,9 @@ const toolPrecheckFailSchema = z.object({
 
 // Create your tool with fully typed policies
 export const myTool = createVincentTool({
-  packageName: '@lit-protocol/awesome-tool@1.0.2',
+  // packageName: '@lit-protocol/awesome-tool@1.0.2',
   toolParamsSchema: myToolSchema,
-  supportedPolicies: [policy1, policy2, policy3] as const,
+  policyMap: createPolicyMapFromToolPolicies([policy1, policy2, policy3]),
 
   // Add schemas for tool results
   executeSuccessSchema: toolExecuteSuccessSchema,

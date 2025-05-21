@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
+import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
 
 // Base tool schema
 const baseToolSchema = z.object({
@@ -130,9 +131,9 @@ export function testPolicyEvaluationResults() {
 
   // Create tool with both policies
   return createVincentTool({
-    packageName: '@lit-protocol/mahTool@1.0.0',
+    // packageName: '@lit-protocol/mahTool@1.0.0',
     toolParamsSchema: baseToolSchema,
-    supportedPolicies: [simplePolicy, commitPolicy],
+    policyMap: createPolicyMapFromToolPolicies([simplePolicy, commitPolicy]),
 
     // Add schemas for tool results
     precheckSuccessSchema,

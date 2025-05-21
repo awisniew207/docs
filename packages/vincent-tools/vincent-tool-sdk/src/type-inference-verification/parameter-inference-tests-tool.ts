@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
+import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
 
 // Define a schema for our test cases
 const testSchema = z.object({
@@ -48,9 +49,8 @@ function testBasicParameterInference() {
   });
 
   return createVincentTool({
-    packageName: '@lit-protocol/tehTool@1.0.0',
     toolParamsSchema: testSchema,
-    supportedPolicies: [testPolicy],
+    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
 
     precheck: async ({ toolParams }, { succeed }) => {
       // Params should have the correct types
@@ -184,9 +184,9 @@ function testPolicyResultInference() {
   });
 
   return createVincentTool({
-    packageName: '@lit-protocol/toolPlusPlus@1.0.0',
+    // packageName: '@lit-protocol/toolPlusPlus@1.0.0',
     toolParamsSchema: testSchema,
-    supportedPolicies: [complexPolicy, commitPolicy],
+    policyMap: createPolicyMapFromToolPolicies([complexPolicy, commitPolicy]),
 
     precheck: async (params, { policiesContext, succeed }) => {
       // Testing allow/deny branch type inference
@@ -325,9 +325,9 @@ function testComplexDestructuring() {
   });
 
   return createVincentTool({
-    packageName: '@lit-protocol/toolPlus@1.0.0',
+    // packageName: '@lit-protocol/toolPlus@1.0.0',
     toolParamsSchema: testSchema,
-    supportedPolicies: [testPolicy],
+    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
     executeSuccessSchema: successSchema,
     executeFailSchema: failSchema,
 
@@ -445,9 +445,9 @@ function testAdvancedParameterValidation() {
   });
 
   return createVincentTool({
-    packageName: '@lit-protocol/plusplustool@1.0.0',
+    // packageName: '@lit-protocol/plusplustool@1.0.0',
     toolParamsSchema: advancedSchema,
-    supportedPolicies: [testPolicy],
+    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
 
     precheck: async ({ toolParams }, { succeed }) => {
       // Test enum type inference
@@ -550,9 +550,9 @@ function testMissingTypes() {
 
   // Case where success schema is defined but fail schema is not
   const toolWithOnlySuccessSchema = createVincentTool({
-    packageName: '@lit-protocol/toolofglory@1.0.0',
+    // packageName: '@lit-protocol/toolofglory@1.0.0',
     toolParamsSchema: testSchema,
-    supportedPolicies: [testPolicy],
+    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
     executeSuccessSchema: successSchema,
 
     precheck: async (_, { succeed }) => {
@@ -579,9 +579,9 @@ function testMissingTypes() {
   });
 
   const toolWithOnlyFailSchema = createVincentTool({
-    packageName: '@lit-protocol/lets-tool-this@1.0.0',
+    // packageName: '@lit-protocol/lets-tool-this@1.0.0',
     toolParamsSchema: testSchema,
-    supportedPolicies: [testPolicy],
+    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
     executeFailSchema: failSchema,
 
     precheck: async (params, { succeed }) => {
