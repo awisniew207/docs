@@ -71,29 +71,33 @@ export function createAllowResult<T>(params: {
   };
 }
 
-export function createAllowEvaluationResult<PolicyMapType extends Record<string, any>>(params: {
-  evaluatedPolicies: Array<keyof PolicyMapType>;
-  allowedPolicies: PolicyEvaluationResultContext<PolicyMapType>['allowedPolicies'];
-}): PolicyEvaluationResultContext<PolicyMapType> {
+export function createAllowEvaluationResult<
+  PolicyMapByPackageName extends Record<string, any>,
+>(params: {
+  evaluatedPolicies: Array<keyof PolicyMapByPackageName>;
+  allowedPolicies: PolicyEvaluationResultContext<PolicyMapByPackageName>['allowedPolicies'];
+}): PolicyEvaluationResultContext<PolicyMapByPackageName> {
   return {
     allow: true,
     evaluatedPolicies: params.evaluatedPolicies,
     allowedPolicies: params.allowedPolicies,
     deniedPolicy: undefined, // important for union discrimination
-  } as PolicyEvaluationResultContext<PolicyMapType>;
+  } as PolicyEvaluationResultContext<PolicyMapByPackageName>;
 }
 
-export function createDenyEvaluationResult<PolicyMapType extends Record<string, any>>(params: {
-  evaluatedPolicies: Array<keyof PolicyMapType>;
-  allowedPolicies: PolicyEvaluationResultContext<PolicyMapType>['allowedPolicies'];
-  deniedPolicy: PolicyEvaluationResultContext<PolicyMapType>['deniedPolicy'];
-}): PolicyEvaluationResultContext<PolicyMapType> {
+export function createDenyEvaluationResult<
+  PolicyMapByPackageName extends Record<string, any>,
+>(params: {
+  evaluatedPolicies: Array<keyof PolicyMapByPackageName>;
+  allowedPolicies: PolicyEvaluationResultContext<PolicyMapByPackageName>['allowedPolicies'];
+  deniedPolicy: PolicyEvaluationResultContext<PolicyMapByPackageName>['deniedPolicy'];
+}): PolicyEvaluationResultContext<PolicyMapByPackageName> {
   return {
     allow: false,
     evaluatedPolicies: params.evaluatedPolicies,
     allowedPolicies: params.allowedPolicies,
     deniedPolicy: params.deniedPolicy,
-  } as PolicyEvaluationResultContext<PolicyMapType>;
+  } as PolicyEvaluationResultContext<PolicyMapByPackageName>;
 }
 
 // Wraps a validated value as a typed allow result

@@ -7,6 +7,10 @@ import {
   ToolResponseSuccessNoResult,
 } from '../../types';
 
+import { z, ZodType } from 'zod';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function createToolSuccessResult(): ToolResponseSuccessNoResult;
 export function createToolSuccessResult<T>({ result }: { result: T }): ToolResponseSuccess<T>;
 export function createToolSuccessResult<T>(args?: {
@@ -50,4 +54,22 @@ export function createToolFailureResult<T>({
     error: message,
     result,
   };
+}
+
+export function createToolFailureNoResult(message: string): ToolResponseFailureNoResult {
+  return createToolFailureResult({ message });
+}
+
+export function returnNoResultFailure<T extends ZodType<any, any, any> | undefined>(
+  message: string,
+): T extends ZodType<any, any, any>
+  ? ToolResponseFailure<z.infer<T>>
+  : ToolResponseFailureNoResult {
+  return createToolFailureNoResult(message) as any;
+}
+
+export function wrapSuccess<T extends z.ZodType<any, any, any>>(
+  value: z.infer<T>,
+): ToolResponseSuccess<z.infer<T>> {
+  return createToolSuccessResult({ result: value });
 }

@@ -7,52 +7,17 @@ import {
   ToolExecutionPolicyEvaluationResult,
   ToolLifecycleFunction,
   ToolResponse,
-  VincentPolicy,
-  VincentToolDef,
   VincentToolPolicy,
 } from '../types';
 import { createExecutionToolContext, createPrecheckToolContext } from './toolContext/toolContext';
-import { BaseToolContext } from './toolContext/types';
+import { BaseToolContext } from './toolDef/context/types';
 import { createToolFailureResult } from './helpers/resultCreators';
 import { getSchemaForToolResponseResult, validateOrFail } from './helpers/zod';
 import { isToolFailureResponse, isToolResponse } from './helpers/typeGuards';
+import { ToolPolicyMap } from './helpers';
+import { ToolDefLifecycleFunction, VincentToolDef } from './toolDef/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * Converts a `supportedPolicies` array into a keyed map of policies,
- * where each key is the `packageName` of the corresponding policyDef.
- *
- * This enables tools to perform fast lookups by package name,
- * enforce key-precise access to `allowedPolicies`, and inject `commit`
- * logic into evaluated policy contexts.
- *
- * ⚠️ Requires all `packageName` values in the input array to be `as const`
- * string literals in order to preserve exact key inference.
- */
-function createPolicyMap<
-  T extends readonly VincentToolPolicy<any, any, any>[],
-  Pkgs extends
-    T[number]['vincentPolicy']['packageName'] = T[number]['vincentPolicy']['packageName'],
->(
-  policies: T,
-): string extends Pkgs
-  ? [
-      '❌ Each policyDef.packageName must be a string literal. Use `as const` when passing the array.',
-    ]
-  : {
-      [K in Pkgs]: Extract<T[number], { vincentPolicy: { packageName: K } }>;
-    } {
-  const result = {} as any;
-  for (const policy of policies) {
-    const name = policy.vincentPolicy.packageName;
-    if (result[name]) {
-      throw new Error('Duplicate policy packageName: ' + name + '');
-    }
-    result[name] = policy;
-  }
-  return result;
-}
-
 export type EnrichedVincentToolPolicy = VincentToolPolicy<any, any, any> & {
   __schemaTypes?: {
     evalAllowResultSchema?: z.ZodType;
@@ -66,20 +31,13 @@ export type EnrichedVincentToolPolicy = VincentToolPolicy<any, any, any> & {
 /**
  * Wraps a VincentToolDef object and returns a fully typed tool with
  * standard lifecycle entrypoints (`precheck`, `execute`) and strong inference
- * based on schemas and supported policies. The original definition is available
- * via `__vincentToolDef`, and `__supportedPolicies` exposes the exact policy array.
+ * based on schemas and supported policies.
  */
 export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
-  PolicyArray extends readonly VincentToolPolicy<
-    ToolParamsSchema,
-    VincentPolicy<any, any, any, any, any, any, any, any, any, any>
-  >[],
-  PkgNames extends
-    PolicyArray[number]['vincentPolicy']['packageName'] = PolicyArray[number]['vincentPolicy']['packageName'],
-  PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PkgNames]: Extract<PolicyArray[number], { vincentPolicy: { packageName: K } }>;
-  },
+  const PkgNames extends string,
+  const PolicyMap extends ToolPolicyMap<any, PkgNames>,
+  PolicyMapByPackageName extends PolicyMap['policyByPackageName'],
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
@@ -87,7 +45,7 @@ export function createVincentTool<
   PrecheckFn extends
     | ToolLifecycleFunction<
         ToolParamsSchema,
-        PolicyEvaluationResultContext<PolicyMapType>,
+        PolicyEvaluationResultContext<PolicyMapByPackageName>,
         PrecheckSuccessSchema,
         PrecheckFailSchema
       >
@@ -95,40 +53,49 @@ export function createVincentTool<
     | undefined
     | ToolLifecycleFunction<
         ToolParamsSchema,
-        PolicyEvaluationResultContext<PolicyMapType>,
+        PolicyEvaluationResultContext<PolicyMapByPackageName>,
         PrecheckSuccessSchema,
         PrecheckFailSchema
       >,
   ExecuteFn extends ToolLifecycleFunction<
     ToolParamsSchema,
-    ToolExecutionPolicyContext<PolicyMapType>,
+    ToolExecutionPolicyContext<PolicyMapByPackageName>,
     ExecuteSuccessSchema,
     ExecuteFailSchema
   > = ToolLifecycleFunction<
     ToolParamsSchema,
-    ToolExecutionPolicyContext<PolicyMapType>,
+    ToolExecutionPolicyContext<PolicyMapByPackageName>,
     ExecuteSuccessSchema,
     ExecuteFailSchema
   >,
 >(
   toolDef: VincentToolDef<
     ToolParamsSchema,
-    PolicyArray,
     PkgNames,
-    PolicyMapType,
+    PolicyMap,
+    PolicyMapByPackageName,
     PrecheckSuccessSchema,
     PrecheckFailSchema,
     ExecuteSuccessSchema,
     ExecuteFailSchema,
-    PrecheckFn,
-    ExecuteFn
+    ToolDefLifecycleFunction<
+      ToolParamsSchema,
+      PolicyEvaluationResultContext<PolicyMapByPackageName>,
+      PrecheckSuccessSchema,
+      PrecheckFailSchema
+    >,
+    ToolDefLifecycleFunction<
+      ToolParamsSchema,
+      ToolExecutionPolicyContext<PolicyMapByPackageName>,
+      ExecuteSuccessSchema,
+      ExecuteFailSchema
+    >
   >,
 ) {
-  const policyMap = createPolicyMap(toolDef.supportedPolicies);
+  const { policyByPackageName: policyMap } = toolDef.policyMap;
 
   const originalToolDef = {
     ...toolDef,
-    supportedPolicies: policyMap,
   };
 
   const wrappedToolDef = {
@@ -138,7 +105,7 @@ export function createVincentTool<
       ? {
           precheck: async (
             params: z.infer<ToolParamsSchema>,
-            baseToolContext: BaseToolContext<PolicyEvaluationResultContext<PolicyMapType>>,
+            baseToolContext: BaseToolContext<PolicyEvaluationResultContext<PolicyMapByPackageName>>,
           ) => {
             try {
               const { toolParamsSchema, precheckSuccessSchema, precheckFailSchema } = toolDef;
@@ -146,7 +113,7 @@ export function createVincentTool<
               const context = createPrecheckToolContext<
                 PrecheckSuccessSchema,
                 PrecheckFailSchema,
-                PolicyMapType
+                PolicyMapByPackageName
               >({
                 baseContext: baseToolContext,
                 successSchema: originalToolDef.precheckSuccessSchema,
@@ -203,18 +170,18 @@ export function createVincentTool<
 
     execute: async (
       params: z.infer<ToolParamsSchema>,
-      baseToolContext: BaseToolContext<ToolExecutionPolicyEvaluationResult<PolicyMapType>>,
+      baseToolContext: BaseToolContext<ToolExecutionPolicyEvaluationResult<PolicyMapByPackageName>>,
     ) => {
       try {
         const context = createExecutionToolContext<
           ExecuteSuccessSchema,
           ExecuteFailSchema,
-          PolicyMapType
+          PolicyMapByPackageName
         >({
           baseContext: baseToolContext,
           successSchema: originalToolDef.executeSuccessSchema,
           failSchema: originalToolDef.executeFailSchema,
-          supportedPolicies: policyMap,
+          supportedPolicies: policyMap as PolicyMapByPackageName,
         });
 
         const { toolParamsSchema, executeSuccessSchema, executeFailSchema } = toolDef;
@@ -262,18 +229,17 @@ export function createVincentTool<
 
   return {
     ...wrappedToolDef,
-    __vincentToolDef: originalToolDef,
     __schemaTypes: {
       precheckSuccessSchema: toolDef.precheckSuccessSchema,
       precheckFailSchema: toolDef.precheckFailSchema,
       executeSuccessSchema: toolDef.executeSuccessSchema,
       executeFailSchema: toolDef.executeFailSchema,
     },
-  } as unknown as VincentToolDef<
+  } as VincentToolDef<
     ToolParamsSchema,
-    PolicyArray,
     PkgNames,
-    PolicyMapType,
+    PolicyMap,
+    PolicyMapByPackageName,
     PrecheckSuccessSchema,
     PrecheckFailSchema,
     ExecuteSuccessSchema,
@@ -281,10 +247,9 @@ export function createVincentTool<
     PrecheckFn,
     ExecuteFn
   > & {
-    supportedPolicies: PolicyMapType;
+    supportedPolicies: PolicyMapByPackageName;
     precheck: (typeof wrappedToolDef)['precheck'];
     execute: (typeof wrappedToolDef)['execute'];
-    __vincentToolDef: typeof originalToolDef;
     __schemaTypes: {
       precheckSuccessSchema: PrecheckSuccessSchema;
       precheckFailSchema: PrecheckFailSchema;

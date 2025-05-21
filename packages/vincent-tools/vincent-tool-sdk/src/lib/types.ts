@@ -9,15 +9,8 @@ import {
   ContextDenyResponse,
   ContextDenyResponseNoResult,
 } from './policyCore/policyDef/context/types';
-import {
-  ContextFailure,
-  ContextFailureNoResult,
-  ContextSuccess,
-  ContextSuccessNoResult,
-  EnforceToolResponse,
-  ToolContext,
-} from './toolCore/toolContext/types';
-import { EnrichedVincentToolPolicy } from './toolCore/vincentTool';
+import { ToolContext } from './toolCore/toolDef/context/types';
+import { ToolPolicyMap } from './toolCore/helpers';
 
 export interface PolicyResponseAllow<AllowResult> {
   allow: true;
@@ -352,66 +345,50 @@ export type ToolResponse<SucceedResult, FailResults> =
   | (ToolResponseFailure<FailResults> | ToolResponseFailureNoResult);
 
 export type ToolLifecycleFunction<
-  ToolParams extends z.ZodType,
+  ToolParamsSchema extends z.ZodType,
   Policies,
   SuccessSchema extends z.ZodType | undefined,
   FailSchema extends z.ZodType | undefined,
 > = (
-  args: {
-    toolParams: z.infer<ToolParams>;
+  params: {
+    toolParams: z.infer<ToolParamsSchema>;
     policiesContext: Policies;
   },
   context: ToolContext<SuccessSchema, FailSchema, Policies>,
-) => Promise<
-  EnforceToolResponse<
-    | (SuccessSchema extends z.ZodType
-        ? ContextSuccess<z.infer<SuccessSchema>>
-        : ContextSuccessNoResult)
-    | (FailSchema extends z.ZodType ? ContextFailure<z.infer<FailSchema>> : ContextFailureNoResult)
-  >
->;
+) => Promise<ToolResponse<SuccessSchema, FailSchema>>;
 
-export interface VincentToolDef<
+export type VincentTool<
   ToolParamsSchema extends z.ZodType,
-  PolicyArray extends readonly VincentToolPolicy<
-    ToolParamsSchema,
-    VincentPolicy<any, any, any, any, any, any, any, any, any, any>
-  >[],
-  PkgNames extends
-    PolicyArray[number]['vincentPolicy']['packageName'] = PolicyArray[number]['vincentPolicy']['packageName'],
-  PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PkgNames]: Extract<PolicyArray[number], { vincentPolicy: { packageName: K } }>;
-  },
-  PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
-  PrecheckFailSchema extends z.ZodType | undefined = undefined,
+  PolicyMapByPackageName extends ToolPolicyMap<any, string>['policyByPackageName'],
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
-  PrecheckFn =
-    | ToolLifecycleFunction<
-        ToolParamsSchema,
-        PolicyEvaluationResultContext<PolicyMapType>,
-        PrecheckSuccessSchema,
-        PrecheckFailSchema
-      >
-    | undefined,
+  PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
+  PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteFn = ToolLifecycleFunction<
     ToolParamsSchema,
-    ToolExecutionPolicyContext<PolicyMapType>,
+    ToolExecutionPolicyContext<PolicyMapByPackageName>,
     ExecuteSuccessSchema,
     ExecuteFailSchema
   >,
-> {
-  packageName: string;
-  toolParamsSchema: ToolParamsSchema;
-  supportedPolicies: PolicyArray;
-  precheckSuccessSchema?: PrecheckSuccessSchema;
-  precheckFailSchema?: PrecheckFailSchema;
-  executeSuccessSchema?: ExecuteSuccessSchema;
-  executeFailSchema?: ExecuteFailSchema;
-
+  PrecheckFn =
+    | undefined
+    | ToolLifecycleFunction<
+        ToolParamsSchema,
+        PolicyEvaluationResultContext<PolicyMapByPackageName>,
+        PrecheckSuccessSchema,
+        PrecheckFailSchema
+      >,
+> = {
   precheck?: PrecheckFn;
   execute: ExecuteFn;
-}
+  toolParamsSchema: ToolParamsSchema;
+  __schemaTypes: {
+    executeSuccessSchema?: ExecuteSuccessSchema;
+    executeFailSchema?: ExecuteFailSchema;
+    precheckSuccessSchema?: PrecheckSuccessSchema;
+    precheckFailSchema?: PrecheckFailSchema;
+  };
+};
 
 export interface BaseContext {
   delegation: {

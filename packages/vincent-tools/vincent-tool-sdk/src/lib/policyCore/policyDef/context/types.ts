@@ -8,12 +8,21 @@ import type {
   PolicyResponseDenyNoResult,
 } from '../../../types';
 
-export const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
+const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
   'PolicyResponses must come from calling context.allow() or context.deny()',
 );
-export type MustCallContextAllowOrDeny<T> = T & {
+
+type MustCallContextAllowOrDeny<T> = T & {
   [YouMustCallContextAllowOrDeny]: 'PolicyResponse';
 };
+
+export type EnforcePolicyResponse<T> = typeof YouMustCallContextAllowOrDeny extends keyof T
+  ? T
+  : {
+      ERROR: 'You must return the result of context.allow() or context.deny()';
+      FIX: 'Do not construct the return value manually. Use the injected context helpers.';
+    };
+
 export type ContextAllowResponse<AllowResult> = MustCallContextAllowOrDeny<
   PolicyResponseAllow<AllowResult>
 >;
@@ -41,10 +50,3 @@ export interface PolicyContext<
     ? (error?: string) => ContextDenyResponseNoResult
     : (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>;
 }
-
-export type EnforcePolicyResponse<T> = typeof YouMustCallContextAllowOrDeny extends keyof T
-  ? T
-  : {
-      ERROR: 'You must return the result of context.allow() or context.deny()';
-      FIX: 'Do not construct the return value manually. Use the injected context helpers.';
-    };

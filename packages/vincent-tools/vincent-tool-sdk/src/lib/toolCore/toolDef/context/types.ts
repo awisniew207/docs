@@ -1,4 +1,4 @@
-// src/lib/toolCore/toolContext/types.ts
+// src/lib/toolCore/toolDef/context/types.ts
 
 import { z } from 'zod';
 import {
@@ -7,7 +7,7 @@ import {
   ToolResponseFailureNoResult,
   ToolResponseSuccess,
   ToolResponseSuccessNoResult,
-} from '../../types';
+} from '../../../types';
 
 export interface BaseToolContext<Policies> extends BaseContext {
   policiesContext: Policies;

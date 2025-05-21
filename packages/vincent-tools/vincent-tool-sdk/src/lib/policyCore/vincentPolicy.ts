@@ -266,10 +266,10 @@ export function createVincentPolicy<
  * extracted from the tool's input params. Also attaches schema metadata for result typing.
  */
 export function createVincentToolPolicy<
-  PackageName extends string,
+  const PackageName extends string,
+  const IpfsCid extends string,
   ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
-  IpfsCid extends string = string,
   UserParams extends z.ZodType = z.ZodUndefined,
   PrecheckAllowResult extends z.ZodType = z.ZodUndefined,
   PrecheckDenyResult extends z.ZodType = z.ZodUndefined,
@@ -292,9 +292,14 @@ export function createVincentToolPolicy<
       CommitParams,
       CommitAllowResult,
       CommitDenyResult,
-      any,
-      any,
-      any
+      PolicyLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+      PolicyLifecycleFunction<
+        PolicyToolParams,
+        UserParams,
+        PrecheckAllowResult,
+        PrecheckDenyResult
+      >,
+      CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>
     >,
     IpfsCid
   >;

@@ -6,7 +6,7 @@ import { VincentPolicy } from '../../types';
 export function asBundledVincentPolicy<
   const VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>,
   const IpfsCid extends string,
->(vincentPolicy: VP, ipfsCid: IpfsCid): BundledVincentPolicy<VP> {
+>(vincentPolicy: VP, ipfsCid: IpfsCid): BundledVincentPolicy<VP, IpfsCid> {
   return {
     ipfsCid,
     vincentPolicy,

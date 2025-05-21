@@ -46,6 +46,7 @@ export type PolicyDefCommitFunction<
         : ContextDenyResponse<z.infer<CommitDenyResult>>)
   >
 >;
+
 export type VincentPolicyDef<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
