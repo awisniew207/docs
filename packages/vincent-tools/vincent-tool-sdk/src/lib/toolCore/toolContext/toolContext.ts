@@ -6,9 +6,9 @@ import {
   PolicyEvaluationResultContext,
   ToolExecutionPolicyContext,
   ToolExecutionPolicyEvaluationResult,
+  VincentPolicy,
 } from '../../types';
 import { BaseToolContext, ToolContext, YouMustCallContextSucceedOrFail } from './types';
-import { VincentPolicyDef } from '../../policyCore';
 
 /**
  * Builds an execution-time ToolContext for use inside `execute()` lifecycle methods.
@@ -100,21 +100,7 @@ export function createPrecheckToolContext<
   PolicyMap extends Record<
     string,
     {
-      vincentPolicy: VincentPolicyDef<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >;
+      vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>;
     }
   >,
 >(params: {

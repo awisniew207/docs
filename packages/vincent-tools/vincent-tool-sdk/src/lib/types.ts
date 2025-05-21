@@ -86,13 +86,27 @@ export type InferOrUndefined<T> = T extends z.ZodType ? z.infer<T> : undefined;
 // Tool supported policy with proper typing on the parameter mappings
 export type VincentToolPolicy<
   ToolParamsSchema extends z.ZodType,
-  PolicyDefType extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
+  VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
   PackageName extends string = string,
+  IpfsCid extends string = string,
 > = {
-  vincentPolicy: PolicyDefType & { packageName: PackageName };
+  ipfsCid: IpfsCid;
+  vincentPolicy: VP & { packageName: PackageName };
   toolParameterMappings: Partial<{
-    [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyDefType['toolParamsSchema']>;
+    [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<VP['toolParamsSchema']>;
   }>;
+  __schemaTypes: {
+    evalAllowResultSchema?: VP['evalAllowResultSchema'];
+    evalDenyResultSchema?: VP['evalDenyResultSchema'];
+    precheckAllowResultSchema?: VP['precheckAllowResultSchema'];
+    precheckDenyResultSchema?: VP['precheckDenyResultSchema'];
+    commitParamsSchema?: VP['commitParamsSchema'];
+    commitAllowResultSchema?: VP['commitAllowResultSchema'];
+    commitDenyResultSchema?: VP['commitDenyResultSchema'];
+    evaluate: VP['evaluate'];
+    precheck?: VP['precheck'];
+    commit?: VP['commit'];
+  };
 };
 
 export type CommitLifecycleFunction<

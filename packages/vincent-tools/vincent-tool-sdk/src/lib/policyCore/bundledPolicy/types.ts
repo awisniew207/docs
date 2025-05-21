@@ -11,8 +11,9 @@ export type __bundledPolicyBrand = typeof __bundledPolicyBrand;
  */
 export type BundledVincentPolicy<
   VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+  IpfsCid extends string = string,
 > = {
-  readonly ipfsCid: string;
+  readonly ipfsCid: IpfsCid;
   readonly vincentPolicy: VP;
   readonly [__bundledPolicyBrand]: 'BundledVincentPolicy';
 };

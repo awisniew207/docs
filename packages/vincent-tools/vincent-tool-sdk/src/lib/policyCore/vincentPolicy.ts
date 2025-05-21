@@ -269,6 +269,7 @@ export function createVincentToolPolicy<
   PackageName extends string,
   ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
+  IpfsCid extends string = string,
   UserParams extends z.ZodType = z.ZodUndefined,
   PrecheckAllowResult extends z.ZodType = z.ZodUndefined,
   PrecheckDenyResult extends z.ZodType = z.ZodUndefined,
@@ -294,7 +295,8 @@ export function createVincentToolPolicy<
       any,
       any,
       any
-    >
+    >,
+    IpfsCid
   >;
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;
