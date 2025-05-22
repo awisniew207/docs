@@ -9,11 +9,12 @@
     "docs/Why-Vincent.md",
     "docs/Developers/Quick-Start.md",
     "docs/Developers/Custom-Tools.md",
+    "docs/Developers/AI-Integration.md",
     "docs/Users/Onboarding.md",
     "docs/Contact-Us.md"
   ],
   "out": "./sdk-docs",
-  "skipErrorChecking": true,
+  "tsconfig": "./tsconfig.lib.json",
   "plugin": ["typedoc-material-theme", "typedoc-plugin-extras"],
   "customTitle": "Vincent Docs",
   "includeVersion": false,

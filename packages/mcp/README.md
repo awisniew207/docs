@@ -24,12 +24,14 @@ You can run the Vincent MCP server directly using npx without downloading the re
 npx @lit-protocol/vincent-mcp stdio
 ```
 
-When setting this in the LLM client, pass it the necessary environment variables.
+When setting this in the LLM client, pass it the necessary environment variables from your client.
 
 ### HTTP mode
 ```bash
 npx @lit-protocol/vincent-mcp http
 ```
+
+In HTTP mode, the environment variables are configured on the server itself, not the client.
 
 These commands require the following environment variables to be set:
 - `VINCENT_APP_JSON_DEFINITION`: Path to your Vincent App definition JSON file
