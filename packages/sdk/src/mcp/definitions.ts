@@ -154,6 +154,7 @@ export type VincentParameter = z.infer<typeof VincentParameterSchema>;
  * Zod schema for validating Vincent tool definitions
  *
  * This schema defines the structure of a tool in a Vincent application.
+ * @hidden
  */
 export const VincentToolDefSchema = z.object({
   name: z.string(),
@@ -183,6 +184,7 @@ export type VincentToolDefWithIPFS = VincentToolDef & { ipfsCid: string };
  * Zod schema for validating Vincent application definitions
  *
  * This schema defines the structure of a Vincent application.
+ * @hidden
  */
 export const VincentAppDefSchema = z.object({
   id: z.string(),

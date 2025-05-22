@@ -15,7 +15,7 @@
   ],
   "out": "./sdk-docs",
   "tsconfig": "./tsconfig.lib.json",
-  "plugin": ["typedoc-material-theme", "typedoc-plugin-extras"],
+  "plugin": ["typedoc-material-theme", "typedoc-plugin-extras", "typedoc-plugin-zod"],
   "customTitle": "Vincent Docs",
   "includeVersion": false,
   "navigation": {

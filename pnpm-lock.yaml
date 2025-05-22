@@ -387,6 +387,9 @@ importers:
       typedoc-plugin-extras:
         specifier: ^4.0.0
         version: 4.0.0(typedoc@0.27.9(typescript@4.9.5))
+      typedoc-plugin-zod:
+        specifier: ^1.4.1
+        version: 1.4.1(typedoc@0.27.9(typescript@4.9.5))
       vercel:
         specifier: ^41.6.2
         version: 41.6.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(rollup@4.40.1)
@@ -1932,6 +1935,10 @@ packages:
 
   '@lit-protocol/vincent-contracts@0.1.1-4':
     resolution: {integrity: sha512-rAEH26hbDfAKOOkZ9qP1gFtJKIiIznE+oc5ivbh1CS41qzCdF2aA+qJx9CaEUF3LfKJRikBfH+vryx9PRo9D0g==}
+
+  '@lit-protocol/vincent-sdk@0.0.6':
+    resolution: {integrity: sha512-oLZEE3REcRuS0N1SO3WTUR9Lstpku0eKuNZ693YaJuRAlu2sMTeodHFUr68D9hPpdhn5G7LCtRkXlbGu4EFpAA==}
+    engines: {node: 20.11.1}
 
   '@lit-protocol/wasm@7.1.1':
     resolution: {integrity: sha512-B7qojNwmftZ+kOUgivm73pBL96LxDZKMn9XSmfOQ0HoirUbO0oLTIMV1UEbtU5Fkr4N+v+zKKcv+XJ7O1ZUCRw==}
@@ -3671,12 +3678,14 @@ packages:
 
   '@walletconnect/ethereum-provider@2.17.0':
     resolution: {integrity: sha512-b+KTAXOb6JjoxkwpgYQQKPUcTwENGmdEdZoIDLeRicUmZTn/IQKfkMoC2frClB4YxkyoVMtj1oMV2JAax+yu9A==}
+    deprecated: 'Reliability and performance improvements. See: https://github.com/WalletConnect/walletconnect-monorepo/releases'
 
   '@walletconnect/ethereum-provider@2.19.2':
     resolution: {integrity: sha512-NzPzNcjMLqow6ha2nssB1ciMD0cdHZesYcHSQKjCi9waIDMov9Fr2yEJccbiVFE3cxek7f9dCPsoZez2q8ihvg==}
 
   '@walletconnect/ethereum-provider@2.9.2':
     resolution: {integrity: sha512-eO1dkhZffV1g7vpG19XUJTw09M/bwGUwwhy1mJ3AOPbOSbMPvwiCuRz2Kbtm1g9B0Jv15Dl+TvJ9vTgYF8zoZg==}
+    deprecated: 'Reliability and performance improvements. See: https://github.com/WalletConnect/walletconnect-monorepo/releases'
     peerDependencies:
       '@walletconnect/modal': '>=2'
     peerDependenciesMeta:
@@ -4240,6 +4249,7 @@ packages:
 
   bun@1.2.10:
     resolution: {integrity: sha512-7KZgjyJQh/nJaU8av0/2Ld9jDPdrVmQb/gAQKuhr796pKLSONJw+mbshme78viR9jbL4q+sgLNW6HOLwYhL0rg==}
+    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -8259,6 +8269,11 @@ packages:
     peerDependencies:
       typedoc: 0.27.x
 
+  typedoc-plugin-zod@1.4.1:
+    resolution: {integrity: sha512-D7+uhPFCyKMcKnUSZip/BldE08Jo/yykvbxlIcY11fI8dKyCe23/igOiZ7rPW2mXD5N9kHEA2he9LkCoU+6HtA==}
+    peerDependencies:
+      typedoc: 0.23.x || 0.24.x || 0.25.x || 0.26.x || 0.27.x || 0.28.x
+
   typedoc@0.27.9:
     resolution: {integrity: sha512-/z585740YHURLl9DN2jCWe6OW7zKYm6VoQ93H0sxZ1cwHQEQrUn5BJrEnkWhfzUdyO+BLGjnKUZ9iz9hKloFDw==}
     engines: {node: '>= 18'}
@@ -11863,6 +11878,41 @@ snapshots:
 
   '@lit-protocol/vincent-contracts@0.1.1-4': {}
 
+  '@lit-protocol/vincent-sdk@0.0.6(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@lit-protocol/auth-helpers': 7.1.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/constants': 7.1.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.1.1(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@noble/secp256k1': 2.2.3
+      did-jwt: 8.0.14
+      ethers: 5.7.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@react-native-async-storage/async-storage'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/kv'
+      - '@walletconnect/modal'
+      - aws4fetch
+      - bufferutil
+      - db0
+      - encoding
+      - ioredis
+      - supports-color
+      - typescript
+      - uploadthing
+      - utf-8-validate
+
   '@lit-protocol/wasm@7.1.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       ethers: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -13531,10 +13581,10 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typescript-eslint/eslint-plugin@8.31.1(@typescript-eslint/parser@8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3))(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)':
+  '@typescript-eslint/eslint-plugin@8.31.1(@typescript-eslint/parser@8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.1
-      '@typescript-eslint/parser': 8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
+      '@typescript-eslint/parser': 8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)
       '@typescript-eslint/scope-manager': 8.31.1
       '@typescript-eslint/type-utils': 8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
       '@typescript-eslint/utils': 8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
@@ -20062,6 +20112,10 @@ snapshots:
     dependencies:
       typedoc: 0.27.9(typescript@4.9.5)
 
+  typedoc-plugin-zod@1.4.1(typedoc@0.27.9(typescript@4.9.5)):
+    dependencies:
+      typedoc: 0.27.9(typescript@4.9.5)
+
   typedoc@0.27.9(typescript@4.9.5):
     dependencies:
       '@gerrit0/mini-shiki': 1.27.2
@@ -20073,7 +20127,7 @@ snapshots:
 
   typescript-eslint@8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.31.1(@typescript-eslint/parser@8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3))(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
+      '@typescript-eslint/eslint-plugin': 8.31.1(@typescript-eslint/parser@8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
       '@typescript-eslint/parser': 8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
       '@typescript-eslint/utils': 8.31.1(eslint@9.25.1(jiti@2.4.2))(typescript@5.7.3)
       eslint: 9.25.1(jiti@2.4.2)
