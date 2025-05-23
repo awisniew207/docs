@@ -26,7 +26,7 @@ export function PendingRequests({
   processing,
 }: PendingRequestsProps) {
   if (requests.length === 0) {
-    return null;
+    return <></>;
   }
 
   return (

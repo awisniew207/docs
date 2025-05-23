@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 
 export interface WithdrawFormProps {
   sessionSigs: SessionSigs;
-  agentPKP: IRelayPKP;
+  agentPKP?: IRelayPKP;
   isSessionValidation?: boolean;
   userPKP?: IRelayPKP;
   shouldRefreshBalances?: boolean;

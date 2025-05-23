@@ -82,11 +82,7 @@ export async function registerPKPWallet(
   }
 
   // Get or create the client
-  const client = await createWalletConnectClient();
-
-  if (!client) {
-    throw new Error('WalletKit client not initialized');
-  }
+  await createWalletConnectClient();
 
   if (sessionSigs) {
     try {
@@ -172,7 +168,7 @@ export async function createWalletConnectClient(
         name: 'Vincent App',
         description: 'Vincent App using PKP with WalletKit',
         url: window.location.origin,
-        icons: ['https://lit.network/favicon.ico'], // TODO: Add a logo
+        icons: [`${window.location.origin}/logo.svg`], // This should work when deployed, but it doesn't really matter
       },
     });
 
@@ -182,9 +178,6 @@ export async function createWalletConnectClient(
     }
 
     return walletKitClient;
-  } catch (error) {
-    console.error('Error initializing WalletKit:', error);
-    throw error;
   } finally {
     isInitializing = false;
   }

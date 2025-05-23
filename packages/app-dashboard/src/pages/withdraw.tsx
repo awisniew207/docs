@@ -245,7 +245,7 @@ export function Withdraw() {
       return (
         <div className="flex justify-center items-start w-full">
           <div className="w-[550px] position-relative mt-0">
-            <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP!} userPKP={userPKP} />
+            <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP} userPKP={userPKP} />
           </div>
         </div>
       );
@@ -258,7 +258,7 @@ export function Withdraw() {
           <div className="w-[550px] position-relative mt-0">
             <WithdrawForm
               sessionSigs={validatedSessionSigs}
-              agentPKP={authInfo.agentPKP!}
+              agentPKP={authInfo.agentPKP}
               userPKP={authInfo.userPKP}
             />
           </div>
