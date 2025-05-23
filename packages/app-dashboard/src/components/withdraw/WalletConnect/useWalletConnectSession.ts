@@ -227,7 +227,7 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
         setDisconnecting(topic);
         setStatus({ message: 'Disconnecting session...', type: 'info' });
         await disconnectSession(topic, refreshSessions);
-        setStatus({ message: 'Session disconnected successfully', type: 'success' });
+        setStatus({ message: 'A previous session was disconnected successfully', type: 'success' });
       } catch (error) {
         console.error('Failed to disconnect session:', error);
         setStatus({
