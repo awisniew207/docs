@@ -45,8 +45,8 @@ importers:
         specifier: ^7.0.8
         version: 7.1.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-sdk':
-        specifier: 0.0.6
-        version: 0.0.6(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 0.0.7
+        version: 0.0.7(@modelcontextprotocol/sdk@1.11.4)(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       bs58:
         specifier: ^6.0.0
         version: 6.0.0
@@ -316,6 +316,9 @@ importers:
       '@lit-protocol/contracts-sdk':
         specifier: ^7.1.1
         version: 7.1.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/vincent-sdk':
+        specifier: 0.0.7
+        version: 0.0.7(@modelcontextprotocol/sdk@1.11.4)(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@modelcontextprotocol/sdk':
         specifier: ^1.11.2
         version: 1.11.4
@@ -1936,9 +1939,11 @@ packages:
   '@lit-protocol/vincent-contracts@0.1.1-4':
     resolution: {integrity: sha512-rAEH26hbDfAKOOkZ9qP1gFtJKIiIznE+oc5ivbh1CS41qzCdF2aA+qJx9CaEUF3LfKJRikBfH+vryx9PRo9D0g==}
 
-  '@lit-protocol/vincent-sdk@0.0.6':
-    resolution: {integrity: sha512-oLZEE3REcRuS0N1SO3WTUR9Lstpku0eKuNZ693YaJuRAlu2sMTeodHFUr68D9hPpdhn5G7LCtRkXlbGu4EFpAA==}
-    engines: {node: 20.11.1}
+  '@lit-protocol/vincent-sdk@0.0.7':
+    resolution: {integrity: sha512-u7B7GX/Aiu1umLW+L96RBGX7T3IQylgHaLiozY6ruUFSh1A2mtQsrV2Fds+3DsaQokBcbUrIN4c9hwbnxVIOdA==}
+    engines: {node: ^20.11.1, pnpm: 10.7.0}
+    peerDependencies:
+      '@modelcontextprotocol/sdk': ^1.11.2
 
   '@lit-protocol/wasm@7.1.1':
     resolution: {integrity: sha512-B7qojNwmftZ+kOUgivm73pBL96LxDZKMn9XSmfOQ0HoirUbO0oLTIMV1UEbtU5Fkr4N+v+zKKcv+XJ7O1ZUCRw==}
@@ -11878,11 +11883,12 @@ snapshots:
 
   '@lit-protocol/vincent-contracts@0.1.1-4': {}
 
-  '@lit-protocol/vincent-sdk@0.0.6(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-sdk@0.0.7(@modelcontextprotocol/sdk@1.11.4)(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@lit-protocol/auth-helpers': 7.1.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/constants': 7.1.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client': 7.1.1(@walletconnect/modal@2.7.0(@types/react@19.1.2)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@modelcontextprotocol/sdk': 1.11.4
       '@noble/secp256k1': 2.2.3
       did-jwt: 8.0.14
       ethers: 5.7.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
