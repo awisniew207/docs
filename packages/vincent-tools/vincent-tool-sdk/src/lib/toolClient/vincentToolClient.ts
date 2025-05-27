@@ -11,11 +11,7 @@ import {
 } from '../policyCore/helpers';
 import { ToolPolicyMap } from '../toolCore/helpers';
 import { getSchemaForToolResult, validateOrFail } from '../toolCore/helpers/zod';
-import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
-import {
-  createToolFailureResult,
-  createToolSuccessResult,
-} from '../toolCore/helpers/resultCreators';
+import { createToolSuccessResult } from '../toolCore/helpers/resultCreators';
 import { ethers } from 'ethers';
 import { decodePolicyParams } from '../policyCore/policyParameters/decodePolicyParams';
 import type { EthersAbiDecodedValue } from '../policyCore/policyParameters/types';
@@ -30,8 +26,13 @@ import {
 } from '@lit-protocol/auth-helpers';
 import { LIT_ABILITY, LIT_NETWORK } from '@lit-protocol/constants';
 import { validatePolicies } from '../toolCore/helpers/validatePolicies';
-import { BaseToolContext } from '../toolCore/toolDef/context/types';
-import { createAllowEvaluationResult, createDenyEvaluationResult } from './resultCreators';
+import {
+  createAllowEvaluationResult,
+  createDenyEvaluationResult,
+  createToolResponseFailureNoResult,
+} from './resultCreators';
+import { ToolResponse } from './types';
+import { isToolResponseFailure } from './typeGuards';
 
 const generateSessionSigs = async ({
   litNodeClient,
@@ -235,10 +236,10 @@ export function createVincentToolClient<
   PkgNames extends string,
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
   PoliciesByPackageName extends PolicyMap['policyByPackageName'],
-  ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
-  ExecuteFailSchema extends z.ZodType | undefined = undefined,
-  PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
-  PrecheckFailSchema extends z.ZodType | undefined = undefined,
+  ExecuteSuccessSchema extends z.ZodType = z.ZodUndefined,
+  ExecuteFailSchema extends z.ZodType = z.ZodUndefined,
+  PrecheckSuccessSchema extends z.ZodType = z.ZodUndefined,
+  PrecheckFailSchema extends z.ZodType = z.ZodUndefined,
 >(args: {
   vincentTool: VincentTool<
     ToolParamsSchema,
@@ -255,6 +256,11 @@ export function createVincentToolClient<
   const { vincentTool, ethersSigner } = args;
   const network = LIT_NETWORK.Datil;
 
+  const executeSuccessSchema = (vincentTool.__schemaTypes.executeSuccessSchema ??
+    z.undefined()) as ExecuteSuccessSchema;
+  const executeFailSchema = (vincentTool.__schemaTypes.executeFailSchema ??
+    z.undefined()) as ExecuteFailSchema;
+
   return {
     async precheck(
       rawToolParams: unknown,
@@ -263,7 +269,7 @@ export function createVincentToolClient<
         delegator,
         toolIpfsCid,
       }: { rpcUrl?: string; delegator: string; toolIpfsCid: string },
-    ) {
+    ): Promise<ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>> {
       const delegatee = ethers.utils.getAddress(await ethersSigner.getAddress());
 
       const policiesContext: PolicyEvaluationResultContext<PoliciesByPackageName> =
@@ -278,19 +284,30 @@ export function createVincentToolClient<
         });
 
       if (!vincentTool.precheck) {
-        return createToolSuccessResult();
+        return {
+          ...createToolSuccessResult(),
+          policiesContext,
+        } as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>;
       }
 
-      return vincentTool.precheck(
+      const precheckResult = await vincentTool.precheck(
         { toolParams: rawToolParams },
         {
           policiesContext,
           delegation: { delegator, delegatee },
         },
       );
+
+      return {
+        ...precheckResult,
+        policiesContext,
+      } as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>;
     },
 
-    async execute(rawToolParams: unknown, context: BaseToolContext<any>) {
+    async execute(
+      rawToolParams: unknown,
+      context: BaseContext,
+    ): Promise<ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>> {
       const parsedParams = validateOrFail(
         rawToolParams,
         vincentTool.toolParamsSchema,
@@ -298,7 +315,12 @@ export function createVincentToolClient<
         'input',
       );
 
-      if (isToolFailureResult(parsedParams)) return parsedParams;
+      if (isToolResponseFailure(parsedParams)) {
+        return {
+          ...parsedParams,
+          policiesContext: undefined,
+        } as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
+      }
 
       const litNodeClient = await getLitNodeClientInstance({ network });
       const sessionSigs = await generateSessionSigs({ ethersSigner, litNodeClient });
@@ -319,24 +341,42 @@ export function createVincentToolClient<
       const { success, response } = result;
 
       if (success !== true) {
-        return createToolFailureResult({
+        return createToolResponseFailureNoResult({
           message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
-        });
+        }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
       if (typeof response === 'string') {
-        return createToolFailureResult({
-          message: `Remote tool returned invalid JSON: ${response}`,
-        });
+        return createToolResponseFailureNoResult({
+          message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+        }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
-      const { schemaToUse } = getSchemaForToolResult({
-        value: response,
-        successResultSchema: vincentTool.__schemaTypes.executeSuccessSchema,
-        failureResultSchema: vincentTool.__schemaTypes.executeFailSchema,
-      });
+      const resp = response as ToolResponse<
+        ExecuteSuccessSchema,
+        ExecuteFailSchema,
+        PoliciesByPackageName
+      >;
 
-      return validateOrFail(response, schemaToUse, 'execute', 'output');
+      if (resp.result) {
+        const { schemaToUse } = getSchemaForToolResult({
+          value: resp.result,
+          successResultSchema: executeSuccessSchema,
+          failureResultSchema: executeFailSchema,
+        });
+
+        const executeResult = validateOrFail(response, schemaToUse, 'execute', 'output');
+
+        return {
+          ...executeResult,
+          policiesContext: resp.policiesContext,
+        } as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
+      }
+
+      return {
+        ...resp,
+        policiesContext: resp.policiesContext,
+      };
     },
   };
 }

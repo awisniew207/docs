@@ -386,10 +386,6 @@ export type VincentTool<
   };
 };
 
-export type ToolResponse<Success, Failure, Policies extends Record<string, any>> =
-  | (ToolResultSuccess<Success> & { policiesContext: PolicyEvaluationResultContext<Policies> })
-  | (ToolResultFailure<Failure> & { policiesContext: PolicyEvaluationResultContext<Policies> });
-
 export interface BaseContext {
   delegation: {
     delegatee: string;
