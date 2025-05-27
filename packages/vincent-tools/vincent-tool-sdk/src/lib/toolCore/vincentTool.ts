@@ -8,7 +8,6 @@ import {
   ToolLifecycleFunction,
   ToolResult,
   VincentTool,
-  VincentToolPolicy,
 } from '../types';
 import {
   createExecutionToolContext,
@@ -21,15 +20,6 @@ import { ToolPolicyMap } from './helpers';
 import { ToolDefLifecycleFunction, VincentToolDef } from './toolDef/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type EnrichedVincentToolPolicy = VincentToolPolicy<any, any, any> & {
-  __schemaTypes?: {
-    evalAllowResultSchema?: z.ZodType;
-    evalDenyResultSchema?: z.ZodType;
-    commitParamsSchema?: z.ZodType;
-    commitAllowResultSchema?: z.ZodType;
-    commitDenyResultSchema?: z.ZodType;
-  };
-};
 
 /**
  * Wraps a VincentToolDef object and returns a fully typed tool with
