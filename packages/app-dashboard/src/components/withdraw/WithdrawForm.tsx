@@ -103,14 +103,14 @@ export default function WithdrawForm({ sessionSigs, agentPKP }: WithdrawFormProp
   };
 
   return (
-    <div className="max-w-[550px] w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div className="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
       {showWalletConnect ? (
-        <div className="p-6">
-          <div className="mb-4">
+        <>
+          <div className="p-6 border-b border-gray-100">
             <BackButton label="Back to withdraw" onClick={() => setShowWalletConnect(false)} />
           </div>
           <WalletConnectPage agentPKP={agentPKP} sessionSigs={sessionSigs} />
-        </div>
+        </>
       ) : (
         <>
           <FormHeader />
