@@ -5,7 +5,7 @@ import type { BaseContext } from '../types';
 import { getPkpInfo } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
-import { isToolFailureResponse } from '../toolCore/helpers/typeGuards';
+import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
 import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import { validatePolicies } from '../toolCore/helpers/validatePolicies';
 import { ToolPolicyMap } from '../toolCore/helpers';
@@ -132,7 +132,7 @@ export const vincentToolHandler = <
         'input',
       );
 
-      if (isToolFailureResponse(parsedOrFail)) {
+      if (isToolFailureResult(parsedOrFail)) {
         Lit.Actions.setResponse({
           response: JSON.stringify({
             toolExecutionResult: parsedOrFail,

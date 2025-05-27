@@ -10,8 +10,8 @@ import {
   isPolicyAllowResponse,
 } from '../policyCore/helpers';
 import { ToolPolicyMap } from '../toolCore/helpers';
-import { getSchemaForToolResponseResult, validateOrFail } from '../toolCore/helpers/zod';
-import { isToolFailureResponse } from '../toolCore/helpers/typeGuards';
+import { getSchemaForToolResult, validateOrFail } from '../toolCore/helpers/zod';
+import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
 import {
   createToolFailureResult,
   createToolSuccessResult,
@@ -298,7 +298,7 @@ export function createVincentToolClient<
         'input',
       );
 
-      if (isToolFailureResponse(parsedParams)) return parsedParams;
+      if (isToolFailureResult(parsedParams)) return parsedParams;
 
       const litNodeClient = await getLitNodeClientInstance({ network });
       const sessionSigs = await generateSessionSigs({ ethersSigner, litNodeClient });
@@ -330,7 +330,7 @@ export function createVincentToolClient<
         });
       }
 
-      const { schemaToUse } = getSchemaForToolResponseResult({
+      const { schemaToUse } = getSchemaForToolResult({
         value: response,
         successResultSchema: vincentTool.__schemaTypes.executeSuccessSchema,
         failureResultSchema: vincentTool.__schemaTypes.executeFailSchema,

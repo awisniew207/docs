@@ -313,30 +313,30 @@ export type ToolExecutionPolicyContext<
   readonly deniedPolicy?: never;
 };
 
-export interface ToolResponseSuccess<SuccessResult = never> {
+export interface ToolResultSuccess<SuccessResult = never> {
   success: true;
   result: SuccessResult;
 }
 
-export interface ToolResponseSuccessNoResult {
+export interface ToolResultSuccessNoResult {
   success: true;
   result?: never;
 }
 
-export interface ToolResponseFailure<FailResult = never> {
+export interface ToolResultFailure<FailResult = never> {
   success: false;
   result: FailResult | ZodValidationDenyResult;
   error?: string;
 }
 
-export interface ToolResponseFailureNoResult {
+export interface ToolResultFailureNoResult {
   success: false;
   error?: string;
   result?: never;
 }
-export type ToolResponse<SucceedResult, FailResults> =
-  | (ToolResponseSuccess<SucceedResult> | ToolResponseSuccessNoResult)
-  | (ToolResponseFailure<FailResults> | ToolResponseFailureNoResult);
+export type ToolResult<SucceedResult, FailResults> =
+  | (ToolResultSuccess<SucceedResult> | ToolResultSuccessNoResult)
+  | (ToolResultFailure<FailResults> | ToolResultFailureNoResult);
 
 export type ToolLifecycleFunction<
   ToolParamsSchema extends z.ZodType,
@@ -348,7 +348,7 @@ export type ToolLifecycleFunction<
     toolParams: z.infer<ToolParamsSchema>;
   },
   context: BaseToolContext<Policies>,
-) => Promise<ToolResponse<SuccessSchema, FailSchema>>;
+) => Promise<ToolResult<SuccessSchema, FailSchema>>;
 
 export type VincentTool<
   ToolParamsSchema extends z.ZodType,
@@ -385,6 +385,10 @@ export type VincentTool<
     precheckFailSchema?: PrecheckFailSchema;
   };
 };
+
+export type ToolResponse<Success, Failure, Policies extends Record<string, any>> =
+  | (ToolResultSuccess<Success> & { policiesContext: PolicyEvaluationResultContext<Policies> })
+  | (ToolResultFailure<Failure> & { policiesContext: PolicyEvaluationResultContext<Policies> });
 
 export interface BaseContext {
   delegation: {

@@ -6,7 +6,7 @@ import {
   ToolExecutionPolicyContext,
   ToolExecutionPolicyEvaluationResult,
   ToolLifecycleFunction,
-  ToolResponse,
+  ToolResult,
   VincentTool,
   VincentToolPolicy,
 } from '../types';
@@ -15,8 +15,8 @@ import {
   createPrecheckToolContext,
 } from './toolDef/context/toolContext';
 import { wrapFailure, wrapNoResultFailure, wrapSuccess } from './helpers/resultCreators';
-import { getSchemaForToolResponseResult, validateOrFail } from './helpers/zod';
-import { isToolFailureResponse } from './helpers/typeGuards';
+import { getSchemaForToolResult, validateOrFail } from './helpers/zod';
+import { isToolFailureResult } from './helpers/typeGuards';
 import { ToolPolicyMap } from './helpers';
 import { ToolDefLifecycleFunction, VincentToolDef } from './toolDef/types';
 
@@ -95,7 +95,7 @@ export function createVincentTool<
         'input',
       );
 
-      if (isToolFailureResponse(parsedToolParams)) {
+      if (isToolFailureResult(parsedToolParams)) {
         return wrapFailure(parsedToolParams);
       }
 
@@ -104,7 +104,7 @@ export function createVincentTool<
         policiesContext: { ...context.policiesContext, allow: true },
       });
 
-      const { schemaToUse } = getSchemaForToolResponseResult({
+      const { schemaToUse } = getSchemaForToolResult({
         value: result,
         successResultSchema: executeSuccessSchema,
         failureResultSchema: executeFailSchema,
@@ -112,7 +112,7 @@ export function createVincentTool<
 
       const resultOrFailure = validateOrFail(result, schemaToUse, 'execute', 'output');
 
-      if (isToolFailureResponse(resultOrFailure)) {
+      if (isToolFailureResult(resultOrFailure)) {
         return wrapFailure(resultOrFailure);
       }
 
@@ -143,26 +143,26 @@ export function createVincentTool<
             'input',
           );
 
-          if (isToolFailureResponse(parsedToolParams)) {
+          if (isToolFailureResult(parsedToolParams)) {
             return wrapFailure(parsedToolParams);
           }
 
           const result = await precheckFn(parsedToolParams, context);
 
-          const { schemaToUse } = getSchemaForToolResponseResult({
+          const { schemaToUse } = getSchemaForToolResult({
             value: result,
             successResultSchema: precheckSuccessSchema,
             failureResultSchema: precheckFailSchema,
           });
 
           const resultOrFailure = validateOrFail(
-            result as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema>,
+            result as ToolResult<PrecheckSuccessSchema, PrecheckFailSchema>,
             schemaToUse,
             'precheck',
             'output',
           );
 
-          if (isToolFailureResponse(resultOrFailure)) {
+          if (isToolFailureResult(resultOrFailure)) {
             return wrapFailure(resultOrFailure);
           }
 

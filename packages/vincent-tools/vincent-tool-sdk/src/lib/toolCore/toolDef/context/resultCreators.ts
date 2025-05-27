@@ -15,7 +15,7 @@ export function createSuccess<T>(result: T): ContextSuccess<T> {
   return {
     success: true,
     result,
-    [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+    [YouMustCallContextSucceedOrFail]: 'ToolResult',
   } as ContextSuccess<T>;
 }
 
@@ -25,7 +25,7 @@ export function createSuccess<T>(result: T): ContextSuccess<T> {
 export function createSuccessNoResult(): ContextSuccessNoResult {
   return {
     success: true,
-    [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+    [YouMustCallContextSucceedOrFail]: 'ToolResult',
   } as ContextSuccessNoResult;
 }
 
@@ -37,7 +37,7 @@ export function createFailure<T>(result: T, error?: string): ContextFailure<T> {
     success: false,
     result,
     ...(error ? { error } : {}),
-    [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+    [YouMustCallContextSucceedOrFail]: 'ToolResult',
   } as ContextFailure<T>;
 }
 
@@ -49,6 +49,6 @@ export function createFailureNoResult(error?: string): ContextFailureNoResult {
     success: false,
     result: undefined as never,
     ...(error ? { error } : {}),
-    [YouMustCallContextSucceedOrFail]: 'ToolResponse',
+    [YouMustCallContextSucceedOrFail]: 'ToolResult',
   } as ContextFailureNoResult;
 }

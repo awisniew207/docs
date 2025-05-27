@@ -3,10 +3,10 @@
 import { z } from 'zod';
 import {
   BaseContext,
-  ToolResponseFailure,
-  ToolResponseFailureNoResult,
-  ToolResponseSuccess,
-  ToolResponseSuccessNoResult,
+  ToolResultFailure,
+  ToolResultFailureNoResult,
+  ToolResultSuccess,
+  ToolResultSuccessNoResult,
 } from '../../../types';
 
 export interface BaseToolContext<Policies> extends BaseContext {
@@ -21,10 +21,10 @@ export const YouMustCallContextSucceedOrFail: unique symbol = Symbol(
 );
 
 export type MustCallContextSucceedOrFail<T> = T & {
-  [YouMustCallContextSucceedOrFail]: 'ToolResponse';
+  [YouMustCallContextSucceedOrFail]: 'ToolResult';
 };
 
-export type EnforceToolResponse<T> = typeof YouMustCallContextSucceedOrFail extends keyof T
+export type EnforceToolResult<T> = typeof YouMustCallContextSucceedOrFail extends keyof T
   ? T
   : {
       ERROR: 'You must return the result of context.succeed() or context.fail()';
@@ -33,15 +33,15 @@ export type EnforceToolResponse<T> = typeof YouMustCallContextSucceedOrFail exte
 
 export type ContextSuccess<SuccessResult = never> = SuccessResult extends never
   ? ContextSuccessNoResult
-  : MustCallContextSucceedOrFail<ToolResponseSuccess<SuccessResult>>;
+  : MustCallContextSucceedOrFail<ToolResultSuccess<SuccessResult>>;
 
-export type ContextSuccessNoResult = MustCallContextSucceedOrFail<ToolResponseSuccessNoResult>;
+export type ContextSuccessNoResult = MustCallContextSucceedOrFail<ToolResultSuccessNoResult>;
 
 export type ContextFailure<FailResult = never> = FailResult extends never
   ? ContextFailureNoResult
-  : MustCallContextSucceedOrFail<ToolResponseFailure<FailResult>>;
+  : MustCallContextSucceedOrFail<ToolResultFailure<FailResult>>;
 
-export type ContextFailureNoResult = MustCallContextSucceedOrFail<ToolResponseFailureNoResult>;
+export type ContextFailureNoResult = MustCallContextSucceedOrFail<ToolResultFailureNoResult>;
 
 export type ContextResult<SuccessResult, FailResult> =
   | ContextSuccess<SuccessResult>

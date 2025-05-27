@@ -6,7 +6,7 @@ import {
   ContextFailureNoResult,
   ContextSuccess,
   ContextSuccessNoResult,
-  EnforceToolResponse,
+  EnforceToolResult,
   ToolContext,
 } from './context/types';
 import { PolicyEvaluationResultContext, ToolExecutionPolicyContext } from '../../types';
@@ -24,7 +24,7 @@ export type ToolDefLifecycleFunction<
   },
   context: ToolContext<SuccessSchema, FailSchema, Policies>,
 ) => Promise<
-  EnforceToolResponse<
+  EnforceToolResult<
     | (SuccessSchema extends z.ZodType
         ? ContextSuccess<z.infer<SuccessSchema>>
         : ContextSuccessNoResult)
