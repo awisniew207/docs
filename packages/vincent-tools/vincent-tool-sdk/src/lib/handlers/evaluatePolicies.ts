@@ -9,11 +9,9 @@ import {
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
   VincentPolicy,
-  VincentToolDef,
-  VincentToolPolicy,
+  VincentTool,
   ZodValidationDenyResult,
 } from '../types';
-import { createVincentTool, EnrichedVincentToolPolicy } from '../toolCore/vincentTool';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
@@ -25,6 +23,7 @@ import {
   createDenyEvaluationResult,
   returnNoResultDeny,
 } from '../policyCore/helpers/resultCreators';
+import { ToolPolicyMap } from '../toolCore/helpers';
 
 declare const Lit: {
   Actions: {
@@ -37,50 +36,40 @@ declare const Lit: {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function evaluatePolicies<
   ToolParamsSchema extends z.ZodType,
-  PolicyArray extends readonly VincentToolPolicy<
-    ToolParamsSchema,
-    VincentPolicy<any, any, any, any, any, any, any, any, any, any>
-  >[],
-  PolicyMapType extends Record<string, EnrichedVincentToolPolicy> = {
-    [K in PolicyArray[number]['vincentPolicy']['packageName']]: Extract<
-      PolicyArray[number],
-      { vincentPolicy: { packageName: K } }
-    >;
-  },
+  PolicyMap extends ToolPolicyMap<any, any>,
+  PoliciesByPackageName extends PolicyMap['policyByPackageName'],
 >({
-  vincentToolDef,
+  vincentTool,
   context,
   validatedPolicies,
 }: {
-  vincentToolDef: VincentToolDef<
+  vincentTool: VincentTool<
     ToolParamsSchema,
-    PolicyArray,
-    PolicyArray[number]['vincentPolicy']['packageName'],
-    PolicyMapType,
-    any,
-    any,
+    keyof PoliciesByPackageName & string,
+    PolicyMap,
+    PoliciesByPackageName,
     any,
     any,
     any,
     any
   >;
   context: BaseContext;
-  validatedPolicies: ValidatedPolicyMap<z.infer<ToolParamsSchema>, PolicyMapType>;
-}): Promise<PolicyEvaluationResultContext<PolicyMapType>> {
-  const vincentTool = createVincentTool(vincentToolDef);
-
-  const evaluatedPolicies: PolicyEvaluationResultContext<PolicyMapType>['evaluatedPolicies'] = [];
-  const policyEvaluationResults: PolicyEvaluationResultContext<PolicyMapType>['allowedPolicies'] =
+  validatedPolicies: ValidatedPolicyMap<z.infer<ToolParamsSchema>, PoliciesByPackageName>;
+}): Promise<PolicyEvaluationResultContext<PoliciesByPackageName>> {
+  const evaluatedPolicies: PolicyEvaluationResultContext<PoliciesByPackageName>['evaluatedPolicies'] =
+    [];
+  const policyEvaluationResults: PolicyEvaluationResultContext<PoliciesByPackageName>['allowedPolicies'] =
     {};
-  let policyDeniedResult: PolicyEvaluationResultContext<PolicyMapType>['deniedPolicy'] = undefined;
+  let policyDeniedResult: PolicyEvaluationResultContext<PoliciesByPackageName>['deniedPolicy'] =
+    undefined;
   const rawAllowedPolicies: Partial<{
-    [K in keyof PolicyMapType]: { result: unknown };
+    [K in keyof PoliciesByPackageName]: { result: unknown };
   }> = {};
 
   for (const { policyPackageName, toolPolicyParams } of validatedPolicies) {
     evaluatedPolicies.push(policyPackageName);
 
-    const policy = vincentTool.supportedPolicies[policyPackageName];
+    const policy = vincentTool.policyMap.policyByPackageName[policyPackageName];
     try {
       const litActionResponse = await Lit.Actions.call({
         ipfsId: policy.vincentPolicy.ipfsCid,
@@ -124,7 +113,7 @@ export async function evaluatePolicies<
   return createAllowEvaluationResult({
     evaluatedPolicies,
     allowedPolicies:
-      rawAllowedPolicies as PolicyEvaluationResultContext<PolicyMapType>['allowedPolicies'],
+      rawAllowedPolicies as PolicyEvaluationResultContext<PoliciesByPackageName>['allowedPolicies'],
   });
 }
 

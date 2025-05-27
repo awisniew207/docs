@@ -12,7 +12,7 @@ import {
 /**
  * Overload: return a fully-typed deny response with a result
  */
-export function createDenyResult<T>(params: { message: string; result: T }): PolicyResponseDeny<T>;
+export function createDenyResult<T>(params: { message?: string; result: T }): PolicyResponseDeny<T>;
 /**
  * Overload: return a deny response with no result
  */
@@ -21,7 +21,7 @@ export function createDenyResult(params: { message: string }): PolicyResponseDen
  * Implementation
  */
 export function createDenyResult<T>(params: {
-  message: string;
+  message?: string;
   result?: T;
 }): PolicyResponseDeny<T> | PolicyResponseDenyNoResult {
   if (params.result === undefined) {

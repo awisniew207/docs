@@ -15,8 +15,8 @@ import { ToolPolicyMap } from '../helpers';
 export type ToolDefLifecycleFunction<
   ToolParams extends z.ZodType,
   Policies,
-  SuccessSchema extends z.ZodType | undefined,
-  FailSchema extends z.ZodType | undefined,
+  SuccessSchema extends z.ZodType = z.ZodUndefined,
+  FailSchema extends z.ZodType = z.ZodUndefined,
 > = (
   args: {
     toolParams: z.infer<ToolParams>;
@@ -36,22 +36,22 @@ export type VincentToolDef<
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
-  PolicyMapType extends PolicyMap['policyByPackageName'],
-  PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
-  PrecheckFailSchema extends z.ZodType | undefined = undefined,
-  ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
-  ExecuteFailSchema extends z.ZodType | undefined = undefined,
+  PoliciesByPackageName extends PolicyMap['policyByPackageName'],
+  PrecheckSuccessSchema extends z.ZodType = z.ZodUndefined,
+  PrecheckFailSchema extends z.ZodType = z.ZodUndefined,
+  ExecuteSuccessSchema extends z.ZodType = z.ZodUndefined,
+  ExecuteFailSchema extends z.ZodType = z.ZodUndefined,
   PrecheckFn =
     | undefined
     | ToolDefLifecycleFunction<
         ToolParamsSchema,
-        PolicyEvaluationResultContext<PolicyMapType>,
+        PolicyEvaluationResultContext<PoliciesByPackageName>,
         PrecheckSuccessSchema,
         PrecheckFailSchema
       >,
   ExecuteFn = ToolDefLifecycleFunction<
     ToolParamsSchema,
-    ToolExecutionPolicyContext<PolicyMapType>,
+    ToolExecutionPolicyContext<PoliciesByPackageName>,
     ExecuteSuccessSchema,
     ExecuteFailSchema
   >,

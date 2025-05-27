@@ -3,6 +3,8 @@ import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { createAllowResult } from '../lib/policyCore/helpers/resultCreators';
+import { createDenyResult } from '../lib/policyCore/helpers';
 
 // Define your tool schema
 const myToolSchema = z.object({
@@ -360,6 +362,8 @@ export const myTool = createVincentTool({
         if (toolSdkPolicyContext) {
           const commitResult = await toolSdkPolicyContext.commit();
 
+          const wat: boolean = commitResult.allow;
+          console.log(wat);
           if (commitResult.allow) {
             console.log(commitResult.result);
           }
@@ -420,10 +424,11 @@ export const gogoPolicy = async function () {
 
 export const gogo = async function () {
   const toolExecuteResult = await myTool.execute(
-    { action: 'wat', target: 'meow', amount: 23098123 },
+    { toolParams: { action: 'wat', target: 'meow', amount: 23098123 } },
     {
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
       policiesContext: {
+        allow: true,
         evaluatedPolicies: [
           // 'extra-rate-limit',
           'rate-limit',
@@ -436,6 +441,22 @@ export const gogo = async function () {
             result: {
               approvedCurrency: 'USD',
             },
+            commit: async (params) => {
+              if (!params.transactionId.includes('fail')) {
+                return createAllowResult({
+                  result: {
+                    transaction: `completed-${params.transactionId}`,
+                    timestamp: 1700000000000,
+                  },
+                });
+              } else {
+                return createDenyResult({
+                  result: {
+                    failureReason: 'Invalid transaction ID format',
+                  },
+                });
+              }
+            },
           },
         },
       },
@@ -446,7 +467,7 @@ export const gogo = async function () {
 
   if (myTool.precheck) {
     return myTool.precheck(
-      { action: 'wat', target: 'meow', amount: 23098123 },
+      { toolParams: { action: 'wat', target: 'meow', amount: 23098123 } },
       {
         delegation: { delegatee: 'meow', delegator: 'meowmeow' },
         policiesContext: {

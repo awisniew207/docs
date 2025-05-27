@@ -3,13 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z, type ZodError } from 'zod';
-import {
-  ContextAllowResponse,
-  ContextAllowResponseNoResult,
-  ContextDenyResponse,
-  ContextDenyResponseNoResult,
-} from './policyCore/policyDef/context/types';
-import { ToolContext } from './toolCore/toolDef/context/types';
+import { BaseToolContext } from './toolCore/toolDef/context/types';
 import { ToolPolicyMap } from './toolCore/helpers';
 
 export interface PolicyResponseAllow<AllowResult> {
@@ -300,16 +294,16 @@ export type ToolExecutionPolicyContext<
                   commitAllowResultSchema: infer CommitAllowSchema;
                 }
                   ? CommitAllowSchema extends z.ZodType
-                    ? ContextAllowResponse<z.infer<CommitAllowSchema>>
-                    : ContextAllowResponseNoResult
-                  : ContextAllowResponseNoResult)
+                    ? PolicyResponseAllow<z.infer<CommitAllowSchema>>
+                    : PolicyResponseAllowNoResult
+                  : PolicyResponseAllowNoResult)
               | (Policies[PolicyKey]['__schemaTypes'] extends {
                   commitDenyResultSchema: infer CommitDenySchema;
                 }
                   ? CommitDenySchema extends z.ZodType
-                    ? ContextDenyResponse<z.infer<CommitDenySchema>>
-                    : ContextDenyResponseNoResult
-                  : ContextDenyResponseNoResult)
+                    ? PolicyResponseDeny<z.infer<CommitDenySchema>>
+                    : PolicyResponseDenyNoResult
+                  : PolicyResponseDenyNoResult)
             >
           : never
         : undefined;
@@ -352,21 +346,22 @@ export type ToolLifecycleFunction<
 > = (
   params: {
     toolParams: z.infer<ToolParamsSchema>;
-    policiesContext: Policies;
   },
-  context: ToolContext<SuccessSchema, FailSchema, Policies>,
+  context: BaseToolContext<Policies>,
 ) => Promise<ToolResponse<SuccessSchema, FailSchema>>;
 
 export type VincentTool<
   ToolParamsSchema extends z.ZodType,
-  PolicyMapByPackageName extends ToolPolicyMap<any, string>['policyByPackageName'],
+  PkgNames extends string,
+  PolicyMap extends ToolPolicyMap<any, PkgNames>,
+  PoliciesByPackageName extends PolicyMap['policyByPackageName'],
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
   PrecheckSuccessSchema extends z.ZodType | undefined = undefined,
   PrecheckFailSchema extends z.ZodType | undefined = undefined,
   ExecuteFn = ToolLifecycleFunction<
     ToolParamsSchema,
-    ToolExecutionPolicyContext<PolicyMapByPackageName>,
+    ToolExecutionPolicyContext<PoliciesByPackageName>,
     ExecuteSuccessSchema,
     ExecuteFailSchema
   >,
@@ -374,7 +369,7 @@ export type VincentTool<
     | undefined
     | ToolLifecycleFunction<
         ToolParamsSchema,
-        PolicyEvaluationResultContext<PolicyMapByPackageName>,
+        PolicyEvaluationResultContext<PoliciesByPackageName>,
         PrecheckSuccessSchema,
         PrecheckFailSchema
       >,
@@ -382,6 +377,7 @@ export type VincentTool<
   precheck?: PrecheckFn;
   execute: ExecuteFn;
   toolParamsSchema: ToolParamsSchema;
+  policyMap: PolicyMap;
   __schemaTypes: {
     executeSuccessSchema?: ExecuteSuccessSchema;
     executeFailSchema?: ExecuteFailSchema;

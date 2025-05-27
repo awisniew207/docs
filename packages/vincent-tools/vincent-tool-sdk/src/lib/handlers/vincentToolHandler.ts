@@ -1,22 +1,15 @@
-// src/lib/handlers/vincentToolHandler.ts
-
 import { ethers } from 'ethers';
 
-import {
-  PolicyEvaluationResultContext,
-  ToolExecutionPolicyContext,
-  VincentToolDef,
-} from '../types';
+import { PolicyEvaluationResultContext, ToolExecutionPolicyContext, VincentTool } from '../types';
 import type { BaseContext } from '../types';
-import { createVincentTool } from '../toolCore/vincentTool';
-import { getPkpInfo, validatePolicies } from '../toolCore/helpers';
+import { getPkpInfo } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
 import { isToolFailureResponse } from '../toolCore/helpers/typeGuards';
-import { createVincentPolicy } from '../policyCore';
 import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { validatePolicies } from '../toolCore/helpers/validatePolicies';
+import { ToolPolicyMap } from '../toolCore/helpers';
+import { z } from 'zod';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -30,41 +23,49 @@ declare const Lit: {
   };
 };
 
-type ExtractPolicyMapType<T> =
-  T extends VincentToolDef<any, any, any, infer PolicyMap, any, any, any, any, any, any>
-    ? PolicyMap
-    : never;
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function createToolExecutionContext<
-  Def extends VincentToolDef<any, any, any, any, any, any, any, any, any, any>,
+  ToolParamsSchema extends z.ZodType,
+  PkgNames extends string,
+  PolicyMap extends ToolPolicyMap<any, PkgNames>,
+  PoliciesByPackageName extends PolicyMap['policyByPackageName'],
 >({
-  vincentToolDef,
+  vincentTool,
   policyEvaluationResults,
   baseContext,
 }: {
-  vincentToolDef: Def;
-  policyEvaluationResults: PolicyEvaluationResultContext<ExtractPolicyMapType<Def>>;
+  vincentTool: VincentTool<
+    ToolParamsSchema,
+    PkgNames,
+    PolicyMap,
+    PoliciesByPackageName,
+    any,
+    any,
+    any,
+    any
+  >;
+  policyEvaluationResults: PolicyEvaluationResultContext<PoliciesByPackageName>;
   baseContext: BaseContext;
-}): ToolExecutionPolicyContext<ExtractPolicyMapType<Def>> {
-  const policyMap = createVincentTool(vincentToolDef)
-    .supportedPolicies as ExtractPolicyMapType<Def>;
-
+}): ToolExecutionPolicyContext<PoliciesByPackageName> {
   if (!policyEvaluationResults.allow) {
     throw new Error('Received denied policies to createToolExecutionContext()');
   }
 
-  const newContext: ToolExecutionPolicyContext<ExtractPolicyMapType<Def>> = {
+  const newContext: ToolExecutionPolicyContext<PoliciesByPackageName> = {
     allow: true,
     evaluatedPolicies: policyEvaluationResults.evaluatedPolicies,
-    allowedPolicies: {} as ToolExecutionPolicyContext<ExtractPolicyMapType<Def>>['allowedPolicies'],
+    allowedPolicies: {} as ToolExecutionPolicyContext<PoliciesByPackageName>['allowedPolicies'],
   };
 
+  const policyByPackageName = vincentTool.policyMap.policyByPackageName;
   const allowedKeys = Object.keys(policyEvaluationResults.allowedPolicies) as Array<
-    keyof ExtractPolicyMapType<Def>
+    keyof typeof policyByPackageName
   >;
+
   for (const packageName of allowedKeys) {
     const entry = policyEvaluationResults.allowedPolicies[packageName];
-    const policy = createVincentPolicy(policyMap[packageName].policyDef);
+    const policy = policyByPackageName[packageName];
+    const vincentPolicy = policy.vincentPolicy;
 
     if (!entry) {
       throw new Error(`Missing entry on allowedPolicies for policy: ${packageName as string}`);
@@ -78,46 +79,55 @@ export function createToolExecutionContext<
     };
 
     // TODO: Collect results of commit calls and add to the execution context result
-    if (policy.commit) {
-      const commitFn = policy.commit;
+    if (vincentPolicy.commit) {
+      const commitFn = vincentPolicy.commit;
       resultWrapper.commit = (commitParams) => {
         return commitFn(commitParams, baseContext);
       };
     }
 
-    newContext.allowedPolicies[packageName] = resultWrapper as ToolExecutionPolicyContext<
-      ExtractPolicyMapType<Def>
-    >['allowedPolicies'][typeof packageName];
+    newContext.allowedPolicies[packageName] =
+      resultWrapper as ToolExecutionPolicyContext<PoliciesByPackageName>['allowedPolicies'][typeof packageName];
   }
 
   return newContext;
 }
 
 export const vincentToolHandler = <
-  Def extends VincentToolDef<any, any, any, any, any, any, any, any, any, any>,
+  ToolParamsSchema extends z.ZodType,
+  PkgNames extends string,
+  PolicyMap extends ToolPolicyMap<any, PkgNames>,
+  PoliciesByPackageName extends PolicyMap['policyByPackageName'],
 >({
-  vincentToolDef,
+  vincentTool,
   toolParams,
   baseContext,
 }: {
-  vincentToolDef: Def;
+  vincentTool: VincentTool<
+    ToolParamsSchema,
+    PkgNames,
+    PolicyMap,
+    PoliciesByPackageName,
+    any,
+    any,
+    any,
+    any
+  >;
   baseContext: BaseContext;
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
-    let policyEvalResults: PolicyEvaluationResultContext<ExtractPolicyMapType<Def>> | undefined =
+    let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
 
     try {
-      const vincentTool = createVincentTool(vincentToolDef);
-
       const toolIpfsCid = LitAuth.actionIpfsIds[0];
       const delegationRpcUrl = await Lit.Actions.getRpcUrl({ chain: 'yellowstone' });
       const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
 
       const parsedOrFail = validateOrFail(
         toolParams,
-        vincentToolDef.toolParamsSchema,
+        vincentTool.toolParamsSchema,
         'execute',
         'input',
       );
@@ -140,7 +150,7 @@ export const vincentToolHandler = <
       const validatedPolicies = await validatePolicies({
         delegationRpcUrl,
         appDelegateeAddress,
-        vincentToolDef,
+        vincentTool,
         parsedToolParams: parsedOrFail,
         toolIpfsCid,
         pkpTokenId: userPkpInfo.tokenId,
@@ -148,13 +158,13 @@ export const vincentToolHandler = <
 
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
-        vincentToolDef,
+        vincentTool,
         context: baseContext,
       });
 
       policyEvalResults = policyEvaluationResults;
 
-      if (policyEvalResults.allow === false) {
+      if (!policyEvalResults.allow) {
         Lit.Actions.setResponse({
           response: JSON.stringify({
             policyEvaluationResults: policyEvalResults,
@@ -167,9 +177,9 @@ export const vincentToolHandler = <
       }
 
       const executeContext = createToolExecutionContext({
-        vincentToolDef,
+        vincentTool,
         policyEvaluationResults,
-        baseContext: baseContext,
+        baseContext,
       });
 
       const toolExecutionResult = await vincentTool.execute(parsedOrFail, {
