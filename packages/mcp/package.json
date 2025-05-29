@@ -1,9 +1,12 @@
 {
   "name": "@lit-protocol/vincent-mcp",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Vincent App MCP Transformer",
   "author": "Lit Protocol",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "pnpm@10.7.0",
   "engines": {
     "node": "^20.11.1",
@@ -17,13 +20,14 @@
     "agents"
   ],
   "files": [
-    "build/**"
+    "src/**"
   ],
   "bin": {
-    "http": "./build/http.js",
-    "stdio": "./build/stdio.js"
+    "vincent-mcp": "src/cli.js",
+    "http": "src/http.js",
+    "stdio": "src/stdio.js"
   },
-  "main": "./build/stdio.js",
+  "main": "./src/stdio.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -36,6 +40,7 @@
   "dependencies": {
     "@lit-protocol/constants": "^7.1.1",
     "@lit-protocol/contracts-sdk": "^7.1.1",
+    "@lit-protocol/vincent-sdk": "0.0.7",
     "@modelcontextprotocol/sdk": "^1.11.2",
     "@t3-oss/env-core": "^0.13.4",
     "ethers": "^5.8.0",
