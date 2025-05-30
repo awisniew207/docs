@@ -1,5 +1,5 @@
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
-import { DeleteResponse, Error, VersionChanges } from './schemas/base';
+import { DeleteResponse, Error, VersionChanges } from '../schemas/base';
 
 const registry = new OpenAPIRegistry();
 

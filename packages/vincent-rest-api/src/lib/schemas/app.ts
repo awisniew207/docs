@@ -1,6 +1,6 @@
 import { BaseDocAttributes } from './base';
 import { z } from './openApiZod';
-import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../constants';
+import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../openApi/constants';
 
 // Request body for creating a new application
 export const CreateApp = z.object({

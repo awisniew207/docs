@@ -1,4 +1,4 @@
-import { z } from './schemas/openApiZod';
+import { z } from '../schemas/openApiZod';
 
 import {
   AppDef,
@@ -6,7 +6,7 @@ import {
   AppVersionWithTools,
   CreateApp,
   CreateAppVersion,
-} from './schemas/app';
+} from '../schemas/app';
 import { DeleteResponseSchema, ErrorSchema, VersionChangesSchema } from './baseRegistry';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 

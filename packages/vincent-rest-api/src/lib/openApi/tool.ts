@@ -1,6 +1,6 @@
-import { CreateTool, EditTool, ToolDef, ToolVersionDef } from './schemas/tool';
+import { CreateTool, EditTool, ToolDef, ToolVersionDef } from '../schemas/tool';
 import { ErrorSchema, VersionChangesSchema } from './baseRegistry';
-import { z } from './schemas/openApiZod';
+import { z } from '../schemas/openApiZod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
 export function addToRegistry(registry: OpenAPIRegistry) {

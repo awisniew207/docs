@@ -1,6 +1,6 @@
-import { CreatePolicy, EditPolicy, PolicyDef, PolicyVersionDef } from './schemas/policy';
+import { CreatePolicy, EditPolicy, PolicyDef, PolicyVersionDef } from '../schemas/policy';
 import { ErrorSchema, VersionChangesSchema } from './baseRegistry';
-import { z } from './schemas/openApiZod';
+import { z } from '../schemas/openApiZod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
 export function addToRegistry(registry: OpenAPIRegistry) {

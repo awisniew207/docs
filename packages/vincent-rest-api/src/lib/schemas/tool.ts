@@ -1,5 +1,5 @@
 import { BaseDocAttributes } from './base';
-import { EXAMPLE_WALLET_ADDRESS } from '../constants';
+import { EXAMPLE_WALLET_ADDRESS } from '../openApi/constants';
 import { z } from 'zod';
 import { Author, Contributor } from './packages';
 
