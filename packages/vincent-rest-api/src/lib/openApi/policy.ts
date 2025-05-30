@@ -9,6 +9,32 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   const PolicyDefSchema = registry.register('PolicyDef', PolicyDef);
   const PolicyVersionDefSchema = registry.register('PolicyVersionDef', PolicyVersionDef);
 
+  registry.registerPath({
+    method: 'get',
+    path: '/policies',
+    tags: ['policy'],
+    summary: 'Lists all policies',
+    operationId: 'listAllPolicies',
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: z.array(PolicyDefSchema),
+          },
+        },
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorSchema,
+          },
+        },
+      },
+    },
+  });
+
   // POST /policy - Create a new policy
   registry.registerPath({
     method: 'post',

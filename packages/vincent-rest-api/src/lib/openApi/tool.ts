@@ -9,6 +9,33 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   const ToolDefSchema = registry.register('ToolDef', ToolDef);
   const ToolVersionDefSchema = registry.register('ToolVersionDef', ToolVersionDef);
 
+  // GET /tools - List all tools
+  registry.registerPath({
+    method: 'get',
+    path: '/tools',
+    tags: ['tool'],
+    summary: 'Lists all tools',
+    operationId: 'listAllTools',
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: z.array(ToolDefSchema),
+          },
+        },
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorSchema,
+          },
+        },
+      },
+    },
+  });
+
   // POST /tool - Create a new tool
   registry.registerPath({
     method: 'post',

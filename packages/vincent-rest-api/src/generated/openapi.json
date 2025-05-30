@@ -756,11 +756,6 @@
             "description": "Policy package name",
             "example": "@vincent/foo-bar-policy"
           },
-          "identity": {
-            "type": "string",
-            "description": "Unique composite identifier",
-            "example": "PolicyDef|@vincent/foo-bar-policy"
-          },
           "authorWalletAddress": {
             "type": "string",
             "description": "Author wallet address",
@@ -782,7 +777,6 @@
           "updatedAt",
           "createdAt",
           "packageName",
-          "identity",
           "authorWalletAddress",
           "description",
           "activeVersion"
@@ -1520,6 +1514,40 @@
         }
       }
     },
+    "/tools": {
+      "get": {
+        "tags": [
+          "tool"
+        ],
+        "summary": "Lists all tools",
+        "operationId": "listAllTools",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ToolDef"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tool": {
       "post": {
         "tags": [
@@ -1961,6 +1989,40 @@
           },
           "422": {
             "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policies": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Lists all policies",
+        "operationId": "listAllPolicies",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyDef"
+                  }
+                }
+              }
+            }
           },
           "default": {
             "description": "Unexpected error",

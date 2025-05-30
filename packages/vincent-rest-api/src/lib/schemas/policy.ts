@@ -7,10 +7,6 @@ export const PolicyDef = BaseDocAttributes.extend({
     description: 'Policy package name',
     example: '@vincent/foo-bar-policy',
   }),
-  identity: z.string().openapi({
-    description: 'Unique composite identifier',
-    example: 'PolicyDef|@vincent/foo-bar-policy',
-  }),
   authorWalletAddress: z.string().openapi({
     description: 'Author wallet address',
     example: '0xa723407AdB396a55aCd843D276daEa0d787F8db5',

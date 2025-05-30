@@ -43,6 +43,9 @@ const injectedRtkApi = api.injectEndpoints({
         method: 'POST',
       }),
     }),
+    listAllTools: build.query<ListAllToolsApiResponse, ListAllToolsApiArg>({
+      query: () => ({ url: `/tools` }),
+    }),
     createTool: build.mutation<CreateToolApiResponse, CreateToolApiArg>({
       query: (queryArg) => ({ url: `/tool`, method: 'POST', body: queryArg.createTool }),
     }),
@@ -82,6 +85,9 @@ const injectedRtkApi = api.injectEndpoints({
         method: 'PUT',
         body: queryArg.versionChanges,
       }),
+    }),
+    listAllPolicies: build.query<ListAllPoliciesApiResponse, ListAllPoliciesApiArg>({
+      query: () => ({ url: `/policies` }),
     }),
     createPolicy: build.mutation<CreatePolicyApiResponse, CreatePolicyApiArg>({
       query: (queryArg) => ({ url: `/policy`, method: 'POST', body: queryArg.createPolicyDef }),
@@ -186,6 +192,8 @@ export type ToggleAppVersionApiArg = {
   /** Version number to toggle */
   version: number;
 };
+export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolDefRead[];
+export type ListAllToolsApiArg = void;
 export type CreateToolApiResponse = /** status 200 Successful operation */ ToolDefRead;
 export type CreateToolApiArg = {
   /** Developer-defined tool details */
@@ -241,6 +249,8 @@ export type EditToolVersionApiArg = {
   /** Update version changes field */
   versionChanges: VersionChanges;
 };
+export type ListAllPoliciesApiResponse = /** status 200 Successful operation */ PolicyDefRead[];
+export type ListAllPoliciesApiArg = void;
 export type CreatePolicyApiResponse = /** status 200 Successful operation */ PolicyDefRead;
 export type CreatePolicyApiArg = {
   /** Developer-defined policy details */
@@ -580,8 +590,6 @@ export type PolicyDef = {
   createdAt: string;
   /** Policy package name */
   packageName: string;
-  /** Unique composite identifier */
-  identity: string;
   /** Author wallet address */
   authorWalletAddress: string;
   /** Policy description */
@@ -598,8 +606,6 @@ export type PolicyDefRead = {
   createdAt: string;
   /** Policy package name */
   packageName: string;
-  /** Unique composite identifier */
-  identity: string;
   /** Author wallet address */
   authorWalletAddress: string;
   /** Policy description */
@@ -739,6 +745,7 @@ export const {
   useGetAppVersionQuery,
   useEditAppVersionMutation,
   useToggleAppVersionMutation,
+  useListAllToolsQuery,
   useCreateToolMutation,
   useGetToolQuery,
   useEditToolMutation,
@@ -747,6 +754,7 @@ export const {
   useCreateToolVersionMutation,
   useGetToolVersionQuery,
   useEditToolVersionMutation,
+  useListAllPoliciesQuery,
   useCreatePolicyMutation,
   useGetPolicyQuery,
   useEditPolicyMutation,
