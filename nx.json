@@ -32,13 +32,20 @@
     }
   ],
   "release": {
-    "projects": ["vincent-sdk", "vincent-rest-api"],
+    "projects": ["vincent-sdk", "vincent-mcp", "vincent-rest-api"],
     "projectsRelationship": "independent",
     "releaseTagPattern": "vincent/{projectName}/{version}",
     "versionPlans": true,
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": true
+    },
+    "version": {
+      "preVersionCommand": "pnpm dlx nx run-many --target=build --projects=vincent-sdk,vincent-mcp,vincent-rest-api --parallel=false"
+    },
+    "git": {
+      "tagArgs": "-f",
+      "pushArgs": "--force-with-lease"
     }
   },
   "targetDefaults": {
