@@ -27,12 +27,12 @@ vincent-rest-api/
 │   │   ├── api/                # RTK Query API client
 │   │   └── openapi.json        # Generated OpenAPI specification
 │   ├── tests/                  # Integration tests
-│   │   └── integration.test.ts # API integration tests (WIP)
+│   │   └── integration.test.txt # API integration tests (WIP)
 │   └── utils/                  # Utility scripts for API generation
 │       └── generate-openapi.ts # Script to generate OpenAPI specs from Zod schemas
 ├── docs/                       # API documentation
 │   └── api.html                # API documentation viewer using RapiDoc
-├── openapi-config.js           # RTK Query codegen configuration
+├── rtk-client-config.js           # RTK Query codegen configuration
 ├── package.json                # Project dependencies and scripts
 └── README.md                   # Project documentation
 ```

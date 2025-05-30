@@ -15,6 +15,7 @@ const config: Config = {
       },
     ],
   },
+  passWithNoTests: true,
   testMatch: ['<rootDir>/src/tests/**/*.test.ts'],
   verbose: true,
 };

@@ -7,7 +7,6 @@ extendZodWithOpenApi(z);
 const registry = new OpenAPIRegistry();
 
 // Request body for creating a new application
-// Active version is optional, since we'll set it to 1, but we'll need to change it if the user wants to update the active version
 export const CreateAppDef = z.object({
   name: z.string().openapi({
     description: 'The name of the application',
@@ -40,10 +39,6 @@ export const CreateAppDef = z.object({
   managerAddress: z.string().openapi({
     description: 'Manager wallet address',
     example: '0xa723407AdB396a55aCd843D276daEa0d787F8db5',
-  }),
-  activeVersion: z.number().optional().openapi({
-    description: 'Active version of the application',
-    example: 2,
   }),
 });
 

@@ -1,4 +1,4 @@
-import { emptySplitApi as api } from './emptyApi';
+import { baseVincentRtkApi as api } from '../lib/baseVincentRtkApi';
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     createApp: build.mutation<CreateAppApiResponse, CreateAppApiArg>({
@@ -126,7 +126,7 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as vincentApi };
+export { injectedRtkApi as vincentApiClient };
 export type CreateAppApiResponse = /** status 200 Successful operation */ IAppDefRead;
 export type CreateAppApiArg = {
   /** Developer-defined application information */
@@ -335,12 +335,12 @@ export type IAppDefRead = {
   deploymentStatus: 'dev' | 'test' | 'prod';
   /** Manager wallet address */
   managerAddress: string;
-  /** Active version of the application */
-  activeVersion: number;
   /** Unique composite identifier in the format AppDef|<appId> */
   identity: string;
   /** Application ID */
   appId: number;
+  /** Active version of the application */
+  activeVersion: number;
   /** Last updated timestamp */
   lastUpdated: string;
 };
@@ -367,8 +367,6 @@ export type ICreateAppDef = {
   deploymentStatus: 'dev' | 'test' | 'prod';
   /** Manager wallet address */
   managerAddress: string;
-  /** Active version of the application */
-  activeVersion?: number;
 };
 export type DeleteResponse = {
   /** Success message */

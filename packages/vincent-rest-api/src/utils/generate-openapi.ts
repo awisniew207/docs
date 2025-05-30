@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { registry } from '../api/api';
+import { registry } from '../lib/apiDefinition';
 import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 
 const generator = new OpenApiGeneratorV3(registry.definitions);
