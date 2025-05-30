@@ -1,7 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import { registry } from '../lib/apiDefinition';
+import { registry } from '../lib/baseRegistry';
 import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
+import { addToRegistry as addPolicyToRegistry } from '../lib/policy';
+import { addToRegistry as addToolToRegistry } from '../lib/tool';
+import { addToRegistry as addAppToRegistry } from '../lib/app';
+
+addAppToRegistry(registry);
+addToolToRegistry(registry);
+addPolicyToRegistry(registry);
 
 const generator = new OpenApiGeneratorV3(registry.definitions);
 

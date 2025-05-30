@@ -2,7 +2,7 @@ import { baseVincentRtkApi as api } from '../lib/baseVincentRtkApi';
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     createApp: build.mutation<CreateAppApiResponse, CreateAppApiArg>({
-      query: (queryArg) => ({ url: `/app`, method: 'POST', body: queryArg.iCreateAppDef }),
+      query: (queryArg) => ({ url: `/app`, method: 'POST', body: queryArg.createApp }),
     }),
     getApp: build.query<GetAppApiResponse, GetAppApiArg>({
       query: (queryArg) => ({ url: `/app/${queryArg.appId}` }),
@@ -11,7 +11,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/app/${queryArg.appId}`,
         method: 'PUT',
-        body: queryArg.iCreateAppDef,
+        body: queryArg.createApp,
       }),
     }),
     deleteApp: build.mutation<DeleteAppApiResponse, DeleteAppApiArg>({
@@ -24,7 +24,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/app/${queryArg.appId}/version`,
         method: 'POST',
-        body: queryArg.iCreateAppVersionDef,
+        body: queryArg.createAppVersion,
       }),
     }),
     getAppVersion: build.query<GetAppVersionApiResponse, GetAppVersionApiArg>({
@@ -44,7 +44,7 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     createTool: build.mutation<CreateToolApiResponse, CreateToolApiArg>({
-      query: (queryArg) => ({ url: `/tool`, method: 'POST', body: queryArg.iCreateToolDef }),
+      query: (queryArg) => ({ url: `/tool`, method: 'POST', body: queryArg.createTool }),
     }),
     getTool: build.query<GetToolApiResponse, GetToolApiArg>({
       query: (queryArg) => ({ url: `/tool/${queryArg.packageName}` }),
@@ -53,7 +53,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/tool/${queryArg.packageName}`,
         method: 'PUT',
-        body: queryArg.iEditToolDef,
+        body: queryArg.editTool,
       }),
     }),
     getToolVersions: build.query<GetToolVersionsApiResponse, GetToolVersionsApiArg>({
@@ -84,7 +84,7 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     createPolicy: build.mutation<CreatePolicyApiResponse, CreatePolicyApiArg>({
-      query: (queryArg) => ({ url: `/policy`, method: 'POST', body: queryArg.iCreatePolicyDef }),
+      query: (queryArg) => ({ url: `/policy`, method: 'POST', body: queryArg.createPolicyDef }),
     }),
     getPolicy: build.query<GetPolicyApiResponse, GetPolicyApiArg>({
       query: (queryArg) => ({ url: `/policy/${queryArg.packageName}` }),
@@ -93,7 +93,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/policy/${queryArg.packageName}`,
         method: 'PUT',
-        body: queryArg.iEditPolicyDef,
+        body: queryArg.editPolicyDef,
       }),
     }),
     createPolicyVersion: build.mutation<CreatePolicyVersionApiResponse, CreatePolicyVersionApiArg>({
@@ -127,22 +127,22 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as vincentApiClient };
-export type CreateAppApiResponse = /** status 200 Successful operation */ IAppDefRead;
+export type CreateAppApiResponse = /** status 200 Successful operation */ AppDefRead;
 export type CreateAppApiArg = {
   /** Developer-defined application information */
-  iCreateAppDef: ICreateAppDef;
+  createApp: CreateApp;
 };
-export type GetAppApiResponse = /** status 200 Successful operation */ IAppDefRead;
+export type GetAppApiResponse = /** status 200 Successful operation */ AppDefRead;
 export type GetAppApiArg = {
   /** ID of the application to retrieve */
   appId: number;
 };
-export type EditAppApiResponse = /** status 200 Successful operation */ IAppDefRead;
+export type EditAppApiResponse = /** status 200 Successful operation */ AppDefRead;
 export type EditAppApiArg = {
   /** ID of the application to edit */
   appId: number;
   /** Developer-defined updated application details */
-  iCreateAppDef: ICreateAppDef;
+  createApp: CreateApp;
 };
 export type DeleteAppApiResponse =
   /** status 200 OK - Resource successfully deleted */ DeleteResponse;
@@ -155,22 +155,22 @@ export type GetAppVersionsApiArg = {
   /** ID of the application whose versions will be fetched */
   appId: number;
 };
-export type CreateAppVersionApiResponse = /** status 200 Successful operation */ IAppVersionDefRead;
+export type CreateAppVersionApiResponse = /** status 200 Successful operation */ AppVersionDefRead;
 export type CreateAppVersionApiArg = {
   /** ID of the application to create a new version for */
   appId: number;
   /** Developer-defined version details */
-  iCreateAppVersionDef: ICreateAppVersionDef;
+  createAppVersion: CreateAppVersion;
 };
 export type GetAppVersionApiResponse =
-  /** status 200 Successful operation */ IAppVersionWithToolsDefRead;
+  /** status 200 Successful operation */ AppVersionWithToolsRead;
 export type GetAppVersionApiArg = {
   /** ID of the application to retrieve a version for */
   appId: number;
   /** Version number to retrieve */
   version: number;
 };
-export type EditAppVersionApiResponse = /** status 200 Successful operation */ IAppVersionDefRead;
+export type EditAppVersionApiResponse = /** status 200 Successful operation */ AppVersionDefRead;
 export type EditAppVersionApiArg = {
   /** ID of the application to edit a version for */
   appId: number;
@@ -179,36 +179,36 @@ export type EditAppVersionApiArg = {
   /** Update version changes field */
   versionChanges: VersionChanges;
 };
-export type ToggleAppVersionApiResponse = /** status 200 Successful operation */ IAppVersionDefRead;
+export type ToggleAppVersionApiResponse = /** status 200 Successful operation */ AppVersionDefRead;
 export type ToggleAppVersionApiArg = {
   /** ID of the application to toggle a version for */
   appId: number;
   /** Version number to toggle */
   version: number;
 };
-export type CreateToolApiResponse = /** status 200 Successful operation */ IToolDef;
+export type CreateToolApiResponse = /** status 200 Successful operation */ ToolDefRead;
 export type CreateToolApiArg = {
   /** Developer-defined tool details */
-  iCreateToolDef: ICreateToolDef;
+  createTool: CreateTool;
 };
-export type GetToolApiResponse = /** status 200 Successful operation */ IToolDef;
+export type GetToolApiResponse = /** status 200 Successful operation */ ToolDefRead;
 export type GetToolApiArg = {
   /** Package name of the tool to retrieve */
   packageName: string;
 };
-export type EditToolApiResponse = /** status 200 Successful operation */ IToolDef;
+export type EditToolApiResponse = /** status 200 Successful operation */ ToolDefRead;
 export type EditToolApiArg = {
   /** Package name of the tool to edit */
   packageName: string;
   /** Developer-defined updated tool details */
-  iEditToolDef: IEditToolDef;
+  editTool: EditTool;
 };
-export type GetToolVersionsApiResponse = /** status 200 Successful operation */ IToolVersionDef[];
+export type GetToolVersionsApiResponse = /** status 200 Successful operation */ ToolVersionDef[];
 export type GetToolVersionsApiArg = {
   /** Package name of the tool to fetch versions for */
   packageName: string;
 };
-export type ChangeToolOwnerApiResponse = /** status 200 Successful operation */ IToolDef;
+export type ChangeToolOwnerApiResponse = /** status 200 Successful operation */ ToolDefRead;
 export type ChangeToolOwnerApiArg = {
   /** Package name of the tool to change the owner of */
   packageName: string;
@@ -218,21 +218,21 @@ export type ChangeToolOwnerApiArg = {
     authorWalletAddress: string;
   };
 };
-export type CreateToolVersionApiResponse = /** status 200 Successful operation */ IToolVersionDef;
+export type CreateToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionDef;
 export type CreateToolVersionApiArg = {
   /** Package name of the tool to create a new version for */
   packageName: string;
   /** Developer-defined version details */
   versionChanges: VersionChanges;
 };
-export type GetToolVersionApiResponse = /** status 200 Successful operation */ IToolVersionDef;
+export type GetToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionDef;
 export type GetToolVersionApiArg = {
   /** Package name of the tool to retrieve a version for */
   packageName: string;
   /** Version number to retrieve */
   version: string;
 };
-export type EditToolVersionApiResponse = /** status 200 Successful operation */ IToolVersionDef;
+export type EditToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionDef;
 export type EditToolVersionApiArg = {
   /** Package name of the tool to edit a version for */
   packageName: string;
@@ -241,39 +241,41 @@ export type EditToolVersionApiArg = {
   /** Update version changes field */
   versionChanges: VersionChanges;
 };
-export type CreatePolicyApiResponse = /** status 200 Successful operation */ IPolicyDef;
+export type CreatePolicyApiResponse = /** status 200 Successful operation */ PolicyDefRead;
 export type CreatePolicyApiArg = {
   /** Developer-defined policy details */
-  iCreatePolicyDef: ICreatePolicyDef;
+  createPolicyDef: CreatePolicyDef;
 };
-export type GetPolicyApiResponse = /** status 200 Successful operation */ IPolicyDef;
+export type GetPolicyApiResponse = /** status 200 Successful operation */ PolicyDefRead;
 export type GetPolicyApiArg = {
   /** Package name of the policy to retrieve */
   packageName: string;
 };
-export type EditPolicyApiResponse = /** status 200 Successful operation */ IPolicyDef;
+export type EditPolicyApiResponse = /** status 200 Successful operation */ PolicyDefRead;
 export type EditPolicyApiArg = {
   /** Package name of the policy to edit */
   packageName: string;
   /** Developer-defined updated policy details */
-  iEditPolicyDef: IEditPolicyDef;
+  editPolicyDef: EditPolicyDef;
 };
 export type CreatePolicyVersionApiResponse =
-  /** status 200 Successful operation */ IPolicyVersionDef;
+  /** status 200 Successful operation */ PolicyVersionDefRead;
 export type CreatePolicyVersionApiArg = {
   /** Package name of the policy to create a new version for */
   packageName: string;
   /** Developer-defined version details */
   versionChanges: VersionChanges;
 };
-export type GetPolicyVersionApiResponse = /** status 200 Successful operation */ IPolicyVersionDef;
+export type GetPolicyVersionApiResponse =
+  /** status 200 Successful operation */ PolicyVersionDefRead;
 export type GetPolicyVersionApiArg = {
   /** Package name of the policy to retrieve a version for */
   packageName: string;
   /** Version number to retrieve */
   version: string;
 };
-export type EditPolicyVersionApiResponse = /** status 200 Successful operation */ IPolicyVersionDef;
+export type EditPolicyVersionApiResponse =
+  /** status 200 Successful operation */ PolicyVersionDefRead;
 export type EditPolicyVersionApiArg = {
   /** Package name of the policy to edit a version for */
   packageName: string;
@@ -283,12 +285,12 @@ export type EditPolicyVersionApiArg = {
   versionChanges: VersionChanges;
 };
 export type GetPolicyVersionsApiResponse =
-  /** status 200 Successful operation */ PolicyVersionsArray;
+  /** status 200 Successful operation */ PolicyVersionsArrayRead;
 export type GetPolicyVersionsApiArg = {
   /** Package name of the policy to fetch versions for */
   packageName: string;
 };
-export type ChangePolicyOwnerApiResponse = /** status 200 Successful operation */ IPolicyDef;
+export type ChangePolicyOwnerApiResponse = /** status 200 Successful operation */ PolicyDefRead;
 export type ChangePolicyOwnerApiArg = {
   /** Package name of the policy to change the owner of */
   packageName: string;
@@ -298,51 +300,57 @@ export type ChangePolicyOwnerApiArg = {
     authorWalletAddress: string;
   };
 };
-export type IAppDef = {
+export type AppDef = {
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** The name of the application */
   name: string;
   /** Description of the application */
   description: string;
-  /** Contact email for the application */
+  /** Contact email for the application manager */
   contactEmail: string;
   /** URL of the application for users */
   appUserUrl: string;
   /** Base64 encoded logo image */
   logo: string;
-  /** Redirect URIs for the application */
+  /** Redirect URIs users can be sent to after signing up for your application (with their JWT token) */
   redirectUris: string[];
-  /** Deployment status of the application */
+  /** Deployment status of the application; dev, test, or prod */
   deploymentStatus: 'dev' | 'test' | 'prod';
   /** Manager wallet address */
   managerAddress: string;
   /** Active version of the application */
   activeVersion: number;
 };
-export type IAppDefRead = {
+export type AppDefRead = {
+  /** Document ID */
+  _id: string;
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** The name of the application */
   name: string;
   /** Description of the application */
   description: string;
-  /** Contact email for the application */
+  /** Contact email for the application manager */
   contactEmail: string;
   /** URL of the application for users */
   appUserUrl: string;
   /** Base64 encoded logo image */
   logo: string;
-  /** Redirect URIs for the application */
+  /** Redirect URIs users can be sent to after signing up for your application (with their JWT token) */
   redirectUris: string[];
-  /** Deployment status of the application */
+  /** Deployment status of the application; dev, test, or prod */
   deploymentStatus: 'dev' | 'test' | 'prod';
   /** Manager wallet address */
   managerAddress: string;
-  /** Unique composite identifier in the format AppDef|<appId> */
-  identity: string;
   /** Application ID */
   appId: number;
   /** Active version of the application */
   activeVersion: number;
-  /** Last updated timestamp */
-  lastUpdated: string;
 };
 export type Error = {
   /** Error code */
@@ -350,20 +358,20 @@ export type Error = {
   /** Error message */
   message: string;
 };
-export type ICreateAppDef = {
+export type CreateApp = {
   /** The name of the application */
   name: string;
   /** Description of the application */
   description: string;
-  /** Contact email for the application */
+  /** Contact email for the application manager */
   contactEmail: string;
   /** URL of the application for users */
   appUserUrl: string;
   /** Base64 encoded logo image */
   logo: string;
-  /** Redirect URIs for the application */
+  /** Redirect URIs users can be sent to after signing up for your application (with their JWT token) */
   redirectUris: string[];
-  /** Deployment status of the application */
+  /** Deployment status of the application; dev, test, or prod */
   deploymentStatus: 'dev' | 'test' | 'prod';
   /** Manager wallet address */
   managerAddress: string;
@@ -373,6 +381,10 @@ export type DeleteResponse = {
   message: string;
 };
 export type AppVersionsArray = {
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Version number */
   version: number;
   /** Whether this version is enabled */
@@ -381,18 +393,26 @@ export type AppVersionsArray = {
   changes: string;
 }[];
 export type AppVersionsArrayRead = {
+  /** Document ID */
+  _id: string;
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Application ID */
   appId: number;
   /** Version number */
   version: number;
-  /** Unique composite identifier in the format AppVersionDef|<appId>@<version> */
-  identity: string;
   /** Whether this version is enabled */
   enabled: boolean;
   /** Changelog information for this version */
   changes: string;
 }[];
-export type IAppVersionDef = {
+export type AppVersionDef = {
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Version number */
   version: number;
   /** Whether this version is enabled */
@@ -400,39 +420,53 @@ export type IAppVersionDef = {
   /** Changelog information for this version */
   changes: string;
 };
-export type IAppVersionDefRead = {
+export type AppVersionDefRead = {
+  /** Document ID */
+  _id: string;
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Application ID */
   appId: number;
   /** Version number */
   version: number;
-  /** Unique composite identifier in the format AppVersionDef|<appId>@<version> */
-  identity: string;
   /** Whether this version is enabled */
   enabled: boolean;
   /** Changelog information for this version */
   changes: string;
 };
-export type ICreateAppVersionDef = {
+export type CreateAppVersion = {
   /** List of tool identities to include in this version */
   tools: string[];
   /** Changelog information for this version */
   changes: string;
 };
-export type IAppVersionWithToolsDef = {};
-export type IAppVersionWithToolsDefRead = {
+export type AppVersionWithTools = {};
+export type AppVersionWithToolsRead = {
   version: {
+    /** Document ID */
+    _id: string;
+    /** Timestamp when this was last modified */
+    updatedAt: string;
+    /** Timestamp when this was created */
+    createdAt: string;
     /** Application ID */
     appId: number;
     /** Version number */
     version: number;
-    /** Unique composite identifier in the format AppVersionDef|<appId>@<version> */
-    identity: string;
     /** Whether this version is enabled */
     enabled: boolean;
     /** Changelog information for this version */
     changes: string;
   };
   tools: {
+    /** Document ID */
+    _id: string;
+    /** Timestamp when this was last modified */
+    updatedAt: string;
+    /** Timestamp when this was created */
+    createdAt: string;
     /** Application ID */
     appId: number;
     /** Application version */
@@ -441,23 +475,23 @@ export type IAppVersionWithToolsDefRead = {
     toolPackageName: string;
     /** Tool version */
     toolVersion: string;
-    /** Tool identity */
-    toolIdentity: string;
-    /** Unique composite identifier */
-    identity: string;
+    /** Policies that are supported by this tool but are hidden from users of this app specifically */
+    hiddenSupportedPolicies: string[];
   }[];
 };
 export type VersionChanges = {
   /** Updated changelog information */
   changes: string;
 };
-export type IToolDef = {
+export type ToolDef = {
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Tool package name */
   packageName: string;
   /** Tool title */
-  toolTitle?: string;
-  /** Unique composite identifier */
-  identity: string;
+  title?: string;
   /** Author wallet address */
   authorWalletAddress: string;
   /** Tool description */
@@ -465,29 +499,45 @@ export type IToolDef = {
   /** Active version of the tool */
   activeVersion: string;
 };
-export type ICreateToolDef = {
+export type ToolDefRead = {
+  /** Document ID */
+  _id: string;
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Tool package name */
   packageName: string;
   /** Tool title */
-  toolTitle: string;
-  /** Tool description */
-  description: string;
-};
-export type IEditToolDef = {
-  /** Tool title */
-  toolTitle: string;
+  title?: string;
+  /** Author wallet address */
+  authorWalletAddress: string;
   /** Tool description */
   description: string;
   /** Active version of the tool */
   activeVersion: string;
 };
-export type IToolVersionDef = {
+export type CreateTool = {
+  /** Tool package name */
+  packageName: string;
+  /** Tool title */
+  title: string;
+  /** Tool description */
+  description: string;
+};
+export type EditTool = {
+  /** Tool title */
+  title: string;
+  /** Tool description */
+  description: string;
+  /** Active version of the tool */
+  activeVersion: string;
+};
+export type ToolVersionDef = {
   /** Tool package name */
   packageName: string;
   /** Tool version */
   version: string;
-  /** Unique composite identifier */
-  identity: string;
   /** Changelog information for this version */
   changes: string;
   /** Repository URLs */
@@ -523,7 +573,11 @@ export type IToolVersionDef = {
   /** IPFS CID */
   ipfsCid: string;
 };
-export type IPolicyDef = {
+export type PolicyDef = {
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Policy package name */
   packageName: string;
   /** Unique composite identifier */
@@ -535,7 +589,25 @@ export type IPolicyDef = {
   /** Active version of the policy */
   activeVersion: string;
 };
-export type ICreatePolicyDef = {
+export type PolicyDefRead = {
+  /** Document ID */
+  _id: string;
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
+  /** Policy package name */
+  packageName: string;
+  /** Unique composite identifier */
+  identity: string;
+  /** Author wallet address */
+  authorWalletAddress: string;
+  /** Policy description */
+  description: string;
+  /** Active version of the policy */
+  activeVersion: string;
+};
+export type CreatePolicyDef = {
   /** Policy package name */
   packageName: string;
   /** Policy title */
@@ -543,7 +615,7 @@ export type ICreatePolicyDef = {
   /** Policy description */
   description: string;
 };
-export type IEditPolicyDef = {
+export type EditPolicyDef = {
   /** Policy title */
   policyTitle: string;
   /** Policy description */
@@ -551,13 +623,15 @@ export type IEditPolicyDef = {
   /** Active version of the policy */
   activeVersion: string;
 };
-export type IPolicyVersionDef = {
+export type PolicyVersionDef = {
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
   /** Policy package name */
   packageName: string;
   /** Policy version */
   version: string;
-  /** Unique composite identifier */
-  identity: string;
   /** Changelog information for this version */
   changes: string;
   /** Repository URLs */
@@ -600,7 +674,61 @@ export type IPolicyVersionDef = {
     jsonSchema: string;
   };
 };
-export type PolicyVersionsArray = IPolicyVersionDef[];
+export type PolicyVersionDefRead = {
+  /** Document ID */
+  _id: string;
+  /** Timestamp when this was last modified */
+  updatedAt: string;
+  /** Timestamp when this was created */
+  createdAt: string;
+  /** Policy package name */
+  packageName: string;
+  /** Policy version */
+  version: string;
+  /** Changelog information for this version */
+  changes: string;
+  /** Repository URLs */
+  repository: string[];
+  /** Policy description */
+  description: string;
+  /** Keywords for the policy */
+  keywords: string[];
+  /** Dependencies of the policy */
+  dependencies: string[];
+  /** Author information */
+  author: {
+    /** Name of the author */
+    name: string;
+    /** Email of the author */
+    email: string;
+    /** URL of the author's website */
+    url?: string;
+  };
+  /** Contributors information */
+  contributors: {
+    /** Name of the contributor */
+    name: string;
+    /** Email of the contributor */
+    email: string;
+    /** URL of the contributor's website */
+    url?: string;
+  }[];
+  /** Policy homepage */
+  homepage?: string;
+  /** Policy status */
+  status: 'invalid' | 'validating' | 'valid' | 'error';
+  /** IPFS CID */
+  ipfsCid: string;
+  /** Schema parameters */
+  parameters: {
+    /** UI Schema for parameter display */
+    uiSchema: string;
+    /** JSON Schema for parameter validation */
+    jsonSchema: string;
+  };
+};
+export type PolicyVersionsArray = PolicyVersionDef[];
+export type PolicyVersionsArrayRead = PolicyVersionDefRead[];
 export const {
   useCreateAppMutation,
   useGetAppQuery,

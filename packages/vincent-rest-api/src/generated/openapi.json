@@ -12,7 +12,52 @@
   ],
   "components": {
     "schemas": {
-      "ICreateAppDef": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Error code",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Invalid input provided"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Application successfully deleted"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "VersionChanges": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "string",
+            "description": "Updated changelog information",
+            "example": "Updated changelog information"
+          }
+        },
+        "required": [
+          "changes"
+        ]
+      },
+      "CreateApp": {
         "type": "object",
         "properties": {
           "name": {
@@ -28,19 +73,19 @@
           "contactEmail": {
             "type": "string",
             "format": "email",
-            "description": "Contact email for the application",
-            "example": "andrew@litprotocol.com"
+            "description": "Contact email for the application manager",
+            "example": "contact@example.com"
           },
           "appUserUrl": {
             "type": "string",
             "format": "uri",
             "description": "URL of the application for users",
-            "example": "https://uniswap.com"
+            "example": "https://myapplication.example.com/"
           },
           "logo": {
             "type": "string",
             "description": "Base64 encoded logo image",
-            "example": "Imagine this is a base64 string"
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           },
           "redirectUris": {
             "type": "array",
@@ -48,7 +93,7 @@
               "type": "string",
               "format": "uri"
             },
-            "description": "Redirect URIs for the application",
+            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token)",
             "example": [
               "https://google.com",
               "https://litprotocol.com"
@@ -61,13 +106,13 @@
               "test",
               "prod"
             ],
-            "description": "Deployment status of the application",
+            "description": "Deployment status of the application; dev, test, or prod",
             "example": "dev"
           },
           "managerAddress": {
             "type": "string",
             "description": "Manager wallet address",
-            "example": "0xa723407AdB396a55aCd843D276daEa0d787F8db5"
+            "example": "0x123456789012345678901234567890123456abcd"
           }
         },
         "required": [
@@ -81,9 +126,24 @@
           "managerAddress"
         ]
       },
-      "IAppDef": {
+      "AppDef": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
           "name": {
             "type": "string",
             "description": "The name of the application",
@@ -97,19 +157,19 @@
           "contactEmail": {
             "type": "string",
             "format": "email",
-            "description": "Contact email for the application",
-            "example": "andrew@litprotocol.com"
+            "description": "Contact email for the application manager",
+            "example": "contact@example.com"
           },
           "appUserUrl": {
             "type": "string",
             "format": "uri",
             "description": "URL of the application for users",
-            "example": "https://uniswap.com"
+            "example": "https://myapplication.example.com/"
           },
           "logo": {
             "type": "string",
             "description": "Base64 encoded logo image",
-            "example": "Imagine this is a base64 string"
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           },
           "redirectUris": {
             "type": "array",
@@ -117,7 +177,7 @@
               "type": "string",
               "format": "uri"
             },
-            "description": "Redirect URIs for the application",
+            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token)",
             "example": [
               "https://google.com",
               "https://litprotocol.com"
@@ -130,39 +190,30 @@
               "test",
               "prod"
             ],
-            "description": "Deployment status of the application",
+            "description": "Deployment status of the application; dev, test, or prod",
             "example": "dev"
           },
           "managerAddress": {
             "type": "string",
             "description": "Manager wallet address",
-            "example": "0xa723407AdB396a55aCd843D276daEa0d787F8db5"
-          },
-          "identity": {
-            "type": "string",
-            "description": "Unique composite identifier in the format AppDef|<appId>",
-            "example": "AppDef|5",
-            "readOnly": true
+            "example": "0x123456789012345678901234567890123456abcd"
           },
           "appId": {
             "type": "number",
             "description": "Application ID",
-            "example": 5,
+            "example": 12345,
             "readOnly": true
           },
           "activeVersion": {
             "type": "number",
             "description": "Active version of the application",
-            "example": 2
-          },
-          "lastUpdated": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Last updated timestamp",
-            "readOnly": true
+            "example": 1
           }
         },
         "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
           "name",
           "description",
           "contactEmail",
@@ -171,13 +222,11 @@
           "redirectUris",
           "deploymentStatus",
           "managerAddress",
-          "identity",
           "appId",
-          "activeVersion",
-          "lastUpdated"
+          "activeVersion"
         ]
       },
-      "ICreateAppVersionDef": {
+      "CreateAppVersion": {
         "type": "object",
         "properties": {
           "tools": {
@@ -201,25 +250,34 @@
           "changes"
         ]
       },
-      "IAppVersionDef": {
+      "AppVersionDef": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
           "appId": {
             "type": "number",
             "description": "Application ID",
-            "example": 5,
+            "example": 12312345,
             "readOnly": true
           },
           "version": {
             "type": "number",
             "description": "Version number",
-            "example": 2
-          },
-          "identity": {
-            "type": "string",
-            "description": "Unique composite identifier in the format AppVersionDef|<appId>@<version>",
-            "example": "AppVersionDef|5@2",
-            "readOnly": true
+            "example": 1
           },
           "enabled": {
             "type": "boolean",
@@ -233,35 +291,46 @@
           }
         },
         "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
           "appId",
           "version",
-          "identity",
           "enabled",
           "changes"
         ]
       },
-      "IAppVersionWithToolsDef": {
+      "AppVersionWithTools": {
         "type": "object",
         "properties": {
           "version": {
             "type": "object",
             "properties": {
+              "_id": {
+                "type": "string",
+                "description": "Document ID",
+                "readOnly": true
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when this was last modified"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when this was created"
+              },
               "appId": {
                 "type": "number",
                 "description": "Application ID",
-                "example": 5,
+                "example": 12312345,
                 "readOnly": true
               },
               "version": {
                 "type": "number",
                 "description": "Version number",
-                "example": 2
-              },
-              "identity": {
-                "type": "string",
-                "description": "Unique composite identifier in the format AppVersionDef|<appId>@<version>",
-                "example": "AppVersionDef|5@2",
-                "readOnly": true
+                "example": 1
               },
               "enabled": {
                 "type": "boolean",
@@ -275,9 +344,11 @@
               }
             },
             "required": [
+              "_id",
+              "updatedAt",
+              "createdAt",
               "appId",
               "version",
-              "identity",
               "enabled",
               "changes"
             ]
@@ -287,6 +358,21 @@
             "items": {
               "type": "object",
               "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Document ID",
+                  "readOnly": true
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when this was last modified"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when this was created"
+                },
                 "appId": {
                   "type": "number",
                   "description": "Application ID",
@@ -308,24 +394,27 @@
                   "description": "Tool version",
                   "example": "1.0.0"
                 },
-                "toolIdentity": {
-                  "type": "string",
-                  "description": "Tool identity",
-                  "example": "@vincent/foo-bar@1.0.0"
-                },
-                "identity": {
-                  "type": "string",
-                  "description": "Unique composite identifier",
-                  "example": "AppToolDef|AppDef|5/@vincent/foo-bar@1.0.0"
+                "hiddenSupportedPolicies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Policies that are supported by this tool but are hidden from users of this app specifically",
+                  "example": [
+                    "@vincent/foo-bar-policy-1",
+                    "@vincent/foo-bar-policy-2"
+                  ]
                 }
               },
               "required": [
+                "_id",
+                "updatedAt",
+                "createdAt",
                 "appId",
                 "appVersion",
                 "toolPackageName",
                 "toolVersion",
-                "toolIdentity",
-                "identity"
+                "hiddenSupportedPolicies"
               ]
             }
           }
@@ -336,7 +425,7 @@
         ],
         "description": "Application version with its tools"
       },
-      "ICreateToolDef": {
+      "CreateTool": {
         "type": "object",
         "properties": {
           "packageName": {
@@ -344,7 +433,7 @@
             "description": "Tool package name",
             "example": "@vincent/foo-bar"
           },
-          "toolTitle": {
+          "title": {
             "type": "string",
             "description": "Tool title",
             "example": "The Greatest Foo Bar Tool"
@@ -357,14 +446,14 @@
         },
         "required": [
           "packageName",
-          "toolTitle",
+          "title",
           "description"
         ]
       },
-      "IEditToolDef": {
+      "EditTool": {
         "type": "object",
         "properties": {
-          "toolTitle": {
+          "title": {
             "type": "string",
             "description": "Tool title",
             "example": "The Greatest Foo Bar Tool"
@@ -381,33 +470,43 @@
           }
         },
         "required": [
-          "toolTitle",
+          "title",
           "description",
           "activeVersion"
         ]
       },
-      "IToolDef": {
+      "ToolDef": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
           "packageName": {
             "type": "string",
             "description": "Tool package name",
             "example": "@vincent/foo-bar"
           },
-          "toolTitle": {
+          "title": {
             "type": "string",
             "description": "Tool title",
             "example": "The Greatest Foo Bar Tool"
           },
-          "identity": {
-            "type": "string",
-            "description": "Unique composite identifier",
-            "example": "ToolDef|@vincent/foo-bar"
-          },
           "authorWalletAddress": {
             "type": "string",
             "description": "Author wallet address",
-            "example": "0xa723407AdB396a55aCd843D276daEa0d787F8db5"
+            "example": "0x123456789012345678901234567890123456abcd"
           },
           "description": {
             "type": "string",
@@ -421,14 +520,16 @@
           }
         },
         "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
           "packageName",
-          "identity",
           "authorWalletAddress",
           "description",
           "activeVersion"
         ]
       },
-      "IToolVersionDef": {
+      "ToolVersionDef": {
         "type": "object",
         "properties": {
           "packageName": {
@@ -440,11 +541,6 @@
             "type": "string",
             "description": "Tool version",
             "example": "1.0.0"
-          },
-          "identity": {
-            "type": "string",
-            "description": "Unique composite identifier",
-            "example": "ToolVersionDef|@vincent/foo-bar@1.0.0"
           },
           "changes": {
             "type": "string",
@@ -494,7 +590,7 @@
                 "type": "string",
                 "format": "email",
                 "description": "Email of the author",
-                "example": "dev@example.com"
+                "example": "contact@example.com"
               },
               "url": {
                 "type": "string",
@@ -529,7 +625,7 @@
                   "type": "string",
                   "format": "uri",
                   "description": "URL of the contributor's website",
-                  "example": "https://contributor-site.com"
+                  "example": "https://contributor-site.example.com"
                 }
               },
               "required": [
@@ -563,8 +659,8 @@
             },
             "description": "Supported policies",
             "example": [
-              "@vincent/foo-bar-policy-1",
-              "@vincent/foo-bar-policy-2"
+              "@vincent/foo-bar-policy-1@1.0.0",
+              "@vincent/foo-bar-policy-2@1.1.0"
             ]
           },
           "ipfsCid": {
@@ -576,7 +672,6 @@
         "required": [
           "packageName",
           "version",
-          "identity",
           "changes",
           "repository",
           "keywords",
@@ -588,7 +683,7 @@
           "ipfsCid"
         ]
       },
-      "ICreatePolicyDef": {
+      "CreatePolicyDef": {
         "type": "object",
         "properties": {
           "packageName": {
@@ -613,7 +708,7 @@
           "description"
         ]
       },
-      "IEditPolicyDef": {
+      "EditPolicyDef": {
         "type": "object",
         "properties": {
           "policyTitle": {
@@ -638,9 +733,24 @@
           "activeVersion"
         ]
       },
-      "IPolicyDef": {
+      "PolicyDef": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
           "packageName": {
             "type": "string",
             "description": "Policy package name",
@@ -668,6 +778,9 @@
           }
         },
         "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
           "packageName",
           "identity",
           "authorWalletAddress",
@@ -675,9 +788,24 @@
           "activeVersion"
         ]
       },
-      "IPolicyVersionDef": {
+      "PolicyVersionDef": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
           "packageName": {
             "type": "string",
             "description": "Policy package name",
@@ -687,11 +815,6 @@
             "type": "string",
             "description": "Policy version",
             "example": "1.0.0"
-          },
-          "identity": {
-            "type": "string",
-            "description": "Unique composite identifier",
-            "example": "PolicyVersionDef|@vincent/foo-bar-policy@1.0.0"
           },
           "changes": {
             "type": "string",
@@ -740,7 +863,7 @@
                 "type": "string",
                 "format": "email",
                 "description": "Email of the author",
-                "example": "dev@example.com"
+                "example": "contact@example.com"
               },
               "url": {
                 "type": "string",
@@ -775,7 +898,7 @@
                   "type": "string",
                   "format": "uri",
                   "description": "URL of the contributor's website",
-                  "example": "https://contributor-site.com"
+                  "example": "https://contributor-site.example.com"
                 }
               },
               "required": [
@@ -829,9 +952,11 @@
           }
         },
         "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
           "packageName",
           "version",
-          "identity",
           "changes",
           "repository",
           "description",
@@ -844,72 +969,36 @@
           "parameters"
         ]
       },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "Error code",
-            "example": "VALIDATION_ERROR"
-          },
-          "message": {
-            "type": "string",
-            "description": "Error message",
-            "example": "Invalid input provided"
-          }
-        },
-        "required": [
-          "code",
-          "message"
-        ]
-      },
-      "DeleteResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Success message",
-            "example": "Application successfully deleted"
-          }
-        },
-        "required": [
-          "message"
-        ]
-      },
-      "VersionChanges": {
-        "type": "object",
-        "properties": {
-          "changes": {
-            "type": "string",
-            "description": "Updated changelog information",
-            "example": "Updated changelog information"
-          }
-        },
-        "required": [
-          "changes"
-        ]
-      },
       "AppVersionsArray": {
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Document ID",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp when this was last modified"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp when this was created"
+            },
             "appId": {
               "type": "number",
               "description": "Application ID",
-              "example": 5,
+              "example": 12312345,
               "readOnly": true
             },
             "version": {
               "type": "number",
               "description": "Version number",
-              "example": 2
-            },
-            "identity": {
-              "type": "string",
-              "description": "Unique composite identifier in the format AppVersionDef|<appId>@<version>",
-              "example": "AppVersionDef|5@2",
-              "readOnly": true
+              "example": 1
             },
             "enabled": {
               "type": "boolean",
@@ -923,9 +1012,11 @@
             }
           },
           "required": [
+            "_id",
+            "updatedAt",
+            "createdAt",
             "appId",
             "version",
-            "identity",
             "enabled",
             "changes"
           ]
@@ -934,7 +1025,7 @@
       "PolicyVersionsArray": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/IPolicyVersionDef"
+          "$ref": "#/components/schemas/PolicyVersionDef"
         }
       }
     },
@@ -954,7 +1045,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ICreateAppDef"
+                "$ref": "#/components/schemas/CreateApp"
               }
             }
           }
@@ -965,7 +1056,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppDef"
+                  "$ref": "#/components/schemas/AppDef"
                 }
               }
             }
@@ -1014,7 +1105,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppDef"
+                  "$ref": "#/components/schemas/AppDef"
                 }
               }
             }
@@ -1058,7 +1149,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ICreateAppDef"
+                "$ref": "#/components/schemas/CreateApp"
               }
             }
           }
@@ -1069,7 +1160,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppDef"
+                  "$ref": "#/components/schemas/AppDef"
                 }
               }
             }
@@ -1211,7 +1302,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ICreateAppVersionDef"
+                "$ref": "#/components/schemas/CreateAppVersion"
               }
             }
           }
@@ -1222,7 +1313,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppVersionDef"
+                  "$ref": "#/components/schemas/AppVersionDef"
                 }
               }
             }
@@ -1281,7 +1372,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppVersionWithToolsDef"
+                  "$ref": "#/components/schemas/AppVersionWithTools"
                 }
               }
             }
@@ -1346,7 +1437,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppVersionDef"
+                  "$ref": "#/components/schemas/AppVersionDef"
                 }
               }
             }
@@ -1405,7 +1496,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IAppVersionDef"
+                  "$ref": "#/components/schemas/AppVersionDef"
                 }
               }
             }
@@ -1442,7 +1533,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ICreateToolDef"
+                "$ref": "#/components/schemas/CreateTool"
               }
             }
           }
@@ -1453,7 +1544,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolDef"
+                  "$ref": "#/components/schemas/ToolDef"
                 }
               }
             }
@@ -1502,7 +1593,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolDef"
+                  "$ref": "#/components/schemas/ToolDef"
                 }
               }
             }
@@ -1546,7 +1637,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/IEditToolDef"
+                "$ref": "#/components/schemas/EditTool"
               }
             }
           }
@@ -1557,7 +1648,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolDef"
+                  "$ref": "#/components/schemas/ToolDef"
                 }
               }
             }
@@ -1608,7 +1699,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/IToolVersionDef"
+                    "$ref": "#/components/schemas/ToolVersionDef"
                   }
                 }
               }
@@ -1676,7 +1767,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolDef"
+                  "$ref": "#/components/schemas/ToolDef"
                 }
               }
             }
@@ -1736,7 +1827,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolVersionDef"
+                  "$ref": "#/components/schemas/ToolVersionDef"
                 }
               }
             }
@@ -1795,7 +1886,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolVersionDef"
+                  "$ref": "#/components/schemas/ToolVersionDef"
                 }
               }
             }
@@ -1860,7 +1951,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IToolVersionDef"
+                  "$ref": "#/components/schemas/ToolVersionDef"
                 }
               }
             }
@@ -1897,7 +1988,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ICreatePolicyDef"
+                "$ref": "#/components/schemas/CreatePolicyDef"
               }
             }
           }
@@ -1908,7 +1999,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyDef"
+                  "$ref": "#/components/schemas/PolicyDef"
                 }
               }
             }
@@ -1957,7 +2048,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyDef"
+                  "$ref": "#/components/schemas/PolicyDef"
                 }
               }
             }
@@ -2001,7 +2092,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/IEditPolicyDef"
+                "$ref": "#/components/schemas/EditPolicyDef"
               }
             }
           }
@@ -2012,7 +2103,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyDef"
+                  "$ref": "#/components/schemas/PolicyDef"
                 }
               }
             }
@@ -2072,7 +2163,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyVersionDef"
+                  "$ref": "#/components/schemas/PolicyVersionDef"
                 }
               }
             }
@@ -2131,7 +2222,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyVersionDef"
+                  "$ref": "#/components/schemas/PolicyVersionDef"
                 }
               }
             }
@@ -2196,7 +2287,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyVersionDef"
+                  "$ref": "#/components/schemas/PolicyVersionDef"
                 }
               }
             }
@@ -2312,7 +2403,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IPolicyDef"
+                  "$ref": "#/components/schemas/PolicyDef"
                 }
               }
             }
