@@ -4,7 +4,6 @@
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
-      "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/eslint.config.js"
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
@@ -33,20 +32,22 @@
     }
   ],
   "release": {
-    "projects": ["vincent-sdk"],
+    "projects": ["vincent-sdk", "vincent-rest-api"],
     "projectsRelationship": "independent",
     "releaseTagPattern": "vincent/{projectName}/{version}",
+    "versionPlans": true,
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": true
-    },
-    "version": {
-      "preVersionCommand": "pnpm dlx nx build vincent-sdk"
     }
   },
   "targetDefaults": {
     "nx-release-publish": {
       "dependsOn": [
+        {
+          "projects": "self",
+          "target": "build"
+        },
         {
           "projects": "self",
           "target": "publish-typedoc"

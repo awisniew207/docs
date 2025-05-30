@@ -1,19 +1,30 @@
 {
   "name": "vincent-rest-api",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "./src",
+  "sourceRoot": "packages/vincent-rest-api/src",
   "projectType": "library",
   "targets": {
+    "generate-api": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "generate-api"
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["generate-api"],
       "options": {
-        "outputPath": "{projectRoot}/dist",
-        "main": "src/index.ts",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "assets": ["{projectRoot}/*.md"],
-        "formats": ["cjs"],
-        "updateBuildableProjectDepsInPackageJson": true
+        "outputPath": "packages/vincent-rest-api/dist",
+        "main": "packages/vincent-rest-api/src/index.ts",
+        "tsConfig": "packages/vincent-rest-api/tsconfig.lib.json",
+        "assets": ["packages/vincent-rest-api/*.md",
+          {
+          "input": "packages/vincent-rest-api/src/generated/",
+          "glob": "**/!(*.ts)",
+          "output": "./"
+        }],
+        "formats": ["cjs"]
       }
     },
     "lint": {
