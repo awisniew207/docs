@@ -34,7 +34,8 @@
     "build:contracts": "nx build vincent-contracts",
     "clean": "node tools/clean.js",
     "deploy:tools": "npx nx deploy vincent-tool-uniswap-swap",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-api": "nx run vincent-rest-api:generate-api"
   },
   "dependencies": {
     "@lit-protocol/auth-browser": "^7.0.8",
@@ -57,7 +58,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9.25.1",
     "@nx/eslint": "20.8.0",
     "@nx/eslint-plugin": "20.8.0",
     "@nx/jest": "20.8.0",
