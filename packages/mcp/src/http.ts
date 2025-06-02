@@ -34,7 +34,7 @@ const vincentAppDef = VincentAppDefSchema.parse(JSON.parse(vincentAppJson));
 const app = express();
 app.use(express.json());
 
-// In-memory store for transports
+// In-memory store for transports. TODO add a cleaning mechanism to remove old transports. Check DELETE /mcp endpoint below
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
 app.post('/mcp', async (req: Request, res: Response) => {
@@ -115,7 +115,24 @@ const handleSessionRequest = async (req: express.Request, res: express.Response)
 };
 
 app.get('/mcp', handleSessionRequest);
-app.delete('/mcp', handleSessionRequest);
+
+// Should use the first handler, but OpenAI responses API sends a DELETE while still using the transport
+// And others, such as Anthropic, do not even call it
+// https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#session-management
+// app.delete('/mcp', handleSessionRequest);
+app.delete('/mcp', async (req: Request, res: Response) => {
+  console.log('Received DELETE MCP request');
+  res.writeHead(405).end(
+    JSON.stringify({
+      jsonrpc: '2.0',
+      error: {
+        code: -32000,
+        message: 'Method not allowed.',
+      },
+      id: null,
+    }),
+  );
+});
 
 app.listen(HTTP_PORT, () => {
   console.log(`MCP Stateless Streamable HTTP Server listening on port ${HTTP_PORT}`);
