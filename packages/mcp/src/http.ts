@@ -24,6 +24,7 @@ import express, { Request, Response } from 'express';
 
 import { env } from './env';
 import { getServer } from './server';
+import { transportManager } from './transportManager';
 
 const { HTTP_PORT, VINCENT_APP_JSON_DEFINITION } = env;
 const { VincentAppDefSchema } = mcp;
@@ -34,32 +35,23 @@ const vincentAppDef = VincentAppDefSchema.parse(JSON.parse(vincentAppJson));
 const app = express();
 app.use(express.json());
 
-// In-memory store for transports. TODO add a cleaning mechanism to remove old transports. Check DELETE /mcp endpoint below
-const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
-
 app.post('/mcp', async (req: Request, res: Response) => {
   try {
     const sessionId = req.headers['mcp-session-id'] as string | undefined;
     let transport: StreamableHTTPServerTransport;
 
-    if (sessionId && transports[sessionId]) {
+    if (sessionId && transportManager.getTransport(sessionId)) {
       // Reuse existing transport
-      transport = transports[sessionId];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      transport = transportManager.getTransport(sessionId)!;
     } else if (!sessionId && isInitializeRequest(req.body)) {
       // New initialization request
       transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: () => randomUUID(),
         onsessioninitialized: (sessionId) => {
-          transports[sessionId] = transport;
+          transportManager.addTransport(sessionId, transport);
         },
       });
-
-      // Cleanup transport when closed
-      transport.onclose = () => {
-        if (transport.sessionId) {
-          delete transports[transport.sessionId];
-        }
-      };
 
       const server = getServer(vincentAppDef);
       await server.connect(transport);
@@ -105,21 +97,19 @@ app.post('/mcp', async (req: Request, res: Response) => {
  */
 const handleSessionRequest = async (req: express.Request, res: express.Response) => {
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
-  if (!sessionId || !transports[sessionId]) {
+  if (!sessionId || !transportManager.getTransport(sessionId)) {
     res.status(400).send('Invalid or missing session ID');
     return;
   }
 
-  const transport = transports[sessionId];
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const transport = transportManager.getTransport(sessionId)!;
   await transport.handleRequest(req, res);
 };
 
 app.get('/mcp', handleSessionRequest);
 
-// Should use the first handler, but OpenAI responses API sends a DELETE while still using the transport
-// And others, such as Anthropic, do not even call it
-// https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#session-management
-// app.delete('/mcp', handleSessionRequest);
+// Clients are not allowed to delete their transport/session. Some never destroy it (Anthropic) and some try to use it after calling DELETE (OpenAI)
 app.delete('/mcp', async (req: Request, res: Response) => {
   console.log('Received DELETE MCP request');
   res.writeHead(405).end(
