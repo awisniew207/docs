@@ -81,7 +81,7 @@ export const UniswapSwapToolDef = createVincentTool({
   executeSuccessSchema: UniswapSwapToolExecuteSuccessSchema,
   executeFailSchema: UniswapSwapToolExecuteFailSchema,
 
-  precheck: async (toolParams, { policiesContext, fail, succeed }) => {
+  precheck: async ({ toolParams }, { policiesContext, fail, succeed }) => {
     if (!policiesContext.allow) return fail({ allow: false, error: 'Policy check failed' });
 
     const {
