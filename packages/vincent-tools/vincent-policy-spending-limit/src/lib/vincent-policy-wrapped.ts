@@ -5,9 +5,10 @@ import { SpendingLimitPolicyDef, SpendingLimitPolicyToolParamsSchema } from './v
 declare const context: { delegation: { delegator: string; delegatee: string } };
 declare const toolParams: typeof SpendingLimitPolicyToolParamsSchema;
 
-(() =>
-  vincentPolicyHandler({
+(async () => {
+  return await vincentPolicyHandler({
     vincentPolicy: SpendingLimitPolicyDef,
     context,
     toolParams,
-  }))();
+  });
+})();

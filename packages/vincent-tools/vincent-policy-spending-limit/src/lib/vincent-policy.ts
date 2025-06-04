@@ -128,6 +128,7 @@ export const SpendingLimitPolicyDef = createVincentPolicy({
         });
   },
   evaluate: async ({ toolParams, userParams }, { allow, deny }) => {
+    console.log('Evaluating spending limit policy');
     const {
       pkpEthAddress,
       appId,
@@ -180,6 +181,12 @@ export const SpendingLimitPolicyDef = createVincentPolicy({
     }
     const { buyAmountAllowed, buyAmountInUsd, adjustedMaxDailySpendingLimit } =
       parsedCheckBuyAmountResponse;
+
+    console.log('Evaluated spending limit policy', {
+      buyAmountAllowed,
+      buyAmountInUsd,
+      adjustedMaxDailySpendingLimit,
+    });
 
     return buyAmountAllowed
       ? allow({

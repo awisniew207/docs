@@ -1,15 +1,7 @@
-import { createPublicClient, http, parseUnits } from 'viem';
-import { Route, SwapRouter, Trade } from '@uniswap/v3-sdk';
-import {
-  CHAIN_TO_ADDRESSES_MAP,
-  CurrencyAmount,
-  Percent,
-  SWAP_ROUTER_02_ADDRESSES,
-  Token,
-  TradeType,
-} from '@uniswap/sdk-core';
+import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
+import { ethers } from 'ethers';
 
-import { signTx } from './sign-tx';
+import { estimateGasForSwap, getUniswapQuote, signTx } from '.';
 
 declare const Lit: {
   Actions: {
@@ -27,56 +19,106 @@ export const sendUniswapTx = async ({
   rpcUrl,
   chainId,
   pkpEthAddress,
-  tokenInDecimals,
-  tokenInAmount,
   pkpPublicKey,
-  uniswapSwapRoute,
-  uniswapTokenIn,
-  uniswapTokenOut,
-  swapQuote,
-  slippageTolerance,
-  swapDeadline,
+  tokenInAddress,
+  tokenOutAddress,
+  tokenInDecimals,
+  tokenOutDecimals,
+  tokenInAmount,
 }: {
   rpcUrl: string;
   chainId: number;
   pkpEthAddress: `0x${string}`;
-  tokenInDecimals: number;
-  tokenInAmount: number;
   pkpPublicKey: string;
-  uniswapSwapRoute: Route<Token, Token>;
-  uniswapTokenIn: Token;
-  uniswapTokenOut: Token;
-  swapQuote: bigint;
-  slippageTolerance: Percent;
-  swapDeadline: bigint;
+  tokenInAddress: `0x${string}`;
+  tokenOutAddress: `0x${string}`;
+  tokenInDecimals: number;
+  tokenOutDecimals: number;
+  tokenInAmount: number;
 }): Promise<`0x${string}`> => {
+  console.log('Estimating gas for Swap transaction (sendUniswapTx)');
+
   if (CHAIN_TO_ADDRESSES_MAP[chainId as keyof typeof CHAIN_TO_ADDRESSES_MAP] === undefined) {
     throw new Error(`Unsupported chainId: ${chainId} (sendUniswapTx)`);
   }
 
-  const uncheckedTrade = Trade.createUncheckedTrade({
-    route: uniswapSwapRoute,
-    inputAmount: CurrencyAmount.fromRawAmount(
-      uniswapTokenIn,
-      parseUnits(tokenInAmount.toString(), tokenInDecimals).toString(),
-    ),
-    outputAmount: CurrencyAmount.fromRawAmount(uniswapTokenOut, swapQuote.toString()),
-    tradeType: TradeType.EXACT_INPUT,
-  });
+  const uniswapRouterAddress = CHAIN_TO_ADDRESSES_MAP[
+    chainId as keyof typeof CHAIN_TO_ADDRESSES_MAP
+  ].swapRouter02Address as `0x{string}`;
+  const uniswapRpcProvider = new ethers.providers.StaticJsonRpcProvider(rpcUrl);
 
-  const swapCallParametersResponse = await Lit.Actions.runOnce(
-    { waitForResponse: true, name: 'getSwapCallParameters' },
+  const partialSwapTxResponse = await Lit.Actions.runOnce(
+    { waitForResponse: true, name: 'Uniswap swap tx gas estimation' },
     async () => {
       try {
-        const methodParameters = SwapRouter.swapCallParameters([uncheckedTrade], {
-          slippageTolerance,
-          deadline: swapDeadline.toString(),
-          recipient: pkpEthAddress as `0x${string}`,
+        const formattedTokenInAmount = ethers.utils.parseUnits(
+          tokenInAmount.toString(),
+          tokenInDecimals,
+        );
+
+        const uniswapV3RouterContract = new ethers.Contract(
+          uniswapRouterAddress,
+          [
+            'function exactInputSingle((address,address,uint24,address,uint256,uint256,uint160)) external payable returns (uint256)',
+          ],
+          uniswapRpcProvider,
+        );
+
+        console.log('Getting Uniswap quote for swap (sendUniswapTx)');
+        const uniswapQuoteResponse = await getUniswapQuote({
+          rpcUrl,
+          chainId,
+          tokenInAddress,
+          tokenInDecimals,
+          tokenInAmount,
+          tokenOutAddress,
+          tokenOutDecimals,
         });
+
+        const { bestFee, amountOutMin } = uniswapQuoteResponse;
+        const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await estimateGasForSwap(
+          uniswapV3RouterContract,
+          tokenInAddress,
+          tokenOutAddress,
+          bestFee,
+          pkpEthAddress,
+          formattedTokenInAmount,
+          amountOutMin,
+        );
+
+        console.log('Encoding swap transaction data (sendUniswapTx)', {
+          tokenInAddress,
+          tokenOutAddress,
+          bestFee,
+          pkpEthAddress,
+          formattedTokenInAmount,
+          amountOutMin,
+          sqrtPriceLimitX96: 0,
+        });
+        const swapTxData = uniswapV3RouterContract.interface.encodeFunctionData(
+          'exactInputSingle',
+          [
+            [
+              tokenInAddress,
+              tokenOutAddress,
+              bestFee,
+              pkpEthAddress,
+              formattedTokenInAmount,
+              amountOutMin,
+              0,
+            ],
+          ],
+        );
 
         return JSON.stringify({
           status: 'success',
-          methodParameters,
+          partialSwapTx: {
+            data: swapTxData,
+            gasLimit: estimatedGas,
+            maxFeePerGas: maxFeePerGas,
+            maxPriorityFeePerGas: maxPriorityFeePerGas,
+            nonce: await uniswapRpcProvider.getTransactionCount(pkpEthAddress),
+          },
         });
       } catch (error) {
         return JSON.stringify({
@@ -87,42 +129,44 @@ export const sendUniswapTx = async ({
     },
   );
 
-  const parsedSwapCallParametersResponse = JSON.parse(swapCallParametersResponse as string);
-  if (parsedSwapCallParametersResponse.status === 'error') {
+  const parsedPartialSwapTxResponse = JSON.parse(partialSwapTxResponse);
+  if (parsedPartialSwapTxResponse.status === 'error') {
     throw new Error(
-      `Error getting swap call parameters: ${parsedSwapCallParametersResponse.error}`,
+      `Error getting transaction data for swap: ${parsedPartialSwapTxResponse.error} (sendUniswapTx)`,
     );
   }
-  const { methodParameters } = parsedSwapCallParametersResponse;
+  const { partialSwapTx } = parsedPartialSwapTxResponse;
 
-  const swapRouterAddress = SWAP_ROUTER_02_ADDRESSES(chainId) as `0x${string}`;
-  console.log(`Using Swap Router Address: ${swapRouterAddress} (sendUniswapTx)`);
-
-  const client = createPublicClient({
-    transport: http(rpcUrl),
+  const unsignedSwapTx = {
+    to: uniswapRouterAddress,
+    data: partialSwapTx.data,
+    value: ethers.BigNumber.from(0),
+    gasLimit: ethers.BigNumber.from(partialSwapTx.gasLimit),
+    maxFeePerGas: ethers.BigNumber.from(partialSwapTx.maxFeePerGas),
+    maxPriorityFeePerGas: ethers.BigNumber.from(partialSwapTx.maxPriorityFeePerGas),
+    nonce: partialSwapTx.nonce,
+    chainId,
+    type: 2,
+  };
+  console.log('Unsigned swap transaction object (sendUniswapTx)', {
+    ...unsignedSwapTx,
+    value: unsignedSwapTx.value.toString(),
+    gasLimit: unsignedSwapTx.gasLimit.toString(),
+    maxFeePerGas: unsignedSwapTx.maxFeePerGas.toString(),
+    maxPriorityFeePerGas: unsignedSwapTx.maxPriorityFeePerGas.toString(),
   });
 
-  const txMetadataResponse = await Lit.Actions.runOnce(
-    { waitForResponse: true, name: 'estimateGas' },
+  const signedSwapTx = await signTx(pkpPublicKey, unsignedSwapTx, 'spendingLimitSig');
+
+  console.log(`Broadcasting swap transaction (sendUniswapTx)`);
+  const swapTxResponse = await Lit.Actions.runOnce(
+    { waitForResponse: true, name: 'swapTxSender' },
     async () => {
       try {
-        const [nonce, estimatedFeesPerGas] = await Promise.all([
-          // client.estimateGas({
-          //   account: pkpEthAddress as `0x${string}`,
-          //   to: swapRouterAddress,
-          //   data: methodParameters.calldata as `0x${string}`,
-          // }),
-          client.getTransactionCount({
-            address: pkpEthAddress as `0x${string}`,
-          }),
-          client.estimateFeesPerGas(),
-        ]);
-
+        const receipt = await uniswapRpcProvider.sendTransaction(signedSwapTx);
         return JSON.stringify({
           status: 'success',
-          maxFeePerGas: estimatedFeesPerGas.maxFeePerGas.toString(),
-          maxPriorityFeePerGas: estimatedFeesPerGas.maxPriorityFeePerGas.toString(),
-          nonce,
+          txHash: receipt.hash,
         });
       } catch (error) {
         return JSON.stringify({
@@ -133,58 +177,14 @@ export const sendUniswapTx = async ({
     },
   );
 
-  const parsedTxMetadataResponse = JSON.parse(txMetadataResponse as string);
-  if (parsedTxMetadataResponse.status === 'error') {
-    throw new Error(`Error estimating gas: ${parsedTxMetadataResponse.error}`);
-  }
-  const { nonce, maxFeePerGas, maxPriorityFeePerGas } = parsedTxMetadataResponse;
-
-  const unsignedSwapTx = {
-    to: swapRouterAddress,
-    data: methodParameters.calldata as `0x${string}`,
-    // value: BigInt(methodParameters.value),
-    value: 0n,
-    gas: 150_000n,
-    maxFeePerGas: BigInt(maxFeePerGas),
-    maxPriorityFeePerGas: BigInt(maxPriorityFeePerGas),
-    nonce,
-    chainId,
-    type: 'eip1559' as const,
-  };
-
-  const signedSwapTx = await signTx({
-    pkpPublicKey,
-    tx: unsignedSwapTx,
-    sigName: 'uniswapSwapSig',
-  });
-  console.log('signedSwapTx (sendUniswapTx)', {
-    signedSwapTx,
-  });
-
-  const swapTxResponse = await Lit.Actions.runOnce(
-    { waitForResponse: true, name: 'uniswapSwapTxSender' },
-    async () => {
-      try {
-        const txHash = await client.sendRawTransaction({
-          serializedTransaction: signedSwapTx as `0x${string}`,
-        });
-        return JSON.stringify({
-          status: 'success',
-          txHash,
-        });
-      } catch (error: unknown) {
-        return JSON.stringify({
-          status: 'error',
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    },
-  );
-
-  const parsedSwapTxResponse = JSON.parse(swapTxResponse as string);
+  const parsedSwapTxResponse = JSON.parse(swapTxResponse);
   if (parsedSwapTxResponse.status === 'error') {
-    throw new Error(`Error sending swap transaction: ${parsedSwapTxResponse.error}`);
+    throw new Error(
+      `Error broadcasting swap transaction: ${parsedSwapTxResponse.error} (sendUniswapTx)`,
+    );
   }
+  const { txHash } = parsedSwapTxResponse;
+  console.log(`Swap transaction broadcasted (sendUniswapTx): ${txHash}`);
 
-  return parsedSwapTxResponse.txHash;
+  return txHash;
 };

@@ -380,9 +380,8 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     expect(parsedResponse.toolExecutionResult.success).toBe(true);
     expect(parsedResponse.toolExecutionResult.result).toBeDefined();
     expect(parsedResponse.toolExecutionResult.result.existingApprovalSufficient).toBe(true);
-    expect(parsedResponse.toolExecutionResult.result.approvedAmount).toBe(
-      '1000000000000000000000000000000000000',
-    );
+    // Allowance will decrease after swap
+    expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
     expect(parsedResponse.toolExecutionResult.result.tokenAddress).toBe(
       '0x4200000000000000000000000000000000000006',
     );
@@ -402,9 +401,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
         chainIdForUniswap: 8453,
         tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
         tokenInDecimals: 18,
-        tokenInAmount: 0.0002,
-        tokenOutAddress: '0xD968196FA6977c4e58F2af5aC01C655ea8332d22', // CBBTC
-        tokenOutDecimals: 18,
+        tokenInAmount: 0.0000077,
+        tokenOutAddress: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // CBBTC
+        tokenOutDecimals: 8,
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
@@ -414,21 +413,26 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
     const parsedResponse = JSON.parse(uniswapSwapExecutionResult.response as string);
 
-    expect(parsedResponse.status).toBe('success');
+    expect(parsedResponse.success).toBeTruthy();
 
-    expect(parsedResponse.details).toBeDefined();
-    expect(Array.isArray(parsedResponse.details)).toBe(true);
+    expect(parsedResponse.result).toBeDefined();
+    expect(parsedResponse.result.swapTxHash).toBeDefined();
+    expect(parsedResponse.result.spendTxHash).toBeDefined();
 
-    const swapTxHash = parsedResponse.details[0];
-
+    const swapTxHash = parsedResponse.result.swapTxHash;
     expect(swapTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
-    expect(parsedResponse.details[1]).toMatch(
-      /^0x[a-fA-F0-9]{40} swapped 0\.0005 0x4200000000000000000000000000000000000006 for 0x[a-fA-F0-9]{40}$/,
-    );
 
     const swapTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
       hash: swapTxHash as `0x${string}`,
     });
     expect(swapTxReceipt.status).toBe('success');
+
+    const spendTxHash = parsedResponse.result.spendTxHash;
+    expect(spendTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+
+    const spendTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+      hash: spendTxHash as `0x${string}`,
+    });
+    expect(spendTxReceipt.status).toBe('success');
   });
 });

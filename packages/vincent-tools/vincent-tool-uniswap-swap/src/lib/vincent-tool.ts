@@ -5,11 +5,11 @@ import {
   createVincentToolPolicy,
 } from '@lit-protocol/vincent-tool-sdk';
 import { SpendingLimitPolicyDef } from '@lit-protocol/vincent-policy-spending-limit';
-import { CHAIN_TO_ADDRESSES_MAP, Percent } from '@uniswap/sdk-core';
+import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
 import { createPublicClient, http } from 'viem';
 import { createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
 
-import { getPkpInfo, getUniswapQuote, sendUniswapTx } from './tool-helpers';
+import { getPkpInfo, getTokenAmountInUsd, sendUniswapTx } from './tool-helpers';
 import {
   checkNativeTokenBalance,
   checkUniswapPoolExists,
@@ -59,7 +59,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema: UniswapSwapToolParamsSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
     SpendingLimitPolicyDef,
-    'QmbAQb3a7h8tLHiAgbfHRVcC8TYMQ29dFB3YF84evRtXRQ' as const,
+    'QmViYqwvjSyDqkqehbxpB7hM6GrVUNhfmm48UW1bHF5dy6' as const,
   ),
   toolParameterMappings: {
     pkpEthAddress: 'pkpEthAddress',
@@ -78,7 +78,6 @@ export const UniswapSwapToolDef = createVincentTool({
 
   precheckSuccessSchema: UniswapSwapToolPrecheckSuccessSchema,
   precheckFailSchema: UniswapSwapToolPrecheckFailSchema,
-
   executeSuccessSchema: UniswapSwapToolExecuteSuccessSchema,
   executeFailSchema: UniswapSwapToolExecuteFailSchema,
 
@@ -94,7 +93,6 @@ export const UniswapSwapToolDef = createVincentTool({
       tokenInAmount,
       tokenOutAddress,
       tokenOutDecimals,
-      poolFee,
     } = toolParams;
 
     const client = createPublicClient({
@@ -139,7 +137,6 @@ export const UniswapSwapToolDef = createVincentTool({
       tokenInAmount,
       tokenOutAddress: tokenOutAddress as `0x${string}`,
       tokenOutDecimals,
-      poolFee,
     });
 
     return succeed({
@@ -161,82 +158,63 @@ export const UniswapSwapToolDef = createVincentTool({
       tokenInAmount,
       tokenOutAddress,
       tokenOutDecimals,
-      poolFee,
-      slippageTolerance,
-      swapDeadline,
     } = toolParams;
 
-    const pkpInfo = await getPkpInfo({
-      pkpEthAddress: pkpEthAddress as `0x${string}`,
-    });
-
-    const { swapQuote, uniswapSwapRoute, uniswapTokenIn, uniswapTokenOut } = await getUniswapQuote({
-      rpcUrl: rpcUrlForUniswap,
-      chainId: chainIdForUniswap,
-      tokenInAddress,
-      tokenInDecimals,
-      tokenInAmount,
-      tokenOutAddress,
-      tokenOutDecimals,
-      poolFee,
-    });
+    const pkpInfo = await getPkpInfo(pkpEthAddress);
 
     const swapTxHash = await sendUniswapTx({
       rpcUrl: rpcUrlForUniswap,
       chainId: chainIdForUniswap,
       pkpEthAddress: pkpEthAddress as `0x${string}`,
-      tokenInDecimals,
-      tokenInAmount,
       pkpPublicKey: pkpInfo.publicKey,
-      uniswapSwapRoute,
-      uniswapTokenIn,
-      uniswapTokenOut,
-      swapQuote,
-      slippageTolerance: new Percent(slippageTolerance ?? 1000, 10_000), // 1000 basis points (10%)
-      swapDeadline: BigInt(
-        swapDeadline ?? Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
-      ),
+      tokenInAddress: tokenInAddress as `0x${string}`,
+      tokenOutAddress: tokenOutAddress as `0x${string}`,
+      tokenInDecimals,
+      tokenOutDecimals,
+      tokenInAmount,
     });
 
-    // let spendTxHash: string | undefined;
-    // if (policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit']) {
-    //   const tokenInAmountInUsd = await getTokenAmountInUsd({
-    //     ethRpcUrl,
-    //     rpcUrlForUniswap,
-    //     chainIdForUniswap,
-    //     tokenAddress: tokenInAddress,
-    //     tokenAmount: tokenInAmount,
-    //     tokenDecimals: tokenInDecimals,
-    //   });
+    let spendTxHash: string | undefined;
+    const spendingLimitPolicyContext =
+      policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+    if (spendingLimitPolicyContext !== undefined) {
+      const tokenInAmountInUsd = await getTokenAmountInUsd({
+        ethRpcUrl,
+        rpcUrlForUniswap,
+        chainIdForUniswap,
+        tokenAddress: tokenInAddress,
+        tokenAmount: tokenInAmount,
+        tokenDecimals: tokenInDecimals,
+      });
 
-    //   const spendingLimitPolicyContext =
-    //     policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
-    //   const { appId, maxSpendingLimitInUsd } = spendingLimitPolicyContext.result;
+      console.log('Spending limit policy context', spendingLimitPolicyContext);
+      console.log('Spending limit policy context result', spendingLimitPolicyContext.result);
 
-    //   const commitResult = await spendingLimitPolicyContext.commit({
-    //     appId,
-    //     amountSpentUsd: Number(tokenInAmountInUsd),
-    //     maxSpendingLimitInUsd: Number(maxSpendingLimitInUsd),
-    //     pkpEthAddress,
-    //     pkpPubKey: pkpInfo.publicKey,
-    //   });
+      const { appId, maxSpendingLimitInUsd } = spendingLimitPolicyContext.result;
+      const commitResult = await spendingLimitPolicyContext.commit({
+        appId,
+        amountSpentUsd: tokenInAmountInUsd.toNumber(),
+        maxSpendingLimitInUsd,
+        pkpEthAddress,
+        pkpPubKey: pkpInfo.publicKey,
+      });
 
-    //   if (commitResult.allow) {
-    //     spendTxHash = commitResult.result.spendTxHash;
-    //   } else {
-    //     return fail({
-    //       error:
-    //         commitResult.error ?? 'Unknown error occurred while committing spending limit policy',
-    //     });
-    //   }
-    //   console.log(
-    //     `Committed spending limit policy for transaction: ${spendTxHash} (UniswapSwapToolExecute)`,
-    //   );
-    // }
+      if (commitResult.allow) {
+        spendTxHash = commitResult.result.spendTxHash;
+      } else {
+        return fail({
+          error:
+            commitResult.error ?? 'Unknown error occurred while committing spending limit policy',
+        });
+      }
+      console.log(
+        `Committed spending limit policy for transaction: ${spendTxHash} (UniswapSwapToolExecute)`,
+      );
+    }
 
     return succeed({
       swapTxHash,
-      // spendTxHash,
+      spendTxHash,
     });
   },
 });
