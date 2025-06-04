@@ -1,3 +1,6 @@
 packages:
   - packages/*
   - packages/vincent-tools/*
+onlyBuiltDependencies:
+  - core-js
+  - nx
