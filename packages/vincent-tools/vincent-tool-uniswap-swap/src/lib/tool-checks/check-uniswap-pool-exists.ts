@@ -1,4 +1,4 @@
-import { FeeAmount } from '@uniswap/v3-sdk';
+// import { FeeAmount } from '@uniswap/v3-sdk';
 
 import { getUniswapQuote } from '../tool-helpers/get-uniswap-quote';
 
@@ -10,7 +10,7 @@ export const checkUniswapPoolExists = async ({
   tokenInAmount,
   tokenOutAddress,
   tokenOutDecimals,
-  poolFee,
+  // poolFee,
 }: {
   rpcUrl: string;
   chainId: number;
@@ -19,7 +19,7 @@ export const checkUniswapPoolExists = async ({
   tokenInAmount: number;
   tokenOutAddress: `0x${string}`;
   tokenOutDecimals: number;
-  poolFee?: FeeAmount;
+  // poolFee?: FeeAmount;
 }) => {
   try {
     await getUniswapQuote({
@@ -30,7 +30,6 @@ export const checkUniswapPoolExists = async ({
       tokenInAmount,
       tokenOutAddress,
       tokenOutDecimals,
-      poolFee,
     });
     return true;
   } catch (error) {

@@ -109,7 +109,6 @@ module.exports = {
     //     );
     //   });
     // });
-    fs.writeFileSync('meta.json', JSON.stringify(result.metafile));
     console.log('✅ Lit actions built successfully');
   } catch (e) {
     console.error('❌ Error building lit actions: ', e);
