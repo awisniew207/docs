@@ -10,6 +10,15 @@ export interface TestConfig {
         pkpPubkey: string | null;
       }
     | undefined;
+  capacityCreditInfo:
+    | {
+        capacityTokenIdStr: string | null;
+        capacityTokenId: string | null;
+        requestsPerKilosecond: number | null;
+        daysUntilUTCMidnightExpiration: number | null;
+        mintedAtUtc: string | null;
+      }
+    | undefined;
 }
 
 export const getEnv = (key: string) => {
@@ -24,7 +33,7 @@ export const getTestConfig = (filePath: string) => {
   if (fs.existsSync(filePath)) {
     const config = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     console.log(
-      `ℹ️  Loaded existing App ID: ${config.appId}, App Version: ${config.appVersion}, User PKP: ${JSON.stringify(config.userPkp, null, 2)}`,
+      `ℹ️  Loaded existing App ID: ${config.appId}, App Version: ${config.appVersion}, User PKP: ${JSON.stringify(config.userPkp, null, 2)}, Capacity Credit Info: ${JSON.stringify(config.capacityCreditInfo, null, 2)}`,
     );
     return config;
   } else {
@@ -36,6 +45,13 @@ export const getTestConfig = (filePath: string) => {
         tokenId: null,
         ethAddress: null,
         pkpPubkey: null,
+      },
+      capacityCreditInfo: {
+        capacityTokenIdStr: null,
+        capacityTokenId: null,
+        requestsPerKilosecond: null,
+        daysUntilUTCMidnightExpiration: null,
+        mintedAtUtc: null,
       },
     };
     fs.writeFileSync(filePath, JSON.stringify(defaultConfig, null, 2));
@@ -49,10 +65,14 @@ export const saveTestConfig = (filePath: string, config: TestConfig) => {
     ...config,
     appId: config.appId !== null ? config.appId.toString() : null,
     appVersion: config.appVersion !== null ? config.appVersion.toString() : null,
+    capacityCreditInfo: {
+      ...config.capacityCreditInfo,
+      capacityTokenId: config.capacityCreditInfo?.capacityTokenId?.toString() || null,
+    },
   };
 
   fs.writeFileSync(filePath, JSON.stringify(serializableConfig, null, 2));
   console.log(
-    `ℹ️  Saved test config: App ID: ${config.appId}, App Version: ${config.appVersion}, User PKP: ${JSON.stringify(config.userPkp, null, 2)}`,
+    `ℹ️  Saved test config: App ID: ${config.appId}, App Version: ${config.appVersion}, User PKP: ${JSON.stringify(config.userPkp, null, 2)}, Capacity Credit Info: ${JSON.stringify(config.capacityCreditInfo, null, 2)}`,
   );
 };

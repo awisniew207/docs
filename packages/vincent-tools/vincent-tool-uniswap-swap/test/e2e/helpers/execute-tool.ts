@@ -15,10 +15,9 @@ export interface ExecuteToolOptions {
   toolParameters: any;
   delegateePrivateKey: string;
   litNetwork?: string;
-  requestsPerKilosecond?: number;
-  daysUntilUTCMidnightExpiration?: number;
   sessionDurationMinutes?: number;
   debug?: boolean;
+  capacityCreditTokenId: string;
 }
 
 export const executeTool = async (options: ExecuteToolOptions) => {
@@ -26,8 +25,6 @@ export const executeTool = async (options: ExecuteToolOptions) => {
     toolIpfsCid,
     toolParameters,
     delegateePrivateKey,
-    requestsPerKilosecond = 80,
-    daysUntilUTCMidnightExpiration = 1,
     sessionDurationMinutes = 10,
     debug = false,
   } = options;
@@ -52,14 +49,9 @@ export const executeTool = async (options: ExecuteToolOptions) => {
     });
     await litContractClient.connect();
 
-    const capacityCreditInfo = await litContractClient.mintCapacityCreditsNFT({
-      requestsPerKilosecond,
-      daysUntilUTCMidnightExpiration,
-    });
-
     const { capacityDelegationAuthSig } = await litNodeClient.createCapacityDelegationAuthSig({
       dAppOwnerWallet: delegateeWallet,
-      capacityTokenId: (capacityCreditInfo as any).tokenId,
+      capacityTokenId: options.capacityCreditTokenId,
       uses: '1',
       expiration: new Date(Date.now() + 1000 * 60 * sessionDurationMinutes).toISOString(),
     });
