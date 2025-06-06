@@ -19,7 +19,6 @@
     "@dotenvx/dotenvx": "^1.39.0",
     "@lit-protocol/vincent-tool-erc20-approval": "workspace:*",
     "@types/jest": "^29.5.14",
-    "cbor": "^10.0.3",
     "esbuild": "^0.19.11",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
