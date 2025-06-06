@@ -16,7 +16,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["action:build"],
       "options": {
-        "commands": ["node tools/scripts/deploy-lit-action.js"],
+        "commands": ["node tools/deploy-lit-action.js"],
         "cwd": "packages/vincent-tools/vincent-policy-spending-limit"
       }
     },

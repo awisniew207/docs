@@ -6,7 +6,7 @@ const FormData = require('form-data');
 const dotenvx = require('@dotenvx/dotenvx');
 
 // Load environment variables
-dotenvx.config({ path: path.join(__dirname, '../../../../../.env') });
+dotenvx.config({ path: path.join(__dirname, '../../../../.env') });
 
 // Get Pinata JWT from environment variable
 const PINATA_JWT = process.env.PINATA_JWT;
@@ -18,11 +18,11 @@ if (!PINATA_JWT) {
   try {
     const outputFile = 'vincent-tool-wrapped.js';
 
-    const generatedDir = path.join(__dirname, '../../src/generated');
+    const generatedDir = path.join(__dirname, '../src/generated');
     const filePath = path.join(generatedDir, outputFile);
     if (!fs.existsSync(filePath)) {
       throw new Error(
-        `Bundled Lit Action code string not found at ${filePath}. Please run pnpx nx run vincent-tool-uniswap-swap:action:build first.`,
+        `Bundled Lit Action code string not found at ${filePath}. Please run pnpx nx run vincent-tool-erc20-approval:action:build first.`,
       );
     }
     const litActionCodeString = require(filePath);
@@ -30,13 +30,15 @@ if (!PINATA_JWT) {
     console.log(`Deploying ${outputFile} to IPFS...`);
     const ipfsCid = await uploadToIPFS(outputFile, litActionCodeString.code);
 
-    const cidJsPath = path.join(generatedDir, 'vincent-tool-ipfs-cid.js');
-    const cidJsContent = `const vincentToolIpfsCid = '${ipfsCid}';\n\nmodule.exports = {\n  vincentToolIpfsCid,\n};\n`;
-    fs.writeFileSync(cidJsPath, cidJsContent, 'utf8');
+    const cidJsonPath = path.join(generatedDir, 'vincent-tool-ipfs-cid.json');
+    const cidJsonContent = {
+      vincentToolIpfsCid: ipfsCid,
+    };
+    fs.writeFileSync(cidJsonPath, JSON.stringify(cidJsonContent, null, 2), 'utf8');
 
     console.log('✅ Successfully deployed Lit Action');
     console.log(`ℹ️  Deployed ${outputFile} to IPFS: ${ipfsCid}`);
-    console.log(`ℹ️  Saved vincent-tool-ipfs-cid.js to: ${cidJsPath}`);
+    console.log(`ℹ️  Saved vincent-tool-ipfs-cid.js to: ${cidJsonPath}`);
   } catch (error) {
     console.error('❌ Error in deploy process:', error);
     process.exit(1);
