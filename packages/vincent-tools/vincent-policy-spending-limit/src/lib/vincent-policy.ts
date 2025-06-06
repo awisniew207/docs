@@ -16,7 +16,7 @@ declare const Lit: {
   };
 };
 
-export const SpendingLimitPolicyToolParamsSchema = z.object({
+export const toolParamsSchema = z.object({
   appId: z.number(),
   pkpEthAddress: z.string(),
   ethRpcUrl: z.string(),
@@ -27,36 +27,36 @@ export const SpendingLimitPolicyToolParamsSchema = z.object({
   buyAmount: z.number(),
 });
 
-export const SpendingLimitPolicyUserParamsSchema = z.object({
+const userParamsSchema = z.object({
   maxDailySpendAmountUsd: z.number(),
 });
 
-export const spendingLimitPolicyPrecheckAllowResultSchema = z.object({
+const precheckAllowResultSchema = z.object({
   appId: z.number(),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
 
-export const spendingLimitPolicyPrecheckDenyResultSchema = z.object({
+const precheckDenyResultSchema = z.object({
   appId: z.number(),
   reason: z.literal('Attempted buy amount exceeds daily limit'),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
 
-export const SpendingLimitPolicyEvalAllowResultSchema = z.object({
+const evalAllowResultSchema = z.object({
   appId: z.number(),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
 
-export const SpendingLimitPolicyEvalDenyResultSchema = z.object({
+const evalDenyResultSchema = z.object({
   reason: z.literal('Attempted buy amount exceeds daily limit'),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
 
-export const SpendingLimitPolicyCommitParamsSchema = z.object({
+const commitParamsSchema = z.object({
   appId: z.number(),
   amountSpentUsd: z.number(),
   maxSpendingLimitInUsd: z.number(),
@@ -64,29 +64,29 @@ export const SpendingLimitPolicyCommitParamsSchema = z.object({
   pkpPubKey: z.string(),
 });
 
-export const SpendingLimitPolicyCommitAllowResultSchema = z.object({
+const commitAllowResultSchema = z.object({
   spendTxHash: z.string(),
 });
 
-export const SpendingLimitPolicyCommitDenyResultSchema = z.object({
+const commitDenyResultSchema = z.object({
   error: z.string(),
 });
 
-export const SpendingLimitPolicy = createVincentPolicy({
+export const VincentPolicySpendingLimit = createVincentPolicy({
   packageName: '@lit-protocol/vincent-policy-spending-limit' as const,
 
-  toolParamsSchema: SpendingLimitPolicyToolParamsSchema,
-  userParamsSchema: SpendingLimitPolicyUserParamsSchema,
-  commitParamsSchema: SpendingLimitPolicyCommitParamsSchema,
+  toolParamsSchema,
+  userParamsSchema,
+  commitParamsSchema,
 
-  precheckAllowResultSchema: spendingLimitPolicyPrecheckAllowResultSchema,
-  precheckDenyResultSchema: spendingLimitPolicyPrecheckDenyResultSchema,
+  precheckAllowResultSchema,
+  precheckDenyResultSchema,
 
-  evalAllowResultSchema: SpendingLimitPolicyEvalAllowResultSchema,
-  evalDenyResultSchema: SpendingLimitPolicyEvalDenyResultSchema,
+  evalAllowResultSchema,
+  evalDenyResultSchema,
 
-  commitAllowResultSchema: SpendingLimitPolicyCommitAllowResultSchema,
-  commitDenyResultSchema: SpendingLimitPolicyCommitDenyResultSchema,
+  commitAllowResultSchema,
+  commitDenyResultSchema,
 
   precheck: async ({ toolParams, userParams }, { allow, deny }) => {
     const {

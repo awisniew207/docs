@@ -1,16 +1,16 @@
 import { vincentToolHandler } from '@lit-protocol/vincent-tool-sdk';
 import { z } from 'zod';
 
-import { UniswapSwapTool, UniswapSwapToolParamsSchema } from './vincent-tool';
+import { VincentToolUniswapSwap, toolParamsSchema } from './vincent-tool';
 
-declare const toolParams: z.infer<typeof UniswapSwapToolParamsSchema>;
+declare const toolParams: z.infer<typeof toolParamsSchema>;
 declare const LitAuth: {
   authSigAddress: string;
 };
 
 (async () => {
   const func = vincentToolHandler({
-    vincentTool: UniswapSwapTool,
+    vincentTool: VincentToolUniswapSwap,
     baseContext: {
       delegation: {
         delegator: toolParams.pkpEthAddress,

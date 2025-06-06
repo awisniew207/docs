@@ -4,7 +4,7 @@ import {
   createVincentTool,
   createVincentToolPolicy,
 } from '@lit-protocol/vincent-tool-sdk';
-import { SpendingLimitPolicyDef } from '@lit-protocol/vincent-policy-spending-limit';
+import { VincentPolicySpendingLimit } from '@lit-protocol/vincent-policy-spending-limit';
 import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
 import { createPublicClient, http } from 'viem';
 import { createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
@@ -17,7 +17,7 @@ import {
   checkErc20Allowance,
 } from './tool-checks';
 
-export const UniswapSwapToolParamsSchema = z.object({
+export const toolParamsSchema = z.object({
   ethRpcUrl: z.string(),
   rpcUrlForUniswap: z.string(),
   chainIdForUniswap: z.number(),
@@ -37,28 +37,28 @@ export const UniswapSwapToolParamsSchema = z.object({
   swapDeadline: z.number().optional(),
 });
 
-export const UniswapSwapToolPrecheckSuccessSchema = z.object({
+const precheckSuccessSchema = z.object({
   allow: z.literal(true),
 });
 
-export const UniswapSwapToolPrecheckFailSchema = z.object({
+const precheckFailSchema = z.object({
   allow: z.literal(false),
   error: z.string(),
 });
 
-export const UniswapSwapToolExecuteSuccessSchema = z.object({
+const executeSuccessSchema = z.object({
   swapTxHash: z.string(),
   spendTxHash: z.string().optional(),
 });
 
-export const UniswapSwapToolExecuteFailSchema = z.object({
+const executeFailSchema = z.object({
   error: z.string(),
 });
 
 const SpendingLimitPolicy = createVincentToolPolicy({
-  toolParamsSchema: UniswapSwapToolParamsSchema,
+  toolParamsSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
-    SpendingLimitPolicyDef,
+    VincentPolicySpendingLimit,
     'QmSUKGACNAMsEfJHE5UZsGfsMRfthhedbvTJC6DrbCpgKX' as const,
   ),
   toolParameterMappings: {
@@ -70,16 +70,16 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   },
 });
 
-export const UniswapSwapTool = createVincentTool({
+export const VincentToolUniswapSwap = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
 
-  toolParamsSchema: UniswapSwapToolParamsSchema,
+  toolParamsSchema,
   policyMap: createPolicyMapFromToolPolicies([SpendingLimitPolicy]),
 
-  precheckSuccessSchema: UniswapSwapToolPrecheckSuccessSchema,
-  precheckFailSchema: UniswapSwapToolPrecheckFailSchema,
-  executeSuccessSchema: UniswapSwapToolExecuteSuccessSchema,
-  executeFailSchema: UniswapSwapToolExecuteFailSchema,
+  precheckSuccessSchema,
+  precheckFailSchema,
+  executeSuccessSchema,
+  executeFailSchema,
 
   precheck: async ({ toolParams }, { policiesContext, fail, succeed }) => {
     if (!policiesContext.allow) return fail({ allow: false, error: 'Policy check failed' });
