@@ -1,4 +1,4 @@
-import { encodeAbiParameters, formatEther, parseEventLogs, toHex } from 'viem';
+import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
 
 import {
   TestConfig,
@@ -35,6 +35,7 @@ import {
   VincentUserFacetAbi,
   VincentUserViewFacetAbi,
 } from './vincent-contract-abis';
+import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
@@ -69,6 +70,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
   beforeAll(async () => {
     TEST_CONFIG = getTestConfig(TEST_CONFIG_PATH);
     TEST_CONFIG = await checkShouldMintAndFundPkp(TEST_CONFIG);
+    TEST_CONFIG = await checkShouldMintCapacityCredit(TEST_CONFIG);
 
     // The Agent Wallet PKP needs to have Base ETH and WETH
     // in order to execute the ERC20 Approval and Uniswap Swap Tools
@@ -365,6 +367,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
+      capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
     });
 
     expect(erc20ApprovalExecutionResult).toBeDefined();
@@ -407,6 +410,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
+      capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
     });
 
     expect(uniswapSwapExecutionResult).toBeDefined();
