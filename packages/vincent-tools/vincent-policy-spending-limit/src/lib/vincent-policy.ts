@@ -72,7 +72,7 @@ export const SpendingLimitPolicyCommitDenyResultSchema = z.object({
   error: z.string(),
 });
 
-export const SpendingLimitPolicyDef = createVincentPolicy({
+export const SpendingLimitPolicy = createVincentPolicy({
   packageName: '@lit-protocol/vincent-policy-spending-limit' as const,
 
   toolParamsSchema: SpendingLimitPolicyToolParamsSchema,

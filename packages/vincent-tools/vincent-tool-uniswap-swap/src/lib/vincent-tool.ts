@@ -59,7 +59,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema: UniswapSwapToolParamsSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
     SpendingLimitPolicyDef,
-    'QmViYqwvjSyDqkqehbxpB7hM6GrVUNhfmm48UW1bHF5dy6' as const,
+    'QmSUKGACNAMsEfJHE5UZsGfsMRfthhedbvTJC6DrbCpgKX' as const,
   ),
   toolParameterMappings: {
     pkpEthAddress: 'pkpEthAddress',
@@ -70,7 +70,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   },
 });
 
-export const UniswapSwapToolDef = createVincentTool({
+export const UniswapSwapTool = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
 
   toolParamsSchema: UniswapSwapToolParamsSchema,

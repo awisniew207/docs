@@ -1,7 +1,7 @@
 import { vincentToolHandler } from '@lit-protocol/vincent-tool-sdk';
 import { z } from 'zod';
 
-import { Erc20ApprovalToolDef, Erc20ApprovalToolParamsSchema } from './vincent-tool';
+import { Erc20ApprovalTool, Erc20ApprovalToolParamsSchema } from './vincent-tool';
 
 declare const toolParams: z.infer<typeof Erc20ApprovalToolParamsSchema>;
 declare const LitAuth: {
@@ -10,7 +10,7 @@ declare const LitAuth: {
 
 (async () => {
   const func = vincentToolHandler({
-    vincentTool: Erc20ApprovalToolDef,
+    vincentTool: Erc20ApprovalTool,
     baseContext: {
       delegation: {
         delegator: toolParams.pkpEthAddress,

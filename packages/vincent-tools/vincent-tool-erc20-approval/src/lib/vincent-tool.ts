@@ -48,7 +48,7 @@ export const Erc20ApprovalToolExecuteFailSchema = z.object({
   error: z.string(),
 });
 
-export const Erc20ApprovalToolDef = createVincentTool({
+export const Erc20ApprovalTool = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
 
   toolParamsSchema: Erc20ApprovalToolParamsSchema,
