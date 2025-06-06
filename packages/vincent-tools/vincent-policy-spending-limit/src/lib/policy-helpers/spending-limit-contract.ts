@@ -28,7 +28,7 @@ export const getSpendingLimitContractInstance = () => {
   const abi = parseAbi(SPENDING_LIMIT_CONTRACT_ABI);
   const chronicleYellowstoneProvider = createChronicleYellowstoneViemClient();
   const spendingLimitContract = getContract({
-    address: SPENDING_LIMIT_CONTRACT_ADDRESS as `0x${string}`,
+    address: SPENDING_LIMIT_CONTRACT_ADDRESS,
     abi,
     client: chronicleYellowstoneProvider,
   });
