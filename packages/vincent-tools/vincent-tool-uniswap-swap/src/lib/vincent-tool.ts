@@ -84,9 +84,7 @@ export const VincentToolUniswapSwap = createVincentTool({
   executeSuccessSchema,
   executeFailSchema,
 
-  precheck: async ({ toolParams }, { policiesContext, fail, succeed }) => {
-    if (!policiesContext.allow) return fail({ allow: false, error: 'Policy check failed' });
-
+  precheck: async ({ toolParams }, { fail, succeed }) => {
     const {
       pkpEthAddress,
       rpcUrlForUniswap,
@@ -147,8 +145,6 @@ export const VincentToolUniswapSwap = createVincentTool({
     });
   },
   execute: async ({ toolParams }, { succeed, fail, policiesContext }) => {
-    if (!policiesContext.allow) return fail({ error: 'Policy check failed' });
-
     console.log('Executing UniswapSwapTool');
 
     const {

@@ -60,9 +60,7 @@ export const VincentToolErc20Approval = createVincentTool({
   executeSuccessSchema,
   executeFailSchema,
 
-  precheck: async ({ toolParams }, { policiesContext, fail, succeed }) => {
-    if (!policiesContext.allow) return fail({ allow: false, error: 'Policy check failed' });
-
+  precheck: async ({ toolParams }, { succeed }) => {
     const { rpcUrl, pkpEthAddress, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } =
       toolParams;
 
@@ -89,9 +87,7 @@ export const VincentToolErc20Approval = createVincentTool({
       existingApprovalSufficient: currentAllowance >= requiredAmount,
     });
   },
-  execute: async ({ toolParams }, { succeed, fail, policiesContext }) => {
-    if (!policiesContext.allow) return fail({ error: 'Policy check failed' });
-
+  execute: async ({ toolParams }, { succeed }) => {
     console.log('Executing ERC20 Approval Tool');
 
     const {
