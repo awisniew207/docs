@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-import { getEthUsdPriceFromChainlink } from '.';
+import { getEthUsdPriceFromChainlink } from './get-eth-usd-price';
 
 export const calculateUsdValue = async ({
   ethRpcUrl,

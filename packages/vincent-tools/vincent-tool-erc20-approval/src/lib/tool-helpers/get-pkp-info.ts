@@ -1,5 +1,5 @@
 import { parseAbi } from 'viem';
-import { createChronicleYellowstoneViemClient } from '.';
+import { createChronicleYellowstoneViemClient } from './viem-chronicle-yellowstone-client';
 
 const DATIL_PUBKEY_ROUTER_ADDRESS = '0xF182d6bEf16Ba77e69372dD096D8B70Bc3d5B475' as `0x${string}`;
 

@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 
-import { calculateUsdValue, getUniswapQuote } from '.';
+import { calculateUsdValue } from './calculate-usd-value';
+import { getUniswapQuote } from './get-uniswap-quote';
 
 const ETH_MAINNET_WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 /**

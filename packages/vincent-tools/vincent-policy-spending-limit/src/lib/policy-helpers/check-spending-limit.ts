@@ -1,4 +1,4 @@
-import { getTokenAmountInUsd } from '.';
+import { getTokenAmountInUsd } from './get-token-amount-in-usd';
 import { getSpendingLimitContractInstance } from './spending-limit-contract';
 
 export const checkIfBuyAmountAllowed = async ({
