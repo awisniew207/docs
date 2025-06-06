@@ -121,9 +121,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     await permitAuthMethod(
       TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
       TEST_CONFIG.userPkp!.tokenId!,
-      ERC20_APPROVAL_TOOL_IPFS_ID,
-      UNISWAP_SWAP_TOOL_IPFS_ID,
-      SPENDING_LIMIT_POLICY_IPFS_ID,
+      VincentToolErc20ApprovalMetadata.ipfsCid,
+      VincentToolUniswapSwapMetadata.ipfsCid,
+      VincentPolicySpendingLimitMetadata.ipfsCid,
     );
   });
 
@@ -322,7 +322,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     expect(validationResult.appVersion).toBe(BigInt(TEST_CONFIG.appVersion!));
     expect(validationResult.policies).toEqual([
       {
-        policyIpfsCid: SPENDING_LIMIT_POLICY_IPFS_ID,
+        policyIpfsCid: VincentPolicySpendingLimitMetadata.ipfsCid,
         parameters: [
           {
             name: 'maxDailySpendingLimitInUsdCents',
@@ -358,7 +358,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
   it('should execute the ERC20 Approval Tool with the Agent Wallet PKP', async () => {
     const erc20ApprovalExecutionResult = await executeTool({
-      toolIpfsCid: ERC20_APPROVAL_TOOL_IPFS_ID,
+      toolIpfsCid: VincentToolErc20ApprovalMetadata.ipfsCid,
       toolParameters: {
         rpcUrl: BASE_RPC_URL,
         chainId: 8453,
@@ -399,7 +399,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
   it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {
     const uniswapSwapExecutionResult = await executeTool({
-      toolIpfsCid: UNISWAP_SWAP_TOOL_IPFS_ID,
+      toolIpfsCid: VincentToolUniswapSwapMetadata.ipfsCid,
       toolParameters: {
         pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
         ethRpcUrl: ETH_RPC_URL,
