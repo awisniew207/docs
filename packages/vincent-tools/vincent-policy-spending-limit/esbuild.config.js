@@ -73,7 +73,6 @@ module.exports = {
       treeShaking: true,
       metafile: true,
       outdir: './src/generated/',
-      inject: ['./buffer.shim.js'],
       // external: ['ethers'],
       plugins: [
         aliasFetch(),
