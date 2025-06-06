@@ -51,9 +51,9 @@ const evalAllowResultSchema = z.object({
 });
 
 const evalDenyResultSchema = z.object({
-  reason: z.literal('Attempted buy amount exceeds daily limit'),
-  maxSpendingLimitInUsd: z.number(),
-  buyAmountInUsd: z.number(),
+  reason: z.string(),
+  maxSpendingLimitInUsd: z.number().optional(),
+  buyAmountInUsd: z.number().optional(),
 });
 
 const commitParamsSchema = z.object({
@@ -175,9 +175,9 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
 
     const parsedCheckBuyAmountResponse = JSON.parse(checkBuyAmountResponse);
     if (parsedCheckBuyAmountResponse.status === 'error') {
-      throw new Error(
-        `Error checking buy amount: ${parsedCheckBuyAmountResponse.error} (evaluate)`,
-      );
+      return deny({
+        reason: `Error checking buy amount: ${parsedCheckBuyAmountResponse.error} (evaluate)`,
+      });
     }
     const { buyAmountAllowed, buyAmountInUsd, adjustedMaxDailySpendingLimit } =
       parsedCheckBuyAmountResponse;
