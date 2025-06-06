@@ -30,15 +30,15 @@ if (!PINATA_JWT) {
     console.log(`Deploying ${outputFile} to IPFS...`);
     const ipfsCid = await uploadToIPFS(outputFile, litActionCodeString.code);
 
-    const cidJsonPath = path.join(generatedDir, 'vincent-policy-ipfs-cid.json');
+    const cidJsonPath = path.join(generatedDir, 'vincent-policy-metadata.json');
     const cidJsonContent = {
-      vincentPolicyIpfsCid: ipfsCid,
+      ipfsCid,
     };
     fs.writeFileSync(cidJsonPath, JSON.stringify(cidJsonContent, null, 2), 'utf8');
 
     console.log('✅ Successfully deployed Lit Action');
     console.log(`ℹ️  Deployed ${outputFile} to IPFS: ${ipfsCid}`);
-    console.log(`ℹ️  Saved vincent-policy-ipfs-cid.json to: ${cidJsonPath}`);
+    console.log(`ℹ️  Saved vincent-policy-metadata.json to: ${cidJsonPath}`);
   } catch (error) {
     console.error('❌ Error in deploy process:', error);
     process.exit(1);

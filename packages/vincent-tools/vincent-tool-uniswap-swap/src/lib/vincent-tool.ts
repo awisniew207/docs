@@ -4,7 +4,10 @@ import {
   createVincentTool,
   createVincentToolPolicy,
 } from '@lit-protocol/vincent-tool-sdk';
-import { VincentPolicySpendingLimit } from '@lit-protocol/vincent-policy-spending-limit';
+import {
+  VincentPolicySpendingLimit,
+  VincentPolicySpendingLimitMetadata,
+} from '@lit-protocol/vincent-policy-spending-limit';
 import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
 import { createPublicClient, http } from 'viem';
 import { createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
@@ -59,7 +62,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
     VincentPolicySpendingLimit,
-    'QmSUKGACNAMsEfJHE5UZsGfsMRfthhedbvTJC6DrbCpgKX' as const,
+    `${VincentPolicySpendingLimitMetadata.ipfsCid}` as const,
   ),
   toolParameterMappings: {
     pkpEthAddress: 'pkpEthAddress',
