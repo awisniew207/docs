@@ -1,14 +1,14 @@
-import { encodeAbiParameters, formatEther, parseEventLogs, toHex } from 'viem';
+import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
+import { VincentPolicySpendingLimitMetadata } from '@lit-protocol/vincent-policy-spending-limit';
+import { VincentToolErc20ApprovalMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
 
+import { VincentToolUniswapSwapMetadata } from '../../src';
 import {
   TestConfig,
   getTestConfig,
   TEST_CONFIG_PATH,
   checkShouldMintAndFundPkp,
   BASE_PUBLIC_CLIENT,
-  SPENDING_LIMIT_POLICY_IPFS_ID,
-  UNISWAP_SWAP_TOOL_IPFS_ID,
-  ERC20_APPROVAL_TOOL_IPFS_ID,
   TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY,
   permitAuthMethod,
   TEST_APP_MANAGER_VIEM_WALLET_CLIENT,
@@ -35,14 +35,18 @@ import {
   VincentUserFacetAbi,
   VincentUserViewFacetAbi,
 } from './vincent-contract-abis';
+import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
 
 describe('Uniswap Swap Tool E2E Tests', () => {
-  const TOOL_IPFS_IDS = [ERC20_APPROVAL_TOOL_IPFS_ID, UNISWAP_SWAP_TOOL_IPFS_ID];
+  const TOOL_IPFS_IDS = [
+    VincentToolErc20ApprovalMetadata.ipfsCid,
+    VincentToolUniswapSwapMetadata.ipfsCid,
+  ];
 
-  const TOOL_POLICIES = [[], [SPENDING_LIMIT_POLICY_IPFS_ID]];
+  const TOOL_POLICIES = [[], [VincentPolicySpendingLimitMetadata.ipfsCid]];
   const TOOL_POLICY_PARAMETER_NAMES = [
     [], // No policies for ERC20_APPROVAL_TOOL, so use empty array
     [['maxDailySpendingLimitInUsdCents']], // Parameters for SPENDING_LIMIT_POLICY_TOOL
@@ -69,6 +73,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
   beforeAll(async () => {
     TEST_CONFIG = getTestConfig(TEST_CONFIG_PATH);
     TEST_CONFIG = await checkShouldMintAndFundPkp(TEST_CONFIG);
+    TEST_CONFIG = await checkShouldMintCapacityCredit(TEST_CONFIG);
 
     // The Agent Wallet PKP needs to have Base ETH and WETH
     // in order to execute the ERC20 Approval and Uniswap Swap Tools
@@ -365,6 +370,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
+      capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
     });
 
     expect(erc20ApprovalExecutionResult).toBeDefined();
@@ -407,6 +413,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
+      capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
     });
 
     expect(uniswapSwapExecutionResult).toBeDefined();

@@ -12,11 +12,12 @@
     "types": ["node"],
     "moduleResolution": "node",
     "module": "commonjs",
+    "esModuleInterop": true,
     "paths": {
       "@lit-protocol/vincent-tool-sdk": ["../vincent-tool-sdk/src"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/generated/vincent-policy-metadata.json"],
   "references": [
     {
       "path": "../vincent-tool-sdk/tsconfig.lib.json"

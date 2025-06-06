@@ -8,6 +8,7 @@ import {
 import {
   getSpendingLimitContractInstance,
   SPENDING_LIMIT_CONTRACT_ABI,
+  SPENDING_LIMIT_CONTRACT_ADDRESS,
 } from './spending-limit-contract';
 import { createChronicleYellowstoneViemClient } from './viem-chronicle-yellowstone-client';
 import { signTx } from './sign-tx';
@@ -23,8 +24,6 @@ declare const Lit: {
     ) => Promise<string>;
   };
 };
-
-const CHRONICLE_YELLOWSTONE_SPENDING_LIMIT_ADDRESS = '0x756fA449De893446B26e10C6C66E62ccabeE908C';
 
 export const sendSpendTx = async ({
   appId,
@@ -49,7 +48,7 @@ export const sendSpendTx = async ({
     { waitForResponse: true, name: 'send spend tx gas estimation' },
     async () => {
       console.log(
-        `Preparing transaction to send to Spending Limit Contract: ${CHRONICLE_YELLOWSTONE_SPENDING_LIMIT_ADDRESS} (sendSpendTx)`,
+        `Preparing transaction to send to Spending Limit Contract: ${SPENDING_LIMIT_CONTRACT_ADDRESS} (sendSpendTx)`,
       );
 
       try {
@@ -107,7 +106,7 @@ export const sendSpendTx = async ({
     parsedBuildPartialSpendTxResponse;
 
   const unsignedSpendTx = {
-    to: CHRONICLE_YELLOWSTONE_SPENDING_LIMIT_ADDRESS as `0x${string}`,
+    to: SPENDING_LIMIT_CONTRACT_ADDRESS,
     data: data as `0x${string}`,
     value: 0n,
     gas: BigInt(gasLimit),

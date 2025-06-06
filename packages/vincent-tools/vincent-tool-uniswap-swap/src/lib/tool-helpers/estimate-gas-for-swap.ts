@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-import { getGasParams } from '.';
+import { getGasParams } from './get-gas-params';
 
 export const estimateGasForSwap = async (
   uniswapV3RouterContract: ethers.Contract,

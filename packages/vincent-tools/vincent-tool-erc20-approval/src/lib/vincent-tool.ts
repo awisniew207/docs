@@ -6,7 +6,7 @@ import { createPublicClient, http, parseUnits } from 'viem';
 import { getPkpInfo, sendErc20ApprovalTx, getCurrentAllowance } from './tool-helpers';
 import { checkNativeTokenBalance } from './tool-checks';
 
-export const Erc20ApprovalToolParamsSchema = z.object({
+export const toolParamsSchema = z.object({
   rpcUrl: z.string(),
   chainId: z.number(),
   pkpEthAddress: z.string(),
@@ -19,17 +19,17 @@ export const Erc20ApprovalToolParamsSchema = z.object({
   }),
 });
 
-export const Erc20ApprovalToolPrecheckSuccessSchema = z.object({
+const precheckSuccessSchema = z.object({
   allow: z.literal(true),
   existingApprovalSufficient: z.boolean(),
 });
 
-export const Erc20ApprovalToolPrecheckFailSchema = z.object({
+const precheckFailSchema = z.object({
   allow: z.literal(false),
   error: z.string(),
 });
 
-export const Erc20ApprovalToolExecuteSuccessSchema = z.object({
+const executeSuccessSchema = z.object({
   // Whether the existing approval amount is sufficient for the requested amount
   existingApprovalSufficient: z.boolean(),
   // Transaction hash if a new approval was created, undefined if existing approval was used
@@ -44,25 +44,23 @@ export const Erc20ApprovalToolExecuteSuccessSchema = z.object({
   spenderAddress: z.string(),
 });
 
-export const Erc20ApprovalToolExecuteFailSchema = z.object({
+const executeFailSchema = z.object({
   error: z.string(),
 });
 
-export const Erc20ApprovalToolDef = createVincentTool({
+export const VincentToolErc20Approval = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
 
-  toolParamsSchema: Erc20ApprovalToolParamsSchema,
+  toolParamsSchema,
   policyMap: createPolicyMapFromToolPolicies([]),
 
-  precheckSuccessSchema: Erc20ApprovalToolPrecheckSuccessSchema,
-  precheckFailSchema: Erc20ApprovalToolPrecheckFailSchema,
+  precheckSuccessSchema,
+  precheckFailSchema,
 
-  executeSuccessSchema: Erc20ApprovalToolExecuteSuccessSchema,
-  executeFailSchema: Erc20ApprovalToolExecuteFailSchema,
+  executeSuccessSchema,
+  executeFailSchema,
 
-  precheck: async ({ toolParams }, { policiesContext, fail, succeed }) => {
-    if (!policiesContext.allow) return fail({ allow: false, error: 'Policy check failed' });
-
+  precheck: async ({ toolParams }, { succeed }) => {
     const { rpcUrl, pkpEthAddress, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } =
       toolParams;
 
@@ -89,9 +87,7 @@ export const Erc20ApprovalToolDef = createVincentTool({
       existingApprovalSufficient: currentAllowance >= requiredAmount,
     });
   },
-  execute: async ({ toolParams }, { succeed, fail, policiesContext }) => {
-    if (!policiesContext.allow) return fail({ error: 'Policy check failed' });
-
+  execute: async ({ toolParams }, { succeed }) => {
     console.log('Executing ERC20 Approval Tool');
 
     const {

@@ -10,10 +10,6 @@ export const ETH_RPC_URL = getEnv('ETH_RPC_URL');
 export const TEST_CONFIG_PATH = path.join(__dirname, '../test-config.json');
 export const VINCENT_ADDRESS = getEnv('VINCENT_ADDRESS');
 
-export const ERC20_APPROVAL_TOOL_IPFS_ID = getEnv('ERC20_APPROVAL_TOOL_IPFS_ID');
-export const UNISWAP_SWAP_TOOL_IPFS_ID = getEnv('UNISWAP_SWAP_TOOL_IPFS_ID');
-export const SPENDING_LIMIT_POLICY_IPFS_ID = getEnv('SPENDING_LIMIT_POLICY_IPFS_ID');
-
 export const DATIL_CHAIN = defineChain({
   id: 175188,
   name: 'Datil Mainnet',
