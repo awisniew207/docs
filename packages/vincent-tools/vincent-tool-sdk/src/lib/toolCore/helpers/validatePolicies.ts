@@ -3,8 +3,6 @@
 import { z } from 'zod';
 
 import { VincentTool, VincentToolPolicy } from '../../types';
-import { LIT_DATIL_VINCENT_ADDRESS } from '../../handlers/constants';
-import { getPoliciesAndAppVersion } from '../../policyCore/policyParameters/getOnchainPolicyParams';
 import { getMappedToolPolicyParams } from './getMappedToolPolicyParams';
 import { Policy, PolicyParameter } from '../../policyCore/policyParameters/types';
 import { ToolPolicyMap } from './createPolicyMapFromToolPolicies';
@@ -38,15 +36,12 @@ export async function validatePolicies<
   PolicyMap extends ToolPolicyMap<any, any>,
   PoliciesByPackageName extends PolicyMap['policyByPackageName'],
 >({
-  delegationRpcUrl,
-  appDelegateeAddress,
+  policies,
   vincentTool,
   toolIpfsCid,
-  pkpTokenId,
   parsedToolParams,
 }: {
-  delegationRpcUrl: string;
-  appDelegateeAddress: string;
+  policies: Policy[];
   vincentTool: VincentTool<
     ToolParamsSchema,
     keyof PoliciesByPackageName & string,
@@ -58,16 +53,9 @@ export async function validatePolicies<
     any
   >;
   toolIpfsCid: string;
-  pkpTokenId: string;
   parsedToolParams: z.infer<ToolParamsSchema>;
 }): Promise<ValidatedPolicyMap<z.infer<ToolParamsSchema>, PoliciesByPackageName>> {
-  const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
-    delegationRpcUrl,
-    vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
-    appDelegateeAddress,
-    agentWalletPkpTokenId: pkpTokenId,
-    toolIpfsCid,
-  });
+  console.log('policies', JSON.stringify(policies, null, 2));
 
   const validatedPolicies: Array<{
     policyPackageName: keyof PoliciesByPackageName;
@@ -81,7 +69,7 @@ export async function validatePolicies<
 
     if (!toolPolicy) {
       throw new Error(
-        `Policy with IPFS CID ${policyIpfsCid} is registered on-chain but not supported by this tool. Vincent Tool: ${toolIpfsCid}, App ID: ${appId.toString()}, App Version: ${appVersion.toString()}, Agent Wallet PKP Token ID: ${pkpTokenId} (vincentToolHandler)`,
+        `Policy with IPFS CID ${policyIpfsCid} is registered on-chain but not supported by this tool. Vincent Tool: ${toolIpfsCid}`,
       );
     }
 
@@ -91,6 +79,10 @@ export async function validatePolicies<
       throw new Error('toolParameterMappings missing on policy');
     }
 
+    console.log(
+      'toolPolicy.toolParameterMappings',
+      JSON.stringify(toolPolicy.toolParameterMappings),
+    );
     const toolPolicyParams = getMappedToolPolicyParams({
       toolParameterMappings: toolPolicy.toolParameterMappings as Record<
         keyof typeof parsedToolParams,

@@ -79,6 +79,10 @@ export async function evaluatePolicies<
         },
       });
 
+      console.log(
+        `evaluated ${String(policyPackageName)} policy, result is:`,
+        JSON.stringify(litActionResponse),
+      );
       const result = parseAndValidateEvaluateResult({
         litActionResponse,
         vincentPolicy: policy.vincentPolicy,
@@ -149,12 +153,15 @@ function parseAndValidateEvaluateResult<
   }
 
   try {
-    const { schemaToUse } = getSchemaForPolicyResponseResult({
+    console.log('parseAndValidateEvaluateResult', JSON.stringify(parsedLitActionResponse));
+
+    const { schemaToUse, parsedType } = getSchemaForPolicyResponseResult({
       value: parsedLitActionResponse,
       denyResultSchema: vincentPolicy.evalDenyResultSchema || z.undefined(),
       allowResultSchema: vincentPolicy.evalAllowResultSchema || z.undefined(),
     });
 
+    console.log('schemaToUse', parsedType);
     return validateOrDeny(
       parsedLitActionResponse,
       schemaToUse,
@@ -162,6 +169,11 @@ function parseAndValidateEvaluateResult<
       'output',
     ) as PolicyResponse<EvalAllowResult, EvalDenyResult>;
   } catch (err) {
+    console.log(
+      'parseAndValidateEvaluateResult error; returning noResultDeny',
+      (err as Error).message,
+      (err as Error).stack,
+    );
     return returnNoResultDeny<EvalDenyResult>(
       err instanceof Error ? err.message : 'Unknown error',
     ) as unknown as EvalDenyResult extends z.ZodType

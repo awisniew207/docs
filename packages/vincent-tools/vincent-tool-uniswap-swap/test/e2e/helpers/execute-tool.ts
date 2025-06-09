@@ -90,6 +90,7 @@ export const executeTool = async (options: ExecuteToolOptions) => {
         toolParams: {
           ...toolParameters,
         },
+        context: {},
       },
     });
 

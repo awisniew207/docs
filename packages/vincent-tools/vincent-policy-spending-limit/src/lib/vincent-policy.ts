@@ -42,10 +42,9 @@ export const vincentPolicy = createVincentPolicy({
   commitAllowResultSchema,
   commitDenyResultSchema,
 
-  precheck: async ({ toolParams, userParams }, { allow, deny }) => {
+  precheck: async ({ toolParams, userParams }, { allow, deny, appId }) => {
     const {
       pkpEthAddress,
-      appId,
       buyAmount,
       ethRpcUrl,
       rpcUrlForUniswap,

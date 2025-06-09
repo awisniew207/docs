@@ -104,7 +104,7 @@ export const vincentTool = createVincentTool({
     });
   },
   execute: async ({ toolParams }, { succeed, fail, policiesContext }) => {
-    console.log('Executing UniswapSwapTool');
+    console.log('Executing UniswapSwapTool', JSON.stringify(toolParams, null, 2));
 
     const {
       pkpEthAddress,
@@ -120,6 +120,12 @@ export const vincentTool = createVincentTool({
 
     const pkpInfo = await getPkpInfo(pkpEthAddress);
 
+    const spendingLimitPolicyContext =
+      policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+
+    console.log('Spending limit policy context', JSON.stringify(spendingLimitPolicyContext));
+    console.log('Policy context', JSON.stringify(policiesContext));
+
     const swapTxHash = await sendUniswapTx({
       rpcUrl: rpcUrlForUniswap,
       chainId: chainIdForUniswap,
@@ -133,8 +139,7 @@ export const vincentTool = createVincentTool({
     });
 
     let spendTxHash: string | undefined;
-    const spendingLimitPolicyContext =
-      policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+
     if (spendingLimitPolicyContext !== undefined) {
       const tokenInAmountInUsd = await getTokenAmountInUsd({
         ethRpcUrl,
@@ -157,6 +162,7 @@ export const vincentTool = createVincentTool({
         pkpPubKey: pkpInfo.publicKey,
       });
 
+      console.log('Spending limit policy commit result', JSON.stringify(commitResult));
       if (commitResult.allow) {
         spendTxHash = commitResult.result.spendTxHash;
       } else {

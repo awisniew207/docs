@@ -103,12 +103,15 @@ export function getSchemaForPolicyResponseResult({
   parsedType: 'allow' | 'deny' | 'unknown';
 } {
   if (!isPolicyResponse(value)) {
+    console.log('getSchemaForPolicyResponseResult !isPolicyResponse', value);
+
     return {
       schemaToUse: PolicyResponseShape,
       parsedType: 'unknown',
     };
   }
 
+  console.log('getSchemaForPolicyResponseResult value is', value);
   return {
     schemaToUse: value.allow ? allowResultSchema : denyResultSchema,
     parsedType: value.allow ? 'allow' : 'deny',

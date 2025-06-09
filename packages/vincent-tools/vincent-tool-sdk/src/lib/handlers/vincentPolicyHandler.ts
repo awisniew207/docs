@@ -50,10 +50,15 @@ export async function vincentPolicyHandler<
 }) {
   const {
     delegation: { delegator },
+    appVersion,
+    appId,
   } = context;
-  const policyIpfsCid = LitAuth.actionIpfsIds[0];
-  const toolIpfsCid = LitAuth.actionIpfsIds[1];
 
+  console.log('actionIpfsIds:', LitAuth.actionIpfsIds.join(','));
+  const policyIpfsCid = LitAuth.actionIpfsIds[0];
+  const toolIpfsCid = context.toolIpfsCid; // FIXME: Use ipfsCidsStack when it's shipped
+
+  console.log('context:', JSON.stringify(context));
   try {
     const delegationRpcUrl = await Lit.Actions.getRpcUrl({
       chain: 'yellowstone',
@@ -64,6 +69,10 @@ export async function vincentPolicyHandler<
       yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
       pkpEthAddress: delegator,
     });
+    console.log('tokenId:', tokenId);
+
+    console.log('LitAuth.authSigAddress', LitAuth.authSigAddress);
+    console.log(ethers.utils.getAddress(LitAuth.authSigAddress));
 
     const onChainPolicyParams = await getOnePolicysOnChainParams({
       delegationRpcUrl,
@@ -74,6 +83,7 @@ export async function vincentPolicyHandler<
       policyIpfsCid,
     });
 
+    console.log('onChainPolicyParams:', JSON.stringify(onChainPolicyParams));
     const evaluateResult = await vincentPolicy.evaluate(
       {
         toolParams,
@@ -84,15 +94,20 @@ export async function vincentPolicyHandler<
           delegatee: ethers.utils.getAddress(LitAuth.authSigAddress),
           delegator,
         },
+        toolIpfsCid,
+        appVersion,
+        appId,
       },
     );
 
+    console.log('evaluateResult:', JSON.stringify(evaluateResult));
     Lit.Actions.setResponse({
       response: JSON.stringify({
         ...evaluateResult,
       }),
     });
   } catch (error) {
+    console.log('Policy evaluation failed:', (error as Error).message, (error as Error).stack);
     Lit.Actions.setResponse({
       response: JSON.stringify(
         createDenyResult({

@@ -7,5 +7,5 @@ import { vincentPolicy } from './vincent-policy';
 
 export const bundledVincentPolicy = asBundledVincentPolicy(
   vincentPolicy,
-  'QmVr6x9XWsJSxAr3Kt1VCN3wrMNyaEawSuM2N1t1rtQDza' as const,
+  'QmV4jN6YvrufSzRqxEMHuvpf8qWytjERxXcfrQFUmbjyKd' as const,
 );

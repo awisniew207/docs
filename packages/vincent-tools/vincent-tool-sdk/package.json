@@ -25,6 +25,7 @@
     "name": "vincent-tool-sdk"
   },
   "devDependencies": {
+    "chokidar-cli": "^3.0.0",
     "jsonc-eslint-parser": "^2.4.0"
   }
 }

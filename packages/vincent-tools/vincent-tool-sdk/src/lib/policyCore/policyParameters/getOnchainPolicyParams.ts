@@ -28,6 +28,7 @@ export const getOnePolicysOnChainParams = async ({
     toolIpfsCid,
   });
 
+  console.log('allOnChainPolicyParams:', JSON.stringify(allOnChainPolicyParams));
   const onChainPolicyParams = allOnChainPolicyParams.policies.find(
     (policy: Policy) => policy.policyIpfsCid === policyIpfsCid,
   );
@@ -86,6 +87,14 @@ async function _fetchAllOnChainParams({
   agentWalletPkpTokenId: string;
   toolIpfsCid: string;
 }): Promise<AllOnChainPolicyParams> {
+  console.log('_fetchAllOnChainParams', {
+    vincentContractAddress,
+    delegationRpcUrl,
+    appDelegateeAddress,
+    agentWalletPkpTokenId,
+    toolIpfsCid,
+  });
+
   try {
     const VINCENT_CONTRACT_ABI = [
       `function validateToolExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata toolIpfsCid) external view returns (tuple(bool isPermitted, uint256 appId, uint256 appVersion, tuple(string policyIpfsCid, tuple(string name, uint8 paramType, bytes value)[] parameters)[] policies) validation)`,

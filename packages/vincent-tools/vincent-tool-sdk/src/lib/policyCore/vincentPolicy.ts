@@ -103,6 +103,12 @@ export function createVincentPolicy<
 
       const result = await policyDef.evaluate({ toolParams, userParams }, context);
 
+      if (isPolicyDenyResponse(result)) {
+        return result as unknown as EvalDenyResult extends z.ZodType
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          : PolicyResponseDenyNoResult;
+      }
+
       const { schemaToUse } = getSchemaForPolicyResponseResult({
         value: result,
         allowResultSchema: evalAllowSchema,
@@ -161,6 +167,12 @@ export function createVincentPolicy<
           }
 
           const result = await precheckFn(args, context);
+
+          if (isPolicyDenyResponse(result)) {
+            return result as unknown as EvalDenyResult extends z.ZodType
+              ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+              : PolicyResponseDenyNoResult;
+          }
 
           const { schemaToUse } = getSchemaForPolicyResponseResult({
             value: result,

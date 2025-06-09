@@ -28,6 +28,14 @@ export const decodePolicyParams = ({
     const result: Record<string, EthersAbiDecodedValue> = {};
 
     for (const param of params) {
+      console.log(
+        'decoding param:',
+        JSON.stringify({
+          name: param.name,
+          paramType: param.paramType,
+          value: param.value,
+        }),
+      );
       const { name, paramType, value } = param;
 
       switch (paramType) {

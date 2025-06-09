@@ -33,6 +33,8 @@ import {
 } from './resultCreators';
 import { ToolResponse } from './types';
 import { isToolResponseFailure } from './typeGuards';
+import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
+import { LIT_DATIL_VINCENT_ADDRESS } from '../handlers/constants';
 
 const generateSessionSigs = async ({
   litNodeClient,
@@ -92,13 +94,19 @@ async function runToolPolicyPrechecks<
 
   const parsedToolParams = vincentTool.toolParamsSchema.parse(toolParams);
 
-  const validatedPolicies = await validatePolicies({
+  const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
     delegationRpcUrl: context.rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
+    vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
     appDelegateeAddress: context.delegation.delegatee,
-    vincentTool,
-    parsedToolParams,
+    agentWalletPkpTokenId: context.delegation.delegator,
     toolIpfsCid: context.toolIpfsCid,
-    pkpTokenId: context.delegation.delegator,
+  });
+
+  const validatedPolicies = await validatePolicies({
+    policies,
+    vincentTool,
+    toolIpfsCid: context.toolIpfsCid,
+    parsedToolParams,
   });
 
   const decodedPoliciesByPackageName: Record<string, Record<string, EthersAbiDecodedValue>> = {};
@@ -158,6 +166,8 @@ async function runToolPolicyPrechecks<
           userParams: decodedPoliciesByPackageName[key as string] as unknown,
         },
         {
+          appId: appId.toNumber(),
+          appVersion: appVersion.toNumber(),
           delegation: {
             delegatee: context.delegation.delegatee,
             delegator: context.delegation.delegator,
@@ -268,7 +278,15 @@ export function createVincentToolClient<
         rpcUrl,
         delegator,
         toolIpfsCid,
-      }: { rpcUrl?: string; delegator: string; toolIpfsCid: string },
+        appId,
+        appVersion,
+      }: {
+        rpcUrl?: string;
+        delegator: string;
+        toolIpfsCid: string;
+        appId: number;
+        appVersion: number;
+      },
     ): Promise<ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>> {
       const delegatee = ethers.utils.getAddress(await ethersSigner.getAddress());
 
@@ -277,6 +295,8 @@ export function createVincentToolClient<
           vincentTool,
           toolParams: rawToolParams,
           context: {
+            appId,
+            appVersion,
             rpcUrl,
             toolIpfsCid,
             delegation: { delegator, delegatee },
@@ -295,6 +315,9 @@ export function createVincentToolClient<
         {
           policiesContext,
           delegation: { delegator, delegatee },
+          toolIpfsCid,
+          appId,
+          appVersion,
         },
       );
 

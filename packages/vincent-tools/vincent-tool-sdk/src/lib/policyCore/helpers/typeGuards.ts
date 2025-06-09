@@ -14,21 +14,11 @@ export function isZodValidationDenyResult(result: unknown): result is ZodValidat
 }
 
 export function isPolicyDenyResponse<T>(val: unknown): val is PolicyResponseDeny<T> {
-  return (
-    typeof val === 'object' &&
-    val !== null &&
-    (val as any).allow === false &&
-    typeof (val as any).ipfsCid === 'string'
-  );
+  return typeof val === 'object' && val !== null && (val as any).allow === false;
 }
 
 export function isPolicyAllowResponse<T>(val: unknown): val is PolicyResponseAllow<T> {
-  return (
-    typeof val === 'object' &&
-    val !== null &&
-    (val as any).allow === true &&
-    typeof (val as any).ipfsCid === 'string'
-  );
+  return typeof val === 'object' && val !== null && (val as any).allow === true;
 }
 
 export function isPolicyResponse<AllowResult extends z.ZodType, DenyResult extends z.ZodType>(
@@ -38,8 +28,6 @@ export function isPolicyResponse<AllowResult extends z.ZodType, DenyResult exten
     typeof value === 'object' &&
     value !== null &&
     'allow' in value &&
-    typeof (value as any).allow === 'boolean' &&
-    'ipfsCid' in value &&
-    typeof (value as any).ipfsCid === 'string'
+    typeof (value as any).allow === 'boolean'
   );
 }

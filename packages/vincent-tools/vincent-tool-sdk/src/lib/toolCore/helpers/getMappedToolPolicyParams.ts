@@ -20,6 +20,7 @@ export function getMappedToolPolicyParams({
       throw new Error(`Tool param "${toolParamKey}" expected in toolParams but was not provided`);
     }
 
+    console.log(`Mapping tool param "${toolParamKey}" to policy param "${policyParamKey}"`);
     mappedToolParams[policyParamKey] = parsedToolParams[toolParamKey];
   }
 
