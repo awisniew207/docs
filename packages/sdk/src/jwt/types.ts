@@ -1,6 +1,14 @@
 import type { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import type { IRelayPKP } from '@lit-protocol/types';
-import type { JWTDecoded, JWTPayload } from 'did-jwt/lib/JWT';
+import type { JWTHeader, JWTPayload } from 'did-jwt';
+
+// Copied interface from did-jwt that is not exposed publicly
+interface JWTDecoded {
+  header: JWTHeader;
+  payload: JWTPayload;
+  signature: string;
+  data: string;
+}
 
 /**
  * Configuration interface for creating a JWT (JSON Web Token) signed by a PKP wallet.
