@@ -1,8 +1,9 @@
 import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
-import { VincentPolicySpendingLimitMetadata } from '@lit-protocol/vincent-policy-spending-limit';
-import { VincentToolErc20ApprovalMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
+import { vincentPolicyMetadata as spendingLimitPolicyMetadata } from '@lit-protocol/vincent-policy-spending-limit';
+import { vincentToolMetadata as erc20ToolMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
 
-import { VincentToolUniswapSwapMetadata } from '../../src';
+import { vincentToolMetadata as uniswapToolMetadata } from '../../src';
+
 import {
   TestConfig,
   getTestConfig,
@@ -41,12 +42,9 @@ import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-cred
 jest.setTimeout(240000);
 
 describe('Uniswap Swap Tool E2E Tests', () => {
-  const TOOL_IPFS_IDS = [
-    VincentToolErc20ApprovalMetadata.ipfsCid,
-    VincentToolUniswapSwapMetadata.ipfsCid,
-  ];
+  const TOOL_IPFS_IDS = [erc20ToolMetadata.ipfsCid, uniswapToolMetadata.ipfsCid];
 
-  const TOOL_POLICIES = [[], [VincentPolicySpendingLimitMetadata.ipfsCid]];
+  const TOOL_POLICIES = [[], [spendingLimitPolicyMetadata.ipfsCid]];
   const TOOL_POLICY_PARAMETER_NAMES = [
     [], // No policies for ERC20_APPROVAL_TOOL, so use empty array
     [['maxDailySpendingLimitInUsdCents']], // Parameters for SPENDING_LIMIT_POLICY_TOOL
@@ -121,9 +119,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     await permitAuthMethod(
       TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
       TEST_CONFIG.userPkp!.tokenId!,
-      VincentToolErc20ApprovalMetadata.ipfsCid,
-      VincentToolUniswapSwapMetadata.ipfsCid,
-      VincentPolicySpendingLimitMetadata.ipfsCid,
+      erc20ToolMetadata.ipfsCid,
+      uniswapToolMetadata.ipfsCid,
+      spendingLimitPolicyMetadata.ipfsCid,
     );
   });
 
@@ -322,7 +320,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     expect(validationResult.appVersion).toBe(BigInt(TEST_CONFIG.appVersion!));
     expect(validationResult.policies).toEqual([
       {
-        policyIpfsCid: VincentPolicySpendingLimitMetadata.ipfsCid,
+        policyIpfsCid: spendingLimitPolicyMetadata.ipfsCid,
         parameters: [
           {
             name: 'maxDailySpendingLimitInUsdCents',
@@ -358,7 +356,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
   it('should execute the ERC20 Approval Tool with the Agent Wallet PKP', async () => {
     const erc20ApprovalExecutionResult = await executeTool({
-      toolIpfsCid: VincentToolErc20ApprovalMetadata.ipfsCid,
+      toolIpfsCid: erc20ToolMetadata.ipfsCid,
       toolParameters: {
         rpcUrl: BASE_RPC_URL,
         chainId: 8453,
@@ -399,7 +397,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
   it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {
     const uniswapSwapExecutionResult = await executeTool({
-      toolIpfsCid: VincentToolUniswapSwapMetadata.ipfsCid,
+      toolIpfsCid: uniswapToolMetadata.ipfsCid,
       toolParameters: {
         pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
         ethRpcUrl: ETH_RPC_URL,

@@ -4,6 +4,21 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/sdk"
+    },
+    {
+      "path": "./packages/app-dashboard"
+    },
+    {
+      "path": "./packages/vincent-rest-api"
+    },
+    {
+      "path": "./packages/registry-backend"
+    },
+    {
+      "path": "./packages/mcp"
+    },
+    {
       "path": "./packages/vincent-tools/vincent-tool-uniswap-swap"
     },
     {

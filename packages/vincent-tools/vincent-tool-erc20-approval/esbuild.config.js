@@ -3,6 +3,41 @@ const path = require('path');
 
 const esbuild = require('esbuild');
 const { polyfillNode } = require('esbuild-plugin-polyfill-node');
+const Hash = require('ipfs-only-hash');
+
+function metadataJsonFile({ ipfsCid }) {
+  return `{
+  "ipfsCid": "${ipfsCid}"
+}
+`;
+}
+
+const createMetadataJsonFile = {
+  name: 'create-metadata-json-file',
+  setup(build) {
+    // Ensure write is set to false so our plugin will always receive outputFiles
+    build.initialOptions.write = false;
+
+    const sourceDir = path.dirname(build.initialOptions.entryPoints[0]);
+
+    console.log(sourceDir);
+    build.onEnd(async (result) => {
+      if (result.errors.length > 0) {
+        console.error('Build failed with errors:', result.errors);
+        return;
+      }
+      const outputFile = result.outputFiles[0];
+
+      const content = outputFile.text;
+      const ipfsCid = await Hash.of(content);
+
+      const outputPath = path.dirname(path.resolve(outputFile.path));
+      const vincentPolicyMetadataPath = path.join(outputPath, 'vincent-tool-metadata.json');
+      const metadataJsonContent = metadataJsonFile({ ipfsCid });
+      fs.writeFileSync(vincentPolicyMetadataPath, metadataJsonContent);
+    });
+  },
+};
 
 function aliasFetch() {
   const shim = path.resolve(__dirname, 'deno-fetch-shim.js');
@@ -67,7 +102,7 @@ module.exports = {
     await esbuild
       .build({
         tsconfig: './tsconfig.lib.json',
-        entryPoints: ['./src/lib/vincent-tool-wrapped.ts'],
+        entryPoints: ['./src/lib/lit-action.ts'],
         bundle: true,
         minify: false,
         sourcemap: false,
@@ -93,6 +128,7 @@ module.exports = {
             },
           }),
           wrapIIFEInStringPlugin,
+          createMetadataJsonFile,
         ],
         platform: 'browser',
       })

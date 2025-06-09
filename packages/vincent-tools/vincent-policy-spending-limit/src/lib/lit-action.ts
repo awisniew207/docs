@@ -1,13 +1,14 @@
 import { vincentPolicyHandler } from '@lit-protocol/vincent-tool-sdk';
 
-import { VincentPolicySpendingLimit, toolParamsSchema } from './vincent-policy';
+import { vincentPolicy } from './vincent-policy';
+import { toolParamsSchema } from './schemas';
 
 declare const context: { delegation: { delegator: string; delegatee: string } };
 declare const toolParams: typeof toolParamsSchema;
 
 (async () => {
   return await vincentPolicyHandler({
-    vincentPolicy: VincentPolicySpendingLimit,
+    vincentPolicy: vincentPolicy,
     context,
     toolParams,
   });

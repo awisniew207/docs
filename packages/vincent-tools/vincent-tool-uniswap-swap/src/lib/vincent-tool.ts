@@ -1,69 +1,28 @@
-import { z } from 'zod';
-import {
-  asBundledVincentPolicy,
-  createVincentTool,
-  createVincentToolPolicy,
-} from '@lit-protocol/vincent-tool-sdk';
-import {
-  VincentPolicySpendingLimit,
-  VincentPolicySpendingLimitMetadata,
-} from '@lit-protocol/vincent-policy-spending-limit';
+import { createVincentTool, createVincentToolPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+
 import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
 import { createPublicClient, http } from 'viem';
 import { createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
 
 import { getPkpInfo, getTokenAmountInUsd, sendUniswapTx } from './tool-helpers';
 import {
-  checkNativeTokenBalance,
-  checkUniswapPoolExists,
-  checkTokenInBalance,
   checkErc20Allowance,
+  checkNativeTokenBalance,
+  checkTokenInBalance,
+  checkUniswapPoolExists,
 } from './tool-checks';
-
-export const toolParamsSchema = z.object({
-  ethRpcUrl: z.string(),
-  rpcUrlForUniswap: z.string(),
-  chainIdForUniswap: z.number(),
-  pkpEthAddress: z.string(),
-
-  tokenInAddress: z.string(),
-  tokenInDecimals: z.number(),
-  tokenInAmount: z.number().refine((val) => val > 0, {
-    message: 'tokenInAmount must be greater than 0',
-  }),
-
-  tokenOutAddress: z.string(),
-  tokenOutDecimals: z.number(),
-
-  poolFee: z.number().optional(),
-  slippageTolerance: z.number().optional(),
-  swapDeadline: z.number().optional(),
-});
-
-const precheckSuccessSchema = z.object({
-  allow: z.literal(true),
-});
-
-const precheckFailSchema = z.object({
-  allow: z.literal(false),
-  error: z.string(),
-});
-
-const executeSuccessSchema = z.object({
-  swapTxHash: z.string(),
-  spendTxHash: z.string().optional(),
-});
-
-const executeFailSchema = z.object({
-  error: z.string(),
-});
+import {
+  executeFailSchema,
+  executeSuccessSchema,
+  precheckFailSchema,
+  precheckSuccessSchema,
+  toolParamsSchema,
+} from './schemas';
 
 const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema,
-  bundledVincentPolicy: asBundledVincentPolicy(
-    VincentPolicySpendingLimit,
-    `${VincentPolicySpendingLimitMetadata.ipfsCid}` as const,
-  ),
+  bundledVincentPolicy,
   toolParameterMappings: {
     pkpEthAddress: 'pkpEthAddress',
     ethRpcUrl: 'ethRpcUrl',
@@ -73,7 +32,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   },
 });
 
-export const VincentToolUniswapSwap = createVincentTool({
+export const vincentTool = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
 
   toolParamsSchema,
