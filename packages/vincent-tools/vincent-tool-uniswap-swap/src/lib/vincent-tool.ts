@@ -24,6 +24,8 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema,
   bundledVincentPolicy,
   toolParameterMappings: {
+    rpcUrlForUniswap: 'rpcUrlForUniswap',
+    chainIdForUniswap: 'chainIdForUniswap',
     pkpEthAddress: 'pkpEthAddress',
     ethRpcUrl: 'ethRpcUrl',
     tokenInAddress: 'tokenAddress',

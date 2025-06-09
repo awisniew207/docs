@@ -155,6 +155,11 @@ function parseAndValidateEvaluateResult<
   try {
     console.log('parseAndValidateEvaluateResult', JSON.stringify(parsedLitActionResponse));
 
+    if (isPolicyDenyResponse(parsedLitActionResponse)) {
+      console.log('parsedLitActionResponse is a deny response; returning it as-is.');
+      return parsedLitActionResponse as PolicyResponse<EvalAllowResult, EvalDenyResult>;
+    }
+
     const { schemaToUse, parsedType } = getSchemaForPolicyResponseResult({
       value: parsedLitActionResponse,
       denyResultSchema: vincentPolicy.evalDenyResultSchema || z.undefined(),

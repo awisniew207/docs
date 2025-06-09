@@ -14,7 +14,7 @@ import { getSchemaForToolResult, validateOrFail } from '../toolCore/helpers/zod'
 import { createToolSuccessResult } from '../toolCore/helpers/resultCreators';
 import { ethers } from 'ethers';
 import { decodePolicyParams } from '../policyCore/policyParameters/decodePolicyParams';
-import type { EthersAbiDecodedValue } from '../policyCore/policyParameters/types';
+import type { DecodedValues } from '../policyCore/policyParameters/types';
 import { YELLOWSTONE_PUBLIC_RPC } from '../constants';
 import { getLitNodeClientInstance } from '../LitNodeClient/getLitNodeClient';
 import type { LitNodeClient } from '@lit-protocol/lit-node-client';
@@ -109,7 +109,7 @@ async function runToolPolicyPrechecks<
     parsedToolParams,
   });
 
-  const decodedPoliciesByPackageName: Record<string, Record<string, EthersAbiDecodedValue>> = {};
+  const decodedPoliciesByPackageName: Record<string, Record<string, DecodedValues>> = {};
 
   for (const { policyPackageName, parameters } of validatedPolicies) {
     decodedPoliciesByPackageName[policyPackageName as string] = decodePolicyParams({

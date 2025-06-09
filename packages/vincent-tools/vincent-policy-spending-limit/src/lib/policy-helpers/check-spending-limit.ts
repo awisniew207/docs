@@ -8,7 +8,7 @@ export const checkIfBuyAmountAllowed = async ({
   tokenAddress,
   tokenDecimals,
   buyAmount,
-  maxDailySpendAmountUsd,
+  maxDailySpendingLimitInUsdCents,
   pkpEthAddress,
   appId,
 }: {
@@ -18,7 +18,7 @@ export const checkIfBuyAmountAllowed = async ({
   tokenAddress: `0x${string}`;
   tokenDecimals: number;
   buyAmount: number;
-  maxDailySpendAmountUsd: number;
+  maxDailySpendingLimitInUsdCents: bigint;
   pkpEthAddress: `0x${string}`;
   appId: number;
 }): Promise<{
@@ -37,7 +37,7 @@ export const checkIfBuyAmountAllowed = async ({
 
   // maxDailySpendingLimitInUsdCents has 2 decimal precision, but tokenAmountInUsd has 8,
   // so we multiply by 10^6 to match the precision
-  const adjustedMaxDailySpendingLimit = BigInt(maxDailySpendAmountUsd) * 1_000_000n;
+  const adjustedMaxDailySpendingLimit = maxDailySpendingLimitInUsdCents * 1_000_000n;
   console.log(
     `Adjusted maxDailySpendingLimitInUsdCents to 8 decimal precision: ${adjustedMaxDailySpendingLimit.toString()} (spendingLimitPolicyPrecheck)`,
   );

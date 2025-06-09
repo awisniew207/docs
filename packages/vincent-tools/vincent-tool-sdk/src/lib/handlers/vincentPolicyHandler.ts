@@ -22,6 +22,10 @@ declare const LitAuth: {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+const bigintReplacer = (key: any, value: any) => {
+  return typeof value === 'bigint' ? value.toString() : value;
+};
+
 export async function vincentPolicyHandler<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
@@ -83,7 +87,7 @@ export async function vincentPolicyHandler<
       policyIpfsCid,
     });
 
-    console.log('onChainPolicyParams:', JSON.stringify(onChainPolicyParams));
+    console.log('onChainPolicyParams:', JSON.stringify(onChainPolicyParams, bigintReplacer));
     const evaluateResult = await vincentPolicy.evaluate(
       {
         toolParams,
@@ -100,7 +104,7 @@ export async function vincentPolicyHandler<
       },
     );
 
-    console.log('evaluateResult:', JSON.stringify(evaluateResult));
+    console.log('evaluateResult:', JSON.stringify(evaluateResult, bigintReplacer));
     Lit.Actions.setResponse({
       response: JSON.stringify({
         ...evaluateResult,

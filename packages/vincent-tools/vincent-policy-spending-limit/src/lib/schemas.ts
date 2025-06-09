@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const toolParamsSchema = z.object({
-  appId: z.number(),
   pkpEthAddress: z.string(),
   ethRpcUrl: z.string(),
   rpcUrlForUniswap: z.string(),
@@ -12,7 +11,7 @@ export const toolParamsSchema = z.object({
 });
 
 export const userParamsSchema = z.object({
-  maxDailySpendAmountUsd: z.number(),
+  maxDailySpendingLimitInUsdCents: z.bigint(),
 });
 
 export const precheckAllowResultSchema = z.object({
