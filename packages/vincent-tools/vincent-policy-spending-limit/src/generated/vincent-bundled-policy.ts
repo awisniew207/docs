@@ -3,7 +3,7 @@
  */
 
 import { asBundledVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
-import { vincentPolicy } from './vincent-policy';
+import { vincentPolicy } from '../lib/vincent-policy';
 
 export const bundledVincentPolicy = asBundledVincentPolicy(
   vincentPolicy,

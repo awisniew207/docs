@@ -33,7 +33,7 @@ function getBundledVincentPolicyCode({ ipfsCid }) {
  */
  
 import { asBundledVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
-import { vincentPolicy } from './vincent-policy';
+import { vincentPolicy } from '../lib/vincent-policy';
 
 export const bundledVincentPolicy = asBundledVincentPolicy(vincentPolicy, "${ipfsCid}" as const);
 `;
@@ -75,7 +75,7 @@ const createBundledPolicyFile = {
       }
       const outputFile = result.outputFiles[0];
 
-      const vincentPolicyPath = path.join(sourceDir, 'vincent-bundled-policy.ts');
+      const vincentPolicyPath = path.join(sourceDir, '../generated/vincent-bundled-policy.ts');
       const content = outputFile.text;
       const ipfsCid = await Hash.of(content);
 
