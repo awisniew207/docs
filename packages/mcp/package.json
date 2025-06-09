@@ -34,7 +34,6 @@
     "dev:stdio": "tsx src/stdio.ts",
     "dev:http": "tsx watch --env-file=.env src/http.ts",
     "inspector": "npx @modelcontextprotocol/inspector",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "mintRlI": "tsx --env-file=.env ./src/bin/mintRLINft.ts"
   },
   "dependencies": {
