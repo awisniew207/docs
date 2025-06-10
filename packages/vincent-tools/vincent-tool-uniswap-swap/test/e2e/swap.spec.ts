@@ -1,8 +1,9 @@
 import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
-import { VincentPolicySpendingLimitMetadata } from '@lit-protocol/vincent-policy-spending-limit';
-import { VincentToolErc20ApprovalMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
+import { vincentPolicyMetadata as spendingLimitPolicyMetadata } from '@lit-protocol/vincent-policy-spending-limit';
+import { vincentToolMetadata as erc20ToolMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
 
-import { VincentToolUniswapSwapMetadata } from '../../src';
+import { vincentToolMetadata as uniswapToolMetadata } from '../../src';
+
 import {
   TestConfig,
   getTestConfig,
@@ -41,12 +42,9 @@ import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-cred
 jest.setTimeout(240000);
 
 describe('Uniswap Swap Tool E2E Tests', () => {
-  const TOOL_IPFS_IDS = [
-    VincentToolErc20ApprovalMetadata.ipfsCid,
-    VincentToolUniswapSwapMetadata.ipfsCid,
-  ];
+  const TOOL_IPFS_IDS = [erc20ToolMetadata.ipfsCid, uniswapToolMetadata.ipfsCid];
 
-  const TOOL_POLICIES = [[], [VincentPolicySpendingLimitMetadata.ipfsCid]];
+  const TOOL_POLICIES = [[], [spendingLimitPolicyMetadata.ipfsCid]];
   const TOOL_POLICY_PARAMETER_NAMES = [
     [], // No policies for ERC20_APPROVAL_TOOL, so use empty array
     [['maxDailySpendingLimitInUsdCents']], // Parameters for SPENDING_LIMIT_POLICY_TOOL
@@ -121,9 +119,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     await permitAuthMethod(
       TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
       TEST_CONFIG.userPkp!.tokenId!,
-      VincentToolErc20ApprovalMetadata.ipfsCid,
-      VincentToolUniswapSwapMetadata.ipfsCid,
-      VincentPolicySpendingLimitMetadata.ipfsCid,
+      erc20ToolMetadata.ipfsCid,
+      uniswapToolMetadata.ipfsCid,
+      spendingLimitPolicyMetadata.ipfsCid,
     );
   });
 
@@ -322,7 +320,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     expect(validationResult.appVersion).toBe(BigInt(TEST_CONFIG.appVersion!));
     expect(validationResult.policies).toEqual([
       {
-        policyIpfsCid: VincentPolicySpendingLimitMetadata.ipfsCid,
+        policyIpfsCid: spendingLimitPolicyMetadata.ipfsCid,
         parameters: [
           {
             name: 'maxDailySpendingLimitInUsdCents',
@@ -358,7 +356,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
   it('should execute the ERC20 Approval Tool with the Agent Wallet PKP', async () => {
     const erc20ApprovalExecutionResult = await executeTool({
-      toolIpfsCid: VincentToolErc20ApprovalMetadata.ipfsCid,
+      toolIpfsCid: erc20ToolMetadata.ipfsCid,
       toolParameters: {
         rpcUrl: BASE_RPC_URL,
         chainId: 8453,
@@ -399,7 +397,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
   it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {
     const uniswapSwapExecutionResult = await executeTool({
-      toolIpfsCid: VincentToolUniswapSwapMetadata.ipfsCid,
+      toolIpfsCid: uniswapToolMetadata.ipfsCid,
       toolParameters: {
         pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
         ethRpcUrl: ETH_RPC_URL,
@@ -408,7 +406,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
         tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
         tokenInDecimals: 18,
         tokenInAmount: 0.0000077,
-        tokenOutAddress: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // CBBTC
+        tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
         tokenOutDecimals: 8,
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
@@ -418,15 +416,16 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
     expect(uniswapSwapExecutionResult).toBeDefined();
 
+    console.log(uniswapSwapExecutionResult);
     const parsedResponse = JSON.parse(uniswapSwapExecutionResult.response as string);
 
-    expect(parsedResponse.success).toBeTruthy();
+    expect(parsedResponse.toolExecutionResult.success).toBeTruthy();
 
-    expect(parsedResponse.result).toBeDefined();
-    expect(parsedResponse.result.swapTxHash).toBeDefined();
-    expect(parsedResponse.result.spendTxHash).toBeDefined();
+    expect(parsedResponse.toolExecutionResult.result).toBeDefined();
+    expect(parsedResponse.toolExecutionResult.result.swapTxHash).toBeDefined();
+    expect(parsedResponse.toolExecutionResult.result.spendTxHash).toBeDefined();
 
-    const swapTxHash = parsedResponse.result.swapTxHash;
+    const swapTxHash = parsedResponse.toolExecutionResult.result.swapTxHash;
     expect(swapTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const swapTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
@@ -434,7 +433,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     });
     expect(swapTxReceipt.status).toBe('success');
 
-    const spendTxHash = parsedResponse.result.spendTxHash;
+    const spendTxHash = parsedResponse.toolExecutionResult.result.spendTxHash;
     expect(spendTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const spendTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({

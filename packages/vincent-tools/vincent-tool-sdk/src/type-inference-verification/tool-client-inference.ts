@@ -65,6 +65,8 @@ export async function run() {
   } as const;
 
   const precheckResult = await client.precheck(toolParams, {
+    appId: 123123,
+    appVersion: 123,
     delegator: '0xabc',
     toolIpfsCid: 'QmFakeTool123',
   });
@@ -119,6 +121,9 @@ export async function run() {
 
   // 🧪 Now check execute inference
   const executeResult = await client.execute(toolParams, {
+    toolIpfsCid: 'oijskljfdj',
+    appId: 123123,
+    appVersion: 123,
     delegation: {
       delegatee: '0xabc',
       delegator: '0xdef',
@@ -200,6 +205,8 @@ const fullParams = { count: 5 };
 
 export async function gogo() {
   const precheck = await fullClient.precheck(fullParams, {
+    appId: 123123,
+    appVersion: 123,
     delegator: '0xabc',
     toolIpfsCid: 'QmFullSchema123',
   });
@@ -218,6 +225,9 @@ export async function gogo() {
   }
 
   const execute = await fullClient.execute(fullParams, {
+    toolIpfsCid: 'oijskljfdj',
+    appId: 123123,
+    appVersion: 123,
     delegation: {
       delegatee: '0xabc',
       delegator: '0xdef',

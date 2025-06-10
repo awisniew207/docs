@@ -387,6 +387,9 @@ export type VincentTool<
 };
 
 export interface BaseContext {
+  toolIpfsCid: string;
+  appId: number;
+  appVersion: number;
   delegation: {
     delegatee: string;
     delegator: string;

@@ -1,2 +1,5 @@
-export * from './lib/vincent-policy';
-export { default as VincentPolicySpendingLimitMetadata } from './generated/vincent-policy-metadata.json';
+export { vincentPolicy } from './lib/vincent-policy';
+export { bundledVincentPolicy } from './generated/vincent-bundled-policy';
+import * as vincentPolicyMetadata from './generated/vincent-policy-metadata.json';
+
+export { vincentPolicyMetadata };
