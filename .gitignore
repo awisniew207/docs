@@ -17,12 +17,13 @@ node_modules
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
+# IDE - VSCode and its forks
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.cursor/
 
 # misc
 /.sass-cache
@@ -61,3 +62,5 @@ screenshots
 /packages/sdk/sdk-docs/**/*
 
 test-output
+
+.github/instructions/nx.instructions.md
