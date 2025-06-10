@@ -55,8 +55,6 @@ export async function validatePolicies<
   toolIpfsCid: string;
   parsedToolParams: z.infer<ToolParamsSchema>;
 }): Promise<ValidatedPolicyMap<z.infer<ToolParamsSchema>, PoliciesByPackageName>> {
-  console.log('policies', JSON.stringify(policies, null, 2));
-
   const validatedPolicies: Array<{
     policyPackageName: keyof PoliciesByPackageName;
     toolPolicyParams: Record<string, unknown>;

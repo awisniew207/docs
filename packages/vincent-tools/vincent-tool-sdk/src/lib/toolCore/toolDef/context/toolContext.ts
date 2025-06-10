@@ -45,20 +45,12 @@ export function createExecutionToolContext<
   for (const key of Object.keys(supportedPolicies)) {
     const k = key as keyof PolicyMapByPackageName;
     const entry = baseContext.policiesContext.allowedPolicies[k];
-    const policyDef = supportedPolicies[k]?.vincentPolicy;
 
     if (!entry) continue;
 
-    if (typeof policyDef?.commit === 'function') {
-      (allowedPolicies as any)[k] = {
-        ...entry,
-        commit: policyDef.commit,
-      };
-    } else {
-      (allowedPolicies as any)[k] = {
-        ...entry,
-      };
-    }
+    (allowedPolicies as any)[k] = {
+      ...entry,
+    };
   }
 
   const upgradedPoliciesContext: ToolExecutionPolicyContext<PolicyMapByPackageName> = {

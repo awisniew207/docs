@@ -77,6 +77,8 @@ export const sendSpendTx = async ({
           ],
         });
 
+        console.log('fetching nonce for pkpEthAddress: ', pkpEthAddress, ' (sendSpendTx)');
+
         return JSON.stringify({
           status: 'success',
           data: txData,

@@ -194,17 +194,25 @@ export const vincentToolHandler = <
       const executeContext = createToolExecutionContext({
         vincentTool,
         policyEvaluationResults,
-        baseContext,
+        baseContext: {
+          ...baseContext,
+          toolIpfsCid: baseContext.toolIpfsCid,
+          appId: appId.toNumber(),
+          appVersion: appVersion.toNumber(),
+        },
       });
-
-      console.log('parsedOrFail', parsedOrFail);
 
       const toolExecutionResult = await vincentTool.execute(
         {
           toolParams: parsedOrFail,
         },
         {
-          ...baseContext,
+          ...{
+            ...baseContext,
+            toolIpfsCid: baseContext.toolIpfsCid,
+            appId: appId.toNumber(),
+            appVersion: appVersion.toNumber(),
+          },
           policiesContext: executeContext,
         },
       );

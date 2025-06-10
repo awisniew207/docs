@@ -125,9 +125,6 @@ export const vincentTool = createVincentTool({
     const spendingLimitPolicyContext =
       policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
 
-    console.log('Spending limit policy context', JSON.stringify(spendingLimitPolicyContext));
-    console.log('Policy context', JSON.stringify(policiesContext));
-
     const swapTxHash = await sendUniswapTx({
       rpcUrl: rpcUrlForUniswap,
       chainId: chainIdForUniswap,
@@ -151,9 +148,6 @@ export const vincentTool = createVincentTool({
         tokenAmount: tokenInAmount,
         tokenDecimals: tokenInDecimals,
       });
-
-      console.log('Spending limit policy context', spendingLimitPolicyContext);
-      console.log('Spending limit policy context result', spendingLimitPolicyContext.result);
 
       const { appId, maxSpendingLimitInUsd } = spendingLimitPolicyContext.result;
       const commitResult = await spendingLimitPolicyContext.commit({

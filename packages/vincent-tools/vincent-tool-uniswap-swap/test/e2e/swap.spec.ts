@@ -416,15 +416,16 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
     expect(uniswapSwapExecutionResult).toBeDefined();
 
+    console.log(uniswapSwapExecutionResult);
     const parsedResponse = JSON.parse(uniswapSwapExecutionResult.response as string);
 
-    expect(parsedResponse.success).toBeTruthy();
+    expect(parsedResponse.toolExecutionResult.success).toBeTruthy();
 
-    expect(parsedResponse.result).toBeDefined();
-    expect(parsedResponse.result.swapTxHash).toBeDefined();
-    expect(parsedResponse.result.spendTxHash).toBeDefined();
+    expect(parsedResponse.toolExecutionResult.result).toBeDefined();
+    expect(parsedResponse.toolExecutionResult.result.swapTxHash).toBeDefined();
+    expect(parsedResponse.toolExecutionResult.result.spendTxHash).toBeDefined();
 
-    const swapTxHash = parsedResponse.result.swapTxHash;
+    const swapTxHash = parsedResponse.toolExecutionResult.result.swapTxHash;
     expect(swapTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const swapTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
@@ -432,7 +433,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     });
     expect(swapTxReceipt.status).toBe('success');
 
-    const spendTxHash = parsedResponse.result.spendTxHash;
+    const spendTxHash = parsedResponse.toolExecutionResult.result.spendTxHash;
     expect(spendTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const spendTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
