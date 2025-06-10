@@ -46,11 +46,15 @@ export const checkIfBuyAmountAllowed = async ({
   const buyAmountAllowed = await spendingLimitContract.read.checkLimit([
     pkpEthAddress,
     BigInt(appId),
-    buyAmountInUsd,
+    buyAmountInUsd.toBigInt(),
     adjustedMaxDailySpendingLimit,
     86400n, // number of seconds in a day
   ]);
   console.log(`Buy amount allowed: ${buyAmountAllowed} (spendingLimitPolicyPrecheck)`);
 
-  return { buyAmountAllowed, buyAmountInUsd, adjustedMaxDailySpendingLimit };
+  return {
+    buyAmountAllowed,
+    buyAmountInUsd: buyAmountInUsd.toBigInt(),
+    adjustedMaxDailySpendingLimit,
+  };
 };

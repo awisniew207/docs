@@ -406,7 +406,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
         tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
         tokenInDecimals: 18,
         tokenInAmount: 0.0000077,
-        tokenOutAddress: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // CBBTC
+        tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
         tokenOutDecimals: 8,
       },
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,

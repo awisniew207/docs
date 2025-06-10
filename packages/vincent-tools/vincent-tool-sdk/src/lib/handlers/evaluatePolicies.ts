@@ -58,8 +58,6 @@ export async function evaluatePolicies<
 }): Promise<PolicyEvaluationResultContext<PoliciesByPackageName>> {
   const evaluatedPolicies: PolicyEvaluationResultContext<PoliciesByPackageName>['evaluatedPolicies'] =
     [];
-  const policyEvaluationResults: PolicyEvaluationResultContext<PoliciesByPackageName>['allowedPolicies'] =
-    {};
   let policyDeniedResult: PolicyEvaluationResultContext<PoliciesByPackageName>['deniedPolicy'] =
     undefined;
   const rawAllowedPolicies: Partial<{
@@ -95,7 +93,7 @@ export async function evaluatePolicies<
         };
       } else {
         rawAllowedPolicies[policyPackageName] = {
-          result: result.result,
+          result,
         };
       }
     } catch (err) {
@@ -108,7 +106,8 @@ export async function evaluatePolicies<
 
   if (policyDeniedResult) {
     return createDenyEvaluationResult({
-      allowedPolicies: policyEvaluationResults,
+      allowedPolicies:
+        rawAllowedPolicies as PolicyEvaluationResultContext<PoliciesByPackageName>['allowedPolicies'],
       evaluatedPolicies,
       deniedPolicy: policyDeniedResult,
     });
@@ -168,7 +167,7 @@ function parseAndValidateEvaluateResult<
 
     console.log('schemaToUse', parsedType);
     return validateOrDeny(
-      parsedLitActionResponse,
+      (parsedLitActionResponse as PolicyResponse<any, any>).result,
       schemaToUse,
       'evaluate',
       'output',

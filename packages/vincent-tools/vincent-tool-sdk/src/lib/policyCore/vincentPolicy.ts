@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   CommitLifecycleFunction,
   PolicyLifecycleFunction,
+  PolicyResponse,
   PolicyResponseAllow,
   PolicyResponseAllowNoResult,
   PolicyResponseDeny,
@@ -115,7 +116,12 @@ export function createVincentPolicy<
         denyResultSchema: evalDenySchema,
       });
 
-      const resultOrDeny = validateOrDeny(result, schemaToUse, 'evaluate', 'output');
+      const resultOrDeny = validateOrDeny(
+        (result as PolicyResponse<any, any>).result,
+        schemaToUse,
+        'evaluate',
+        'output',
+      );
 
       if (isPolicyDenyResponse(resultOrDeny)) {
         return resultOrDeny as EvalDenyResult extends z.ZodType
@@ -180,7 +186,12 @@ export function createVincentPolicy<
             denyResultSchema: precheckDenySchema,
           });
 
-          const resultOrDeny = validateOrDeny(result, schemaToUse, 'precheck', 'output');
+          const resultOrDeny = validateOrDeny(
+            (result as PolicyResponse<any, any>).result,
+            schemaToUse,
+            'precheck',
+            'output',
+          );
 
           if (isPolicyDenyResponse(resultOrDeny)) {
             return resultOrDeny;
@@ -239,7 +250,12 @@ export function createVincentPolicy<
             denyResultSchema: commitDenySchema,
           });
 
-          const resultOrDeny = validateOrDeny(result, schemaToUse, 'commit', 'output');
+          const resultOrDeny = validateOrDeny(
+            (result as PolicyResponse<any, any>).result,
+            schemaToUse,
+            'commit',
+            'output',
+          );
 
           if (isPolicyDenyResponse(resultOrDeny)) {
             return resultOrDeny;
