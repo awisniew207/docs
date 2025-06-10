@@ -16,7 +16,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.39.0",
     "@lit-protocol/vincent-tool-erc20-approval": "workspace:*",
     "@types/jest": "^29.5.14",
     "esbuild": "^0.19.11",
@@ -34,8 +33,5 @@
   "files": [
     "dist",
     "!**/*.tsbuildinfo"
-  ],
-  "scripts": {
-    "test": "jest"
-  }
+  ]
 }

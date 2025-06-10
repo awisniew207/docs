@@ -11,7 +11,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.39.0",
     "@types/jest": "^29.5.14",
     "cbor": "^10.0.3",
     "esbuild": "^0.19.11",
@@ -29,8 +28,5 @@
   "files": [
     "dist",
     "!**/*.tsbuildinfo"
-  ],
-  "scripts": {
-    "test": "jest"
-  }
+  ]
 }

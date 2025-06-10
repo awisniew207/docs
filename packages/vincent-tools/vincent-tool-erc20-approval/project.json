@@ -38,6 +38,13 @@
         ]
       }
     },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/vincent-tools/vincent-tool-erc20-approval/jest.config.js"
+      }
+    },
     "publish": {
       "executor": "@nx/js:npm-publish",
       "dependsOn": ["deploy"],
