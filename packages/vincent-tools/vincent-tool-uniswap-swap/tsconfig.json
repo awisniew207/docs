@@ -7,6 +7,12 @@
       "path": "../vincent-tool-sdk"
     },
     {
+      "path": "../vincent-policy-spending-limit"
+    },
+    {
+      "path": "../vincent-tool-erc20-approval"
+    },
+    {
       "path": "./tsconfig.lib.json"
     }
   ]
