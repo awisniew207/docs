@@ -114,8 +114,6 @@ export function createVincentTool<
         'output',
       );
 
-      console.log('resultOrFailure', resultOrFailure);
-
       if (isToolFailureResult(resultOrFailure)) {
         return wrapFailure(resultOrFailure);
       }

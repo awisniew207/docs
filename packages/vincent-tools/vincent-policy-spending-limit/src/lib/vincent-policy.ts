@@ -1,8 +1,18 @@
-import { z } from 'zod';
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
 
 import { sendSpendTx } from './policy-helpers/send-spend-tx';
 import { checkIfBuyAmountAllowed } from './policy-helpers/check-spending-limit';
+import {
+  commitAllowResultSchema,
+  commitDenyResultSchema,
+  commitParamsSchema,
+  evalAllowResultSchema,
+  evalDenyResultSchema,
+  precheckAllowResultSchema,
+  precheckDenyResultSchema,
+  toolParamsSchema,
+  userParamsSchema,
+} from './schemas';
 
 declare const Lit: {
   Actions: {
@@ -16,63 +26,7 @@ declare const Lit: {
   };
 };
 
-export const toolParamsSchema = z.object({
-  appId: z.number(),
-  pkpEthAddress: z.string(),
-  ethRpcUrl: z.string(),
-  rpcUrlForUniswap: z.string(),
-  chainIdForUniswap: z.number(),
-  tokenAddress: z.string(),
-  tokenDecimals: z.number(),
-  buyAmount: z.number(),
-});
-
-const userParamsSchema = z.object({
-  maxDailySpendAmountUsd: z.number(),
-});
-
-const precheckAllowResultSchema = z.object({
-  appId: z.number(),
-  maxSpendingLimitInUsd: z.number(),
-  buyAmountInUsd: z.number(),
-});
-
-const precheckDenyResultSchema = z.object({
-  appId: z.number(),
-  reason: z.literal('Attempted buy amount exceeds daily limit'),
-  maxSpendingLimitInUsd: z.number(),
-  buyAmountInUsd: z.number(),
-});
-
-const evalAllowResultSchema = z.object({
-  appId: z.number(),
-  maxSpendingLimitInUsd: z.number(),
-  buyAmountInUsd: z.number(),
-});
-
-const evalDenyResultSchema = z.object({
-  reason: z.string(),
-  maxSpendingLimitInUsd: z.number().optional(),
-  buyAmountInUsd: z.number().optional(),
-});
-
-const commitParamsSchema = z.object({
-  appId: z.number(),
-  amountSpentUsd: z.number(),
-  maxSpendingLimitInUsd: z.number(),
-  pkpEthAddress: z.string(),
-  pkpPubKey: z.string(),
-});
-
-const commitAllowResultSchema = z.object({
-  spendTxHash: z.string(),
-});
-
-const commitDenyResultSchema = z.object({
-  error: z.string(),
-});
-
-export const VincentPolicySpendingLimit = createVincentPolicy({
+export const vincentPolicy = createVincentPolicy({
   packageName: '@lit-protocol/vincent-policy-spending-limit' as const,
 
   toolParamsSchema,
@@ -88,10 +42,9 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
   commitAllowResultSchema,
   commitDenyResultSchema,
 
-  precheck: async ({ toolParams, userParams }, { allow, deny }) => {
+  precheck: async ({ toolParams, userParams }, { allow, deny, appId }) => {
     const {
       pkpEthAddress,
-      appId,
       buyAmount,
       ethRpcUrl,
       rpcUrlForUniswap,
@@ -99,7 +52,7 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
       tokenAddress,
       tokenDecimals,
     } = toolParams;
-    const { maxDailySpendAmountUsd } = userParams;
+    const { maxDailySpendingLimitInUsdCents } = userParams;
 
     const { buyAmountAllowed, buyAmountInUsd, adjustedMaxDailySpendingLimit } =
       await checkIfBuyAmountAllowed({
@@ -109,7 +62,7 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
         tokenAddress: tokenAddress as `0x${string}`,
         tokenDecimals,
         buyAmount,
-        maxDailySpendAmountUsd,
+        maxDailySpendingLimitInUsdCents,
         pkpEthAddress: pkpEthAddress as `0x${string}`,
         appId,
       });
@@ -127,11 +80,10 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
           buyAmountInUsd: Number(buyAmountInUsd),
         });
   },
-  evaluate: async ({ toolParams, userParams }, { allow, deny }) => {
-    console.log('Evaluating spending limit policy');
+  evaluate: async ({ toolParams, userParams }, { allow, deny, appId }) => {
+    console.log('Evaluating spending limit policy', JSON.stringify(toolParams));
     const {
       pkpEthAddress,
-      appId,
       buyAmount,
       ethRpcUrl,
       rpcUrlForUniswap,
@@ -139,7 +91,7 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
       tokenAddress,
       tokenDecimals,
     } = toolParams;
-    const { maxDailySpendAmountUsd } = userParams;
+    const { maxDailySpendingLimitInUsdCents } = userParams;
 
     const checkBuyAmountResponse = await Lit.Actions.runOnce(
       { waitForResponse: true, name: 'checkBuyAmount' },
@@ -153,7 +105,7 @@ export const VincentPolicySpendingLimit = createVincentPolicy({
               tokenAddress: tokenAddress as `0x${string}`,
               tokenDecimals,
               buyAmount,
-              maxDailySpendAmountUsd,
+              maxDailySpendingLimitInUsdCents,
               pkpEthAddress: pkpEthAddress as `0x${string}`,
               appId,
             });

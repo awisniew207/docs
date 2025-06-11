@@ -6,7 +6,6 @@ export { vincentToolHandler } from './lib/handlers/vincentToolHandler';
 
 export { asBundledVincentPolicy } from './lib/policyCore/bundledPolicy/bundledPolicy';
 
-export { createVincentToolClient } from './lib/toolClient/vincentToolClient';
 export type {
   ToolResponse,
   ToolResponseSuccess,

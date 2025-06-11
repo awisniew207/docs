@@ -6,10 +6,11 @@ import { getPkpInfo } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
 import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
 import { validatePolicies } from '../toolCore/helpers/validatePolicies';
 import { ToolPolicyMap } from '../toolCore/helpers';
 import { z } from 'zod';
+import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -121,7 +122,6 @@ export const vincentToolHandler = <
       undefined;
 
     try {
-      const toolIpfsCid = LitAuth.actionIpfsIds[0];
       const delegationRpcUrl = await Lit.Actions.getRpcUrl({ chain: 'yellowstone' });
       const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
 
@@ -147,20 +147,35 @@ export const vincentToolHandler = <
         pkpEthAddress: baseContext.delegation.delegator,
       });
 
-      const validatedPolicies = await validatePolicies({
+      const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl,
+        vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
         appDelegateeAddress,
+        agentWalletPkpTokenId: userPkpInfo.tokenId,
+        toolIpfsCid: baseContext.toolIpfsCid,
+      });
+
+      const validatedPolicies = await validatePolicies({
+        policies,
         vincentTool,
         parsedToolParams: parsedOrFail,
-        toolIpfsCid,
-        pkpTokenId: userPkpInfo.tokenId,
+        toolIpfsCid: baseContext.toolIpfsCid,
       });
+
+      console.log('validatedPolicies', JSON.stringify(validatedPolicies));
 
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
         vincentTool,
-        context: baseContext,
+        context: {
+          ...baseContext,
+          toolIpfsCid: baseContext.toolIpfsCid,
+          appId: appId.toNumber(),
+          appVersion: appVersion.toNumber(),
+        },
       });
+
+      console.log('policyEvaluationResults', JSON.stringify(policyEvaluationResults));
 
       policyEvalResults = policyEvaluationResults;
 
@@ -179,17 +194,25 @@ export const vincentToolHandler = <
       const executeContext = createToolExecutionContext({
         vincentTool,
         policyEvaluationResults,
-        baseContext,
+        baseContext: {
+          ...baseContext,
+          toolIpfsCid: baseContext.toolIpfsCid,
+          appId: appId.toNumber(),
+          appVersion: appVersion.toNumber(),
+        },
       });
-
-      console.log('parsedOrFail', parsedOrFail);
 
       const toolExecutionResult = await vincentTool.execute(
         {
           toolParams: parsedOrFail,
         },
         {
-          ...baseContext,
+          ...{
+            ...baseContext,
+            toolIpfsCid: baseContext.toolIpfsCid,
+            appId: appId.toNumber(),
+            appVersion: appVersion.toNumber(),
+          },
           policiesContext: executeContext,
         },
       );

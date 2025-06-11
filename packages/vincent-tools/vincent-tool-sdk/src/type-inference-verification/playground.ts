@@ -406,6 +406,9 @@ export const gogoPolicy = async function () {
     },
     {
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+      toolIpfsCid: 'oijskljfdj',
+      appId: 123123,
+      appVersion: 123,
     },
   );
 
@@ -415,6 +418,9 @@ export const gogoPolicy = async function () {
         transactionId: '10981328981279487',
       },
       {
+        toolIpfsCid: 'oijskljfdj',
+        appId: 123123,
+        appVersion: 123,
         delegation: { delegatee: 'meow', delegator: 'meowmeow' },
       },
     );
@@ -426,6 +432,9 @@ export const gogo = async function () {
   const toolExecuteResult = await myTool.execute(
     { toolParams: { action: 'wat', target: 'meow', amount: 23098123 } },
     {
+      toolIpfsCid: 'oijskljfdj',
+      appId: 123123,
+      appVersion: 123,
       delegation: { delegatee: 'meow', delegator: 'meowmeow' },
       policiesContext: {
         allow: true,
@@ -469,6 +478,9 @@ export const gogo = async function () {
     return myTool.precheck(
       { toolParams: { action: 'wat', target: 'meow', amount: 23098123 } },
       {
+        toolIpfsCid: 'oijskljfdj',
+        appId: 123123,
+        appVersion: 123,
         delegation: { delegatee: 'meow', delegator: 'meowmeow' },
         policiesContext: {
           allow: false,

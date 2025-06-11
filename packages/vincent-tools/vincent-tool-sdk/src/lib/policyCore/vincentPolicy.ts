@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   CommitLifecycleFunction,
   PolicyLifecycleFunction,
+  PolicyResponse,
   PolicyResponseAllow,
   PolicyResponseAllowNoResult,
   PolicyResponseDeny,
@@ -103,13 +104,24 @@ export function createVincentPolicy<
 
       const result = await policyDef.evaluate({ toolParams, userParams }, context);
 
+      if (isPolicyDenyResponse(result)) {
+        return result as unknown as EvalDenyResult extends z.ZodType
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          : PolicyResponseDenyNoResult;
+      }
+
       const { schemaToUse } = getSchemaForPolicyResponseResult({
         value: result,
         allowResultSchema: evalAllowSchema,
         denyResultSchema: evalDenySchema,
       });
 
-      const resultOrDeny = validateOrDeny(result, schemaToUse, 'evaluate', 'output');
+      const resultOrDeny = validateOrDeny(
+        (result as PolicyResponse<any, any>).result,
+        schemaToUse,
+        'evaluate',
+        'output',
+      );
 
       if (isPolicyDenyResponse(resultOrDeny)) {
         return resultOrDeny as EvalDenyResult extends z.ZodType
@@ -162,13 +174,24 @@ export function createVincentPolicy<
 
           const result = await precheckFn(args, context);
 
+          if (isPolicyDenyResponse(result)) {
+            return result as unknown as PrecheckDenyResult extends z.ZodType
+              ? PolicyResponseDeny<z.infer<PrecheckDenyResult> | ZodValidationDenyResult>
+              : PolicyResponseDenyNoResult;
+          }
+
           const { schemaToUse } = getSchemaForPolicyResponseResult({
             value: result,
             allowResultSchema: precheckAllowSchema,
             denyResultSchema: precheckDenySchema,
           });
 
-          const resultOrDeny = validateOrDeny(result, schemaToUse, 'precheck', 'output');
+          const resultOrDeny = validateOrDeny(
+            (result as PolicyResponse<any, any>).result,
+            schemaToUse,
+            'precheck',
+            'output',
+          );
 
           if (isPolicyDenyResponse(resultOrDeny)) {
             return resultOrDeny;
@@ -215,13 +238,24 @@ export function createVincentPolicy<
 
           const result = await commitFn(args, context);
 
+          if (isPolicyDenyResponse(result)) {
+            return result as unknown as CommitDenyResult extends z.ZodType
+              ? PolicyResponseDeny<z.infer<CommitDenyResult> | ZodValidationDenyResult>
+              : PolicyResponseDenyNoResult;
+          }
+
           const { schemaToUse } = getSchemaForPolicyResponseResult({
             value: result,
             allowResultSchema: commitAllowSchema,
             denyResultSchema: commitDenySchema,
           });
 
-          const resultOrDeny = validateOrDeny(result, schemaToUse, 'commit', 'output');
+          const resultOrDeny = validateOrDeny(
+            (result as PolicyResponse<any, any>).result,
+            schemaToUse,
+            'commit',
+            'output',
+          );
 
           if (isPolicyDenyResponse(resultOrDeny)) {
             return resultOrDeny;

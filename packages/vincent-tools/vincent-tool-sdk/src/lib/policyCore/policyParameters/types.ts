@@ -13,9 +13,9 @@ export interface Policy {
   parameters: PolicyParameter[];
 }
 
-export type EthersAbiDecodedValue =
-  | ethers.BigNumber
-  | ethers.BigNumber[]
+export type DecodedValues =
+  | bigint
+  | bigint[]
   | boolean
   | boolean[]
   | string
