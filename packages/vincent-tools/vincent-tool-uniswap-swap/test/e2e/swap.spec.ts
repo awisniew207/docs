@@ -353,45 +353,203 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     }
   });
 
-  it('should execute the ERC20 Approval Tool with the Agent Wallet PKP', async () => {
-    const erc20ApprovalExecutionResult = await executeTool({
-      toolIpfsCid: erc20ToolMetadata.ipfsCid,
-      toolParameters: {
-        rpcUrl: BASE_RPC_URL,
-        chainId: 8453,
-        spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-        tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-        tokenDecimals: 18,
-        tokenAmount: 1,
-      },
-      delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-      delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-      debug: true,
-      capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
+  describe('ERC20 approval tool when there is no approval', () => {
+    beforeAll(async () => {
+      // First, remove any existing approvals
+      const erc20ApprovalExecutionResult = await executeTool({
+        toolIpfsCid: erc20ToolMetadata.ipfsCid,
+        toolParameters: {
+          rpcUrl: BASE_RPC_URL,
+          chainId: 8453,
+          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+          tokenDecimals: 18,
+          tokenAmount: 0,
+        },
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
+        debug: true,
+        capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
+      });
+      const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+
+      expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBe(0n);
+
+      console.log(
+        'waiting for approval tx to finalize',
+        parsedResponse.toolExecutionResult.result.approvalTxHash,
+      );
+      const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+        hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+      });
+      console.log('approval TX is GTG! continuing');
+
+      // Wait for 2 seconds
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
     });
 
-    expect(erc20ApprovalExecutionResult).toBeDefined();
+    it('should add an approval successfully', async () => {
+      const erc20ApprovalExecutionResult = await executeTool({
+        toolIpfsCid: erc20ToolMetadata.ipfsCid,
+        toolParameters: {
+          rpcUrl: BASE_RPC_URL,
+          chainId: 8453,
+          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+          tokenDecimals: 18,
+          tokenAmount: 1,
+        },
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
+        debug: true,
+        capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
+      });
 
-    const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+      expect(erc20ApprovalExecutionResult).toBeDefined();
 
-    expect(parsedResponse.policyEvaluationResults).toBeDefined();
-    expect(parsedResponse.policyEvaluationResults.allow).toBe(true);
-    expect(parsedResponse.policyEvaluationResults.evaluatedPolicies.length).toBe(0);
-    expect(parsedResponse.policyEvaluationResults.allowedPolicies).toEqual({});
+      const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
 
-    expect(parsedResponse.toolExecutionResult).toBeDefined();
-    expect(parsedResponse.toolExecutionResult.success).toBe(true);
-    expect(parsedResponse.toolExecutionResult.result).toBeDefined();
-    expect(parsedResponse.toolExecutionResult.result.existingApprovalSufficient).toBe(true);
-    // Allowance will decrease after swap
-    expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-    expect(parsedResponse.toolExecutionResult.result.tokenAddress).toBe(
-      '0x4200000000000000000000000000000000000006',
-    );
-    expect(parsedResponse.toolExecutionResult.result.tokenDecimals).toBe(18);
-    expect(parsedResponse.toolExecutionResult.result.spenderAddress).toBe(
-      '0x2626664c2603336E57B271c5C0b26F421741e481',
-    );
+      console.log({ parsedResponse });
+      expect(parsedResponse.policyEvaluationResults).toBeDefined();
+      expect(parsedResponse.policyEvaluationResults.allow).toBe(true);
+      expect(parsedResponse.policyEvaluationResults.evaluatedPolicies.length).toBe(0);
+      expect(parsedResponse.policyEvaluationResults.allowedPolicies).toEqual({});
+
+      expect(parsedResponse.toolExecutionResult).toBeDefined();
+      expect(parsedResponse.toolExecutionResult.success).toBe(true);
+      expect(parsedResponse.toolExecutionResult.result).toBeDefined();
+      expect(parsedResponse.toolExecutionResult.result.existingApprovalSufficient).toBe(false);
+
+      // Allowance will decrease after swap
+      expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+      expect(parsedResponse.toolExecutionResult.result.tokenAddress).toBe(
+        '0x4200000000000000000000000000000000000006',
+      );
+      expect(parsedResponse.toolExecutionResult.result.tokenDecimals).toBe(18);
+      expect(parsedResponse.toolExecutionResult.result.spenderAddress).toBe(
+        '0x2626664c2603336E57B271c5C0b26F421741e481',
+      );
+      console.log(
+        'waiting for approval tx to finalize',
+        parsedResponse.toolExecutionResult.result.approvalTxHash,
+      );
+      const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+        hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+      });
+      console.log('approval TX is GTG! continuing');
+    });
+  });
+
+  describe('ERC20 approval tool should work when there is an existing approval', () => {
+    beforeAll(async () => {
+      {
+        // First, remove any existing approvals
+        const erc20ApprovalExecutionResult = await executeTool({
+          toolIpfsCid: erc20ToolMetadata.ipfsCid,
+          toolParameters: {
+            rpcUrl: BASE_RPC_URL,
+            chainId: 8453,
+            spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+            tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+            tokenDecimals: 18,
+            tokenAmount: 0,
+          },
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+          delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
+          debug: true,
+          capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
+        });
+        const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+
+        expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBe(0n);
+
+        console.log(
+          'waiting for approval tx to finalize',
+          parsedResponse.toolExecutionResult.result.approvalTxHash,
+        );
+        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+          hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+        });
+        console.log('approval TX is GTG! continuing');
+      }
+
+      {
+        // Now add an approval so our test case will be guaranteed one already exists
+        const erc20ApprovalExecutionResult = await executeTool({
+          toolIpfsCid: erc20ToolMetadata.ipfsCid,
+          toolParameters: {
+            rpcUrl: BASE_RPC_URL,
+            chainId: 8453,
+            spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+            tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+            tokenDecimals: 18,
+            tokenAmount: 1,
+          },
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+          delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
+          debug: true,
+          capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
+        });
+        const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+
+        expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(
+          0n,
+        );
+
+        console.log(
+          'waiting for approval tx to finalize',
+          parsedResponse.toolExecutionResult.result.approvalTxHash,
+        );
+        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+          hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+        });
+        console.log('approval TX is GTG! continuing');
+      }
+    });
+
+    it('should succeed without a TX when there is already a valid approval', async () => {
+      const erc20ApprovalExecutionResult = await executeTool({
+        toolIpfsCid: erc20ToolMetadata.ipfsCid,
+        toolParameters: {
+          rpcUrl: BASE_RPC_URL,
+          chainId: 8453,
+          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+          tokenDecimals: 18,
+          tokenAmount: 1,
+        },
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
+        debug: true,
+        capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
+      });
+
+      expect(erc20ApprovalExecutionResult).toBeDefined();
+
+      const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+
+      console.log({ parsedResponse });
+      expect(parsedResponse.policyEvaluationResults).toBeDefined();
+      expect(parsedResponse.policyEvaluationResults.allow).toBe(true);
+      expect(parsedResponse.policyEvaluationResults.evaluatedPolicies.length).toBe(0);
+      expect(parsedResponse.policyEvaluationResults.allowedPolicies).toEqual({});
+
+      expect(parsedResponse.toolExecutionResult).toBeDefined();
+      expect(parsedResponse.toolExecutionResult.success).toBe(true);
+      expect(parsedResponse.toolExecutionResult.result).toBeDefined();
+      expect(parsedResponse.toolExecutionResult.result.existingApprovalSufficient).toBe(true);
+      expect(parsedResponse.toolExecutionResult.result.approvalTxHash).toBeUndefined();
+
+      // Allowance will decrease after swap
+      expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+      expect(parsedResponse.toolExecutionResult.result.tokenAddress).toBe(
+        '0x4200000000000000000000000000000000000006',
+      );
+      expect(parsedResponse.toolExecutionResult.result.tokenDecimals).toBe(18);
+      expect(parsedResponse.toolExecutionResult.result.spenderAddress).toBe(
+        '0x2626664c2603336E57B271c5C0b26F421741e481',
+      );
+    });
   });
 
   it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {

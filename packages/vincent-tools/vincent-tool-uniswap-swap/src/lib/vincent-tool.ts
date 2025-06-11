@@ -2,12 +2,10 @@ import { createVincentTool, createVincentToolPolicy } from '@lit-protocol/vincen
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
 
 import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
-import { createPublicClient, http } from 'viem';
 import { supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
 
 import { getTokenAmountInUsd, sendUniswapTx } from './tool-helpers';
 import {
-  checkErc20Allowance,
   checkNativeTokenBalance,
   checkTokenInBalance,
   checkUniswapPoolExists,
@@ -19,6 +17,8 @@ import {
   precheckSuccessSchema,
   toolParamsSchema,
 } from './schemas';
+import { ethers } from 'ethers';
+import { checkErc20Allowance } from './tool-checks/check-erc20-allowance';
 
 const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema,
@@ -57,12 +57,10 @@ export const vincentTool = createVincentTool({
 
     const delegatorPkpAddress = delegatorPkpInfo.ethAddress;
 
-    const client = createPublicClient({
-      transport: http(rpcUrlForUniswap),
-    });
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrlForUniswap);
 
     await checkNativeTokenBalance({
-      client,
+      provider,
       pkpEthAddress: delegatorPkpAddress as `0x${string}`,
     });
 
@@ -77,7 +75,7 @@ export const vincentTool = createVincentTool({
     }
 
     await checkErc20Allowance({
-      client,
+      provider,
       tokenAddress: tokenInAddress as `0x${string}`,
       owner: delegatorPkpAddress as `0x${string}`,
       spender: uniswapRouterAddress,
@@ -85,7 +83,7 @@ export const vincentTool = createVincentTool({
     });
 
     await checkTokenInBalance({
-      client,
+      provider,
       pkpEthAddress: delegatorPkpAddress as `0x${string}`,
       tokenInAddress: tokenInAddress as `0x${string}`,
       tokenInAmount: BigInt(tokenInAmount),
