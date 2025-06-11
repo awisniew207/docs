@@ -21,7 +21,7 @@ export function createAllowEvaluationResult<PoliciesByPackageName extends Record
           : never
         : never;
     };
-  },
+  }
 ): {
   allow: true;
   evaluatedPolicies: Array<keyof PoliciesByPackageName>;
@@ -68,7 +68,7 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
         ? z.infer<Schema>
         : undefined
       : undefined);
-  },
+  }
 ): {
   allow: false;
   evaluatedPolicies: Array<keyof PoliciesByPackageName>;

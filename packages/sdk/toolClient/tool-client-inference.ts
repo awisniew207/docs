@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { createVincentToolClient } from '../lib/toolClient/vincentToolClient';
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers/createPolicyMapFromToolPolicies';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers/supportedPoliciesForTool';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 
 const currencyPolicy = createVincentPolicy({
@@ -48,7 +48,7 @@ const toolParamsSchema = z.object({
 
 const tool = createVincentTool({
   toolParamsSchema,
-  policyMap: createPolicyMapFromToolPolicies([currencyToolPolicy, rateLimitToolPolicy]),
+  supportedPolicies: supportedPoliciesForTool([currencyToolPolicy, rateLimitToolPolicy]),
   execute: async ({ toolParams }, ctx) => ctx.succeed({ ok: true }),
   executeSuccessSchema: z.object({ ok: z.literal(true) }),
 });
@@ -125,8 +125,12 @@ export async function run() {
     appId: 123123,
     appVersion: 123,
     delegation: {
-      delegatee: '0xabc',
-      delegator: '0xdef',
+      delegateeAddress: '0xabc',
+      delegatorPkpInfo: {
+        tokenId: '90128301832',
+        ethAddress: '0x102398103981032',
+        publicKey: '0398103810938ef987ef978fe987ef',
+      },
     },
     // toolIpfsCid: 'QmFakeTool123',
   });
@@ -175,7 +179,7 @@ const fullSchemaToolPolicy = createVincentToolPolicy({
 
 const fullTool = createVincentTool({
   toolParamsSchema: z.object({ count: z.number() }),
-  policyMap: createPolicyMapFromToolPolicies([fullSchemaToolPolicy]),
+  supportedPolicies: supportedPoliciesForTool([fullSchemaToolPolicy]),
   precheck: async ({ toolParams }, ctx) => {
     if (toolParams.count > 10) {
       return ctx.succeed({ accepted: true });
@@ -229,8 +233,12 @@ export async function gogo() {
     appId: 123123,
     appVersion: 123,
     delegation: {
-      delegatee: '0xabc',
-      delegator: '0xdef',
+      delegateeAddress: '0xabc',
+      delegatorPkpInfo: {
+        tokenId: '90128301832',
+        ethAddress: '0x102398103981032',
+        publicKey: '0398103810938ef987ef978fe987ef',
+      },
     },
   });
 

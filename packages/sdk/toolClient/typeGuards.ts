@@ -12,7 +12,7 @@ import {
  * Runtime type guard for ToolResponse success result.
  */
 export function isToolResponseSuccess(
-  value: unknown,
+  value: unknown
 ): value is
   | ToolResponseSuccess<any, Record<string, any>>
   | ToolResponseSuccessNoResult<Record<string, any>> {
@@ -29,7 +29,7 @@ export function isToolResponseSuccess(
  * Runtime type guard for ToolResponse failure result.
  */
 export function isToolResponseFailure(
-  value: unknown,
+  value: unknown
 ): value is
   | ToolResponseFailure<any, Record<string, any>>
   | ToolResponseFailureNoResult<Record<string, any>> {
@@ -46,7 +46,7 @@ export function isToolResponseFailure(
  * General ToolResponse shape check (success or failure).
  */
 export function isToolResponse(
-  value: unknown,
+  value: unknown
 ): value is ToolResponse<any, any, Record<string, any>> {
   return (
     typeof value === 'object' &&

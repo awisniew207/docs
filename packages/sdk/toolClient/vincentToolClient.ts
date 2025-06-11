@@ -86,7 +86,7 @@ async function runToolPolicyPrechecks<
     any
   >;
   toolParams: unknown;
-  context: BaseContext & { rpcUrl?: string; toolIpfsCid: string };
+  context: BaseContext & { rpcUrl?: string };
 }): Promise<PolicyEvaluationResultContext<PoliciesByPackageName>> {
   type Key = PkgNames & keyof PoliciesByPackageName;
 
@@ -97,8 +97,8 @@ async function runToolPolicyPrechecks<
   const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
     delegationRpcUrl: context.rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
     vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
-    appDelegateeAddress: context.delegation.delegatee,
-    agentWalletPkpTokenId: context.delegation.delegator,
+    appDelegateeAddress: context.delegation.delegateeAddress,
+    agentWalletPkpTokenId: context.delegation.delegatorPkpInfo.tokenId,
     toolIpfsCid: context.toolIpfsCid,
   });
 
@@ -145,9 +145,9 @@ async function runToolPolicyPrechecks<
       }
     | undefined = undefined;
 
-  const policyByName = vincentTool.policyMap.policyByPackageName as Record<
+  const policyByName = vincentTool.supportedPolicies.policyByPackageName as Record<
     keyof PoliciesByPackageName,
-    (typeof vincentTool.policyMap.policyByPackageName)[keyof typeof vincentTool.policyMap.policyByPackageName]
+    (typeof vincentTool.supportedPolicies.policyByPackageName)[keyof typeof vincentTool.supportedPolicies.policyByPackageName]
   >;
 
   for (const { policyPackageName, toolPolicyParams } of validatedPolicies) {
@@ -169,10 +169,10 @@ async function runToolPolicyPrechecks<
           appId: appId.toNumber(),
           appVersion: appVersion.toNumber(),
           delegation: {
-            delegatee: context.delegation.delegatee,
-            delegator: context.delegation.delegator,
+            delegatee: context.delegation.delegateeAddress,
+            delegator: context.delegation.delegatorAddress,
           },
-        },
+        }
       );
 
       const { schemaToUse } = getSchemaForPolicyResponseResult({
@@ -223,7 +223,7 @@ async function runToolPolicyPrechecks<
               : never;
           };
         },
-        deniedPolicy,
+        deniedPolicy
       )
     : createAllowEvaluationResult(
         evaluatedPolicies,
@@ -237,7 +237,7 @@ async function runToolPolicyPrechecks<
                 : never
               : never;
           };
-        },
+        }
       );
 }
 
@@ -286,7 +286,7 @@ export function createVincentToolClient<
         toolIpfsCid: string;
         appId: number;
         appVersion: number;
-      },
+      }
     ): Promise<ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>> {
       const delegatee = ethers.utils.getAddress(await ethersSigner.getAddress());
 
@@ -299,7 +299,7 @@ export function createVincentToolClient<
             appVersion,
             rpcUrl,
             toolIpfsCid,
-            delegation: { delegator, delegatee },
+            delegation: { delegatorAddress: delegator, delegateeAddress: delegatee },
           },
         });
 
@@ -314,11 +314,11 @@ export function createVincentToolClient<
         { toolParams: rawToolParams },
         {
           policiesContext,
-          delegation: { delegator, delegatee },
+          delegation: { delegatorAddress: delegator, delegateeAddress: delegatee },
           toolIpfsCid,
           appId,
           appVersion,
-        },
+        }
       );
 
       return {
@@ -329,13 +329,13 @@ export function createVincentToolClient<
 
     async execute(
       rawToolParams: unknown,
-      context: BaseContext,
+      context: BaseContext
     ): Promise<ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>> {
       const parsedParams = validateOrFail(
         rawToolParams,
         vincentTool.toolParamsSchema,
         'execute',
-        'input',
+        'input'
       );
 
       if (isToolResponseFailure(parsedParams)) {
