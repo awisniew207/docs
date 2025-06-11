@@ -1,6 +1,5 @@
 import { getTokenAmountInUsd } from './get-token-amount-in-usd';
 import { getSpendingLimitContractInstance } from './spending-limit-contract';
-import { ethers } from 'ethers';
 
 export const checkIfBuyAmountAllowed = async ({
   ethRpcUrl,
@@ -43,9 +42,7 @@ export const checkIfBuyAmountAllowed = async ({
     `Adjusted maxDailySpendingLimitInUsdCents to 8 decimal precision: ${adjustedMaxDailySpendingLimit.toString()} (spendingLimitPolicyPrecheck)`,
   );
 
-  const spendingLimitContract = getSpendingLimitContractInstance(
-    new ethers.providers.StaticJsonRpcProvider('https://yellowstone-rpc.litprotocol.com/'),
-  );
+  const spendingLimitContract = getSpendingLimitContractInstance();
 
   const buyAmountAllowed = await spendingLimitContract.checkLimit(
     pkpEthAddress,

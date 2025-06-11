@@ -18,12 +18,10 @@ const SPENDING_LIMIT_CONTRACT_ABI = [
 
 export const SPENDING_LIMIT_CONTRACT_ADDRESS = '0x756fa449de893446b26e10c6c66e62ccabee908c';
 
-export const getSpendingLimitContractInstance = (
-  rpcProvider: ethers.providers.StaticJsonRpcProvider,
-) => {
+export const getSpendingLimitContractInstance = () => {
   return new ethers.Contract(
     SPENDING_LIMIT_CONTRACT_ADDRESS,
     SPENDING_LIMIT_CONTRACT_ABI,
-    rpcProvider,
+    new ethers.providers.StaticJsonRpcProvider('https://yellowstone-rpc.litprotocol.com/'),
   );
 };

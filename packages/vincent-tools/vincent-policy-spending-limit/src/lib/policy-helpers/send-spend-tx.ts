@@ -32,10 +32,7 @@ export const sendSpendTx = async ({
   pkpEthAddress: string;
   pkpPubKey: string;
 }) => {
-  const chronicleYellowstoneProvider = new ethers.providers.StaticJsonRpcProvider(
-    'https://yellowstone-rpc.litprotocol.com/',
-  );
-  const spendingLimitContract = getSpendingLimitContractInstance(chronicleYellowstoneProvider);
+  const spendingLimitContract = getSpendingLimitContractInstance();
 
   const buildPartialSpendTxResponse = await Lit.Actions.runOnce(
     { waitForResponse: true, name: 'send spend tx gas estimation' },
@@ -49,8 +46,8 @@ export const sendSpendTx = async ({
 
         // Get current gas price and nonce
         const [feeData, nonce] = await Promise.all([
-          chronicleYellowstoneProvider.getFeeData(),
-          chronicleYellowstoneProvider.getTransactionCount(pkpEthAddress),
+          spendingLimitContract.provider.getFeeData(),
+          spendingLimitContract.provider.getTransactionCount(pkpEthAddress),
         ]);
 
         // Encode function data
@@ -117,7 +114,7 @@ export const sendSpendTx = async ({
     { waitForResponse: true, name: 'spendTxSender' },
     async () => {
       try {
-        const txResponse = await chronicleYellowstoneProvider.sendTransaction(signedSpendTx);
+        const txResponse = await spendingLimitContract.provider.sendTransaction(signedSpendTx);
         return JSON.stringify({
           status: 'success',
           txHash: txResponse.hash,
