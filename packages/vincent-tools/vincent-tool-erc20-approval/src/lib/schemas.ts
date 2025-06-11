@@ -7,7 +7,7 @@ export const toolParamsSchema = z.object({
 
   tokenAddress: z.string(),
   tokenDecimals: z.number(),
-  tokenAmount: z.number(),
+  tokenAmount: z.number().gte(0, 'tokenAmount cannot be a negative number'),
 });
 
 export const precheckSuccessSchema = z.object({
