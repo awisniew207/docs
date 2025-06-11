@@ -66,13 +66,6 @@
       "options": {
         "lintFilePatterns": ["packages/sdk/**/*.ts"]
       }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "packages/sdk/jest.config.js"
-      }
     }
   },
   "tags": []

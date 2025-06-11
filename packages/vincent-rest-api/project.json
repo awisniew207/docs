@@ -18,12 +18,14 @@
         "outputPath": "packages/vincent-rest-api/dist",
         "main": "packages/vincent-rest-api/src/index.ts",
         "tsConfig": "packages/vincent-rest-api/tsconfig.lib.json",
-        "assets": ["packages/vincent-rest-api/*.md",
+        "assets": [
+          "packages/vincent-rest-api/*.md",
           {
-          "input": "packages/vincent-rest-api/src/generated/",
-          "glob": "**/!(*.ts)",
-          "output": "./"
-        }],
+            "input": "packages/vincent-rest-api/src/generated/",
+            "glob": "**/!(*.ts)",
+            "output": "./"
+          }
+        ],
         "formats": ["cjs"]
       }
     },
@@ -32,13 +34,6 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["{projectRoot}/src"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "{projectRoot}/jest.config.ts"
       }
     }
   },
