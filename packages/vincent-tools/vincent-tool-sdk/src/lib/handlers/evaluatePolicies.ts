@@ -67,7 +67,7 @@ export async function evaluatePolicies<
   for (const { policyPackageName, toolPolicyParams } of validatedPolicies) {
     evaluatedPolicies.push(policyPackageName);
 
-    const policy = vincentTool.policyMap.policyByPackageName[policyPackageName];
+    const policy = vincentTool.supportedPolicies.policyByPackageName[policyPackageName];
     try {
       const litActionResponse = await Lit.Actions.call({
         ipfsId: policy.ipfsCid,

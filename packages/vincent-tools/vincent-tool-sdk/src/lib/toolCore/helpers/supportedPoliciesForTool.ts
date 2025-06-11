@@ -1,4 +1,4 @@
-// src/lib/toolCore/helpers/createPolicyMapFromToolPolicies.ts
+// src/lib/toolCore/helpers/supportedPoliciesForTool.ts
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -15,7 +15,7 @@ export type ToolPolicyMap<T extends readonly any[], PkgNames extends string> = {
  * Safely builds a strongly typed policy map from an array of VincentToolPolicy entries.
  * Enforces literal string `packageName` keys and exposes reverse lookup maps.
  */
-export function createPolicyMapFromToolPolicies<
+export function supportedPoliciesForTool<
   const Policies extends readonly {
     vincentPolicy: { packageName: string };
     ipfsCid: string;

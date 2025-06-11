@@ -2,5 +2,5 @@
 export { getMappedToolPolicyParams } from './getMappedToolPolicyParams';
 export { getPkpInfo } from './getPkpInfo';
 // export { validatePolicies } from './validatePolicies';
-export { createPolicyMapFromToolPolicies } from './createPolicyMapFromToolPolicies';
-export type { ToolPolicyMap } from './createPolicyMapFromToolPolicies';
+export { supportedPoliciesForTool } from './supportedPoliciesForTool';
+export type { ToolPolicyMap } from './supportedPoliciesForTool';

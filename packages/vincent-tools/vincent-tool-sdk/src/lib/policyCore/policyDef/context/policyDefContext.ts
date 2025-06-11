@@ -68,10 +68,7 @@ export function createPolicyContext<
   const deny = denySchema ? denyWithSchema : denyWithoutSchema;
 
   return {
-    toolIpfsCid: baseContext.toolIpfsCid,
-    delegation: baseContext.delegation,
-    appId: baseContext.appId,
-    appVersion: baseContext.appVersion,
+    ...baseContext,
     allow: allow as AllowSchema extends z.ZodUndefined
       ? () => ContextAllowResponseNoResult
       : (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>,

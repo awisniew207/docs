@@ -1,6 +1,11 @@
 import { ethers } from 'ethers';
 
-import { PolicyEvaluationResultContext, ToolExecutionPolicyContext, VincentTool } from '../types';
+import {
+  PolicyEvaluationResultContext,
+  ToolConsumerContext,
+  ToolExecutionPolicyContext,
+  VincentTool,
+} from '../types';
 import type { BaseContext } from '../types';
 import { getPkpInfo } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
@@ -16,6 +21,7 @@ declare const LitAuth: {
   authSigAddress: string;
   actionIpfsIds: string[];
 };
+
 declare const Lit: {
   Actions: {
     setResponse: (response: { response: string }) => void;
@@ -58,7 +64,7 @@ export function createToolExecutionContext<
     allowedPolicies: {} as ToolExecutionPolicyContext<PoliciesByPackageName>['allowedPolicies'],
   };
 
-  const policyByPackageName = vincentTool.policyMap.policyByPackageName;
+  const policyByPackageName = vincentTool.supportedPolicies.policyByPackageName;
   const allowedKeys = Object.keys(policyEvaluationResults.allowedPolicies) as Array<
     keyof typeof policyByPackageName
   >;
@@ -102,7 +108,7 @@ export const vincentToolHandler = <
 >({
   vincentTool,
   toolParams,
-  baseContext,
+  context,
 }: {
   vincentTool: VincentTool<
     ToolParamsSchema,
@@ -114,12 +120,13 @@ export const vincentToolHandler = <
     any,
     any
   >;
-  baseContext: BaseContext;
+  context: ToolConsumerContext;
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
     let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
+    const toolIpfsCid = LitAuth.actionIpfsIds[0];
 
     try {
       const delegationRpcUrl = await Lit.Actions.getRpcUrl({ chain: 'yellowstone' });
@@ -144,7 +151,7 @@ export const vincentToolHandler = <
       const userPkpInfo = await getPkpInfo({
         litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
         yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
-        pkpEthAddress: baseContext.delegation.delegator,
+        pkpEthAddress: context.delegatorPkpEthAddress,
       });
 
       const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
@@ -152,14 +159,24 @@ export const vincentToolHandler = <
         vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
         appDelegateeAddress,
         agentWalletPkpTokenId: userPkpInfo.tokenId,
-        toolIpfsCid: baseContext.toolIpfsCid,
+        toolIpfsCid,
       });
+
+      const baseContext = {
+        delegation: {
+          delegateeAddress: appDelegateeAddress,
+          delegatorPkpInfo: userPkpInfo,
+        },
+        toolIpfsCid,
+        appId: appId.toNumber(),
+        appVersion: appVersion.toNumber(),
+      };
 
       const validatedPolicies = await validatePolicies({
         policies,
         vincentTool,
         parsedToolParams: parsedOrFail,
-        toolIpfsCid: baseContext.toolIpfsCid,
+        toolIpfsCid,
       });
 
       console.log('validatedPolicies', JSON.stringify(validatedPolicies));
@@ -167,12 +184,7 @@ export const vincentToolHandler = <
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
         vincentTool,
-        context: {
-          ...baseContext,
-          toolIpfsCid: baseContext.toolIpfsCid,
-          appId: appId.toNumber(),
-          appVersion: appVersion.toNumber(),
-        },
+        context: baseContext,
       });
 
       console.log('policyEvaluationResults', JSON.stringify(policyEvaluationResults));
@@ -194,12 +206,7 @@ export const vincentToolHandler = <
       const executeContext = createToolExecutionContext({
         vincentTool,
         policyEvaluationResults,
-        baseContext: {
-          ...baseContext,
-          toolIpfsCid: baseContext.toolIpfsCid,
-          appId: appId.toNumber(),
-          appVersion: appVersion.toNumber(),
-        },
+        baseContext,
       });
 
       const toolExecutionResult = await vincentTool.execute(
@@ -207,12 +214,7 @@ export const vincentToolHandler = <
           toolParams: parsedOrFail,
         },
         {
-          ...{
-            ...baseContext,
-            toolIpfsCid: baseContext.toolIpfsCid,
-            appId: appId.toNumber(),
-            appVersion: appVersion.toNumber(),
-          },
+          ...baseContext,
           policiesContext: executeContext,
         },
       );

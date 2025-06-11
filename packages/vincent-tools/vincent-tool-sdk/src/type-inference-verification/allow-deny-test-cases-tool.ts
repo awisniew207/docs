@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Define a simple schema for our test cases
@@ -59,7 +59,7 @@ export function testNoSchemas() {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { succeed, fail }) => {
       // Should allow succeed() with no arguments
@@ -95,7 +95,7 @@ export function tesWithSchemas() {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool2@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema: successSchema,
     executeFailSchema: failSchema,
 
@@ -168,7 +168,7 @@ export function testDifferentSchemas() {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool3@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     precheckSuccessSchema,
     precheckFailSchema,
     executeSuccessSchema,
@@ -217,7 +217,7 @@ export function testPolicyResultTypes() {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool4@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { policiesContext, succeed }) => {
       // Should be able to check if policy evaluation allowed
@@ -259,7 +259,7 @@ export function testExecutePolicyResultTyping() {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool5@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { succeed }) => {
       return succeed();
@@ -291,7 +291,7 @@ export function testExecutePolicyResultTyping() {
 // @ts-expect-error - Missing required execute function
 export const missingExecute = createVincentTool({
   toolParamsSchema: testSchema,
-  policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+  supportedPolicies: supportedPoliciesForTool([testPolicy]),
   precheck: async (params, { succeed }) => {
     return succeed();
   },
@@ -299,7 +299,7 @@ export const missingExecute = createVincentTool({
 
 // @ts-expect-error - Missing required toolParamsSchema
 export const missingSchema = createVincentTool({
-  policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+  supportedPolicies: supportedPoliciesForTool([testPolicy]),
   precheck: async (params, { succeed }) => {
     return succeed();
   },
@@ -319,7 +319,7 @@ export const testReturnNoSchema = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool6@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { succeed }) => {
       return succeed();
@@ -335,7 +335,7 @@ export const testReturnNoSchema = () => {
 export const testPrecheckNoReturn = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     // @ts-expect-error - Function doesn't return anything
     precheck: async (params, { succeed }) => {
@@ -352,7 +352,7 @@ export const testPrecheckNoReturn = () => {
 export const testExecuteNoReturn = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { succeed }) => {
       return succeed();
@@ -369,7 +369,7 @@ export const testExecuteNoReturn = () => {
 export const testPrecheckRawReturn = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     // @ts-expect-error - Returning raw value instead of ToolPrecheckResponse
     precheck: async (params, { succeed }) => {
@@ -391,7 +391,7 @@ export const testExecuteRawReturn = () => {
 
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema,
 
     precheck: async (params, { succeed }) => {
@@ -415,7 +415,7 @@ export const testExecuteWrongTypeReturn = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool7@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema,
 
     precheck: async (params, { succeed }) => {
@@ -445,7 +445,7 @@ export const testPrecheckWrongSchema = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool7@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     precheckSuccessSchema,
     executeSuccessSchema,
 
@@ -476,7 +476,7 @@ export const testExecuteWrongSchema = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool8@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     precheckSuccessSchema,
     executeSuccessSchema,
 
@@ -508,7 +508,7 @@ export const testPrecheckSuccessWithFailSchema = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool9@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     precheckSuccessSchema,
     precheckFailSchema,
 
@@ -544,7 +544,7 @@ export const testExecuteFailWithSuccessSchema = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool10@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema,
     executeFailSchema,
 
@@ -571,7 +571,7 @@ export const testReturnWithInnerFunctions = () => {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool11@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { succeed }) => {
       // Internal function that doesn't return anything shouldn't affect the overall return type
@@ -601,7 +601,7 @@ export const testReturnWithInnerFunctions = () => {
 export const testPrecheckConditionalReturns = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     // @ts-expect-error - Missing return in one code path
     precheck: async ({ toolParams }, { succeed }) => {
@@ -621,7 +621,7 @@ export const testPrecheckConditionalReturns = () => {
 export const testExecuteConditionalReturns = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (_, { succeed }) => {
       return succeed();
@@ -641,7 +641,7 @@ export const testExecuteConditionalReturns = () => {
 export const testPrecheckAsyncWithoutAwait = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     // @ts-expect-error - Missing return from async function that calls other async functions
     precheck: async (params, { succeed }) => {
@@ -665,7 +665,7 @@ export const testPrecheckAsyncWithoutAwait = () => {
 export const testExecuteTryCatchReturn = () => {
   return createVincentTool({
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
     precheck: async (params, { succeed }) => {
       return succeed();
@@ -695,7 +695,7 @@ export function testContextDestructuring() {
   return createVincentTool({
     // packageName: '@lit-protocol/yestool12@1.0.0',
     toolParamsSchema: testSchema,
-    policyMap: createPolicyMapFromToolPolicies([testPolicy]),
+    supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema,
 
     precheck: async (params, { succeed }) => {

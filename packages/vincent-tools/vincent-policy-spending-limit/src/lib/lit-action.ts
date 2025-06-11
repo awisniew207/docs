@@ -5,10 +5,9 @@ import { toolParamsSchema } from './schemas';
 
 declare const context: {
   toolIpfsCid: string;
-  delegation: { delegator: string; delegatee: string };
-  appVersion: number;
-  appId: number;
+  delegatorPkpEthAddress: string;
 };
+
 declare const toolParams: typeof toolParamsSchema;
 
 (async () => {

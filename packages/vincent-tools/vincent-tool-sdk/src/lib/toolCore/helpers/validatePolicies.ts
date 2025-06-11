@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { VincentTool, VincentToolPolicy } from '../../types';
 import { getMappedToolPolicyParams } from './getMappedToolPolicyParams';
 import { Policy, PolicyParameter } from '../../policyCore/policyParameters/types';
-import { ToolPolicyMap } from './createPolicyMapFromToolPolicies';
+import { ToolPolicyMap } from './supportedPoliciesForTool';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -63,7 +63,7 @@ export async function validatePolicies<
 
   for (const policy of policies) {
     const { policyIpfsCid, parameters } = policy;
-    const toolPolicy = vincentTool.policyMap.policyByIpfsCid[policyIpfsCid as string];
+    const toolPolicy = vincentTool.supportedPolicies.policyByIpfsCid[policyIpfsCid as string];
 
     if (!toolPolicy) {
       throw new Error(

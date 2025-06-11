@@ -1,8 +1,8 @@
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
-import { createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
 import { createPublicClient, http, parseUnits } from 'viem';
 
-import { getCurrentAllowance, getPkpInfo, sendErc20ApprovalTx } from './tool-helpers';
+import { getCurrentAllowance, sendErc20ApprovalTx } from './tool-helpers';
 import { checkNativeTokenBalance } from './tool-checks';
 import {
   executeFailSchema,
@@ -16,7 +16,7 @@ export const vincentTool = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
 
   toolParamsSchema,
-  policyMap: createPolicyMapFromToolPolicies([]),
+  supportedPolicies: supportedPoliciesForTool([]),
 
   precheckSuccessSchema,
   precheckFailSchema,
@@ -24,9 +24,9 @@ export const vincentTool = createVincentTool({
   executeSuccessSchema,
   executeFailSchema,
 
-  precheck: async ({ toolParams }, { succeed }) => {
-    const { rpcUrl, pkpEthAddress, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } =
-      toolParams;
+  precheck: async ({ toolParams }, { succeed, delegation: { delegatorPkpInfo } }) => {
+    const { ethAddress } = delegatorPkpInfo;
+    const { rpcUrl, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } = toolParams;
 
     const client = createPublicClient({
       transport: http(rpcUrl),
@@ -34,13 +34,13 @@ export const vincentTool = createVincentTool({
 
     await checkNativeTokenBalance({
       client,
-      pkpEthAddress: pkpEthAddress as `0x${string}`,
+      pkpEthAddress: ethAddress as `0x${string}`,
     });
 
     const currentAllowance = await getCurrentAllowance({
       client,
       tokenAddress: tokenAddress as `0x${string}`,
-      owner: pkpEthAddress as `0x${string}`,
+      owner: ethAddress as `0x${string}`,
       spender: spenderAddress as `0x${string}`,
     });
 
@@ -51,22 +51,12 @@ export const vincentTool = createVincentTool({
       existingApprovalSufficient: currentAllowance >= requiredAmount,
     });
   },
-  execute: async ({ toolParams }, { succeed }) => {
+  execute: async ({ toolParams }, { succeed, delegation: { delegatorPkpInfo } }) => {
     console.log('Executing ERC20 Approval Tool');
 
-    const {
-      rpcUrl,
-      chainId,
-      pkpEthAddress,
-      spenderAddress,
-      tokenAddress,
-      tokenDecimals,
-      tokenAmount,
-    } = toolParams;
-
-    const pkpInfo = await getPkpInfo({
-      pkpEthAddress: pkpEthAddress as `0x${string}`,
-    });
+    const { ethAddress, publicKey } = delegatorPkpInfo;
+    const { rpcUrl, chainId, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } =
+      toolParams;
 
     const client = createPublicClient({
       transport: http(rpcUrl),
@@ -74,13 +64,13 @@ export const vincentTool = createVincentTool({
 
     await checkNativeTokenBalance({
       client,
-      pkpEthAddress: pkpEthAddress as `0x${string}`,
+      pkpEthAddress: ethAddress as `0x${string}`,
     });
 
     const currentAllowance = await getCurrentAllowance({
       client,
       tokenAddress: tokenAddress as `0x${string}`,
-      owner: pkpEthAddress as `0x${string}`,
+      owner: ethAddress as `0x${string}`,
       spender: spenderAddress as `0x${string}`,
     });
 
@@ -111,8 +101,8 @@ export const vincentTool = createVincentTool({
     const approvalTxHash = await sendErc20ApprovalTx({
       rpcUrl,
       chainId,
-      pkpEthAddress: pkpEthAddress as `0x${string}`,
-      pkpPublicKey: pkpInfo.publicKey,
+      pkpEthAddress: ethAddress as `0x${string}`,
+      pkpPublicKey: publicKey,
       spenderAddress: spenderAddress as `0x${string}`,
       tokenAmount: parseUnits(tokenAmount.toString(), tokenDecimals),
       tokenDecimals,

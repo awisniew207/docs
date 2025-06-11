@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 import { createAllowResult } from '../lib/policyCore/helpers/resultCreators';
 
 const toolParamsSchema = z.object({
@@ -45,7 +45,7 @@ const policyB = createVincentToolPolicy({
 
 const tool = createVincentTool({
   toolParamsSchema,
-  policyMap: createPolicyMapFromToolPolicies([policyA, policyB] as const),
+  supportedPolicies: supportedPoliciesForTool([policyA, policyB] as const),
   execute: async ({ toolParams }, { policiesContext, succeed, fail }) => {
     // Type inference for allowedPolicies
     const a = policiesContext.allowedPolicies['a'];
@@ -97,7 +97,14 @@ export async function run() {
       },
     },
     {
-      delegation: { delegator: 'x', delegatee: 'y' },
+      delegation: {
+        delegatorPkpInfo: {
+          tokenId: '90128301832',
+          ethAddress: '0x102398103981032',
+          publicKey: '0398103810938ef987ef978fe987ef',
+        },
+        delegateeAddress: 'y',
+      },
       policiesContext: {
         evaluatedPolicies: ['a', 'b'],
         allowedPolicies: {

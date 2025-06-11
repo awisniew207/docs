@@ -3,7 +3,6 @@ import { z } from 'zod';
 export const toolParamsSchema = z.object({
   rpcUrl: z.string(),
   chainId: z.number(),
-  pkpEthAddress: z.string(),
   spenderAddress: z.string(),
 
   tokenAddress: z.string(),
