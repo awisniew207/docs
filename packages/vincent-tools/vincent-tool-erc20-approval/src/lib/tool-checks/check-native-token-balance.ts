@@ -6,14 +6,8 @@ export const checkNativeTokenBalance = async ({
 }: {
   provider: ethers.providers.Provider;
   pkpEthAddress: string;
-}) => {
+}): Promise<boolean> => {
   const ethBalance = await provider.getBalance(pkpEthAddress);
 
-  if (ethBalance.isZero()) {
-    throw new Error(
-      `pkpEthAddress (${pkpEthAddress}) has zero native token balance (UniswapSwapToolPrecheck)`,
-    );
-  }
-
-  return ethBalance;
+  return ethBalance.gt(0n);
 };

@@ -11,18 +11,15 @@ export const toolParamsSchema = z.object({
 });
 
 export const precheckSuccessSchema = z.object({
-  allow: z.literal(true),
-  existingApprovalSufficient: z.boolean(),
+  alreadyApproved: z.boolean(),
+  currentAllowance: z.string(),
 });
 
 export const precheckFailSchema = z.object({
-  allow: z.literal(false),
-  error: z.string(),
+  noNativeTokenBalance: z.boolean(),
 });
 
 export const executeSuccessSchema = z.object({
-  // Whether the existing approval amount is sufficient for the requested amount
-  existingApprovalSufficient: z.boolean(),
   // Transaction hash if a new approval was created, undefined if existing approval was used
   approvalTxHash: z.string().optional(),
   // The approved amount that is now active (either from existing or new approval)

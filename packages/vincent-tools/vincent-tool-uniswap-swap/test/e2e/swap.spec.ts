@@ -375,17 +375,16 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
       expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBe(0n);
 
-      console.log(
-        'waiting for approval tx to finalize',
-        parsedResponse.toolExecutionResult.result.approvalTxHash,
-      );
-      const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-        hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
-      });
-      console.log('approval TX is GTG! continuing');
-
-      // Wait for 2 seconds
-      // await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (parsedResponse.toolExecutionResult.result.approvalTxHash) {
+        console.log(
+          'waiting for approval tx to finalize',
+          parsedResponse.toolExecutionResult.result.approvalTxHash,
+        );
+        const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+          hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+        });
+        console.log('approval TX is GTG! continuing');
+      }
     });
 
     it('should add an approval successfully', async () => {
@@ -418,7 +417,6 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       expect(parsedResponse.toolExecutionResult).toBeDefined();
       expect(parsedResponse.toolExecutionResult.success).toBe(true);
       expect(parsedResponse.toolExecutionResult.result).toBeDefined();
-      expect(parsedResponse.toolExecutionResult.result.existingApprovalSufficient).toBe(false);
 
       // Allowance will decrease after swap
       expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
@@ -433,7 +431,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
         'waiting for approval tx to finalize',
         parsedResponse.toolExecutionResult.result.approvalTxHash,
       );
-      const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+      await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
         hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
       });
       console.log('approval TX is GTG! continuing');
@@ -463,14 +461,16 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
         expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBe(0n);
 
-        console.log(
-          'waiting for approval tx to finalize',
-          parsedResponse.toolExecutionResult.result.approvalTxHash,
-        );
-        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
-        });
-        console.log('approval TX is GTG! continuing');
+        if (parsedResponse.toolExecutionResult.result.approvalTxHash) {
+          console.log(
+            'waiting for approval tx to finalize',
+            parsedResponse.toolExecutionResult.result.approvalTxHash,
+          );
+          const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+            hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+          });
+          console.log('approval TX is GTG! continuing');
+        }
       }
 
       {
@@ -537,7 +537,6 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       expect(parsedResponse.toolExecutionResult).toBeDefined();
       expect(parsedResponse.toolExecutionResult.success).toBe(true);
       expect(parsedResponse.toolExecutionResult.result).toBeDefined();
-      expect(parsedResponse.toolExecutionResult.result.existingApprovalSufficient).toBe(true);
       expect(parsedResponse.toolExecutionResult.result.approvalTxHash).toBeUndefined();
 
       // Allowance will decrease after swap

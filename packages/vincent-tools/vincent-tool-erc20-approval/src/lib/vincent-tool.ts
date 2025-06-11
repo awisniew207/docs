@@ -24,16 +24,20 @@ export const vincentTool = createVincentTool({
   executeSuccessSchema,
   executeFailSchema,
 
-  precheck: async ({ toolParams }, { succeed, delegation: { delegatorPkpInfo } }) => {
+  precheck: async ({ toolParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
     const { ethAddress } = delegatorPkpInfo;
     const { rpcUrl, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } = toolParams;
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
-    await checkNativeTokenBalance({
+    const hasNativeTokenBalance = await checkNativeTokenBalance({
       provider,
       pkpEthAddress: ethAddress,
     });
+
+    if (!hasNativeTokenBalance) {
+      return fail({ noNativeTokenBalance: true });
+    }
 
     const currentAllowance = await getCurrentAllowance({
       provider,
@@ -45,8 +49,8 @@ export const vincentTool = createVincentTool({
     const requiredAmount = ethers.utils.parseUnits(tokenAmount.toString(), tokenDecimals);
 
     return succeed({
-      allow: true,
-      existingApprovalSufficient: currentAllowance >= requiredAmount.toBigInt(),
+      alreadyApproved: currentAllowance == requiredAmount.toBigInt(),
+      currentAllowance: currentAllowance.toString(),
     });
   },
   execute: async ({ toolParams }, { succeed, delegation: { delegatorPkpInfo } }) => {
@@ -77,11 +81,8 @@ export const vincentTool = createVincentTool({
       `currentAllowance: ${currentAllowance} >= requiredAmount: ${requiredAmount} (execute)`,
     );
 
-    if (currentAllowance >= requiredAmount && requiredAmount > 0n) {
-      // requiredAmount of 0 would indicate we are _explicitly removing an existing approval_
-
+    if (currentAllowance === requiredAmount) {
       console.log('Tool execution successful', {
-        existingApprovalSufficient: true,
         approvedAmount: currentAllowance.toString(),
         spenderAddress,
         tokenAddress,
@@ -89,7 +90,6 @@ export const vincentTool = createVincentTool({
       });
 
       return succeed({
-        existingApprovalSufficient: true,
         approvedAmount: currentAllowance.toString(),
         tokenAddress,
         tokenDecimals: parseInt(tokenDecimals.toString()),
@@ -108,7 +108,6 @@ export const vincentTool = createVincentTool({
     });
 
     console.log('Tool execution successful', {
-      existingApprovalSufficient: false,
       approvalTxHash,
       approvedAmount: requiredAmount.toString(),
       spenderAddress,
@@ -117,7 +116,6 @@ export const vincentTool = createVincentTool({
     });
 
     return succeed({
-      existingApprovalSufficient: false,
       approvalTxHash,
       approvedAmount: requiredAmount.toString(),
       tokenAddress,
