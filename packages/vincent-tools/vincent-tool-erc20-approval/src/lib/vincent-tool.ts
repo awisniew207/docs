@@ -1,6 +1,6 @@
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
 import { supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
-import { createPublicClient, http, parseUnits } from 'viem';
+import { ethers } from 'ethers';
 
 import { getCurrentAllowance, sendErc20ApprovalTx } from './tool-helpers';
 import { checkNativeTokenBalance } from './tool-checks';
@@ -28,27 +28,25 @@ export const vincentTool = createVincentTool({
     const { ethAddress } = delegatorPkpInfo;
     const { rpcUrl, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } = toolParams;
 
-    const client = createPublicClient({
-      transport: http(rpcUrl),
-    });
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
     await checkNativeTokenBalance({
-      client,
-      pkpEthAddress: ethAddress as `0x${string}`,
+      provider,
+      pkpEthAddress: ethAddress,
     });
 
     const currentAllowance = await getCurrentAllowance({
-      client,
-      tokenAddress: tokenAddress as `0x${string}`,
-      owner: ethAddress as `0x${string}`,
-      spender: spenderAddress as `0x${string}`,
+      provider,
+      tokenAddress,
+      owner: ethAddress,
+      spender: spenderAddress,
     });
 
-    const requiredAmount = parseUnits(tokenAmount.toString(), tokenDecimals);
+    const requiredAmount = ethers.utils.parseUnits(tokenAmount.toString(), tokenDecimals);
 
     return succeed({
       allow: true,
-      existingApprovalSufficient: currentAllowance >= requiredAmount,
+      existingApprovalSufficient: currentAllowance >= requiredAmount.toBigInt(),
     });
   },
   execute: async ({ toolParams }, { succeed, delegation: { delegatorPkpInfo } }) => {
@@ -58,28 +56,29 @@ export const vincentTool = createVincentTool({
     const { rpcUrl, chainId, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } =
       toolParams;
 
-    const client = createPublicClient({
-      transport: http(rpcUrl),
-    });
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
     await checkNativeTokenBalance({
-      client,
-      pkpEthAddress: ethAddress as `0x${string}`,
+      provider,
+      pkpEthAddress: ethAddress,
     });
 
     const currentAllowance = await getCurrentAllowance({
-      client,
-      tokenAddress: tokenAddress as `0x${string}`,
-      owner: ethAddress as `0x${string}`,
-      spender: spenderAddress as `0x${string}`,
+      provider,
+      tokenAddress,
+      owner: ethAddress,
+      spender: spenderAddress,
     });
+    const requiredAmount = ethers.utils
+      .parseUnits(tokenAmount.toString(), tokenDecimals)
+      .toBigInt();
 
-    const requiredAmount = parseUnits(tokenAmount.toString(), tokenDecimals);
+    console.log(
+      `currentAllowance: ${currentAllowance} >= requiredAmount: ${requiredAmount} (execute)`,
+    );
 
-    if (currentAllowance >= requiredAmount) {
-      console.log(
-        `currentAllowance: ${currentAllowance} >= requiredAmount: ${requiredAmount} (execute)`,
-      );
+    if (currentAllowance >= requiredAmount && requiredAmount > 0n) {
+      // requiredAmount of 0 would indicate we are _explicitly removing an existing approval_
 
       console.log('Tool execution successful', {
         existingApprovalSufficient: true,
@@ -101,12 +100,11 @@ export const vincentTool = createVincentTool({
     const approvalTxHash = await sendErc20ApprovalTx({
       rpcUrl,
       chainId,
-      pkpEthAddress: ethAddress as `0x${string}`,
+      pkpEthAddress: ethAddress,
       pkpPublicKey: publicKey,
-      spenderAddress: spenderAddress as `0x${string}`,
-      tokenAmount: parseUnits(tokenAmount.toString(), tokenDecimals),
-      tokenDecimals,
-      tokenAddress: tokenAddress as `0x${string}`,
+      spenderAddress,
+      tokenAmount: requiredAmount,
+      tokenAddress,
     });
 
     console.log('Tool execution successful', {

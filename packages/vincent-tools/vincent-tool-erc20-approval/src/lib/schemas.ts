@@ -7,9 +7,7 @@ export const toolParamsSchema = z.object({
 
   tokenAddress: z.string(),
   tokenDecimals: z.number(),
-  tokenAmount: z.number().refine((val) => val > 0, {
-    message: 'tokenAmount must be greater than 0',
-  }),
+  tokenAmount: z.number(),
 });
 
 export const precheckSuccessSchema = z.object({
