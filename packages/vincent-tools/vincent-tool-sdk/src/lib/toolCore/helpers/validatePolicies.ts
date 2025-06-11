@@ -65,6 +65,10 @@ export async function validatePolicies<
     const { policyIpfsCid, parameters } = policy;
     const toolPolicy = vincentTool.supportedPolicies.policyByIpfsCid[policyIpfsCid as string];
 
+    console.log(
+      'vincentTool.supportedPolicies',
+      Object.keys(vincentTool.supportedPolicies.policyByIpfsCid),
+    );
     if (!toolPolicy) {
       throw new Error(
         `Policy with IPFS CID ${policyIpfsCid} is registered on-chain but not supported by this tool. Vincent Tool: ${toolIpfsCid}`,
