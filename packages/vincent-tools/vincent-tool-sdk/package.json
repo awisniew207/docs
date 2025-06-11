@@ -5,9 +5,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@lit-protocol/constants": "7.0.6",
     "tslib": "^2.3.0",
     "zod": "^3.24.1"
+  },
+  "scripts": {
+    "watch:type-tests": "chokidar 'src/**/*' --initial --await-write-finish --delay 100 --silent -c './scripts/run-typecheck.sh'",
+    "typecheck": "./scripts/precommit-check.sh"
   },
   "type": "commonjs",
   "main": "./dist/index.js",
@@ -22,6 +25,7 @@
     "name": "vincent-tool-sdk"
   },
   "devDependencies": {
+    "chokidar-cli": "^3.0.0",
     "jsonc-eslint-parser": "^2.4.0"
   }
 }

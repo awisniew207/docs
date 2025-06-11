@@ -12,14 +12,18 @@
     "types": ["node"],
     "moduleResolution": "node",
     "module": "commonjs",
-    "paths": {
-      "@lit-protocol/vincent-tool-sdk": ["../vincent-tool-sdk/src"]
-    }
+    "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/generated/vincent-tool-metadata.json"],
   "references": [
     {
       "path": "../vincent-tool-sdk/tsconfig.lib.json"
+    },
+    {
+      "path": "../vincent-policy-spending-limit/tsconfig.lib.json"
+    },
+    {
+      "path": "../vincent-tool-erc20-approval/tsconfig.lib.json"
     }
   ],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
