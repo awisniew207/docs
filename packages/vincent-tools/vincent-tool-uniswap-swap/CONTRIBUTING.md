@@ -16,13 +16,6 @@ The Vincent Tool Uniswap Swap is a tool to trigger swaps on Uniswap from a Vince
 
 ## Development Workflow
 
-### Building
-
-Build the tool:
-```bash
-nx build vincent-tool-uniswap-swap
-```
-
 ### Testing
 
 Run tests:
@@ -30,11 +23,18 @@ Run tests:
 nx test vincent-tool-uniswap-swap
 ```
 
-### Deployment
+### Building the Lit Action
 
-Deploy the tool:
+Build the policy:
 ```bash
-nx deploy vincent-tool-uniswap-swap
+nx action:build vincent-tool-uniswap-swap
+```
+
+### Deploying the Lit Action to IPFS
+
+Building will be done automatically. Deploy the policy:
+```bash
+nx action:deploy vincent-tool-uniswap-swap
 ```
 
 ## Project Structure

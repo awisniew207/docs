@@ -39,12 +39,17 @@ The Vincent system consists of several key components:
    cd Vincent
    ```
 
-2. Install dependencies:
+2. Ensure pnpm is available:
+   ```bash
+   corepack enable
+   ```
+
+3. Install dependencies:
    ```bash
    pnpm install
    ```
 
-3. Build all projects:
+4. Build all projects:
    ```bash
    pnpm build
    ```
@@ -129,7 +134,8 @@ Each project has its own README.md and CONTRIBUTING.md files with project-specif
 2. Update documentation if necessary
 3. Include tests for new features or bug fixes
 4. Link any related issues in your pull request description
-5. Request a review from a maintainer
+5. Create a version plan with `nx release plan` describing your changes and indicating the needed version bump for each project
+6. Request a review from a maintainer
 
 ### Commit Message Guidelines
 

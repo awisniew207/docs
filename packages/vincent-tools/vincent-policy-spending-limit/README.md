@@ -23,23 +23,22 @@ npm install @lit-protocol/vincent-policy-spending-limit
 This policy can be integrated with Vincent Tools to enforce spending limits:
 
 ```typescript
-import { createVincentToolPolicy, createVincentTool } from '@lit-protocol/vincent-tool-sdk';
-import { dailySpendPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+import { createVincentToolPolicy, createVincentTool, supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
+import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
 
 const toolParamsSchema = z.object({
   buy: z.boolean(),
-  buyAmount: z.number(),
+});
+
+const spendingLimitPolicy = createVincentToolPolicy({
+  toolParamsSchema,
+  bundledVincentPolicy,
+  toolParameterMappings: { buy: 'buyAmount' },
 });
 
 export const myTokenSwapTool = createVincentTool({
   toolParamsSchema,
-  supportedPolicies: [
-    createVincentToolPolicy({
-      toolParamsSchema,
-      policyDef: dailySpendPolicy,
-      toolParameterMappings: { buy: 'buyAmount' },
-    }),
-  ],
+  supportedPolicies: supportedPoliciesForTool([spendingLimitPolicy]),
   // ... rest of tool implementation
 });
 ```

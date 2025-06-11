@@ -47,22 +47,28 @@ const response = await toolClient.execute({
 
 ## Integration with Policies
 
-This tool can be integrated with the Vincent Policy Spending Limit to enforce spending constraints:
+This tool is integrated with the Vincent Policy Spending Limit to enforce spending constraints:
 
 ```typescript
-import { createVincentToolPolicy, createVincentTool } from '@lit-protocol/vincent-tool-sdk';
-import { dailySpendPolicy } from '@lit-protocol/vincent-policy-spending-limit';
-import { uniswapSwapTool } from '@lit-protocol/vincent-tool-uniswap-swap';
+import { createVincentToolPolicy, createVincentTool, createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk';
+import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+import { toolParamsSchema } from '@lit-protocol/vincent-tool-uniswap-swap';
 
-// Create a tool with spending limit policy
-const uniswapSwapWithSpendingLimit = createVincentTool({
-  // ... tool configuration
-  supportedPolicies: [
-    createVincentToolPolicy({
-      // ... policy configuration
-      policyDef: dailySpendPolicy,
-    }),
-  ],
+const spendingLimitPolicy = createVincentToolPolicy({
+  toolParamsSchema,
+  bundledVincentPolicy,
+  toolParameterMappings: {
+    pkpEthAddress: 'pkpEthAddress',
+    ethRpcUrl: 'ethRpcUrl',
+    tokenInAddress: 'tokenAddress',
+    tokenInDecimals: 'tokenDecimals',
+    tokenInAmount: 'buyAmount',
+  },
+});
+
+export const uniswapSwapWithSpendingLimit = createVincentTool({
+  toolParamsSchema,
+  policyMap: createPolicyMapFromToolPolicies([spendingLimitPolicy]),
   // ... rest of tool implementation
 });
 ```

@@ -95,9 +95,6 @@ When working with AI-powered editors like Cursor, GitHub Copilot, or other AI as
 - `/packages/vincent-tools/vincent-tool-sdk/README.md`: Overview of the Tool SDK project
 - `/packages/vincent-tools/vincent-tool-sdk/CONTRIBUTING.md`: This file, with Tool SDK-specific contribution guidelines
 - `/packages/vincent-tools/vincent-tool-sdk/src/`: Source code for the Tool SDK
-  - `/packages/vincent-tools/vincent-tool-sdk/src/policy/`: Policy-related utilities
-  - `/packages/vincent-tools/vincent-tool-sdk/src/tool/`: Tool-related utilities
-  - `/packages/vincent-tools/vincent-tool-sdk/src/types/`: TypeScript type definitions
 
 ### Related Projects
 

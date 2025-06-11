@@ -76,7 +76,8 @@ Alternatively, you can use Postman or any other MCP debugger. LLM clients should
 2. Update documentation if necessary
 3. Include tests for new features or bug fixes
 4. Link any related issues in your pull request description
-5. Request a review from a maintainer
+5. Add an nx version plan documenting your changes
+6. Request a review from a maintainer
 
 ## For AI Editors and IDEs
 
