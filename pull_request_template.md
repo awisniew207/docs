@@ -18,7 +18,7 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 
 # Checklist:
 
-- [ ] I created a release plan (`nx release plan`) describing my changes and the version bump
+- [ ] I created a [release plan](https://nx.dev/recipes/nx-release/file-based-versioning-version-plans) (`nx release plan`) describing my changes and the version bump
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code, particularly in hard-to-understand areas
