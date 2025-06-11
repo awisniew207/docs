@@ -1,5 +1,5 @@
 {
-  "appId": "455",
+  "appId": "460",
   "appVersion": "1",
   "userPkp": {
     "tokenId": "82104276824339269971064922653638509343882443844866538545851912408514686622617",
@@ -7,10 +7,10 @@
     "pkpPubkey": "0x048bbc2754457f84ac079c23ce399796e510aa79aa9d86b9d03aac6f3033ef5db3b178653fbb618a4d10397312ba19689c3826fd74e5d9e7171bcc6b801924f533"
   },
   "capacityCreditInfo": {
-    "capacityTokenIdStr": "210428",
-    "capacityTokenId": "210428",
+    "capacityTokenIdStr": "211273",
+    "capacityTokenId": "211273",
     "requestsPerKilosecond": 80,
     "daysUntilUTCMidnightExpiration": 1,
-    "mintedAtUtc": "2025-06-10T02:03:37.594Z"
+    "mintedAtUtc": "2025-06-11T02:45:45.724Z"
   }
 }

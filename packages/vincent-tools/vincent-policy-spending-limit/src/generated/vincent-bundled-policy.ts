@@ -5,4 +5,4 @@
 import { asBundledVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
 import { vincentPolicy } from '../lib/vincent-policy';
 
-export const bundledVincentPolicy = asBundledVincentPolicy(vincentPolicy, "QmXbBZmxCJHHS1ncy1rKEgRGDfdZJ6mMRKNnqnvDMPqFQm" as const);
+export const bundledVincentPolicy = asBundledVincentPolicy(vincentPolicy, "QmdNRE4z8PE4BsRxdxq9tGBz7YssKNsYfrze8mvLAr8Dsp" as const);

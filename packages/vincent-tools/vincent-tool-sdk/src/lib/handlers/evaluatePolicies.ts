@@ -73,7 +73,10 @@ export async function evaluatePolicies<
         ipfsId: policy.ipfsCid,
         params: {
           toolParams: toolPolicyParams,
-          context,
+          context: {
+            toolIpfsCid: context.toolIpfsCid,
+            delegatorPkpEthAddress: context.delegation.delegatorPkpInfo.ethAddress,
+          },
         },
       });
 

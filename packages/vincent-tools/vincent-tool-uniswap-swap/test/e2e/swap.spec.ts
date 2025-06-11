@@ -234,9 +234,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       abi: VincentAppFacetAbi,
       logs: txReceipt.logs,
     });
-    // @ts-expect-error Property 'eventName' does not exist on type Log
     const appRegisteredLog = parsedLogs.filter((log) => log.eventName === 'NewAppRegistered');
-    // @ts-expect-error Property 'args' does not exist on type Log
     const newAppId = appRegisteredLog[0].args.appId;
 
     expect(newAppId).toBeDefined();
@@ -340,6 +338,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       address: TEST_APP_DELEGATEE_ACCOUNT.address,
     });
     if (balance === 0n) {
+      // @ts-expect-error KZG is incorrectly being marked as required here
       const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
         to: TEST_APP_DELEGATEE_ACCOUNT.address,
         value: BigInt(10000000000000000), // 0.01 ETH in wei
@@ -360,12 +359,12 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       toolParameters: {
         rpcUrl: BASE_RPC_URL,
         chainId: 8453,
-        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
         spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
         tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
         tokenDecimals: 18,
         tokenAmount: 1,
       },
+      delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
       capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
@@ -399,7 +398,6 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     const uniswapSwapExecutionResult = await executeTool({
       toolIpfsCid: uniswapToolMetadata.ipfsCid,
       toolParameters: {
-        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
         ethRpcUrl: ETH_RPC_URL,
         rpcUrlForUniswap: BASE_RPC_URL,
         chainIdForUniswap: 8453,
@@ -409,6 +407,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
         tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
         tokenOutDecimals: 8,
       },
+      delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
       delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
       debug: true,
       capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
@@ -436,7 +435,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     const spendTxHash = parsedResponse.toolExecutionResult.result.spendTxHash;
     expect(spendTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
-    const spendTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+    const spendTxReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
       hash: spendTxHash as `0x${string}`,
     });
     expect(spendTxReceipt.status).toBe('success');

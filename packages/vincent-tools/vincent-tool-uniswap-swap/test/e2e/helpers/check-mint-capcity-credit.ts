@@ -34,7 +34,7 @@ export const checkShouldMintCapacityCredit = async (testConfig: TestConfig) => {
 
     testConfig.capacityCreditInfo = await mintCapacityCredit(litContractClient, {
       requestsPerKilosecond: 80,
-      daysUntilUTCMidnightExpiration: 1,
+      daysUntilUTCMidnightExpiration: 25,
     });
     console.log(
       `Minted new capacity credit with token id: ${testConfig.capacityCreditInfo!.capacityTokenId}`,

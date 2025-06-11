@@ -13,6 +13,7 @@ const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 export interface ExecuteToolOptions {
   toolIpfsCid: string;
   toolParameters: any;
+  delegatorPkpEthAddress: string;
   delegateePrivateKey: string;
   litNetwork?: string;
   sessionDurationMinutes?: number;
@@ -27,6 +28,7 @@ export const executeTool = async (options: ExecuteToolOptions) => {
     delegateePrivateKey,
     sessionDurationMinutes = 10,
     debug = false,
+    delegatorPkpEthAddress,
   } = options;
 
   const delegateeWallet = new ethers.Wallet(
@@ -90,7 +92,9 @@ export const executeTool = async (options: ExecuteToolOptions) => {
         toolParams: {
           ...toolParameters,
         },
-        context: {},
+        context: {
+          delegatorPkpEthAddress,
+        },
       },
     });
 
