@@ -1,5 +1,6 @@
-import { createPublicClient, http, parseUnits, parseAbi, formatUnits } from 'viem';
+import { ethers } from 'ethers';
 
+import { calculateUsdValue } from './calculate-usd-value';
 import { getUniswapQuote } from './get-uniswap-quote';
 
 const ETH_MAINNET_WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -7,10 +8,6 @@ const ETH_MAINNET_WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
  * Source: https://docs.chain.link/data-feeds/price-feeds/addresses/?network=ethereum&page=1&search=ETH%2FUSD
  */
 const ETH_MAINNET_ETH_USD_CHAINLINK_FEED = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419';
-
-const CHAINLINK_AGGREGATOR_ABI = parseAbi([
-  'function latestRoundData() external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
-]);
 
 export const getTokenAmountInUsd = async ({
   ethRpcUrl,
@@ -26,17 +23,48 @@ export const getTokenAmountInUsd = async ({
   tokenAddress: string;
   tokenDecimals: number;
   tokenAmount: number;
-}): Promise<bigint> => {
+}): Promise<ethers.BigNumber> => {
+  console.log(`Getting token amount in USD (getTokenAmountInUsd)`, {
+    ethRpcUrl,
+    rpcUrlForUniswap,
+    chainIdForUniswap,
+    tokenAddress,
+    tokenAmount,
+    tokenDecimals,
+    ethMainnetWethAddress: ETH_MAINNET_WETH_ADDRESS,
+    ethMainnetEthUsdChainlinkFeed: ETH_MAINNET_ETH_USD_CHAINLINK_FEED,
+  });
+
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrlForUniswap);
+  const tokenInContract = new ethers.Contract(
+    tokenAddress,
+    ['function symbol() view returns (string)'],
+    provider,
+  );
+  const tokenInSymbol = await tokenInContract.symbol();
+  console.log(`tokenInSymbol: ${tokenInSymbol} (getTokenAmountInUsd)`);
+
   // Special case for WETH - no need to get a quote since it's already in ETH terms
-  if (tokenAddress.toLowerCase() === ETH_MAINNET_WETH_ADDRESS.toLowerCase()) {
+  if (tokenInSymbol.toUpperCase() === 'WETH') {
     console.log(`Token is WETH, using amount directly: ${tokenAmount} (getTokenAmountInUsd)`);
-    const amountInWeth = parseUnits(tokenAmount.toString(), tokenDecimals);
-    return calculateUsdValue({ ethRpcUrl, amountInWeth });
+    const amountInWeth = ethers.utils.parseUnits(tokenAmount.toString(), tokenDecimals);
+    return calculateUsdValue({
+      ethRpcUrl,
+      chainlinkPriceFeedAddress: ETH_MAINNET_ETH_USD_CHAINLINK_FEED,
+      amountInWeth,
+    });
   }
 
-  console.log(
-    `Getting price in WETH from Uniswap for tokenAmount: ${tokenAmount} tokenAddress: ${tokenAddress} (getTokenAmountInUsd)`,
-  );
+  console.log(`Getting price in WETH from Uniswap (getTokenAmountInUsd)`, {
+    tokenInAddress: tokenAddress,
+    tokenInDecimals: tokenDecimals,
+    tokenInAmount: tokenAmount,
+    tokenOutAddress: ETH_MAINNET_WETH_ADDRESS,
+    tokenOutDecimals: 18,
+    rpcUrl: rpcUrlForUniswap,
+    chainId: chainIdForUniswap,
+  });
+
   const amountInWeth = await getUniswapQuote({
     tokenInAddress: tokenAddress,
     tokenInDecimals: tokenDecimals,
@@ -48,45 +76,16 @@ export const getTokenAmountInUsd = async ({
   });
 
   // Convert WETH amount to USD
-  console.log(`Amount in WETH: ${formatUnits(amountInWeth.swapQuote, 18)} (getTokenAmountInUsd)`);
-  return calculateUsdValue({ ethRpcUrl, amountInWeth: amountInWeth.swapQuote });
-};
-
-const calculateUsdValue = async ({
-  ethRpcUrl,
-  amountInWeth,
-}: {
-  ethRpcUrl: string;
-  amountInWeth: bigint;
-}): Promise<bigint> => {
-  const ethPriceInUsd = await getEthUsdPriceFromChainlink({ ethRpcUrl });
-  console.log(`ETH price in USD 8 decimals (calculateUsdValue): ${ethPriceInUsd.toString()}`);
-
-  // Calculate USD value (8 decimals precision)
-  const CHAINLINK_DECIMALS = 8n;
-  const WETH_DECIMALS = 18n; // WETH decimals
-  const amountInUsd = (amountInWeth * ethPriceInUsd) / 10n ** WETH_DECIMALS;
-  console.log(
-    `Token amount in USD 8 decimals: $${formatUnits(amountInUsd, Number(CHAINLINK_DECIMALS))} (calculateUsdValue)`,
-  );
-
-  return amountInUsd;
-};
-
-const getEthUsdPriceFromChainlink = async ({
-  ethRpcUrl,
-}: {
-  ethRpcUrl: string;
-}): Promise<bigint> => {
-  const client = createPublicClient({
-    transport: http(ethRpcUrl),
+  const amountInUsdc = await calculateUsdValue({
+    ethRpcUrl,
+    chainlinkPriceFeedAddress: ETH_MAINNET_ETH_USD_CHAINLINK_FEED,
+    amountInWeth: amountInWeth.bestQuote,
   });
 
-  const [_, answer] = await client.readContract({
-    address: ETH_MAINNET_ETH_USD_CHAINLINK_FEED,
-    abi: CHAINLINK_AGGREGATOR_ABI,
-    functionName: 'latestRoundData',
+  console.log('Calculated token amount in USDC (getTokenAmountInUsd)', {
+    amountInWeth: ethers.utils.formatUnits(amountInWeth.bestQuote, 18),
+    amountInUsdc: ethers.utils.formatUnits(amountInUsdc, 8),
   });
 
-  return answer;
+  return amountInUsdc;
 };

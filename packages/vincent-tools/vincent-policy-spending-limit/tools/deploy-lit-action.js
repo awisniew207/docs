@@ -11,7 +11,7 @@ if (!PINATA_JWT) {
 
 (async () => {
   try {
-    const outputFile = 'vincent-policy-wrapped.js';
+    const outputFile = 'lit-action.js';
 
     const generatedDir = path.join(__dirname, '../src/generated');
     const filePath = path.join(generatedDir, outputFile);
@@ -26,14 +26,21 @@ if (!PINATA_JWT) {
     const ipfsCid = await uploadToIPFS(outputFile, litActionCodeString.code);
 
     const cidJsonPath = path.join(generatedDir, 'vincent-policy-metadata.json');
-    const cidJsonContent = {
-      ipfsCid,
-    };
-    fs.writeFileSync(cidJsonPath, JSON.stringify(cidJsonContent, null, 2), 'utf8');
+    const metadata = fs.readFileSync(cidJsonPath);
+    const { ipfsCid: metadataIpfsCid } = JSON.parse(metadata);
+    if (ipfsCid !== metadataIpfsCid) {
+      throw new Error(
+        `IPFS CID mismatch in vincent-policy-metadata.json. Expected: ${metadataIpfsCid}, got: ${ipfsCid}`,
+      );
+    }
+    // const cidJsonContent = {
+    //   ipfsCid,
+    // };
+    // fs.writeFileSync(cidJsonPath, JSON.stringify(cidJsonContent, null, 2), 'utf8');
 
     console.log('✅ Successfully deployed Lit Action');
     console.log(`ℹ️  Deployed ${outputFile} to IPFS: ${ipfsCid}`);
-    console.log(`ℹ️  Saved vincent-policy-metadata.json to: ${cidJsonPath}`);
+    // console.log(`ℹ️  Saved vincent-policy-metadata.json to: ${cidJsonPath}`);
   } catch (error) {
     console.error('❌ Error in deploy process:', error);
     process.exit(1);

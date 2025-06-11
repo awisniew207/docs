@@ -36,6 +36,10 @@ export interface PolicyContext<
   AllowSchema extends z.ZodType = z.ZodUndefined,
   DenySchema extends z.ZodType = z.ZodUndefined,
 > {
+  toolIpfsCid: string;
+  appId: number;
+  appVersion: number;
+
   delegation: {
     delegatee: string;
     delegator: string;

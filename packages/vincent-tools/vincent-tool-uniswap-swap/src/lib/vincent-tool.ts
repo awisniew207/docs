@@ -1,70 +1,31 @@
-import { z } from 'zod';
-import {
-  asBundledVincentPolicy,
-  createVincentTool,
-  createVincentToolPolicy,
-} from '@lit-protocol/vincent-tool-sdk';
-import {
-  VincentPolicySpendingLimit,
-  VincentPolicySpendingLimitMetadata,
-} from '@lit-protocol/vincent-policy-spending-limit';
+import { createVincentTool, createVincentToolPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+
 import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
 import { createPublicClient, http } from 'viem';
 import { createPolicyMapFromToolPolicies } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
 
 import { getPkpInfo, getTokenAmountInUsd, sendUniswapTx } from './tool-helpers';
 import {
-  checkNativeTokenBalance,
-  checkUniswapPoolExists,
-  checkTokenInBalance,
   checkErc20Allowance,
+  checkNativeTokenBalance,
+  checkTokenInBalance,
+  checkUniswapPoolExists,
 } from './tool-checks';
-
-export const toolParamsSchema = z.object({
-  ethRpcUrl: z.string(),
-  rpcUrlForUniswap: z.string(),
-  chainIdForUniswap: z.number(),
-  pkpEthAddress: z.string(),
-
-  tokenInAddress: z.string(),
-  tokenInDecimals: z.number(),
-  tokenInAmount: z.number().refine((val) => val > 0, {
-    message: 'tokenInAmount must be greater than 0',
-  }),
-
-  tokenOutAddress: z.string(),
-  tokenOutDecimals: z.number(),
-
-  poolFee: z.number().optional(),
-  slippageTolerance: z.number().optional(),
-  swapDeadline: z.number().optional(),
-});
-
-const precheckSuccessSchema = z.object({
-  allow: z.literal(true),
-});
-
-const precheckFailSchema = z.object({
-  allow: z.literal(false),
-  error: z.string(),
-});
-
-const executeSuccessSchema = z.object({
-  swapTxHash: z.string(),
-  spendTxHash: z.string().optional(),
-});
-
-const executeFailSchema = z.object({
-  error: z.string(),
-});
+import {
+  executeFailSchema,
+  executeSuccessSchema,
+  precheckFailSchema,
+  precheckSuccessSchema,
+  toolParamsSchema,
+} from './schemas';
 
 const SpendingLimitPolicy = createVincentToolPolicy({
   toolParamsSchema,
-  bundledVincentPolicy: asBundledVincentPolicy(
-    VincentPolicySpendingLimit,
-    `${VincentPolicySpendingLimitMetadata.ipfsCid}` as const,
-  ),
+  bundledVincentPolicy,
   toolParameterMappings: {
+    rpcUrlForUniswap: 'rpcUrlForUniswap',
+    chainIdForUniswap: 'chainIdForUniswap',
     pkpEthAddress: 'pkpEthAddress',
     ethRpcUrl: 'ethRpcUrl',
     tokenInAddress: 'tokenAddress',
@@ -73,7 +34,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   },
 });
 
-export const VincentToolUniswapSwap = createVincentTool({
+export const vincentTool = createVincentTool({
   // packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
 
   toolParamsSchema,
@@ -145,7 +106,7 @@ export const VincentToolUniswapSwap = createVincentTool({
     });
   },
   execute: async ({ toolParams }, { succeed, fail, policiesContext }) => {
-    console.log('Executing UniswapSwapTool');
+    console.log('Executing UniswapSwapTool', JSON.stringify(toolParams, null, 2));
 
     const {
       pkpEthAddress,
@@ -161,6 +122,9 @@ export const VincentToolUniswapSwap = createVincentTool({
 
     const pkpInfo = await getPkpInfo(pkpEthAddress);
 
+    const spendingLimitPolicyContext =
+      policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+
     const swapTxHash = await sendUniswapTx({
       rpcUrl: rpcUrlForUniswap,
       chainId: chainIdForUniswap,
@@ -174,8 +138,7 @@ export const VincentToolUniswapSwap = createVincentTool({
     });
 
     let spendTxHash: string | undefined;
-    const spendingLimitPolicyContext =
-      policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+
     if (spendingLimitPolicyContext !== undefined) {
       const tokenInAmountInUsd = await getTokenAmountInUsd({
         ethRpcUrl,
@@ -186,9 +149,6 @@ export const VincentToolUniswapSwap = createVincentTool({
         tokenDecimals: tokenInDecimals,
       });
 
-      console.log('Spending limit policy context', spendingLimitPolicyContext);
-      console.log('Spending limit policy context result', spendingLimitPolicyContext.result);
-
       const { appId, maxSpendingLimitInUsd } = spendingLimitPolicyContext.result;
       const commitResult = await spendingLimitPolicyContext.commit({
         appId,
@@ -198,6 +158,7 @@ export const VincentToolUniswapSwap = createVincentTool({
         pkpPubKey: pkpInfo.publicKey,
       });
 
+      console.log('Spending limit policy commit result', JSON.stringify(commitResult));
       if (commitResult.allow) {
         spendTxHash = commitResult.result.spendTxHash;
       } else {

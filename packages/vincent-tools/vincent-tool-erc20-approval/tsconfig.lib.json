@@ -12,10 +12,7 @@
     "types": ["node"],
     "moduleResolution": "node",
     "module": "commonjs",
-    "esModuleInterop": true,
-    "paths": {
-      "@lit-protocol/vincent-tool-sdk": ["../vincent-tool-sdk/src"]
-    }
+    "esModuleInterop": true
   },
   "include": ["src/**/*.ts", "src/generated/vincent-tool-metadata.json"],
   "references": [
