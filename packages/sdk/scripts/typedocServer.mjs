@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import { watch } from 'fs';
 
 function generateDocs() {
-  execSync('pnpm typedoc', { stdio: 'inherit' });
+  execSync('pnpm typedoc --skipErrorChecking', { stdio: 'inherit' });
 }
 
 generateDocs();
