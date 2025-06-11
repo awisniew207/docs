@@ -41,9 +41,7 @@ The signing capability of Vincent Agent Wallets are what's delegated to Vincent 
 
 Because Vincent Agent Wallets are Lit Protocol PKPs, Vincent Apps can never directly access a Vincent App User's Agent Wallet. Instead, they can only execute Vincent Tools that the Vincent App User has explicitly authorized. Each Vincent Tool's code strictly defines what data can be signed, and Vincent Apps cannot modify this code or sign any data beyond the Vincent Tool's programmed scope. When a Vincent Tool needs to sign data, like a blockchain transaction, it must request the signature through the Lit network, which verifies the origin of the request came from the authorized Vincent Tool before generating the signature.
 
-:::info
-This security model enables Vincent's core innovation: Vincent App Users can safely delegate on-chain actions to Vincent Apps while maintaining complete control over their assets. Vincent Apps can execute authorized Vincent Tools on behalf of Vincent App Users, but they can never access private keys or sign data outside of what the Vincent Tool has been programmed to do.
-:::
+> **Note:** This security model enables Vincent's core innovation: Vincent App Users can safely delegate on-chain actions to Vincent Apps while maintaining complete control over their assets. Vincent Apps can execute authorized Vincent Tools on behalf of Vincent App Users, but they can never access private keys or sign data outside of what the Vincent Tool has been programmed to do.
 
 # Vincent App
 
