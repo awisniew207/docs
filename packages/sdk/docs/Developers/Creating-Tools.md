@@ -68,7 +68,7 @@ A Vincent Tool consists of two main lifecycle methods executed in the following 
 
 Vincent Tools are created by calling the `createVincentTool` function from the `@lit-protocol/vincent-tool-sdk` package. This function takes a single object parameter that defines your tool's lifecycle methods, parameter schemas, return value schemas, and supported policies.
 
-The basic structure of a Vincent Tool definition is as follows:
+The following is the basic structure of a Vincent Tool definition:
 
 ```typescript
 export const vincentTool = createVincentTool({
@@ -103,8 +103,21 @@ interface ToolContext {
       publicKey: string;
     };
   };
-  succeed: (executeSuccessResult) => void;
-  fail: (executeFailResult) => void;
+  policiesContext: {
+    allow: boolean;
+    allowedPolicies: {
+      [policyPackageName: string]: {
+        result: evalAllowResultSchema;
+        commit: (params: commitParamsSchema) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
+      };
+    };
+    deniedPolicy?: {
+      policyPackageName: string;
+      result: evalDenyResultSchema;
+    };
+  };
+  succeed: (executeSuccessResult: executeSuccessSchema) => void;
+  fail: (executeFailResult: executeFailSchema) => void;
 }
 ```
 
@@ -118,6 +131,16 @@ Where:
     - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet PKP
     - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet PKP
     - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet PKP
+- `policiesContext`: An object containing the context of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
+  - `allow`: A boolean indicating if the Vincent Tool execution is allowed to proceed, and all evaluated Vincent Policies returned `allow` results
+  - `allowedPolicies`: An object containing the results of the `evaluate` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
+    - `[policyPackageName]`: An object where the key is the package name of the Vincent Policy, and the value is an object containing the result of the `evaluate` function of the Vincent Policy as well the policy's `commit` function if it exists
+      - `result`: The result of the `evaluate` function of the Vincent Policy, will have the shape of the Vincent Policy's [evalAllowResultSchema](./Creating-Policies.md#evalallowresultschema)
+      - `commit`: An optional functions for each evaluated Vincent Policy that allows the policies to commit any state changes after your tool has successfully executed
+        - The parameter object passed to the `commit` function is defined by each Vincent Policy's [commitParamsSchema](./Creating-Policies.md#commitparamsschema), and the return value is defined by the policy's [commitAllowResultSchema](./Creating-Policies.md#commitallowresultschema) or [commitDenyResultSchema](./Creating-Policies.md#commitdenyresultschema)
+  - `deniedPolicy`: An object containing the first Vincent Policy that denied the Vincent Tool execution
+    - `policyPackageName`: The package name of the Vincent Policy that denied the Vincent Tool execution
+    - `result`: The result of the `evaluate` function of the Vincent Policy that denied the Vincent Tool execution, will have the shape of the Vincent Policy's [evalDenyResultSchema](./Creating-Policies.md#evaldenyresultschema)
 - `succeed`: A helper method for returning a `success` result from your tool's `precheck` and `execute` functions
 - `fail`: A helper method for returning a `fail` result from your tool's `precheck` and `execute` functions
 
