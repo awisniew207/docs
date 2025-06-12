@@ -1,6 +1,6 @@
 ---
 category: Developers
-title: Custom Policies
+title: Creating Vincent Policies
 ---
 
 # What is a Vincent Policy?
@@ -9,8 +9,6 @@ A Vincent Policy is a function built using [Lit Actions](https://developer.litpr
 
 ## Key Capabilities
 
-Vincent Policies provide a comprehensive framework for building sophisticated guardrails:
-
 **Flexible Data Access**
 - Read and write on-chain data (token balances, NFT ownership, smart contract state)
 - Read and write off-chain data from any HTTP-accessible API or database
@@ -18,23 +16,18 @@ Vincent Policies provide a comprehensive framework for building sophisticated gu
 **Stateful Policy Management**
 - Persist data across executions to track cumulative metrics
 - Implement sophisticated rules like spending limits, rate limiting, and usage quotas
-- Maintain policy state independently of individual tool executions
+- Maintain policy state independently of individual Vincent Tool executions
 
 **Type-Safe Development**
-- Strongly-typed Zod schemas for all parameters and return values
-- Clear interfaces between policies and tools with guaranteed type safety
-
-**Comprehensive Context**
-- Access to delegation information (delegator/delegatee addresses and PKP details)
-- Helper methods for returning properly formatted allow/deny responses
-- Integration with the broader Vincent ecosystem (app metadata, tool context)
+- Strongly-typed Zod schemas for your policy functions' parameters and return values
+- Clear interfaces between your policy and Vincent Tools with type safety
 
 ## Real-World Policy Examples
 
 Vincent Policies can implement sophisticated business logic and safety measures across multiple domains:
 
 **Financial Controls**
-- **Daily Spending Limits**: Track cumulative spending by storing transaction amounts on-chain and deny execution when limits are exceeded
+- **Daily Spending Limits**: Track cumulative spending by storing transaction amounts on or off-chain and deny execution when limits are exceeded
 - **Multi-Signature Requirements**: Require additional approvals for high-value transactions by integrating with on or off-chain approval systems
 - **Token Allowlists**: Restrict transactions to specific token types or verified contract addresses
 
@@ -57,31 +50,16 @@ Vincent Policies can implement sophisticated business logic and safety measures 
 
 A Vincent Policy consists of three main lifecycle methods executed in the following order:
 
-1. **Precheck**: Executed first by the Vincent Tool's `precheck` function to provide the Vincent Tool executor with a best-effort check that the policy shouldn't fail when `evaluate` is called
-2. **Evaluate**: The validation logic executed in the beginning of the Vincent Tool's `execute` function, used to inform the Vincent Tool whether it can execute the tool logic
-3. **Commit**: An optional function executed after all policies have been evaluated and the Vincent Tool has executed, used to commit results and update any state the policy depends on
-
-The Precheck and Evaluate functions receive two arguments:
-- First argument: An object containing `toolParams` and `userParams`
-  - `toolParams`: Parameters provided by the tool author
-  - `userParams`: On-chain policy parameters set by the user
-- Second argument: A context object containing:
-  - Helper methods for type-safe policy results (`allow()` and `deny()`)
-  - The Ethereum address of the Vincent Tool executor
-  - Vincent Agent Wallet PKP information such as Ethereum address, public key, and token ID
-  - The `appId` and `appVersion` of the Vincent App that the policy is being executed for
-
-The Commit function receives two arguments:
-- First argument: Specific parameters matching a `commitParamsSchema` you as the policy author have defined
-- Second argument: A context object containing:
-  - Helper methods for type-safe policy results (`allow()` and `deny()`)
-  - The Ethereum address of the Vincent Tool executor
-  - Vincent Agent Wallet PKP information such as Ethereum address, public key, and token ID
-  - The `appId` and `appVersion` of the Vincent App that the policy is being executed for
+1. **Precheck**: Executed first by the Vincent Tool's `precheck` function to provide the Vincent Tool executor with a best-effort check that the policy shouldn't fail when the policy's `evaluate` function is called
+   - The `precheck` function is executed locally by the Vincent Tool executor, outside of the Lit Action environment
+2. **Evaluate**: The validation logic executed in the beginning of the Vincent Tool's `execute` function, used to inform the Vincent Tool whether it can execute it's logic
+   - The `evaluate` function is executed in the Lit Action environment
+3. **Commit**: An optional function used to commit results and update any state the policy depends on, executed after all the Vincent Policies registered by the Vincent App User for the Vincent Tool have been evaluated and the Vincent Tool has executed successfully
+   - The `commit` function is executed in the Lit Action environment
 
 # Defining Your Vincent Policy
 
-Vincent Policies are created by calling the `createVincentPolicy` function from the `@lit-protocol/vincent-tool-sdk` package. This functions take a single object as a parameter that defines your policy's lifecycle methods, parameter schemas, and return value schemas.
+Vincent Policies are created by calling the `createVincentPolicy` function from the `@lit-protocol/vincent-tool-sdk` package. This function takes a single object as a parameter that defines your policy's lifecycle methods, parameter schemas, and return value schemas.
 
 The basic structure of a Vincent Policy definition is as follows:
 
@@ -91,19 +69,18 @@ export const vincentPolicy = createVincentPolicy({
 
   toolParamsSchema,
   userParamsSchema,
-  commitParamsSchema,
 
   precheckAllowResultSchema,
   precheckDenyResultSchema,
+  precheck: async ({ toolParams, userParams }, policyContext) => { },
 
   evalAllowResultSchema,
   evalDenyResultSchema,
+  evaluate: async ({ toolParams, userParams }, policyContext) => { },
 
+  commitParamsSchema,
   commitAllowResultSchema,
   commitDenyResultSchema,
-
-  precheck: async ({ toolParams, userParams }, policyContext) => { },
-  evaluate: async ({ toolParams, userParams }, policyContext) => { },
   commit: async (params, policyContext) => {  },
 });
 ```
@@ -123,7 +100,7 @@ const vincentPolicy = createVincentPolicy({
 
 # The `policyContext` Argument
 
-The `policyContext` argument is provided and managed by the Vincent Tool SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
+The `policyContext` argument is provided and managed by the Vincent Tool & Policy SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
 
 ```typescript
 interface PolicyContext {
@@ -160,7 +137,7 @@ Where:
 
 ### `toolParamsSchema`
 
-This Zod schema defines the structure of parameters that Vincent Tools will pass to your policy. As the policy author, these should be the parameters you require to make your policy checks and validations.
+This Zod schema defines the structure of parameters that Vincent Tools will pass to your policy. The Vincent Tool receives these parameters from the Vincent Tool executor, and the Vincent Tool & Policy SDK handles passing these parameters to your policy as `toolParams`. These parameters should be the what your policy requires to make it's checks and validations.
 
 For example, if you are building a spending limit policy, you might define the `toolParamsSchema` as follows:
 
@@ -178,15 +155,13 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-This would allow your policy to check if Vincent Tool executor is attempting to spend more than the spending limit the Vincent App User has set for a given time period.
-
-The Vincent Tool receives these parameters from the Vincent Tool executor and passes them to your policy.
+This would enable your policy to verify against its database or smart contract whether permitting the Vincent Tool executor to spend `amount` of `tokenAddress` would exceed the Vincent App User's configured spending limit.
 
 ### `userParamsSchema`
 
 This Zod schema defines the structure of the on-chain parameters that Vincent App Users configure for your policy. These parameters are fetched from the Vincent smart contract during execution of a Vincent Policy's `precheck` and `evaluate` functions. They are unique to each Vincent Tool and Vincent App combo, and cannot be altered by the Vincent App or Vincent Tool executor during tool execution.
 
-These parameters are meant to be used to define the guardrails that Vincent App Users will want to place on the Vincent Apps. For example, if you are building a spending limit policy, you might define the `userParamsSchema` as follows:
+These parameters are meant to be used to define the guardrails that Vincent App Users will want to place on the Vincent Apps for executing Vincent Tools. For example, if you are building a spending limit policy, you might define the `userParamsSchema` as follows:
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
@@ -202,7 +177,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-This would allow the Vincent App User to specify how much of a token they are allowing the Vincent App to spend on their behalf in a day, as well as the specify tokens that are allowed to be spent.
+This would allow the Vincent App User to specify how much of a token they are allowing the Vincent App to spend on their behalf in a day, as well as the specific tokens that are allowed to be spent.
 
 ## Precheck Function
 
@@ -255,7 +230,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Two arguments are passed to your policy's `precheck` function by the Vincent Tool SDK. The first is an object containing the `toolParams` and `userParams` the adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
+Two arguments are passed to your policy's `precheck` function by the Vincent Tool & Policy SDK. The first is an object containing the `toolParams` and `userParams` the adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool & Policy SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
 
 ### `precheckAllowResultSchema`
 
@@ -284,7 +259,7 @@ Specifying `maxDailySpendingLimit` allows the Vincent Tool executor to adapt to 
 
 This Zod schema defines the structure of a failed `precheck` result. What's included in the returned object is up to you, but ideally it includes details about why the `precheck` failed.
 
-The following schema returns additional information to the Vincent Tool executor that would allow the Vincent Tool executor to adapt their execution request so that the policy's `precheck` validation checks doesn't fail:
+The following schema returns additional information to the Vincent Tool executor that would allow them to adapt their execution request so that the policy's `precheck` validation checks doesn't fail:
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
@@ -308,7 +283,7 @@ For the above schema, the `reason` string allows the `precheck` function to retu
 
 The `evaluate` function is the validation logic executed in the beginning of the Vincent Tool's `execute` function, used to inform the Vincent Tool whether it can execute the tool logic.
 
-It's may be similar in logic to the `precheck` function, but this is the function that has the ability to deny Vincent Tool execution if the function returns the `deny` result. Additionally, while the `precheck` function is executed locally by the Vincent Tool executor, the `evaluate` function is executed in the Lit Action environment during the execution of the Vincent Tool, and has access to the full Lit Action environment (for more information on what's available to you within the Lit Action environment see the Lit Protocol [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/overview) docs).
+It's may be similar in logic to the `precheck` function, but the `evaluate` function has the ability to deny Vincent Tool execution if your policy returns the `deny` result. Additionally, while the `precheck` function is executed locally by the Vincent Tool executor, the `evaluate` function is executed in the Lit Action environment during the execution of the Vincent Tool's `execute` function, and has access to the full Lit Action environment (for more information on what's available to you within the Lit Action environment see the Lit Protocol [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/overview) docs).
 
 In the case of our spending limit policy example, the `evaluate` function is going to be identical to the `precheck` function:
 
@@ -355,11 +330,11 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Two arguments are passed to your policy's `evaluate` function by the Vincent Tool SDK. The first is an object containing the `toolParams` and `userParams` the adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
+Two arguments are passed to your policy's `evaluate` function by the Vincent Tool & Policy SDK. The first is an object containing the `toolParams` and `userParams` the adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool & Policy SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
 
 ### `evalAllowResultSchema`
 
-This Zod schema defines the structure of successful `evaluate` results. What's included in the returned object is up to you, but ideally it includes details about why the `evaluate` function is allowing the Vincent Tool execution.
+This Zod schema defines the structure of a successful `evaluate` result. What's included in the returned object is up to you, but ideally it includes details about why the `evaluate` function is allowing the Vincent Tool execution.
 
 The following schema returns useful information to the Vincent Tool executor about the current policy state for the Vincent App User and Vincent App combo:
 
@@ -402,7 +377,7 @@ const vincentPolicy = createVincentPolicy({
 
 ## Commit Function
 
-The `commit` function is called from within the Vincent Tool's `execute` method after all registered Vincent Policies have been evaluated are returned `allow` results, and the Vincent Tool's execution logic has been successfully executed. This functions is **optional**, and is only required if you need to update any state that the policy depends on, after the Vincent Tool executes.
+The `commit` function is called by the Vincent Tool's `execute` method after all Vincent Policies registered by the Vincent App User for the Vincent Tool have been evaluated and returned `allow` results, and the Vincent Tool's execution logic has been successfully executed. This functions is **optional**, and is only required if you need to update any state that the policy depends on, after the Vincent Tool executes.
 
 For the spending limit policy example, the `commit` function would be used to update the spending limit database/smart contract with the amount of tokens the Vincent App has spent on behalf of the Vincent App User:
 
@@ -427,6 +402,8 @@ const vincentPolicy = createVincentPolicy({
         });
 
         return policyContext.allow({
+            vincentAppId: policyContext.appId,
+            spenderAddress: policyContext.delegation.delegatorPkpInfo.ethAddress,
             updatedDailySpending,
             remainingDailyLimit,
         });
@@ -443,13 +420,15 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Two arguments are passed to your policy's `commit` function by the Vincent Tool SDK. The first is an object adhering to the `commitParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
+Two arguments are passed to your policy's `commit` function by the Vincent Tool & Policy SDK. The first is an object adhering to the `commitParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool & Policy SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
+
+Notice that unlike the `precheck` and `evaluate` functions, the `commit` functions does **not** receive the `toolParams` and `userParams` arguments. If you need access to any of the variable specified in those objects, make sure to include them in the `commitParamsSchema` you have defined for your policy.
 
 ### `commitParamsSchema`
 
 The `params` argument provided to your `commit` function will follow the structure of the `commitParamsSchema` you will have defined for your policy. What's provided in the `params` object is up to you, but it should include the specific parameters that your policy needs to update the state your policy depends on for it's validation checks.
 
-For the spending limit policy example, the `spentAmount` and `tokenAddress` are required in order to update the amount of tokens that have been spent by the Vincent App on behalf of the Vincent App User. The following would be the `commitParamsSchema` for the `commit` function defined in the [Commit Function](#commit-function) section:
+For the spending limit policy example, the following parameters are required in order to update the amount of tokens that have been spent by the Vincent App on behalf of the Vincent App User:
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
@@ -481,13 +460,15 @@ const vincentPolicy = createVincentPolicy({
   // ... other policy definitions
 
   commitAllowResultSchema: z.object({
+    vincentAppId: z.number(),
+    spenderAddress: z.string(),
     updatedDailySpending: z.number(),
     remainingDailyLimit: z.number(),
   }),
 });
 ```
 
-These details provide transparency about what was updated during the commit phase, allowing the Vincent Tool executor to understand the current state after the successful execution.
+These details provide transparency about what was updated during the commit phase, allowing the Vincent Tool executor to understand the current state after the successful execution of the Vincent Tool.
 
 ### `commitDenyResultSchema`
 

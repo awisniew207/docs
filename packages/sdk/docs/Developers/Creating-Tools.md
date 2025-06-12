@@ -1,6 +1,6 @@
 ---
 category: Developers
-title: Custom Tools
+title: Creating Vincent Tools
 ---
 
 # What is a Vincent Tool?
