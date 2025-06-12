@@ -14,12 +14,18 @@ A Vincent Tool is a function built using [Lit Actions](https://developer.litprot
 - Read and write off-chain data from any HTTP-accessible API or database
 
 **Policy-Driven Execution**
-- Execute tools only when all Vincent App User-registered Vincent Policies allow it
-- Access policy evaluation results through `policiesContext`
+- Execute tools only when all Vincent App User registered Vincent Policies allow it
+- Combine on and off-chain policy conditions
 
 **Type-Safe Development**
 - Strongly-typed Zod schemas for your tool functions' parameters and return values
 - Clear interfaces between your tool and Vincent Policies with type safety
+
+**Lit Action Based**
+- Built-in ethers.js for blockchain interactions
+- Ability to import and use NPM packages within your tool
+- Access to Lit Protocol's [Encryption and Access Control](https://developer.litprotocol.com/sdk/access-control/intro) features
+- Ability to sign data on behalf of the Vincent App User's Agent Wallet PKP
 
 ## Real-World Tool Examples
 
@@ -36,7 +42,7 @@ Vincent Tools can implement a wide variety of blockchain and web2 actions, such 
 
 **Cryptographic Operations**
 - **Message Signing**: Create cryptographic signatures for authentication, attestations, or custom protocols
-- **Data Encryption/Decryption**: Secure sensitive data or decrypt data within your Vincent Tool using Lit Protocol's [Encryption and Access Control](https://developer.litprotocol.com/sdk/access-control/intro) features
+- **Data Encryption/Decryption**: Secure sensitive data or decrypt data within your Vincent Tool using Lit Protocol's encryption and access control features
 - **Custom Cryptographic Protocols**: Implement specialized signing schemes or multi-party computation workflows
 
 **Programmable Logic & Governance**
