@@ -5,7 +5,7 @@ title: Creating Vincent Policies
 
 # What is a Vincent Policy?
 
-A Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and are programmable guardrails for Vincent Tool executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Tools on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.
+A Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and is a programmable guardrail for Vincent Tool executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Tools on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.
 
 ## Key Capabilities
 
@@ -98,7 +98,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-# The `policyContext` Argument
+## The `policyContext` Argument
 
 The `policyContext` argument is provided and managed by the Vincent Tool & Policy SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
 
@@ -115,8 +115,8 @@ interface PolicyContext {
       publicKey: string;
     };
   };
-  allow: (result: commitAllowResultSchema) => void;
-  deny: (result: commitDenyResultSchema) => void;
+  allow: (allowResult) => void;
+  deny: (denyResult) => void;
 }
 ```
 
@@ -130,8 +130,8 @@ Where:
     - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet PKP
     - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet PKP
     - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet PKP
-- `allow`: A helper method for returning an `allow` result from your policy's `commit` function
-- `deny`: A helper method for returning a `deny` result from your policy's `commit` function
+- `allow`: A helper method for returning an `allow` result from your policy's `precheck`, `evaluate`, and `commit` functions
+- `deny`: A helper method for returning a `deny` result from your policy's `precheck`, `evaluate`, and `commit` functions
 
 ## Parameter Schemas
 
