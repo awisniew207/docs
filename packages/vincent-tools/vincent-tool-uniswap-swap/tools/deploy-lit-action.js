@@ -3,11 +3,6 @@ const path = require('path');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 
-const dotenvx = require('@dotenvx/dotenvx');
-
-// Load environment variables
-dotenvx.config({ path: path.join(__dirname, '../../../../.env') });
-
 // Get Pinata JWT from environment variable
 const PINATA_JWT = process.env.PINATA_JWT;
 if (!PINATA_JWT) {

@@ -15,7 +15,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.39.0",
     "@types/jest": "^29.5.14",
     "esbuild": "^0.19.11",
     "ipfs-only-hash": "^4.0.0",
@@ -33,8 +32,5 @@
   "files": [
     "dist",
     "!**/*.tsbuildinfo"
-  ],
-  "scripts": {
-    "test": "jest"
-  }
+  ]
 }

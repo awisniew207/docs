@@ -33,7 +33,6 @@
     "src"
   ],
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.39.1",
     "@types/express": "^5.0.1",
     "live-server": "^1.2.2",
     "typedoc": "0.27.9",

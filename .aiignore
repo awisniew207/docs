@@ -1,4 +1,10 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# An .aiignore file follows the same syntax as a .gitignore file.
+# .gitignore documentation: https://git-scm.com/docs/gitignore
+# Junie will ask for explicit approval before view or edit the file or file within a directory listed in .aiignore.
+# Only files contents is protected, Junie is still allowed to view file names even if they are listed in .aiignore.
+# Be aware that the files you included in .aiignore can still be accessed by Junie in two cases:
+# - If Brave Mode is turned on.
+# - If a command has been added to the Allowlist — Junie will not ask for confirmation, even if it accesses - files and folders listed in .aiignore.
 
 # compiled output
 dist
@@ -9,7 +15,7 @@ out-tsc
 node_modules
 
 # IDEs and editors
-/.idea
+.idea
 .project
 .classpath
 .c9/
@@ -17,13 +23,12 @@ node_modules
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode and its forks
+# IDE - VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.cursor/
 
 # misc
 /.sass-cache
@@ -62,5 +67,3 @@ screenshots
 /packages/sdk/sdk-docs/**/*
 
 test-output
-
-.github/instructions/nx.instructions.md

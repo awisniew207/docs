@@ -11,7 +11,7 @@
           "pnpm typedoc --skipErrorChecking",
           "mkdir ./sdk-docs/.vercel",
           "printf '{\"projectId\": \"%s\", \"orgId\": \"%s\"}\\n' \"$SDK_DOCS_VERCEL_PROJECT_ID\" \"$SDK_DOCS_VERCEL_ORG_ID\" > ./sdk-docs/.vercel/project.json\n",
-          "pnpm dotenvx run -- vercel --prod --cwd=./sdk-docs --yes",
+          "pnpm vercel --prod --cwd=./sdk-docs --yes",
           "rm -Rf ./sdk-docs"
         ],
         "parallel": false,
