@@ -3,49 +3,92 @@ category: Users
 title: Concepts
 ---
 
+Vincent is a platform that enables Vincent Users to delegate both on and off-chain actions to Vincent Apps. Each Vincent App has a set of Vincent Tools that allow them to perform specific actions on behalf of their Vincent Users. Vincent App tool usage is also governed by Vincent Policies, which are user configured "guardrails" that ensure each Vincent App operates within the boundaries defined by each Vincent User.
+
+> **Note:** The secure and non-custodial delegation of any on or off-chain action is Vincent's core innovation. Vincent Users have the ability to delegate these operations to authorized 3rd parties (Vincent Apps and Agents) to execute on their behalf, while never giving up control of their assets and data. Vincent Apps can execute authorized Vincent Tools on behalf of a given user, but they can never access private keys or sign data outside of what the user has explicitly consented to.
+
+This guide provides definitions of the core concepts of the Vincent platform, below is a quick overview of the concepts:
+
+| Concept Name                                                                     | Description                                                                                                                       | Example                                                                                                                    |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Vincent Tool                                                                     | A function that enables Vincent Apps to perform specific actions on behalf of Vincent App Users                                   | A tool that executes token swaps on Uniswap or manages stock portfolios through a broker API                               |
+| Vincent Policy                                                                   | User-configured guardrails that control how Vincent Apps can use Vincent Tools                                                    | A daily spending limit of $1,000 or a requirement for 2FA on high-value transactions                                       |
+| [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) | The underlying technology that powers both Vincent Tools and Policies, enabling on and off-chain interactions                     | The code that executes token swaps or enforces spending limits using blockchain and API data                               |
+| Policy Parameters                                                                | On-chain configurable values that define how a Vincent Policy behaves for a specific Vincent App and User                         | A daily spending limit amount or list of allowed tokens for a specific trading bot                                         |
+| Vincent Agent Wallet                                                             | A wallet created for each Vincent User that Vincent Apps use to sign transactions on behalf of their App Users                    | A wallet delegated to a Vincent App that dollar-cost-averages into the top cryptocurrency                                  |
+| Vincent App                                                                      | An application that uses Vincent Tools to perform actions on behalf of Vincent App Users governed by Vincent Policies             | A trading bot that uses Vincent Tools to execute trades while respecting user-defined spending limits and token allowlists |
+| Vincent App Version                                                              | Each App Version specifies a specific set of Vincent Tools and Policies that App Users are delegating usage of to the Vincent App | Version 1 of a Vincent trading app includes utilizes a Uniswap Tool with a daily spending limit Policy                     |
+| Vincent App User                                                                 | An individual who delegates actions to Vincent Apps and configures policies to control their behavior                             | A user who allows a trading bot to trade on their behalf with specific spending limits                                     |
+| Vincent App Manager                                                              | The entity responsible for creating and managing a Vincent App, including its versions, tools, and policies                       | A development team that builds and maintains a trading bot, adding new features and policies in each version               |
+
 # Vincent Tool
 
-A Vincent Tool is an **immutable** serverless function that the User permits a Vincent App to perform specific actions on their behalf.
+Vincent Tools enable Vincent Apps to perform specific actions on behalf of Vincent App Users. These tools are the core functional units that Vincent Apps use to interact with blockchains, APIs, and other services while being governed by user-configured Vincent Policies.
 
-Vincent Tools can serve specific use cases, such as minting a reward token based on off-chain data, or they can serve general purposes, such as enabling ERC20 token swaps using the best price across multiple DEXs.
+<!-- TODO Link to Uniswap doc page -->
+Vincent Tools can read and write data to both on and off-chain sources, perform arbitrary computations, and sign blockchain transactions. This allows them to perform specific actions, such as minting a reward token based on off-chain data, or they can serve general purposes, such as enabling ERC20 token swaps using Uniswap like the Vincent Uniswap Tool.
 
-Vincent Tools leverage Lit Protocol's [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) to execute immutable and decentralized serverless functions that can read and write data to both on and off-chain sources, perform arbitrary computations, and sign blockchain transactions.
+**On-chain examples:**
+- Execute automated DeFi strategies like yield farming or liquidity provision
+- Manage NFT collections by buying, selling, or staking NFTs
+- Perform cross-chain operations like bridging assets or executing cross-chain swaps
+- Interact with DAOs by voting on proposals or executing governance actions
 
-**On-chain example:** Uses AI to buy the hottest ERC20 token on Uniswap.
-	
-**Off-chain example:** Trade stocks with your broker API key.
+**Off-chain examples:**
+- Integrate with traditional finance APIs to manage stock portfolios
+- Connect with social media platforms to automate content posting and engagement
+- Use weather APIs to trigger automated actions based on environmental conditions
+- Interact with e-commerce platforms to manage inventory and process orders
+
+Under the hood, Vincent Tools are created using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview). With the ability to natively interact with any on or off-chain data source (blockchains, social networks, TradFi, etc), Lit Actions are uniquely positioned to support the creation of tools for virtually any use case.
 
 # Vincent Policy
 
-A Vincent Policy also leverages Lit Actions to determine whether a given Vincent App can execute a Vincent Tool for a Vincent App User. These Policies serve as guardrails that Vincent App Users configure to ensure Vincent Apps can only perform actions within the Vincent App User's intended boundaries and set parameters.
+Vincent Policies give users full control over defining how their assets and data are used when they interact with a given Vincent App. Each Vincent Policy is assigned to specific Vincent Tool(s) and govern their usage. For example, when interacting with a Vincent App that involves crypto trading, a Policy would be used to specify things like spend limits or token allowlists / denylists. Policies can be thought of as user-defined "guardrails" that ensure each Vincent App operates within a given Vincent App User's defined boundaries.
 
-Similar to Vincent Tools, Vincent Policies can serve specific use cases, such as permitting a Vincent App to execute a Vincent Tool only when the Vincent App User holds a certain status in a Vincent App's off-chain database, or they can serve general purposes across multiple Vincent Apps, such as enforcing a daily spending limit from the Vincent App User's wallet.
+Just like Tools, Vincent Policies are also powered by Lit Actions under the hood. This makes them highly generalizable and well-suited to track and query on or off-chain state to make decisions based on data such as:
 
-Because Vincent Policies are powered by Lit Actions, they can use both on and off chain data to determine whether a Vincent Tool should execute. Vincent Policies can also write data to on and off chain sources to track state such as:
+- Usage metrics:
+  - Tool execution frequency (e.g. max 10 transactions per day)
+  - Session duration limits (e.g. max 2 hours per session)
+  - Concurrent operation limits (e.g. max 3 pending operations)
 
-- Vincent Tool execution frequency
-- Spending amounts over time periods
-- Any other relevant Vincent Policy data
+- Financial controls:
+  - Spending amounts over time periods (e.g. daily spending limit of $1,000)
+  - Token-specific limits (e.g. max 5 ERC20 tokens per transaction)
+  - Portfolio allocation limits (e.g. max 20% of portfolio in any single token)
+
+- Access controls:
+  - Time-based restrictions (e.g. only during market hours)
+  - Geographic limitations (e.g. restricted to specific regions)
+  - Multi-factor authentication requirements (e.g. require 2FA for high-value transactions)
+
+- Compliance and risk management:
+  - Unusual transaction detection (e.g. flag transactions 3x larger than average)
+  - Rate of change monitoring (e.g. alert on 50% portfolio value change in 24h)
+  - KYC/AML verification requirements (e.g. require verified identity for transactions over $10,000)
 
 ## Policy Parameters
 
-Vincent Policies accept parameters that customize their behavior. These parameters are stored on-chain, set by Vincent App Users when they permit a Vincent App Version, and are retrieved during Vincent Policy execution to provide input for the Policy's logic. Vincent Policy parameters are configurable by the Vincent App User per Vincent App, cannot be altered by the Vincent App, and are able to be updated at any time by the Vincent App User.
+Vincent Policies utilize parameters defined by the Vincent App User that are stored on-chain, verifiable by anyone. These parameters are specific to each Vincent Tool that a Vincent App executes on behalf of the Vincent App User. Prior to the execution of a Vincent Tool, the Policy parameters are fetched from on-chain and used during the evaluation of the Vincent Policy that govern Vincent tool usage. Only Vincent App Users have the ability to configure these parameters and they can be updated at any time.
 
-For example, a Vincent App User can set a daily spending limit when authorizing a Vincent App Version that would apply only to that specific Vincent App. When the Vincent App executes Vincent Tools that transfer funds from the User's Agent Wallet, the Policy tracks the total spent in an on-chain smart contract. Once the daily spending limit is reached, the Vincent Policy would prevent the Vincent App from executing any more Vincent Tools that transfer funds from the Vincent App User's Agent Wallet, until the next day.
+An example Policy is a daily spend limit, assigned to a Vincent App that performs token transfers on behalf of it's App Users. Without the policy, the Vincent App would be able to spend tokens from it's delegated Vincent Users (using a Vincent Tool) without restriction. After enabling the Vincent spending limit policy, the Vincent App's usage of the token transfer Vincent Tool is now governed by the configured daily spending limit set by each of it's Vincent Users. Once the daily spending limit is reach for a specific Vincent User, the Vincent App would no longer be permitted to execute the token transfer Vincent Tool until the spending limit is reset the next day. This ensures that the Vincent App User's assets are protected and their spending is controlled.
 
 # Vincent Agent Wallet
 
-Vincent Agent Wallets are non-custodial wallets ([MPC](https://en.wikipedia.org/wiki/Secure_multi-party_computation)) that enable users to interact with Vincent Apps. These wallets leverage Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview) to provide wallets that are owned by a user's _authentication method_ which include many different methods supported by Lit Protocol, such as a one-time-password sent to an email address or phone number, a passkey saved on the User's device, a social account such as a Google, X, or Telegram, and [many more](https://developer.litprotocol.com/user-wallets/pkps/advanced-topics/auth-methods/overview#existing-supported-auth-methods).
+Each Agent Wallet is a non-custodial account (powered via [Secure Multi-Party Computation (MPC)](https://en.wikipedia.org/wiki/Secure_multi-party_computation)) that enables seamless interactions with any Vincent App. Each Agent Wallet is represented by a [Lit Programmable Key Pair (PKP)](https://developer.litprotocol.com/user-wallets/pkps/overview) and controlled by the Vincent User's desired authentication method. Currently, Vincent supports the following authentication methods during account creation:
 
-The signing capability of Vincent Agent Wallets are what's delegated to Vincent Apps to allow them to execute Vincent Tools on behalf of a Vincent App User and perform on-chain actions. For example, a Vincent App that offers to trade ERC20 tokens based on some unique algorithm would add an ERC20 token swap Vincent Tool to a Vincent App Version. The Vincent App User would authorize the Vincent App Version, permitting the Vincent App to execute the ERC20 token swap Vincent Tool on behalf of the Vincent App User, restricted by whatever Vincent Policies the Vincent App User has set for the Tool.
+- Email
+- SMS
+- Passkey
 
-Because Vincent Agent Wallets are Lit Protocol PKPs, Vincent Apps can never directly access a Vincent App User's Agent Wallet. Instead, they can only execute Vincent Tools that the Vincent App User has explicitly authorized. Each Vincent Tool's code strictly defines what data can be signed, and Vincent Apps cannot modify this code or sign any data beyond the Vincent Tool's programmed scope. When a Vincent Tool needs to sign data, like a blockchain transaction, it must request the signature through the Lit network, which verifies the origin of the request came from the authorized Vincent Tool before generating the signature.
+When you interact with a given Vincent App, it will prompt you to delegate signing capabilities from your Agent Wallet to specific Vincent Tools. By delegating these signing capabilities, you enable the Vincent App to execute specific operations on your behalf without requiring your manual intervention. For example, a Vincent trading App would first prompt the user to permit it's custom Vincent swap Tool to have signing capability using their Agent Wallet. The Vincent User would then be prompted to define their desired Policy parameters, such as a spend limit. Once the Vincent User permits the Tool, and any desired Policies were set, the Vincent App would have permission to sign transactions on behalf of the Vincent User according to the guardrails the User has set
 
-> **Note:** This security model enables Vincent's core innovation: Vincent App Users can safely delegate on-chain actions to Vincent Apps while maintaining complete control over their assets. Vincent Apps can execute authorized Vincent Tools on behalf of Vincent App Users, but they can never access private keys or sign data outside of what the Vincent Tool has been programmed to do.
+Because Vincent Agent Wallets are PKPs, Vincent Apps can never directly access Agent Wallets directly. Instead, they can only execute the Vincent Tools that the Vincent User has explicitly authorized for each Vincent App. Each Vincent Tool's code strictly defines what data can be signed, and Vincent Apps cannot modify this code or sign any data beyond the Vincent Tool's programmed scope. When a Vincent Tool needs to sign data, like a blockchain transaction, it must request the signature through the Lit network, which verifies the origin of the request came from the authorized Vincent Tool before generating the signature. Any pre-defined Vincent Policies are evaluated prior to Tool execution.
 
 # Vincent App
 
-A Vincent App bundles Vincent Tools and their associated Vincent Policies, where Vincent Tools define the actions that the Vincent App can perform on behalf of a Vincent App User, and Vincent Policies ensure these actions execute within the Vincent App User's defined parameters and permissions.
+A Vincent App is a collection of Vincent Tools and their associated Vincent Policies. Vincent Tools define the specific operations that the Vincent App can perform, while Vincent Policies ensure these operations are scoped according to user-defined parameters and permissions.
 
 ## App Version
 
