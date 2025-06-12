@@ -32,7 +32,7 @@ A Vincent Tool is a function built using [Lit Actions](https://developer.litprot
 Vincent Tools can implement a wide variety of blockchain and web2 actions, such as:
 
 **Blockchain Interactions**
-- **Transaction Signing**: Sign and submit transactions to any blockchain network using the user's Agent Wallet PKP
+- **Transaction Signing**: Sign and submit transactions to any blockchain network using the Vincent App User's Agent Wallet PKP
 - **Smart Contract Operations**: Read contract state, call contract functions, and deploy new contracts
 - **Cross-Chain Operations**: Execute actions across multiple blockchain networks within a single tool
 
@@ -47,7 +47,7 @@ Vincent Tools can implement a wide variety of blockchain and web2 actions, such 
 
 **Programmable Logic & Governance**
 - **Conditional Execution**: Implement complex business logic with branching paths based on runtime data
-- **Policy Integration**: Leverage user-configured policies to govern when and how Vincent Tools can execute
+- **Policy Integration**: Leverage Vincent App User configured policies to govern when and how Vincent Tools can execute
 - **Stateful Operations**: Maintain and update persistent state across multiple Vincent Tool executions
 
 # How a Vincent Tool Works
@@ -55,14 +55,14 @@ Vincent Tools can implement a wide variety of blockchain and web2 actions, such 
 A Vincent Tool consists of two main lifecycle methods executed in the following order:
 
 1. **Precheck**: Executed locally by the Vincent Tool executor, this function provides a best-effort check that the tool execution shouldn't fail
-   - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies enabled by the Vincent App User for your tool for a specific Vincent App
+   - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
    - If all Vincent Policies return `allow` results, the Vincent Tool's `precheck` function will be executed
-   - This functions is where you'd perform checks such as validating the Vincent Agent Wallet PKP has enough balance to execute the tool logic, has the appropriate on-chain approvals to make token transfers, or anything else you tool can validate before executing the tool logic
+   - This function is where you'd perform checks such as validating the Vincent Agent Wallet PKP has enough balance to execute the tool logic, has the appropriate on-chain approvals to make token transfers, or anything else your tool can validate before executing the tool's logic
 
 2. **Execute**: Executed within the Lit Action environment, this function performs the actual tool logic and has the ability to sign data using the Vincent App User's Agent Wallet PKP
-   - Before the execution of your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies enabled by the Vincent App User for your tool for a specific Vincent App
+   - Before the execution of your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
    - If all Vincent Policies return `allow` results, the Vincent Tool's `execute` function will be executed
-   - This functions is where you'd perform the actual tool logic, such as making token transfers, interacting with smart contracts, or anything else you tool needs to do to fulfill the tool's purpose
+   - This function is where you'd perform the actual tool logic, such as making token transfers, interacting with smart contracts, or anything else your tool needs to do to fulfill the tool's purpose
 
 # Defining Your Vincent Tool
 
