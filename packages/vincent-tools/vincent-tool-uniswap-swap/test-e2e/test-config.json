@@ -7,10 +7,10 @@
     "pkpPubkey": "0x048bbc2754457f84ac079c23ce399796e510aa79aa9d86b9d03aac6f3033ef5db3b178653fbb618a4d10397312ba19689c3826fd74e5d9e7171bcc6b801924f533"
   },
   "capacityCreditInfo": {
-    "capacityTokenIdStr": "211273",
-    "capacityTokenId": "211273",
+    "capacityTokenIdStr": "212042",
+    "capacityTokenId": "212042",
     "requestsPerKilosecond": 80,
-    "daysUntilUTCMidnightExpiration": 1,
-    "mintedAtUtc": "2025-06-11T02:45:45.724Z"
+    "daysUntilUTCMidnightExpiration": 25,
+    "mintedAtUtc": "2025-06-12T02:56:45.834Z"
   }
 }

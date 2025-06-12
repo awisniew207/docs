@@ -26,5 +26,11 @@
       "path": "../vincent-tool-erc20-approval/tsconfig.lib.json"
     }
   ],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts", "test/**/*.ts"]
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "test/**/*.ts",
+    "test-e2e/**/*.ts"
+  ]
 }
