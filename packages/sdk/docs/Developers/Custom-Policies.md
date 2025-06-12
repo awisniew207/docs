@@ -121,7 +121,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-## The `policyContext` Argument
+# The `policyContext` Argument
 
 The `policyContext` argument is provided and managed by the Vincent Tool SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
 
@@ -402,9 +402,7 @@ const vincentPolicy = createVincentPolicy({
 
 ## Commit Function
 
-The `commit` function is called from within the Vincent Tool's `execute` method after all registered Vincent Policies have been evaluated are returned `allow` results, and the Vincent Tool's execution logic has been successfully executed.
-
-This functions is intended to be used by our policy to update any state that the policy depends on.
+The `commit` function is called from within the Vincent Tool's `execute` method after all registered Vincent Policies have been evaluated are returned `allow` results, and the Vincent Tool's execution logic has been successfully executed. This functions is **optional**, and is only required if you need to update any state that the policy depends on, after the Vincent Tool executes.
 
 For the spending limit policy example, the `commit` function would be used to update the spending limit database/smart contract with the amount of tokens the Vincent App has spent on behalf of the Vincent App User:
 
