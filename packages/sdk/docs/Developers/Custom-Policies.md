@@ -55,7 +55,7 @@ Vincent Policies can implement sophisticated business logic and safety measures 
 
 # How a Vincent Policy Works
 
-A Vincent Policy consists of three main lifecycle methods:
+A Vincent Policy consists of three main lifecycle methods executed in the following order:
 
 1. **Precheck**: Executed first by the Vincent Tool's `precheck` function to provide the Vincent Tool executor with a best-effort check that the policy shouldn't fail when `evaluate` is called
 2. **Evaluate**: The validation logic executed in the beginning of the Vincent Tool's `execute` function, used to inform the Vincent Tool whether it can execute the tool logic
@@ -113,6 +113,8 @@ export const vincentPolicy = createVincentPolicy({
 The `packageName` serves as the unique identifier for your policy within the Vincent ecosystem. This **must exactly match** the NPM package name you publish your policy under, as Vincent Tool authors will use this identifier to install and integrate your policy into their tools.
 
 ```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+
 const vincentPolicy = createVincentPolicy({
   packageName: '@my-npm-org/vincent-policy-my-name' as const,
   // ... other policy definitions
@@ -128,6 +130,9 @@ This Zod schema defines the structure of parameters that Vincent Tools will pass
 For example, if you are building a spending limit policy, you might define the `toolParamsSchema` as follows:
 
 ```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
 const vincentPolicy = createVincentPolicy({
   // ... other policy definitions
 
@@ -149,6 +154,9 @@ This Zod schema defines the structure of the on-chain parameters that Vincent Ap
 These parameters are meant to be used to define the guardrails that Vincent App Users will want to place on the Vincent Apps. For example, if you are building a spending limit policy, you might define the `userParamsSchema` as follows:
 
 ```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
 const vincentPolicy = createVincentPolicy({
   // ... other policy definitions
 
@@ -170,6 +178,9 @@ Executing a Vincent Tool using the Lit network is an operation that cost both ti
 In the case of our spending limit policy example, this would include a call to the spending limit database/smart contract to check if the amount of tokens the Vincent App is attempting to spend exceeds the spending limit the Vincent App User has set for the Vincent App:
 
 ```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
 const vincentPolicy = createVincentPolicy({
   // ... other policy definitions
 
@@ -196,42 +207,144 @@ const vincentPolicy = createVincentPolicy({
 
 ### `precheckAllowResultSchema`
 
-Description
+This Zod schema defines the structure of successful `precheck` results. What's included in the returned object is up to you, but ideally it includes details about why the `precheck` passed.
+
+The code example in the above [Precheck Function](#precheck-function) section was returning the following as the `allow` result:
 
 ```typescript
-// code example
+return policyContext.allow({ message: "Precheck passed" });
 ```
+
+This is technically fine, additional details aren't required, but it doesn't provide additional information to the Vincent Tool executor about the policy's `precheck` validation checks. The following code example returns useful information to the Vincent Tool executor about the current policy state for the Vincent App User and Vincent App combo:
+
+```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
+const vincentPolicy = createVincentPolicy({
+  // ... other policy definitions
+
+  precheckAllowResultSchema: z.object({
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+});
+```
+
+Specifying `maxDailySpendingLimit` allows the Vincent Tool executor to adapt to the Vincent App User modifying their spending limit for the Vincent App. `currentDailySpending` is useful to know so that Vincent App can understand how much of the spending limit has been used, and `allowedTokens` is useful to know so that Vincent App doesn't try to spend tokens that will cause the policy to fail.
 
 ### `precheckDenyResultSchema`
 
-Description
+This Zod schema defines the structure of a failed `precheck` result. What's included in the returned object is up to you, but ideally it includes details about why the `precheck` failed.
+
+In the code example in the above [Precheck Function](#precheck-function) section the following was returned as the `deny` result:
 
 ```typescript
-// code example
+return policyContext.deny({ reason: "Spending limit exceeded" });
 ```
+
+This is technically fine, additional details aren't required, but it doesn't provide additional information to the Vincent Tool executor about the specifics of why the policy's `precheck` validation checks failed. The following code example returns additional information to the Vincent Tool executor that would allow the Vincent Tool executor to adapt their execution request so that the policy's `precheck` validation checks doesn't fail:
+
+```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
+const vincentPolicy = createVincentPolicy({
+  // ... other policy definitions
+
+  precheckDenyResultSchema: z.object({
+    reason: z.string(),
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+});
+```
+
+These additional details would allow the Vincent Tool executor to see how much over the limit they're attempting to spend, as well as the allowed tokens that the Vincent App User has configured for the Vincent App. The `reason` string could provide a specific error message stating something like `"Attempted buy amount exceeds daily limit"` or `"Token not on allow list"`.
 
 ## Evaluate Function
 
-Description
+The `evaluate` function is the validation logic executed in the beginning of the Vincent Tool's `execute` function, used to inform the Vincent Tool whether it can execute the tool logic.
+
+It's may be similar in logic to the `precheck` function, but this is the function that has the ability to deny Vincent Tool execution if the function returns the `deny` result. Additionally, while the `precheck` function is executed locally by the Vincent Tool executor, the `evaluate` function is executed in the Lit Action environment during the execution of the Vincent Tool, and has access to the full Lit Action environment (for more information on what's available to you within the Lit Action environment see the Lit Protocol [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/overview) docs).
+
+In the case of our spending limit policy example, the `evaluate` function is going to be identical to the `precheck` function:
 
 ```typescript
-// code example
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
+const vincentPolicy = createVincentPolicy({
+  // ... other policy definitions
+
+  evaluate: async ({ toolParams, userParams }, policyContext) => {
+    const { amount, tokenAddress } = toolParams;
+    const { dailySpendingLimit, allowedTokens } = userParams;
+
+    const isTokenAllowed = allowedTokens.includes(tokenAddress);
+
+    if (!isTokenAllowed) {
+      return policyContext.deny({ reason: "Token not allowed" });
+    }
+
+    const isSpendingLimitExceeded = await checkSpendingLimit(tokenAddress, amount, dailySpendingLimit);
+
+    if (isSpendingLimitExceeded) {
+      return policyContext.deny({ reason: "Spending limit exceeded" });
+    }
+
+    return policyContext.allow({ message: "Evaluate passed" });
+  },
+});
 ```
 
 ### `evalAllowResultSchema`
 
-Description
+This Zod schema defines the structure of successful `evaluate` results. What's included in the returned object is up to you, but ideally it includes details about why the `evaluate` function is allowing the Vincent Tool execution.
+
+For the same reasons covered in the [`precheckAllowResultSchema`](#precheckallowresultschema) section, you should include details about the policy's state that would allow the Vincent Tool executor to have further details about why your policy's `evaluate` validation checks passed.
+
+Identical to the [`precheckAllowResultSchema`](#precheckallowresultschema) section, the following code example returns useful information to the Vincent Tool executor about the current policy state for the Vincent App User and Vincent App combo:
 
 ```typescript
-// code example
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
+const vincentPolicy = createVincentPolicy({
+  // ... other policy definitions
+
+  evalAllowResultSchema: z.object({
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+});
 ```
 
 ### `evalDenyResultSchema`
 
-Description
+This Zod schema defines the structure of a denied `evaluate` result. What's included in the returned object is up to you, but ideally it includes details about why the `evaluate` function is denying the Vincent Tool execution.
+
+For the same reasons covered in the [`precheckDenyResultSchema`](#predenyresultschema) section, you should include details about the policy's state that would allow the Vincent Tool executor to have further details about why your policy's `evaluate` validation checks failed.
+
+Identical to the [`precheckDenyResultSchema`](#predenyresultschema) section, the following code example returns additional information to the Vincent Tool executor that would allow the Vincent Tool executor to adapt their execution request so that the policy's `evaluate` validation checks don't fail:
 
 ```typescript
-// code example
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
+const vincentPolicy = createVincentPolicy({
+  // ... other policy definitions
+
+  evalDenyResultSchema: z.object({
+    reason: z.string(),
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+});
 ```
 
 ## Commit Function
