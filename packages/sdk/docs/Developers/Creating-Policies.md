@@ -127,9 +127,9 @@ Where:
 - `delegation`:
   - `delegateeAddress`: The Ethereum address of the Vincent Tool executor
   - `delegatorPkpInfo`:
-    - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet PKP
-    - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet PKP
-    - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet PKP
+    - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet
+    - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet
+    - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet
 - `allow`: A helper method for returning an `allow` result from your policy's `precheck`, `evaluate`, and `commit` functions
 - `deny`: A helper method for returning a `deny` result from your policy's `precheck`, `evaluate`, and `commit` functions
 
@@ -261,6 +261,8 @@ This Zod schema defines the structure of a failed `precheck` result. What's incl
 
 The following schema returns additional information to the Vincent Tool executor that would allow them to adapt their execution request so that the policy's `precheck` validation checks doesn't fail:
 
+> **Note** If any unhandled error occurs during execution of your policy's `precheck` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
+
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
 import { z } from 'zod';
@@ -358,6 +360,8 @@ const vincentPolicy = createVincentPolicy({
 This Zod schema defines the structure of a denied `evaluate` result. What's included in the returned object is up to you, but ideally it includes details about why the `evaluate` function is denying the Vincent Tool execution.
 
 The following schema returns additional information to the Vincent Tool executor that would allow the Vincent Tool executor to adapt their execution request so that the policy's `evaluate` validation checks don't fail:
+
+> **Note** If any unhandled error occurs during execution of your policy's `evaluate` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
@@ -475,6 +479,8 @@ These details provide transparency about what was updated during the commit phas
 This Zod schema defines the structure of a failed `commit` result. What's included in the returned object is up to you, but ideally it includes details about why the `commit` function failed to update the policy's state.
 
 The following schema returns information that would help the Vincent Tool executor understand why the `commit` function failed to update the policy's state, as well as the data the `commit` function was attempting to update it's state with:
+
+> **Note** If any unhandled error occurs during execution of your policy's `commit` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
