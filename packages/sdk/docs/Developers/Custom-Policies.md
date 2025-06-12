@@ -121,6 +121,41 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
+## The `policyContext` Argument
+
+The `policyContext` argument is provided and managed by the Vincent Tool SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
+
+```typescript
+interface PolicyContext {
+  toolIpfsCid: string;
+  appId: number;
+  appVersion: number;
+  delegation: {
+    delegateeAddress: string;
+    delegatorPkpInfo: {
+      tokenId: string;
+      ethAddress: string;
+      publicKey: string;
+    };
+  };
+  allow: (result: commitAllowResultSchema) => void;
+  deny: (result: commitDenyResultSchema) => void;
+}
+```
+
+Where:
+- `toolIpfsCid`: The IPFS CID of the Vincent Tool that is being executed
+- `appId`: The ID of the Vincent App the Vincent Tool is being executed for
+- `appVersion`: The version of the Vincent App the Vincent Tool is being executed for
+- `delegation`:
+  - `delegateeAddress`: The Ethereum address of the Vincent Tool executor
+  - `delegatorPkpInfo`:
+    - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet PKP
+    - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet PKP
+    - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet PKP
+- `allow`: A helper method for returning an `allow` result from your policy's `commit` function
+- `deny`: A helper method for returning a `deny` result from your policy's `commit` function
+
 ## Parameter Schemas
 
 ### `toolParamsSchema`
@@ -220,7 +255,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-<!-- TODO Document the policyContext object -->
+Two arguments are passed to your policy's `precheck` function by the Vincent Tool SDK. The first is an object containing the `toolParams` and `userParams` the adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
 
 ### `precheckAllowResultSchema`
 
@@ -320,7 +355,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-<!-- TODO Document the policyContext object -->
+Two arguments are passed to your policy's `evaluate` function by the Vincent Tool SDK. The first is an object containing the `toolParams` and `userParams` the adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
 
 ### `evalAllowResultSchema`
 
@@ -410,9 +445,9 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-The two arguments passed to your policy's `commit` function by the Vincent Tool SDK, `params` and `policyContext`, are described in the following sections.
+Two arguments are passed to your policy's `commit` function by the Vincent Tool SDK. The first is an object adhering to the `commitParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
 
-### Commit Function `params` Argument (`commitParamsSchema`)
+### `commitParamsSchema`
 
 The `params` argument provided to your `commit` function will follow the structure of the `commitParamsSchema` you will have defined for your policy. What's provided in the `params` object is up to you, but it should include the specific parameters that your policy needs to update the state your policy depends on for it's validation checks.
 
@@ -433,41 +468,6 @@ const vincentPolicy = createVincentPolicy({
   }),
 });
 ```
-
-### Commit Function `policyContext` Argument
-
-The `policyContext` argument provided to your `commit` function is provided and managed by the Vincent Tool SDK. It's an object containing the following properties:
-
-```typescript
-interface PolicyContext {
-  toolIpfsCid: string;
-  appId: number;
-  appVersion: number;
-  delegation: {
-    delegateeAddress: string;
-    delegatorPkpInfo: {
-      tokenId: string;
-      ethAddress: string;
-      publicKey: string;
-    };
-  };
-  allow: (result: commitAllowResultSchema) => void;
-  deny: (result: commitDenyResultSchema) => void;
-}
-```
-
-Where:
-- `toolIpfsCid`: The IPFS CID of the Vincent Tool that is being executed
-- `appId`: The ID of the Vincent App the Vincent Tool is being executed for
-- `appVersion`: The version of the Vincent App the Vincent Tool is being executed for
-- `delegation`:
-  - `delegateeAddress`: The Ethereum address of the Vincent Tool executor
-  - `delegatorPkpInfo`:
-    - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet PKP
-    - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet PKP
-    - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet PKP
-- `allow`: A helper method for returning an `allow` result from your policy's `commit` function
-- `deny`: A helper method for returning a `deny` result from your policy's `commit` function
 
 ### `commitAllowResultSchema`
 
@@ -511,5 +511,156 @@ const vincentPolicy = createVincentPolicy({
     spentAmount: z.number(),
     spentTokenAddress: z.string(),
   }),
+});
+```
+
+# Wrapping Up
+
+This guide has covered the basics of creating a Vincent Policy to be consumed by Vincent Tools. You've learned how to define the policy's `precheck`, `evaluate`, and `commit` functions, as well as the schemas for the parameters required by the policy's `precheck`, `evaluate`, and `commit` functions.
+
+For the spending limit policy example we've been building throughout this guide, the final policy definition would look like the following:
+
+```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { z } from 'zod';
+
+const vincentPolicy = createVincentPolicy({
+  packageName: '@my-npm-org/vincent-policy-my-name' as const,
+
+  toolParamsSchema: z.object({
+      tokenAddress: z.string(),
+      amount: z.number(),
+  }),
+  userParamsSchema: z.object({
+      dailySpendingLimit: z.number(),
+      allowedTokens: z.array(z.string()).optional(),
+  }),
+
+  precheckAllowResultSchema: z.object({
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+  precheckDenyResultSchema: z.object({
+    reason: z.string(),
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+  precheck: async ({ toolParams, userParams }, policyContext) => {
+    const { amount, tokenAddress } = toolParams;
+    const { dailySpendingLimit, allowedTokens } = userParams;
+
+    const isTokenAllowed = allowedTokens.includes(tokenAddress);
+    const { isSpendingLimitExceeded, currentDailySpending } = await checkSpendingLimit(tokenAddress, amount, dailySpendingLimit);
+
+    if (!isTokenAllowed) {
+      return policyContext.deny({
+        reason: "Token not allowed",
+        maxDailySpendingLimit: dailySpendingLimit,
+        currentDailySpending,
+        allowedTokens: allowedTokens,
+      });
+    }
+
+    if (isSpendingLimitExceeded) {
+      return policyContext.deny({
+        reason: "Spending limit exceeded",
+        maxDailySpendingLimit: dailySpendingLimit,
+        currentDailySpending,
+        allowedTokens: allowedTokens,
+      });
+    }
+
+    return policyContext.allow({
+      maxDailySpendingLimit: dailySpendingLimit,
+      currentDailySpending,
+      allowedTokens: allowedTokens,
+    });
+  },
+
+  evalAllowResultSchema: z.object({
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+  evalDenyResultSchema: z.object({
+    reason: z.string(),
+    maxDailySpendingLimit: z.number(),
+    currentDailySpending: z.number(),
+    allowedTokens: z.array(z.string()),
+  }),
+  evaluate: async ({ toolParams, userParams }, policyContext) => {
+    const { amount, tokenAddress } = toolParams;
+    const { dailySpendingLimit, allowedTokens } = userParams;
+
+    const isTokenAllowed = allowedTokens.includes(tokenAddress);
+    const { isSpendingLimitExceeded, currentDailySpending } = await checkSpendingLimit(tokenAddress, amount, dailySpendingLimit);
+
+    if (!isTokenAllowed) {
+      return policyContext.deny({
+        reason: "Token not allowed",
+        maxDailySpendingLimit: dailySpendingLimit,
+        currentDailySpending,
+        allowedTokens: allowedTokens,
+      });
+    }
+
+    if (isSpendingLimitExceeded) {
+      return policyContext.deny({
+        reason: "Spending limit exceeded",
+        maxDailySpendingLimit: dailySpendingLimit,
+        currentDailySpending,
+        allowedTokens: allowedTokens,
+      });
+    }
+
+    return policyContext.allow({
+      maxDailySpendingLimit: dailySpendingLimit,
+      currentDailySpending,
+      allowedTokens: allowedTokens,
+    });
+  },
+
+  commitParamsSchema: z.object({
+    spentAmount: z.number(),
+    tokenAddress: z.string(),
+  }),
+  commitAllowResultSchema: z.object({
+    updatedDailySpending: z.number(),
+    remainingDailyLimit: z.number(),
+  }),
+  commitDenyResultSchema: z.object({
+    reason: z.string(),
+    vincentAppId: z.number(),
+    spenderAddress: z.string(),
+    spentAmount: z.number(),
+    spentTokenAddress: z.string(),
+  }),
+  commit: async (params, policyContext) => {
+    const { spentAmount, tokenAddress } = params;
+
+    try {
+        const { updatedDailySpending, remainingDailyLimit } = await updateSpentAmount({
+            vincentAppId: policyContext.appId,
+            spenderAddress: policyContext.delegation.delegatorPkpInfo.ethAddress,
+            spentAmount,
+            spentTokenAddress: tokenAddress,
+        });
+
+        return policyContext.allow({
+            updatedDailySpending,
+            remainingDailyLimit,
+        });
+    } catch (error) {
+        return policyContext.deny({
+            reason: "Failed to update spending limit",
+            vincentAppId: policyContext.appId,
+            spenderAddress: policyContext.delegation.delegatorPkpInfo.ethAddress,
+            spentAmount,
+            spentTokenAddress: tokenAddress,
+        });
+    }
+  },
 });
 ```
