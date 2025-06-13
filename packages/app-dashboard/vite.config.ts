@@ -15,4 +15,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    include: ['@lit-protocol/vincent-sdk'],
+  },
+  build: {
+    commonjsOptions: {
+      include: ['@lit-protocol/vincent-sdk'],
+    },
+  },
 });
