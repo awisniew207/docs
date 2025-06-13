@@ -13,7 +13,6 @@
     "watch:type-tests": "chokidar 'src/**/*' --initial --await-write-finish --delay 100 --silent -c './scripts/run-typecheck.sh'",
     "typecheck": "./scripts/precommit-check.sh"
   },
-  "type": "commonjs",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "files": [

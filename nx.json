@@ -51,7 +51,8 @@
       "vincent-mcp",
       "vincent-rest-api",
       "vincent-policy-spending-limit",
-      "vincent-tool-erc20-approval"
+      "vincent-tool-erc20-approval",
+      "vincent-tool-uniswap-swap"
     ],
     "projectsRelationship": "independent",
     "releaseTagPattern": "vincent/{projectName}/{version}",
