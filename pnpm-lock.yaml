@@ -187,8 +187,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.3(react-hook-form@7.57.0(react@19.1.0))
       '@lit-protocol/vincent-sdk':
-        specifier: workspace:*
-        version: file:packages/sdk(@modelcontextprotocol/sdk@1.12.1)(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 0.0.7
+        version: 0.0.7(@modelcontextprotocol/sdk@1.12.1)(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@radix-ui/react-checkbox':
         specifier: ^1.2.3
         version: 1.3.2(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -303,9 +303,6 @@ importers:
       wagmi:
         specifier: 2.14.11
         version: 2.14.11(@tanstack/query-core@5.80.7)(@tanstack/react-query@5.80.7(react@19.1.0))(@types/react@19.1.8)(bufferutil@4.0.9)(immer@10.1.1)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.31.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.63))(zod@3.25.63)
-    dependenciesMeta:
-      '@lit-protocol/vincent-sdk':
-        injected: true
     devDependencies:
       '@eslint/js':
         specifier: ^9.22.0
@@ -2123,8 +2120,8 @@ packages:
   '@lit-protocol/uint8arrays@7.2.0':
     resolution: {integrity: sha512-Gc+REd0RRPivUPrwMklAhrwdRmTVbs2XatZpeJpjoUlXhqIIf9gWau33GKbZI3k6vEEeVoLqJU0JqEQoeEzKMA==}
 
-  '@lit-protocol/vincent-sdk@file:packages/sdk':
-    resolution: {directory: packages/sdk, type: directory}
+  '@lit-protocol/vincent-sdk@0.0.7':
+    resolution: {integrity: sha512-u7B7GX/Aiu1umLW+L96RBGX7T3IQylgHaLiozY6ruUFSh1A2mtQsrV2Fds+3DsaQokBcbUrIN4c9hwbnxVIOdA==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.11.2
@@ -12608,7 +12605,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@lit-protocol/vincent-sdk@file:packages/sdk(@modelcontextprotocol/sdk@1.12.1)(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-sdk@0.0.7(@modelcontextprotocol/sdk@1.12.1)(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@lit-protocol/auth-helpers': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/constants': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
