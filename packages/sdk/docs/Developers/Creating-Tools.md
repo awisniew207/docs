@@ -5,6 +5,7 @@ title: Creating Vincent Tools
 
 # What is a Vincent Tool?
 
+<!-- TODO Link to Vincent Policy definition when it's available -->
 A Vincent Tool is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) that enables Vincent Apps to perform specific actions on behalf of Vincent App Users. These tools are the core functional units that Vincent Apps use to interact with blockchains, APIs, and other services while being governed by user-configured Vincent Policies.
 
 ## Key Capabilities of Vincent Tools
