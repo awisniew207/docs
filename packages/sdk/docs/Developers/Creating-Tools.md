@@ -11,42 +11,10 @@ A Vincent Tool is a function built using [Lit Actions](https://developer.litprot
 
 Vincent Tools provide powerful capabilities that enable a wide variety of blockchain and web2 actions:
 
-**Policy-Driven Execution**
-- Execute tools only when permitted by all registered Vincent Policies for the Vincent App User
-- Combine on and off-chain policy conditions
-
-**Type-Safe Development**
-- Strongly-typed Zod schemas for your tool functions' parameters and return values
-- Clear interfaces between your tool and Vincent Policies with type safety
-
-**Lit Action Based**
-- Built-in ethers.js for blockchain interactions
-- Ability to import and use NPM packages within your tool
-- Access to Lit Protocol's [Encryption and Access Control](https://developer.litprotocol.com/sdk/access-control/intro) features
-- Ability to sign data on behalf of the Vincent App User's Agent Wallet
-
-## Real-World Tool Examples
-
-Vincent Tools can implement a wide variety of blockchain and web2 actions, such as:
-
-**Blockchain Interactions**
-- **Transaction Signing**: Sign and submit transactions to any blockchain network using the Vincent App User's Agent Wallet
-- **Smart Contract Operations**: Read contract state, call contract functions, and deploy new contracts
-- **Cross-Chain Operations**: Execute actions across multiple blockchain networks within a single tool
-
-**External Data Integration**
-- **HTTP API Access**: Make authenticated requests to any endpoint available using an HTTP request
-- **Data Transformation**: Process and combine data from multiple sources before executing Vincent Tool operations
-
-**Cryptographic Operations**
-- **Message Signing**: Create cryptographic signatures for authentication, attestations, or custom protocols
-- **Data Encryption/Decryption**: Secure sensitive data or decrypt data within your Vincent Tool using Lit Protocol's encryption and access control features
-- **Custom Cryptographic Protocols**: Implement specialized signing schemes or multi-party computation workflows
-
-**Programmable Logic & Governance**
-- **Conditional Execution**: Implement complex business logic with branching paths based on runtime data
-- **Policy Integration**: Leverage Vincent App User configured policies to govern when and how Vincent Tools can execute
-- **Stateful Operations**: Maintain and update persistent state across multiple Vincent Tool executions
+- **Flexible Data Access:** Read and write both on and off-chain data to any blockchain network or HTTP-accessible API or database
+- **Policy-Driven Execution:** Execute tools only when permitted by all registered Vincent Policies for the Vincent App User
+- **Cryptographic Capabilities:** Sign transactions and data on behalf of users, and utilize Lit Protocol's [Encryption and Access Control](https://developer.litprotocol.com/sdk/access-control/intro) features for conditional data access
+- **Type-Safe Development:** Strongly-typed Zod schemas ensure parameter validation and clear interfaces between Vincent Tools and Policies, and both utilize packages installed from NPM to extend functionality
 
 # How a Vincent Tool Works
 
