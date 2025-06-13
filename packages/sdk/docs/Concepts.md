@@ -121,7 +121,7 @@ The lifecycle of a Vincent App follows these steps:
 1. An App Manager creates a new App, specifying the App metadata, and the Tools and Policies that the first version of the App will use
 2. A User navigates to the App's webapp and clicks a button that uses the Vincent SDK to redirect to the Vincent Consent page
 3. The User authenticates with Vincent and either retrieves an existing Vincent Agent wallet or creates a new one
-4. The User views the App Consent page, which displays the App metadata, the Tools and associated Policies that the App Version will use, and provides input fields for any Policy parameters configured for each Tool's Policy
+4. The User views the Vincent App's Consent page, which displays the App metadata, the Tools and associated Policies that the App Version will use, and provides input fields for any Policy parameters configured for each Tool's Policy
 5. The User approves delegation for the App Version and is redirected back to the App's webapp
 6. The App's webapp receives the redirect from the Vincent Consent page and logs the User in
 7. The User interacts with the webapp and clicks a button that requires execution of a Vincent Tool
