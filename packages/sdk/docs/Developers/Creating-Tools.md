@@ -55,12 +55,12 @@ Vincent Tools can implement a wide variety of blockchain and web2 actions, such 
 A Vincent Tool consists of two main lifecycle methods executed in the following order:
 
 1. **Precheck**: Executed locally by the Vincent Tool executor, this function provides a best-effort check that the tool execution shouldn't fail
-   - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
+   - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Tool's `precheck` function will be executed
    - This function is where you'd perform checks such as validating the Vincent Agent Wallet has enough balance to execute the tool logic, has the appropriate on-chain approvals to make token transfers, or anything else your tool can validate before executing the tool's logic
 
 2. **Execute**: Executed within the Lit Action environment, this function performs the actual tool logic and has the ability to sign data using the Vincent App User's Agent Wallet
-   - Before the execution of your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
+   - Before the execution of your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Tool's `execute` function will be executed
    - This function is where you'd perform the actual tool logic, such as making token transfers, interacting with smart contracts, or anything else your tool needs to do to fulfill the tool's purpose
 
@@ -148,7 +148,7 @@ Where:
 
 ### `toolParamsSchema`
 
-This Zod schema defines the structure of parameters that executors of your tool will provide to your tool. These should be the parameters you require to execute your tool's functionality, as well as any parameters required by the Vincent Policies your tool supports.
+This Zod schema defines the structure of parameters that executors will provide to your tool. These should be the parameters you require to execute your tool's functionality, as well as any parameters required by the Vincent Policies your tool supports.
 
 For example, if you are building a token transfer tool that supports a Vincent spending limit policy, you might define the `toolParamsSchema` as follows:
 
@@ -177,7 +177,7 @@ The `tokenAddress` and `amountToSend` parameters are also the parameters require
 
 To add support for Vincent Policies to your tool, you need to create _VincentToolPolicy_ objects using the `createVincentToolPolicy` function from the `@lit-protocol/vincent-tool-sdk` package for each Vincent Policy you want your tool to support. These _VincentToolPolicy_ objects are then added to your tool's `supportedPolicies` array, which binds the policies to your tool and enables proper parameter mapping between your tool and the policies.
 
-> **Note** Supporting a Vincent Policy does not mean the policy is required to be used with your tool, it means the Vincent App developer that uses your tool can enabled the supported policies for use by their Vincent App Users, if the App User chooses to enable those policies.
+> **Note:** Supporting a Vincent Policy does not mean the policy is required to be used with your tool, it means the Vincent App developer that uses your tool can enabled the supported policies for use by their Vincent App Users, if the App User chooses to enable those policies.
 
 ### Creating a `VincentToolPolicy` object
 
@@ -236,18 +236,18 @@ const vincentTool = createVincentTool({
 
 A couple of new things are happening in this code example:
 
-First we're importing `bundledVincentPolicy` from the `@lit-protocol/vincent-policy-spending-limit` package, which is a Vincent Policy object created using the Vincent Tool & Policy SDK and exported by the policy author for Vincent Tools to consume
+First we're importing `bundledVincentPolicy` from the `@lit-protocol/vincent-policy-spending-limit` package, which is a Vincent Policy object created using the Vincent Tool & Policy SDK and exported by the policy author for Vincent Tools to consume.
 
 Then we're creating a `VincentToolPolicy` object named `SpendingLimitPolicy` using the `createVincentToolPolicy` function. The `createVincentToolPolicy` function takes a single object parameter with the required properties:
 
 - `toolParamsSchema`: The Zod schema (covered in the [Parameter Schemas](#parameter-schemas) section) you've defined for the parameters your tool expects to be given by the Vincent Tool executor
 - `bundledVincentPolicy`: The Vincent Policy object created by the policy author for Vincent Tools to consume, which is imported from the `@lit-protocol/vincent-policy-spending-limit` package
-- `toolParameterMappings`: An object that maps the parameters given to your tool, to the parameters expected by the Vincent Policy you're supporting
+- `toolParameterMappings`: An object that maps the parameters given to your tool to the parameters expected by the Vincent Policy you're supporting
   - The keys of this object are the parameter names your tool uses (`tokenAddress` and `amountToSend`), and the values are the parameter names expected by the Vincent Policy (`tokenAddress` and `amount`)
 
 Lastly, we take the `SpendingLimitPolicy` object and add it to an array, which we then wrap in a `supportedPoliciesForTool` function call to our tool's `supportedPolicies` array.
 
-This is how we register the `SpendingLimitPolicy` with our tool, and is all that's needed for your tool to support the Vincent spending limit policy. The execution of the policy's `precheck` and `evaluate` functions will be handled for you by the Vincent Tool & Policy SDK, as well as processing the return values from the policy's `precheck` and `evaluate` functions to check if the tool should be allowed to execute.
+This is how we register the `SpendingLimitPolicy` with our tool. That's all that's needed for your tool to support the Vincent spending limit policy. The execution of the policy's `precheck` and `evaluate` functions will be handled for you by the Vincent Tool & Policy SDK, as well as processing the return values from the policy's `precheck` and `evaluate` functions to check if the tool should be allowed to execute.
 
 ## Precheck Function
 
@@ -259,7 +259,7 @@ Before executing your tool's `precheck` function, the Vincent Tool & Policy SDK 
 
 For our example token transfer tool, the `precheck` function checks both the Vincent User's Agent Wallet  ERC20 token balance, as well as the native token balance to validate the Agent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
 
-> **Note** the code from the previous sections has been omitted for brevity. The full code example can be found in the [Wrapping Up](#wrapping-up) section at the end of this guide.
+> **Note:** The code from the previous sections has been omitted for brevity. The full code example can be found in the [Wrapping Up](#wrapping-up) section at the end of this guide.
 
 ```typescript
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
@@ -361,7 +361,7 @@ This Zod schema defines the structure of a failed `precheck` result. What's incl
 
 The following schema returns additional information to the Vincent Tool executor that would help them understand why the tool execution would fail. In this case, the `reason` string allows the `precheck` function to return a specific error message stating something like `"Insufficient token balance"` or `"Insufficient native token balance"`, along with current and required amounts for debugging:
 
-> **Note** If any unhandled error occurs during execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will automatically return a `fail` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will automatically return a `fail` result with the error message.
 
 ```typescript
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
@@ -461,7 +461,7 @@ This Zod schema defines the structure of a failed `execute` result. What's inclu
 
 The following schema returns error information to the Vincent Tool executor, including an error message, error code, and revert reason for failed transactions to assist with debugging:
 
-> **Note** If any unhandled error occurs during execution of your tool's `execute` function, the Vincent Tool & Policy SDK will automatically return a `fail` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your tool's `execute` function, the Vincent Tool & Policy SDK will automatically return a `fail` result with the error message.
 
 ```typescript
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
@@ -502,7 +502,7 @@ After all the Vincent Policies that have been registered to be used with your to
 
 The `policiesContext` object contains a property called `allowedPolicies` that is an object where the keys are the package names of the evaluated Vincent policies, and the values are objects containing the `evalAllowResult` of the policy, and the policy's `commit` function if one exists for the policy:
 
-> **Note** The following interface isn't the actual interface used by the Vincent Tool & Policy SDK, it's just a simplified example of what the `policiesContext` object looks like for reference.
+> **Note:** The following interface isn't the actual interface used by the Vincent Tool & Policy SDK, it's just a simplified example of what the `policiesContext` object looks like for reference.
 >
 > The [`evalAllowResultSchema`](./Creating-Policies.md#evalallowresultschema) and [`commitParamsSchema`](./Creating-Policies.md#commitparamsschema) are Zod schemas specified by the Vincent Policy package.
 
