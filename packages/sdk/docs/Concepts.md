@@ -44,7 +44,7 @@ Under the hood, Vincent Tools are created using [Lit Actions](https://developer.
 
 # Vincent Policy
 
-Vincent Policies give users full control over defining how their assets and data are used when they interact with a given Vincent App. Each Vincent Policy is assigned to specific Vincent Tool(s) and govern their usage. For example, when interacting with a Vincent App that involves crypto trading, a Policy would be used to specify things like spend limits or token allowlists / denylists. Policies can be thought of as user-defined "guardrails" that ensure each Vincent App operates within a given Vincent App User's defined boundaries.
+Vincent Policies give users full control over defining how their assets and data are used when they interact with a given Vincent App. Each Vincent Policy is assigned to specific Vincent Tool(s) and governs their usage. For example, when interacting with a Vincent App that involves crypto trading, a Policy would be used to specify things like spend limits or token allowlists / denylists. Policies can be thought of as user-defined "guardrails" that ensure each Vincent App operates within a given Vincent App User's defined boundaries.
 
 Just like Tools, Vincent Policies are also powered by Lit Actions under the hood. This makes them highly generalizable and well-suited to track and query on or off-chain state to make decisions based on data such as:
 
