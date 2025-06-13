@@ -14,7 +14,7 @@ A Vincent Tool is a function built using [Lit Actions](https://developer.litprot
 - Read and write off-chain data from any HTTP-accessible API or database
 
 **Policy-Driven Execution**
-- Execute tools only when all Vincent App User registered Vincent Policies allow it
+- Execute tools only when permitted by all registered Vincent Policies for the Vincent App User
 - Combine on and off-chain policy conditions
 
 **Type-Safe Development**
