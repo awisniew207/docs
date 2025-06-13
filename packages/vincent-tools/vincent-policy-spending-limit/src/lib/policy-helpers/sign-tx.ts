@@ -1,11 +1,4 @@
-import {
-  keccak256,
-  recoverTransactionAddress,
-  serializeTransaction,
-  Signature,
-  toBytes,
-  TransactionSerializableEIP1559,
-} from 'viem';
+import { ethers } from 'ethers';
 
 declare const Lit: {
   Actions: {
@@ -17,49 +10,31 @@ declare const Lit: {
   };
 };
 
-export const signTx = async ({
-  pkpPublicKey,
-  tx,
-  sigName,
-}: {
-  pkpPublicKey: string;
-  tx: TransactionSerializableEIP1559;
-  sigName: string;
-}): Promise<`0x${string}`> => {
-  console.log(`Signing tx: ${sigName} (signTx)`);
-
+export const signTx = async (pkpPublicKey: string, tx: ethers.Transaction, sigName: string) => {
+  // Remove 0x prefix if it exists, Lit expects a hex string without 0x prefix
   const publicKeyForLit = pkpPublicKey.replace(/^0x/, '');
   console.log(`Signing using PKP Public Key: ${publicKeyForLit} (signTx)`);
 
-  const unsignedSerializedTx = serializeTransaction(tx);
-  const txHash = keccak256(toBytes(unsignedSerializedTx));
+  const unsignedSerializedTx = ethers.utils.serializeTransaction(tx);
 
-  console.log('unsignedSerializedTx (signTx)', unsignedSerializedTx);
-  console.log('txHash (signTx)', txHash);
+  const txHash = ethers.utils.keccak256(unsignedSerializedTx);
+  console.log('Tx hash (signTx)', txHash);
 
-  const sigJson = await Lit.Actions.signAndCombineEcdsa({
-    toSign: toBytes(txHash),
+  const signatureResponse = await Lit.Actions.signAndCombineEcdsa({
+    toSign: ethers.utils.arrayify(txHash),
     publicKey: publicKeyForLit,
     sigName,
   });
 
-  console.log(`Signature: ${sigJson} (signTx)`);
-
-  const parsed = JSON.parse(sigJson);
-  const { r, s, v } = parsed;
-  console.log('Parsed signature (signTx)', { r, s, v });
-
-  const signature: Signature = {
-    r: ('0x' + r.substring(2)) as `0x${string}`,
-    s: ('0x' + s) as `0x${string}`,
-    v,
-  };
-
-  const recoveredAddress = await recoverTransactionAddress({
-    serializedTransaction: unsignedSerializedTx,
-    signature,
+  const { r, s, v } = JSON.parse(signatureResponse);
+  const ethersJoinedSignature = ethers.utils.joinSignature({
+    r: '0x' + r.substring(2),
+    s: '0x' + s,
+    v: v,
   });
-  console.log('Recovered address (signTx)', recoveredAddress);
 
-  return serializeTransaction(tx, signature);
+  const signedSerializedTx = ethers.utils.serializeTransaction(tx, ethersJoinedSignature);
+  console.log('Signed serialized tx (signTx)', signedSerializedTx);
+
+  return signedSerializedTx;
 };

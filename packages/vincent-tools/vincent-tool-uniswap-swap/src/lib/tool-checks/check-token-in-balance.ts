@@ -1,26 +1,25 @@
-import { parseAbi } from 'viem';
-
-import { PublicClient } from 'viem';
+import { ethers } from 'ethers';
+import { getErc20Contract } from './getErc20Contract';
 
 export const checkTokenInBalance = async ({
-  client,
+  provider,
   pkpEthAddress,
   tokenInAddress,
   tokenInAmount,
 }: {
-  client: PublicClient;
-  pkpEthAddress: `0x${string}`;
-  tokenInAddress: `0x${string}`;
+  provider: ethers.providers.StaticJsonRpcProvider;
+  pkpEthAddress: string;
+  tokenInAddress: string;
   tokenInAmount: bigint;
 }) => {
-  const tokenInBalance = await client.readContract({
-    address: tokenInAddress,
-    abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
-    functionName: 'balanceOf',
-    args: [pkpEthAddress],
-  });
+  const contract = getErc20Contract(tokenInAddress, provider);
 
-  if (tokenInBalance < tokenInAmount) {
+  const tokenInBalance = await contract.balanceOf(pkpEthAddress);
+
+  // Convert bigint to BigNumber for comparison
+  const tokenInAmountBN = ethers.BigNumber.from(tokenInAmount.toString());
+
+  if (tokenInBalance.lt(tokenInAmountBN)) {
     throw new Error(
       `pkpEthAddress (${pkpEthAddress}) has insufficient balance of tokenIn (${tokenInAddress}). Wanted ${tokenInAmount}, but only have ${tokenInBalance} (checkTokenInBalance)`,
     );

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 
 const toolParams = z.object({ x: z.string() });
 const dummyPolicy = createVincentToolPolicy({
@@ -25,7 +25,7 @@ const F = z.object({ err: z.string() });
 
 export const tool_s_p = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeSuccessSchema: S,
   precheckSuccessSchema: S,
   execute: async (_, { succeed, fail }) => {
@@ -50,7 +50,7 @@ export const tool_s_p = createVincentTool({
 
 export const tool_s_none = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeSuccessSchema: S,
   execute: async (_, { succeed, fail }) => {
     // @ts-expect-error - succeed requires argument matching success schema
@@ -74,7 +74,7 @@ export const tool_s_none = createVincentTool({
 
 export const tool_f_pf = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeFailSchema: F,
   precheckFailSchema: F,
   execute: async (_, { succeed, fail }) => {
@@ -97,7 +97,7 @@ export const tool_f_pf = createVincentTool({
 
 export const tool_f_p = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeFailSchema: F,
   precheckSuccessSchema: S,
   execute: async (_, { succeed, fail }) => {
@@ -121,7 +121,7 @@ export const tool_f_p = createVincentTool({
 
 export const tool_f_none = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeFailSchema: F,
   execute: async (_, { succeed, fail }) => {
     succeed();
@@ -144,7 +144,7 @@ export const tool_f_none = createVincentTool({
 
 export const tool_none_pf = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   precheckFailSchema: F,
   execute: async (_, { succeed, fail }) => {
     succeed();
@@ -167,7 +167,7 @@ export const tool_none_pf = createVincentTool({
 
 export const tool_none_p = createVincentTool({
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([dummyPolicy]),
+  supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   precheckSuccessSchema: S,
   execute: async (_, { succeed, fail }) => {
     succeed();

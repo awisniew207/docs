@@ -1,5 +1,5 @@
-import { createPublicClient, encodeFunctionData, http, parseAbi, parseUnits } from 'viem';
-
+import { ethers } from 'ethers';
+import { getErc20Contract } from './getErc20Contract';
 import { signTx } from './sign-tx';
 
 declare const Lit: {
@@ -21,17 +21,15 @@ export const sendErc20ApprovalTx = async ({
   pkpPublicKey,
   spenderAddress,
   tokenAmount,
-  tokenDecimals,
   tokenAddress,
 }: {
   rpcUrl: string;
   chainId: number;
-  pkpEthAddress: `0x${string}`;
+  pkpEthAddress: string;
   pkpPublicKey: string;
-  spenderAddress: `0x${string}`;
+  spenderAddress: string;
   tokenAmount: bigint;
-  tokenDecimals: number;
-  tokenAddress: `0x${string}`;
+  tokenAddress: string;
 }) => {
   console.log('sendErc20ApprovalTx', {
     rpcUrl,
@@ -40,43 +38,40 @@ export const sendErc20ApprovalTx = async ({
     pkpPublicKey,
     spenderAddress,
     tokenAmount: tokenAmount.toString(),
-    tokenDecimals,
     tokenAddress,
   });
 
-  const erc20Abi = parseAbi(['function approve(address spender, uint256 amount) returns (bool)']);
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const contract = getErc20Contract(tokenAddress, provider);
 
-  const approveTxData = encodeFunctionData({
-    abi: erc20Abi,
-    functionName: 'approve',
-    args: [spenderAddress, parseUnits(tokenAmount.toString(), tokenDecimals)],
-  });
+  // Convert bigint to ethers.BigNumber for proper encoding
+  const tokenAmountBN = ethers.BigNumber.from(tokenAmount.toString());
 
-  const client = createPublicClient({
-    transport: http(rpcUrl),
-  });
+  // Encode the approve function call
+  const approveTxData = contract.interface.encodeFunctionData('approve', [
+    spenderAddress,
+    tokenAmountBN,
+  ]);
 
   const txMetadataResponse = await Lit.Actions.runOnce(
     { waitForResponse: true, name: 'estimateGas' },
     async () => {
       try {
-        const [{ maxFeePerGas, maxPriorityFeePerGas }, gas, nonce] = await Promise.all([
-          client.estimateFeesPerGas(),
-          client.estimateGas({
-            account: pkpEthAddress as `0x${string}`,
-            to: tokenAddress as `0x${string}`,
+        const [feeData, gasLimit, nonce] = await Promise.all([
+          provider.getFeeData(),
+          provider.estimateGas({
+            from: pkpEthAddress,
+            to: tokenAddress,
             data: approveTxData,
           }),
-          client.getTransactionCount({
-            address: pkpEthAddress as `0x${string}`,
-          }),
+          provider.getTransactionCount(pkpEthAddress),
         ]);
 
         return JSON.stringify({
           status: 'success',
-          maxFeePerGas: maxFeePerGas.toString(),
-          maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
-          gas: gas.toString(),
+          maxFeePerGas: feeData.maxFeePerGas?.toString() || '0',
+          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas?.toString() || '0',
+          gas: gasLimit.toString(),
           nonce,
         });
       } catch (error) {
@@ -92,25 +87,27 @@ export const sendErc20ApprovalTx = async ({
   if (parsedTxMetadataResponse.status === 'error') {
     throw new Error(`Error estimating gas: ${parsedTxMetadataResponse.error}`);
   }
+
+  console.log(
+    'parsedTxMetadataResponse (sendErc20ApprovalTx)',
+    JSON.stringify(parsedTxMetadataResponse),
+  );
+
   const { maxFeePerGas, maxPriorityFeePerGas, gas, nonce } = parsedTxMetadataResponse;
 
-  const unsignedApproveTx = {
-    to: tokenAddress as `0x${string}`,
+  const unsignedApproveTx: ethers.Transaction = {
+    to: tokenAddress,
     data: approveTxData,
-    value: 0n,
-    gas: BigInt(gas),
-    maxFeePerGas: BigInt(maxFeePerGas),
-    maxPriorityFeePerGas: BigInt(maxPriorityFeePerGas),
+    value: ethers.BigNumber.from(0),
+    gasLimit: ethers.BigNumber.from(gas),
+    maxFeePerGas: ethers.BigNumber.from(maxFeePerGas),
+    maxPriorityFeePerGas: ethers.BigNumber.from(maxPriorityFeePerGas),
     nonce,
     chainId,
-    type: 'eip1559' as const,
+    type: 2, // EIP-1559 transaction type
   };
 
-  const signedApproveTx = await signTx({
-    pkpPublicKey,
-    tx: unsignedApproveTx,
-    sigName: 'approveErc20Sig',
-  });
+  const signedApproveTx = await signTx(pkpPublicKey, unsignedApproveTx, 'approveErc20Sig');
 
   console.log('signedApproveTx (sendErc20ApprovalTx)', signedApproveTx);
 
@@ -118,12 +115,10 @@ export const sendErc20ApprovalTx = async ({
     { waitForResponse: true, name: 'spendTxSender' },
     async () => {
       try {
-        const txHash = await client.sendRawTransaction({
-          serializedTransaction: signedApproveTx as `0x${string}`,
-        });
+        const txResponse = await provider.sendTransaction(signedApproveTx);
         return JSON.stringify({
           status: 'success',
-          txHash,
+          txHash: txResponse.hash,
         });
       } catch (error: unknown) {
         return JSON.stringify({
@@ -138,7 +133,7 @@ export const sendErc20ApprovalTx = async ({
 
   const parsedErc20ApproveTxResponse = JSON.parse(erc20ApproveTxResponse as string);
   if (parsedErc20ApproveTxResponse.status === 'error') {
-    throw new Error(`Error sending spend transaction: ${parsedErc20ApproveTxResponse.error}`);
+    throw new Error(`Error sending approval transaction: ${parsedErc20ApproveTxResponse.error}`);
   }
 
   return parsedErc20ApproveTxResponse.txHash;

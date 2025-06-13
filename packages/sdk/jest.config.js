@@ -1,9 +1,7 @@
 module.exports = {
-  preset: 'ts-jest',
+  preset: '../../jest.preset.js',
   testEnvironment: 'node',
-
   passWithNoTests: true,
-  testMatch: ['**/tests/**/*.test.ts'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: ['src/**/*.ts'],
