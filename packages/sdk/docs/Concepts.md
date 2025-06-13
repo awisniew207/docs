@@ -3,7 +3,7 @@ category: Users
 title: Concepts
 ---
 
-Vincent is a platform that enables Vincent Users to delegate both on and off-chain actions to Vincent Apps. Each Vincent App has a set of Vincent Tools that allow them to perform specific actions on behalf of their Vincent Users. Vincent App tool usage is also governed by Vincent Policies, which are user configured "guardrails" that ensure each Vincent App operates within the boundaries defined by each Vincent User.
+Vincent is a platform that enables Vincent Users to delegate both on and off-chain actions to Vincent Apps. Each Vincent App has a set of Vincent Tools that allow them to perform specific actions on behalf of their Vincent Users. Vincent App tool usage is also governed by Vincent Policies, which are user-configured "guardrails" that ensure each Vincent App operates within the boundaries defined by each Vincent User.
 
 > **Note:** The secure and non-custodial delegation of any on or off-chain action is Vincent's core innovation. Vincent Users have the ability to delegate these operations to authorized 3rd parties (Vincent Apps and Agents) to execute on their behalf, while never giving up control of their assets and data. Vincent Apps can execute authorized Vincent Tools on behalf of a given user, but they can never access private keys or sign data outside of what the user has explicitly consented to.
 
