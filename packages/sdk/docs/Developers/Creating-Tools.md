@@ -7,11 +7,9 @@ title: Creating Vincent Tools
 
 A Vincent Tool is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) that enables Vincent Apps to perform specific actions on behalf of Vincent App Users. These tools are the core functional units that Vincent Apps use to interact with blockchains, APIs, and other services while being governed by user-configured Vincent Policies.
 
-## Key Capabilities
+## Key Capabilities of Vincent Tools
 
-**Flexible Data Access**
-- Read and write on-chain data (token balances, NFT ownership, smart contract state)
-- Read and write off-chain data from any HTTP-accessible API or database
+Vincent Tools provide powerful capabilities that enable a wide variety of blockchain and web2 actions:
 
 **Policy-Driven Execution**
 - Execute tools only when permitted by all registered Vincent Policies for the Vincent App User
@@ -57,7 +55,7 @@ A Vincent Tool consists of two main lifecycle methods executed in the following 
 1. **Precheck**: Executed locally by the Vincent Tool executor, this function provides a best-effort check that the tool execution shouldn't fail
    - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Tool's `precheck` function will be executed
-   - This function is where you'd perform checks such as validating the Vincent Agent Wallet has enough balance to execute the tool logic, has the appropriate on-chain approvals to make token transfers, or anything else your tool can validate before executing the tool's logic
+   - This function is where you'd perform checks such as validating the Vincent Agent Wallet has sufficient token balances, has the appropriate on-chain approvals to make token transfers, or anything else your tool can validate before executing the tool's logic
 
 2. **Execute**: Executed within the Lit Action environment, this function performs the actual tool logic and has the ability to sign data using the Vincent App User's Agent Wallet
    - Before the execution of your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies
@@ -131,12 +129,12 @@ Where:
     - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet
     - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet
     - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet
-- `policiesContext`: An object containing the context of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
+- `policiesContext`: An object containing the results of each evaluated Vincent Policy
   - `allow`: A boolean indicating if the Vincent Tool execution is allowed to proceed, and all evaluated Vincent Policies returned `allow` results
-  - `allowedPolicies`: An object containing the results of the `evaluate` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for
-    - `[policyPackageName]`: An object where the key is the package name of the Vincent Policy, and the value is an object containing the result of the `evaluate` function of the Vincent Policy as well the policy's `commit` function if it exists
-      - `result`: The result of the `evaluate` function of the Vincent Policy, will have the shape of the Vincent Policy's [evalAllowResultSchema](./Creating-Policies.md#evalallowresultschema)
-      - `commit`: An optional functions for each evaluated Vincent Policy that allows the policies to commit any state changes after your tool has successfully executed
+  - `allowedPolicies`: An object containing the results and `commit` functions for each Vincent Policy that permitted tool execution
+    - `[policyPackageName]`: An object where the key is the package name of the Vincent Policy, and the value is an object containing the result of the policy's `evaluate` function and the policy's `commit` function if it exists
+      - `result`: An object will details describing why the policy has permitted tool execution. This will have the shape of the Vincent Policy's [evalAllowResultSchema](./Creating-Policies.md#evalallowresultschema)
+      - `commit`: An optional function for each evaluated Vincent Policy that allows the policy to update any state it depends on to make it's decisions
         - The parameter object passed to the `commit` function is defined by each Vincent Policy's [commitParamsSchema](./Creating-Policies.md#commitparamsschema), and the return value is defined by the policy's [commitAllowResultSchema](./Creating-Policies.md#commitallowresultschema) or [commitDenyResultSchema](./Creating-Policies.md#commitdenyresultschema)
   - `deniedPolicy`: An object containing the first Vincent Policy that denied the Vincent Tool execution
     - `policyPackageName`: The package name of the Vincent Policy that denied the Vincent Tool execution
@@ -175,7 +173,8 @@ The `tokenAddress` and `amountToSend` parameters are also the parameters require
 
 ## Defining Supported Policies
 
-To add support for Vincent Policies to your tool, you need to create _VincentToolPolicy_ objects using the `createVincentToolPolicy` function from the `@lit-protocol/vincent-tool-sdk` package for each Vincent Policy you want your tool to support. These _VincentToolPolicy_ objects are then added to your tool's `supportedPolicies` array, which binds the policies to your tool and enables proper parameter mapping between your tool and the policies.
+<!-- TODO Link to the VincentToolPolicy typedoc interface when it's available -->
+To add support for Vincent Policies to your tool, you need to create Vincent Tool Policy objects using the `createVincentToolPolicy` function from the `@lit-protocol/vincent-tool-sdk` package for each Vincent Policy you want your tool to support. These Vincent Tool Policy objects are then added to your tool's `supportedPolicies` array, which binds the policies to your tool and enables proper parameter mapping between your tool and the policies.
 
 > **Note:** Supporting a Vincent Policy does not mean the policy is required to be used with your tool, it means the Vincent App developer that uses your tool can enabled the supported policies for use by their Vincent App Users, if the App User chooses to enable those policies.
 
@@ -255,7 +254,7 @@ The `precheck` function is executed locally by the Vincent Tool executor to prov
 
 Executing a Vincent Tool's `execute` function uses the Lit network, which costs both time and money, so your `precheck` function should perform whatever validation it can to ensure that the tool won't fail during execution.
 
-Before executing your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies enabled by the Vincent App User for your tool the specific Vincent App the tool is being executed for. If all Vincent Policies return `allow` results, the Vincent Tool's `precheck` function will be executed.
+Before executing your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, the Vincent Tool's `precheck` function will be executed.
 
 For our example token transfer tool, the `precheck` function checks both the Vincent User's Agent Wallet  ERC20 token balance, as well as the native token balance to validate the Agent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
 
@@ -384,9 +383,9 @@ The `execute` function is the main logic of your Vincent Tool, executed within t
 
 Unlike the `precheck` function which only validates feasibility, the `execute` function performs the actual work your tool is designed to do. Additionally, because the `execute` function is executed in the Lit Action environment, it has access to the full Lit Action capabilities, including the ability to sign transactions and data using the Vincent App User's Agent Wallet (for more information on what's available to you within the Lit Action environment see the Lit Protocol [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/overview) docs).
 
-> **Note** This [Lit Action doc page](https://developer.litprotocol.com/sdk/serverless-signing/combining-signatures) covers how to sign data with a PKP using the Ethers.js library within a Lit Action. Ethers.js is injected by Lit into the Lit Action runtime, so you don't need to import it to use it within your tool's `execute` function.
+> **Note** This [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/combining-signatures) doc page covers how to sign data with a PKP using the Ethers.js library within a Lit Action. Ethers.js is injected by Lit into the Lit Action runtime, so you don't need to import it to use it within your tool's `execute` function.
 
-Before executing your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies enabled by the Vincent App User for your tool for the specific Vincent App the tool is being executed for. If all Vincent Policies return `allow` results, your tool's `execute` function will be executed.
+Before executing your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, your tool's `execute` function will be executed.
 
 For our example token transfer tool, the `execute` function performs the actual ERC20 token transfer transaction:
 
