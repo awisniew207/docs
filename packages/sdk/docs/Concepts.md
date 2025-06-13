@@ -76,7 +76,7 @@ An example Policy is a daily spend limit, assigned to a Vincent App that perform
 
 # Vincent Agent Wallet
 
-Each Agent Wallet is a non-custodial account (powered via [Secure Multi-Party Computation (MPC)](https://en.wikipedia.org/wiki/Secure_multi-party_computation)) that enables seamless interactions with any Vincent App. Each Agent Wallet is represented by a [Lit Programmable Key Pair (PKP)](https://developer.litprotocol.com/user-wallets/pkps/overview) and controlled by the Vincent User's desired authentication method. Currently, Vincent supports the following authentication methods during account creation:
+Each Agent Wallet is a non-custodial account powered via [Secure Multi-Party Computation (MPC)](https://en.wikipedia.org/wiki/Secure_multi-party_computation) that enables seamless interactions with any Vincent App. Each Agent Wallet is represented by a [Lit Programmable Key Pair (PKP)](https://developer.litprotocol.com/user-wallets/pkps/overview) and controlled by the Vincent User's desired authentication method. Currently, Vincent supports the following authentication methods during account creation:
 
 - Email
 - SMS
