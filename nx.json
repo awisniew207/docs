@@ -50,7 +50,7 @@
     "releaseTagPattern": "vincent/{projectName}/{version}",
     "versionPlans": true,
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many --target=build --projects=vincent-tool-sdk,vincent-sdk,vincent-mcp,vincent-rest-api --parallel=false",
+      "preVersionCommand": "pnpm dlx nx run-many --target=build --all",
       "generatorOptions": {
         "preserveLocalDependencyProtocols": true
       }
