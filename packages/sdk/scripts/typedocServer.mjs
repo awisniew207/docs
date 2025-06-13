@@ -1,17 +1,4 @@
 import * as liveServer from 'live-server';
-import { execSync } from 'child_process';
-import { watch } from 'fs';
-
-function generateDocs() {
-  execSync('pnpm typedoc --skipErrorChecking', { stdio: 'inherit' });
-}
-
-generateDocs();
-
-const docsDir = './docs';
-watch(docsDir, { recursive: true }, (eventType, filename) => {
-  generateDocs();
-});
 
 const params = {
   port: 8181, // Set the server port. Defaults to 8080.
