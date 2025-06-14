@@ -1,11 +1,11 @@
 {
-  "name": "@lit-protocol/vincent-tool-uniswap-swap",
+  "name": "vincent-tool-uniswap-swap",
   "sourceRoot": "src",
   "projectType": "library",
   "targets": {
     "action:build": {
       "executor": "nx:run-commands",
-      "dependsOn": ["vincent-tool-sdk:build", "@lit-protocol/vincent-policy-spending-limit:build"],
+      "dependsOn": ["vincent-tool-sdk:build", "vincent-policy-spending-limit:build"],
       "options": {
         "commands": ["pnpm node ./esbuild.config.js"],
         "cwd": "packages/vincent-tools/vincent-tool-uniswap-swap",
@@ -38,11 +38,21 @@
         ]
       }
     },
-    "publish": {
-      "executor": "@nx/js:npm-publish",
-      "dependsOn": ["deploy"],
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "packageRoot": "dist"
+        "jestConfig": "{projectRoot}/test/jest.config.js",
+        "testMatch": ["<rootDir>/**/*.spec.ts"],
+        "passWithNoTests": true
+      }
+    },
+    "test-e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "{projectRoot}/test-e2e/jest.config.js",
+        "testMatch": ["<rootDir>/**/*.spec.ts"]
       }
     }
   }

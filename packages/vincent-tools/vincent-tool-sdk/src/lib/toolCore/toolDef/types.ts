@@ -57,7 +57,7 @@ export type VincentToolDef<
   >,
 > = {
   toolParamsSchema: ToolParamsSchema;
-  policyMap: PolicyMap;
+  supportedPolicies: PolicyMap;
 
   precheckSuccessSchema?: PrecheckSuccessSchema;
   precheckFailSchema?: PrecheckFailSchema;

@@ -42,9 +42,12 @@ export const vincentPolicy = createVincentPolicy({
   commitAllowResultSchema,
   commitDenyResultSchema,
 
-  precheck: async ({ toolParams, userParams }, { allow, deny, appId }) => {
+  precheck: async (
+    { toolParams, userParams },
+    { allow, deny, appId, delegation: { delegatorPkpInfo } },
+  ) => {
+    const { ethAddress } = delegatorPkpInfo;
     const {
-      pkpEthAddress,
       buyAmount,
       ethRpcUrl,
       rpcUrlForUniswap,
@@ -63,27 +66,29 @@ export const vincentPolicy = createVincentPolicy({
         tokenDecimals,
         buyAmount,
         maxDailySpendingLimitInUsdCents,
-        pkpEthAddress: pkpEthAddress as `0x${string}`,
+        pkpEthAddress: ethAddress as `0x${string}`,
         appId,
       });
 
     return buyAmountAllowed
       ? allow({
-          appId,
           maxSpendingLimitInUsd: Number(adjustedMaxDailySpendingLimit),
           buyAmountInUsd: Number(buyAmountInUsd),
         })
       : deny({
-          appId,
           reason: 'Attempted buy amount exceeds daily limit',
           maxSpendingLimitInUsd: Number(adjustedMaxDailySpendingLimit),
           buyAmountInUsd: Number(buyAmountInUsd),
         });
   },
-  evaluate: async ({ toolParams, userParams }, { allow, deny, appId }) => {
+  evaluate: async (
+    { toolParams, userParams },
+    { allow, deny, appId, delegation: { delegatorPkpInfo } },
+  ) => {
+    const { ethAddress } = delegatorPkpInfo;
+
     console.log('Evaluating spending limit policy', JSON.stringify(toolParams));
     const {
-      pkpEthAddress,
       buyAmount,
       ethRpcUrl,
       rpcUrlForUniswap,
@@ -106,7 +111,7 @@ export const vincentPolicy = createVincentPolicy({
               tokenDecimals,
               buyAmount,
               maxDailySpendingLimitInUsdCents,
-              pkpEthAddress: pkpEthAddress as `0x${string}`,
+              pkpEthAddress: ethAddress as `0x${string}`,
               appId,
             });
 
@@ -142,7 +147,6 @@ export const vincentPolicy = createVincentPolicy({
 
     return buyAmountAllowed
       ? allow({
-          appId,
           maxSpendingLimitInUsd: Number(adjustedMaxDailySpendingLimit),
           buyAmountInUsd: Number(buyAmountInUsd),
         })
@@ -152,16 +156,17 @@ export const vincentPolicy = createVincentPolicy({
           buyAmountInUsd: Number(buyAmountInUsd),
         });
   },
-  commit: async (params, { allow }) => {
-    const { appId, amountSpentUsd, maxSpendingLimitInUsd, pkpEthAddress, pkpPubKey } = params;
+  commit: async (params, { allow, appId, delegation: { delegatorPkpInfo } }) => {
+    const { ethAddress, publicKey } = delegatorPkpInfo;
+    const { amountSpentUsd, maxSpendingLimitInUsd } = params;
 
     const spendTxHash = await sendSpendTx({
       appId,
       amountSpentUsd,
       maxSpendingLimitInUsd,
       spendingLimitDuration: 86400, // number of seconds in a day
-      pkpEthAddress,
-      pkpPubKey,
+      pkpEthAddress: ethAddress,
+      pkpPubKey: publicKey,
     });
 
     return allow({

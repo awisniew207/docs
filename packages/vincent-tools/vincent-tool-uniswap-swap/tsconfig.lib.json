@@ -4,14 +4,13 @@
     "baseUrl": ".",
     "rootDir": "src",
     "outDir": "dist",
-    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
     "emitDeclarationOnly": false,
     "composite": true,
     "declaration": true,
     "declarationMap": true,
     "types": ["node"],
-    "moduleResolution": "node",
-    "module": "commonjs",
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
     "esModuleInterop": true
   },
   "include": ["src/**/*.ts", "src/generated/vincent-tool-metadata.json"],
@@ -26,5 +25,11 @@
       "path": "../vincent-tool-erc20-approval/tsconfig.lib.json"
     }
   ],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "test/**/*.ts",
+    "test-e2e/**/*.ts"
+  ]
 }

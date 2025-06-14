@@ -1,21 +1,13 @@
-import { PublicClient } from 'viem';
+import { ethers } from 'ethers';
 
 export const checkNativeTokenBalance = async ({
-  client,
+  provider,
   pkpEthAddress,
 }: {
-  client: PublicClient;
-  pkpEthAddress: `0x${string}`;
-}) => {
-  const ethBalance = await client.getBalance({
-    address: pkpEthAddress as `0x${string}`,
-  });
+  provider: ethers.providers.Provider;
+  pkpEthAddress: string;
+}): Promise<boolean> => {
+  const ethBalance = await provider.getBalance(pkpEthAddress);
 
-  if (ethBalance === 0n) {
-    throw new Error(
-      `pkpEthAddress (${pkpEthAddress}) has zero native token balance (UniswapSwapToolPrecheck)`,
-    );
-  }
-
-  return ethBalance;
+  return ethBalance.gt(0n);
 };

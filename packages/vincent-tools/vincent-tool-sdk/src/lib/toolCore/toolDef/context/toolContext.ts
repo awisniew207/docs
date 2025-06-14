@@ -32,9 +32,9 @@ export function createExecutionToolContext<
   baseContext: BaseToolContext<ToolExecutionPolicyEvaluationResult<PolicyMapByPackageName>>;
   successSchema?: SuccessSchema;
   failSchema?: FailSchema;
-  supportedPolicies: PolicyMapByPackageName;
+  policiesByPackageName: PolicyMapByPackageName;
 }): ToolContext<SuccessSchema, FailSchema, ToolExecutionPolicyContext<PolicyMapByPackageName>> {
-  const { baseContext, successSchema, failSchema, supportedPolicies } = params;
+  const { baseContext, successSchema, failSchema, policiesByPackageName } = params;
 
   const succeed = successSchema ? createSuccess : createSuccessNoResult;
   const fail = failSchema ? createFailure : createFailureNoResult;
@@ -42,7 +42,7 @@ export function createExecutionToolContext<
   const allowedPolicies =
     {} as ToolExecutionPolicyContext<PolicyMapByPackageName>['allowedPolicies'];
 
-  for (const key of Object.keys(supportedPolicies)) {
+  for (const key of Object.keys(policiesByPackageName)) {
     const k = key as keyof PolicyMapByPackageName;
     const entry = baseContext.policiesContext.allowedPolicies[k];
 

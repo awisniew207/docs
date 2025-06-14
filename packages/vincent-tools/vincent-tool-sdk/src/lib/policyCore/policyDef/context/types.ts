@@ -6,6 +6,7 @@ import type {
   PolicyResponseAllowNoResult,
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
+  BaseContext,
 } from '../../../types';
 
 const YouMustCallContextAllowOrDeny: unique symbol = Symbol(
@@ -35,17 +36,7 @@ export type ContextDenyResponseNoResult = MustCallContextAllowOrDeny<PolicyRespo
 export interface PolicyContext<
   AllowSchema extends z.ZodType = z.ZodUndefined,
   DenySchema extends z.ZodType = z.ZodUndefined,
-> {
-  toolIpfsCid: string;
-  appId: number;
-  appVersion: number;
-
-  delegation: {
-    delegatee: string;
-    delegator: string;
-  };
-
-  // Instead of branded types, we use conditional types directly
+> extends BaseContext {
   allow: AllowSchema extends z.ZodUndefined
     ? () => ContextAllowResponseNoResult
     : (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>;

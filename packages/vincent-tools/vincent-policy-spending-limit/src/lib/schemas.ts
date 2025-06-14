@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const toolParamsSchema = z.object({
-  pkpEthAddress: z.string(),
   ethRpcUrl: z.string(),
   rpcUrlForUniswap: z.string(),
   chainIdForUniswap: z.number(),
@@ -15,20 +14,17 @@ export const userParamsSchema = z.object({
 });
 
 export const precheckAllowResultSchema = z.object({
-  appId: z.number(),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
 
 export const precheckDenyResultSchema = z.object({
-  appId: z.number(),
   reason: z.literal('Attempted buy amount exceeds daily limit'),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
 
 export const evalAllowResultSchema = z.object({
-  appId: z.number(),
   maxSpendingLimitInUsd: z.number(),
   buyAmountInUsd: z.number(),
 });
@@ -40,11 +36,8 @@ export const evalDenyResultSchema = z.object({
 });
 
 export const commitParamsSchema = z.object({
-  appId: z.number(),
   amountSpentUsd: z.number(),
   maxSpendingLimitInUsd: z.number(),
-  pkpEthAddress: z.string(),
-  pkpPubKey: z.string(),
 });
 
 export const commitAllowResultSchema = z.object({

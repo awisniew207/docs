@@ -5,8 +5,10 @@
   "name": "Vincent Docs",
   "projectDocuments": [
     "docs/Why-Vincent.md",
+    "docs/Concepts.md",
     "docs/Developers/Quick-Start.md",
     "docs/Developers/Creating-Policies.md",
+    "docs/Developers/Creating-Tools.md",
     "docs/Developers/AI-Integration.md",
     "docs/Users/Onboarding.md",
     "docs/Contact-Us.md"

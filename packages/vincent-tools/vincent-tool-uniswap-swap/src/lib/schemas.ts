@@ -4,7 +4,6 @@ export const toolParamsSchema = z.object({
   ethRpcUrl: z.string(),
   rpcUrlForUniswap: z.string(),
   chainIdForUniswap: z.number(),
-  pkpEthAddress: z.string(),
 
   tokenInAddress: z.string(),
   tokenInDecimals: z.number(),

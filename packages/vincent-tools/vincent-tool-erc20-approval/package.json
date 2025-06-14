@@ -7,11 +7,9 @@
   "dependencies": {
     "@lit-protocol/vincent-tool-sdk": "workspace:*",
     "ethers": "^5.7.2",
-    "viem": "^2.23.2",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.39.0",
     "@types/jest": "^29.5.14",
     "cbor": "^10.0.3",
     "esbuild": "^0.19.11",
@@ -23,15 +21,11 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2"
   },
-  "type": "commonjs",
   "main": "./dist/src/index.js",
   "module": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "files": [
-    "dist",
-    "!**/*.tsbuildinfo"
-  ],
-  "scripts": {
-    "test": "jest"
-  }
+    "dist/**",
+    "*.md"
+  ]
 }

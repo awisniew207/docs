@@ -59,7 +59,7 @@ export function createVincentTool<
     >
   >,
 ) {
-  const { policyByPackageName } = toolDef.policyMap;
+  const { policyByPackageName } = toolDef.supportedPolicies;
 
   const executeSuccessSchema = (toolDef.executeSuccessSchema ??
     z.undefined()) as ExecuteSuccessSchema;
@@ -75,7 +75,7 @@ export function createVincentTool<
         baseContext: baseToolContext,
         successSchema: executeSuccessSchema,
         failSchema: executeFailSchema,
-        supportedPolicies: policyByPackageName as PolicyMapByPackageName,
+        policiesByPackageName: policyByPackageName as PolicyMapByPackageName,
       });
 
       const parsedToolParams = validateOrFail(
@@ -183,7 +183,7 @@ export function createVincentTool<
   return {
     execute,
     precheck,
-    policyMap: toolDef.policyMap,
+    supportedPolicies: toolDef.supportedPolicies,
     policyByPackageName,
     toolParamsSchema: toolDef.toolParamsSchema,
     __schemaTypes: {

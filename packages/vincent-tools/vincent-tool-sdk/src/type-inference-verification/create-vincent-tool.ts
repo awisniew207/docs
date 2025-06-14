@@ -5,7 +5,7 @@ import { createVincentPolicy } from '../lib/policyCore/vincentPolicy';
 import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 
 const toolParams = z.object({
   action: z.string(),
@@ -45,7 +45,7 @@ const policy = createVincentToolPolicy({
 export const tool = createVincentTool({
   // packageName: 'my-tool@1.0.0',
   toolParamsSchema: toolParams,
-  policyMap: createPolicyMapFromToolPolicies([policy] as const),
+  supportedPolicies: supportedPoliciesForTool([policy] as const),
 
   executeSuccessSchema: z.object({ status: z.string() }),
   executeFailSchema: z.object({ error: z.string() }),

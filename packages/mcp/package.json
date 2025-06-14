@@ -20,27 +20,27 @@
     "agents"
   ],
   "files": [
-    "src/**"
+    "dist/**",
+    "*.md"
   ],
   "bin": {
-    "vincent-mcp": "src/cli.js",
-    "http": "src/http.js",
-    "stdio": "src/stdio.js"
+    "vincent-mcp": "./dist/src/cli.js",
+    "http": "./dist/http.js",
+    "stdio": "./dist/stdio.js"
   },
-  "main": "./src/stdio.js",
+  "main": "./dist/stdio.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
     "dev:stdio": "tsx src/stdio.ts",
     "dev:http": "tsx watch --env-file=.env src/http.ts",
     "inspector": "npx @modelcontextprotocol/inspector",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "mintRlI": "tsx --env-file=.env ./src/bin/mintRLINft.ts"
   },
   "dependencies": {
     "@lit-protocol/constants": "^7.1.1",
     "@lit-protocol/contracts-sdk": "^7.1.1",
-    "@lit-protocol/vincent-sdk": "0.0.7",
+    "@lit-protocol/vincent-sdk": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.11.2",
     "@t3-oss/env-core": "^0.13.4",
     "ethers": "^5.8.0",
