@@ -146,11 +146,11 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-This would enable your policy to verify against its database or smart contract whether permitting the Vincent Tool executor to spend `amount` of `tokenAddress` would exceed the Vincent App User's configured spending limit.
+Your policy can then check whether spending `amount` of `tokenAddress` would exceed the Vincent App User's configured spending limit by querying its database of smart contract.
 
 ### `userParamsSchema`
 
-This Zod schema defines the structure of the on-chain parameters that Vincent App Users configure for your policy. These parameters are fetched from the Vincent smart contract during execution of a Vincent Policy's `precheck` and `evaluate` functions. They are unique to each Vincent Tool and Vincent App combo, and cannot be altered by the Vincent App or tool executor during execution.
+This Zod schema defines the structure of the on-chain parameters that Vincent App Users configure for your policy. These parameters are fetched from the Vincent smart contract during execution of a Vincent Policy's `precheck` and `evaluate` functions. They are unique to each Vincent Tool and Vincent App union, and cannot be altered by the Vincent App or tool executor during execution.
 
 These parameters are meant to be used to define the guardrails that Vincent App Users want to place on the Vincent Apps for executing Vincent Tools. For example, if you are building a spending limit policy, you might define the `userParamsSchema` as follows:
 
@@ -244,13 +244,13 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Specifying `maxDailySpendingLimit` allows the Vincent Tool executor to adapt to the Vincent App User modifying their spending limit for the Vincent App. `currentDailySpending` is useful to know so that Vincent App can understand how much of the spending limit has been used, and `allowedTokens` is useful to know so that Vincent App doesn't try to spend tokens that will cause the policy to fail.
+Specifying `maxDailySpendingLimit` allows the Vincent Tool executor to adapt to the Vincent App User modifying their spending limit for the Vincent App. `currentDailySpending` is useful to know so that the Vincent App can understand how much of the spending limit has been used, and `allowedTokens` allows the Vincent App to avoid trying to spend tokens that will cause the policy to fail.
 
 ### `precheckDenyResultSchema`
 
 This Zod schema defines the structure of a failed `precheck` result. What's included in the returned object is up to you, but ideally it includes details about why the `precheck` failed.
 
-The following schema returns additional information to the Vincent Tool executor that would allow them to adapt their execution request so that the policy's `precheck` validation checks doesn't fail:
+The following schema returns additional information to the Vincent Tool executor that would allow them to adapt their execution request so that the policy's `precheck` validation checks don't fail:
 
 > **Note:** If any unhandled error occurs during execution of your policy's `precheck` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
 
@@ -372,7 +372,7 @@ const vincentPolicy = createVincentPolicy({
 
 ## Commit Function
 
-The `commit` function is called by the Vincent Tool's `execute` method after all the Vincent Policies registered by the Vincent User have been evaluated and returned `allow` results, and the Vincent Tool's execution logic has been successfully executed. This functions is **optional**, and is only required if you need to update any state that the policy depends on, after the Vincent Tool executes.
+The `commit` function is called by the Vincent Tool's `execute` method after all the Vincent Policies registered by the Vincent User have been evaluated and returned `allow` results, and the Vincent Tool's execution logic has been successfully executed. This function is **optional**, and is only required if you need to update any state that the policy depends on, after the Vincent Tool executes.
 
 For the spending limit policy example, the `commit` function would be used to update the spending limit database/smart contract with the amount of tokens the Vincent App has spent on behalf of the Vincent App User:
 
@@ -417,7 +417,7 @@ const vincentPolicy = createVincentPolicy({
 
 Two arguments are passed to your policy's `commit` function by the Vincent Tool & Policy SDK. The first is an object adhering to the `commitParamsSchema` you have defined for your policy, and the second is the same [`policyContext`](#the-policycontext-argument) passed to the `precheck` and `evaluate` functions.
 
-Notice that unlike the `precheck` and `evaluate` functions, the `commit` functions does **not** receive the `toolParams` and `userParams` arguments. If you need access to any of the variable specified in those objects, make sure to include them in the `commitParamsSchema` you have defined for your policy.
+Notice that unlike the `precheck` and `evaluate` functions, the `commit` functions does **not** receive the `toolParams` and `userParams` arguments. If you need access to any of the variables specified in those objects, make sure to include them in the `commitParamsSchema` you have defined for your policy.
 
 ### `commitParamsSchema`
 
