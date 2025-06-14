@@ -42,7 +42,7 @@ A Vincent Policy consists of three main lifecycle methods executed in the follow
 
 1. **Precheck**: Executed by the Vincent Tool's `precheck` function, your policy's precheck logic provides the Vincent Tool executor with a best-effort validation that your policy should permit the execution of the Vincent Tool given current policy conditions
    - This function is executed locally by the Vincent Tool executor outside of the Lit Action environment
-2. **Evaluate**: Executed by the Vincent Tool's `execute` function, this is the validation logic that determine whether or not your policy permits the execution of the Vincent Tool based on given input parameters and current policy state
+2. **Evaluate**: Executed by the Vincent Tool's `execute` function, this is the validation logic that determines whether or not your policy permits the execution of the Vincent Tool based on given input parameters and current policy state
    - This function is executed in the Lit Action environment
 3. **Commit**: An optional function used to commit results and update any state the policy depends on, executed after all the Vincent Policies registered by the Vincent User have been evaluated, and the Vincent Tool has executed successfully
    - This function is executed in the Lit Action environment
