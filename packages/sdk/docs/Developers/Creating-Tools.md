@@ -6,6 +6,7 @@ title: Creating Vincent Tools
 # What is a Vincent Tool?
 
 <!-- TODO Link to Vincent Policy definition when it's available -->
+
 A Vincent Tool is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) that enables Vincent Apps to perform specific actions on behalf of Vincent App Users. These tools are the core functional units that Vincent Apps use to interact with blockchains, APIs, and other services while being governed by user-configured Vincent Policies.
 
 ## Key Capabilities of Vincent Tools
@@ -22,6 +23,7 @@ Vincent Tools provide powerful capabilities that enable a wide variety of blockc
 A Vincent Tool consists of two main lifecycle methods executed in the following order:
 
 1. **Precheck**: Executed locally by the Vincent Tool executor, this function provides a best-effort check that the tool execution shouldn't fail
+
    - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Tool's `precheck` function will be executed
    - This function is where you'd perform checks such as validating the Vincent Agent Wallet has sufficient token balances, has the appropriate on-chain approvals to make token transfers, or anything else your tool can validate before executing the tool's logic
@@ -41,15 +43,15 @@ The following is the basic structure of a Vincent Tool definition:
 export const vincentTool = createVincentTool({
   toolParamsSchema,
 
-  supportedPolicies: supportedPoliciesForTool([ ]),
+  supportedPolicies: supportedPoliciesForTool([]),
 
   precheckSuccessSchema,
   precheckFailSchema,
-  precheck: async ({ toolParams }, toolContext) => { },
+  precheck: async ({ toolParams }, toolContext) => {},
 
   executeSuccessSchema,
   executeFailSchema,
-  execute: async ({ toolParams }, toolContext) => { },
+  execute: async ({ toolParams }, toolContext) => {},
 });
 ```
 
@@ -75,7 +77,9 @@ interface ToolContext {
     allowedPolicies: {
       [policyPackageName: string]: {
         result: evalAllowResultSchema;
-        commit: (params: commitParamsSchema) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
+        commit: (
+          params: commitParamsSchema
+        ) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
       };
     };
     deniedPolicy?: {
@@ -89,6 +93,7 @@ interface ToolContext {
 ```
 
 Where:
+
 - `toolIpfsCid`: The IPFS CID of the Vincent Tool that is being executed
 - `appId`: The ID of the Vincent App the Vincent Tool is being executed for
 - `appVersion`: The version of the Vincent App the Vincent Tool is being executed for
@@ -143,6 +148,7 @@ The `tokenAddress` and `amountToSend` parameters are also the parameters require
 ## Defining Supported Policies
 
 <!-- TODO Link to the VincentToolPolicy typedoc interface when it's available -->
+
 To add support for Vincent Policies to your tool, you need to create Vincent Tool Policy objects using the `createVincentToolPolicy` function from the `@lit-protocol/vincent-tool-sdk` package for each Vincent Policy you want your tool to support. These Vincent Tool Policy objects are then added to your tool's `supportedPolicies` array, which binds the policies to your tool and enables proper parameter mapping between your tool and the policies.
 
 > **Note:** Supporting a Vincent Policy does not mean the policy is required to be used with your tool, it means the Vincent App developer that uses your tool can enabled the supported policies for use by their Vincent App Users, if the App User chooses to enable those policies.
@@ -161,8 +167,8 @@ const vincentPolicy = createVincentPolicy({
   // ... other policy definitions
 
   toolParamsSchema: z.object({
-      tokenAddress: z.string(),
-      amount: z.number(),
+    tokenAddress: z.string(),
+    amount: z.number(),
   }),
 });
 ```
@@ -174,7 +180,11 @@ Because the name of the parameters given to your tool, as defined by your tool's
 To accomplish this, we create a _VincentToolPolicy_ object using the `createVincentToolPolicy` function:
 
 ```typescript
-import { createVincentTool, createVincentToolPolicy, supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
+import {
+  createVincentTool,
+  createVincentToolPolicy,
+  supportedPoliciesForTool,
+} from '@lit-protocol/vincent-tool-sdk';
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
 import { z } from 'zod';
 
@@ -225,14 +235,18 @@ Executing a Vincent Tool's `execute` function uses the Lit network, which costs 
 
 Before executing your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, the Vincent Tool's `precheck` function will be executed.
 
-For our example token transfer tool, the `precheck` function checks both the Vincent User's Agent Wallet  ERC20 token balance, as well as the native token balance to validate the Agent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
+For our example token transfer tool, the `precheck` function checks both the Vincent User's Agent Wallet ERC20 token balance, as well as the native token balance to validate the Agent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
 
 > **Note:** The code from the previous sections has been omitted for brevity. The full code example can be found in the [Wrapping Up](#wrapping-up) section at the end of this guide.
 
 ```typescript
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
 
-import { createErc20TransferTransaction, getErc20TokenBalance, getNativeTokenBalance } from './my-tool-code';
+import {
+  createErc20TransferTransaction,
+  getErc20TokenBalance,
+  getNativeTokenBalance,
+} from './my-tool-code';
 
 const vincentTool = createVincentTool({
   // ... other tool definitions
@@ -247,9 +261,9 @@ const vincentTool = createVincentTool({
     );
     if (erc20TokenBalance < amountToSend) {
       return toolContext.fail({
-        reason: "Insufficient token balance",
+        reason: 'Insufficient token balance',
         currentBalance: erc20TokenBalance,
-        requiredAmount: amountToSend
+        requiredAmount: amountToSend,
       });
     }
 
@@ -267,9 +281,9 @@ const vincentTool = createVincentTool({
       // Handle gas estimation failures (transaction would revert)
       if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         return toolContext.fail({
-          reason: "Transaction reverted during gas estimation/transaction simulation",
+          reason: 'Transaction reverted during gas estimation/transaction simulation',
           errorCode: error.code,
-          revertReason: error.reason || "Unknown revert reason",
+          revertReason: error.reason || 'Unknown revert reason',
           transferTransaction,
         });
       }
@@ -277,7 +291,7 @@ const vincentTool = createVincentTool({
       // Let the Vincent Tool & Policy SDK handle the error
       throw error;
     }
-    
+
     const nativeTokenBalance = await getNativeTokenBalance(
       toolContext.delegation.delegatorPkpInfo.ethAddress,
       estimatedGas
@@ -285,9 +299,9 @@ const vincentTool = createVincentTool({
 
     if (nativeTokenBalance < estimatedGas) {
       return toolContext.fail({
-        reason: "Insufficient native token balance",
+        reason: 'Insufficient native token balance',
         currentBalance: nativeTokenBalance,
-        requiredAmount: estimatedGas
+        requiredAmount: estimatedGas,
       });
     }
 
@@ -382,9 +396,9 @@ const vincentTool = createVincentTool({
       // Handle different types of errors
       if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         return toolContext.fail({
-          error: "Transaction reverted during gas estimation/transaction simulation",
+          error: 'Transaction reverted during gas estimation/transaction simulation',
           errorCode: error.code,
-          revertReason: error.reason || "Unknown revert reason",
+          revertReason: error.reason || 'Unknown revert reason',
           transferTransaction,
         });
       }
@@ -392,7 +406,7 @@ const vincentTool = createVincentTool({
       // Let the Vincent Tool & Policy SDK handle the error
       throw error;
     }
-      
+
     const transferTransactionHash = await transferTransaction.send();
     return toolContext.succeed({
       transferTransactionHash,
@@ -476,10 +490,15 @@ The `policiesContext` object contains a property called `allowedPolicies` that i
 
 ```typescript
 interface PoliciesContext {
-  allowedPolicies: Record<string, {
-    result: evalAllowResultSchema;
-    commit: (params: commitParamsSchema) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
-  }>;
+  allowedPolicies: Record<
+    string,
+    {
+      result: evalAllowResultSchema;
+      commit: (
+        params: commitParamsSchema
+      ) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
+    }
+  >;
 }
 ```
 
@@ -497,7 +516,7 @@ const vincentTool = createVincentTool({
     const { tokenAddress, amountToSend, recipientAddress } = toolParams;
 
     // previous code omitted for brevity
-      
+
     const transferTransactionHash = await transferTransaction.send();
 
     const spendingLimitPolicyContext =
@@ -536,7 +555,11 @@ This guide has covered the basics of creating a Vincent Tool with supported Vinc
 For the token transfer tool example we've been building throughout this guide, the final tool definition would look like the following:
 
 ```typescript
-import { createVincentTool, createVincentToolPolicy, supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
+import {
+  createVincentTool,
+  createVincentToolPolicy,
+  supportedPoliciesForTool,
+} from '@lit-protocol/vincent-tool-sdk';
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
 import { z } from 'zod';
 
@@ -580,9 +603,9 @@ const vincentTool = createVincentTool({
     );
     if (erc20TokenBalance < amountToSend) {
       return toolContext.fail({
-        reason: "Insufficient token balance",
+        reason: 'Insufficient token balance',
         currentBalance: erc20TokenBalance,
-        requiredAmount: amountToSend
+        requiredAmount: amountToSend,
       });
     }
 
@@ -600,9 +623,9 @@ const vincentTool = createVincentTool({
       // Handle gas estimation failures (transaction would revert)
       if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         return toolContext.fail({
-          reason: "Transaction reverted during gas estimation/transaction simulation",
+          reason: 'Transaction reverted during gas estimation/transaction simulation',
           errorCode: error.code,
-          revertReason: error.reason || "Unknown revert reason",
+          revertReason: error.reason || 'Unknown revert reason',
           transferTransaction,
         });
       }
@@ -610,7 +633,7 @@ const vincentTool = createVincentTool({
       // Let the Vincent Tool & Policy SDK handle the error
       throw error;
     }
-    
+
     const nativeTokenBalance = await getNativeTokenBalance(
       toolContext.delegation.delegatorPkpInfo.ethAddress,
       estimatedGas
@@ -618,9 +641,9 @@ const vincentTool = createVincentTool({
 
     if (nativeTokenBalance < estimatedGas) {
       return toolContext.fail({
-        reason: "Insufficient native token balance",
+        reason: 'Insufficient native token balance',
         currentBalance: nativeTokenBalance,
-        requiredAmount: estimatedGas
+        requiredAmount: estimatedGas,
       });
     }
 
@@ -668,9 +691,9 @@ const vincentTool = createVincentTool({
       // Handle different types of errors
       if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         return toolContext.fail({
-          error: "Transaction reverted during gas estimation/transaction simulation",
+          error: 'Transaction reverted during gas estimation/transaction simulation',
           errorCode: error.code,
-          revertReason: error.reason || "Unknown revert reason",
+          revertReason: error.reason || 'Unknown revert reason',
           transferTransaction,
         });
       }
@@ -678,9 +701,9 @@ const vincentTool = createVincentTool({
       // Let the Vincent Tool & Policy SDK handle the error
       throw error;
     }
-      
+
     const transferTransactionHash = await transferTransaction.send();
-    
+
     const spendingLimitPolicyContext =
       policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
 

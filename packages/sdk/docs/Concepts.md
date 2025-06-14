@@ -26,15 +26,18 @@ This guide provides definitions of the core concepts of the Vincent platform, be
 Vincent Tools enable Vincent Apps to perform specific actions on behalf of Vincent App Users. These tools are the core functional units that Vincent Apps use to interact with blockchains, APIs, and other services while being governed by user-configured Vincent Policies.
 
 <!-- TODO Link to Uniswap doc page -->
+
 Vincent Tools can read and write data to both on and off-chain sources, perform arbitrary computations, and sign blockchain transactions. This allows them to perform specific actions, such as minting a reward token based on off-chain data, or they can serve general purposes, such as enabling ERC20 token swaps using Uniswap like the Vincent Uniswap Tool.
 
 **On-chain examples:**
+
 - Execute automated DeFi strategies like yield farming or liquidity provision
 - Manage NFT collections by buying, selling, or staking NFTs
 - Perform cross-chain operations like bridging assets or executing cross-chain swaps
 - Interact with DAOs by voting on proposals or executing governance actions
 
 **Off-chain examples:**
+
 - Integrate with traditional finance APIs to manage stock portfolios
 - Connect with social media platforms to automate content posting and engagement
 - Use weather APIs to trigger automated actions based on environmental conditions
@@ -49,16 +52,19 @@ Vincent Policies give users full control over defining how their assets and data
 Just like Tools, Vincent Policies are also powered by Lit Actions under the hood. This makes them highly generalizable and well-suited to track and query on or off-chain state to make decisions based on data such as:
 
 - Usage metrics:
+
   - Tool execution frequency (e.g. max 10 transactions per day)
   - Session duration limits (e.g. max 2 hours per session)
   - Concurrent operation limits (e.g. max 3 pending operations)
 
 - Financial controls:
+
   - Spending amounts over time periods (e.g. daily spending limit of $1,000)
   - Token-specific limits (e.g. max 5 ERC20 tokens per transaction)
   - Portfolio allocation limits (e.g. max 20% of portfolio in any single token)
 
 - Access controls:
+
   - Time-based restrictions (e.g. only during market hours)
   - Geographic limitations (e.g. restricted to specific regions)
   - Multi-factor authentication requirements (e.g. require 2FA for high-value transactions)
@@ -126,7 +132,7 @@ The lifecycle of a Vincent App follows these steps:
 6. The App's webapp receives the redirect from the Vincent Consent page and logs the User in
 7. The User interacts with the webapp and clicks a button that requires execution of a Vincent Tool
 8. The App's webapp backend triggers the Tool execution
-9.  The App collects the necessary data for the Tool execution and submits a request to the Lit Protocol network
+9. The App collects the necessary data for the Tool execution and submits a request to the Lit Protocol network
 10. The Tool begins execution and first checks which Vincent App the executor is associated with
     - If the executor is not associated with any App, execution halts and returns a not-authorized error
 11. The Tool then checks which App Version the App User has authorized and retrieves the Policies and Policy parameters that the User set for the executing Tool
