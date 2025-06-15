@@ -51,3 +51,7 @@ export interface RemoteVincentToolExecutionResult<
   toolExecutionResult: ToolResponse<SuccessSchema, FailSchema, Policies>;
   toolContext: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
 }
+
+export interface ToolClientContext {
+  delegatorPkpEthAddress: string;
+}

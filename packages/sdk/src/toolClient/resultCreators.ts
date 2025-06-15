@@ -109,10 +109,10 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
   };
 }
 
-export function createToolResponseSuccess<Success, Policies extends Record<string, any>>(params: {
+export function createToolResponseSuccess<Success, Policies extends Record<any, any>>(params: {
   result: Success;
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseSuccess<any, Policies> {
+}): ToolResponseSuccess<Success, Policies> {
   return {
     success: true,
     result: params.result,
@@ -120,7 +120,7 @@ export function createToolResponseSuccess<Success, Policies extends Record<strin
   };
 }
 
-export function createToolResponseSuccessNoResult<Policies extends Record<string, any>>(params?: {
+export function createToolResponseSuccessNoResult<Policies extends Record<any, any>>(params?: {
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
 }): ToolResponseSuccessNoResult<Policies> {
   return {
@@ -130,11 +130,11 @@ export function createToolResponseSuccessNoResult<Policies extends Record<string
   };
 }
 
-export function createToolResponseFailure<Fail, Policies extends Record<string, any>>(params: {
+export function createToolResponseFailure<Fail, Policies extends Record<any, any>>(params: {
   result: Fail;
   message?: string;
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseFailure<any, Policies> {
+}): ToolResponseFailure<Fail, Policies> {
   return {
     success: false,
     result: params.result,
@@ -143,7 +143,7 @@ export function createToolResponseFailure<Fail, Policies extends Record<string, 
   };
 }
 
-export function createToolResponseFailureNoResult<Policies extends Record<string, any>>(params: {
+export function createToolResponseFailureNoResult<Policies extends Record<any, any>>(params: {
   message?: string;
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
 }): ToolResponseFailureNoResult<Policies> {

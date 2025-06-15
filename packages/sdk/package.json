@@ -18,6 +18,7 @@
     "sdk"
   ],
   "scripts": {
+    "type-tests": "./scripts/run-typecheck.sh",
     "watch:type-tests": "chokidar 'src/**/*' --initial --await-write-finish --delay 100 --silent -c './scripts/run-typecheck.sh'",
     "typecheck": "./scripts/precommit-check.sh"
   },

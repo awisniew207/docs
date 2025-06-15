@@ -130,6 +130,8 @@ export const vincentToolHandler = <
     const toolIpfsCid = LitAuth.actionIpfsIds[0];
     const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
 
+    // Build an initial baseContext -- we will add info as we execute, so if an error is encountered the consumer gets
+    // all of the info we did find along the way
     const baseContext = {
       delegation: {
         delegateeAddress: appDelegateeAddress,

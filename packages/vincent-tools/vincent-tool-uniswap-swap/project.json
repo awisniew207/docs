@@ -48,6 +48,11 @@
       }
     },
     "test-e2e": {
+      "verbose": true,
+      "dependsOn": [
+        "vincent-policy-spending-limit:action:deploy",
+        "vincent-tool-erc20-approval:action:deploy"
+      ],
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {

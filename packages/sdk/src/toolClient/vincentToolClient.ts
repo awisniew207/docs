@@ -20,6 +20,7 @@ import type {
   PolicyEvaluationResultContext,
   ToolConsumerContext,
   BaseToolContext,
+  BundledVincentTool,
 } from '@lit-protocol/vincent-tool-sdk';
 
 import type { DecodedValues, ToolPolicyMap } from '@lit-protocol/vincent-tool-sdk/internal';
@@ -47,12 +48,18 @@ import { getLitNodeClientInstance } from '../internal/LitNodeClient/getLitNodeCl
 import {
   createAllowEvaluationResult,
   createDenyEvaluationResult,
+  createToolResponseFailure,
   createToolResponseFailureNoResult,
+  createToolResponseSuccess,
 } from './resultCreators';
 
-import { type RemoteVincentToolExecutionResult, ToolResponse } from './types';
+import {
+  type ToolClientContext,
+  type ToolResponse,
+  type RemoteVincentToolExecutionResult,
+} from './types';
 
-import { isToolResponseFailure } from './typeGuards';
+import { isRemoteVincentToolExecutionResult, isToolResponseFailure } from './typeGuards';
 
 const generateSessionSigs = async ({
   litNodeClient,
@@ -88,20 +95,28 @@ const generateSessionSigs = async ({
 };
 
 async function runToolPolicyPrechecks<
+  const IpfsCid extends string,
   ToolParamsSchema extends z.ZodType,
-  const PkgNames extends string,
+  PkgNames extends string,
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
   PoliciesByPackageName extends PolicyMap['policyByPackageName'],
->(args: {
-  vincentTool: VincentTool<
-    ToolParamsSchema,
-    PkgNames,
-    PolicyMap,
-    PoliciesByPackageName,
-    any,
-    any,
-    any,
-    any
+  ExecuteSuccessSchema extends z.ZodType = z.ZodUndefined,
+  ExecuteFailSchema extends z.ZodType = z.ZodUndefined,
+  PrecheckSuccessSchema extends z.ZodType = z.ZodUndefined,
+  PrecheckFailSchema extends z.ZodType = z.ZodUndefined,
+>(params: {
+  bundledVincentTool: BundledVincentTool<
+    VincentTool<
+      ToolParamsSchema,
+      PkgNames,
+      PolicyMap,
+      PoliciesByPackageName,
+      ExecuteSuccessSchema,
+      ExecuteFailSchema,
+      PrecheckSuccessSchema,
+      PrecheckFailSchema
+    >,
+    IpfsCid
   >;
   toolParams: unknown;
   context: ToolConsumerContext & { delegateePkpEthAddress: string; rpcUrl?: string };
@@ -109,10 +124,10 @@ async function runToolPolicyPrechecks<
   type Key = PkgNames & keyof PoliciesByPackageName;
 
   const {
-    vincentTool,
+    bundledVincentTool: { vincentTool, ipfsCid },
     toolParams,
-    context: { delegateePkpEthAddress, delegatorPkpEthAddress, rpcUrl, toolIpfsCid },
-  } = args;
+    context: { delegateePkpEthAddress, delegatorPkpEthAddress, rpcUrl },
+  } = params;
 
   const parsedToolParams = vincentTool.toolParamsSchema.parse(toolParams);
 
@@ -127,11 +142,11 @@ async function runToolPolicyPrechecks<
     vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
     appDelegateeAddress: delegateePkpEthAddress,
     agentWalletPkpTokenId: userPkpInfo.tokenId,
-    toolIpfsCid,
+    toolIpfsCid: ipfsCid,
   });
 
   const baseContext = {
-    toolIpfsCid,
+    toolIpfsCid: ipfsCid,
     appId: appId.toNumber(),
     appVersion: appVersion.toNumber(),
     delegation: {
@@ -147,7 +162,7 @@ async function runToolPolicyPrechecks<
   const validatedPolicies = await validatePolicies({
     policies,
     vincentTool,
-    toolIpfsCid,
+    toolIpfsCid: ipfsCid,
     parsedToolParams,
   });
 
@@ -289,6 +304,7 @@ async function runToolPolicyPrechecks<
 }
 
 export function createVincentToolClient<
+  const IpfsCid extends string,
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
@@ -297,20 +313,25 @@ export function createVincentToolClient<
   ExecuteFailSchema extends z.ZodType = z.ZodUndefined,
   PrecheckSuccessSchema extends z.ZodType = z.ZodUndefined,
   PrecheckFailSchema extends z.ZodType = z.ZodUndefined,
->(args: {
-  vincentTool: VincentTool<
-    ToolParamsSchema,
-    PkgNames,
-    PolicyMap,
-    PoliciesByPackageName,
-    ExecuteSuccessSchema,
-    ExecuteFailSchema,
-    PrecheckSuccessSchema,
-    PrecheckFailSchema
+>(params: {
+  bundledVincentTool: BundledVincentTool<
+    VincentTool<
+      ToolParamsSchema,
+      PkgNames,
+      PolicyMap,
+      PoliciesByPackageName,
+      ExecuteSuccessSchema,
+      ExecuteFailSchema,
+      PrecheckSuccessSchema,
+      PrecheckFailSchema
+    >,
+    IpfsCid
   >;
   ethersSigner: ethers.Signer;
 }) {
-  const { vincentTool, ethersSigner } = args;
+  const { bundledVincentTool, ethersSigner } = params;
+  const { ipfsCid, vincentTool } = bundledVincentTool;
+
   const network = LIT_NETWORK.Datil;
 
   const executeSuccessSchema = (vincentTool.__schemaTypes.executeSuccessSchema ??
@@ -324,20 +345,16 @@ export function createVincentToolClient<
       {
         rpcUrl,
         delegatorPkpEthAddress,
-        toolIpfsCid,
-      }: {
+      }: ToolClientContext & {
         rpcUrl?: string;
-        delegatorPkpEthAddress: string;
-        toolIpfsCid: string;
       }
     ): Promise<ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>> {
       const delegateePkpEthAddress = ethers.utils.getAddress(await ethersSigner.getAddress());
 
       const baseToolContext = await runToolPolicyPrechecks({
-        vincentTool,
+        bundledVincentTool,
         toolParams,
         context: {
-          toolIpfsCid,
           delegateePkpEthAddress,
           delegatorPkpEthAddress: delegatorPkpEthAddress,
           rpcUrl,
@@ -361,7 +378,7 @@ export function createVincentToolClient<
 
     async execute(
       rawToolParams: unknown,
-      context: ToolConsumerContext
+      context: ToolClientContext
     ): Promise<ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>> {
       const parsedParams = validateOrFail(
         rawToolParams,
@@ -381,7 +398,7 @@ export function createVincentToolClient<
       const sessionSigs = await generateSessionSigs({ ethersSigner, litNodeClient });
 
       const result = await litNodeClient.executeJs({
-        ipfsId: context.toolIpfsCid, // FIXME: The toolIpfsCid should be on the bundledVincentTool
+        ipfsId: ipfsCid,
         sessionSigs,
         jsParams: {
           toolParams: parsedParams,
@@ -403,45 +420,47 @@ export function createVincentToolClient<
         }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
-      const resp = response as RemoteVincentToolExecutionResult<
+      if (!isRemoteVincentToolExecutionResult(response)) {
+        return createToolResponseFailureNoResult({
+          message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+        }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
+      }
+
+      const resp: RemoteVincentToolExecutionResult<
         ExecuteSuccessSchema,
         ExecuteFailSchema,
         PoliciesByPackageName
-      >;
+      > = response;
 
       const executionResult = resp.toolExecutionResult;
-      if (executionResult.result) {
-        const { schemaToUse } = getSchemaForToolResult({
-          value: executionResult,
-          successResultSchema: executeSuccessSchema,
-          failureResultSchema: executeFailSchema,
-        });
+      const { schemaToUse } = getSchemaForToolResult({
+        value: executionResult,
+        successResultSchema: executeSuccessSchema,
+        failureResultSchema: executeFailSchema,
+      });
 
-        const executeResult = validateOrFail(
-          executionResult.result,
-          schemaToUse,
-          'execute',
-          'output'
-        );
+      // Parse returned result using appropriate execute zod schema
+      const executeResult = validateOrFail(
+        executionResult.result,
+        schemaToUse,
+        'execute',
+        'output'
+      );
 
-        if (isToolResponseFailure(executeResult)) {
-          return { ...executeResult, context: resp.toolContext } as ToolResponse<
-            ExecuteSuccessSchema,
-            ExecuteFailSchema,
-            PoliciesByPackageName
-          >;
-        }
-
-        return {
+      if (isToolResponseFailure(executeResult)) {
+        return createToolResponseFailure({
+          result: executeResult.result,
           ...executeResult,
           context: resp.toolContext,
-        };
+        }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
-      return {
-        ...executionResult,
+      const res: ExecuteFailSchema | ExecuteSuccessSchema = executeResult;
+
+      return createToolResponseSuccess({
+        result: res,
         context: resp.toolContext,
-      };
+      }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
     },
   };
 }

@@ -15,7 +15,6 @@ declare const context: {
   const func = vincentToolHandler({
     vincentTool: vincentTool,
     context: {
-      toolIpfsCid: '',
       delegatorPkpEthAddress: context.delegatorPkpEthAddress,
     },
     toolParams,

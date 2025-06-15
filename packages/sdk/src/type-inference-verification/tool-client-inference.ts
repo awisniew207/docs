@@ -5,6 +5,7 @@ import {
   createVincentToolPolicy,
   supportedPoliciesForTool,
   asBundledVincentPolicy,
+  asBundledVincentTool,
 } from '@lit-protocol/vincent-tool-sdk';
 
 import { createVincentToolClient } from '../toolClient/vincentToolClient';
@@ -59,7 +60,7 @@ const tool = createVincentTool({
 });
 
 const client = createVincentToolClient({
-  vincentTool: tool,
+  bundledVincentTool: asBundledVincentTool(tool, 'QmFakeTool123' as const),
   ethersSigner: {} as any, // stubbed
 });
 
@@ -71,7 +72,6 @@ export async function run() {
 
   const precheckResult = await client.precheck(toolParams, {
     delegatorPkpEthAddress: '0xabc',
-    toolIpfsCid: 'QmFakeTool123',
   });
 
   if (precheckResult.success === true) {
@@ -131,7 +131,6 @@ export async function run() {
 
   // 🧪 Now check execute inference
   const executeResult = await client.execute(toolParams, {
-    toolIpfsCid: 'oijskljfdj',
     delegatorPkpEthAddress: '0x09182301238',
   });
 
@@ -201,7 +200,7 @@ const fullTool = createVincentTool({
 });
 
 const fullClient = createVincentToolClient({
-  vincentTool: fullTool,
+  bundledVincentTool: asBundledVincentTool(fullTool, 'QmFullTool123' as const),
   ethersSigner: {} as any,
 });
 
@@ -209,7 +208,6 @@ const fullParams = { count: 5 };
 
 export async function gogo() {
   const precheck = await fullClient.precheck(fullParams, {
-    toolIpfsCid: 'QmFullSchema123',
     delegatorPkpEthAddress: '0x1sfskjdfhf',
   });
 
@@ -227,7 +225,6 @@ export async function gogo() {
   }
 
   const execute = await fullClient.execute(fullParams, {
-    toolIpfsCid: 'oijskljfdj',
     delegatorPkpEthAddress: '0x098479847928734',
   });
 
