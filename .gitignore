@@ -28,7 +28,7 @@ node_modules
 # misc
 /.sass-cache
 /connect.lock
-/coverage
+coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -48,8 +48,6 @@ screenshots
 **/.next
 **/next-env.d.ts
 
-packages/examples
-
 **/vincent-contract-caller-config.json
 
 # Environment variables
@@ -57,9 +55,8 @@ packages/examples
 **/.env.*
 !**/.env.test.example
 !.env.example
-screenshots
-.env
 /packages/sdk/sdk-docs/**/*
+*.tsbuildinfo
 
 test-output
 
