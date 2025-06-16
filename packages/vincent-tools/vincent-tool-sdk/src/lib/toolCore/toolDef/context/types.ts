@@ -31,15 +31,15 @@ export type EnforceToolResult<T> = typeof YouMustCallContextSucceedOrFail extend
       FIX: 'Do not construct tool result objects manually.';
     };
 
-export type ContextSuccess<SuccessResult = never> = SuccessResult extends never
-  ? ContextSuccessNoResult
-  : MustCallContextSucceedOrFail<ToolResultSuccess<SuccessResult>>;
+export type ContextSuccess<SuccessResult = undefined> = MustCallContextSucceedOrFail<
+  ToolResultSuccess<SuccessResult>
+>;
 
 export type ContextSuccessNoResult = MustCallContextSucceedOrFail<ToolResultSuccessNoResult>;
 
-export type ContextFailure<FailResult = never> = FailResult extends never
-  ? ContextFailureNoResult
-  : MustCallContextSucceedOrFail<ToolResultFailure<FailResult>>;
+export type ContextFailure<FailResult = undefined> = MustCallContextSucceedOrFail<
+  ToolResultFailure<FailResult>
+>;
 
 export type ContextFailureNoResult = MustCallContextSucceedOrFail<ToolResultFailureNoResult>;
 

@@ -6,7 +6,6 @@ import {
   ToolExecutionPolicyContext,
   ToolExecutionPolicyEvaluationResult,
   ToolLifecycleFunction,
-  ToolResult,
   VincentTool,
 } from '../types';
 import {
@@ -69,7 +68,7 @@ export function createVincentTool<
     ToolExecutionPolicyEvaluationResult<PolicyMapByPackageName>,
     ExecuteSuccessSchema,
     ExecuteFailSchema
-  > = async (params, baseToolContext) => {
+  > = async ({ toolParams }, baseToolContext) => {
     try {
       const context = createExecutionToolContext({
         baseContext: baseToolContext,
@@ -79,7 +78,7 @@ export function createVincentTool<
       });
 
       const parsedToolParams = validateOrFail(
-        params.toolParams,
+        toolParams,
         toolDef.toolParamsSchema,
         'execute',
         'input',
@@ -90,7 +89,6 @@ export function createVincentTool<
       }
 
       const result = await toolDef.execute(
-        // @ts-expect-error - TODO: fix this
         { toolParams: parsedToolParams },
         {
           ...context,
@@ -106,13 +104,7 @@ export function createVincentTool<
         failureResultSchema: executeFailSchema,
       });
 
-      const resultOrFailure = validateOrFail(
-        // @ts-expect-error - TODO: fix this
-        result.result,
-        schemaToUse,
-        'execute',
-        'output',
-      );
+      const resultOrFailure = validateOrFail(result.result, schemaToUse, 'execute', 'output');
 
       if (isToolFailureResult(resultOrFailure)) {
         return wrapFailure(resultOrFailure);
@@ -130,7 +122,7 @@ export function createVincentTool<
   const { precheck: precheckFn } = toolDef;
 
   const precheck = precheckFn
-    ? ((async (params, baseToolContext) => {
+    ? ((async ({ toolParams }, baseToolContext) => {
         try {
           const context = createPrecheckToolContext({
             baseContext: baseToolContext,
@@ -139,7 +131,7 @@ export function createVincentTool<
           });
 
           const parsedToolParams = validateOrFail(
-            params.toolParams,
+            toolParams,
             toolDef.toolParamsSchema,
             'precheck',
             'input',
@@ -149,20 +141,16 @@ export function createVincentTool<
             return wrapFailure(parsedToolParams);
           }
 
-          const result = await precheckFn(parsedToolParams, context);
+          const result = await precheckFn({ toolParams }, context);
 
+          console.log('toolDef precheck result', JSON.stringify(result));
           const { schemaToUse } = getSchemaForToolResult({
             value: result,
             successResultSchema: precheckSuccessSchema,
             failureResultSchema: precheckFailSchema,
           });
 
-          const resultOrFailure = validateOrFail(
-            result as ToolResult<PrecheckSuccessSchema, PrecheckFailSchema>,
-            schemaToUse,
-            'precheck',
-            'output',
-          );
+          const resultOrFailure = validateOrFail(result.result, schemaToUse, 'precheck', 'output');
 
           if (isToolFailureResult(resultOrFailure)) {
             return wrapFailure(resultOrFailure);
@@ -181,6 +169,7 @@ export function createVincentTool<
     : undefined;
 
   return {
+    packageName: toolDef.packageName,
     execute,
     precheck,
     supportedPolicies: toolDef.supportedPolicies,

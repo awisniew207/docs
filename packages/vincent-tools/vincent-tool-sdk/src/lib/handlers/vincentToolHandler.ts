@@ -16,6 +16,7 @@ import { validatePolicies } from '../toolCore/helpers/validatePolicies';
 import { ToolPolicyMap } from '../toolCore/helpers';
 import { z } from 'zod';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
+import type { BaseToolContext } from '../toolCore/toolDef/context/types';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -127,10 +128,22 @@ export const vincentToolHandler = <
     let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
     const toolIpfsCid = LitAuth.actionIpfsIds[0];
+    const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
+
+    // Build an initial baseContext -- we will add info as we execute, so if an error is encountered the consumer gets
+    // all of the info we did find along the way
+    const baseContext = {
+      delegation: {
+        delegateeAddress: appDelegateeAddress,
+        // delegatorPkpInfo: null,
+      },
+      toolIpfsCid,
+      // appId: undefined,
+      // appVersion: undefined,
+    } as any;
 
     try {
       const delegationRpcUrl = await Lit.Actions.getRpcUrl({ chain: 'yellowstone' });
-      const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
 
       const parsedOrFail = validateOrFail(
         toolParams,
@@ -153,6 +166,7 @@ export const vincentToolHandler = <
         yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
         pkpEthAddress: context.delegatorPkpEthAddress,
       });
+      baseContext.delegation.delegatorPkpInfo = userPkpInfo;
 
       const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl,
@@ -161,16 +175,8 @@ export const vincentToolHandler = <
         agentWalletPkpTokenId: userPkpInfo.tokenId,
         toolIpfsCid,
       });
-
-      const baseContext = {
-        delegation: {
-          delegateeAddress: appDelegateeAddress,
-          delegatorPkpInfo: userPkpInfo,
-        },
-        toolIpfsCid,
-        appId: appId.toNumber(),
-        appVersion: appVersion.toNumber(),
-      };
+      baseContext.appId = appId.toNumber();
+      baseContext.appVersion = appVersion.toNumber();
 
       const validatedPolicies = await validatePolicies({
         policies,
@@ -194,7 +200,10 @@ export const vincentToolHandler = <
       if (!policyEvalResults.allow) {
         Lit.Actions.setResponse({
           response: JSON.stringify({
-            policyEvaluationResults: policyEvalResults,
+            toolContext: {
+              ...baseContext,
+              policiesContext: policyEvaluationResults,
+            } as BaseToolContext<typeof policyEvaluationResults>,
             toolExecutionResult: {
               success: false,
             },
@@ -223,14 +232,20 @@ export const vincentToolHandler = <
 
       Lit.Actions.setResponse({
         response: JSON.stringify({
-          policyEvaluationResults,
           toolExecutionResult,
+          toolContext: {
+            ...baseContext,
+            policiesContext: policyEvaluationResults,
+          } as BaseToolContext<typeof policyEvaluationResults>,
         }),
       });
     } catch (err) {
       Lit.Actions.setResponse({
         response: JSON.stringify({
-          policyEvaluationResults: policyEvalResults,
+          toolContext: {
+            ...baseContext,
+            policiesContext: policyEvalResults,
+          } as BaseToolContext<typeof policyEvalResults>,
           toolExecutionResult: {
             success: false,
             error: err instanceof Error ? err.message : String(err),

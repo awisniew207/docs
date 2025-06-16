@@ -2,8 +2,18 @@ import * as jwt from './jwt';
 export { jwt };
 export type { JWTConfig, VincentJWT, VincentJWTPayload } from './jwt/types';
 
-export { getVincentToolClient } from './tool';
-export type { VincentToolParams, VincentToolClientConfig, VincentToolClient } from './tool/types';
+import { disconnectLitNodeClientInstance as disconnectVincentToolClients } from './internal/LitNodeClient/getLitNodeClient';
+
+export { disconnectVincentToolClients };
+
+export { getVincentToolClientv1 } from './tool';
+export type {
+  VincentToolParamsv1,
+  VincentToolClientConfigv1,
+  VincentToolClientv1,
+} from './tool/types';
+
+export { getVincentToolClient } from './toolClient';
 
 export { getVincentWebAppClient } from './app';
 export type {

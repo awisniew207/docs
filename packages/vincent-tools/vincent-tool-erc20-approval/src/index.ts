@@ -1,4 +1,2 @@
-export { vincentTool } from './lib/vincent-tool';
-import * as vincentToolMetadata from './generated/vincent-tool-metadata.json';
-
-export { vincentToolMetadata };
+export { bundledVincentTool } from './generated/vincent-bundled-tool';
+export { getCurrentAllowance, checkNativeTokenBalance } from './lib/helpers';

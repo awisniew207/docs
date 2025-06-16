@@ -374,6 +374,7 @@ export type VincentTool<
         PrecheckFailSchema
       >,
 > = {
+  packageName: string;
   precheck?: PrecheckFn;
   execute: ExecuteFn;
   toolParamsSchema: ToolParamsSchema;

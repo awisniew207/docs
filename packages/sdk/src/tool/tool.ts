@@ -11,7 +11,7 @@ import { getLitNodeClientInstance } from '../internal/LitNodeClient/getLitNodeCl
 
 import type { LitNodeClient } from '@lit-protocol/lit-node-client';
 import type { ExecuteJsResponse, LIT_NETWORKS_KEYS } from '@lit-protocol/types';
-import { VincentToolClient, VincentToolClientConfig, VincentToolParams } from './types';
+import { VincentToolClientv1, VincentToolClientConfigv1, VincentToolParamsv1 } from './types';
 
 const generateSessionSigs = async ({
   litNodeClient,
@@ -55,7 +55,7 @@ const generateSessionSigs = async ({
   });
 };
 
-const executeVincentTool = async <ToolParams extends VincentToolParams>({
+const executeVincentTool = async <ToolParams extends VincentToolParamsv1>({
   ethersSigner,
   litActionIpfsCid,
   params,
@@ -76,19 +76,19 @@ const executeVincentTool = async <ToolParams extends VincentToolParams>({
   });
 };
 
-/** Create a new {@link VincentToolClient} instance.
+/** Create a new {@link VincentToolClientv1} instance.
  *
  * - `ethersSigner` is assumed to be an Ethers v5 signer
  *
  * @category Vincent SDK API
  * */
-export const getVincentToolClient = (config: VincentToolClientConfig): VincentToolClient => {
+export const getVincentToolClientv1 = (config: VincentToolClientConfigv1): VincentToolClientv1 => {
   const { vincentToolCid, ethersSigner } = config;
 
   const network = LIT_NETWORK.Datil;
 
   return {
-    execute: async <ToolParams extends VincentToolParams>(
+    execute: async <ToolParams extends VincentToolParamsv1>(
       toolParams: ToolParams
     ): Promise<ExecuteJsResponse> => {
       return executeVincentTool({

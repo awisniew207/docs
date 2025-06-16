@@ -43,7 +43,7 @@ const policy = createVincentToolPolicy({
 });
 
 export const tool = createVincentTool({
-  // packageName: 'my-tool@1.0.0',
+  packageName: 'my-tool@1.0.0',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([policy] as const),
 

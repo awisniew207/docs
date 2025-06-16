@@ -17,6 +17,11 @@
     "authentication",
     "sdk"
   ],
+  "scripts": {
+    "type-tests": "./scripts/run-typecheck.sh",
+    "watch:type-tests": "chokidar 'src/**/*' --initial --await-write-finish --delay 100 --silent -c './scripts/run-typecheck.sh'",
+    "typecheck": "./scripts/precommit-check.sh"
+  },
   "dependencies": {
     "@lit-protocol/auth-helpers": "^7.0.9",
     "@lit-protocol/constants": "^7.0.8",
@@ -40,6 +45,7 @@
     "@lit-protocol/pkp-ethers": "^7.2.0",
     "@lit-protocol/types": "^7.0.8",
     "@types/express": "^5.0.1",
+    "chokidar-cli": "^3.0.0",
     "live-server": "^1.2.2",
     "typedoc": "0.28.5",
     "typedoc-material-theme": "1.3.0",
