@@ -145,7 +145,7 @@ export function createVincentTool<
 
           console.log('toolDef precheck result', JSON.stringify(result));
           const { schemaToUse } = getSchemaForToolResult({
-            value: result.result,
+            value: result,
             successResultSchema: precheckSuccessSchema,
             failureResultSchema: precheckFailSchema,
           });
