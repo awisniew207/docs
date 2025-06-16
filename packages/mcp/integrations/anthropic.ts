@@ -10,7 +10,7 @@ async function main() {
     mcp_servers: [
       {
         type: 'url',
-        url: process.env.VINCENT_MCP_URL, // The URL of the MCP server
+        url: process.env.VINCENT_MCP_URL!, // The URL of the MCP server
         name: 'vincent-app',
         tool_configuration: {
           enabled: true,
