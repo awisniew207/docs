@@ -6,13 +6,6 @@ import { disconnectLitNodeClientInstance as disconnectVincentToolClients } from 
 
 export { disconnectVincentToolClients };
 
-export { getVincentToolClientv1 } from './tool';
-export type {
-  VincentToolParamsv1,
-  VincentToolClientConfigv1,
-  VincentToolClientv1,
-} from './tool/types';
-
 export { getVincentToolClient } from './toolClient';
 
 export { getVincentWebAppClient } from './app';
