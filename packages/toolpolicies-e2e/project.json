@@ -5,54 +5,6 @@
   "projectType": "application",
   "tags": [],
   "targets": {
-    "build": {
-      "executor": "@nx/esbuild:esbuild",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "platform": "node",
-        "outputPath": "packages/toolpolicies-e2e/dist",
-        "format": ["cjs"],
-        "bundle": false,
-        "main": "packages/toolpolicies-e2e/src/main.ts",
-        "tsConfig": "packages/toolpolicies-e2e/tsconfig.app.json",
-        "assets": ["packages/toolpolicies-e2e/src/assets"],
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
-      },
-      "configurations": {
-        "development": {},
-        "production": {
-          "esbuildOptions": {
-            "sourcemap": false,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        }
-      }
-    },
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
-      "options": {
-        "buildTarget": "@lit-protocol/toolpolicies-e2e:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "@lit-protocol/toolpolicies-e2e:build:development"
-        },
-        "production": {
-          "buildTarget": "@lit-protocol/toolpolicies-e2e:build:production"
-        }
-      }
-    },
     "test": {
       "command": "echo 'Test target disabled for this project - only \"test-e2e\"'"
     },
