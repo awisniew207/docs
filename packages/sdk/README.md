@@ -19,7 +19,7 @@ The Vincent Web App Client provides methods for managing user authentication, JW
 #### redirectToConsentPage()
 
 Redirects the user to the Vincent consent page to obtain authorization. Once the user has completed the vincent consent flow
-they will be redirected back to your app with a signed JWT that you can use to authenticate requests against your backend APIs 
+they will be redirected back to your app with a signed JWT that you can use to authenticate requests against your backend APIs
 
 - When a JWT is expired, you need to use this method to get a new JWT
 
@@ -31,12 +31,11 @@ Checks if the current window location contains a Vincent login JWT. You can use 
 
 #### decodeVincentLoginJWT(expectedAudience)
 
-Decodes a Vincent login JWT. Performs basic sanity check but does not perform full verify() logic.  You will want to run `verify()` from the jwt tools to verify the JWT is fully valid and not expired etc.
+Decodes a Vincent login JWT. Performs basic sanity check but does not perform full verify() logic. You will want to run `verify()` from the jwt tools to verify the JWT is fully valid and not expired etc.
 
 - The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration
 
 - Returns: An object containing both the original JWT string and the decoded JWT object
-
 
 #### removeLoginJWTFromURI()
 
@@ -51,7 +50,7 @@ const { isExpired } = jwt;
 
 const vincentAppClient = getVincentWebAppClient({ appId: MY_APP_ID });
 // ... In your app logic:
-if(vincentAppClient.isLogin()) {
+if (vincentAppClient.isLogin()) {
   // Handle app logic for the user has just logged in
   const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(window.location.origin);
   // Store `jwt` for later usage; the user is now logged in.
@@ -59,12 +58,12 @@ if(vincentAppClient.isLogin()) {
   // Handle app logic for the user is _already logged in_ (check for stored & unexpired JWT)
 
   const jwt = localStorage.getItem('VINCENT_AUTH_JWT');
-  if(jwt && isExpired(jwt)) {
+  if (jwt && isExpired(jwt)) {
     // User must re-log in
     vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
   }
 
-  if(!jwt) {
+  if (!jwt) {
     // Handle app logic for the user is not yet logged in
     vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
   }
@@ -85,8 +84,8 @@ This client will typically be used by an AI agent or your app backend service, a
 
 ```typescript
 interface VincentToolClientConfig {
-  ethersSigner: ethers.Signer;  // An ethers v5 compatible signer
-  vincentToolCid: string;       // The CID of the Vincent Tool to execute
+  ethersSigner: ethers.Signer; // An ethers v5 compatible signer
+  vincentToolCid: string; // The CID of the Vincent Tool to execute
 }
 ```
 
@@ -99,8 +98,8 @@ Executes a Vincent Tool with the provided parameters.
 - `params`: Record<string, unknown> - Parameters to pass to the Vincent Tool
 - Returns: Promise resolving to an ExecuteJsResponse from the LIT network
 
-
 ### Tool execution
+
 ```typescript
 import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
 
@@ -111,23 +110,23 @@ const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
 // Initialize the Vincent Tool Client
 const toolClient = getVincentToolClient({
   ethersSigner: delegateeSigner,
-  vincentToolCid: 'your-vincent-tool-cid'
+  vincentToolCid: 'your-vincent-tool-cid',
 });
 
 // Execute the Vincent Tool
 const response = await toolClient.execute({
   // Tool-specific parameters
   param1: 'value1',
-  param2: 'value2'
+  param2: 'value2',
 });
 ```
-
-
 
 ### Usage
 
 ### Authentication
+
 A basic Express authentication middleware factory function is provided with the SDK.
+
 - Create an express middleware using `getAuthenticateUserExpressHandler()`
 - Once you have added the middleware to your route, use `authenticatedRequestHandler()` to provide
   type-safe access to `req.user` in your downstream RequestHandler functions.
@@ -142,7 +141,6 @@ const { authenticatedRequestHandler, getAuthenticateUserExpressHandler } = expre
 import type { ExpressAuthHelpers } from '@lit-protocol/vincent-sdk';
 
 const { ALLOWED_AUDIENCE } = process.env;
-
 
 const authenticateUserMiddleware = getAuthenticateUserExpressHandler(ALLOWED_AUDIENCE);
 
@@ -173,11 +171,12 @@ The JWT authentication system in Vincent SDK allows for secure communication bet
 3. User provides consent for the requested tools/policies
 4. User is redirected back to the application with a JWT in the URL
 5. Application validates and stores the JWT using `VincentWebAppClient` methods
-6. JWT is used to authenticate with the app backend 
+6. JWT is used to authenticate with the app backend
 
 ### JWT Structure
 
 Vincent JWTs contain:
+
 - User account identity information (pkpAddress and pkpPublicKey)
 - Expiration timestamp
 - Signature from the Vincent authorization service
@@ -191,92 +190,10 @@ When JWT validation fails, descriptive error messages are thrown to help with tr
 - JWTs have an expiration time after which they are no longer valid
 - When a JWT expires, redirect the user to the consent page to obtain a new one using the `VincentWebAppClient`
 
-# Model Context Protocol (MCP) Integration
-
-## Overview
-
-The Vincent SDK provides integration with the Model Context Protocol (MCP), allowing developers to transform their Vincent applications into MCP servers. This enables Large Language Models (LLMs) to interact with and operate Vincent tools on behalf of delegators.
-
-MCP provides a standardized way for LLMs to discover and use tools, making it easier to build AI-powered applications that can leverage Vincent's capabilities.
-
-## Usage
-
-The SDK provides tools to transform your Vincent application into an MCP server, exposing your tools to LLMs:
-
-```typescript
-import { ethers } from 'ethers';
-import { mcp } from '@lit-protocol/vincent-sdk';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-
-// Create a signer for your delegatee account
-const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/YOUR_INFURA_KEY');
-const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY', provider);
-
-// Define your Vincent application with tools
-const vincentApp: mcp.VincentAppDef = {
-  id: '8462368',
-  name: 'My Vincent App',
-  version: '1',
-  tools: {
-    'ipfs-cid-of-tool-1': {
-      name: 'sendMessage',
-      description: 'Send a message to a user',
-      parameters: [
-        {
-          name: 'recipient',
-          type: 'address',
-          description: 'Ethereum address of the recipient'
-        },
-        {
-          name: 'message',
-          type: 'string',
-          description: 'Message content to send'
-        }
-      ]
-    },
-    'ipfs-cid-of-tool-2': {
-      name: 'checkBalance',
-      description: 'Check the balance of an account',
-      parameters: [
-        {
-          name: 'address',
-          type: 'address',
-          description: 'Ethereum address to check'
-        }
-      ]
-    }
-  }
-};
-
-// Create an MCP server from your Vincent application
-const mcpServer = mcp.getVincentAppServer(delegateeSigner, vincentApp);
-
-// Connect the server to a transport (e.g., stdio for CLI-based LLM tools)
-const stdioTransport = new StdioServerTransport();
-await mcpServer.connect(stdioTransport);
-// For HTTP-based integration, you can use HTTP transport instead
-```
-
-### How It Works
-
-1. **Define Your Vincent Application**: Create a Vincent application definition with the tools you want to expose to LLMs.
-
-2. **Create an MCP Server**: Use `getVincentAppServer()` to transform your Vincent application into an MCP server.
-
-3. **Connect to a Transport**: Connect your MCP server to a transport mechanism (stdio, HTTP, etc.) to allow LLMs to communicate with it.
-
-4. **LLM Interaction**: LLMs can now discover and use your Vincent tools through the MCP interface, executing them on behalf of authenticated users.
-
-### Benefits
-
-- **Standardized Interface**: MCP provides a standardized way for LLMs to discover and use your Vincent tools.
-- **Delegated Execution**: LLMs can execute Vincent tools on behalf of your app delegator users.
-- **Flexible Integration**: Support for various transport mechanisms allows integration with different LLM platforms and environments.
-- **Extendability**: MCP server can be extended with custom tools and prompts to suit your specific needs.
-
 ## Release
 
 Pre-requisites:
+
 - You will need a valid npm account with access to the `@lit-protocol` organization.
 - Run `pnpm vercel login` at sdk root to get a authentication token for vercel
 - Also you will need to fill the `.env` file with the vercel project and org ids for the [vincent-docs](https://vercel.com/lit-protocol/vincent-docs) project.
