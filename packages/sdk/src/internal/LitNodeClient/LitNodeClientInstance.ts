@@ -56,9 +56,9 @@ export class LitNodeClientInstance {
 
     try {
       await this.litNodeClientInstance.disconnect();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       /* We did our best */
+      console.log('Failed to disconnect from LitNodeClientInstance.', (e as Error).message);
     } finally {
       this.isConnected = false;
     }
