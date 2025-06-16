@@ -10,9 +10,6 @@
       "path": "../vincent-policy-spending-limit"
     },
     {
-      "path": "../vincent-tool-erc20-approval"
-    },
-    {
       "path": "./tsconfig.lib.json"
     },
     {
@@ -20,9 +17,6 @@
     },
     {
       "path": "./test/tsconfig.spec.json"
-    },
-    {
-      "path": "./test-e2e/tsconfig.spec.json"
     }
   ]
 }

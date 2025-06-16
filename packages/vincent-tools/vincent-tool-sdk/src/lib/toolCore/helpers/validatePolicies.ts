@@ -50,6 +50,8 @@ export async function validatePolicies<
     any,
     any,
     any,
+    any,
+    any,
     any
   >;
   toolIpfsCid: string;

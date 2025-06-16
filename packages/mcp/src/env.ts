@@ -3,6 +3,9 @@ import { z } from 'zod';
 
 // Ref: https://github.com/t3-oss/t3-env/pull/145
 const booleanStrings = ['true', 'false', true, false, '1', '0', 'yes', 'no', 'y', 'n', 'on', 'off'];
+
+// @ts-expect-error Just happen to not have any boolean env vars right now, but want to keep this in case we do
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const BooleanOrBooleanStringSchema = z
   .any()
   .refine((val) => booleanStrings.includes(val), { message: 'must be boolean' })
@@ -17,11 +20,15 @@ const BooleanOrBooleanStringSchema = z
     throw new Error(`Expected boolean or boolean string, got: ${typeof val}`);
   });
 
+const ONE_HOUR = 60 * 60 * 1000;
+
 export const env = createEnv({
   emptyStringAsUndefined: true,
   runtimeEnv: process.env,
   server: {
     HTTP_PORT: z.coerce.number().default(3000),
+    HTTP_TRANSPORT_CLEAN_INTERVAL: z.coerce.number().default(ONE_HOUR),
+    HTTP_TRANSPORT_TTL: z.coerce.number().default(ONE_HOUR),
     PUBKEY_ROUTER_DATIL_CONTRACT: z.string(),
     VINCENT_APP_JSON_DEFINITION: z.string(),
     VINCENT_DELEGATEE_PRIVATE_KEY: z.string(),

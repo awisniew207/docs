@@ -1,3 +1,3 @@
-import { getVincentToolClient } from './tool';
+import { getVincentToolClientv1 } from './tool';
 
-export { getVincentToolClient };
+export { getVincentToolClientv1 };

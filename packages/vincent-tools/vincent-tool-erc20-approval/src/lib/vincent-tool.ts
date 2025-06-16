@@ -1,9 +1,8 @@
-import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
-import { supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk/src/lib/toolCore/helpers';
+import { createVincentTool, supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
 import { ethers } from 'ethers';
 
-import { getCurrentAllowance, sendErc20ApprovalTx } from './tool-helpers';
-import { checkNativeTokenBalance } from './tool-checks';
+import { getCurrentAllowance, checkNativeTokenBalance } from './helpers';
+import { sendErc20ApprovalTx } from './lit-action-helpers';
 import {
   executeFailSchema,
   executeSuccessSchema,
@@ -13,8 +12,7 @@ import {
 } from './schemas';
 
 export const vincentTool = createVincentTool({
-  // packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
-
+  packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([]),
 

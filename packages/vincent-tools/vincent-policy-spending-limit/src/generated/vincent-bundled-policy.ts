@@ -4,5 +4,10 @@
  
 import { asBundledVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
 import { vincentPolicy } from '../lib/vincent-policy';
+import metadata from './vincent-policy-metadata.json';
 
-export const bundledVincentPolicy = asBundledVincentPolicy(vincentPolicy, "QmQEhSxqtE97gK8L8zhwsh1pBDRaaJvek8AzrQ8REnRkqh" as const);
+if(!metadata.ipfsCid) {
+  throw new Error('ipfsCid is not defined in metadata JSON file');
+}
+
+export const bundledVincentPolicy = asBundledVincentPolicy(vincentPolicy, metadata.ipfsCid);
