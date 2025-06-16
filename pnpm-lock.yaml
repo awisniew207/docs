@@ -354,7 +354,7 @@ importers:
         version: link:../sdk
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.1
-        version: 1.12.1
+        version: 1.12.3
       '@t3-oss/env-core':
         specifier: ^0.13.4
         version: 0.13.8(typescript@5.8.3)(zod@3.25.64)
@@ -379,7 +379,7 @@ importers:
         version: 5.0.3
       openai:
         specifier: ^5.0.1
-        version: 5.3.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.25.56)
+        version: 5.3.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.25.64)
       tsx:
         specifier: ^4.19.4
         version: 4.20.3
@@ -19203,10 +19203,10 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@5.3.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.25.56):
+  openai@5.3.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.25.64):
     optionalDependencies:
       ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      zod: 3.25.56
+      zod: 3.25.64
 
   openapi-types@12.1.3: {}
 
