@@ -1,5 +1,9 @@
 export type { JWTConfig, VincentJWT, VincentJWTPayload } from './jwt/types';
-export type { VincentToolParams, VincentToolClientConfig, VincentToolClient } from './tool/types';
+export type {
+  VincentToolParamsv1,
+  VincentToolClientConfigv1,
+  VincentToolClientv1,
+} from './tool/types';
 export type {
   VincentWebAppClient,
   VincentAppClientConfig,

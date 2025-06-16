@@ -37,7 +37,7 @@ const SpendingLimitPolicy = createVincentToolPolicy({
 });
 
 export const vincentTool = createVincentTool({
-  // packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
+  packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
 
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([SpendingLimitPolicy]),

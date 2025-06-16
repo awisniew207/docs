@@ -1,8 +1,11 @@
 import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
 import { vincentPolicyMetadata as spendingLimitPolicyMetadata } from '@lit-protocol/vincent-policy-spending-limit';
-import { vincentToolMetadata as erc20ToolMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
+import { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';
 
-import { vincentToolMetadata as uniswapToolMetadata } from '@lit-protocol/vincent-tool-uniswap-swap';
+import { bundledVincentTool as uniswapBundledTool } from '@lit-protocol/vincent-tool-uniswap-swap';
+
+import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
+import { ethers } from 'ethers';
 
 import {
   TestConfig,
@@ -28,7 +31,7 @@ import {
   TEST_APP_DELEGATEE_PRIVATE_KEY,
   BASE_RPC_URL,
   ETH_RPC_URL,
-  executeTool,
+  YELLOWSTONE_RPC_URL,
 } from './helpers';
 import {
   VincentAppFacetAbi,
@@ -42,7 +45,7 @@ import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-cred
 jest.setTimeout(240000);
 
 describe('Uniswap Swap Tool E2E Tests', () => {
-  const TOOL_IPFS_IDS = [erc20ToolMetadata.ipfsCid, uniswapToolMetadata.ipfsCid];
+  const TOOL_IPFS_IDS = [erc20BundledTool.ipfsCid, uniswapBundledTool.ipfsCid];
 
   const TOOL_POLICIES = [[], [spendingLimitPolicyMetadata.ipfsCid]];
   const TOOL_POLICY_PARAMETER_NAMES = [
@@ -65,6 +68,29 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       ],
     ],
   ];
+
+  // Create a delegatee wallet for tool execution
+  const getDelegateeWallet = () => {
+    return new ethers.Wallet(
+      TEST_APP_DELEGATEE_PRIVATE_KEY as string,
+      new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
+    );
+  };
+
+  // Get tool clients for ERC20 approval and Uniswap swap
+  const getErc20ApprovalToolClient = () => {
+    return getVincentToolClient({
+      bundledVincentTool: erc20BundledTool,
+      ethersSigner: getDelegateeWallet(),
+    });
+  };
+
+  const getUniswapSwapToolClient = () => {
+    return getVincentToolClient({
+      bundledVincentTool: uniswapBundledTool,
+      ethersSigner: getDelegateeWallet(),
+    });
+  };
 
   let TEST_CONFIG: TestConfig;
 
@@ -119,8 +145,8 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     await permitAuthMethod(
       TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
       TEST_CONFIG.userPkp!.tokenId!,
-      erc20ToolMetadata.ipfsCid,
-      uniswapToolMetadata.ipfsCid,
+      erc20BundledTool.ipfsCid,
+      uniswapBundledTool.ipfsCid,
       spendingLimitPolicyMetadata.ipfsCid,
     );
   });
@@ -234,7 +260,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       abi: VincentAppFacetAbi,
       logs: txReceipt.logs,
     });
+    // @ts-expect-error eventName exists?
     const appRegisteredLog = parsedLogs.filter((log) => log.eventName === 'NewAppRegistered');
+    // @ts-expect-error args exists?
     const newAppId = appRegisteredLog[0].args.appId;
 
     expect(newAppId).toBeDefined();
@@ -338,7 +366,6 @@ describe('Uniswap Swap Tool E2E Tests', () => {
       address: TEST_APP_DELEGATEE_ACCOUNT.address,
     });
     if (balance === 0n) {
-      // @ts-expect-error KZG is incorrectly being marked as required here
       const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
         to: TEST_APP_DELEGATEE_ACCOUNT.address,
         value: BigInt(10000000000000000), // 0.01 ETH in wei
@@ -356,9 +383,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
   describe('ERC20 approval tool when there is no approval', () => {
     beforeAll(async () => {
       // First, remove any existing approvals
-      const erc20ApprovalExecutionResult = await executeTool({
-        toolIpfsCid: erc20ToolMetadata.ipfsCid,
-        toolParameters: {
+      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+        {
           rpcUrl: BASE_RPC_URL,
           chainId: 8453,
           spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
@@ -366,31 +393,36 @@ describe('Uniswap Swap Tool E2E Tests', () => {
           tokenDecimals: 18,
           tokenAmount: 0,
         },
-        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-        debug: true,
-        capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
-      });
-      const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
 
-      expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBe(0n);
+      console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
 
-      if (parsedResponse.toolExecutionResult.result.approvalTxHash) {
+      expect(erc20ApprovalExecutionResult).toHaveProperty('success', true);
+      if (erc20ApprovalExecutionResult.success === false) {
+        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+        throw new Error(erc20ApprovalExecutionResult.error);
+      }
+      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBe(0n);
+
+      if (erc20ApprovalExecutionResult.result.approvalTxHash) {
         console.log(
           'waiting for approval tx to finalize',
-          parsedResponse.toolExecutionResult.result.approvalTxHash,
+          erc20ApprovalExecutionResult.result.approvalTxHash,
         );
-        const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+          hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
         });
         console.log('approval TX is GTG! continuing');
       }
     });
 
     it('should add an approval successfully', async () => {
-      const erc20ApprovalExecutionResult = await executeTool({
-        toolIpfsCid: erc20ToolMetadata.ipfsCid,
-        toolParameters: {
+      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+        {
           rpcUrl: BASE_RPC_URL,
           chainId: 8453,
           spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
@@ -398,41 +430,44 @@ describe('Uniswap Swap Tool E2E Tests', () => {
           tokenDecimals: 18,
           tokenAmount: 1,
         },
-        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-        debug: true,
-        capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
-      });
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
 
+      console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
       expect(erc20ApprovalExecutionResult).toBeDefined();
 
-      const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+      expect(erc20ApprovalExecutionResult.success).toBe(true);
+      if (erc20ApprovalExecutionResult.success === false) {
+        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+        throw new Error(erc20ApprovalExecutionResult.error);
+      }
+      console.log({ erc20ApprovalExecutionResult });
+      expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(
+        0,
+      );
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
 
-      console.log({ parsedResponse });
-      expect(parsedResponse.policyEvaluationResults).toBeDefined();
-      expect(parsedResponse.policyEvaluationResults.allow).toBe(true);
-      expect(parsedResponse.policyEvaluationResults.evaluatedPolicies.length).toBe(0);
-      expect(parsedResponse.policyEvaluationResults.allowedPolicies).toEqual({});
-
-      expect(parsedResponse.toolExecutionResult).toBeDefined();
-      expect(parsedResponse.toolExecutionResult.success).toBe(true);
-      expect(parsedResponse.toolExecutionResult.result).toBeDefined();
+      expect(erc20ApprovalExecutionResult.result).toBeDefined();
 
       // Allowance will decrease after swap
-      expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-      expect(parsedResponse.toolExecutionResult.result.tokenAddress).toBe(
+      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+      expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
         '0x4200000000000000000000000000000000000006',
       );
-      expect(parsedResponse.toolExecutionResult.result.tokenDecimals).toBe(18);
-      expect(parsedResponse.toolExecutionResult.result.spenderAddress).toBe(
+      expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
+      expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
         '0x2626664c2603336E57B271c5C0b26F421741e481',
       );
       console.log(
         'waiting for approval tx to finalize',
-        parsedResponse.toolExecutionResult.result.approvalTxHash,
+        erc20ApprovalExecutionResult.result.approvalTxHash,
       );
       await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-        hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+        hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
       });
       console.log('approval TX is GTG! continuing');
     });
@@ -442,9 +477,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     beforeAll(async () => {
       {
         // First, remove any existing approvals
-        const erc20ApprovalExecutionResult = await executeTool({
-          toolIpfsCid: erc20ToolMetadata.ipfsCid,
-          toolParameters: {
+        const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+        const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+          {
             rpcUrl: BASE_RPC_URL,
             chainId: 8453,
             spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
@@ -452,22 +487,26 @@ describe('Uniswap Swap Tool E2E Tests', () => {
             tokenDecimals: 18,
             tokenAmount: 0,
           },
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-          debug: true,
-          capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
-        });
-        const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+          {
+            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+          },
+        );
 
-        expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBe(0n);
+        expect(erc20ApprovalExecutionResult.success).toBe(true);
+        if (erc20ApprovalExecutionResult.success === false) {
+          // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+          throw new Error(erc20ApprovalExecutionResult.error);
+        }
 
-        if (parsedResponse.toolExecutionResult.result.approvalTxHash) {
+        expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBe(0n);
+
+        if (erc20ApprovalExecutionResult.result.approvalTxHash) {
           console.log(
             'waiting for approval tx to finalize',
-            parsedResponse.toolExecutionResult.result.approvalTxHash,
+            erc20ApprovalExecutionResult.result.approvalTxHash,
           );
-          const allowanceTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-            hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+          await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+            hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
           });
           console.log('approval TX is GTG! continuing');
         }
@@ -475,9 +514,9 @@ describe('Uniswap Swap Tool E2E Tests', () => {
 
       {
         // Now add an approval so our test case will be guaranteed one already exists
-        const erc20ApprovalExecutionResult = await executeTool({
-          toolIpfsCid: erc20ToolMetadata.ipfsCid,
-          toolParameters: {
+        const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+        const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+          {
             rpcUrl: BASE_RPC_URL,
             chainId: 8453,
             spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
@@ -485,32 +524,34 @@ describe('Uniswap Swap Tool E2E Tests', () => {
             tokenDecimals: 18,
             tokenAmount: 1,
           },
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-          debug: true,
-          capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
-        });
-        const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
-
-        expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(
-          0n,
+          {
+            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+          },
         );
+
+        expect(erc20ApprovalExecutionResult.success).toBe(true);
+        if (erc20ApprovalExecutionResult.success === false) {
+          // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+          throw new Error(erc20ApprovalExecutionResult.error);
+        }
+
+        expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
 
         console.log(
           'waiting for approval tx to finalize',
-          parsedResponse.toolExecutionResult.result.approvalTxHash,
+          erc20ApprovalExecutionResult.result.approvalTxHash,
         );
         await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: parsedResponse.toolExecutionResult.result.approvalTxHash as `0x${string}`,
+          hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
         });
         console.log('approval TX is GTG! continuing');
       }
     });
 
     it('should succeed without a TX when there is already a valid approval', async () => {
-      const erc20ApprovalExecutionResult = await executeTool({
-        toolIpfsCid: erc20ToolMetadata.ipfsCid,
-        toolParameters: {
+      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+        {
           rpcUrl: BASE_RPC_URL,
           chainId: 8453,
           spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
@@ -518,43 +559,45 @@ describe('Uniswap Swap Tool E2E Tests', () => {
           tokenDecimals: 18,
           tokenAmount: 1,
         },
-        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-        debug: true,
-        capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
-      });
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
 
       expect(erc20ApprovalExecutionResult).toBeDefined();
 
-      const parsedResponse = JSON.parse(erc20ApprovalExecutionResult.response as string);
+      expect(erc20ApprovalExecutionResult.success).toBe(true);
+      if (erc20ApprovalExecutionResult.success === false) {
+        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+        throw new Error(erc20ApprovalExecutionResult.error);
+      }
+      console.log({ erc20ApprovalExecutionResult });
+      expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(
+        0,
+      );
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
 
-      console.log({ parsedResponse });
-      expect(parsedResponse.policyEvaluationResults).toBeDefined();
-      expect(parsedResponse.policyEvaluationResults.allow).toBe(true);
-      expect(parsedResponse.policyEvaluationResults.evaluatedPolicies.length).toBe(0);
-      expect(parsedResponse.policyEvaluationResults.allowedPolicies).toEqual({});
-
-      expect(parsedResponse.toolExecutionResult).toBeDefined();
-      expect(parsedResponse.toolExecutionResult.success).toBe(true);
-      expect(parsedResponse.toolExecutionResult.result).toBeDefined();
-      expect(parsedResponse.toolExecutionResult.result.approvalTxHash).toBeUndefined();
+      expect(erc20ApprovalExecutionResult.result).toBeDefined();
+      expect(erc20ApprovalExecutionResult.result.approvalTxHash).toBeUndefined();
 
       // Allowance will decrease after swap
-      expect(BigInt(parsedResponse.toolExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-      expect(parsedResponse.toolExecutionResult.result.tokenAddress).toBe(
+      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+      expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
         '0x4200000000000000000000000000000000000006',
       );
-      expect(parsedResponse.toolExecutionResult.result.tokenDecimals).toBe(18);
-      expect(parsedResponse.toolExecutionResult.result.spenderAddress).toBe(
+      expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
+      expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
         '0x2626664c2603336E57B271c5C0b26F421741e481',
       );
     });
   });
 
   it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {
-    const uniswapSwapExecutionResult = await executeTool({
-      toolIpfsCid: uniswapToolMetadata.ipfsCid,
-      toolParameters: {
+    const uniswapSwapToolClient = getUniswapSwapToolClient();
+    const uniswapSwapExecutionResult = await uniswapSwapToolClient.execute(
+      {
         ethRpcUrl: ETH_RPC_URL,
         rpcUrlForUniswap: BASE_RPC_URL,
         chainIdForUniswap: 8453,
@@ -564,24 +607,26 @@ describe('Uniswap Swap Tool E2E Tests', () => {
         tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
         tokenOutDecimals: 8,
       },
-      delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-      delegateePrivateKey: TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
-      debug: true,
-      capacityCreditTokenId: TEST_CONFIG.capacityCreditInfo!.capacityTokenId!,
-    });
+      {
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      },
+    );
 
     expect(uniswapSwapExecutionResult).toBeDefined();
 
+    expect(uniswapSwapExecutionResult.success).toBe(true);
+    if (uniswapSwapExecutionResult.success === false) {
+      // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+      throw new Error(uniswapSwapExecutionResult.error);
+    }
+
     console.log(uniswapSwapExecutionResult);
-    const parsedResponse = JSON.parse(uniswapSwapExecutionResult.response as string);
 
-    expect(parsedResponse.toolExecutionResult.success).toBeTruthy();
+    expect(uniswapSwapExecutionResult.result).toBeDefined();
+    expect(uniswapSwapExecutionResult.result.swapTxHash).toBeDefined();
+    expect(uniswapSwapExecutionResult.result.spendTxHash).toBeDefined();
 
-    expect(parsedResponse.toolExecutionResult.result).toBeDefined();
-    expect(parsedResponse.toolExecutionResult.result.swapTxHash).toBeDefined();
-    expect(parsedResponse.toolExecutionResult.result.spendTxHash).toBeDefined();
-
-    const swapTxHash = parsedResponse.toolExecutionResult.result.swapTxHash;
+    const swapTxHash = uniswapSwapExecutionResult.result.swapTxHash;
     expect(swapTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const swapTxReceipt = await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
@@ -589,7 +634,7 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     });
     expect(swapTxReceipt.status).toBe('success');
 
-    const spendTxHash = parsedResponse.toolExecutionResult.result.spendTxHash;
+    const spendTxHash = uniswapSwapExecutionResult.result.spendTxHash;
     expect(spendTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const spendTxReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({

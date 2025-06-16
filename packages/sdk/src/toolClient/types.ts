@@ -3,7 +3,7 @@ import type { z } from 'zod';
 import type {
   BaseToolContext,
   PolicyEvaluationResultContext,
-} from '@lit-protocol/vincent-tool-sdk'; // or wherever it's defined
+} from '@lit-protocol/vincent-tool-sdk';
 
 export interface ToolResponseSuccess<Result, Policies extends Record<string, any>> {
   success: true;

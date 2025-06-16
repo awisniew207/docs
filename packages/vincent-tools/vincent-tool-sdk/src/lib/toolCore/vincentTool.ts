@@ -181,6 +181,7 @@ export function createVincentTool<
     : undefined;
 
   return {
+    packageName: toolDef.packageName,
     execute,
     precheck,
     supportedPolicies: toolDef.supportedPolicies,

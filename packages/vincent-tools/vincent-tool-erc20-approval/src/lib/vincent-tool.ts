@@ -12,8 +12,7 @@ import {
 } from './schemas';
 
 export const vincentTool = createVincentTool({
-  // packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
-
+  packageName: '@lit-protocol/vincent-tool-erc20-approval' as const,
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([]),
 

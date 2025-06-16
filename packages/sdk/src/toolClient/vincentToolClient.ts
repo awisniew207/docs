@@ -303,7 +303,7 @@ async function runToolPolicyPrechecks<
   };
 }
 
-export function createVincentToolClient<
+export function getVincentToolClient<
   const IpfsCid extends string,
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,
@@ -409,20 +409,33 @@ export function createVincentToolClient<
       const { success, response } = result;
 
       if (success !== true) {
+        console.log('executeResult 1', { response, success });
         return createToolResponseFailureNoResult({
           message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
         }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
+
+      let parsedResult = response;
 
       if (typeof response === 'string') {
-        return createToolResponseFailureNoResult({
-          message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
-        }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
+        // lit-node-client returns a string if no signed data, even if the result could be JSON.parse'd :(
+        console.log('executeResult 2', { response, success });
+
+        try {
+          parsedResult = JSON.parse(response);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e) {
+          return createToolResponseFailureNoResult({
+            message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+          }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
+        }
       }
 
-      if (!isRemoteVincentToolExecutionResult(response)) {
+      if (!isRemoteVincentToolExecutionResult(parsedResult)) {
+        console.log('executeResult3', { parsedResult, success });
+
         return createToolResponseFailureNoResult({
-          message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+          message: `Remote tool failed with unknown error: ${JSON.stringify(parsedResult)}`,
         }) as ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
@@ -430,7 +443,7 @@ export function createVincentToolClient<
         ExecuteSuccessSchema,
         ExecuteFailSchema,
         PoliciesByPackageName
-      > = response;
+      > = parsedResult;
 
       const executionResult = resp.toolExecutionResult;
       const { schemaToUse } = getSchemaForToolResult({

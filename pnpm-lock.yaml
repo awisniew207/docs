@@ -450,6 +450,9 @@ importers:
       '@lit-protocol/vincent-policy-spending-limit':
         specifier: workspace:*
         version: link:../vincent-tools/vincent-policy-spending-limit
+      '@lit-protocol/vincent-sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@lit-protocol/vincent-tool-erc20-approval':
         specifier: workspace:*
         version: link:../vincent-tools/vincent-tool-erc20-approval
@@ -4517,7 +4520,6 @@ packages:
 
   bun@1.2.16:
     resolution: {integrity: sha512-sjZH6rr1P6yu44+XPA8r+ZojwmK9Kbz9lO6KAA/4HRIupdpC31k7b93crLBm19wEYmd6f2+3+57/7tbOcmHbGg==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 

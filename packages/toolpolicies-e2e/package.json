@@ -8,6 +8,7 @@
     "@lit-protocol/vincent-policy-spending-limit": "workspace:*",
     "@lit-protocol/vincent-tool-erc20-approval": "workspace:*",
     "@lit-protocol/vincent-tool-sdk": "workspace:*",
+    "@lit-protocol/vincent-sdk": "workspace:*",
     "@lit-protocol/vincent-tool-uniswap-swap": "workspace:*",
     "ethers": "5.8.0",
     "tslib": "2.8.1",

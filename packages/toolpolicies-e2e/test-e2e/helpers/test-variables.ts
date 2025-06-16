@@ -1,5 +1,6 @@
 import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import { Wallet } from 'ethers';
 import path from 'path';
 
 import { getEnv } from './test-config';
@@ -92,6 +93,7 @@ export const TEST_APP_DELEGATEE_PRIVATE_KEY = getEnv('TEST_APP_DELEGATEE_PRIVATE
 export const TEST_APP_DELEGATEE_ACCOUNT = privateKeyToAccount(
   TEST_APP_DELEGATEE_PRIVATE_KEY as `0x${string}`,
 );
+export const TEST_APP_DELEGATEE_SIGNER = new Wallet(TEST_APP_DELEGATEE_PRIVATE_KEY);
 
 export const APP_NAME = 'Vincent Test App';
 export const APP_DESCRIPTION = 'A test app for the Vincent protocol';

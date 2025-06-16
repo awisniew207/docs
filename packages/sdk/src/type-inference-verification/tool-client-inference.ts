@@ -8,7 +8,7 @@ import {
   asBundledVincentTool,
 } from '@lit-protocol/vincent-tool-sdk';
 
-import { createVincentToolClient } from '../toolClient/vincentToolClient';
+import { getVincentToolClient } from '../toolClient/vincentToolClient';
 
 const currencyPolicy = createVincentPolicy({
   packageName: 'currency-policy',
@@ -53,13 +53,14 @@ const toolParamsSchema = z.object({
 });
 
 const tool = createVincentTool({
+  packageName: '@lit-protocol/yestool3@1.0.0',
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([currencyToolPolicy, rateLimitToolPolicy]),
   execute: async ({ toolParams }, ctx) => ctx.succeed({ ok: true }),
   executeSuccessSchema: z.object({ ok: z.literal(true) }),
 });
 
-const client = createVincentToolClient({
+const client = getVincentToolClient({
   bundledVincentTool: asBundledVincentTool(tool, 'QmFakeTool123' as const),
   ethersSigner: {} as any, // stubbed
 });
@@ -177,6 +178,7 @@ const fullSchemaToolPolicy = createVincentToolPolicy({
 });
 
 const fullTool = createVincentTool({
+  packageName: '@lit-protocol/yestool3@1.0.0',
   toolParamsSchema: z.object({ count: z.number() }),
   supportedPolicies: supportedPoliciesForTool([fullSchemaToolPolicy]),
   precheck: async ({ toolParams }, ctx) => {
@@ -199,7 +201,7 @@ const fullTool = createVincentTool({
   executeFailSchema: z.object({ reason: z.string() }),
 });
 
-const fullClient = createVincentToolClient({
+const fullClient = getVincentToolClient({
   bundledVincentTool: asBundledVincentTool(fullTool, 'QmFullTool123' as const),
   ethersSigner: {} as any,
 });

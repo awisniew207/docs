@@ -133,7 +133,7 @@ export function testPolicyEvaluationResults() {
 
   // Create tool with both policies
   return createVincentTool({
-    // packageName: '@lit-protocol/mahTool@1.0.0',
+    packageName: '@lit-protocol/mahTool@1.0.0',
     toolParamsSchema: baseToolSchema,
     supportedPolicies: supportedPoliciesForTool([simplePolicy, commitPolicy]),
 

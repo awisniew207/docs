@@ -18,7 +18,7 @@ import { ethers } from 'ethers';
 import { ZodRawShape } from 'zod';
 
 import { VincentAppDef, VincentToolDefWithIPFS, buildParamDefinitions } from './definitions';
-import { getVincentToolClient } from '../tool/tool';
+import { getVincentToolClientv1 } from '../tool/tool';
 
 /**
  * Creates a callback function for handling tool execution requests
@@ -36,7 +36,7 @@ function buildToolCallback(
     args: ZodRawShape,
     _extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<CallToolResult> => {
-    const vincentToolClient = getVincentToolClient({
+    const vincentToolClient = getVincentToolClientv1({
       ethersSigner: delegateeSigner,
       vincentToolCid: vincentToolDefWithIPFS.ipfsCid,
     });

@@ -56,6 +56,7 @@ export type VincentToolDef<
     ExecuteFailSchema
   >,
 > = {
+  packageName: string;
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies: PolicyMap;
 

@@ -51,6 +51,7 @@ function testBasicParameterInference() {
   });
 
   return createVincentTool({
+    packageName: '@lit-protocol/yestool3@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
@@ -186,7 +187,7 @@ function testPolicyResultInference() {
   });
 
   return createVincentTool({
-    // packageName: '@lit-protocol/toolPlusPlus@1.0.0',
+    packageName: '@lit-protocol/toolPlusPlus@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([complexPolicy, commitPolicy]),
 
@@ -327,7 +328,7 @@ function testComplexDestructuring() {
   });
 
   return createVincentTool({
-    // packageName: '@lit-protocol/toolPlus@1.0.0',
+    packageName: '@lit-protocol/toolPlus@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema: successSchema,
@@ -447,7 +448,7 @@ function testAdvancedParameterValidation() {
   });
 
   return createVincentTool({
-    // packageName: '@lit-protocol/plusplustool@1.0.0',
+    packageName: '@lit-protocol/plusplustool@1.0.0',
     toolParamsSchema: advancedSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
@@ -552,7 +553,7 @@ function testMissingTypes() {
 
   // Case where success schema is defined but fail schema is not
   const toolWithOnlySuccessSchema = createVincentTool({
-    // packageName: '@lit-protocol/toolofglory@1.0.0',
+    packageName: '@lit-protocol/toolofglory@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema: successSchema,
@@ -581,7 +582,7 @@ function testMissingTypes() {
   });
 
   const toolWithOnlyFailSchema = createVincentTool({
-    // packageName: '@lit-protocol/lets-tool-this@1.0.0',
+    packageName: '@lit-protocol/lets-tool-this@1.0.0',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeFailSchema: failSchema,
