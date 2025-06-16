@@ -25,7 +25,7 @@ This tool can be used in Vincent apps to manage ERC20 approvals:
 
 ```typescript
 import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
-import { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';
+import { bundledVincentTool } from '@lit-protocol/vincent-tool-erc20-approval';
 
 // One of delegatee signers from your app's Vincent Dashboard
 const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
@@ -33,7 +33,7 @@ const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
 // Initialize the Vincent Tool Client
 const toolClient = getVincentToolClient({
   ethersSigner: delegateeSigner,
-  bundledVincentTool: erc20BundledTool,
+  bundledVincentTool,
 });
 const delegatorPkpEthAddress = '0x09182301238'; // The delegator PKP Eth Address
 

@@ -26,7 +26,7 @@ This tool can be used in Vincent apps to execute Uniswap swaps:
 
 ```typescript
 import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
-import { bundledVincentTool as uniswapBundledTool } from '@lit-protocol/vincent-tool-uniswap-swap';
+import { bundledVincentTool } from '@lit-protocol/vincent-tool-uniswap-swap';
 
 // One of delegatee signers from your app's Vincent Dashboard
 const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
@@ -34,7 +34,7 @@ const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
 // Initialize the Vincent Tool Client
 const toolClient = getVincentToolClient({
   ethersSigner: delegateeSigner,
-  bundledVincentTool: uniswapBundledTool,
+  bundledVincentTool,
 });
 const delegatorPkpEthAddress = '0x09182301238'; // The delegator PKP Eth Address
 
