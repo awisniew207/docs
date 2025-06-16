@@ -18,12 +18,12 @@ import type { LitNodeClient } from '@lit-protocol/lit-node-client';
 import type {
   VincentTool,
   PolicyEvaluationResultContext,
-  ToolConsumerContext,
   BaseToolContext,
   BundledVincentTool,
+  BaseContext,
 } from '@lit-protocol/vincent-tool-sdk';
 
-import type { DecodedValues, ToolPolicyMap } from '@lit-protocol/vincent-tool-sdk/internal';
+import type { DecodedValues, Policy, ToolPolicyMap } from '@lit-protocol/vincent-tool-sdk/internal';
 
 import {
   getPkpInfo,
@@ -38,7 +38,6 @@ import {
   isPolicyAllowResponse,
   isPolicyDenyResponse,
   validateOrDeny,
-  createToolSuccessResult,
   getSchemaForToolResult,
   validateOrFail,
 } from '@lit-protocol/vincent-tool-sdk/internal';
@@ -51,6 +50,7 @@ import {
   createToolResponseFailure,
   createToolResponseFailureNoResult,
   createToolResponseSuccess,
+  createToolResponseSuccessNoResult,
 } from './resultCreators';
 
 import {
@@ -60,6 +60,7 @@ import {
 } from './types';
 
 import { isRemoteVincentToolExecutionResult, isToolResponseFailure } from './typeGuards';
+import * as util from 'node:util';
 
 const generateSessionSigs = async ({
   litNodeClient,
@@ -114,56 +115,35 @@ async function runToolPolicyPrechecks<
       ExecuteSuccessSchema,
       ExecuteFailSchema,
       PrecheckSuccessSchema,
-      PrecheckFailSchema
+      PrecheckFailSchema,
+      any,
+      any
     >,
     IpfsCid
   >;
-  toolParams: unknown;
-  context: ToolConsumerContext & { delegateePkpEthAddress: string; rpcUrl?: string };
+  toolParams: z.infer<ToolParamsSchema>;
+  context: BaseContext & { rpcUrl?: string };
+  policies: Policy[];
 }): Promise<BaseToolContext<PolicyEvaluationResultContext<PoliciesByPackageName>>> {
   type Key = PkgNames & keyof PoliciesByPackageName;
 
   const {
     bundledVincentTool: { vincentTool, ipfsCid },
     toolParams,
-    context: { delegateePkpEthAddress, delegatorPkpEthAddress, rpcUrl },
+    context,
+    policies,
   } = params;
 
-  const parsedToolParams = vincentTool.toolParamsSchema.parse(toolParams);
-
-  const userPkpInfo = await getPkpInfo({
-    litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-    yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
-    pkpEthAddress: delegatorPkpEthAddress,
-  });
-
-  const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
-    delegationRpcUrl: rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
-    vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
-    appDelegateeAddress: delegateePkpEthAddress,
-    agentWalletPkpTokenId: userPkpInfo.tokenId,
-    toolIpfsCid: ipfsCid,
-  });
-
-  const baseContext = {
-    toolIpfsCid: ipfsCid,
-    appId: appId.toNumber(),
-    appVersion: appVersion.toNumber(),
-    delegation: {
-      delegateeAddress: delegateePkpEthAddress,
-      delegatorPkpInfo: {
-        ethAddress: delegatorPkpEthAddress,
-        tokenId: userPkpInfo.tokenId,
-        publicKey: userPkpInfo.publicKey,
-      },
-    },
-  };
+  console.log(
+    'Executing runToolPolicyPrechecks()',
+    Object.keys(params.bundledVincentTool.vincentTool.supportedPolicies.policyByPackageName)
+  );
 
   const validatedPolicies = await validatePolicies({
     policies,
     vincentTool,
     toolIpfsCid: ipfsCid,
-    parsedToolParams,
+    parsedToolParams: toolParams,
   });
 
   const decodedPoliciesByPackageName: Record<string, Record<string, DecodedValues>> = {};
@@ -214,24 +194,29 @@ async function runToolPolicyPrechecks<
     evaluatedPolicies.push(key as Key);
     const vincentPolicy = toolPolicy.vincentPolicy;
 
-    if (!vincentPolicy.precheck) continue;
+    if (!vincentPolicy.precheck) {
+      console.log('No precheck() defined policy', key, 'skipping...');
+      continue;
+    }
 
     try {
+      console.log('Executing precheck() for policy', key);
       const result = await vincentPolicy.precheck(
         {
           toolParams: toolPolicyParams,
           userParams: decodedPoliciesByPackageName[key as string] as unknown,
         },
-        baseContext
+        context
       );
 
+      console.log('vincentPolicy.precheck() result', util.inspect(result, { depth: 10 }));
       const { schemaToUse } = getSchemaForPolicyResponseResult({
         value: result,
         allowResultSchema: vincentPolicy.precheckAllowResultSchema ?? z.undefined(),
         denyResultSchema: vincentPolicy.precheckDenyResultSchema ?? z.undefined(),
       });
 
-      const validated = validateOrDeny(result, schemaToUse, 'precheck', 'output');
+      const validated = validateOrDeny(result.result, schemaToUse, 'precheck', 'output');
 
       if (isPolicyDenyResponse(validated)) {
         // @ts-expect-error We know the shape of this is valid.
@@ -277,7 +262,7 @@ async function runToolPolicyPrechecks<
     );
 
     return {
-      ...baseContext,
+      ...context,
       policiesContext,
     };
   }
@@ -298,7 +283,7 @@ async function runToolPolicyPrechecks<
   );
 
   return {
-    ...baseContext,
+    ...context,
     policiesContext,
   };
 }
@@ -323,7 +308,9 @@ export function getVincentToolClient<
       ExecuteSuccessSchema,
       ExecuteFailSchema,
       PrecheckSuccessSchema,
-      PrecheckFailSchema
+      PrecheckFailSchema,
+      any,
+      any
     >,
     IpfsCid
   >;
@@ -341,7 +328,7 @@ export function getVincentToolClient<
 
   return {
     async precheck(
-      toolParams: z.infer<ToolParamsSchema>,
+      rawToolParams: z.infer<ToolParamsSchema>,
       {
         rpcUrl,
         delegatorPkpEthAddress,
@@ -349,27 +336,85 @@ export function getVincentToolClient<
         rpcUrl?: string;
       }
     ): Promise<ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>> {
+      console.log('precheck', { rawToolParams, delegatorPkpEthAddress, rpcUrl });
       const delegateePkpEthAddress = ethers.utils.getAddress(await ethersSigner.getAddress());
+
+      // This will be populated further during execution; if an error is encountered, it'll include as much data as we can give the caller.
+      const baseContext = {
+        delegation: {
+          delegateeAddress: delegateePkpEthAddress,
+          // delegatorPkpInfo: null,
+        },
+        toolIpfsCid: ipfsCid,
+        // appId: undefined,
+        // appVersion: undefined,
+      } as any;
+
+      const parsedParams = validateOrFail(
+        rawToolParams,
+        vincentTool.toolParamsSchema,
+        'execute',
+        'input'
+      );
+
+      if (isToolResponseFailure(parsedParams)) {
+        return createToolResponseFailureNoResult({
+          ...parsedParams,
+          context: baseContext,
+        }) as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>;
+      }
+
+      const userPkpInfo = await getPkpInfo({
+        litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
+        yellowstoneRpcUrl: rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
+        pkpEthAddress: delegatorPkpEthAddress,
+      });
+      baseContext.delegation.delegatorPkpInfo = userPkpInfo;
+
+      console.log('userPkpInfo', userPkpInfo);
+
+      const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
+        delegationRpcUrl: rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
+        vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
+        appDelegateeAddress: delegateePkpEthAddress,
+        agentWalletPkpTokenId: userPkpInfo.tokenId,
+        toolIpfsCid: ipfsCid,
+      });
+      baseContext.appId = appId.toNumber();
+      baseContext.appVersion = appVersion.toNumber();
+
+      console.log('Fetched policies and app info', { policies, appId, appVersion });
 
       const baseToolContext = await runToolPolicyPrechecks({
         bundledVincentTool,
-        toolParams,
+        toolParams: parsedParams as z.infer<ToolParamsSchema>,
+        policies,
         context: {
-          delegateePkpEthAddress,
-          delegatorPkpEthAddress: delegatorPkpEthAddress,
+          ...baseContext,
           rpcUrl,
         },
       });
 
       if (!vincentTool.precheck) {
-        return {
-          ...createToolSuccessResult(),
+        console.log('No tool precheck defined - returning baseContext and success result', {
+          rawToolParams,
+          delegatorPkpEthAddress,
+          rpcUrl,
+        });
+
+        return createToolResponseSuccessNoResult({
           context: baseToolContext,
-        } as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>;
+        }) as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>;
       }
 
-      const precheckResult = await vincentTool.precheck({ toolParams }, baseToolContext);
+      console.log('Executing tool precheck');
 
+      const precheckResult = await vincentTool.precheck(
+        { toolParams: parsedParams },
+        baseToolContext
+      );
+
+      console.log('precheckResult()', JSON.stringify(precheckResult));
       return {
         ...precheckResult,
         context: baseToolContext,

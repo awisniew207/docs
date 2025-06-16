@@ -5,4 +5,4 @@
 import { asBundledVincentTool } from '@lit-protocol/vincent-tool-sdk';
 import { vincentTool } from '../lib/vincent-tool';
 
-export const bundledVincentTool = asBundledVincentTool(vincentTool, "QmY2GJFAjkeZmxpnJjVRYAxyVVwvNcvPRiFKzXjt9ZsXnk" as const);
+export const bundledVincentTool = asBundledVincentTool(vincentTool, "QmZgzKQRAYxj5rWsW1Y5cLdFCdscwLKHMQbwyhdiVd9ETc" as const);

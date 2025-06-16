@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const toolParamsSchema = z.object({
-  rpcUrl: z.string(),
+  rpcUrl: z.string(), // FIXME: This should not be a tool-provided argument
   chainId: z.number(),
   spenderAddress: z.string(),
 

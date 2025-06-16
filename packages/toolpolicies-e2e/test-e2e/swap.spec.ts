@@ -40,6 +40,7 @@ import {
   VincentUserViewFacetAbi,
 } from './vincent-contract-abis';
 import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
+import * as util from 'node:util';
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
@@ -378,6 +379,108 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     } else {
       expect(balance).toBeGreaterThan(0n);
     }
+  });
+
+  describe('Precheck for the Uniswap Swap Tool', () => {
+    beforeAll(async () => {
+      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+        {
+          rpcUrl: BASE_RPC_URL,
+          chainId: 8453,
+          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+          tokenDecimals: 18,
+          tokenAmount: 1,
+        },
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
+
+      console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
+      expect(erc20ApprovalExecutionResult).toBeDefined();
+
+      expect(erc20ApprovalExecutionResult.success).toBe(true);
+      if (erc20ApprovalExecutionResult.success === false) {
+        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+        throw new Error(erc20ApprovalExecutionResult.error);
+      }
+      console.log({ erc20ApprovalExecutionResult });
+      expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(
+        0,
+      );
+      expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
+
+      expect(erc20ApprovalExecutionResult.result).toBeDefined();
+
+      // Allowance will decrease after swap
+      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+      expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
+        '0x4200000000000000000000000000000000000006',
+      );
+      expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
+      expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
+        '0x2626664c2603336E57B271c5C0b26F421741e481',
+      );
+      console.log(
+        'waiting for approval tx to finalize',
+        erc20ApprovalExecutionResult.result.approvalTxHash,
+      );
+      if (erc20ApprovalExecutionResult.result.approvalTxHash) {
+        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+          hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
+        });
+        console.log('approval TX is GTG! continuing');
+      }
+    });
+
+    it('should successfully run precheck on the Uniswap Swap Tool', async () => {
+      const uniswapSwapToolClient = getUniswapSwapToolClient();
+
+      // Call the precheck method with the same parameters used in the execute test
+      const precheckResult = await uniswapSwapToolClient.precheck(
+        {
+          ethRpcUrl: ETH_RPC_URL,
+          rpcUrlForUniswap: BASE_RPC_URL,
+          chainIdForUniswap: 8453,
+          tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
+          tokenInDecimals: 18,
+          tokenInAmount: 0.0000077,
+          tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+          tokenOutDecimals: 8,
+        },
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
+
+      // Verify the precheck was successful
+      expect(precheckResult).toBeDefined();
+      console.log('precheckResult', util.inspect(precheckResult, { depth: 10 }));
+      expect(precheckResult.success).toBe(true);
+
+      if (precheckResult.success === false) {
+        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+        throw new Error(precheckResult.error);
+      }
+
+      // Verify the context is properly populated
+      expect(precheckResult.context).toBeDefined();
+      expect(precheckResult.context?.delegation.delegateeAddress).toBeDefined();
+      expect(precheckResult.context?.delegation.delegatorPkpInfo.ethAddress).toBe(
+        TEST_CONFIG.userPkp!.ethAddress!,
+      );
+
+      // Verify policies context
+      expect(precheckResult.context?.policiesContext).toBeDefined();
+      expect(precheckResult.context?.policiesContext.allow).toBe(true);
+
+      // The precheck should has no result
+      expect(precheckResult.result).not.toBeDefined();
+    });
   });
 
   describe('ERC20 approval tool when there is no approval', () => {

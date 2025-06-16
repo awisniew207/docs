@@ -19,15 +19,6 @@ export const toolParamsSchema = z.object({
   swapDeadline: z.number().optional(),
 });
 
-export const precheckSuccessSchema = z.object({
-  allow: z.literal(true),
-});
-
-export const precheckFailSchema = z.object({
-  allow: z.literal(false),
-  error: z.string(),
-});
-
 export const executeSuccessSchema = z.object({
   swapTxHash: z.string(),
   spendTxHash: z.string().optional(),

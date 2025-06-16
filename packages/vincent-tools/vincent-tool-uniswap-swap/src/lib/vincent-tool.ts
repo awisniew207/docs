@@ -13,13 +13,7 @@ import {
   checkTokenInBalance,
   checkUniswapPoolExists,
 } from './tool-checks';
-import {
-  executeFailSchema,
-  executeSuccessSchema,
-  precheckFailSchema,
-  precheckSuccessSchema,
-  toolParamsSchema,
-} from './schemas';
+import { executeFailSchema, executeSuccessSchema, toolParamsSchema } from './schemas';
 import { ethers } from 'ethers';
 import { checkErc20Allowance } from './tool-checks/check-erc20-allowance';
 
@@ -42,12 +36,11 @@ export const vincentTool = createVincentTool({
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([SpendingLimitPolicy]),
 
-  precheckSuccessSchema,
-  precheckFailSchema,
   executeSuccessSchema,
   executeFailSchema,
 
   precheck: async ({ toolParams }, { fail, succeed, delegation: { delegatorPkpInfo } }) => {
+    // TODO: The return types for this precheck could be more strongly typed; right now they will just be `error` with a string.
     const {
       rpcUrlForUniswap,
       chainIdForUniswap,
@@ -58,6 +51,7 @@ export const vincentTool = createVincentTool({
       tokenOutDecimals,
     } = toolParams;
 
+    console.log('Prechecking UniswapSwapTool', toolParams);
     const delegatorPkpAddress = delegatorPkpInfo.ethAddress;
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrlForUniswap);
@@ -69,27 +63,30 @@ export const vincentTool = createVincentTool({
 
     const uniswapRouterAddress = CHAIN_TO_ADDRESSES_MAP[
       chainIdForUniswap as keyof typeof CHAIN_TO_ADDRESSES_MAP
-    ].quoterAddress as `0x${string}`;
+    ].swapRouter02Address as `0x${string}`;
     if (uniswapRouterAddress === undefined) {
-      return fail({
-        allow: false,
-        error: `Uniswap router address not found for chainId ${chainIdForUniswap} (UniswapSwapToolPrecheck)`,
-      });
+      return fail(
+        `Uniswap router address not found for chainId ${chainIdForUniswap} (UniswapSwapToolPrecheck)`,
+      );
     }
+
+    const requiredAmount = ethers.utils
+      .parseUnits(tokenInAmount.toString(), tokenInDecimals)
+      .toBigInt();
 
     await checkErc20Allowance({
       provider,
       tokenAddress: tokenInAddress as `0x${string}`,
       owner: delegatorPkpAddress as `0x${string}`,
       spender: uniswapRouterAddress,
-      tokenAmount: BigInt(tokenInAmount),
+      tokenAmount: requiredAmount,
     });
 
     await checkTokenInBalance({
       provider,
       pkpEthAddress: delegatorPkpAddress as `0x${string}`,
       tokenInAddress: tokenInAddress as `0x${string}`,
-      tokenInAmount: BigInt(tokenInAmount),
+      tokenInAmount: requiredAmount,
     });
 
     await checkUniswapPoolExists({
@@ -102,9 +99,7 @@ export const vincentTool = createVincentTool({
       tokenOutDecimals,
     });
 
-    return succeed({
-      allow: true,
-    });
+    return succeed();
   },
   execute: async (
     { toolParams },

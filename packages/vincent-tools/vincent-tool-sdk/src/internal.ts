@@ -14,7 +14,7 @@ export type { ToolResultFailure } from './lib/types';
 // Policy Core - Parameter Loading + Decoding
 export { getPoliciesAndAppVersion } from './lib/policyCore/policyParameters/getOnchainPolicyParams';
 export { decodePolicyParams } from './lib/policyCore/policyParameters/decodePolicyParams';
-export type { DecodedValues } from './lib/policyCore/policyParameters/types';
+export type { DecodedValues, Policy } from './lib/policyCore/policyParameters/types';
 
 // Policy Core - Evaluation Helpers
 export {

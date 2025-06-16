@@ -46,6 +46,7 @@ export const vincentPolicy = createVincentPolicy({
     { toolParams, userParams },
     { allow, deny, appId, delegation: { delegatorPkpInfo } },
   ) => {
+    console.log('Prechecking spending limit policy', { toolParams, userParams });
     const { ethAddress } = delegatorPkpInfo;
     const {
       buyAmount,

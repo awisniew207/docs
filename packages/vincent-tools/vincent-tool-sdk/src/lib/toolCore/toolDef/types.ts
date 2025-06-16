@@ -20,7 +20,6 @@ export type ToolDefLifecycleFunction<
 > = (
   args: {
     toolParams: z.infer<ToolParams>;
-    policiesContext: Policies;
   },
   context: ToolContext<SuccessSchema, FailSchema, Policies>,
 ) => Promise<
