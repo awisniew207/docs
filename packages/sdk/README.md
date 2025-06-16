@@ -102,23 +102,36 @@ Executes a Vincent Tool with the provided parameters.
 
 ```typescript
 import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
+// Import the tool you want to execute
+import { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';
 
-const ALLOWED_AUDIENCE = 'YOUR_FRONTEND_URL';
-
+// One of delegatee signers from your app's Vincent Dashboard
 const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
 
 // Initialize the Vincent Tool Client
 const toolClient = getVincentToolClient({
   ethersSigner: delegateeSigner,
-  vincentToolCid: 'your-vincent-tool-cid',
+  bundledVincentTool: erc20BundledTool,
+});
+const delegatorPkpEthAddress = '0x09182301238';
+
+const toolParams = {
+  // Fill with the params your tool needs
+};
+
+// Run precheck to see if tool should be executed
+const precheckResult = await client.precheck(toolParams, {
+  delegatorPkpEthAddress,
 });
 
-// Execute the Vincent Tool
-const response = await toolClient.execute({
-  // Tool-specific parameters
-  param1: 'value1',
-  param2: 'value2',
-});
+if (precheckResult.success === true) {
+  // Execute the Vincent Tool
+  const executeResult = await client.execute(toolParams, {
+    delegatorPkpEthAddress,
+  });
+
+  // ...tool has executed, you can check `executeResult` for details
+}
 ```
 
 ### Usage
