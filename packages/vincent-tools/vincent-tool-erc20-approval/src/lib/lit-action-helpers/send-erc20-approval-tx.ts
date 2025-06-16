@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getErc20Contract } from './getErc20Contract';
+import { getErc20Contract } from '../helpers';
 import { signTx } from './sign-tx';
 
 declare const Lit: {

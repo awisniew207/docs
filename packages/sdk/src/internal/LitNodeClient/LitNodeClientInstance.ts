@@ -43,6 +43,27 @@ export class LitNodeClientInstance {
     return true;
   }
 
+  async disconnect(): Promise<void> {
+    if (!this.isConnected && this.connectHandle) {
+      // Wait for connect attempt to finish so we don't end up just re-adding the listener when it finishes.
+      try {
+        await this.connectHandle;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        /* Ignore errors on connect; we're disconnecting! */
+      }
+    }
+
+    try {
+      await this.litNodeClientInstance.disconnect();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      /* We did our best */
+    } finally {
+      this.isConnected = false;
+    }
+  }
+
   get litNodeClient(): LitNodeClient {
     return this.litNodeClientInstance;
   }

@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getErc20Contract } from './getErc20Contract';
+import { getErc20Contract } from '../helpers/getErc20Contract';
 
 export const getCurrentAllowance = async ({
   provider,

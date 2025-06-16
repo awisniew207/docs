@@ -1,10 +1,14 @@
 import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
 import { vincentPolicyMetadata as spendingLimitPolicyMetadata } from '@lit-protocol/vincent-policy-spending-limit';
-import { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';
+import {
+  bundledVincentTool as erc20BundledTool,
+  getCurrentAllowance,
+  checkNativeTokenBalance,
+} from '@lit-protocol/vincent-tool-erc20-approval';
 
 import { bundledVincentTool as uniswapBundledTool } from '@lit-protocol/vincent-tool-uniswap-swap';
 
-import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
+import { getVincentToolClient, disconnectVincentToolClients } from '@lit-protocol/vincent-sdk';
 import { ethers } from 'ethers';
 
 import {
@@ -42,8 +46,121 @@ import {
 import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
 import * as util from 'node:util';
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
+
+// Create a delegatee wallet for tool execution
+const getDelegateeWallet = () => {
+  return new ethers.Wallet(
+    TEST_APP_DELEGATEE_PRIVATE_KEY as string,
+    new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
+  );
+};
+
+// Get tool clients for ERC20 approval and Uniswap swap
+const getErc20ApprovalToolClient = () => {
+  return getVincentToolClient({
+    bundledVincentTool: erc20BundledTool,
+    ethersSigner: getDelegateeWallet(),
+  });
+};
+
+const getUniswapSwapToolClient = () => {
+  return getVincentToolClient({
+    bundledVincentTool: uniswapBundledTool,
+    ethersSigner: getDelegateeWallet(),
+  });
+};
+
+// Helper methods for common test behaviors
+const removeExistingApproval = async (delegatorPkpEthAddress: string) => {
+  console.log('Removing approval...');
+  const setupClient = getErc20ApprovalToolClient();
+  const setupResult = await setupClient.execute(
+    {
+      rpcUrl: BASE_RPC_URL,
+      chainId: 8453,
+      spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+      tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+      tokenDecimals: 18,
+      tokenAmount: 0,
+    },
+    {
+      delegatorPkpEthAddress,
+    },
+  );
+
+  expect(setupResult.success).toBe(true);
+  if (setupResult.success === false) {
+    throw new Error(setupResult.error);
+  }
+
+  expect(BigInt(setupResult.result.approvedAmount)).toBe(0n);
+
+  if (setupResult.result.approvalTxHash) {
+    console.log('waiting for approval tx to finalize', setupResult.result.approvalTxHash);
+    await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+      hash: setupResult.result.approvalTxHash as `0x${string}`,
+    });
+    console.log('approval TX is GTG! continuing');
+  }
+
+  return setupResult;
+};
+
+const addNewApproval = async (delegatorPkpEthAddress: string, tokenAmount: number) => {
+  console.log(`Adding approval for amount: ${tokenAmount}...`);
+  const erc20ApprovalToolClient = getErc20ApprovalToolClient();
+  const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
+    {
+      rpcUrl: BASE_RPC_URL,
+      chainId: 8453,
+      spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+      tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+      tokenDecimals: 18,
+      tokenAmount,
+    },
+    {
+      delegatorPkpEthAddress,
+    },
+  );
+
+  expect(erc20ApprovalExecutionResult.success).toBe(true);
+  if (erc20ApprovalExecutionResult.success === false) {
+    throw new Error(erc20ApprovalExecutionResult.error);
+  }
+
+  expect(erc20ApprovalExecutionResult.result).toBeDefined();
+
+  if (tokenAmount > 0) {
+    expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+  } else {
+    expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBe(0n);
+  }
+
+  expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
+    '0x4200000000000000000000000000000000000006',
+  );
+  expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
+  expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
+    '0x2626664c2603336E57B271c5C0b26F421741e481',
+  );
+
+  if (erc20ApprovalExecutionResult.result.approvalTxHash) {
+    console.log(
+      'waiting for approval tx to finalize',
+      erc20ApprovalExecutionResult.result.approvalTxHash,
+    );
+    await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
+      hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
+    });
+    console.log('approval TX is GTG! continuing');
+  }
+
+  return erc20ApprovalExecutionResult;
+};
 
 describe('Uniswap Swap Tool E2E Tests', () => {
   const TOOL_IPFS_IDS = [erc20BundledTool.ipfsCid, uniswapBundledTool.ipfsCid];
@@ -70,30 +187,12 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     ],
   ];
 
-  // Create a delegatee wallet for tool execution
-  const getDelegateeWallet = () => {
-    return new ethers.Wallet(
-      TEST_APP_DELEGATEE_PRIVATE_KEY as string,
-      new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
-    );
-  };
-
-  // Get tool clients for ERC20 approval and Uniswap swap
-  const getErc20ApprovalToolClient = () => {
-    return getVincentToolClient({
-      bundledVincentTool: erc20BundledTool,
-      ethersSigner: getDelegateeWallet(),
-    });
-  };
-
-  const getUniswapSwapToolClient = () => {
-    return getVincentToolClient({
-      bundledVincentTool: uniswapBundledTool,
-      ethersSigner: getDelegateeWallet(),
-    });
-  };
-
   let TEST_CONFIG: TestConfig;
+
+  afterAll(async () => {
+    console.log('Disconnecting from Lit node client...');
+    await disconnectVincentToolClients();
+  });
 
   beforeAll(async () => {
     TEST_CONFIG = getTestConfig(TEST_CONFIG_PATH);
@@ -381,323 +480,245 @@ describe('Uniswap Swap Tool E2E Tests', () => {
     }
   });
 
-  describe('Precheck for the Uniswap Swap Tool', () => {
-    beforeAll(async () => {
-      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
-      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
-        {
-          rpcUrl: BASE_RPC_URL,
-          chainId: 8453,
-          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-          tokenDecimals: 18,
-          tokenAmount: 1,
-        },
-        {
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        },
-      );
-
-      console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
-      expect(erc20ApprovalExecutionResult).toBeDefined();
-
-      expect(erc20ApprovalExecutionResult.success).toBe(true);
-      if (erc20ApprovalExecutionResult.success === false) {
-        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-        throw new Error(erc20ApprovalExecutionResult.error);
-      }
-      console.log({ erc20ApprovalExecutionResult });
-      expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(
-        0,
-      );
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
-
-      expect(erc20ApprovalExecutionResult.result).toBeDefined();
-
-      // Allowance will decrease after swap
-      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-      expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
-        '0x4200000000000000000000000000000000000006',
-      );
-      expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
-      expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
-        '0x2626664c2603336E57B271c5C0b26F421741e481',
-      );
-      console.log(
-        'waiting for approval tx to finalize',
-        erc20ApprovalExecutionResult.result.approvalTxHash,
-      );
-      if (erc20ApprovalExecutionResult.result.approvalTxHash) {
-        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
-        });
-        console.log('approval TX is GTG! continuing');
-      }
+  it('should successfully run precheck on the Uniswap Swap Tool', async () => {
+    // Check if the PKP has a native token balance
+    const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+    const hasBalance = await checkNativeTokenBalance({
+      provider,
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
     });
 
-    it('should successfully run precheck on the Uniswap Swap Tool', async () => {
-      const uniswapSwapToolClient = getUniswapSwapToolClient();
-
-      // Call the precheck method with the same parameters used in the execute test
-      const precheckResult = await uniswapSwapToolClient.precheck(
-        {
-          ethRpcUrl: ETH_RPC_URL,
-          rpcUrlForUniswap: BASE_RPC_URL,
-          chainIdForUniswap: 8453,
-          tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
-          tokenInDecimals: 18,
-          tokenInAmount: 0.0000077,
-          tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
-          tokenOutDecimals: 8,
-        },
-        {
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        },
-      );
-
-      // Verify the precheck was successful
-      expect(precheckResult).toBeDefined();
-      console.log('precheckResult', util.inspect(precheckResult, { depth: 10 }));
-      expect(precheckResult.success).toBe(true);
-
-      if (precheckResult.success === false) {
-        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-        throw new Error(precheckResult.error);
-      }
-
-      // Verify the context is properly populated
-      expect(precheckResult.context).toBeDefined();
-      expect(precheckResult.context?.delegation.delegateeAddress).toBeDefined();
-      expect(precheckResult.context?.delegation.delegatorPkpInfo.ethAddress).toBe(
-        TEST_CONFIG.userPkp!.ethAddress!,
-      );
-
-      // Verify policies context
-      expect(precheckResult.context?.policiesContext).toBeDefined();
-      expect(precheckResult.context?.policiesContext.allow).toBe(true);
-
-      // The precheck should has no result
-      expect(precheckResult.result).not.toBeDefined();
-    });
-  });
-
-  describe('ERC20 approval tool when there is no approval', () => {
-    beforeAll(async () => {
-      // First, remove any existing approvals
-      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
-      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
-        {
-          rpcUrl: BASE_RPC_URL,
-          chainId: 8453,
-          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-          tokenDecimals: 18,
-          tokenAmount: 0,
-        },
-        {
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        },
-      );
-
-      console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
-
-      expect(erc20ApprovalExecutionResult).toHaveProperty('success', true);
-      if (erc20ApprovalExecutionResult.success === false) {
-        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-        throw new Error(erc20ApprovalExecutionResult.error);
-      }
-      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBe(0n);
-
-      if (erc20ApprovalExecutionResult.result.approvalTxHash) {
-        console.log(
-          'waiting for approval tx to finalize',
-          erc20ApprovalExecutionResult.result.approvalTxHash,
-        );
-        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
-        });
-        console.log('approval TX is GTG! continuing');
-      }
-    });
-
-    it('should add an approval successfully', async () => {
-      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
-      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
-        {
-          rpcUrl: BASE_RPC_URL,
-          chainId: 8453,
-          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-          tokenDecimals: 18,
-          tokenAmount: 1,
-        },
-        {
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        },
-      );
-
-      console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
-      expect(erc20ApprovalExecutionResult).toBeDefined();
-
-      expect(erc20ApprovalExecutionResult.success).toBe(true);
-      if (erc20ApprovalExecutionResult.success === false) {
-        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-        throw new Error(erc20ApprovalExecutionResult.error);
-      }
-      console.log({ erc20ApprovalExecutionResult });
-      expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(
-        0,
-      );
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
-
-      expect(erc20ApprovalExecutionResult.result).toBeDefined();
-
-      // Allowance will decrease after swap
-      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-      expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
-        '0x4200000000000000000000000000000000000006',
-      );
-      expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
-      expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
-        '0x2626664c2603336E57B271c5C0b26F421741e481',
-      );
-      console.log(
-        'waiting for approval tx to finalize',
-        erc20ApprovalExecutionResult.result.approvalTxHash,
-      );
-      await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-        hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
+    if (hasBalance) {
+      // Check the current allowance
+      const currentAllowance = await getCurrentAllowance({
+        provider,
+        tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+        owner: TEST_CONFIG.userPkp!.ethAddress!,
+        spender: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
       });
-      console.log('approval TX is GTG! continuing');
-    });
+
+      // Convert tokenAmount to bigint for comparison
+      const requiredAllowance = ethers.utils.parseUnits('0.0000077', 18).toBigInt();
+
+      // Only add approval if the current allowance is less than the required amount
+      if (currentAllowance < requiredAllowance) {
+        // Setup: Approve WETH for Uniswap Router
+        const erc20ApprovalExecutionResult = await addNewApproval(
+          TEST_CONFIG.userPkp!.ethAddress!,
+          0.0000077,
+        );
+        console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
+        console.log({ erc20ApprovalExecutionResult });
+      } else {
+        console.log(`Existing allowance (${currentAllowance}) is sufficient, skipping approval`);
+      }
+    } else {
+      console.log('PKP has no native token balance, skipping approval');
+    }
+
+    // Test: Run precheck on Uniswap Swap Tool
+    const uniswapSwapToolClient = getUniswapSwapToolClient();
+
+    // Call the precheck method with the same parameters used in the execute test
+    const precheckResult = await uniswapSwapToolClient.precheck(
+      {
+        ethRpcUrl: ETH_RPC_URL,
+        rpcUrlForUniswap: BASE_RPC_URL,
+        chainIdForUniswap: 8453,
+        tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
+        tokenInDecimals: 18,
+        tokenInAmount: 0.0000077,
+        tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+        tokenOutDecimals: 8,
+      },
+      {
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      },
+    );
+
+    // Verify the precheck was successful
+    expect(precheckResult).toBeDefined();
+    console.log('precheckResult', util.inspect(precheckResult, { depth: 10 }));
+    expect(precheckResult.success).toBe(true);
+
+    if (precheckResult.success === false) {
+      // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
+      throw new Error(precheckResult.error);
+    }
+
+    // Verify the context is properly populated
+    expect(precheckResult.context).toBeDefined();
+    expect(precheckResult.context?.delegation.delegateeAddress).toBeDefined();
+    expect(precheckResult.context?.delegation.delegatorPkpInfo.ethAddress).toBe(
+      TEST_CONFIG.userPkp!.ethAddress!,
+    );
+
+    // Verify policies context
+    expect(precheckResult.context?.policiesContext).toBeDefined();
+    expect(precheckResult.context?.policiesContext.allow).toBe(true);
+
+    // The precheck should has no result
+    expect(precheckResult.result).not.toBeDefined();
   });
 
-  describe('ERC20 approval tool should work when there is an existing approval', () => {
-    beforeAll(async () => {
-      {
-        // First, remove any existing approvals
-        const erc20ApprovalToolClient = getErc20ApprovalToolClient();
-        const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
-          {
-            rpcUrl: BASE_RPC_URL,
-            chainId: 8453,
-            spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-            tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-            tokenDecimals: 18,
-            tokenAmount: 0,
-          },
-          {
-            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          },
-        );
-
-        expect(erc20ApprovalExecutionResult.success).toBe(true);
-        if (erc20ApprovalExecutionResult.success === false) {
-          // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-          throw new Error(erc20ApprovalExecutionResult.error);
-        }
-
-        expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBe(0n);
-
-        if (erc20ApprovalExecutionResult.result.approvalTxHash) {
-          console.log(
-            'waiting for approval tx to finalize',
-            erc20ApprovalExecutionResult.result.approvalTxHash,
-          );
-          await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-            hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
-          });
-          console.log('approval TX is GTG! continuing');
-        }
-      }
-
-      {
-        // Now add an approval so our test case will be guaranteed one already exists
-        const erc20ApprovalToolClient = getErc20ApprovalToolClient();
-        const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
-          {
-            rpcUrl: BASE_RPC_URL,
-            chainId: 8453,
-            spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-            tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-            tokenDecimals: 18,
-            tokenAmount: 1,
-          },
-          {
-            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          },
-        );
-
-        expect(erc20ApprovalExecutionResult.success).toBe(true);
-        if (erc20ApprovalExecutionResult.success === false) {
-          // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-          throw new Error(erc20ApprovalExecutionResult.error);
-        }
-
-        expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-
-        console.log(
-          'waiting for approval tx to finalize',
-          erc20ApprovalExecutionResult.result.approvalTxHash,
-        );
-        await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: erc20ApprovalExecutionResult.result.approvalTxHash as `0x${string}`,
-        });
-        console.log('approval TX is GTG! continuing');
-      }
+  it('should add an approval successfully when there is no approval', async () => {
+    // Check if the PKP has a native token balance
+    const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+    const hasBalance = await checkNativeTokenBalance({
+      provider,
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
     });
 
-    it('should succeed without a TX when there is already a valid approval', async () => {
-      const erc20ApprovalToolClient = getErc20ApprovalToolClient();
-      const erc20ApprovalExecutionResult = await erc20ApprovalToolClient.execute(
-        {
-          rpcUrl: BASE_RPC_URL,
-          chainId: 8453,
-          spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
-          tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
-          tokenDecimals: 18,
-          tokenAmount: 1,
-        },
-        {
-          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        },
-      );
+    if (!hasBalance) {
+      console.log('PKP has no native token balance, skipping test');
+      return;
+    }
 
-      expect(erc20ApprovalExecutionResult).toBeDefined();
-
-      expect(erc20ApprovalExecutionResult.success).toBe(true);
-      if (erc20ApprovalExecutionResult.success === false) {
-        // A bit redundant, but typescript doesn't understand `expect().toBe(true)` is narrowing to the type.
-        throw new Error(erc20ApprovalExecutionResult.error);
-      }
-      console.log({ erc20ApprovalExecutionResult });
-      expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(
-        0,
-      );
-      expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
-
-      expect(erc20ApprovalExecutionResult.result).toBeDefined();
-      expect(erc20ApprovalExecutionResult.result.approvalTxHash).toBeUndefined();
-
-      // Allowance will decrease after swap
-      expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
-      expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
-        '0x4200000000000000000000000000000000000006',
-      );
-      expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
-      expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
-        '0x2626664c2603336E57B271c5C0b26F421741e481',
-      );
+    // Check the current allowance
+    let currentAllowance = await getCurrentAllowance({
+      provider,
+      tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+      owner: TEST_CONFIG.userPkp!.ethAddress!,
+      spender: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
     });
+
+    // If there's an existing allowance, remove it first
+    if (currentAllowance > 0n) {
+      console.log(`Existing allowance found: ${currentAllowance}, removing...`);
+      // Setup: First, remove any existing approvals
+      await removeExistingApproval(TEST_CONFIG.userPkp!.ethAddress!);
+
+      // Verify the allowance is now 0
+      currentAllowance = await getCurrentAllowance({
+        provider,
+        tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+        owner: TEST_CONFIG.userPkp!.ethAddress!,
+        spender: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+      });
+
+      expect(currentAllowance).toBe(0n);
+    }
+
+    // Test: Add a new approval
+    const erc20ApprovalExecutionResult = await addNewApproval(
+      TEST_CONFIG.userPkp!.ethAddress!,
+      0.0000077,
+    );
+
+    console.log('erc20ApprovalExecutionResult', erc20ApprovalExecutionResult);
+    console.log({ erc20ApprovalExecutionResult });
+
+    // Verify policy context
+    expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
+    expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
+    expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(0);
+    expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
+  });
+
+  it('should succeed without a TX when there is already a valid approval', async () => {
+    // Check if the PKP has a native token balance
+    const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+    const hasBalance = await checkNativeTokenBalance({
+      provider,
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+    });
+
+    if (!hasBalance) {
+      console.log('PKP has no native token balance, skipping test');
+      return;
+    }
+
+    // Check the current allowance
+    let currentAllowance = await getCurrentAllowance({
+      provider,
+      tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+      owner: TEST_CONFIG.userPkp!.ethAddress!,
+      spender: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+    });
+
+    if (!(currentAllowance > 0n)) {
+      // Setup: Add an approval so our test case will be guaranteed one already exists
+      await addNewApproval(TEST_CONFIG.userPkp!.ethAddress!, 0.0000077);
+
+      // Verify the allowance is now greater than 0
+      currentAllowance = await getCurrentAllowance({
+        provider,
+        tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+        owner: TEST_CONFIG.userPkp!.ethAddress!,
+        spender: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+      });
+    }
+
+    expect(currentAllowance).toBeGreaterThan(0n);
+    // Convert tokenAmount to bigint for comparison
+    const requiredAllowance = ethers.utils.parseUnits('0.0000077', 18).toBigInt();
+
+    // Verify the current allowance is sufficient
+    expect(currentAllowance).toBeGreaterThanOrEqual(requiredAllowance);
+
+    console.log('currentAllowance', currentAllowance.toString());
+    console.log('requiredAllowance', requiredAllowance.toString());
+    // Test: Execute with existing approval
+    const erc20ApprovalExecutionResult = await addNewApproval(
+      TEST_CONFIG.userPkp!.ethAddress!,
+      0.0000077,
+    );
+
+    console.log({ erc20ApprovalExecutionResult });
+
+    // Verify policy context
+    expect(erc20ApprovalExecutionResult.context?.policiesContext).toBeDefined();
+    expect(erc20ApprovalExecutionResult.context?.policiesContext.allow).toBe(true);
+    expect(erc20ApprovalExecutionResult.context?.policiesContext.evaluatedPolicies.length).toBe(0);
+    expect(erc20ApprovalExecutionResult.context?.policiesContext.allowedPolicies).toEqual({});
+
+    expect(erc20ApprovalExecutionResult.result).toBeDefined();
+    expect(erc20ApprovalExecutionResult.result.approvalTxHash).toBeUndefined();
+
+    // Allowance will decrease after swap
+    expect(BigInt(erc20ApprovalExecutionResult.result.approvedAmount)).toBeGreaterThan(0n);
+    expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(
+      '0x4200000000000000000000000000000000000006',
+    );
+    expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(18);
+    expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(
+      '0x2626664c2603336E57B271c5C0b26F421741e481',
+    );
   });
 
   it('should execute the Uniswap Swap Tool with the Agent Wallet PKP', async () => {
+    // Check if the PKP has a native token balance
+    const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+    const hasBalance = await checkNativeTokenBalance({
+      provider,
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+    });
+
+    if (!hasBalance) {
+      console.log('PKP has no native token balance, skipping test');
+      return;
+    }
+
+    // Check the current allowance
+    const currentAllowance = await getCurrentAllowance({
+      provider,
+      tokenAddress: '0x4200000000000000000000000000000000000006', // WETH
+      owner: TEST_CONFIG.userPkp!.ethAddress!,
+      spender: '0x2626664c2603336E57B271c5C0b26F421741e481', // Uniswap V3 Router 02 on Base
+    });
+
+    // Convert tokenAmount to bigint for comparison
+    const requiredAllowance = ethers.utils.parseUnits('0.0000077', 18).toBigInt();
+
+    // Only add approval if the current allowance is less than the required amount
+    if (currentAllowance < requiredAllowance) {
+      console.log(`Existing allowance (${currentAllowance}) is insufficient, adding approval...`);
+      // Ensure we have a valid approval before executing the swap
+      await addNewApproval(TEST_CONFIG.userPkp!.ethAddress!, 0.0000077);
+    } else {
+      console.log(`Existing allowance (${currentAllowance}) is sufficient, skipping approval`);
+    }
+
     const uniswapSwapToolClient = getUniswapSwapToolClient();
     const uniswapSwapExecutionResult = await uniswapSwapToolClient.execute(
       {

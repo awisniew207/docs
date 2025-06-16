@@ -1,8 +1,8 @@
 import { createVincentTool, supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
 import { ethers } from 'ethers';
 
-import { getCurrentAllowance, sendErc20ApprovalTx } from './tool-helpers';
-import { checkNativeTokenBalance } from './tool-checks';
+import { getCurrentAllowance, checkNativeTokenBalance } from './helpers';
+import { sendErc20ApprovalTx } from './lit-action-helpers';
 import {
   executeFailSchema,
   executeSuccessSchema,

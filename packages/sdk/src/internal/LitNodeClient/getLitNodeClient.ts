@@ -22,3 +22,11 @@ export async function getLitNodeClientInstance({
 
   return instance.litNodeClient;
 }
+
+export async function disconnectLitNodeClientInstance() {
+  if (instance) {
+    await instance.disconnect();
+    instance = null;
+  }
+  return true;
+}

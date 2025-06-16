@@ -24,4 +24,5 @@ module.exports = {
   coverageDirectory: 'coverage',
   collectCoverageFrom: ['src/**/*.ts'],
   setupFilesAfterEnv: ['./jest.setup.js'],
+  detectOpenHandles: true,
 };

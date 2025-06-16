@@ -426,7 +426,7 @@ export function getVincentToolClient<
     },
 
     async execute(
-      rawToolParams: unknown,
+      rawToolParams: z.infer<ToolParamsSchema>,
       context: ToolClientContext
     ): Promise<ToolResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>> {
       const parsedParams = validateOrFail(
