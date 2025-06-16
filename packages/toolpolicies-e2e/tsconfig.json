@@ -4,6 +4,18 @@
   "include": [],
   "references": [
     {
+      "path": "../vincent-tools/vincent-tool-erc20-approval"
+    },
+    {
+      "path": "../vincent-tools/vincent-tool-uniswap-swap"
+    },
+    {
+      "path": "../vincent-tools/vincent-tool-sdk"
+    },
+    {
+      "path": "../vincent-tools/vincent-policy-spending-limit"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {

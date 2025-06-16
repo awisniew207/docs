@@ -1,10 +1,17 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "types": ["node"],
+    "baseUrl": ".",
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+    "outDir": "dist",
+    "emitDeclarationOnly": false,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "types": ["node"],
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
+    "esModuleInterop": true
   },
   "include": ["src/**/*.ts"],
   "exclude": [
@@ -16,5 +23,19 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../vincent-tools/vincent-tool-erc20-approval/tsconfig.lib.json"
+    },
+    {
+      "path": "../vincent-tools/vincent-tool-uniswap-swap/tsconfig.lib.json"
+    },
+    {
+      "path": "../vincent-tools/vincent-tool-sdk/tsconfig.lib.json"
+    },
+    {
+      "path": "../vincent-tools/vincent-policy-spending-limit/tsconfig.lib.json"
+    }
   ]
 }

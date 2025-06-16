@@ -54,8 +54,18 @@
       }
     },
     "test": {
+      "command": "echo 'Test target disabled for this project - only \"test-e2e\"'"
+    },
+    "test-e2e": {
+      "dependsOn": [
+        "vincent-policy-spending-limit:action:deploy",
+        "vincent-tool-uniswap-swap:action:deploy",
+        "vincent-tool-erc20-approval:action:deploy"
+      ],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/test-output/jest/{projectRoot}"],
       "options": {
-        "passWithNoTests": true
+        "jestConfig": "{projectRoot}/jest.config.js"
       }
     }
   }

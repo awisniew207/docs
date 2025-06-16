@@ -2,7 +2,7 @@ import { encodeAbiParameters, formatEther, parseEventLogs } from 'viem';
 import { vincentPolicyMetadata as spendingLimitPolicyMetadata } from '@lit-protocol/vincent-policy-spending-limit';
 import { vincentToolMetadata as erc20ToolMetadata } from '@lit-protocol/vincent-tool-erc20-approval';
 
-import { vincentToolMetadata as uniswapToolMetadata } from '../src';
+import { vincentToolMetadata as uniswapToolMetadata } from '@lit-protocol/vincent-tool-uniswap-swap';
 
 import {
   TestConfig,
