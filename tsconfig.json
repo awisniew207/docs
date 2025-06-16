@@ -10,10 +10,28 @@
       "path": "./packages/vincent-tools/vincent-tool-sdk"
     },
     {
+      "path": "./packages/sdk"
+    },
+    {
       "path": "./packages/vincent-tools/vincent-policy-spending-limit"
     },
     {
       "path": "./packages/vincent-tools/vincent-tool-erc20-approval"
+    },
+    {
+      "path": "./packages/app-dashboard"
+    },
+    {
+      "path": "./packages/sdk"
+    },
+    {
+      "path": "./packages/vincent-rest-api"
+    },
+    {
+      "path": "./packages/mcp"
+    },
+    {
+      "path": "./packages/toolpolicies-e2e"
     }
   ]
 }

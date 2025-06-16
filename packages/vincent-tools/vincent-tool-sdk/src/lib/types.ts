@@ -374,10 +374,11 @@ export type VincentTool<
         PrecheckFailSchema
       >,
 > = {
+  packageName: string;
   precheck?: PrecheckFn;
   execute: ExecuteFn;
   toolParamsSchema: ToolParamsSchema;
-  policyMap: PolicyMap;
+  supportedPolicies: PolicyMap;
   __schemaTypes: {
     executeSuccessSchema?: ExecuteSuccessSchema;
     executeFailSchema?: ExecuteFailSchema;
@@ -386,12 +387,25 @@ export type VincentTool<
   };
 };
 
+export interface ToolConsumerContext {
+  delegatorPkpEthAddress: string;
+}
+
+export interface PolicyConsumerContext {
+  delegatorPkpEthAddress: string;
+  toolIpfsCid: string; // FIXME: This will be removed when we have shipped lit action ipfs cids stack
+}
+
 export interface BaseContext {
   toolIpfsCid: string;
   appId: number;
   appVersion: number;
   delegation: {
-    delegatee: string;
-    delegator: string;
+    delegateeAddress: string;
+    delegatorPkpInfo: {
+      tokenId: string;
+      ethAddress: string;
+      publicKey: string;
+    };
   };
 }

@@ -4,15 +4,20 @@ export { createVincentTool } from './lib/toolCore/vincentTool';
 export { vincentPolicyHandler } from './lib/handlers/vincentPolicyHandler';
 export { vincentToolHandler } from './lib/handlers/vincentToolHandler';
 
+export { asBundledVincentTool } from './lib/toolCore/bundledTool/bundledTool';
 export { asBundledVincentPolicy } from './lib/policyCore/bundledPolicy/bundledPolicy';
-
-export type {
-  ToolResponse,
-  ToolResponseSuccess,
-  ToolResponseFailure,
-  ToolResponseFailureNoResult,
-  ToolResponseSuccessNoResult,
-} from './lib/toolClient/types';
+export { supportedPoliciesForTool } from './lib/toolCore/helpers/supportedPoliciesForTool';
 
 export type { BundledVincentPolicy } from './lib/policyCore/bundledPolicy/types';
-export type { VincentToolPolicy, BaseContext, PolicyEvaluationResultContext } from './lib/types';
+export type { BundledVincentTool } from './lib/toolCore/bundledTool/types';
+
+export type {
+  VincentToolPolicy,
+  BaseContext,
+  PolicyEvaluationResultContext,
+  VincentTool,
+  ToolConsumerContext,
+  PolicyConsumerContext,
+} from './lib/types';
+
+export type { BaseToolContext } from './lib/toolCore/toolDef/context/types';

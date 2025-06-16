@@ -11,7 +11,7 @@
           "pnpm typedoc --skipErrorChecking",
           "mkdir ./sdk-docs/.vercel",
           "printf '{\"projectId\": \"%s\", \"orgId\": \"%s\"}\\n' \"$SDK_DOCS_VERCEL_PROJECT_ID\" \"$SDK_DOCS_VERCEL_ORG_ID\" > ./sdk-docs/.vercel/project.json\n",
-          "pnpm dotenvx run -- vercel --prod --cwd=./sdk-docs --yes",
+          "pnpm vercel --prod --cwd=./sdk-docs --yes",
           "rm -Rf ./sdk-docs"
         ],
         "parallel": false,
@@ -36,7 +36,6 @@
         "tsConfig": "packages/sdk/tsconfig.lib.json",
         "assets": ["packages/sdk/*.md"],
         "formats": ["cjs"],
-        "updateBuildableProjectDepsInPackageJson": true,
         "watch": true
       }
     },
@@ -48,8 +47,7 @@
         "main": "packages/sdk/src/index.ts",
         "tsConfig": "packages/sdk/tsconfig.lib.json",
         "assets": ["packages/sdk/*.md"],
-        "formats": ["cjs"],
-        "updateBuildableProjectDepsInPackageJson": true
+        "formats": ["cjs"]
       }
     },
     "lint": {
@@ -57,13 +55,6 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/sdk/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "packages/sdk/jest.config.js"
       }
     }
   },

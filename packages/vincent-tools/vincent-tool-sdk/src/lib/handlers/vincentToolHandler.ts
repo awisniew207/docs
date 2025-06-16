@@ -1,6 +1,11 @@
 import { ethers } from 'ethers';
 
-import { PolicyEvaluationResultContext, ToolExecutionPolicyContext, VincentTool } from '../types';
+import {
+  PolicyEvaluationResultContext,
+  ToolConsumerContext,
+  ToolExecutionPolicyContext,
+  VincentTool,
+} from '../types';
 import type { BaseContext } from '../types';
 import { getPkpInfo } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
@@ -11,11 +16,13 @@ import { validatePolicies } from '../toolCore/helpers/validatePolicies';
 import { ToolPolicyMap } from '../toolCore/helpers';
 import { z } from 'zod';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
+import type { BaseToolContext } from '../toolCore/toolDef/context/types';
 
 declare const LitAuth: {
   authSigAddress: string;
   actionIpfsIds: string[];
 };
+
 declare const Lit: {
   Actions: {
     setResponse: (response: { response: string }) => void;
@@ -58,7 +65,7 @@ export function createToolExecutionContext<
     allowedPolicies: {} as ToolExecutionPolicyContext<PoliciesByPackageName>['allowedPolicies'],
   };
 
-  const policyByPackageName = vincentTool.policyMap.policyByPackageName;
+  const policyByPackageName = vincentTool.supportedPolicies.policyByPackageName;
   const allowedKeys = Object.keys(policyEvaluationResults.allowedPolicies) as Array<
     keyof typeof policyByPackageName
   >;
@@ -102,7 +109,7 @@ export const vincentToolHandler = <
 >({
   vincentTool,
   toolParams,
-  baseContext,
+  context,
 }: {
   vincentTool: VincentTool<
     ToolParamsSchema,
@@ -114,16 +121,29 @@ export const vincentToolHandler = <
     any,
     any
   >;
-  baseContext: BaseContext;
+  context: ToolConsumerContext;
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
     let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
+    const toolIpfsCid = LitAuth.actionIpfsIds[0];
+    const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
+
+    // Build an initial baseContext -- we will add info as we execute, so if an error is encountered the consumer gets
+    // all of the info we did find along the way
+    const baseContext = {
+      delegation: {
+        delegateeAddress: appDelegateeAddress,
+        // delegatorPkpInfo: null,
+      },
+      toolIpfsCid,
+      // appId: undefined,
+      // appVersion: undefined,
+    } as any;
 
     try {
       const delegationRpcUrl = await Lit.Actions.getRpcUrl({ chain: 'yellowstone' });
-      const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
 
       const parsedOrFail = validateOrFail(
         toolParams,
@@ -144,22 +164,25 @@ export const vincentToolHandler = <
       const userPkpInfo = await getPkpInfo({
         litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
         yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
-        pkpEthAddress: baseContext.delegation.delegator,
+        pkpEthAddress: context.delegatorPkpEthAddress,
       });
+      baseContext.delegation.delegatorPkpInfo = userPkpInfo;
 
       const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl,
         vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
         appDelegateeAddress,
         agentWalletPkpTokenId: userPkpInfo.tokenId,
-        toolIpfsCid: baseContext.toolIpfsCid,
+        toolIpfsCid,
       });
+      baseContext.appId = appId.toNumber();
+      baseContext.appVersion = appVersion.toNumber();
 
       const validatedPolicies = await validatePolicies({
         policies,
         vincentTool,
         parsedToolParams: parsedOrFail,
-        toolIpfsCid: baseContext.toolIpfsCid,
+        toolIpfsCid,
       });
 
       console.log('validatedPolicies', JSON.stringify(validatedPolicies));
@@ -167,12 +190,7 @@ export const vincentToolHandler = <
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
         vincentTool,
-        context: {
-          ...baseContext,
-          toolIpfsCid: baseContext.toolIpfsCid,
-          appId: appId.toNumber(),
-          appVersion: appVersion.toNumber(),
-        },
+        context: baseContext,
       });
 
       console.log('policyEvaluationResults', JSON.stringify(policyEvaluationResults));
@@ -182,7 +200,10 @@ export const vincentToolHandler = <
       if (!policyEvalResults.allow) {
         Lit.Actions.setResponse({
           response: JSON.stringify({
-            policyEvaluationResults: policyEvalResults,
+            toolContext: {
+              ...baseContext,
+              policiesContext: policyEvaluationResults,
+            } as BaseToolContext<typeof policyEvaluationResults>,
             toolExecutionResult: {
               success: false,
             },
@@ -194,12 +215,7 @@ export const vincentToolHandler = <
       const executeContext = createToolExecutionContext({
         vincentTool,
         policyEvaluationResults,
-        baseContext: {
-          ...baseContext,
-          toolIpfsCid: baseContext.toolIpfsCid,
-          appId: appId.toNumber(),
-          appVersion: appVersion.toNumber(),
-        },
+        baseContext,
       });
 
       const toolExecutionResult = await vincentTool.execute(
@@ -207,12 +223,7 @@ export const vincentToolHandler = <
           toolParams: parsedOrFail,
         },
         {
-          ...{
-            ...baseContext,
-            toolIpfsCid: baseContext.toolIpfsCid,
-            appId: appId.toNumber(),
-            appVersion: appVersion.toNumber(),
-          },
+          ...baseContext,
           policiesContext: executeContext,
         },
       );
@@ -221,14 +232,20 @@ export const vincentToolHandler = <
 
       Lit.Actions.setResponse({
         response: JSON.stringify({
-          policyEvaluationResults,
           toolExecutionResult,
+          toolContext: {
+            ...baseContext,
+            policiesContext: policyEvaluationResults,
+          } as BaseToolContext<typeof policyEvaluationResults>,
         }),
       });
     } catch (err) {
       Lit.Actions.setResponse({
         response: JSON.stringify({
-          policyEvaluationResults: policyEvalResults,
+          toolContext: {
+            ...baseContext,
+            policiesContext: policyEvalResults,
+          } as BaseToolContext<typeof policyEvalResults>,
           toolExecutionResult: {
             success: false,
             error: err instanceof Error ? err.message : String(err),

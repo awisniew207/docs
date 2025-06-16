@@ -1,12 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch');
-const FormData = require('form-data');
-
-const dotenvx = require('@dotenvx/dotenvx');
-
-// Load environment variables
-dotenvx.config({ path: path.join(__dirname, '../../../../.env') });
 
 // Get Pinata JWT from environment variable
 const PINATA_JWT = process.env.PINATA_JWT;
@@ -55,10 +48,7 @@ if (!PINATA_JWT) {
 async function uploadToIPFS(filename, fileContent) {
   try {
     const form = new FormData();
-    form.append('file', fileContent, {
-      filename,
-      contentType: 'application/javascript',
-    });
+    form.append('file', new Blob([fileContent], { type: 'application/javascript' }), filename);
 
     const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
       method: 'POST',

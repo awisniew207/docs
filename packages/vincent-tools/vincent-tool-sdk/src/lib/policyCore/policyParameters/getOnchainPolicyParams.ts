@@ -2,34 +2,19 @@
 
 import { ethers } from 'ethers';
 
-import type { AllOnChainPolicyParams, Policy } from './types';
+import { AllOnChainPolicyParams, type DecodedValues, Policy } from './types';
 import { decodePolicyParams } from './decodePolicyParams';
 
-export const getOnePolicysOnChainParams = async ({
-  delegationRpcUrl,
-  vincentContractAddress,
-  appDelegateeAddress,
-  agentWalletPkpTokenId,
-  toolIpfsCid,
+export const getDecodedPolicyParams = async ({
+  policies,
   policyIpfsCid,
 }: {
-  delegationRpcUrl: string;
-  vincentContractAddress: string;
-  appDelegateeAddress: string;
-  agentWalletPkpTokenId: string;
-  toolIpfsCid: string;
+  policies: Policy[];
   policyIpfsCid: string;
-}): Promise<unknown | undefined> => {
-  const allOnChainPolicyParams = await _fetchAllOnChainParams({
-    delegationRpcUrl,
-    vincentContractAddress,
-    appDelegateeAddress,
-    agentWalletPkpTokenId,
-    toolIpfsCid,
-  });
+}): Promise<Record<string, DecodedValues> | undefined> => {
+  console.log('All on-chain policy params:', JSON.stringify(policies));
 
-  console.log('allOnChainPolicyParams:', JSON.stringify(allOnChainPolicyParams));
-  const onChainPolicyParams = allOnChainPolicyParams.policies.find(
+  const onChainPolicyParams = policies.find(
     (policy: Policy) => policy.policyIpfsCid === policyIpfsCid,
   );
 
@@ -39,6 +24,7 @@ export const getOnePolicysOnChainParams = async ({
     });
   }
 
+  console.log('Found no on-chain parameters for policy IPFS CID:', policyIpfsCid);
   return undefined;
 };
 

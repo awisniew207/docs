@@ -1,4 +1,3 @@
-export { vincentPolicy } from './lib/vincent-policy';
 export { bundledVincentPolicy } from './generated/vincent-bundled-policy';
 import * as vincentPolicyMetadata from './generated/vincent-policy-metadata.json';
 

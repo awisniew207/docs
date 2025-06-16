@@ -1,5 +1,5 @@
 {
-  "name": "@lit-protocol/vincent-policy-spending-limit",
+  "name": "vincent-policy-spending-limit",
   "sourceRoot": "src",
   "projectType": "library",
   "targets": {
@@ -38,11 +38,11 @@
         ]
       }
     },
-    "publish": {
-      "executor": "@nx/js:npm-publish",
-      "dependsOn": ["deploy"],
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "packageRoot": "dist"
+        "jestConfig": "packages/vincent-tools/vincent-policy-spending-limit/jest.config.js"
       }
     }
   }

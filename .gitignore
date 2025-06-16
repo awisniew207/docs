@@ -17,17 +17,18 @@ node_modules
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
+# IDE - VSCode and its forks
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.cursor/
 
 # misc
 /.sass-cache
 /connect.lock
-/coverage
+coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -47,8 +48,6 @@ screenshots
 **/.next
 **/next-env.d.ts
 
-packages/examples
-
 **/vincent-contract-caller-config.json
 
 # Environment variables
@@ -56,8 +55,9 @@ packages/examples
 **/.env.*
 !**/.env.test.example
 !.env.example
-screenshots
-.env
 /packages/sdk/sdk-docs/**/*
+*.tsbuildinfo
 
 test-output
+
+.github/instructions/nx.instructions.md

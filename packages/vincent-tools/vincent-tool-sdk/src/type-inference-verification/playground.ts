@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { createVincentTool } from '../lib/toolCore/vincentTool';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 import { createAllowResult } from '../lib/policyCore/helpers/resultCreators';
 import { createDenyResult } from '../lib/policyCore/helpers';
 
@@ -268,9 +268,9 @@ const toolPrecheckFailSchema = z.object({
 
 // Create your tool with fully typed policies
 export const myTool = createVincentTool({
-  // packageName: '@lit-protocol/awesome-tool@1.0.2',
+  packageName: '@lit-protocol/awesome-tool@1.0.2',
   toolParamsSchema: myToolSchema,
-  policyMap: createPolicyMapFromToolPolicies([policy1, policy2, policy3]),
+  supportedPolicies: supportedPoliciesForTool([policy1, policy2, policy3]),
 
   // Add schemas for tool results
   executeSuccessSchema: toolExecuteSuccessSchema,
@@ -405,7 +405,14 @@ export const gogoPolicy = async function () {
       userParams: { userAddress: 'meow', accessLevel: 'basic' },
     },
     {
-      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+      delegation: {
+        delegateeAddress: 'meow',
+        delegatorPkpInfo: {
+          tokenId: '90128301832',
+          ethAddress: '0x102398103981032',
+          publicKey: '0398103810938ef987ef978fe987ef',
+        },
+      },
       toolIpfsCid: 'oijskljfdj',
       appId: 123123,
       appVersion: 123,
@@ -421,7 +428,14 @@ export const gogoPolicy = async function () {
         toolIpfsCid: 'oijskljfdj',
         appId: 123123,
         appVersion: 123,
-        delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+        delegation: {
+          delegateeAddress: 'meow',
+          delegatorPkpInfo: {
+            tokenId: '90128301832',
+            ethAddress: '0x102398103981032',
+            publicKey: '0398103810938ef987ef978fe987ef',
+          },
+        },
       },
     );
   }
@@ -435,7 +449,14 @@ export const gogo = async function () {
       toolIpfsCid: 'oijskljfdj',
       appId: 123123,
       appVersion: 123,
-      delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+      delegation: {
+        delegateeAddress: 'meow',
+        delegatorPkpInfo: {
+          tokenId: '90128301832',
+          ethAddress: '0x102398103981032',
+          publicKey: '0398103810938ef987ef978fe987ef',
+        },
+      },
       policiesContext: {
         allow: true,
         evaluatedPolicies: [
@@ -481,7 +502,14 @@ export const gogo = async function () {
         toolIpfsCid: 'oijskljfdj',
         appId: 123123,
         appVersion: 123,
-        delegation: { delegatee: 'meow', delegator: 'meowmeow' },
+        delegation: {
+          delegateeAddress: 'meow',
+          delegatorPkpInfo: {
+            tokenId: '90128301832',
+            ethAddress: '0x102398103981032',
+            publicKey: '0398103810938ef987ef978fe987ef',
+          },
+        },
         policiesContext: {
           allow: false,
           deniedPolicy: {

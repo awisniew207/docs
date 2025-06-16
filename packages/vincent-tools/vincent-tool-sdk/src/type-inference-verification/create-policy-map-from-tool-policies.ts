@@ -6,7 +6,7 @@ import { createVincentPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
 import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
-import { createPolicyMapFromToolPolicies } from '../lib/toolCore/helpers';
+import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 
 const policyDef1 = createVincentPolicy({
   packageName: 'example-policy-1',
@@ -47,7 +47,7 @@ const policy2 = createVincentToolPolicy({
   },
 });
 
-const result = createPolicyMapFromToolPolicies([policy1, policy2]);
+const result = supportedPoliciesForTool([policy1, policy2]);
 
 // ✅ Known package names — should succeed
 const p1 = result.policyByPackageName['example-policy-1'];
