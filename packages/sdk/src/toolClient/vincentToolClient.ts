@@ -23,7 +23,11 @@ import type {
   BaseContext,
 } from '@lit-protocol/vincent-tool-sdk';
 
-import type { DecodedValues, Policy, ToolPolicyMap } from '@lit-protocol/vincent-tool-sdk/internal';
+import {
+  type DecodedValues,
+  type Policy,
+  type ToolPolicyMap,
+} from '@lit-protocol/vincent-tool-sdk/internal';
 
 import {
   getPkpInfo,

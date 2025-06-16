@@ -6,7 +6,6 @@ import {
   ToolExecutionPolicyContext,
   ToolExecutionPolicyEvaluationResult,
   ToolLifecycleFunction,
-  ToolResult,
   VincentTool,
 } from '../types';
 import {
@@ -105,13 +104,7 @@ export function createVincentTool<
         failureResultSchema: executeFailSchema,
       });
 
-      const resultOrFailure = validateOrFail(
-        // @ts-expect-error - TODO: fix this
-        result.result,
-        schemaToUse,
-        'execute',
-        'output',
-      );
+      const resultOrFailure = validateOrFail(result.result, schemaToUse, 'execute', 'output');
 
       if (isToolFailureResult(resultOrFailure)) {
         return wrapFailure(resultOrFailure);
@@ -152,18 +145,12 @@ export function createVincentTool<
 
           console.log('toolDef precheck result', JSON.stringify(result));
           const { schemaToUse } = getSchemaForToolResult({
-            value: result,
+            value: result.result,
             successResultSchema: precheckSuccessSchema,
             failureResultSchema: precheckFailSchema,
           });
 
-          const resultOrFailure = validateOrFail(
-            // @ts-expect-error - TODO: fix this
-            result.result as ToolResult<PrecheckSuccessSchema, PrecheckFailSchema>,
-            schemaToUse,
-            'precheck',
-            'output',
-          );
+          const resultOrFailure = validateOrFail(result.result, schemaToUse, 'precheck', 'output');
 
           if (isToolFailureResult(resultOrFailure)) {
             return wrapFailure(resultOrFailure);

@@ -4,5 +4,10 @@
 
 import { asBundledVincentTool } from '@lit-protocol/vincent-tool-sdk';
 import { vincentTool } from '../lib/vincent-tool';
+import metadata from './vincent-tool-metadata.json';
 
-export const bundledVincentTool = asBundledVincentTool(vincentTool, "QmPJ2gjasYczUBYNFQJjMtm4bZy5zse59ic1R5d2dR45rX" as const);
+if(!metadata.ipfsCid) {
+  throw new Error('ipfsCid is not defined in metadata JSON file');
+}
+
+export const bundledVincentTool = asBundledVincentTool(vincentTool, metadata.ipfsCid);

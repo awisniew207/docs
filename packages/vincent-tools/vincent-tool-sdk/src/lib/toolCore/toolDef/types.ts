@@ -1,14 +1,7 @@
 // src/lib/toolCore/toolDef/types.ts
 
 import { z } from 'zod';
-import {
-  ContextFailure,
-  ContextFailureNoResult,
-  ContextSuccess,
-  ContextSuccessNoResult,
-  EnforceToolResult,
-  ToolContext,
-} from './context/types';
+import { ContextFailure, ContextSuccess, EnforceToolResult, ToolContext } from './context/types';
 import { PolicyEvaluationResultContext, ToolExecutionPolicyContext } from '../../types';
 import { ToolPolicyMap } from '../helpers';
 
@@ -23,12 +16,7 @@ export type ToolDefLifecycleFunction<
   },
   context: ToolContext<SuccessSchema, FailSchema, Policies>,
 ) => Promise<
-  EnforceToolResult<
-    | (SuccessSchema extends z.ZodType
-        ? ContextSuccess<z.infer<SuccessSchema>>
-        : ContextSuccessNoResult)
-    | (FailSchema extends z.ZodType ? ContextFailure<z.infer<FailSchema>> : ContextFailureNoResult)
-  >
+  EnforceToolResult<ContextSuccess<z.infer<SuccessSchema>> | ContextFailure<z.infer<FailSchema>>>
 >;
 
 export type VincentToolDef<

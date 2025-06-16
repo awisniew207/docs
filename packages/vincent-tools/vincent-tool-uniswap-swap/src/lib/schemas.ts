@@ -23,7 +23,3 @@ export const executeSuccessSchema = z.object({
   swapTxHash: z.string(),
   spendTxHash: z.string().optional(),
 });
-
-export const executeFailSchema = z.object({
-  error: z.string(),
-});

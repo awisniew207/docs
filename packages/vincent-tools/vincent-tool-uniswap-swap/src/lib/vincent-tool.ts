@@ -13,7 +13,7 @@ import {
   checkTokenInBalance,
   checkUniswapPoolExists,
 } from './tool-checks';
-import { executeFailSchema, executeSuccessSchema, toolParamsSchema } from './schemas';
+import { executeSuccessSchema, toolParamsSchema } from './schemas';
 import { ethers } from 'ethers';
 import { checkErc20Allowance } from './tool-checks/check-erc20-allowance';
 
@@ -37,7 +37,6 @@ export const vincentTool = createVincentTool({
   supportedPolicies: supportedPoliciesForTool([SpendingLimitPolicy]),
 
   executeSuccessSchema,
-  executeFailSchema,
 
   precheck: async ({ toolParams }, { fail, succeed, delegation: { delegatorPkpInfo } }) => {
     // TODO: The return types for this precheck could be more strongly typed; right now they will just be `error` with a string.
@@ -156,10 +155,9 @@ export const vincentTool = createVincentTool({
       if (commitResult.allow) {
         spendTxHash = commitResult.result.spendTxHash;
       } else {
-        return fail({
-          error:
-            commitResult.error ?? 'Unknown error occurred while committing spending limit policy',
-        });
+        return fail(
+          commitResult.error ?? 'Unknown error occurred while committing spending limit policy',
+        );
       }
       console.log(
         `Committed spending limit policy for transaction: ${spendTxHash} (UniswapSwapToolExecute)`,
