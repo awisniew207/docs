@@ -117,6 +117,15 @@ If `precheck` returns a failure result, you should check the `error` property on
 
 # Executing the Tool Client's `execute` function
 
+<div class="info-box">
+  <p class="info-box-title">
+    <span class="info-icon">Info</span> Before executing the Tool
+  </p>
+  <p>Executing a Tool using the Lit Protocol network requires a <a href="https://developer.litprotocol.com/paying-for-lit/capacity-credits">Lit Capacity Credit</a> minted for the Ethereum Address you're using for the `ethersSigner` when creating the Tool Client instance with `getVincentToolClient`.</p>
+  <p>In order to mint a Capacity Credit, you'll need to have tokens on Lit Protocol's Yellowstone blockchain. You can use <a href="https://chronicle-yellowstone-faucet.getlit.dev/">this faucet</a> to get the Lit test tokens used to pay for minting a Capacity Credit.</p>
+  <p>To mint a Capacity Credit using the Lit Explorer, please see <a href="https://developer.litprotocol.com/paying-for-lit/minting-capacity-credit/via-explorer">this guide</a>. To mint a Credit programmatically, refer to <a href="https://developer.litprotocol.com/paying-for-lit/minting-capacity-credit/via-contract">this guide</a>.</p>
+</div>
+
 After executing the `precheck` function and getting a success result, you can execute the Tool Client's `execute` function to perform the programmed action of the Vincent Tool.
 
 ```typescript
