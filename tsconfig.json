@@ -28,9 +28,6 @@
       "path": "./packages/vincent-rest-api"
     },
     {
-      "path": "./packages/mcp"
-    },
-    {
       "path": "./packages/toolpolicies-e2e"
     }
   ]

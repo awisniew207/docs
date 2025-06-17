@@ -14,7 +14,6 @@ The repository is managed with [Nx](https://nx.dev/) and [pnpm](https://pnpm.io/
 The Vincent system consists of several key components:
 
 - **app-dashboard**: A Vite React app where users interact with the Vincent system, allowing them to create apps with their tools and policies, update versions, manage delegatee addresses, and more.
-- **mcp**: A Model Context Protocol Wrapper that converts any Vincent app into an MCP server that can be connected to any LLM client to provide it with Vincent tools.
 - **sdk**: A TypeScript SDK that exposes useful tools to interact with Vincent systems in web or Node.js environments.
 - **vincent-contracts**: Solidity contracts that create and manage the blockchain contracts needed to enforce user-to-app delegation, record policy parameters, and store Vincent apps' onchain data.
 - **vincent-rest-api**: An offchain service increasing the available info that Vincent apps can show to their users, offering discoverability and auditability services.

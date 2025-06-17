@@ -48,7 +48,6 @@
     "projects": [
       "vincent-tool-sdk",
       "vincent-sdk",
-      "vincent-mcp",
       "vincent-rest-api",
       "vincent-policy-spending-limit",
       "vincent-tool-erc20-approval",

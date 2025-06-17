@@ -4,7 +4,7 @@ This document provides guidelines for contributing to the Vincent SDK project.
 
 ## Overview
 
-The Vincent SDK is a TypeScript SDK that exposes useful tools to interact with Vincent systems in web or Node.js environments. It provides client libraries for both frontend applications and backend services, as well as utilities for integrating with the Model Context Protocol (MCP).
+The Vincent SDK is a TypeScript SDK that exposes useful tools to interact with Vincent systems in web or Node.js environments. It provides client libraries for both frontend applications and backend services.
 
 ## Setup
 
@@ -39,7 +39,6 @@ pnpm typedoc
   - `app/`: Web utilities to authenticate against Vincent Apps in clients
   - `express-authentication-middleware/`: Express middleware wrapper to properly validate clients JWT server side
   - `jwt/`: Utility functions to work with Vincent JWT between Vincent Apps client and server
-  - `mcp/`: Model Context Protocol transformer
   - `tool/`: Utility functions to work with Vincent Tools
 
 ## SDK Components
@@ -51,10 +50,6 @@ The Vincent Web App Client provides methods for managing user authentication, JW
 ### VincentToolClient
 
 The Vincent Tool Client uses an ethers signer for your delegatee account to run Vincent Tools on behalf of your app users.
-
-### MCP Integration
-
-This SDK provides tools to transform your Vincent application into an MCP server, exposing your tools to LLMs.
 
 ## Coding Standards
 
@@ -115,7 +110,6 @@ When working with AI-powered editors like Cursor, GitHub Copilot, or other AI as
 
 The SDK is a core component that is used by:
 
-- `vincent-mcp`: For MCP server implementation
 - `vincent-tools`: For tool and policy implementation
 - `app-dashboard`: For frontend integration
 

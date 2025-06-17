@@ -4,6 +4,7 @@ title: Quick Start
 ---
 
 # Quick Start
+
 <div class="info-box">
   <p class="info-box-title">
     <span class="info-icon">Info</span> Demo
@@ -16,7 +17,7 @@ In this Quick Start guide you'll learn how to register your first Vincent app:
 
 ## 1. Creating Tools & Policies
 
-- **Tools:** Vincent Tools are [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) that are used to define the specific operations that your Vincent app can perform on *behalf* of your users. As a Vincent App developer, you can prompt your users to permit these Tools access to their Agent Wallet using the Vincent [Consent Page](../Users/Onboarding.md). This enables your application to perform these specific operations on behalf of the user, fully programmatically according to the guardrails they set via Policies.
+- **Tools:** Vincent Tools are [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) that are used to define the specific operations that your Vincent app can perform on _behalf_ of your users. As a Vincent App developer, you can prompt your users to permit these Tools access to their Agent Wallet using the Vincent [Consent Page](../Users/Onboarding.md). This enables your application to perform these specific operations on behalf of the user, fully programmatically according to the guardrails they set via Policies.
 
 - **Policies:** Users can set guardrails for the Tools they permit which dictate the operating conditions for that Tool. Each Tool can have any number of Policies associated with it, such as maximum daily spending limits or multi-factor authentication (MFA). The Vincent delegation system ensures that all of these policies are met before a given Tool can be executed using the delegated user's Agent Wallet. Just like Tools, Policies are also Lit Actions and your job as the app developer is to provide the the user with a set of optional Policies for each Tool using the Consent Page.
 
@@ -36,14 +37,14 @@ In this Quick Start guide you'll learn how to register your first Vincent app:
 **Available Tools & Policies:**
 | Tool | IPFS Cid |
 |------|--------|
-| ERC20 Token Approval  | QmPZ46EiurxMb7DmE9McFyzHfg2B6ZGEERui2tnNNX7cky |
+| ERC20 Token Approval | QmPZ46EiurxMb7DmE9McFyzHfg2B6ZGEERui2tnNNX7cky |
 | Uniswap Tool | QmZbh52JYnutuFURnpwfywfiiHuFoJpqFyFzNiMtbiDNkK |
 
 <br>
 
-| Policy | IPFS Cid |
-|------|--------|
-| Spending Limit  | QmZrG2DFvVDgo3hZgpUn31TUgrHYfLQA2qEpAo3tnKmzhQ |
+| Policy         | IPFS Cid                                       |
+| -------------- | ---------------------------------------------- |
+| Spending Limit | QmZrG2DFvVDgo3hZgpUn31TUgrHYfLQA2qEpAo3tnKmzhQ |
 
 It's an ever expanding list and we're actively adding more Tools & Policies to the Registry.
 
@@ -83,36 +84,62 @@ It's an ever expanding list and we're actively adding more Tools & Policies to t
 - **[Handle User Login](https://sdk-docs.heyvincent.ai/Vincent_Web_App/VincentWebAppClient.html#redirecttoconsentpage):** You can use the Vincent Consent Page to sign-in users to your App instead of implementing a separate User Login flow. You need to provide a redirectUri in the URLSearch params (`https://dashboard.heyvincent.ai/appId/160/consent?redirectUri=http://localhost:3000`) to receive the signed JWT from the user's Agent Wallet after they log in on the Vincent Consent Page. This can be used as the User's Auth for your App, for example, use it as the user's access token for your API requests.
 
 - Install the Vincent SDK using NPM:
-```javascript
+
+```bash
 npm install @lit-protocol/vincent-sdk
 ```
 
-``` javascript
+```javascript
 import { getVincentWebAppClient } from '@lit-protocol/vincent-sdk';
 
 const vincentAppClient = getVincentWebAppClient({ appId: MY_APP_ID });
 
 // ... In your app logic:
-if(vincentAppClient.isLogin()) {
-	// Handle app logic for the user has just logged in
-	const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(EXPECTED_AUDIENCE);
-	// Store `jwt` for later usage; the user is now logged in.
+if (vincentAppClient.isLogin()) {
+  // Handle app logic for the user has just logged in
+  const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(EXPECTED_AUDIENCE);
+  // Store `jwt` for later usage; the user is now logged in.
 } else {
-	// Handle app logic for the user is already logged in (check for stored & unexpired JWT)
-	// Handle app logic for the user is not yet logged in
-	vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
+  // Handle app logic for the user is already logged in (check for stored & unexpired JWT)
+  // Handle app logic for the user is not yet logged in
+  vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });
 }
 ```
 
 - **[Execute Tools for User's Wallet](https://sdk-docs.heyvincent.ai/Vincent_Tools/VincentToolClient.html#execute):** This is where you provide all your AI-Agentic logic in the `params` object of the `execute()` function, for example, the tokens to buy and at what price.
 
 ```javascript
-import { ethers } from 'ethers';
 import { getVincentToolClient } from '@lit-protocol/vincent-sdk';
+import { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';
 
-const delegateePrivateKey = DELEGATEE_PRIVATE_KEY_GENERATED_FROM_APP_DASHBOARD;
-const delegateeSigner = new ethers.Wallet(delegateePrivateKey, provider);
-const vincentToolClient = getVincentToolClient({ ethersSigner: delegateeSigner, vincentToolCid: YOUR_TOOL_IPFS_CID });
-// params = { amountIn: (wethAmount).toFixed(18).toString(), chainId: BASE_CHAIN_ID, pkpEthAddress: agentWalletAddress, rpcUrl: BASE_RPC_URL, tokenIn: WETH_ADDRESS }
-const res = await vincentToolClient.execute({ params }); // This is the result of executing the Tool usually a txReceipt for the broadcasted tx
+// One of delegatee signers from your app's Vincent Dashboard
+const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
+
+// Initialize the Vincent Tool Client
+const toolClient = getVincentToolClient({
+  ethersSigner: delegateeSigner,
+  bundledVincentTool: erc20BundledTool,
+});
+const delegatorPkpEthAddress = '0x09182301238'; // The delegator PKP Eth Address
+
+const toolParams = {
+  chainId: '8453', // The chain where the tx will be executed
+  tokenIn: '0x1234...', // The ERC20 token address
+  amountIn: '1000000000000000000', // The amount to approve (in wei)
+  rpcUrl: 'https://mainnet.base.org', // The RPC to send the transaction through
+};
+
+// Run precheck to see if tool should be executed
+const precheckResult = await client.precheck(toolParams, {
+  delegatorPkpEthAddress,
+});
+
+if (precheckResult.success === true) {
+  // Execute the Vincent Tool
+  const executeResult = await client.execute(toolParams, {
+    delegatorPkpEthAddress,
+  });
+
+  // ...tool has executed, you can check `executeResult` for details
+}
 ```
