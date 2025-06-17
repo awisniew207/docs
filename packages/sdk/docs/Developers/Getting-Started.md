@@ -14,7 +14,7 @@ You’re an App & Agent Developer if you're building an app or autonomous agent 
 [Get started with App & Agent Development](./App-Agent-Developers/Getting-Started.md) and learn how to:
 
 - Create and configure a Vincent App
-- Install and use the Vincent Tool Client SDK to execute Vincent Tools governed by user-defined Vincent Policies<!-- TODO Link to SDK -->
+- Install and use the Vincent App SDK to execute Vincent Tools governed by user-defined Vincent Policies<!-- TODO Link to SDK -->
 
 ## Tool Developers
 
@@ -22,9 +22,7 @@ Tool Developers create custom tools that enable Vincent Apps to perform specific
 
 [Get started with Tool Development](./Tool-Developers/Getting-Started.md) and learn how to:
 
-<!-- TODO Link to SDK -->
-
-- Install and use the Vincent Tool & Policy SDK to define your custom tool logic
+- Install and use the [Vincent Tool SDK](https://www.npmjs.com/package/@lit-protocol/vincent-tool-sdk) to define your custom tool logic
 - Declare the Vincent Policies your tool supports
 - Publish and register your tool for Vincent App developers to use
 
@@ -34,8 +32,6 @@ Policy Developers define rules that govern how and when Vincent Tools can be exe
 
 [Get started with Policy Development](./Policy-Developers/Getting-Started.md) and learn how to:
 
-<!-- TODO Link to SDK -->
-
-- Install and use the Vincent Tool & Policy SDK to define your custom policy logic
+- Install and use the [Vincent Tool SDK](https://www.npmjs.com/package/@lit-protocol/vincent-tool-sdk) to define your custom policy logic
 - Enable fine-grained, user-defined control over tool execution
 - Publish and register your policy for Vincent App developers to use
