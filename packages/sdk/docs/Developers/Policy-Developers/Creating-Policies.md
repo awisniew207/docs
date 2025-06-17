@@ -57,7 +57,7 @@ const vincentPolicy = createVincentPolicy({
 
 ## The `policyContext` Argument
 
-The `policyContext` argument is provided and managed by the Vincent Tool & Policy SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
+The `policyContext` argument is provided and managed by the Vincent Tool SDK. It's an object containing the following properties and is passed as an argument to your policy's `precheck`, `evaluate`, and `commit` functions:
 
 ```typescript
 interface PolicyContext {
@@ -96,7 +96,7 @@ Where:
 
 ### `toolParamsSchema`
 
-This Zod schema defines the structure of parameters that Vincent Tools will pass to your policy. The Vincent Tool receives these parameters from the tool executor, and the Vincent Tool & Policy SDK handles passing these parameters to your policy as `toolParams`. These parameters should be the what your policy requires to make it's checks and validations.
+This Zod schema defines the structure of parameters that Vincent Tools will pass to your policy. The Vincent Tool receives these parameters from the tool executor, and the Vincent Tool SDK handles passing these parameters to your policy as `toolParams`. These parameters should be the what your policy requires to make it's checks and validations.
 
 For example, if you are building a spending limit policy, you might define the `toolParamsSchema` as follows:
 
@@ -193,7 +193,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Two arguments are passed to your policy's `precheck` function by the Vincent Tool & Policy SDK. The first is an object containing the `toolParams` and `userParams` that adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool & Policy SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
+Two arguments are passed to your policy's `precheck` function by the Vincent Tool SDK. The first is an object containing the `toolParams` and `userParams` that adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy. The second is the [`policyContext`](#the-policycontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `allow` and `deny` results, as well as some metadata about the Vincent App that the policy is being executed for.
 
 ### `precheckAllowResultSchema`
 
@@ -224,7 +224,7 @@ This Zod schema defines the structure of a failed `precheck` result. What's incl
 
 The following schema returns additional information to the Vincent Tool executor that would allow them to adapt their execution request so that the policy's `precheck` validation checks don't fail:
 
-> **Note:** If any unhandled error occurs during execution of your policy's `precheck` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your policy's `precheck` function, the Vincent Tool SDK will automatically return a `deny` result with the error message.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
@@ -299,7 +299,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Two arguments are passed to your policy's `evaluate` function by the Vincent Tool & Policy SDK. The first is an object containing the `toolParams` and `userParams` that adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy, and the second is the same [`policyContext`](#the-policycontext-argument) passed to the `precheck` function.
+Two arguments are passed to your policy's `evaluate` function by the Vincent Tool SDK. The first is an object containing the `toolParams` and `userParams` that adhere to the `toolParamsSchema` and `userParamsSchema` you have defined for your policy, and the second is the same [`policyContext`](#the-policycontext-argument) passed to the `precheck` function.
 
 ### `evalAllowResultSchema`
 
@@ -328,7 +328,7 @@ This Zod schema defines the structure of a denied `evaluate` result. What's incl
 
 The following schema returns additional information to the Vincent Tool executor that would allow the Vincent Tool executor to adapt their execution request so that the policy's `evaluate` validation checks don't fail:
 
-> **Note:** If any unhandled error occurs during execution of your policy's `evaluate` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your policy's `evaluate` function, the Vincent Tool SDK will automatically return a `deny` result with the error message.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
@@ -391,7 +391,7 @@ const vincentPolicy = createVincentPolicy({
 });
 ```
 
-Two arguments are passed to your policy's `commit` function by the Vincent Tool & Policy SDK. The first is an object adhering to the `commitParamsSchema` you have defined for your policy, and the second is the same [`policyContext`](#the-policycontext-argument) passed to the `precheck` and `evaluate` functions.
+Two arguments are passed to your policy's `commit` function by the Vincent Tool SDK. The first is an object adhering to the `commitParamsSchema` you have defined for your policy, and the second is the same [`policyContext`](#the-policycontext-argument) passed to the `precheck` and `evaluate` functions.
 
 Notice that unlike the `precheck` and `evaluate` functions, the `commit` functions does **not** receive the `toolParams` and `userParams` arguments. If you need access to any of the variables specified in those objects, make sure to include them in the `commitParamsSchema` you have defined for your policy.
 
@@ -447,7 +447,7 @@ This Zod schema defines the structure of a failed `commit` result. What's includ
 
 The following schema returns information that would help the Vincent Tool executor understand why the `commit` function failed to update the policy's state, as well as the data the `commit` function was attempting to update it's state with:
 
-> **Note:** If any unhandled error occurs during execution of your policy's `commit` function, the Vincent Tool & Policy SDK will automatically return a `deny` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your policy's `commit` function, the Vincent Tool SDK will automatically return a `deny` result with the error message.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';

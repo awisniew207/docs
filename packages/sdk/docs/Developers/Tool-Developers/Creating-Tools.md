@@ -9,12 +9,12 @@ A Vincent Tool consists of two main lifecycle methods executed in the following 
 
 1. **Precheck**: Executed locally by the Vincent Tool executor, this function provides a best-effort check that the tool execution shouldn't fail
 
-   - Before the execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of the Vincent Policies
+   - Before the execution of your tool's `precheck` function, the Vincent Tool SDK will execute the `precheck` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Tool's `precheck` function will be executed
    - This function is where you'd perform checks such as validating the Vincent Agent Wallet has sufficient token balances, has the appropriate on-chain approvals to make token transfers, or anything else your tool can validate before executing the tool's logic
 
 2. **Execute**: Executed within the Lit Action environment, this function performs the actual tool logic and has the ability to sign data using the Vincent App User's Agent Wallet
-   - Before the execution of your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of the Vincent Policies
+   - Before the execution of your tool's `execute` function, the Vincent Tool SDK will execute the `evaluate` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Tool's `execute` function will be executed
    - This function is where you'd perform the actual tool logic, such as making token transfers, interacting with smart contracts, or anything else your tool needs to do to fulfill the tool's purpose
 
@@ -42,7 +42,7 @@ export const vincentTool = createVincentTool({
 
 ## The `toolContext` Argument
 
-The `toolContext` argument is provided and managed by the Vincent Tool & Policy SDK. It's an object containing the following properties and is passed as an argument to your tool's `precheck` and `execute` functions:
+The `toolContext` argument is provided and managed by the Vincent Tool SDK. It's an object containing the following properties and is passed as an argument to your tool's `precheck` and `execute` functions:
 
 ```typescript
 interface ToolContext {
@@ -199,7 +199,7 @@ const vincentTool = createVincentTool({
 
 A couple of new things are happening in this code example:
 
-First we're importing `bundledVincentPolicy` from the `@lit-protocol/vincent-policy-spending-limit` package, which is a Vincent Policy object created using the Vincent Tool & Policy SDK and exported by the policy author for Vincent Tools to consume.
+First we're importing `bundledVincentPolicy` from the `@lit-protocol/vincent-policy-spending-limit` package, which is a Vincent Policy object created using the Vincent Tool SDK and exported by the policy author for Vincent Tools to consume.
 
 Then we're creating a `VincentToolPolicy` object named `SpendingLimitPolicy` using the `createVincentToolPolicy` function. The `createVincentToolPolicy` function takes a single object parameter with the required properties:
 
@@ -210,7 +210,7 @@ Then we're creating a `VincentToolPolicy` object named `SpendingLimitPolicy` usi
 
 Lastly, we take the `SpendingLimitPolicy` object and add it to an array, which we then wrap in a `supportedPoliciesForTool` function call to our tool's `supportedPolicies` array.
 
-This is how we register the `SpendingLimitPolicy` with our tool. That's all that's needed for your tool to support the Vincent spending limit policy. The execution of the policy's `precheck` and `evaluate` functions will be handled for you by the Vincent Tool & Policy SDK, as well as processing the return values from the policy's `precheck` and `evaluate` functions to check if the tool should be allowed to execute.
+This is how we register the `SpendingLimitPolicy` with our tool. That's all that's needed for your tool to support the Vincent spending limit policy. The execution of the policy's `precheck` and `evaluate` functions will be handled for you by the Vincent Tool SDK, as well as processing the return values from the policy's `precheck` and `evaluate` functions to check if the tool should be allowed to execute.
 
 ## Precheck Function
 
@@ -218,7 +218,7 @@ The `precheck` function is executed locally by the Vincent Tool executor to prov
 
 Executing a Vincent Tool's `execute` function uses the Lit network, which costs both time and money, so your `precheck` function should perform whatever validation it can to ensure that the tool won't fail during execution.
 
-Before executing your tool's `precheck` function, the Vincent Tool & Policy SDK will execute the `precheck` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, the Vincent Tool's `precheck` function will be executed.
+Before executing your tool's `precheck` function, the Vincent Tool SDK will execute the `precheck` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, the Vincent Tool's `precheck` function will be executed.
 
 For our example token transfer tool, the `precheck` function checks both the Vincent User's Agent Wallet ERC20 token balance, as well as the native token balance to validate the Agent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
 
@@ -273,7 +273,7 @@ const vincentTool = createVincentTool({
         });
       }
 
-      // Let the Vincent Tool & Policy SDK handle the error
+      // Let the Vincent Tool SDK handle the error
       throw error;
     }
 
@@ -299,7 +299,7 @@ const vincentTool = createVincentTool({
 });
 ```
 
-Two arguments are passed to your tool's `precheck` function by the Vincent Tool & Policy SDK. The first is an object containing the `toolParams` the adhere to the `toolParamsSchema` you have defined for your tool. The second is the [`toolContext`](#the-toolcontext-argument) managed by the Vincent Tool & Policy SDK that contains helper methods for returning `succeed` and `fail` results, as well as some metadata about the Vincent App that the tool is being executed for.
+Two arguments are passed to your tool's `precheck` function by the Vincent Tool SDK. The first is an object containing the `toolParams` the adhere to the `toolParamsSchema` you have defined for your tool. The second is the [`toolContext`](#the-toolcontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `succeed` and `fail` results, as well as some metadata about the Vincent App that the tool is being executed for.
 
 ### `precheckSuccessSchema`
 
@@ -328,7 +328,7 @@ This Zod schema defines the structure of a failed `precheck` result. What's incl
 
 The following schema returns additional information to the Vincent Tool executor that would help them understand why the tool execution would fail. In this case, the `reason` string allows the `precheck` function to return a specific error message stating something like `"Insufficient token balance"` or `"Insufficient native token balance"`, along with current and required amounts for debugging:
 
-> **Note:** If any unhandled error occurs during execution of your tool's `precheck` function, the Vincent Tool & Policy SDK will automatically return a `fail` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your tool's `precheck` function, the Vincent Tool SDK will automatically return a `fail` result with the error message.
 
 ```typescript
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
@@ -353,7 +353,7 @@ Unlike the `precheck` function which only validates feasibility, the `execute` f
 
 > **Note** This [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/combining-signatures) doc page covers how to sign data with a PKP using the Ethers.js library within a Lit Action. Ethers.js is injected by Lit into the Lit Action runtime, so you don't need to import it to use it within your tool's `execute` function.
 
-Before executing your tool's `execute` function, the Vincent Tool & Policy SDK will execute the `evaluate` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, your tool's `execute` function will be executed.
+Before executing your tool's `execute` function, the Vincent Tool SDK will execute the `evaluate` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, your tool's `execute` function will be executed.
 
 For our example token transfer tool, the `execute` function performs the actual ERC20 token transfer transaction:
 
@@ -388,7 +388,7 @@ const vincentTool = createVincentTool({
         });
       }
 
-      // Let the Vincent Tool & Policy SDK handle the error
+      // Let the Vincent Tool SDK handle the error
       throw error;
     }
 
@@ -400,7 +400,7 @@ const vincentTool = createVincentTool({
 });
 ```
 
-Two arguments are passed to your tool's `execute` function by the Vincent Tool & Policy SDK. The first is an object containing the `toolParams` the adhere to the `toolParamsSchema` you have defined for your tool. The second is the [`toolContext`](#the-toolcontext-argument) managed by the Vincent Tool & Policy SDK that contains helper methods for returning `succeed` and `fail` results, as well as some metadata about the Vincent App that the tool is being executed for.
+Two arguments are passed to your tool's `execute` function by the Vincent Tool SDK. The first is an object containing the `toolParams` the adhere to the `toolParamsSchema` you have defined for your tool. The second is the [`toolContext`](#the-toolcontext-argument) managed by the Vincent Tool SDK that contains helper methods for returning `succeed` and `fail` results, as well as some metadata about the Vincent App that the tool is being executed for.
 
 ### `executeSuccessSchema`
 
@@ -428,7 +428,7 @@ This Zod schema defines the structure of a failed `execute` result. What's inclu
 
 The following schema returns error information to the Vincent Tool executor, including an error message, error code, and revert reason for failed transactions to assist with debugging:
 
-> **Note:** If any unhandled error occurs during execution of your tool's `execute` function, the Vincent Tool & Policy SDK will automatically return a `fail` result with the error message.
+> **Note:** If any unhandled error occurs during execution of your tool's `execute` function, the Vincent Tool SDK will automatically return a `fail` result with the error message.
 
 ```typescript
 import { createVincentTool } from '@lit-protocol/vincent-tool-sdk';
@@ -469,7 +469,7 @@ After all the Vincent Policies that have been registered to be used with your to
 
 The `policiesContext` object contains a property called `allowedPolicies` that is an object where the keys are the package names of the evaluated Vincent policies, and the values are objects containing the `evalAllowResult` of the policy, and the policy's `commit` function if one exists for the policy:
 
-> **Note:** The following interface isn't the actual interface used by the Vincent Tool & Policy SDK, it's just a simplified example of what the `policiesContext` object looks like for reference.
+> **Note:** The following interface isn't the actual interface used by the Vincent Tool SDK, it's just a simplified example of what the `policiesContext` object looks like for reference.
 >
 > The [`evalAllowResultSchema`](./Creating-Policies.md#evalallowresultschema) and [`commitParamsSchema`](./Creating-Policies.md#commitparamsschema) are Zod schemas specified by the Vincent Policy package.
 
@@ -615,7 +615,7 @@ const vincentTool = createVincentTool({
         });
       }
 
-      // Let the Vincent Tool & Policy SDK handle the error
+      // Let the Vincent Tool SDK handle the error
       throw error;
     }
 
@@ -683,7 +683,7 @@ const vincentTool = createVincentTool({
         });
       }
 
-      // Let the Vincent Tool & Policy SDK handle the error
+      // Let the Vincent Tool SDK handle the error
       throw error;
     }
 
