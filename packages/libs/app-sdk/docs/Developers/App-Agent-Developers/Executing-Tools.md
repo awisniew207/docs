@@ -77,6 +77,7 @@ const toolClient = getVincentToolClient({
 const precheckResult = await toolClient.precheck({
   toolParams: {
     tokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+    recipientAddress: '0x1234567890123456789012345678901234567890',
     amount: 100,
   },
   context: {
@@ -133,6 +134,7 @@ const toolClient = getVincentToolClient({
 const executeResult = await toolClient.execute({
   toolParams: {
     tokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+    recipientAddress: '0x1234567890123456789012345678901234567890',
     amount: 100,
   },
   context: {
