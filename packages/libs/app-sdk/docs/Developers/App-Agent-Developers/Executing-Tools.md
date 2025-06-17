@@ -88,7 +88,7 @@ const precheckResult = await toolClient.precheck({
 
 The `precheck` function takes two arguments:
 
-1. An object that contains the input parameters for the Tool
+1. An object that contains the input parameters for the Tool that has the structure of the Tool's Zod schema: `ToolParamsSchema`
 
 > **Note:** Because Vincent Tool definitions are strongly typed, your code editor should display the expected input parameters for the Tool
 >
@@ -144,7 +144,7 @@ const executeResult = await toolClient.execute({
 
 The `execute` function takes two arguments similar to the `precheck` function:
 
-1. An object that contains the input parameters for the Tool
+1. An object that contains the input parameters for the Tool that has the structure of the Tool's Zod schema: `ToolParamsSchema`
 
 > **Note:** Because Vincent Tool definitions are strongly typed, your code editor should display the expected input parameters for the Tool
 >
