@@ -14,14 +14,13 @@ The repository is managed with [Nx](https://nx.dev/) and [pnpm](https://pnpm.io/
 The Vincent system consists of several key components:
 
 - **app-dashboard**: A Vite React app where users interact with the Vincent system, allowing them to create apps with their tools and policies, update versions, manage delegatee addresses, and more.
-- **sdk**: A TypeScript SDK that exposes useful tools to interact with Vincent systems in web or Node.js environments.
-- **vincent-contracts**: Solidity contracts that create and manage the blockchain contracts needed to enforce user-to-app delegation, record policy parameters, and store Vincent apps' onchain data.
-- **vincent-rest-api**: An offchain service increasing the available info that Vincent apps can show to their users, offering discoverability and auditability services.
-- **vincent-tools**: A container of several projects:
-  - **vincent-policy-spending-limit**: A policy that can be attached to tools to avoid them spending more than a user-defined limit in a specific period of time.
-  - **vincent-tool-erc20-approval**: A tool to send ERC20 approve/allowance transactions from a Vincent app on behalf of the delegator.
-  - **vincent-tool-sdk**: An SDK exposing utilities to develop Vincent tools and policies.
-  - **vincent-tool-uniswap-swap**: A tool to trigger swaps on Uniswap from a Vincent app on behalf of the delegator.
+- **app-sdk**: A TypeScript SDK that exposes useful tools to interact with Vincent systems in web or Node.js environments.
+- **contracts-sdk**: Solidity contracts that create and manage the blockchain contracts needed to enforce user-to-app delegation, record policy parameters, and store Vincent apps' onchain data.
+- **registry-sdk**: REST API for an offchain service increasing the available info that Vincent apps can show to their users, offering discoverability and auditability services.
+- **policy-spending-limit**: A policy that can be attached to tools to avoid them spending more than a user-defined limit in a specific period of time.
+- **tool-erc20-approval**: A tool to send ERC20 approve/allowance transactions from a Vincent app on behalf of the delegator.
+- **tool-sdk**: An SDK exposing utilities to develop Vincent tools and policies.
+- **tool-uniswap-swap**: A tool to trigger swaps on Uniswap from a Vincent app on behalf of the delegator.
 
 ## Getting Started
 

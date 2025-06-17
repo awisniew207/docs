@@ -1,0 +1,10 @@
+{
+  "name": "app-dashboard",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/apps/app-dashboard/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "clean": {}
+  }
+}

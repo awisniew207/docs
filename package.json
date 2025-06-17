@@ -27,13 +27,10 @@
     "build:dashboard": "nx build dashboard",
     "start:dashboard": "nx serve dashboard --prod",
     "lint:dashboard": "nx lint dashboard",
-    "start:docs": "nx run vincent-sdk:typedoc",
-    "install:contracts": "cd packages/vincent-contracts && forge install",
-    "make:contracts": "cd packages/vincent-contracts && make",
+    "install:contracts": "cd packages/lib/contracts-sdk && forge install",
+    "make:contracts": "cd packages/lib/contracts-sdk && make",
     "gen:contracts": "bun run make:contracts get-abis run-postbuild-scripts",
-    "build:contracts": "nx build vincent-contracts",
-    "clean": "node tools/clean.js",
-    "deploy:tools": "npx nx deploy vincent-tool-uniswap-swap",
+    "clean": "nx reset && nx run-many --target=clean --all && rm -Rf node_modules bun.lock",
     "prepare": "husky"
   },
   "dependencies": {

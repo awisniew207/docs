@@ -4,31 +4,31 @@
   "files": [],
   "references": [
     {
-      "path": "./packages/vincent-tools/vincent-tool-uniswap-swap"
+      "path": "./packages/apps/tool-uniswap-swap"
     },
     {
-      "path": "./packages/vincent-tools/vincent-tool-sdk"
+      "path": "./packages/libs/app-sdk"
     },
     {
-      "path": "./packages/sdk"
+      "path": "./packages/apps/policy-spending-limit"
     },
     {
-      "path": "./packages/vincent-tools/vincent-policy-spending-limit"
+      "path": "./packages/apps/tool-erc20-approval"
     },
     {
-      "path": "./packages/vincent-tools/vincent-tool-erc20-approval"
+      "path": "./packages/apps/app-dashboard"
     },
     {
-      "path": "./packages/app-dashboard"
+      "path": "./packages/libs/contracts-sdk"
     },
     {
-      "path": "./packages/sdk"
+      "path": "./packages/apps/toolpolicies-e2e"
     },
     {
-      "path": "./packages/vincent-rest-api"
+      "path": "./packages/libs/registry-sdk"
     },
     {
-      "path": "./packages/toolpolicies-e2e"
+      "path": "./packages/libs/tool-sdk"
     }
   ]
 }
