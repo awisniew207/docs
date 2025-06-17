@@ -18,7 +18,7 @@ The Vincent App SDK exports a function called `getVincentToolClient` that create
 1. **Precheck**: Executes the Vincent Tool's `precheck` function to provide quick and cost-free feedback on whether the Tool execution is likely to succeed. This function also:
 
    - Validates the Tool parameters you provide against the Vincent Tool's requirements
-   - Evaluates the `precheck` function for both the Vincent Tool and any Vincent Policies the User has configured for your App
+   - Evaluates the `precheck` function for any Vincent Policies the User has configured for your App
      - **Note:** Execution of the Tool's `precheck` logic will **not** happen unless all of the registered Vincent Policies pass their prechecks
    - Returns the results of the Vincent Tool and Policy `precheck` functions, providing context on why the precheck logic has determined Tool execution is likely to succeed or fail
 
@@ -26,7 +26,7 @@ The Vincent App SDK exports a function called `getVincentToolClient` that create
    - Validates Tool parameters and evaluates Policies registered by the User for your App
      - **Note:** Execution of the Tool's logic will **not** happen unless all of the registered Policies permit execution
    - Executes the `commit` function of any Policies that have defined a `commit` function
-     - **Note:** Policy `commit` functions give each policy the opportunity to update any state they depend on for their policy logic after the Tool has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Tool has successfully transferred funds from the User's Agent Wallet)
+     - **Note:** Policy `commit` functions give each Policy the opportunity to update any state they depend on for their policy logic after the Tool has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Tool has successfully transferred funds from the User's Agent Wallet)
    - Returns the execution results of both the Tool and any evaluated Policies
 
 # Creating a Tool Client
@@ -52,7 +52,7 @@ The two required parameters for the `getVincentToolClient` function are:
 
 1. `bundledVincentTool`: The definition of the Vincent Tool you want to execute on behalf of the App User, imported from a Vincent Tool package
    - This tool definition is exported by the author of the Vincent Tool package you are using and defines properties like the expected input parameters of the Tool, the Vincent Policies supported by the Tool, and the Tool's expected return values
-   - The Tool Client handles wrapping this tool definition and providing you with a simple interface for executing the Tool, abstracting away the complexity of the Tool's implementation
+   - The Tool Client handles wrapping this tool definition, providing you with a simple interface for executing the Tool, abstracting away the complexity of the Tool's implementation
 2. `ethersSigner`: An Ethers.js signer that will be used to sign the request to execute the Tool using the Lit Protocol network
    - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Tool for. You can see how to add a delegatee to your Vincent App [here](./Quick-Start.md#2-registering-an-app-using-the-app-dashboard)
 
@@ -96,7 +96,7 @@ The `precheck` function takes two arguments:
 
 2. An object that contains:
    - `rpcUrl`: An optional parameter to override the default RPC URL used to communicate with the Lit Protocol network
-     - This RPC URL is used to fetch the on-chain data about your Vincent App, what App Version (if any) the Vincent User has approved, and the on-chain Policy parameters configured by the User for your App
+     - This RPC URL is used to fetch the on-chain data about your Vincent App, what App Version (if any) the Vincent User has authorized, and the on-chain Policy parameters configured by the User for your App
      - Most developers do **not** need to provide this property, and the default RPC URL should be used
    - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the App User's Agent Wallet you'll be executing the Tool on behalf of
 
@@ -173,7 +173,7 @@ As a quick recap:
 - Use `getVincentToolClient` to create an instance of the Tool Client for a specific Vincent Tool
 - Always run the `precheck` method first to validate Tool parameters, ensure all user-configured Vincent Policies permit execution, and check whether the Tool's execution is likely to succeed
 - If the `precheck` passes, use the `execute` method on the Tool Client to execute the Tool’s logic
-- After successful execution, any evaluated Vincent Policies with commit functions will automatically update their internal state, keeping your App compliant with the User's defined Policy limits
+- After successful execution of the Tool's logic, any evaluated Vincent Policies with commit functions will automatically update their internal state, keeping your App compliant with the User's defined Policy limits
 
 ## Next Steps
 
