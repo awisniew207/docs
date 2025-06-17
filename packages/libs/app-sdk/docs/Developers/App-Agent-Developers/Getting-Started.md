@@ -36,5 +36,6 @@ Vincent Apps enable secure, policy governed automation on behalf of Vincent User
 # Next Steps
 
 - Check out the [Creating a Vincent App](./Creating-App.md) guide to get started
+- See how to [execute Vincent Tools](./Executing-Tools.md) on behalf of your App Users
 - Checkout the official [Automated Dollar-cost-averaging](https://demo.heyvincent.ai/) Vincent demo and explore it's [source code](https://github.com/LIT-Protocol/vincent-dca)
 - Join the [Vincent community](https://t.me/c/2038294753/3289) for support and collaboration
