@@ -5,7 +5,7 @@ module.exports = [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/generated/**'],
+    ignores: ['**/dist', '**/generated/**', '**/contracts-sdk/src/**/*'],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

@@ -44,14 +44,18 @@
       }
     }
   ],
+  "workspaceLayout": {
+    "appsDir": "packages/apps",
+    "libsDir": "packages/libs"
+  },
   "release": {
     "projects": [
-      "vincent-tool-sdk",
-      "vincent-sdk",
-      "vincent-rest-api",
-      "vincent-policy-spending-limit",
-      "vincent-tool-erc20-approval",
-      "vincent-tool-uniswap-swap"
+      "tool-sdk",
+      "app-sdk",
+      "registry-sdk",
+      "policy-spending-limit",
+      "tool-erc20-approval",
+      "tool-uniswap-swap"
     ],
     "projectsRelationship": "independent",
     "releaseTagPattern": "vincent/{projectName}/{version}",
@@ -68,6 +72,13 @@
     }
   },
   "targetDefaults": {
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["rm -rf ./node_modules", "rm -rf ./dist"],
+        "cwd": "{projectRoot}"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],

@@ -1,0 +1,25 @@
+{
+  "name": "@lit-protocol/toolpolicies-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/apps/toolpolicies-e2e/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "clean": {},
+    "test": {
+      "command": "echo 'Test target disabled for this project - only \"test-e2e\"'"
+    },
+    "test-e2e": {
+      "dependsOn": [
+        "policy-spending-limit:action:deploy",
+        "tool-uniswap-swap:action:deploy",
+        "tool-erc20-approval:action:deploy"
+      ],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/test-output/jest/{projectRoot}"],
+      "options": {
+        "jestConfig": "{projectRoot}/jest.config.js"
+      }
+    }
+  }
+}

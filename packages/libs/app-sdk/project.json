@@ -1,0 +1,63 @@
+{
+  "name": "app-sdk",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/libs/app-sdk/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "clean": {},
+    "publish-typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typedoc --skipErrorChecking",
+          "mkdir ./sdk-docs/.vercel",
+          "printf '{\"projectId\": \"%s\", \"orgId\": \"%s\"}\\n' \"$SDK_DOCS_VERCEL_PROJECT_ID\" \"$SDK_DOCS_VERCEL_ORG_ID\" > ./sdk-docs/.vercel/project.json\n",
+          "pnpm vercel --prod --cwd=./sdk-docs --yes",
+          "rm -Rf ./sdk-docs"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm typedoc --skipErrorChecking", "node ./scripts/typedocServer.mjs"],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "dev": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/libs/app-sdk/dist",
+        "main": "packages/libs/app-sdk/src/index.ts",
+        "tsConfig": "packages/libs/app-sdk/tsconfig.lib.json",
+        "assets": ["packages/libs/app-sdk/*.md"],
+        "formats": ["cjs"],
+        "watch": true
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/libs/app-sdk/dist",
+        "main": "packages/libs/app-sdk/src/index.ts",
+        "tsConfig": "packages/libs/app-sdk/tsconfig.lib.json",
+        "assets": ["packages/libs/app-sdk/*.md"],
+        "formats": ["cjs"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/libs/app-sdk/**/*.ts"]
+      }
+    }
+  }
+}

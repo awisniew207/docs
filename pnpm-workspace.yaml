@@ -1,18 +1,18 @@
 packages:
-  - packages/*
-  - packages/vincent-tools/*
+  - 'packages/libs/*'
+  - 'packages/apps/*'
 onlyBuiltDependencies:
   - '@swc/core'
   - '@tailwindcss/oxide'
-  - bufferutil
-  - bun
-  - core-js
-  - esbuild
-  - fsevents
-  - keccak
-  - nx
-  - protobufjs
-  - unrs-resolver
-  - utf-8-validate
+  - 'bufferutil'
+  - 'bun'
+  - 'core-js'
+  - 'esbuild'
+  - 'fsevents'
+  - 'keccak'
+  - 'nx'
+  - 'protobufjs'
+  - 'unrs-resolver'
+  - 'utf-8-validate'
 overrides:
-   "typescript": "5.8.3"
+  typescript: '5.8.3'
