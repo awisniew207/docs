@@ -25,6 +25,7 @@
     "release": "nx release",
     "typedoc:update-documents": "pnpm typedoc --skipErrorChecking --logLevel Verbose --options ./docs/documents.typedoc.config.js",
     "typedoc:build-site": "pnpm typedoc --skipErrorChecking --logLevel Verbose --options ./typedoc.site.config.js",
+    "typedoc:build": "run-s typedoc:update-documents typedoc:build-site",
     "typedoc:serve": "node scripts/typedocServer.mjs",
     "install:contracts": "cd packages/lib/contracts-sdk && forge install",
     "make:contracts": "cd packages/lib/contracts-sdk && make",

@@ -19,7 +19,7 @@
         "watch": true
       }
     },
-    "typedoc:update": {
+    "typedoc:build": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
