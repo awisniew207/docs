@@ -24,14 +24,14 @@ A Vincent App is composed of four key elements:
 
    - Policies are immutable once published, and are configurable per User ensuring that every Tool execution is tightly scoped to each User’s explicit intent.
 
-3. **Vincent App Delegatees**: Ethereum addresses that are authorized by your App to execute the Tools Vincent Users have permitted your App to execute on their behalf.
+3. **Vincent App Delegatees**: Ethereum addresses authorized by your App to execute Tools on behalf of Vincent Users.
 
 4. **Vincent Agent Wallets**: Non-custodial wallets that enable secure, automated interactions between your Vincent App and its Users.
-   - Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions for each Vincent Tool used by a Vincent App.
+   - Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Tool.
 
 # Defining Your Vincent App
 
-Before registering your Vincent App, you’ll need to decide on the core components that make up its behavior and what Policies your App Users will use to govern its execution.
+Before registering your Vincent App, you’ll need to decide on the core components that make up its behavior and the Policies your App Users will use to govern its execution.
 
 # 1. Selecting Vincent Tools
 
@@ -66,7 +66,7 @@ Vincent Policies are programmable constraints that govern when and how each Vinc
   <p class="info-box-title">
     <span class="info-icon">Info</span> Note
   </p>
-  <p>As with selecting which Vincent Tools you'd like to use in your App, you'll need to manually copy and paste the IPFS CID of each Vincent Policy you'd like to use for each Tool into the Vincent App Dashboard when registering your App.</p>
+  <p>Similar to selecting which Vincent Tools you'd like your App to use, you'll need to manually copy and paste the IPFS CID of each Vincent Policy you'd like to use for each Tool into the Vincent App Dashboard when registering your App.</p>
   <p>The below table includes links to the IPFS CID of each Policy that will be automatically updated as new iterations of the Policy are published.</p>
 </div>
 
@@ -143,7 +143,7 @@ For the available Tools, see the [Selecting Vincent Tools](#1-selecting-vincent-
 
 #### Policies
 
-Each Vincent Tool has a list of supported Vincent Policies that can govern the execution of the Tool. It's up to you to select which Policies from the Tool's supported Policies your Users will have the option to enable and configure for each Tool your App uses.
+Each Vincent Tool has a list of supported Vincent Policies that can govern the execution of the Tool. It's up to you to select which Policies your Users can configure for each Tool your App uses.
 
 You can add Policies for each Tool by clicking the `Add Policy` button and copy and pasting the IPFS CID of each Policy.
 
@@ -154,11 +154,11 @@ For the Tools mentioned in the [Selecting Vincent Tools](#1-selecting-vincent-to
 | [ERC20 Token Approval](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/tool-erc20-approval) | None                                                                                                          | -                                                                                                                                        |
 | [Uniswap Swap Tool](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/tool-uniswap-swap)      | [Daily Spending Limit](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/policy-spending-limit) | [Link](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/policy-spending-limit/src/generated/vincent-policy-metadata.json) |
 
-##### Policy Parameters
+#### Policy Parameters
 
 Each Policy has parameters that can be configured by the Vincent User to explicitly define the conditions under which the Tool can be executed.
 
-This section is where you'll define the parameters for each Policy that can be configured by the Vincent User for the specific Tool it's associated with.
+This section is where you'll define the parameters Users can configure for each Tool Policy.
 
 Each Policy has a parameter name and type, where the name and type of each parameter must match what the Policy is expecting.
 
@@ -172,7 +172,7 @@ After defining the above details for your App, you can click on the `Submit Appl
 
 ## Adding Delegatees to your App
 
-In order to execute your App's Vincent Tools, you'll need to register App Delegatees. These delegatees are defined as Ethereum addresses that are authorized by your App to execute the Tools Vincent Users have permitted for your App.
+In order to execute your App's Vincent Tools, you'll need to register App Delegatees. These delegatees are defined as Ethereum addresses that are authorized by your App to execute the Tools that Vincent Users have permitted for your App.
 
 After creating your App, you'll be redirected to the dashboard overview screen. Click the box with the name of the App you just created, and you'll be taken to the App's settings screen.
 
