@@ -1,4 +1,4 @@
-// src/lib/policyDef/context/types.ts
+// src/lib/policyConfig/context/types.ts
 
 import { z } from 'zod';
 import type {

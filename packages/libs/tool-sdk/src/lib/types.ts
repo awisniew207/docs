@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z, type ZodError } from 'zod';
-import { BaseToolContext } from './toolCore/toolDef/context/types';
+import { BaseToolContext } from './toolCore/toolConfig/context/types';
 import { ToolPolicyMap } from './toolCore/helpers';
 
 export interface PolicyResponseAllow<AllowResult> {
@@ -357,13 +357,24 @@ export type ToolLifecycleFunction<
   context: BaseToolContext<Policies>,
 ) => Promise<ToolResult<SuccessSchema, FailSchema>>;
 
-/** @hidden */
+/**
+ *
+ * @typeParam ToolParamsSchema {@removeTypeParameterCompletely}
+ * @typeParam PkgNames {@removeTypeParameterCompletely}
+ * @typeParam PolicyMap {@removeTypeParameterCompletely}
+ * @typeParam PoliciesByPackageName {@removeTypeParameterCompletely}
+ * @typeParam ExecuteSuccessSchema {@removeTypeParameterCompletely}
+ * @typeParam ExecuteFailSchema {@removeTypeParameterCompletely}
+ * @typeParam PrecheckSuccessSchema {@removeTypeParameterCompletely}
+ * @typeParam PrecheckFailSchema {@removeTypeParameterCompletely}
+ * @typeParam ExecuteFn {@removeTypeParameterCompletely}
+ * @typeParam PrecheckFn {@removeTypeParameterCompletely}
+ *
+ */
 export type VincentTool<
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,
-  /** @hidden */
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
-  /** @hidden */
   PoliciesByPackageName extends PolicyMap['policyByPackageName'],
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,

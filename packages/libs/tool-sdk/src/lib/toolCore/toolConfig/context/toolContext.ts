@@ -1,4 +1,4 @@
-// src/lib/toolCore/toolDef/context/toolContext.ts
+// src/lib/toolCore/toolConfig/context/toolContext.ts
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from 'zod';

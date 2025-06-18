@@ -1,11 +1,11 @@
-// src/lib/toolCore/toolDef/types.ts
+// src/lib/toolCore/toolConfig/types.ts
 
 import { z } from 'zod';
 import { ContextFailure, ContextSuccess, EnforceToolResult, ToolContext } from './context/types';
 import { PolicyEvaluationResultContext, ToolExecutionPolicyContext } from '../../types';
 import { ToolPolicyMap } from '../helpers';
 
-export type ToolDefLifecycleFunction<
+export type ToolConfigLifecycleFunction<
   ToolParams extends z.ZodType,
   Policies,
   SuccessSchema extends z.ZodType = z.ZodUndefined,
@@ -19,8 +19,7 @@ export type ToolDefLifecycleFunction<
   EnforceToolResult<ContextSuccess<z.infer<SuccessSchema>> | ContextFailure<z.infer<FailSchema>>>
 >;
 
-/** @inline */
-export type VincentToolDef<
+export type VincentToolConfig<
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
@@ -31,13 +30,13 @@ export type VincentToolDef<
   ExecuteFailSchema extends z.ZodType = z.ZodUndefined,
   PrecheckFn =
     | undefined
-    | ToolDefLifecycleFunction<
+    | ToolConfigLifecycleFunction<
         ToolParamsSchema,
         PolicyEvaluationResultContext<PoliciesByPackageName>,
         PrecheckSuccessSchema,
         PrecheckFailSchema
       >,
-  ExecuteFn = ToolDefLifecycleFunction<
+  ExecuteFn = ToolConfigLifecycleFunction<
     ToolParamsSchema,
     ToolExecutionPolicyContext<PoliciesByPackageName>,
     ExecuteSuccessSchema,

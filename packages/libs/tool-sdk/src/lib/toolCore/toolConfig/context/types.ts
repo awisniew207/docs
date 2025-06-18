@@ -1,4 +1,4 @@
-// src/lib/toolCore/toolDef/context/types.ts
+// src/lib/toolCore/toolConfig/context/types.ts
 
 import { z } from 'zod';
 import {

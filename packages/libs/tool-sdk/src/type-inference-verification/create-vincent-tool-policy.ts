@@ -16,7 +16,7 @@ const policyParamsSchema = z.object({
 const evalAllow = z.object({ allowed: z.boolean() });
 const evalDeny = z.object({ reason: z.string() });
 
-const policyDef = createVincentPolicy({
+const PolicyConfig = createVincentPolicy({
   packageName: 'my-policy' as const,
   toolParamsSchema: policyParamsSchema,
   evalAllowResultSchema: evalAllow,
@@ -26,7 +26,7 @@ const policyDef = createVincentPolicy({
   },
 });
 
-const bundled = asBundledVincentPolicy(policyDef, 'QmCID12345' as const);
+const bundled = asBundledVincentPolicy(PolicyConfig, 'QmCID12345' as const);
 
 const toolPolicy = createVincentToolPolicy({
   toolParamsSchema,
