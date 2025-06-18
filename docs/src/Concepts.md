@@ -5,8 +5,6 @@ title: Concepts
 
 Vincent is a platform that enables users to securely delegate on and off-chain operations (i.e. token swaps, buying and selling stocks, social media interactions) to AI agents and other permitted 3rd parties. Users have the ability to set fine-grained policies which govern how these operations are performed, ensuring they retain full control over how their assets and data are used. The Vincent platform is built on top of and secured by [Lit Protocol](https://developer.litprotocol.com/what-is-lit)
 
-Check out {@link vincent-tool-sdk!PolicyEvaluationResultContext | The Policy Evaluation Context} for details on what policy output looks like!
-
 > **Note:** The secure and non-custodial delegation of any on or off-chain actions is Vincent's core innovation. Vincent Users have the ability to delegate these operations to authorized 3rd parties (Vincent Apps and Agents) to execute on their behalf, while never giving up control of their assets and data. Vincent Apps can execute authorized Vincent Tools on behalf of a given user, but they can never access private keys or sign data outside of what the user has explicitly consented to.
 
 This guide provides definitions of the core concepts of the Vincent platform, below is a quick overview of the concepts:
