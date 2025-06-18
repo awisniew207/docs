@@ -54,7 +54,7 @@ The two required parameters for the `getVincentToolClient` function are:
    - This tool definition is exported by the author of the Vincent Tool package and defines properties like the expected input parameters of the Tool, the Vincent Policies supported by the Tool, and the Tool's expected return values
    - The Tool Client handles wrapping this tool definition, providing you with a simple interface for executing the Tool, abstracting away the complexity of the Tool's implementation
 2. `ethersSigner`: An Ethers.js signer that will be used to sign the request to execute the Tool using the Lit Protocol network
-   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Tool for. You can see how to add a delegatee to your Vincent App [here](./Quick-Start.md#2-registering-an-app-using-the-app-dashboard)
+   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Tool for. You can see how to add a delegatee to your Vincent App [here](./Creating-Apps.md#adding-delegatees-to-your-app)
 
 # Executing the Tool Client's `precheck` function
 
@@ -188,4 +188,4 @@ As a quick recap:
 
 ## Next Steps
 
-If you're interested in creating your own Vincent Tool and Policies, checkout the [Creating Tools](./Creating-Tools.md) and [Creating Policies](./Creating-Policies.md) guides.
+If you're interested in creating your own Vincent Tool and Policies, checkout the [Creating Tools](../Tool-Developers/Creating-Tools.md) and [Creating Policies](../Policy-Developers/Creating-Policies.md) guides.
