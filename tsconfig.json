@@ -29,6 +29,12 @@
     },
     {
       "path": "./packages/libs/tool-sdk"
+    },
+    {
+      "path": "./packages/mcp-sdk"
+    },
+    {
+      "path": "./packages/mcp"
     }
   ]
 }
