@@ -1,114 +1,82 @@
-# Vincent Dashboard, Contracts and SDK monorepo
+# Hello, Vincent
 
-## Architecture Overview
+Vincent is an open-source framework for creating programmable, user controlled agents. Built on [Lit Protocol](https://developer.litprotocol.com/what-is-lit) and powered by decentralized key management and policy enforcement, Vincent enables secure delegation of both on-chain and off-chain actions without compromising user control.
 
-The Vincent Agent Wallet system is a decentralized permission management framework designed to allow third party applications to request users for permission to execute transactions on their behalf.
+Vincent is an open-source framework powered by [Lit Protocol](https://developer.litprotocol.com/what-is-lit) that empowers developers to create automated, user-controlled AI agents.
 
-It uses an on-chain Agent PKP (Public Key Pair) registry and an off-chain App Registry backend. The system leverages blockchain technology (on Yellowstone chain) and Lit Protocol for secure key management and execution, ensuring users maintain control over their permissions while developers can manage their Apps efficiently.
+With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data.
 
-## Key Components
+Powered by Lit’s [decentralized key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.
 
-### Agent PKP (On-Chain Agent Registry)
-- Manages user-approved permissions for Apps using Policies
-- Structure: AgentPKP → Apps → Tools → Policies
-- Controlled by the User Admin PKP, allowing updates like enabling/disabling Apps, Tools & Policies
+# Key Concepts
 
-### App Registry (On-Chain)
-- Tracks delegatee addresses for Apps, managed by the App's Management Wallet
-- Ensures only authorized delegatees can execute Tools on behalf of users
+## Vincent Agent Wallets
 
-### Tools
-- Vincent Tools are the operations that an Agent can perform on behalf of the user and are codified as Lit Actions.
-- Lit Actions are immutable Javascript code snippets assigned to the Agent's wallet and hosted under a unique IPFS CID.
-- As a Vincent App developer you prompt the user, via the Consent Page, to delegate the execution of these Tools for their Agent wallets thus allowing you to autonomously execute these pre-defined operations on behalf of your users.
-- Tools operate under the compliance of policies and cannot execute anything they are not authorized to or exceeding the limits set by the policies.
+Non-custodial accounts controlled by users and backed by Lit [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), used to delegate signing authority to Vincent Apps during Tool execution.
 
-### Policies
-- Policies set guard-rails for the permitted Tools to dictate the operating conditions for that Tool.
-- As Tools, Policies are also codified as Lit Actions and hosted under a unique IPFS CID.
-- Multiple Policies can be applied to a Tool like max daily spend or 2FA and all these policies should be met before the Tool can sign using the delegated user's Agent wallet. This also becomes important since your AI Agents can occasionally hallucinate.
-- A defined set of parameters can be configured for these Policies like specifying the max daily spend amount or the 2FA method.
+[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Concepts.html#vincent-agent-wallet)
 
-### Consent Page
-- A user-facing interface where permissions (Tools and Policies) are approved
-- Displays App metadata and requested Roles/Tools from the App Registry
-- Facilitates transaction signing with the User PKP and gas sponsorship via a Relayer
+## Vincent Tools
 
-### Relayer
-- Sponsors gas costs (on Yellowstone) and Lit payments for user transactions
-- Uses capability delegation to enable seamless execution
+Vincent Tools are immutable functions, built with [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview), that define the specific operations a Vincent App can perform on behalf of users. Tools can interact with blockchains, APIs, and databases but only execute when permitted by all active Vincent Policies configured by the user.
 
-## How It Works
+[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Tool_Developers.html)
 
-### Developer Flow
-1. Developers register an App with a unique Management Wallet and define its metadata (name, description, etc.).
-2. They either create Tools (with IPFS-hosted Lit Actions and Policy schemas) and Policies, or use existing ones.
-3. They secure their app using explicitly allowed `redirectUris` that the Vincent consent page respects.
-4. The App integrates with the Consent Page, using an App Id.
-5. When a user uses the Consent page to add delegations, they are redirected to the app with a signed JWT.
+## Vincent Policies
 
-### User Flow
-1. Users access the Consent Page via an App, review requested Tools and Policies, adjusting Policy variables if needed.
-2. Approval triggers a transaction signed by the User PKP, sponsored by the Relayer, writing permissions to the Agent Registry.
-3. Users can later manage permissions (disable Apps/Roles/Tools) via a dashboard.
+Vincent Policies are programmable guardrails that govern how and when Tools can be executed. Built using Lit Actions, Policies enforce user-defined constraints like spending limits, multi-factor authentication, rate limits, or time-based access before any Tool can run.
 
-### Execution
-- Delegatees (approved by the App) use session signatures to execute Tools, validated against the Agent Registry.
-- Lit Protocol ensures secure signing and execution of Tool Lit Actions, respecting the approved Tools, Policies, and Policy variables.
+Each Policy has user-configurable parameters, supports on/off-chain data access, and can persist state across executions. Users define the exact conditions under which a Vincent App can act on their behalf and can update or revoke those conditions at any time.
 
-## Why It's Secure
+[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Policy_Developers.html)
 
-- **User Control**: The User PKP is the sole admin of the Agent Registry, ensuring only the user can approve or revoke permissions.
-- **Lit Protocol**: Uses threshold cryptography and decentralized key management, eliminating single points of failure compared to centralized solutions like Turnkey.
-- **Delegatee Verification**: Only addresses approved by the App's Management Wallet can execute Tools, enforced on-chain.
-- **Gas Sponsorship**: The Relayer's JIT sponsorship prevents users from needing to manage gas, reducing attack vectors while maintaining security via capability delegation.
+## Vincent App
 
-## Lit vs. Turnkey
+Vincent Apps enable secure, policy-governed automation on behalf of users—without compromising custody or control. Users delegate specific on- and off-chain actions to your App via Vincent Tools, each governed by user-configured Policies. Every action is explicitly authorized, auditable, and constrained to the boundaries set by the user.
 
-### Lit Protocol
-- **Decentralized**: Keys are split across a network of nodes using threshold cryptography.
-- **Flexibility**: Supports programmable Lit Actions for custom logic (e.g., Tools + Policies).
-- **Security**: No single entity controls keys; user PKPs are user-owned and managed via AuthMethods.
-- **Cost**: Requires Lit payments, offset by Relayer sponsorship in this system for the user.
+Apps are bundled as versioned packages and must be approved via the Consent Page before they can execute any actions.
 
-### Turnkey
-- **Centralized**: Relies on a trusted third-party service to manage keys.
-- **Simplicity**: Easier to integrate for basic use cases but lacks programmability.
-- **Security Trade-off**: Centralized control introduces a single point of failure and trust dependency.
-- **Cost**: Typically subscription-based, potentially higher for complex workflows.
+[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.App___Agent_Developers.html)
 
-**Why Lit?**: Vincent prioritizes decentralization, user sovereignty, and programmable flexibility, making Lit the better fit over Turnkey's centralized model.
+## Consent Page
 
+The Consent Page is a standard interface where users review a Vincent App, approve its requested Tools and Policies, and configure any policy parameters. Vincent Apps use the Consent page to authenticate their users and execute Tools on their behalf.
 
-## Documentation
-- [Vincent Docs](https://docs.heyvincent.ai/)
-- [SDK Docs](https://sdk-docs.heyvincent.ai/)
+## On-chain App Registry
 
-## Release
+The On-chain App Registry is a smart contract that tracks which Vincent Apps, Tools, and Policies each user has authorized for their Agent Wallet, ensuring only Tools authorized by the user can be executed by the specific Apps they've permitted to act on their behalf.
 
-Each package handles its own release cycle as they are fundamentally independent and should not be locked to be up to date unless we want to.
+# How It All Fits Together
 
-Check each package's README for more information on how each one releases.
+### Vincent Developer Workflow
 
-### Summary
+1. Registers a Vincent App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/), selecting the from the existing Tools and Policies their App will use
+2. Optionally creates and publishes custom Tools and Policies tailored to their App’s functionality
+3. Integrates the Vincent App SDK to authenticate users and redirect them to the Vincent Consent Page for delegation
+4. Executes Tools on behalf of authenticated users, governed by the Vincent Policies each user has configured for their App
 
-- All apps hosted in vercel (dashboard) are built and made public with their own url. Then promotion to production is done manually or when merging to `main`.
-- SDK is released by `nx` with `pnpm release` (run at root)
+### Vincent User Workflow
 
-# Ecosystem
+1. Visits a Vincent App and is redirected to the Vincent Consent Page to log in or create their Agent Wallet
+2. Reviews the App’s requested Tools, configures Policy parameters, and approves the delegation
+3. Is redirected back to the App with a signed Vincent JWT, enabling the App to execute the approved Tools on their behalf within the user’s configured Policy limits
 
-## Policies
+# Why Vincent?
 
-- Spending Limits Contract
-  https://github.com/LIT-Protocol/SpendingLimitsContract
+Vincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:
+
+- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.
+- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.
+- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.
+- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.
+- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.
+
+# Useful Links
+
+- [Vincent Docs](https://docs.heyvincent.ai/modules/Vincent_Docs.html)
+- [Automated Dollar-Cost Averaging Demo](https://demo.heyvincent.ai/)
+- [Telegram Community](https://t.me/+aa73FAF9Vp82ZjJh)
 
 # Contributing
 
-Check [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and general development instructions.
-
-### Dashboard action/policy IPFS CIDs:
-```
-ERC20_APPROVAL_TOOL_IPFS_ID=QmPZ46EiurxMb7DmE9McFyzHfg2B6ZGEERui2tnNNX7cky
-UNISWAP_SWAP_TOOL_IPFS_ID=QmZbh52JYnutuFURnpwfywfiiHuFoJpqFyFzNiMtbiDNkK
-SPENDING_LIMIT_POLICY_IPFS_ID=QmZrG2DFvVDgo3hZgpUn31TUgrHYfLQA2qEpAo3tnKmzhQ
-```
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions and development guidelines.

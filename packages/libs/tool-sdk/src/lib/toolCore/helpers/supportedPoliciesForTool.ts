@@ -1,5 +1,7 @@
 // src/lib/toolCore/helpers/supportedPoliciesForTool.ts
 
+import { VincentPolicy } from '../../types';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type ToolPolicyMap<T extends readonly any[], PkgNames extends string> = {
@@ -12,14 +14,46 @@ export type ToolPolicyMap<T extends readonly any[], PkgNames extends string> = {
 };
 
 /**
- * Safely builds a strongly typed policy map from an array of VincentToolPolicy entries.
- * Enforces literal string `packageName` keys and exposes reverse lookup maps.
+ * `supportedPoliciesForTool()` takes an array of bundled Vincent Policies, and provides strong type inference for those policies
+ * inside of your VincentTool's lifecycle functions and return values.
+ *
+ * ```typescript
+ * import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+ *
+ * const SpendingLimitPolicy = createVincentToolPolicy({
+ *   toolParamsSchema,
+ *   bundledVincentPolicy,
+ *   toolParameterMappings: {
+ *     rpcUrlForUniswap: 'rpcUrlForUniswap',
+ *     chainIdForUniswap: 'chainIdForUniswap',
+ *     ethRpcUrl: 'ethRpcUrl',
+ *     tokenInAddress: 'tokenAddress',
+ *     tokenInDecimals: 'tokenDecimals',
+ *     tokenInAmount: 'buyAmount',
+ *   },
+ * });
+ *
+ *
+ * export const vincentTool = createVincentTool({
+ *   packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
+ *
+ *   toolParamsSchema,
+ *   supportedPolicies: supportedPoliciesForTool([SpendingLimitPolicy]),
+ *
+ *   ...
+ *
+ *   });
+ * ```
+ *
+ * @category API Methods
+ * @inlineType VincentPolicy
  */
 export function supportedPoliciesForTool<
   const Policies extends readonly {
-    vincentPolicy: { packageName: string };
-    ipfsCid: string;
+    vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>;
+    ipfsCid: IpfsCid;
   }[],
+  const IpfsCid extends string = string,
   const PkgNames extends
     Policies[number]['vincentPolicy']['packageName'] = Policies[number]['vincentPolicy']['packageName'],
 >(policies: Policies): ToolPolicyMap<Policies, PkgNames> {

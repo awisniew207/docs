@@ -19,6 +19,7 @@ export type ToolDefLifecycleFunction<
   EnforceToolResult<ContextSuccess<z.infer<SuccessSchema>> | ContextFailure<z.infer<FailSchema>>>
 >;
 
+/** @inline */
 export type VincentToolDef<
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,

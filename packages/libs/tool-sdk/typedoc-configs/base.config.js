@@ -8,8 +8,8 @@ module.exports = {
   navigation: {
     includeCategories: true,
   },
-  defaultCategory: 'API',
   categorizeByGroup: false,
-  // categoryOrder: ['vincent-tool-sdk'],
+  categoryOrder: ['API Methods', 'Interfaces'],
   visibilityFilters: {},
+  sort: 'source-order',
 };

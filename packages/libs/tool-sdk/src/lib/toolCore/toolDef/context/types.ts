@@ -9,6 +9,11 @@ import {
   ToolResultSuccessNoResult,
 } from '../../../types';
 
+/** BaseToolContext is returned with tool execution results, and contains information about the app, delegation, and
+ * policy evaluation results for any policies that the user had enabled for the tool.
+ *
+ * @category Interfaces
+ */
 export interface BaseToolContext<Policies> extends BaseContext {
   policiesContext: Policies;
 }
