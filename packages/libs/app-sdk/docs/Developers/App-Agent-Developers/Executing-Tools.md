@@ -5,7 +5,7 @@ title: Executing Vincent Tools
 
 # Using the Vincent Tool Client to Execute Tools
 
-As a Vincent App Developer, you need a structured way to execute the Vincent Tools your App Users have permitted you the ability to execute on their behalf.
+As a Vincent App Developer, you need a structured way to execute Vincent Tools for your Vincent App Users.
 
 The Vincent App SDK provides a streamlined, type-safe interface called the Vincent Tool Client which manages the entire execution flow of a Vincent Tool. From handling the precheck validations to confirm all prerequisites are met and Tool execution is likely to succeed, to executing the Tool's logic to perform the permitted actions on behalf of the Vincent User.
 
