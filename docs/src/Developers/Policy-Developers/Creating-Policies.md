@@ -41,8 +41,6 @@ A Vincent Policy is a function built using [Lit Actions](https://developer.litpr
 - **Circuit Breakers**: Automatically disable tools when unusual activity is detected or system-wide limits are reached
 - **Emergency Stops**: Implement admin-controlled emergency stops that can pause policy-governed operations
 
-> > > > > > > > 6f72b58b (chore: Restructure repo):packages/libs/app-sdk/docs/Developers/Creating-Policies.md
-
 # How a Vincent Policy Works
 
 A Vincent Policy consists of three main lifecycle methods executed in the following order:
