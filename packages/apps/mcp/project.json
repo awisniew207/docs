@@ -1,5 +1,5 @@
 {
-  "name": "vincent-mcp",
+  "name": "mcp",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/apps/mcp/src",
   "projectType": "application",

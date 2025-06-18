@@ -31,10 +31,10 @@
       "path": "./packages/libs/tool-sdk"
     },
     {
-      "path": "./packages/mcp-sdk"
+      "path": "./packages/libs/mcp-sdk"
     },
     {
-      "path": "./packages/mcp"
+      "path": "./packages/apps/mcp"
     }
   ]
 }

@@ -91,5 +91,4 @@ When working on MCP SDK code, consider these dependencies and consumers for cont
 ## Additional Resources
 
 - [Vincent Documentation](https://docs.heyvincent.ai/)
-- [SDK Documentation](https://sdk-docs.heyvincent.ai/)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
