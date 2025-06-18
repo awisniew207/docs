@@ -51,7 +51,7 @@ const toolClient = getVincentToolClient({
 The two required parameters for the `getVincentToolClient` function are:
 
 1. `bundledVincentTool`: The definition of the Vincent Tool you want to execute on behalf of the App User, imported from a Vincent Tool package
-   - This tool definition is exported by the author of the Vincent Tool package you are using and defines properties like the expected input parameters of the Tool, the Vincent Policies supported by the Tool, and the Tool's expected return values
+   - This tool definition is exported by the author of the Vincent Tool package and defines properties like the expected input parameters of the Tool, the Vincent Policies supported by the Tool, and the Tool's expected return values
    - The Tool Client handles wrapping this tool definition, providing you with a simple interface for executing the Tool, abstracting away the complexity of the Tool's implementation
 2. `ethersSigner`: An Ethers.js signer that will be used to sign the request to execute the Tool using the Lit Protocol network
    - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Tool for. You can see how to add a delegatee to your Vincent App [here](./Quick-Start.md#2-registering-an-app-using-the-app-dashboard)
