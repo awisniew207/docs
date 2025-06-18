@@ -3,6 +3,7 @@
 import { __bundledToolBrand, BundledVincentTool } from './types';
 import { VincentTool } from '../../types';
 
+/** @hidden */
 export function asBundledVincentTool<
   const VT extends VincentTool<any, any, any, any, any, any, any, any, any, any>,
   const IpfsCid extends string,

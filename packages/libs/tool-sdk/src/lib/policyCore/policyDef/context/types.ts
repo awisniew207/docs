@@ -33,6 +33,10 @@ export type ContextDenyResponse<DenyResult> = MustCallContextAllowOrDeny<
 >;
 export type ContextDenyResponseNoResult = MustCallContextAllowOrDeny<PolicyResponseDenyNoResult>;
 
+/**
+ * @expand
+ * @category Interfaces
+ * */
 export interface PolicyContext<
   AllowSchema extends z.ZodType = z.ZodUndefined,
   DenySchema extends z.ZodType = z.ZodUndefined,

@@ -10,6 +10,8 @@ export type __bundledPolicyBrand = typeof __bundledPolicyBrand;
 /**
  * A VincentPolicy bundled with an IPFS CID and uniquely branded.
  * This ensures only correctly constructed objects are assignable.
+ *
+ *  @hidden
  */
 export type BundledVincentPolicy<
   VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>,

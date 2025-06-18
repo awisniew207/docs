@@ -71,9 +71,10 @@ export type PolicyLifecycleFunction<
 export type InferOrUndefined<T> = T extends z.ZodType ? z.infer<T> : undefined;
 
 // Tool supported policy with proper typing on the parameter mappings
+/** @hidden */
 export type VincentToolPolicy<
   ToolParamsSchema extends z.ZodType,
-  VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any>,
+  VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>,
   PackageName extends string = string,
   IpfsCid extends string = string,
 > = {
@@ -113,6 +114,7 @@ export type CommitLifecycleFunction<
       : PolicyResponseDenyNoResult)
 >;
 
+/** @inline */
 export type VincentPolicy<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
@@ -155,6 +157,7 @@ export type VincentPolicy<
   commit?: CommitFn;
 };
 
+/** @hidden */
 export type PolicyEvaluationResultContext<
   Policies extends Record<
     string,
@@ -354,6 +357,7 @@ export type ToolLifecycleFunction<
   context: BaseToolContext<Policies>,
 ) => Promise<ToolResult<SuccessSchema, FailSchema>>;
 
+/** @hidden */
 export type VincentTool<
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,

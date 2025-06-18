@@ -8,6 +8,11 @@ import {
   PolicyContext,
 } from './context/types';
 
+/** `evaluate()` and `precheck()` functions that you define when using `createVincentPolicy()` will match this function signature.
+ * Note that the arguments and return types are inferred based on the ZOD schemas that you pass to `createVincentPolicy`
+ *
+ * @category Interfaces
+ */
 export type PolicyDefLifecycleFunction<
   ToolParams extends z.ZodType,
   UserParams extends z.ZodType = z.ZodUndefined,
@@ -29,6 +34,12 @@ export type PolicyDefLifecycleFunction<
         : ContextDenyResponse<z.infer<DenyResult>>)
   >
 >;
+
+/** Unlike `evaluate()` and `precheck()`, commit receives specific arguments provided by the tool during its `execute()` phase
+ * instead of than `toolParams` and `userParams` that the tool was called with.
+ *
+ * @category Interfaces
+ */
 export type PolicyDefCommitFunction<
   CommitParams extends z.ZodType = z.ZodUndefined,
   CommitAllowResult extends z.ZodType = z.ZodUndefined,
@@ -47,6 +58,7 @@ export type PolicyDefCommitFunction<
   >
 >;
 
+/** @inline */
 export type VincentPolicyDef<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
