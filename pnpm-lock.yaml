@@ -111,6 +111,12 @@ importers:
       lint-staged:
         specifier: ^15.5.1
         version: 15.5.2
+      live-server:
+        specifier: ^1.2.2
+        version: 1.2.2
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
       nx:
         specifier: 20.8.0
         version: 20.8.0(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.5.29(@swc/helpers@0.5.17))
@@ -126,6 +132,18 @@ importers:
       ts-node:
         specifier: 10.9.1
         version: 10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.17))(@types/node@20.19.1)(typescript@5.8.3)
+      typedoc:
+        specifier: 0.27.9
+        version: 0.27.9(typescript@5.8.3)
+      typedoc-material-theme:
+        specifier: 1.3.0
+        version: 1.3.0(typedoc@0.27.9(typescript@5.8.3))
+      typedoc-plugin-extras:
+        specifier: ^4.0.0
+        version: 4.0.0(typedoc@0.27.9(typescript@5.8.3))
+      typedoc-plugin-zod:
+        specifier: ^1.4.1
+        version: 1.4.2(typedoc@0.27.9(typescript@5.8.3))
       typescript:
         specifier: 5.8.3
         version: 5.8.3
@@ -535,17 +553,17 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2
       typedoc:
-        specifier: 0.28.5
-        version: 0.28.5(typescript@5.8.3)
+        specifier: 0.27.9
+        version: 0.27.9(typescript@5.8.3)
       typedoc-material-theme:
         specifier: 1.3.0
-        version: 1.3.0(typedoc@0.28.5(typescript@5.8.3))
+        version: 1.3.0(typedoc@0.27.9(typescript@5.8.3))
       typedoc-plugin-extras:
         specifier: ^4.0.0
-        version: 4.0.0(typedoc@0.28.5(typescript@5.8.3))
+        version: 4.0.0(typedoc@0.27.9(typescript@5.8.3))
       typedoc-plugin-zod:
         specifier: ^1.4.1
-        version: 1.4.2(typedoc@0.28.5(typescript@5.8.3))
+        version: 1.4.2(typedoc@0.27.9(typescript@5.8.3))
       vercel:
         specifier: ^41.6.2
         version: 41.7.8(@swc/core@1.5.29(@swc/helpers@0.5.17))(rollup@4.43.0)
@@ -567,6 +585,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.8.2
         version: 2.8.2(react@19.1.0)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
       zod:
         specifier: 3.25.64
         version: 3.25.64
@@ -611,6 +632,18 @@ importers:
       jsonc-eslint-parser:
         specifier: ^2.4.0
         version: 2.4.0
+      typedoc:
+        specifier: 0.27.9
+        version: 0.27.9(typescript@5.8.3)
+      typedoc-material-theme:
+        specifier: 1.3.0
+        version: 1.3.0(typedoc@0.27.9(typescript@5.8.3))
+      typedoc-plugin-extras:
+        specifier: ^4.0.0
+        version: 4.0.0(typedoc@0.27.9(typescript@5.8.3))
+      typedoc-plugin-zod:
+        specifier: ^1.4.1
+        version: 1.4.2(typedoc@0.27.9(typescript@5.8.3))
 
 packages:
 
@@ -1863,8 +1896,8 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@gerrit0/mini-shiki@3.6.0':
-    resolution: {integrity: sha512-KaeJvPNofTEZR9EzVNp/GQzbQqkGfjiu6k3CXKvhVTX+8OoAKSX/k7qxLKOX3B0yh2XqVAc93rsOu48CGt2Qug==}
+  '@gerrit0/mini-shiki@1.27.2':
+    resolution: {integrity: sha512-GeWyHz8ao2gBiUW4OJnQDxXQnFgZQwwQk05t/CVVgNBN7/rK8XZ7xY6YhLVv9tH3VppWWmr9DCl3MwemB/i+Og==}
 
   '@hookform/resolvers@4.1.3':
     resolution: {integrity: sha512-Jsv6UOWYTrEFJ/01ZrnwVXs7KDvP8XIo115i++5PWvNkNvkrsTfGiLS6w+eJ57CYtUtDQalUWovCZDHFJ8u1VQ==}
@@ -3116,17 +3149,11 @@ packages:
   '@scure/bip39@1.6.0':
     resolution: {integrity: sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==}
 
-  '@shikijs/engine-oniguruma@3.6.0':
-    resolution: {integrity: sha512-nmOhIZ9yT3Grd+2plmW/d8+vZ2pcQmo/UnVwXMUXAKTXdi+LK0S08Ancrz5tQQPkxvjBalpMW2aKvwXfelauvA==}
+  '@shikijs/engine-oniguruma@1.29.2':
+    resolution: {integrity: sha512-7iiOx3SG8+g1MnlzZVDYiaeHe7Ez2Kf2HrJzdmGwkRisT7r4rak0e655AcM/tF9JG/kg5fMNYlLLKglbN7gBqA==}
 
-  '@shikijs/langs@3.6.0':
-    resolution: {integrity: sha512-IdZkQJaLBu1LCYCwkr30hNuSDfllOT8RWYVZK1tD2J03DkiagYKRxj/pDSl8Didml3xxuyzUjgtioInwEQM/TA==}
-
-  '@shikijs/themes@3.6.0':
-    resolution: {integrity: sha512-Fq2j4nWr1DF4drvmhqKq8x5vVQ27VncF8XZMBuHuQMZvUSS3NBgpqfwz/FoGe36+W6PvniZ1yDlg2d4kmYDU6w==}
-
-  '@shikijs/types@3.6.0':
-    resolution: {integrity: sha512-cLWFiToxYu0aAzJqhXTQsFiJRTFDAGl93IrMSBNaGSzs7ixkLfdG6pH11HipuWFGW5vyx4X47W8HDQ7eSrmBUg==}
+  '@shikijs/types@1.29.2':
+    resolution: {integrity: sha512-VJjK0eIijTZf0QSTODEXCqinjBn0joAHQ+aPSBzrv4O2d/QSbsMw+ZeSRx03kV34Hy7NzUvV/7NqfYGRLrASmw==}
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
@@ -8835,9 +8862,9 @@ packages:
     peerDependencies:
       typedoc: 0.23.x || 0.24.x || 0.25.x || 0.26.x || 0.27.x || 0.28.x
 
-  typedoc@0.28.5:
-    resolution: {integrity: sha512-5PzUddaA9FbaarUzIsEc4wNXCiO4Ot3bJNeMF2qKpYlTmM9TTaSHQ7162w756ERCkXER/+o2purRG6YOAv6EMA==}
-    engines: {node: '>= 18', pnpm: '>= 10'}
+  typedoc@0.27.9:
+    resolution: {integrity: sha512-/z585740YHURLl9DN2jCWe6OW7zKYm6VoQ93H0sxZ1cwHQEQrUn5BJrEnkWhfzUdyO+BLGjnKUZ9iz9hKloFDw==}
+    engines: {node: '>= 18'}
     hasBin: true
     peerDependencies:
       typescript: 5.8.3
@@ -11163,12 +11190,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@gerrit0/mini-shiki@3.6.0':
+  '@gerrit0/mini-shiki@1.27.2':
     dependencies:
-      '@shikijs/engine-oniguruma': 3.6.0
-      '@shikijs/langs': 3.6.0
-      '@shikijs/themes': 3.6.0
-      '@shikijs/types': 3.6.0
+      '@shikijs/engine-oniguruma': 1.29.2
+      '@shikijs/types': 1.29.2
       '@shikijs/vscode-textmate': 10.0.2
 
   '@hookform/resolvers@4.1.3(react-hook-form@7.58.1(react@19.1.0))':
@@ -13405,20 +13430,12 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
 
-  '@shikijs/engine-oniguruma@3.6.0':
+  '@shikijs/engine-oniguruma@1.29.2':
     dependencies:
-      '@shikijs/types': 3.6.0
+      '@shikijs/types': 1.29.2
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@shikijs/langs@3.6.0':
-    dependencies:
-      '@shikijs/types': 3.6.0
-
-  '@shikijs/themes@3.6.0':
-    dependencies:
-      '@shikijs/types': 3.6.0
-
-  '@shikijs/types@3.6.0':
+  '@shikijs/types@1.29.2':
     dependencies:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
@@ -20671,22 +20688,22 @@ snapshots:
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
 
-  typedoc-material-theme@1.3.0(typedoc@0.28.5(typescript@5.8.3)):
+  typedoc-material-theme@1.3.0(typedoc@0.27.9(typescript@5.8.3)):
     dependencies:
       '@material/material-color-utilities': 0.3.0
-      typedoc: 0.28.5(typescript@5.8.3)
+      typedoc: 0.27.9(typescript@5.8.3)
 
-  typedoc-plugin-extras@4.0.0(typedoc@0.28.5(typescript@5.8.3)):
+  typedoc-plugin-extras@4.0.0(typedoc@0.27.9(typescript@5.8.3)):
     dependencies:
-      typedoc: 0.28.5(typescript@5.8.3)
+      typedoc: 0.27.9(typescript@5.8.3)
 
-  typedoc-plugin-zod@1.4.2(typedoc@0.28.5(typescript@5.8.3)):
+  typedoc-plugin-zod@1.4.2(typedoc@0.27.9(typescript@5.8.3)):
     dependencies:
-      typedoc: 0.28.5(typescript@5.8.3)
+      typedoc: 0.27.9(typescript@5.8.3)
 
-  typedoc@0.28.5(typescript@5.8.3):
+  typedoc@0.27.9(typescript@5.8.3):
     dependencies:
-      '@gerrit0/mini-shiki': 3.6.0
+      '@gerrit0/mini-shiki': 1.27.2
       lunr: 2.3.9
       markdown-it: 14.1.0
       minimatch: 9.0.5

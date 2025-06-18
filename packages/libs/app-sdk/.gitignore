@@ -46,13 +46,11 @@ coverage/
 tmp/
 temp/
 
-# Documentation build
-docs/_build/
-docs/_static/
-docs/_templates/
-
 # Misc
 *.bak
 *.tmp
 *.temp
 .DS_Store
+
+docs/html/**/*
+docs/assets/**/*

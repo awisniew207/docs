@@ -63,7 +63,7 @@ interface ToolContext {
       [policyPackageName: string]: {
         result: evalAllowResultSchema;
         commit: (
-          params: commitParamsSchema
+          params: commitParamsSchema,
         ) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
       };
     };
@@ -242,7 +242,7 @@ const vincentTool = createVincentTool({
     const erc20TokenBalance = await getErc20TokenBalance(
       toolContext.delegation.delegatorPkpInfo.ethAddress,
       tokenAddress,
-      amountToSend
+      amountToSend,
     );
     if (erc20TokenBalance < amountToSend) {
       return toolContext.fail({
@@ -255,7 +255,7 @@ const vincentTool = createVincentTool({
     const transferTransaction = createErc20TransferTransaction(
       tokenAddress,
       recipientAddress,
-      amountToSend
+      amountToSend,
     );
 
     let estimatedGas;
@@ -279,7 +279,7 @@ const vincentTool = createVincentTool({
 
     const nativeTokenBalance = await getNativeTokenBalance(
       toolContext.delegation.delegatorPkpInfo.ethAddress,
-      estimatedGas
+      estimatedGas,
     );
 
     if (nativeTokenBalance < estimatedGas) {
@@ -371,7 +371,7 @@ const vincentTool = createVincentTool({
     const transferTransaction = createErc20TransferTransaction(
       tokenAddress,
       recipientAddress,
-      amountToSend
+      amountToSend,
     );
 
     try {
@@ -480,7 +480,7 @@ interface PoliciesContext {
     {
       result: evalAllowResultSchema;
       commit: (
-        params: commitParamsSchema
+        params: commitParamsSchema,
       ) => Promise<commitAllowResultSchema | commitDenyResultSchema>;
     }
   >;
@@ -584,7 +584,7 @@ const vincentTool = createVincentTool({
     const erc20TokenBalance = await getErc20TokenBalance(
       toolContext.delegation.delegatorPkpInfo.ethAddress,
       tokenAddress,
-      amountToSend
+      amountToSend,
     );
     if (erc20TokenBalance < amountToSend) {
       return toolContext.fail({
@@ -597,7 +597,7 @@ const vincentTool = createVincentTool({
     const transferTransaction = createErc20TransferTransaction(
       tokenAddress,
       recipientAddress,
-      amountToSend
+      amountToSend,
     );
 
     let estimatedGas;
@@ -621,7 +621,7 @@ const vincentTool = createVincentTool({
 
     const nativeTokenBalance = await getNativeTokenBalance(
       toolContext.delegation.delegatorPkpInfo.ethAddress,
-      estimatedGas
+      estimatedGas,
     );
 
     if (nativeTokenBalance < estimatedGas) {
@@ -666,7 +666,7 @@ const vincentTool = createVincentTool({
     const transferTransaction = createErc20TransferTransaction(
       tokenAddress,
       recipientAddress,
-      amountToSend
+      amountToSend,
     );
 
     try {

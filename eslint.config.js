@@ -5,10 +5,10 @@ module.exports = [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/generated/**', '**/contracts-sdk/src/**/*'],
+    ignores: ['**/dist', '**/generated/**', '**/contracts-sdk/src/**/*', '**/docs/html/**/*'],
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@nx/enforce-module-boundaries': [
         'error',
