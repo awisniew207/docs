@@ -1,9 +1,7 @@
 {
   "name": "@lit-protocol/toolpolicies-e2e",
   "version": "0.0.1",
-  "publishConfig": {
-    "access": "public"
-  },
+  "private": true,
   "dependencies": {
     "@lit-protocol/vincent-policy-spending-limit": "workspace:*",
     "@lit-protocol/vincent-tool-erc20-approval": "workspace:*",

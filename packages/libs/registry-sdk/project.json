@@ -30,13 +30,6 @@
         ],
         "formats": ["cjs"]
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["{projectRoot}/src"]
-      }
     }
   }
 }

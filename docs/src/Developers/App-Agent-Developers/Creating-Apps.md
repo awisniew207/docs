@@ -17,17 +17,18 @@ A Vincent App is composed of four key elements:
 
 1. **Vincent Tools**: Modular, executable functions that define the operations your App can perform on behalf of its Users.
 
-   - Tools can interact with blockchains, APIs, databases, or any service reachable via JavaScript and HTTP requests.
-   - Each Tool is immutable once published and can only be executed under the conditions explicitly approved by the User ensuring transparent, tamper-proof behavior.
+- Tools can interact with blockchains, APIs, databases, or any service reachable via JavaScript and HTTP requests.
+- Each Tool is immutable once published and can only be executed under the conditions explicitly approved by the User ensuring transparent, tamper-proof behavior.
 
 2. **Vincent Policies**: Programmable guardrails that govern when and how Vincent Tools can be executed.
 
-   - Policies are immutable once published, and are configurable per User ensuring that every Tool execution is tightly scoped to each User’s explicit intent.
+- Policies are immutable once published, and are configurable per User ensuring that every Tool execution is tightly scoped to each User’s explicit intent.
 
 3. **Vincent App Delegatees**: Ethereum addresses authorized by your App to execute Tools on behalf of Vincent Users.
 
 4. **Vincent Agent Wallets**: Non-custodial wallets that enable secure, automated interactions between your Vincent App and its Users.
-   - Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Tool.
+
+- Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Tool.
 
 # Defining Your Vincent App
 

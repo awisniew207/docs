@@ -205,7 +205,7 @@ const vincentPolicy = createVincentPolicy({
     const { isSpendingLimitExceeded, currentDailySpending } = await checkSpendingLimit(
       tokenAddress,
       amount,
-      dailySpendingLimit
+      dailySpendingLimit,
     );
 
     if (!isTokenAllowed) {
@@ -311,7 +311,7 @@ const vincentPolicy = createVincentPolicy({
     const { isSpendingLimitExceeded, currentDailySpending } = await checkSpendingLimit(
       tokenAddress,
       amount,
-      dailySpendingLimit
+      dailySpendingLimit,
     );
 
     if (!isTokenAllowed) {
@@ -549,7 +549,7 @@ const vincentPolicy = createVincentPolicy({
     const { isSpendingLimitExceeded, currentDailySpending } = await checkSpendingLimit(
       tokenAddress,
       amount,
-      dailySpendingLimit
+      dailySpendingLimit,
     );
 
     if (!isTokenAllowed) {
@@ -596,7 +596,7 @@ const vincentPolicy = createVincentPolicy({
     const { isSpendingLimitExceeded, currentDailySpending } = await checkSpendingLimit(
       tokenAddress,
       amount,
-      dailySpendingLimit
+      dailySpendingLimit,
     );
 
     if (!isTokenAllowed) {

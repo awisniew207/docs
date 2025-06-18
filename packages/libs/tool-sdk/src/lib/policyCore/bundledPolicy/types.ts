@@ -17,5 +17,6 @@ export type BundledVincentPolicy<
 > = {
   readonly ipfsCid: IpfsCid;
   readonly vincentPolicy: VP;
+  /** @hidden */
   readonly [__bundledPolicyBrand]: 'BundledVincentPolicy';
 };

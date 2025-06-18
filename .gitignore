@@ -58,6 +58,7 @@ screenshots
 /packages/sdk/sdk-docs/**/*
 *.tsbuildinfo
 
+./docs/dist/html
 test-output
 
 .github/instructions/nx.instructions.md

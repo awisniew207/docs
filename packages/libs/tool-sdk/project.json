@@ -29,11 +29,33 @@
         "formats": ["cjs"]
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+    "typedoc:build": {
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": ["packages/libs/tool-sdk/**/*.ts"]
+        "commands": [
+          "pnpm typedoc --skipErrorChecking --logLevel Verbose --options ./typedoc-configs/json.config.js"
+        ],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "typedoc:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typedoc --watch --logLevel Verbose --options ./typedoc-configs/html.config.js",
+          "node ./scripts/typedocServer.mjs"
+        ],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "typedoc:watch:json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm typedoc --watch --logLevel Verbose --options ./typedoc.json.config.js"],
+        "cwd": "{projectRoot}",
+        "tty": true
       }
     },
     "test": {

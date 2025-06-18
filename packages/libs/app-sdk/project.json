@@ -4,31 +4,9 @@
   "sourceRoot": "packages/libs/app-sdk/src",
   "projectType": "library",
   "tags": [],
+  "publishable": false,
   "targets": {
     "clean": {},
-    "publish-typedoc": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "pnpm typedoc --skipErrorChecking",
-          "mkdir ./sdk-docs/.vercel",
-          "printf '{\"projectId\": \"%s\", \"orgId\": \"%s\"}\\n' \"$SDK_DOCS_VERCEL_PROJECT_ID\" \"$SDK_DOCS_VERCEL_ORG_ID\" > ./sdk-docs/.vercel/project.json\n",
-          "pnpm vercel --prod --cwd=./sdk-docs --yes",
-          "rm -Rf ./sdk-docs"
-        ],
-        "parallel": false,
-        "cwd": "{projectRoot}",
-        "tty": true
-      }
-    },
-    "typedoc": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["pnpm typedoc --skipErrorChecking", "node ./scripts/typedocServer.mjs"],
-        "cwd": "{projectRoot}",
-        "tty": true
-      }
-    },
     "dev": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -41,6 +19,35 @@
         "watch": true
       }
     },
+    "typedoc:build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typedoc --skipErrorChecking --logLevel Verbose --options ./typedoc-configs/json.config.js"
+        ],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "typedoc:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typedoc --watch --logLevel Verbose --options ./typedoc-configs/html.config.js",
+          "node ./scripts/typedocServer.mjs"
+        ],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
+    "typedoc:watch:json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm typedoc --watch --logLevel Verbose --options ./typedoc.json.config.js"],
+        "cwd": "{projectRoot}",
+        "tty": true
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -50,13 +57,6 @@
         "tsConfig": "packages/libs/app-sdk/tsconfig.lib.json",
         "assets": ["packages/libs/app-sdk/*.md"],
         "formats": ["cjs"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/libs/app-sdk/**/*.ts"]
       }
     }
   }
