@@ -114,12 +114,21 @@
 				},
 				{
 					"kind": "text",
-					"text": ") guide to get started\n- See how to [execute Vincent Tools]("
+					"text": ") guide to get started\n- Learn how to [Authenticate Vincent Users]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Auth-Users.md",
+					"target": 8
+				},
+				{
+					"kind": "text",
+					"text": ") in your frontend app\n- See how to [execute Vincent Tools]("
 				},
 				{
 					"kind": "relative-link",
 					"text": "./Executing-Tools.md",
-					"target": 8
+					"target": 9
 				},
 				{
 					"kind": "text",
@@ -203,7 +212,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Creating-Tools.md",
-					"target": 9
+					"target": 10
 				},
 				{
 					"kind": "text",
@@ -212,7 +221,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Policy-Developers/Creating-Policies.md",
-					"target": 10
+					"target": 11
 				},
 				{
 					"kind": "text",
@@ -221,7 +230,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/connect-app-management-wallet.png",
-					"target": 11
+					"target": 12
 				},
 				{
 					"kind": "text",
@@ -238,7 +247,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/create-new-app.png",
-					"target": 12
+					"target": 13
 				},
 				{
 					"kind": "text",
@@ -263,7 +272,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/consent-ui.png",
-					"target": 13
+					"target": 14
 				},
 				{
 					"kind": "text",
@@ -312,7 +321,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Creating-Tools.md",
-					"target": 9
+					"target": 10
 				},
 				{
 					"kind": "text",
@@ -361,7 +370,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/vincent-app-manage-delegatees.png",
-					"target": 14
+					"target": 15
 				},
 				{
 					"kind": "text",
@@ -394,7 +403,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/vincent-app-generate-app-url.png",
-					"target": 15
+					"target": 16
 				},
 				{
 					"kind": "text",
@@ -441,6 +450,340 @@
 		},
 		{
 			"id": 8,
+			"name": "Authenticating Vincent Users",
+			"variant": "document",
+			"kind": 8388608,
+			"flags": {},
+			"content": [
+				{
+					"kind": "text",
+					"text": "# Authenticating Users Using the Vincent Web App Client\n\nExported from the Vincent App SDK, the Vincent Web App Client provides methods for securely authenticating users and obtaining their consent to execute Vincent Tools on their behalf.\n\nUsing the Web App Client, you can direct users to the Vincent Consent page where:\n\n- New users can review the Tools your App is requesting permission to execute and configure the Vincent Policies that govern their use.\n- Returning users can log in and confirm both their identity and the specific App Version they’ve previously authorized to act on their behalf.\n\nThis guide walks you through the process of authenticating Vincent Users in your frontend application using the Web App Client.\n\n# Vincent JWT Overview\n\nAt the end of the Vincent Consent flow, the User’s Agent Wallet signs a JWT and returns it as a URL parameter in the redirect URI. This JWT proves that:\n\n- The User has been authenticated using their Agent Wallet\n- The User has granted your Vincent App permission to act on their behalf\n\n## JWT Structure\n\nEach Vincent JWT contains the following claims in its payload:\n\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`pkp`"
+				},
+				{
+					"kind": "text",
+					"text": ": An object representing the User’s Agent Wallet, including their ethAddress, publicKey, and tokenId\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`app`"
+				},
+				{
+					"kind": "text",
+					"text": ": The Vincent App the JWT was issued for, including:\n  - "
+				},
+				{
+					"kind": "code",
+					"text": "`id`"
+				},
+				{
+					"kind": "text",
+					"text": ": The App ID\n  - "
+				},
+				{
+					"kind": "code",
+					"text": "`version`"
+				},
+				{
+					"kind": "text",
+					"text": ": The specific App Version the User has authorized\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`authentication`"
+				},
+				{
+					"kind": "text",
+					"text": ": The method used to authenticate the User, such as:\n  - "
+				},
+				{
+					"kind": "code",
+					"text": "`type`"
+				},
+				{
+					"kind": "text",
+					"text": ": \"email\", \"phone\", or \"passkey\"\n  - "
+				},
+				{
+					"kind": "code",
+					"text": "`value`"
+				},
+				{
+					"kind": "text",
+					"text": ": (Optional) identifier used during authentication (e.g. email address)\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`aud`"
+				},
+				{
+					"kind": "text",
+					"text": ": The audience this JWT is valid for (typically your app’s domain or redirect URI)\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`exp`"
+				},
+				{
+					"kind": "text",
+					"text": ": Expiration timestamp (in seconds since Unix epoch)\n\nIn addition to the payload, the JWT also includes:\n\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`header`"
+				},
+				{
+					"kind": "text",
+					"text": ": Standard JWT header containing algorithm and type information\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`signature`"
+				},
+				{
+					"kind": "text",
+					"text": ": A signature from the User’s Agent Wallet proving the JWT was signed using their Agent Wallet\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`data`"
+				},
+				{
+					"kind": "text",
+					"text": ": The raw, unsigned payload string used during signing\n\n> **Note:** To access these claims, use [decodeVincentLoginJWT](#decodevincentloginjwt) in your frontend.\n\n## Authentication Flow\n\n1. Your App redirects the user to the Vincent Consent Page using "
+				},
+				{
+					"kind": "code",
+					"text": "`redirectToConsentPage`"
+				},
+				{
+					"kind": "text",
+					"text": "\n2. The User reviews the Tools your App wants to use and configures the Policies that will govern them\n3. Upon approval, the User is redirected back to your App with a signed JWT in the URL\n4. Your App extracts and verifies the JWT using "
+				},
+				{
+					"kind": "code",
+					"text": "`decodeVincentLoginJWT`"
+				},
+				{
+					"kind": "text",
+					"text": "\n5. The verified JWT can now be stored and used to:\n   - Authenticate requests to your backend APIs\n   - Execute Vincent Tools on behalf of the User\n\n# How the Vincent Web App Client Works\n\nThe "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentWebAppClient`"
+				},
+				{
+					"kind": "text",
+					"text": " function from the "
+				},
+				{
+					"kind": "code",
+					"text": "`@lit-protocol/vincent-app-sdk`"
+				},
+				{
+					"kind": "text",
+					"text": " package creates a Web App Client instance tied to your Vincent App’s ID. This client exposes a set of methods for handling user login, consent, and JWT management for your App's frontend.\n\nThe Web App Client exposes the following methods:\n\n## "
+				},
+				{
+					"kind": "code",
+					"text": "`redirectToConsentPage`"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nRedirects the user to the Vincent Consent Page, and once the User has completed the Consent flow, they will be redirected back to your App with a signed JWT that you can use to authenticate requests against your backend APIs.\n\n- New Users are shown the Tools your App wants to execute and can configure the Vincent Policies that govern their use.\n- Returning Users can log in and confirm their prior delegation to your App.\n- When a Vincent JWT is expired, use this method to get a new JWT\n\n## "
+				},
+				{
+					"kind": "code",
+					"text": "`isLoginUri`"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nReturns "
+				},
+				{
+					"kind": "code",
+					"text": "`true`"
+				},
+				{
+					"kind": "text",
+					"text": " if the current URL contains a Vincent login JWT, indicating the User has just completed the consent flow and should be authenticated.\n\nIf this method returns "
+				},
+				{
+					"kind": "code",
+					"text": "`false`"
+				},
+				{
+					"kind": "text",
+					"text": ", you should use the "
+				},
+				{
+					"kind": "code",
+					"text": "`redirectToConsentPage`"
+				},
+				{
+					"kind": "text",
+					"text": " method to to authenticate the User.\n\n## "
+				},
+				{
+					"kind": "code",
+					"text": "`decodeVincentLoginJWT`"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nExtracts and verifies the Vincent login JWT returned in the URL after a user completes the Consent flow.\n\nThis method performs full validation, including:\n\n- Verifying that the JWT was signed by the Vincent User’s Agent Wallet\n- Ensuring the JWT has not expired\n- Confirming the JWT was issued specifically for your App, by checking that the redirect URI that received the JWT from the Vincent Consent Page is included in the JWT's audience claim\n\nIf the JWT is valid, it returns the decoded JWT object containing identity and delegation details (as described in the [JWT Structure](#jwt-structure) section). If the JWT is invalid, expired, or mis-scoped, an error is thrown.\n\n## "
+				},
+				{
+					"kind": "code",
+					"text": "`removeLoginJWTFromURI`"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nUse this method to remove the Vincent JWT query parameter from the current URL after you’ve extracted and stored it. You should call this method after you've called "
+				},
+				{
+					"kind": "code",
+					"text": "`decodeVincentLoginJWT`"
+				},
+				{
+					"kind": "text",
+					"text": ", validated the JWT, and stored it locally to be used when making authenticated requests to your backend APIs.\n\n# Creating a Web App Client\n\nTo initialize the Web App Client, import and call the "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentWebAppClient`"
+				},
+				{
+					"kind": "text",
+					"text": " function with your App’s ID:\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { getVincentWebAppClient } from '@lit-protocol/vincent-app-sdk';\n\nconst vincentAppClient = getVincentWebAppClient({ appId: process.env.MY_VINCENT_APP_ID });\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nThe "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentWebAppClient`"
+				},
+				{
+					"kind": "text",
+					"text": " takes an object as an argument with the following properties:\n\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`appId`"
+				},
+				{
+					"kind": "text",
+					"text": ": The ID of your Vincent App.\n  - This ID can be found on your [Vincent App Dashboard](https://dashboard.heyvincent.ai/):\n\n![Vincent App Dashboard]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/vincent-app-dashboard.png",
+					"target": 17
+				},
+				{
+					"kind": "text",
+					"text": ")\n\n# Handling Login Flow\n\nUse the following pattern to manage login and redirect flows in your frontend:\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { getVincentWebAppClient, jwt } from '@lit-protocol/vincent-app-sdk';\n\nconst { isExpired } = jwt;\n\nconst vincentAppClient = getVincentWebAppClient({ appId: process.env.MY_VINCENT_APP_ID });\n\nif (vincentAppClient.isLoginUri()) {\n  const { decodedJWT, jwtStr } = vincentAppClient.decodeVincentLoginJWT(window.location.origin);\n\n  // Store JWT for later use\n  localStorage.setItem('VINCENT_AUTH_JWT', jwtStr);\n\n  // Clean up the URL\n  vincentAppClient.removeLoginJWTFromURI();\n\n  // Proceed with App logic for an authenticated User\n} else {\n  const storedJwt = localStorage.getItem('VINCENT_AUTH_JWT');\n  const isExpired = storedJwt ? jwt.isExpired(storedJwt) : true;\n\n  if (!storedJwt || isExpired) {\n    vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });\n  }\n\n  // Proceed with App logic for an authenticated User\n}\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\n> **Note:** The "
+				},
+				{
+					"kind": "code",
+					"text": "`redirectUri`"
+				},
+				{
+					"kind": "text",
+					"text": " given to "
+				},
+				{
+					"kind": "code",
+					"text": "`redirectToConsentPage`"
+				},
+				{
+					"kind": "text",
+					"text": " is where the user will be sent with the signed Vincent JWT after completing the Vincent Consent flow.\n>\n> This **must** be one of the [Authorized Redirect URIs]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "Creating-Apps.md#authorized-redirect-uris",
+					"target": 7,
+					"targetAnchor": "authorized-redirect-uris"
+				},
+				{
+					"kind": "text",
+					"text": ") you've configured for your App.\n\n# Wrapping Up\n\nBy integrating the Vincent Web App Client, your App now supports secure authentication for Vincent Users.\n\nYou’ve learned how to:\n\n- Redirect users to the Vincent Consent Page using "
+				},
+				{
+					"kind": "code",
+					"text": "`redirectToConsentPage`"
+				},
+				{
+					"kind": "text",
+					"text": "\n- Detect when a User returns from the Consent flow with "
+				},
+				{
+					"kind": "code",
+					"text": "`isLoginUri`"
+				},
+				{
+					"kind": "text",
+					"text": "\n- Decode and validate the returned JWT using "
+				},
+				{
+					"kind": "code",
+					"text": "`decodeVincentLoginJWT`"
+				},
+				{
+					"kind": "text",
+					"text": "\n- Store the JWT for authenticated requests to your backend APIs\n- Re-initiate the Consent flow when a JWT is missing or expired\n\nWith this in place, your frontend is ready to authenticate Users and safely execute Vincent Tools on their behalf—within the boundaries they’ve configured through Vincent Policies.\n\n## Next Steps\n\n- Dive into the [Executing Vincent Tools]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Executing-Tools.md",
+					"target": 9
+				},
+				{
+					"kind": "text",
+					"text": ") guide to learn how to use the Vincent Tool Client to execute your App's Tool on behalf of an authenticated User\n- Explore the [Creating Vincent Tools]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Tool-Developers/Getting-Started.md",
+					"target": 4
+				},
+				{
+					"kind": "text",
+					"text": ") guide to learn how to create your own Vincent Tools\n- Explore the [Creating Vincent Policies]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Policy-Developers/Creating-Policies.md",
+					"target": 11
+				},
+				{
+					"kind": "text",
+					"text": ") guide to learn how to create your own Vincent Policies"
+				}
+			],
+			"frontmatter": {
+				"category": "Developers"
+			}
+		},
+		{
+			"id": 9,
 			"name": "Executing Vincent Tools",
 			"variant": "document",
 			"kind": 8388608,
@@ -992,7 +1335,7 @@
 			}
 		},
 		{
-			"id": 9,
+			"id": 10,
 			"name": "Creating Vincent Tools",
 			"variant": "document",
 			"kind": 8388608,
@@ -2468,7 +2811,7 @@
 			}
 		},
 		{
-			"id": 10,
+			"id": 11,
 			"name": "Creating Vincent Policies",
 			"variant": "document",
 			"kind": 8388608,
@@ -3648,7 +3991,7 @@
 			}
 		},
 		{
-			"id": 11,
+			"id": 12,
 			"name": "Onboarding",
 			"variant": "document",
 			"kind": 8388608,
@@ -3661,7 +4004,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./images/login.png",
-					"target": 16
+					"target": 18
 				},
 				{
 					"kind": "text",
@@ -3670,7 +4013,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./images/consent-page.png",
-					"target": 17
+					"target": 19
 				},
 				{
 					"kind": "text",
@@ -3679,7 +4022,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./images/consent-update.png",
-					"target": 18
+					"target": 20
 				},
 				{
 					"kind": "text",
@@ -3703,7 +4046,7 @@
 			}
 		},
 		{
-			"id": 12,
+			"id": 13,
 			"name": "Contact Us",
 			"variant": "document",
 			"kind": 8388608,
@@ -3734,7 +4077,8 @@
 				9,
 				10,
 				11,
-				12
+				12,
+				13
 			]
 		}
 	],
@@ -3755,20 +4099,21 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11
 			]
 		},
 		{
 			"title": "Users",
 			"children": [
 				2,
-				11
+				12
 			]
 		},
 		{
 			"title": "Contact",
 			"children": [
-				12
+				13
 			]
 		}
 	],
@@ -3797,19 +4142,21 @@
 			"5": "docs/src/Developers/Policy-Developers/Getting-Started.md",
 			"6": "docs/src/Developers/Getting-Started.md",
 			"7": "docs/src/Developers/App-Agent-Developers/Creating-Apps.md",
-			"8": "docs/src/Developers/App-Agent-Developers/Executing-Tools.md",
-			"9": "docs/src/Developers/Tool-Developers/Creating-Tools.md",
-			"10": "docs/src/Developers/Policy-Developers/Creating-Policies.md",
-			"11": "docs/src/Developers/images/connect-app-management-wallet.png",
-			"12": "docs/src/Developers/images/create-new-app.png",
-			"13": "docs/src/Developers/images/consent-ui.png",
-			"14": "docs/src/Developers/images/vincent-app-manage-delegatees.png",
-			"15": "docs/src/Developers/images/vincent-app-generate-app-url.png",
-			"16": "docs/src/Users/images/login.png",
-			"17": "docs/src/Users/images/consent-page.png",
-			"18": "docs/src/Users/images/consent-update.png",
-			"19": "docs/src/Users/Onboarding.md",
-			"20": "docs/src/Contact-Us.md"
+			"8": "docs/src/Developers/App-Agent-Developers/Auth-Users.md",
+			"9": "docs/src/Developers/App-Agent-Developers/Executing-Tools.md",
+			"10": "docs/src/Developers/Tool-Developers/Creating-Tools.md",
+			"11": "docs/src/Developers/Policy-Developers/Creating-Policies.md",
+			"12": "docs/src/Developers/images/connect-app-management-wallet.png",
+			"13": "docs/src/Developers/images/create-new-app.png",
+			"14": "docs/src/Developers/images/consent-ui.png",
+			"15": "docs/src/Developers/images/vincent-app-manage-delegatees.png",
+			"16": "docs/src/Developers/images/vincent-app-generate-app-url.png",
+			"17": "docs/src/Developers/images/vincent-app-dashboard.png",
+			"18": "docs/src/Users/images/login.png",
+			"19": "docs/src/Users/images/consent-page.png",
+			"20": "docs/src/Users/images/consent-update.png",
+			"21": "docs/src/Users/Onboarding.md",
+			"22": "docs/src/Contact-Us.md"
 		},
 		"reflections": {
 			"1": 1,
@@ -3822,8 +4169,9 @@
 			"8": 8,
 			"9": 9,
 			"10": 10,
-			"19": 11,
-			"20": 12
+			"11": 11,
+			"21": 12,
+			"22": 13
 		}
 	}
 }
