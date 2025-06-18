@@ -14,6 +14,7 @@ module.exports = {
     'src/Developers/Tool-Developers/Getting-Started.md',
     'src/Developers/Policy-Developers/Getting-Started.md',
     'src/Developers/App-Agent-Developers/Creating-Apps.md',
+    'src/Developers/App-Agent-Developers/Upgrading-Apps.md',
     'src/Developers/App-Agent-Developers/Auth-Users.md',
     'src/Developers/App-Agent-Developers/Executing-Tools.md',
     'src/Developers/Tool-Developers/Creating-Tools.md',

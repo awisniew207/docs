@@ -14,15 +14,16 @@
 			"content": [
 				{
 					"kind": "text",
-					"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [quick start]("
+					"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [Getting Started]("
 				},
 				{
 					"kind": "relative-link",
-					"text": "../docs/Developers/Quick-Start.md"
+					"text": "./Developers/Getting-Started.md",
+					"target": 1
 				},
 				{
 					"kind": "text",
-					"text": ").\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
+					"text": ") page.\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
 				}
 			],
 			"frontmatter": {
@@ -67,7 +68,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./App-Agent-Developers/Getting-Started.md",
-					"target": 3
+					"target": 4
 				},
 				{
 					"kind": "text",
@@ -76,7 +77,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -85,7 +86,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Policy-Developers/Getting-Started.md",
-					"target": 5
+					"target": 6
 				},
 				{
 					"kind": "text",
@@ -153,7 +154,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Policy-Developers/Getting-Started.md",
-					"target": 5
+					"target": 6
 				},
 				{
 					"kind": "text",
@@ -178,7 +179,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -203,7 +204,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Getting-Started.md",
-					"target": 3
+					"target": 4
 				},
 				{
 					"kind": "text",
@@ -225,12 +226,22 @@
 				},
 				{
 					"kind": "text",
-					"text": ") guide to learn how to create your own Vincent Policies to govern the execution of Vincent Tools.\n\n# 3. Registering Your Vincent App\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Before registering your Vincent App\n  </p>\n  <p>Registering an App requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href=\"https://chronicle-yellowstone-faucet.getlit.dev/\">this faucet</a> to get the Lit test tokens used to pay for registering your App.</p>\n</div>\n\nOnce you've selected your Vincent Tools and Policies, you'll need to register your App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/).\n\n## Connecting your App Management Wallet to the App Dashboard\n\nBefore you can register your App, you'll need to connect an Ethereum wallet to the App Dashboard.\n\nThis wallet will be the Vincent App Manager for your new App and is responsible for creating new App Versions, defining which Vincent Tools and Policies are used in each App Version, as well as the managing the App Delegatees that are permitted to execute Tools on behalf of your App's Vincent Users.\n\n![Connect App Management Wallet]("
+					"text": ") guide to learn how to create your own Vincent Policies to govern the execution of Vincent Tools.\n\n# 3. Registering Your Vincent App\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Before registering your Vincent App\n  </p>\n  <p>Registering an App requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href=\"https://chronicle-yellowstone-faucet.getlit.dev/\">this faucet</a> to get the Lit test tokens used to pay for registering your App.</p>\n</div>\n\nOnce you've selected your Vincent Tools and Policies, you'll need to register your App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/).\n\n> **Note:** When you register your App, you'll be creating the first App Version that Users can permit their delegation for. App Versions are immutable meaning you can't change the Tools or Policies associated with each App Version once it's been published.\n>\n> To make changes to the Tools and Policies your App uses, you'll need to create a new App Version. Learn more about App Versioning in [this guide]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Upgrading-Apps.md#how-app-versioning-works",
+					"target": 12,
+					"targetAnchor": "how-app-versioning-works"
+				},
+				{
+					"kind": "text",
+					"text": ").\n\n## Connecting your App Management Wallet to the App Dashboard\n\nBefore you can register your App, you'll need to connect an Ethereum wallet to the App Dashboard.\n\nThis wallet will be the Vincent App Manager for your new App and is responsible for creating new App Versions, defining which Vincent Tools and Policies are used in each App Version, as well as the managing the App Delegatees that are permitted to execute Tools on behalf of your App's Vincent Users.\n\n![Connect App Management Wallet]("
 				},
 				{
 					"kind": "relative-link",
 					"text": "../images/connect-app-management-wallet.png",
-					"target": 12
+					"target": 13
 				},
 				{
 					"kind": "text",
@@ -247,7 +258,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/create-new-app.png",
-					"target": 13
+					"target": 14
 				},
 				{
 					"kind": "text",
@@ -272,7 +283,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/consent-ui.png",
-					"target": 14
+					"target": 15
 				},
 				{
 					"kind": "text",
@@ -370,7 +381,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/vincent-app-manage-delegatees.png",
-					"target": 15
+					"target": 16
 				},
 				{
 					"kind": "text",
@@ -403,7 +414,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/vincent-app-generate-app-url.png",
-					"target": 16
+					"target": 17
 				},
 				{
 					"kind": "text",
@@ -428,7 +439,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -437,7 +448,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Policy-Developers/Getting-Started.md",
-					"target": 5
+					"target": 6
 				},
 				{
 					"kind": "text",
@@ -450,6 +461,192 @@
 		},
 		{
 			"id": 8,
+			"name": "Upgrading Vincent Apps",
+			"variant": "document",
+			"kind": 8388608,
+			"flags": {},
+			"content": [
+				{
+					"kind": "text",
+					"text": "# Upgrading a Vincent App\n\nVincent Apps are versioned to guarantee trust and transparency. Once a Vincent App Version is published, its set of Tools and Policies it uses are immutable. This ensures that Users know exactly what actions they’ve authorized and that App Managers cannot alter those permissions without explicit re-authorization from the User.\n\n### Why this matters\n\nVincent Users don’t just delegate to your App, they delegate to a specific App Version. This Version defines the exact set of Tools and Policies that your App can execute on their behalf, and can never be changed. This  gives your Users confidence that the set of Tools they've authorized, and are governing with their configured Policies, will never change without their explicit consent.\n\n# When Should You Create a New Version?\n\nAs the Vincent App Manager, you can create a new version of your App whenever you want to. Some common occurrences of when you'll need to create a new Version are when you want to:\n\n- Add new Vincent Tools or remove existing ones\n- Upgrade existing Tools to newer iterations\n- Change or add the Vincent Policies available to be used with your App's selected Tools\n\n## When a New Version isn't Required\n\nThere are some parts of your Vincent App that you can change without creating a new Version by visiting the [Vincent App Dashboard](https://dashboard.heyvincent.ai/). For each Vincent App you've created, you can change:\n\n- The App Delegatees that are authorized to execute your App's Tools for all App Versions\n- The authorized redirect URIs Users can be redirected to after they've authorized your App via the Vincent Consent page\n- The current Deployment Status of your App\n\n# How App Versioning Works\n\nEach Version of your App is stored on-chain in the Vincent App Registry smart contract, with no ability to modify the Version once it's been published to the Registry.\n\nEach App Version includes:\n\n- A finite list of Vincent Tools the App can execute on behalf of Users that authorize the App Version\n- Each Policy that's available to be used with the App's selected Tools, along with the Policy parameters that Users can configure\n\n> **Note:** Once published, App Versions cannot be modified. If you need to make any changes, you'll need to publish a new Version.\n\n# Creating a New Version\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Before creating a new App Version\n  </p>\n  <p>Creating a new App Version requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href=\"https://chronicle-yellowstone-faucet.getlit.dev/\">this faucet</a> to get the Lit test tokens used to pay for creating the new App Version.</p>\n</div>\n\nTo publish a new version of your App:\n\n1. Navigate to the [Vincent App Dashboard](https://dashboard.heyvincent.ai/)\n2. Select your App from the list\n3. Click the "
+				},
+				{
+					"kind": "code",
+					"text": "`Manage Tool Policies`"
+				},
+				{
+					"kind": "text",
+					"text": " button:\n\n![Manage Tool Policies Button]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/manage-tool-policies-button.png",
+					"target": 18
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nYou will then be shown the following screen which displays:\n\n- The current Tools configured for your App\n- The Policies that are available to be used with each Tool\n- Each Policy parameter that can be configured by the User for each Policy:\n\n![Manage Tool Policies Page]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/manage-tool-policies-page.png",
+					"target": 19
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nAfter updating the Tools and Policies for your App, you'll need to click the "
+				},
+				{
+					"kind": "code",
+					"text": "`Publish New Version`"
+				},
+				{
+					"kind": "text",
+					"text": " button to publish the Version on-chain. This will prompt you to sign a transaction with your connected Vincent App Manager wallet.\n\nAfter it's published, your new App Version will be immediately available for Vincent Users to authorize/upgrade to the next time they visit your App’s Vincent Consent Page.\n\n# Managing App Versions\n\nAlso on the Vincent App Overview page, you'll see an "
+				},
+				{
+					"kind": "code",
+					"text": "`Advanced Functions`"
+				},
+				{
+					"kind": "text",
+					"text": " button:\n\n![Advanced Functions Button]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/advanced-functions-button.png",
+					"target": 20
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nClicking this button will navigate you to the advanced settings for your App, including the option to manage your App Versions:\n\n![Manage App Versions]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/manage-app-versions.png",
+					"target": 21
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nAfter clicking the "
+				},
+				{
+					"kind": "code",
+					"text": "`Manage Versions`"
+				},
+				{
+					"kind": "text",
+					"text": " button, you'll be given the option to select from your App Versions. You can see which Version are currently enabled, and which are disabled:\n\n![Enable App Version Dialog]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/enable-app-version-dialog.png",
+					"target": 22
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nSelect the App Version you'd like to enable or disable, and click the "
+				},
+				{
+					"kind": "code",
+					"text": "`Enable Version`"
+				},
+				{
+					"kind": "text",
+					"text": " or "
+				},
+				{
+					"kind": "code",
+					"text": "`Disable Version`"
+				},
+				{
+					"kind": "text",
+					"text": " button to toggle the Version's status. This will prompt you to sign a transaction with your connected Vincent App Manager wallet to update the App's status in the on-chain App Registry.\n\n## What Does it Mean to Enable/Disable an App Version?\n\nEnabled App Versions mean that new Users can authorize the corresponding set of Tools and Policies to be executed on their behalf, and existing Users of the enabled Version can continue to authenticate with Vincent for your App.\n\nNew Users will never be prompted to authorize disabled App Versions, and existing Users who've previously permitted a now disabled Version will either be prompted to update to the latest enabled Version, or will no longer be able to authenticate with Vincent for your App if there is no newer App Version to upgrade to:\n\n> **Note:** A disabled App Version will also prohibit your App Delegatees from executing the corresponding Tools on behalf of your Users.\n\n![Disabled App Version Upgrade Dialog]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/disabled-app-version-upgrade-dialog.png",
+					"target": 23
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nThe latest enabled App Version is always the version that new Users will be prompted to authorize when they visit your App’s Vincent Consent Page.\n\nIf you have multiple enabled App Versions, existing Users who've permitted previous Versions are still able to use those Versions up until the point you disable it.\n\nHowever, those Users will be prompted to upgrade to the latest enabled App Version the next time they visit your App’s Vincent Consent Page:\n\n![Upgrade App Version Dialog]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/upgrade-app-version-dialog.png",
+					"target": 24
+				},
+				{
+					"kind": "text",
+					"text": ")\n\n# Best Practices\n\n- **Clearly communicate changes** to your Users before publishing new versions, especially if you’re introducing new Tools or modifying existing functionality.\n- **Incremental changes** can be better than large overhauls, it makes it easier for Users to understand what's changed.\n- **Keep old versions active** during testing to allow for safe rollout and rollback if needed.\n- **Use "
+				},
+				{
+					"kind": "code",
+					"text": "`DEV`"
+				},
+				{
+					"kind": "text",
+					"text": ", "
+				},
+				{
+					"kind": "code",
+					"text": "`TEST`"
+				},
+				{
+					"kind": "text",
+					"text": ", and "
+				},
+				{
+					"kind": "code",
+					"text": "`PROD`"
+				},
+				{
+					"kind": "text",
+					"text": " App modes** appropriately to manage expectations of the stability of your App and whether it's still undergoing development.\n\n# Wrapping Up\n\nApp Versioning is a cornerstone of Vincent’s trust model. It allows your App to evolve by adding new functionality, fixing issues, or improving User safety without ever compromising the permissions your Users originally granted.\n\nEvery App Version is:\n\n- **Immutable:** Once published, it can never be changed\n- **Transparent:** Users see exactly what Tools and Policies they’re authorizing\n- **Opt-in:** Upgrades require explicit User consent through your App's Vincent Consent Page\n\nAs the App Manager, versioning gives you control over your App’s configuration without ever taking control away from your Users.\n\n### Key Takeaways:\n\n- Users delegate to specific App Versions, not your App in general\n- To make changes to Tools or Policies, create a new App Version using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/)\n- You can enable/disable versions at any time to manage upgrades and deprecations\n- Only enabled App Versions can be authorized by Users and executed by your App Delegatees\n\n## Next Steps\n\n- Checkout how to [Authenticate your Users with Vincent]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../App-Agent-Developers/Authenticating-Users.md"
+				},
+				{
+					"kind": "text",
+					"text": ") to get Users to started delegating to your Vincent App.\n- Dive into how to [Execute Vincent Tools]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../App-Agent-Developers/Executing-Tools.md",
+					"target": 9
+				},
+				{
+					"kind": "text",
+					"text": ") and start executing Vincent Tools on behalf of your Users.\n- Learn how to [Create a Vincent Tool]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Tool-Developers/Getting-Started.md",
+					"target": 5
+				},
+				{
+					"kind": "text",
+					"text": ") to add new functionality to your App.\n- Learn how to [Create a Vincent Policy]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Policy-Developers/Getting-Started.md",
+					"target": 6
+				},
+				{
+					"kind": "text",
+					"text": ") to add new governance rules to your App's Tools."
+				}
+			],
+			"frontmatter": {
+				"category": "Developers"
+			}
+		},
+		{
+			"id": 9,
 			"name": "Authenticating Vincent Users",
 			"variant": "document",
 			"kind": 8388608,
@@ -569,7 +766,23 @@
 				},
 				{
 					"kind": "text",
-					"text": "\n5. The verified JWT can now be stored and used to:\n   - Authenticate requests to your backend APIs\n   - Execute Vincent Tools on behalf of the User\n\n# How the Vincent Web App Client Works\n\nThe "
+					"text": " in your frontend\n   - **Note:** For your backend it's **critical** that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method from the "
+				},
+				{
+					"kind": "code",
+					"text": "`@lit-protocol/vincent-app-sdk`"
+				},
+				{
+					"kind": "text",
+					"text": " package, and as shown [here](#verifying-the-vincent-jwt-on-your-backend).\n5. The verified JWT can now be stored and used to:\n   - Authenticate requests to your backend APIs\n   - Execute Vincent Tools on behalf of the User\n\n# How the Vincent Web App Client Works\n\nThe "
 				},
 				{
 					"kind": "code",
@@ -686,7 +899,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../images/vincent-app-dashboard.png",
-					"target": 17
+					"target": 25
 				},
 				{
 					"kind": "text",
@@ -724,7 +937,55 @@
 				},
 				{
 					"kind": "text",
-					"text": ") you've configured for your App.\n\n# Wrapping Up\n\nBy integrating the Vincent Web App Client, your App now supports secure authentication for Vincent Users.\n\nYou’ve learned how to:\n\n- Redirect users to the Vincent Consent Page using "
+					"text": ") you've configured for your App.\n\n## Verifying the Vincent JWT on your backend\n\nIt's critical that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method from the "
+				},
+				{
+					"kind": "code",
+					"text": "`@lit-protocol/vincent-app-sdk`"
+				},
+				{
+					"kind": "text",
+					"text": " package, and as shown here:\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { jwt } from '@lit-protocol/vincent-app-sdk';\n\nconst { verify } = jwt;\n\nconst vincentJwtSubmittedToBackend = '...';\nconst jwtAudience = 'https://my-redirect-uri.com';\n\nconst decodedVincentJWT = verify(vincentJwtSubmittedToBackend, jwtAudience);\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nWhere the "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method takes two arguments:\n\n- The Vincent JWT string that was returned to you by the Vincent Consent flow\n- The "
+				},
+				{
+					"kind": "code",
+					"text": "`jwtAudience`"
+				},
+				{
+					"kind": "text",
+					"text": " string, which is the redirect URI that received the JWT from the Vincent Consent Page\n\nThe "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method will throw an error if the JWT is invalid, expired, or mis-scoped, otherwise it's considered valid and was created specifically for your App.\n\n# Wrapping Up\n\nBy integrating the Vincent Web App Client, your App now supports secure authentication for Vincent Users.\n\nYou’ve learned how to:\n\n- Redirect users to the Vincent Consent Page using "
 				},
 				{
 					"kind": "code",
@@ -762,7 +1023,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -783,7 +1044,7 @@
 			}
 		},
 		{
-			"id": 9,
+			"id": 10,
 			"name": "Executing Vincent Tools",
 			"variant": "document",
 			"kind": 8388608,
@@ -907,7 +1168,9 @@
 				},
 				{
 					"kind": "relative-link",
-					"text": "./Quick-Start.md#2-registering-an-app-using-the-app-dashboard"
+					"text": "./Creating-Apps.md#adding-delegatees-to-your-app",
+					"target": 7,
+					"targetAnchor": "adding-delegatees-to-your-app"
 				},
 				{
 					"kind": "text",
@@ -1315,7 +1578,8 @@
 				},
 				{
 					"kind": "relative-link",
-					"text": "./Creating-Tools.md"
+					"text": "../Tool-Developers/Creating-Tools.md",
+					"target": 10
 				},
 				{
 					"kind": "text",
@@ -1323,7 +1587,8 @@
 				},
 				{
 					"kind": "relative-link",
-					"text": "./Creating-Policies.md"
+					"text": "../Policy-Developers/Creating-Policies.md",
+					"target": 11
 				},
 				{
 					"kind": "text",
@@ -1335,7 +1600,7 @@
 			}
 		},
 		{
-			"id": 10,
+			"id": 11,
 			"name": "Creating Vincent Tools",
 			"variant": "document",
 			"kind": 8388608,
@@ -2811,7 +3076,7 @@
 			}
 		},
 		{
-			"id": 11,
+			"id": 12,
 			"name": "Creating Vincent Policies",
 			"variant": "document",
 			"kind": 8388608,
@@ -3991,7 +4256,7 @@
 			}
 		},
 		{
-			"id": 12,
+			"id": 13,
 			"name": "Onboarding",
 			"variant": "document",
 			"kind": 8388608,
@@ -4004,7 +4269,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./images/login.png",
-					"target": 18
+					"target": 26
 				},
 				{
 					"kind": "text",
@@ -4013,7 +4278,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./images/consent-page.png",
-					"target": 19
+					"target": 27
 				},
 				{
 					"kind": "text",
@@ -4022,7 +4287,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./images/consent-update.png",
-					"target": 20
+					"target": 28
 				},
 				{
 					"kind": "text",
@@ -4046,7 +4311,7 @@
 			}
 		},
 		{
-			"id": 13,
+			"id": 14,
 			"name": "Contact Us",
 			"variant": "document",
 			"kind": 8388608,
@@ -4078,7 +4343,8 @@
 				10,
 				11,
 				12,
-				13
+				13,
+				14
 			]
 		}
 	],
@@ -4100,20 +4366,21 @@
 				8,
 				9,
 				10,
-				11
+				11,
+				12
 			]
 		},
 		{
 			"title": "Users",
 			"children": [
 				2,
-				12
+				13
 			]
 		},
 		{
 			"title": "Contact",
 			"children": [
-				13
+				14
 			]
 		}
 	],
@@ -4121,57 +4388,67 @@
 	"readme": [
 		{
 			"kind": "text",
-			"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [quick start]("
+			"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [Getting Started]("
 		},
 		{
 			"kind": "relative-link",
-			"text": "../docs/Developers/Quick-Start.md"
+			"text": "./Developers/Getting-Started.md",
+			"target": 1
 		},
 		{
 			"kind": "text",
-			"text": ").\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
+			"text": ") page.\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
 		}
 	],
 	"symbolIdMap": {},
 	"files": {
 		"entries": {
-			"1": "docs/src/Why-Vincent.md",
-			"2": "docs/src/Concepts.md",
-			"3": "docs/src/Developers/App-Agent-Developers/Getting-Started.md",
-			"4": "docs/src/Developers/Tool-Developers/Getting-Started.md",
-			"5": "docs/src/Developers/Policy-Developers/Getting-Started.md",
-			"6": "docs/src/Developers/Getting-Started.md",
+			"1": "docs/src/Developers/Getting-Started.md",
+			"2": "docs/src/Why-Vincent.md",
+			"3": "docs/src/Concepts.md",
+			"4": "docs/src/Developers/App-Agent-Developers/Getting-Started.md",
+			"5": "docs/src/Developers/Tool-Developers/Getting-Started.md",
+			"6": "docs/src/Developers/Policy-Developers/Getting-Started.md",
 			"7": "docs/src/Developers/App-Agent-Developers/Creating-Apps.md",
 			"8": "docs/src/Developers/App-Agent-Developers/Auth-Users.md",
 			"9": "docs/src/Developers/App-Agent-Developers/Executing-Tools.md",
 			"10": "docs/src/Developers/Tool-Developers/Creating-Tools.md",
 			"11": "docs/src/Developers/Policy-Developers/Creating-Policies.md",
-			"12": "docs/src/Developers/images/connect-app-management-wallet.png",
-			"13": "docs/src/Developers/images/create-new-app.png",
-			"14": "docs/src/Developers/images/consent-ui.png",
-			"15": "docs/src/Developers/images/vincent-app-manage-delegatees.png",
-			"16": "docs/src/Developers/images/vincent-app-generate-app-url.png",
-			"17": "docs/src/Developers/images/vincent-app-dashboard.png",
-			"18": "docs/src/Users/images/login.png",
-			"19": "docs/src/Users/images/consent-page.png",
-			"20": "docs/src/Users/images/consent-update.png",
-			"21": "docs/src/Users/Onboarding.md",
-			"22": "docs/src/Contact-Us.md"
+			"12": "docs/src/Developers/App-Agent-Developers/Upgrading-Apps.md",
+			"13": "docs/src/Developers/images/connect-app-management-wallet.png",
+			"14": "docs/src/Developers/images/create-new-app.png",
+			"15": "docs/src/Developers/images/consent-ui.png",
+			"16": "docs/src/Developers/images/vincent-app-manage-delegatees.png",
+			"17": "docs/src/Developers/images/vincent-app-generate-app-url.png",
+			"18": "docs/src/Developers/images/manage-tool-policies-button.png",
+			"19": "docs/src/Developers/images/manage-tool-policies-page.png",
+			"20": "docs/src/Developers/images/advanced-functions-button.png",
+			"21": "docs/src/Developers/images/manage-app-versions.png",
+			"22": "docs/src/Developers/images/enable-app-version-dialog.png",
+			"23": "docs/src/Developers/images/disabled-app-version-upgrade-dialog.png",
+			"24": "docs/src/Developers/images/upgrade-app-version-dialog.png",
+			"25": "docs/src/Developers/images/vincent-app-dashboard.png",
+			"26": "docs/src/Users/images/login.png",
+			"27": "docs/src/Users/images/consent-page.png",
+			"28": "docs/src/Users/images/consent-update.png",
+			"29": "docs/src/Users/Onboarding.md",
+			"30": "docs/src/Contact-Us.md"
 		},
 		"reflections": {
-			"1": 1,
-			"2": 2,
-			"3": 4,
-			"4": 5,
-			"5": 6,
-			"6": 3,
+			"1": 3,
+			"2": 1,
+			"3": 2,
+			"4": 4,
+			"5": 5,
+			"6": 6,
 			"7": 7,
-			"8": 8,
-			"9": 9,
-			"10": 10,
-			"11": 11,
-			"21": 12,
-			"22": 13
+			"8": 9,
+			"9": 10,
+			"10": 11,
+			"11": 12,
+			"12": 8,
+			"29": 13,
+			"30": 14
 		}
 	}
 }

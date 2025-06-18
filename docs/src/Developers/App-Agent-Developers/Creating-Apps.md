@@ -90,6 +90,10 @@ Additionally, you can checkout the [Creating a Vincent Policy](../Policy-Develop
 
 Once you've selected your Vincent Tools and Policies, you'll need to register your App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/).
 
+> **Note:** When you register your App, you'll be creating the first App Version that Users can permit their delegation for. App Versions are immutable meaning you can't change the Tools or Policies associated with each App Version once it's been published.
+>
+> To make changes to the Tools and Policies your App uses, you'll need to create a new App Version. Learn more about App Versioning in [this guide](./Upgrading-Apps.md#how-app-versioning-works).
+
 ## Connecting your App Management Wallet to the App Dashboard
 
 Before you can register your App, you'll need to connect an Ethereum wallet to the App Dashboard.
