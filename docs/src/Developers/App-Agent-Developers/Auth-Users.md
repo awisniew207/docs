@@ -7,7 +7,7 @@ title: Authenticating Vincent Users
 
 Exported from the Vincent App SDK, the Vincent Web App Client provides methods for securely authenticating users and obtaining their consent to execute Vincent Tools on their behalf.
 
-Using the Web App Client, you can redirect users to the Vincent Consent page where:
+Using the Web App Client, you can direct users to the Vincent Consent page where:
 
 - New users can review the Tools your App is requesting permission to execute and configure the Vincent Policies that govern their use.
 - Returning users can log in and confirm both their identity and the specific App Version they’ve previously authorized to act on their behalf.
@@ -41,18 +41,17 @@ In addition to the payload, the JWT also includes:
 - `signature`: A signature from the User’s Agent Wallet proving the JWT was signed using their Agent Wallet
 - `data`: The raw, unsigned payload string used during signing
 
-> **Note:** To access these claims, use `decodeVincentLoginJWT()` in the frontend.
+> **Note:** To access these claims, use [decodeVincentLoginJWT](#decodevincentloginjwt) in your frontend.
 
 ## Authentication Flow
 
-1. Your App redirects the user to the Vincent Consent Page using redirectToConsentPage()
+1. Your App redirects the user to the Vincent Consent Page using `redirectToConsentPage`
 2. The User reviews the Tools your App wants to use and configures the Policies that will govern them
 3. Upon approval, the User is redirected back to your App with a signed JWT in the URL
-4. Your App extracts and verifies the JWT using decodeVincentLoginJWT() (frontend) and verify() (backend)
+4. Your App extracts and verifies the JWT using `decodeVincentLoginJWT`
 5. The verified JWT can now be stored and used to:
-
-- Authenticate requests to your backend
-- Execute Vincent Tools on behalf of the User
+   - Authenticate requests to your backend APIs
+   - Execute Vincent Tools on behalf of the User
 
 # How the Vincent Web App Client Works
 
@@ -63,8 +62,6 @@ The Web App Client exposes the following methods:
 ## `redirectToConsentPage`
 
 Redirects the user to the Vincent Consent Page, and once the User has completed the Consent flow, they will be redirected back to your App with a signed JWT that you can use to authenticate requests against your backend APIs.
-
-> **Note:** Once a User completes the Vincent Consent flow, your App will receive a JWT signed by their Agent Wallet. This token contains the User’s Agent Wallet address and the specific App Version they’ve authorized. You can store this JWT and use it to authenticate backend requests or initiate Vincent Tool executions on the User’s behalf.
 
 - New Users are shown the Tools your App wants to execute and can configure the Vincent Policies that govern their use.
 - Returning Users can log in and confirm their prior delegation to your App.
@@ -86,7 +83,7 @@ This method performs full validation, including:
 - Ensuring the JWT has not expired
 - Confirming the JWT was issued specifically for your App, by checking that the redirect URI that received the JWT from the Vincent Consent Page is included in the JWT's audience claim
 
-If the JWT is valid, it returns the decoded JWT object containing identity and delegation details. If the JWT is invalid, expired, or mis-scoped, an error is thrown.
+If the JWT is valid, it returns the decoded JWT object containing identity and delegation details (as described in the [JWT Structure](#jwt-structure) section). If the JWT is invalid, expired, or mis-scoped, an error is thrown.
 
 ## `removeLoginJWTFromURI`
 
