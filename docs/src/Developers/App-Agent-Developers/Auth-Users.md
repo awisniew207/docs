@@ -48,7 +48,8 @@ In addition to the payload, the JWT also includes:
 1. Your App redirects the user to the Vincent Consent Page using `redirectToConsentPage`
 2. The User reviews the Tools your App wants to use and configures the Policies that will govern them
 3. Upon approval, the User is redirected back to your App with a signed JWT in the URL
-4. Your App extracts and verifies the JWT using `decodeVincentLoginJWT`
+4. Your App extracts and verifies the JWT using `decodeVincentLoginJWT` in your frontend
+   - **Note:** For your backend it's **critical** that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the `verify` method from the `@lit-protocol/vincent-app-sdk` package, and as shown [here](#verifying-the-vincent-jwt-on-your-backend).
 5. The verified JWT can now be stored and used to:
    - Authenticate requests to your backend APIs
    - Execute Vincent Tools on behalf of the User
@@ -142,6 +143,28 @@ if (vincentAppClient.isLoginUri()) {
 > **Note:** The `redirectUri` given to `redirectToConsentPage` is where the user will be sent with the signed Vincent JWT after completing the Vincent Consent flow.
 >
 > This **must** be one of the [Authorized Redirect URIs](Creating-Apps.md#authorized-redirect-uris) you've configured for your App.
+
+## Verifying the Vincent JWT on your backend
+
+It's critical that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the `verify` method from the `@lit-protocol/vincent-app-sdk` package, and as shown here:
+
+```typescript
+import { jwt } from '@lit-protocol/vincent-app-sdk';
+
+const { verify } = jwt;
+
+const vincentJwtSubmittedToBackend = '...';
+const jwtAudience = 'https://my-redirect-uri.com';
+
+const decodedVincentJWT = verify(vincentJwtSubmittedToBackend, jwtAudience);
+```
+
+Where the `verify` method takes two arguments:
+
+- The Vincent JWT string that was returned to you by the Vincent Consent flow
+- The `jwtAudience` string, which is the redirect URI that received the JWT from the Vincent Consent Page
+
+The `verify` method will throw an error if the JWT is invalid, expired, or mis-scoped, otherwise it's considered valid and was created specifically for your App.
 
 # Wrapping Up
 
