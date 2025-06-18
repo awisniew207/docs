@@ -101,6 +101,7 @@ export function createToolExecutionContext<
   return newContext;
 }
 
+/** @hidden */
 export const vincentToolHandler = <
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,

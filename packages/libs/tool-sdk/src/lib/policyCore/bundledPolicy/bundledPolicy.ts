@@ -3,6 +3,7 @@
 import { __bundledPolicyBrand, BundledVincentPolicy } from './types';
 import { VincentPolicy } from '../../types';
 
+/** @hidden */
 export function asBundledVincentPolicy<
   const VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>,
   const IpfsCid extends string,
@@ -11,5 +12,5 @@ export function asBundledVincentPolicy<
     ipfsCid,
     vincentPolicy,
     [__bundledPolicyBrand]: 'BundledVincentPolicy',
-  } as BundledVincentPolicy<VP, IpfsCid>;
+  };
 }

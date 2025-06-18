@@ -28,9 +28,10 @@ import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resu
 import { BundledVincentPolicy } from './bundledPolicy/types';
 
 /**
- * Wraps a raw VincentPolicyDef with internal logic and returns a fully typed
- * policy object, preserving inference for all lifecycle methods (`evaluate`, `precheck`, `commit`)
- * and providing metadata such as `ipfsCid` and `packageName`.
+ * The `createVincentPolicy()` method is used to define a policy's lifecycle methods and ensure that arguments provided to the tool's
+ * lifecycle methods, as well as their return values, are validated and fully type-safe by defining ZOD schemas for them.
+ *
+ * @category API Methods
  */
 export function createVincentPolicy<
   PackageName extends string,
@@ -295,9 +296,31 @@ export function createVincentPolicy<
 }
 
 /**
- * Adapts a single policy to a specific tool by applying parameter mappings.
- * This allows the policy's schema-defined params to be inferred and automatically
- * extracted from the tool's input params. Also attaches schema metadata for result typing.
+ * `createVincentToolPolicy()` is used to bind a policy to a specific tool. You must provide a `toolParameterMappings` argument
+ * which instructs the tool which of its toolParams should be passed to the Vincent Policy during evaluation, and
+ * defines what the argument passed to the tool should be.
+ *
+ * For example, a Tool might receive an argument called `tokenInAmount`, but it may need to pass that as `buyAmount` to a
+ * policy that uses the `tokenInAmount` for its own purposes.
+ *
+ * ```typescript
+ * import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+ *
+ * const SpendingLimitPolicy = createVincentToolPolicy({
+ *   toolParamsSchema,
+ *   bundledVincentPolicy,
+ *   toolParameterMappings: {
+ *     rpcUrlForUniswap: 'rpcUrlForUniswap',
+ *     chainIdForUniswap: 'chainIdForUniswap',
+ *     ethRpcUrl: 'ethRpcUrl',
+ *     tokenInAddress: 'tokenAddress',
+ *     tokenInDecimals: 'tokenDecimals',
+ *     tokenInAmount: 'buyAmount',
+ *   },
+ * });
+ * ```
+ *
+ * @category API Methods
  */
 export function createVincentToolPolicy<
   const PackageName extends string,
@@ -350,6 +373,7 @@ export function createVincentToolPolicy<
     ipfsCid,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
+    /** @hidden */
     __schemaTypes: {
       evalAllowResultSchema: vincentPolicy.evalAllowResultSchema,
       evalDenyResultSchema: vincentPolicy.evalDenyResultSchema,
@@ -370,6 +394,7 @@ export function createVincentToolPolicy<
     vincentPolicy: typeof vincentPolicy;
     ipfsCid: typeof ipfsCid;
     toolParameterMappings: typeof config.toolParameterMappings;
+    /* @hidden */
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;
       evalDenyResultSchema: EvalDenyResult;

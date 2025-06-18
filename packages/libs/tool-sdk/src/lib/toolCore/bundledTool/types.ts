@@ -10,6 +10,8 @@ export type __bundledToolBrand = typeof __bundledToolBrand;
 /**
  * A VincentTool bundled with an IPFS CID and uniquely branded.
  * This ensures only correctly constructed objects are assignable.
+ *
+ * @hidden
  */
 export type BundledVincentTool<
   VT extends VincentTool<any, any, any, any, any, any, any, any, any, any>,

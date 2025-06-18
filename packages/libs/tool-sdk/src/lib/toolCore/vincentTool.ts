@@ -21,9 +21,42 @@ import { ToolDefLifecycleFunction, VincentToolDef } from './toolDef/types';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * Wraps a VincentToolDef object and returns a fully typed tool with
- * standard lifecycle entrypoints (`precheck`, `execute`) and strong inference
- * based on schemas and supported policies.
+ * The `createVincentTool()` method is used to define a tool's lifecycle methods and ensure that arguments provided to the tool's
+ * lifecycle methods, as well as their return values, are validated and fully type-safe by defining ZOD schemas for them.
+ *
+ *```typescript
+ * const exampleSimpleTool = createVincentTool({
+ *     packageName: '@lit-protocol/yestool@1.0.0',
+ *     toolParamsSchema: testSchema,
+ *     supportedPolicies: supportedPoliciesForTool([testPolicy]),
+ *
+ *     precheck: async (params, { succeed, fail }) => {
+ *       // Should allow succeed() with no arguments
+ *       succeed();
+ *
+ *       // Should allow fail() with string error
+ *       fail('Error message');
+ *
+ *       // @ts-expect-error - Should not allow succeed() with arguments when no schema
+ *       succeed({ message: 'test' });
+ *
+ *       // @ts-expect-error - Should not allow fail() with object when no schema
+ *       fail({ error: 'test' });
+ *
+ *       return succeed();
+ *     },
+ *
+ *     execute: async (params, { succeed }) => {
+ *       // Should allow succeed() with no arguments
+ *       succeed();
+ *
+ *       // @ts-expect-error - Should not allow succeed() with arguments when no schema
+ *       return succeed({ data: 'test' });
+ *     },
+ *   });
+ * ```
+ *
+ * @category API Methods
  */
 export function createVincentTool<
   ToolParamsSchema extends z.ZodType,
