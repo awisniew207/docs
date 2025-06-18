@@ -8,7 +8,6 @@ module.exports = {
   navigation: {
     includeCategories: true,
   },
-  projectDocuments: ['../test.md'],
   defaultCategory: 'API',
   categorizeByGroup: false,
   // categoryOrder: ['vincent-tool-sdk'],

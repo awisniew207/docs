@@ -82,6 +82,7 @@ export type VincentToolPolicy<
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<VP['toolParamsSchema']>;
   }>;
+  /** @hidden */
   __schemaTypes: {
     evalAllowResultSchema?: VP['evalAllowResultSchema'];
     evalDenyResultSchema?: VP['evalDenyResultSchema'];
@@ -159,6 +160,7 @@ export type PolicyEvaluationResultContext<
     string,
     {
       vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any>;
+      /** @hidden */
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -222,6 +224,7 @@ export type ToolExecutionPolicyEvaluationResult<
     string,
     {
       vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any>;
+      /** @hidden */
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -254,6 +257,7 @@ export type ToolExecutionPolicyContext<
     string,
     {
       vincentPolicy: VincentPolicy<any, any, any, any, any, any, any, any, any, any>;
+      /** @hidden */
       __schemaTypes?: {
         evalAllowResultSchema?: z.ZodType;
         evalDenyResultSchema?: z.ZodType;
@@ -353,7 +357,9 @@ export type ToolLifecycleFunction<
 export type VincentTool<
   ToolParamsSchema extends z.ZodType,
   PkgNames extends string,
+  /** @hidden */
   PolicyMap extends ToolPolicyMap<any, PkgNames>,
+  /** @hidden */
   PoliciesByPackageName extends PolicyMap['policyByPackageName'],
   ExecuteSuccessSchema extends z.ZodType | undefined = undefined,
   ExecuteFailSchema extends z.ZodType | undefined = undefined,
@@ -379,6 +385,7 @@ export type VincentTool<
   execute: ExecuteFn;
   toolParamsSchema: ToolParamsSchema;
   supportedPolicies: PolicyMap;
+  /** @hidden */
   __schemaTypes: {
     executeSuccessSchema?: ExecuteSuccessSchema;
     executeFailSchema?: ExecuteFailSchema;
@@ -387,15 +394,18 @@ export type VincentTool<
   };
 };
 
+/** @hidden */
 export interface ToolConsumerContext {
   delegatorPkpEthAddress: string;
 }
 
+/** @hidden */
 export interface PolicyConsumerContext {
   delegatorPkpEthAddress: string;
   toolIpfsCid: string; // FIXME: This will be removed when we have shipped lit action ipfs cids stack
 }
 
+/** @hidden */
 export interface BaseContext {
   toolIpfsCid: string;
   appId: number;

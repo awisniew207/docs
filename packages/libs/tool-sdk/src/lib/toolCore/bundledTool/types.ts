@@ -17,5 +17,6 @@ export type BundledVincentTool<
 > = {
   readonly ipfsCid: IpfsCid;
   readonly vincentTool: VT;
+  /** @hidden */
   readonly [__bundledToolBrand]: 'BundledVincentTool';
 };
