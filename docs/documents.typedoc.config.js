@@ -12,6 +12,7 @@ module.exports = {
     'src/Developers/Quick-Start.md',
     'src/Developers/Getting-Started.md',
     'src/Developers/App-Agent-Developers/Getting-Started.md',
+    'docs/Developers/App-Agent-Developers/Creating-Apps.md',
     'src/Developers/Tool-Developers/Getting-Started.md',
     'src/Developers/Tool-Developers/Creating-Tools.md',
     'src/Developers/Policy-Developers/Getting-Started.md',

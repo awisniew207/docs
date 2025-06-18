@@ -6,263 +6,6 @@
 	"flags": {},
 	"children": [
 		{
-			"id": 144,
-			"name": "BaseContext",
-			"variant": "declaration",
-			"kind": 256,
-			"flags": {},
-			"children": [
-				{
-					"id": 146,
-					"name": "appId",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 401,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L401"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 147,
-					"name": "appVersion",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 402,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L402"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 148,
-					"name": "delegation",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 403,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L403"
-						}
-					],
-					"type": {
-						"type": "reflection",
-						"declaration": {
-							"id": 149,
-							"name": "__type",
-							"variant": "declaration",
-							"kind": 65536,
-							"flags": {},
-							"children": [
-								{
-									"id": 150,
-									"name": "delegateeAddress",
-									"variant": "declaration",
-									"kind": 1024,
-									"flags": {},
-									"sources": [
-										{
-											"fileName": "types.ts",
-											"line": 404,
-											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L404"
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								},
-								{
-									"id": 151,
-									"name": "delegatorPkpInfo",
-									"variant": "declaration",
-									"kind": 1024,
-									"flags": {},
-									"sources": [
-										{
-											"fileName": "types.ts",
-											"line": 405,
-											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L405"
-										}
-									],
-									"type": {
-										"type": "reflection",
-										"declaration": {
-											"id": 152,
-											"name": "__type",
-											"variant": "declaration",
-											"kind": 65536,
-											"flags": {},
-											"children": [
-												{
-													"id": 154,
-													"name": "ethAddress",
-													"variant": "declaration",
-													"kind": 1024,
-													"flags": {},
-													"sources": [
-														{
-															"fileName": "types.ts",
-															"line": 407,
-															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L407"
-														}
-													],
-													"type": {
-														"type": "intrinsic",
-														"name": "string"
-													}
-												},
-												{
-													"id": 155,
-													"name": "publicKey",
-													"variant": "declaration",
-													"kind": 1024,
-													"flags": {},
-													"sources": [
-														{
-															"fileName": "types.ts",
-															"line": 408,
-															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L408"
-														}
-													],
-													"type": {
-														"type": "intrinsic",
-														"name": "string"
-													}
-												},
-												{
-													"id": 153,
-													"name": "tokenId",
-													"variant": "declaration",
-													"kind": 1024,
-													"flags": {},
-													"sources": [
-														{
-															"fileName": "types.ts",
-															"line": 406,
-															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L406"
-														}
-													],
-													"type": {
-														"type": "intrinsic",
-														"name": "string"
-													}
-												}
-											],
-											"groups": [
-												{
-													"title": "Properties",
-													"children": [
-														154,
-														155,
-														153
-													]
-												}
-											],
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 405,
-													"character": 22,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L405"
-												}
-											]
-										}
-									}
-								}
-							],
-							"groups": [
-								{
-									"title": "Properties",
-									"children": [
-										150,
-										151
-									]
-								}
-							],
-							"sources": [
-								{
-									"fileName": "types.ts",
-									"line": 403,
-									"character": 14,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L403"
-								}
-							]
-						}
-					}
-				},
-				{
-					"id": 145,
-					"name": "toolIpfsCid",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 400,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L400"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Properties",
-					"children": [
-						146,
-						147,
-						148,
-						145
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "types.ts",
-					"line": 399,
-					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L399"
-				}
-			],
-			"extendedBy": [
-				{
-					"type": "reference",
-					"target": 223,
-					"name": "BaseToolContext"
-				}
-			]
-		},
-		{
 			"id": 223,
 			"name": "BaseToolContext",
 			"variant": "declaration",
@@ -280,9 +23,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 401,
+							"line": 411,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L401"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L411"
 						}
 					],
 					"type": {
@@ -291,7 +34,7 @@
 					},
 					"inheritedFrom": {
 						"type": "reference",
-						"target": 146,
+						"target": -1,
 						"name": "BaseContext.appId"
 					}
 				},
@@ -306,9 +49,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 402,
+							"line": 412,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L402"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L412"
 						}
 					],
 					"type": {
@@ -317,7 +60,7 @@
 					},
 					"inheritedFrom": {
 						"type": "reference",
-						"target": 147,
+						"target": -1,
 						"name": "BaseContext.appVersion"
 					}
 				},
@@ -332,9 +75,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 403,
+							"line": 413,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L403"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L413"
 						}
 					],
 					"type": {
@@ -355,9 +98,9 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 404,
+											"line": 414,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L404"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L414"
 										}
 									],
 									"type": {
@@ -374,9 +117,9 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 405,
+											"line": 415,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L405"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L415"
 										}
 									],
 									"type": {
@@ -397,9 +140,9 @@
 													"sources": [
 														{
 															"fileName": "types.ts",
-															"line": 407,
+															"line": 417,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L407"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L417"
 														}
 													],
 													"type": {
@@ -416,9 +159,9 @@
 													"sources": [
 														{
 															"fileName": "types.ts",
-															"line": 408,
+															"line": 418,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L408"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L418"
 														}
 													],
 													"type": {
@@ -435,9 +178,9 @@
 													"sources": [
 														{
 															"fileName": "types.ts",
-															"line": 406,
+															"line": 416,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L406"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L416"
 														}
 													],
 													"type": {
@@ -459,9 +202,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 405,
+													"line": 415,
 													"character": 22,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L405"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L415"
 												}
 											]
 										}
@@ -480,16 +223,16 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 403,
+									"line": 413,
 									"character": 14,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L403"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L413"
 								}
 							]
 						}
 					},
 					"inheritedFrom": {
 						"type": "reference",
-						"target": 148,
+						"target": -1,
 						"name": "BaseContext.delegation"
 					}
 				},
@@ -504,7 +247,7 @@
 							"fileName": "toolCore/toolDef/context/types.ts",
 							"line": 13,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/toolDef/context/types.ts#L13"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/toolDef/context/types.ts#L13"
 						}
 					],
 					"type": {
@@ -527,9 +270,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 400,
+							"line": 410,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L400"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L410"
 						}
 					],
 					"type": {
@@ -538,7 +281,7 @@
 					},
 					"inheritedFrom": {
 						"type": "reference",
-						"target": 145,
+						"target": -1,
 						"name": "BaseContext.toolIpfsCid"
 					}
 				}
@@ -560,7 +303,7 @@
 					"fileName": "toolCore/toolDef/context/types.ts",
 					"line": 12,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/toolDef/context/types.ts#L12"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/toolDef/context/types.ts#L12"
 				}
 			],
 			"typeParameters": [
@@ -575,117 +318,9 @@
 			"extendedTypes": [
 				{
 					"type": "reference",
-					"target": 144,
+					"target": -1,
 					"name": "BaseContext",
 					"package": "@lit-protocol/vincent-tool-sdk"
-				}
-			]
-		},
-		{
-			"id": 220,
-			"name": "PolicyConsumerContext",
-			"variant": "declaration",
-			"kind": 256,
-			"flags": {},
-			"children": [
-				{
-					"id": 221,
-					"name": "delegatorPkpEthAddress",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 395,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L395"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				},
-				{
-					"id": 222,
-					"name": "toolIpfsCid",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 396,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L396"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Properties",
-					"children": [
-						221,
-						222
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "types.ts",
-					"line": 394,
-					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L394"
-				}
-			]
-		},
-		{
-			"id": 218,
-			"name": "ToolConsumerContext",
-			"variant": "declaration",
-			"kind": 256,
-			"flags": {},
-			"children": [
-				{
-					"id": 219,
-					"name": "delegatorPkpEthAddress",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 391,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L391"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Properties",
-					"children": [
-						219
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "types.ts",
-					"line": 390,
-					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L390"
 				}
 			]
 		},
@@ -708,7 +343,7 @@
 					"fileName": "policyCore/bundledPolicy/types.ts",
 					"line": 14,
 					"character": 12,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L14"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L14"
 				}
 			],
 			"typeParameters": [
@@ -808,27 +443,6 @@
 					"flags": {},
 					"children": [
 						{
-							"id": 111,
-							"name": "[___bundledPolicyBrand]",
-							"variant": "declaration",
-							"kind": 1024,
-							"flags": {
-								"isReadonly": true
-							},
-							"sources": [
-								{
-									"fileName": "policyCore/bundledPolicy/types.ts",
-									"line": 20,
-									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L20"
-								}
-							],
-							"type": {
-								"type": "literal",
-								"value": "BundledVincentPolicy"
-							}
-						},
-						{
 							"id": 109,
 							"name": "ipfsCid",
 							"variant": "declaration",
@@ -841,7 +455,7 @@
 									"fileName": "policyCore/bundledPolicy/types.ts",
 									"line": 18,
 									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L18"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L18"
 								}
 							],
 							"type": {
@@ -865,7 +479,7 @@
 									"fileName": "policyCore/bundledPolicy/types.ts",
 									"line": 19,
 									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L19"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L19"
 								}
 							],
 							"type": {
@@ -881,7 +495,6 @@
 						{
 							"title": "Properties",
 							"children": [
-								111,
 								109,
 								110
 							]
@@ -892,7 +505,7 @@
 							"fileName": "policyCore/bundledPolicy/types.ts",
 							"line": 17,
 							"character": 4,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L17"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/types.ts#L17"
 						}
 					]
 				}
@@ -917,7 +530,7 @@
 					"fileName": "toolCore/bundledTool/types.ts",
 					"line": 14,
 					"character": 12,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L14"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L14"
 				}
 			],
 			"typeParameters": [
@@ -1002,27 +615,6 @@
 					"flags": {},
 					"children": [
 						{
-							"id": 118,
-							"name": "[___bundledToolBrand]",
-							"variant": "declaration",
-							"kind": 1024,
-							"flags": {
-								"isReadonly": true
-							},
-							"sources": [
-								{
-									"fileName": "toolCore/bundledTool/types.ts",
-									"line": 20,
-									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L20"
-								}
-							],
-							"type": {
-								"type": "literal",
-								"value": "BundledVincentTool"
-							}
-						},
-						{
 							"id": 116,
 							"name": "ipfsCid",
 							"variant": "declaration",
@@ -1035,7 +627,7 @@
 									"fileName": "toolCore/bundledTool/types.ts",
 									"line": 18,
 									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L18"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L18"
 								}
 							],
 							"type": {
@@ -1059,7 +651,7 @@
 									"fileName": "toolCore/bundledTool/types.ts",
 									"line": 19,
 									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L19"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L19"
 								}
 							],
 							"type": {
@@ -1075,7 +667,6 @@
 						{
 							"title": "Properties",
 							"children": [
-								118,
 								116,
 								117
 							]
@@ -1086,7 +677,7 @@
 							"fileName": "toolCore/bundledTool/types.ts",
 							"line": 17,
 							"character": 4,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L17"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/types.ts#L17"
 						}
 					]
 				}
@@ -1101,9 +692,9 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 157,
+					"line": 158,
 					"character": 12,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L157"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L158"
 				}
 			],
 			"typeParameters": [
@@ -1134,271 +725,6 @@
 									"flags": {},
 									"children": [
 										{
-											"id": 185,
-											"name": "__schemaTypes",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 162,
-													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L162"
-												}
-											],
-											"type": {
-												"type": "reflection",
-												"declaration": {
-													"id": 186,
-													"name": "__type",
-													"variant": "declaration",
-													"kind": 65536,
-													"flags": {},
-													"children": [
-														{
-															"id": 194,
-															"name": "commit",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 170,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L170"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
-																	"qualifiedName": "Function"
-																},
-																"name": "Function",
-																"package": "typescript"
-															}
-														},
-														{
-															"id": 190,
-															"name": "commitAllowResultSchema",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 166,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L166"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-																	"qualifiedName": "ZodType"
-																},
-																"name": "z.ZodType",
-																"package": "zod",
-																"qualifiedName": "ZodType"
-															}
-														},
-														{
-															"id": 191,
-															"name": "commitDenyResultSchema",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 167,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L167"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-																	"qualifiedName": "ZodType"
-																},
-																"name": "z.ZodType",
-																"package": "zod",
-																"qualifiedName": "ZodType"
-															}
-														},
-														{
-															"id": 189,
-															"name": "commitParamsSchema",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 165,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L165"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-																	"qualifiedName": "ZodType"
-																},
-																"name": "z.ZodType",
-																"package": "zod",
-																"qualifiedName": "ZodType"
-															}
-														},
-														{
-															"id": 187,
-															"name": "evalAllowResultSchema",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 163,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L163"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-																	"qualifiedName": "ZodType"
-																},
-																"name": "z.ZodType",
-																"package": "zod",
-																"qualifiedName": "ZodType"
-															}
-														},
-														{
-															"id": 188,
-															"name": "evalDenyResultSchema",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 164,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L164"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-																	"qualifiedName": "ZodType"
-																},
-																"name": "z.ZodType",
-																"package": "zod",
-																"qualifiedName": "ZodType"
-															}
-														},
-														{
-															"id": 192,
-															"name": "evaluate",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 168,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L168"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
-																	"qualifiedName": "Function"
-																},
-																"name": "Function",
-																"package": "typescript"
-															}
-														},
-														{
-															"id": 193,
-															"name": "precheck",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {
-																"isOptional": true
-															},
-															"sources": [
-																{
-																	"fileName": "types.ts",
-																	"line": 169,
-																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L169"
-																}
-															],
-															"type": {
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
-																	"qualifiedName": "Function"
-																},
-																"name": "Function",
-																"package": "typescript"
-															}
-														}
-													],
-													"groups": [
-														{
-															"title": "Properties",
-															"children": [
-																194,
-																190,
-																191,
-																189,
-																187,
-																188,
-																192,
-																193
-															]
-														}
-													],
-													"sources": [
-														{
-															"fileName": "types.ts",
-															"line": 162,
-															"character": 22,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L162"
-														}
-													]
-												}
-											}
-										},
-										{
 											"id": 184,
 											"name": "vincentPolicy",
 											"variant": "declaration",
@@ -1407,9 +733,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 161,
+													"line": 162,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L161"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L162"
 												}
 											],
 											"type": {
@@ -1469,7 +795,6 @@
 										{
 											"title": "Properties",
 											"children": [
-												185,
 												184
 											]
 										}
@@ -1477,9 +802,9 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 160,
+											"line": 161,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L160"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L161"
 										}
 									]
 								}
@@ -1511,9 +836,9 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 175,
+											"line": 177,
 											"character": 2,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L175"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L177"
 										}
 									],
 									"type": {
@@ -1543,9 +868,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 174,
+									"line": 176,
 									"character": 4,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L174"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L176"
 								}
 							]
 						}
@@ -1571,9 +896,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 178,
+													"line": 180,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L178"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L180"
 												}
 											],
 											"type": {
@@ -1590,9 +915,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 179,
+													"line": 181,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L179"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L181"
 												}
 											],
 											"type": {
@@ -1627,9 +952,9 @@
 																"sources": [
 																	{
 																		"fileName": "types.ts",
-																		"line": 181,
+																		"line": 183,
 																		"character": 10,
-																		"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L181"
+																		"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L183"
 																	}
 																],
 																"type": {
@@ -1679,9 +1004,9 @@
 																					"sources": [
 																						{
 																							"fileName": "types.ts",
-																							"line": 182,
+																							"line": 184,
 																							"character": 12,
-																							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L182"
+																							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L184"
 																						}
 																					],
 																					"type": {
@@ -1701,9 +1026,9 @@
 																			"sources": [
 																				{
 																					"fileName": "types.ts",
-																					"line": 181,
+																					"line": 183,
 																					"character": 63,
-																					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L181"
+																					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L183"
 																				}
 																			]
 																		}
@@ -1775,9 +1100,9 @@
 														"sources": [
 															{
 																"fileName": "types.ts",
-																"line": 180,
+																"line": 182,
 																"character": 40,
-																"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L180"
+																"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L182"
 															}
 														]
 													}
@@ -1796,9 +1121,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 190,
+													"line": 192,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L190"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L192"
 												}
 											],
 											"type": {
@@ -1820,9 +1145,9 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 177,
+											"line": 179,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L177"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L179"
 										}
 									]
 								}
@@ -1845,9 +1170,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 193,
+													"line": 195,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L193"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L195"
 												}
 											],
 											"type": {
@@ -1866,9 +1191,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 206,
+													"line": 208,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L206"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L208"
 												}
 											],
 											"type": {
@@ -1903,9 +1228,9 @@
 																"sources": [
 																	{
 																		"fileName": "types.ts",
-																		"line": 208,
+																		"line": 210,
 																		"character": 10,
-																		"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L208"
+																		"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L210"
 																	}
 																],
 																"type": {
@@ -1955,9 +1280,9 @@
 																					"sources": [
 																						{
 																							"fileName": "types.ts",
-																							"line": 209,
+																							"line": 211,
 																							"character": 12,
-																							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L209"
+																							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L211"
 																						}
 																					],
 																					"type": {
@@ -1977,9 +1302,9 @@
 																			"sources": [
 																				{
 																					"fileName": "types.ts",
-																					"line": 208,
+																					"line": 210,
 																					"character": 63,
-																					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L208"
+																					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L210"
 																				}
 																			]
 																		}
@@ -2051,9 +1376,9 @@
 														"sources": [
 															{
 																"fileName": "types.ts",
-																"line": 207,
+																"line": 209,
 																"character": 40,
-																"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L207"
+																"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L209"
 															}
 														]
 													}
@@ -2070,9 +1395,9 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 194,
+													"line": 196,
 													"character": 6,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L194"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L196"
 												}
 											],
 											"type": {
@@ -2093,9 +1418,9 @@
 															"sources": [
 																{
 																	"fileName": "types.ts",
-																	"line": 195,
+																	"line": 197,
 																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L195"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L197"
 																}
 															],
 															"type": {
@@ -2119,9 +1444,9 @@
 															"sources": [
 																{
 																	"fileName": "types.ts",
-																	"line": 196,
+																	"line": 198,
 																	"character": 8,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L196"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L198"
 																}
 															],
 															"type": {
@@ -2147,9 +1472,9 @@
 																					"sources": [
 																						{
 																							"fileName": "types.ts",
-																							"line": 197,
+																							"line": 199,
 																							"character": 10,
-																							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L197"
+																							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L199"
 																						}
 																					],
 																					"type": {
@@ -2169,9 +1494,9 @@
 																			"sources": [
 																				{
 																					"fileName": "types.ts",
-																					"line": 196,
+																					"line": 198,
 																					"character": 16,
-																					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L196"
+																					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L198"
 																				}
 																			]
 																		}
@@ -2232,9 +1557,9 @@
 																						"sources": [
 																							{
 																								"fileName": "types.ts",
-																								"line": 199,
+																								"line": 201,
 																								"character": 10,
-																								"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L199"
+																								"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L201"
 																							}
 																						],
 																						"type": {
@@ -2254,9 +1579,9 @@
 																				"sources": [
 																					{
 																						"fileName": "types.ts",
-																						"line": 198,
+																						"line": 200,
 																						"character": 80,
-																						"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L198"
+																						"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L200"
 																					}
 																				]
 																			}
@@ -2331,9 +1656,9 @@
 													"sources": [
 														{
 															"fileName": "types.ts",
-															"line": 194,
+															"line": 196,
 															"character": 20,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L194"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L196"
 														}
 													]
 												}
@@ -2353,9 +1678,9 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 192,
+											"line": 194,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L192"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L194"
 										}
 									]
 								}
@@ -2374,9 +1699,9 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 353,
+					"line": 357,
 					"character": 12,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L353"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L357"
 				}
 			],
 			"typeParameters": [
@@ -2709,148 +2034,6 @@
 					"flags": {},
 					"children": [
 						{
-							"id": 202,
-							"name": "__schemaTypes",
-							"variant": "declaration",
-							"kind": 1024,
-							"flags": {},
-							"sources": [
-								{
-									"fileName": "types.ts",
-									"line": 382,
-									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L382"
-								}
-							],
-							"type": {
-								"type": "reflection",
-								"declaration": {
-									"id": 203,
-									"name": "__type",
-									"variant": "declaration",
-									"kind": 65536,
-									"flags": {},
-									"children": [
-										{
-											"id": 205,
-											"name": "executeFailSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 384,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L384"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": 213,
-												"name": "ExecuteFailSchema",
-												"package": "@lit-protocol/vincent-tool-sdk",
-												"refersToTypeParameter": true
-											}
-										},
-										{
-											"id": 204,
-											"name": "executeSuccessSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 383,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L383"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": 212,
-												"name": "ExecuteSuccessSchema",
-												"package": "@lit-protocol/vincent-tool-sdk",
-												"refersToTypeParameter": true
-											}
-										},
-										{
-											"id": 207,
-											"name": "precheckFailSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 386,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L386"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": 215,
-												"name": "PrecheckFailSchema",
-												"package": "@lit-protocol/vincent-tool-sdk",
-												"refersToTypeParameter": true
-											}
-										},
-										{
-											"id": 206,
-											"name": "precheckSuccessSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 385,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L385"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": 214,
-												"name": "PrecheckSuccessSchema",
-												"package": "@lit-protocol/vincent-tool-sdk",
-												"refersToTypeParameter": true
-											}
-										}
-									],
-									"groups": [
-										{
-											"title": "Properties",
-											"children": [
-												205,
-												204,
-												207,
-												206
-											]
-										}
-									],
-									"sources": [
-										{
-											"fileName": "types.ts",
-											"line": 382,
-											"character": 17,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L382"
-										}
-									]
-								}
-							}
-						},
-						{
 							"id": 199,
 							"name": "execute",
 							"variant": "declaration",
@@ -2859,9 +2042,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 379,
+									"line": 385,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L379"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L385"
 								}
 							],
 							"type": {
@@ -2881,9 +2064,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 377,
+									"line": 383,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L377"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L383"
 								}
 							],
 							"type": {
@@ -2902,9 +2085,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 378,
+									"line": 384,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L378"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L384"
 								}
 							],
 							"type": {
@@ -2924,9 +2107,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 381,
+									"line": 387,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L381"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L387"
 								}
 							],
 							"type": {
@@ -2946,9 +2129,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 380,
+									"line": 386,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L380"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L386"
 								}
 							],
 							"type": {
@@ -2964,7 +2147,6 @@
 						{
 							"title": "Properties",
 							"children": [
-								202,
 								199,
 								197,
 								198,
@@ -2976,9 +2158,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 376,
+							"line": 382,
 							"character": 4,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L376"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L382"
 						}
 					]
 				}
@@ -2995,7 +2177,7 @@
 					"fileName": "types.ts",
 					"line": 74,
 					"character": 12,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L74"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L74"
 				}
 			],
 			"typeParameters": [
@@ -3115,366 +2297,6 @@
 					"flags": {},
 					"children": [
 						{
-							"id": 128,
-							"name": "__schemaTypes",
-							"variant": "declaration",
-							"kind": 1024,
-							"flags": {},
-							"sources": [
-								{
-									"fileName": "types.ts",
-									"line": 85,
-									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L85"
-								}
-							],
-							"type": {
-								"type": "reflection",
-								"declaration": {
-									"id": 129,
-									"name": "__type",
-									"variant": "declaration",
-									"kind": 65536,
-									"flags": {},
-									"children": [
-										{
-											"id": 139,
-											"name": "commit",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 95,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L95"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "commit"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 135,
-											"name": "commitAllowResultSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 91,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L91"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "commitAllowResultSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 136,
-											"name": "commitDenyResultSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 92,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L92"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "commitDenyResultSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 134,
-											"name": "commitParamsSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 90,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L90"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "commitParamsSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 130,
-											"name": "evalAllowResultSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 86,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L86"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "evalAllowResultSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 131,
-											"name": "evalDenyResultSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 87,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L87"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "evalDenyResultSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 137,
-											"name": "evaluate",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 93,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L93"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "evaluate"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 138,
-											"name": "precheck",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 94,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L94"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "precheck"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 132,
-											"name": "precheckAllowResultSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 88,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L88"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "precheckAllowResultSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										},
-										{
-											"id": 133,
-											"name": "precheckDenyResultSchema",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {
-												"isOptional": true
-											},
-											"sources": [
-												{
-													"fileName": "types.ts",
-													"line": 89,
-													"character": 4,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L89"
-												}
-											],
-											"type": {
-												"type": "indexedAccess",
-												"indexType": {
-													"type": "literal",
-													"value": "precheckDenyResultSchema"
-												},
-												"objectType": {
-													"type": "reference",
-													"target": 141,
-													"name": "VP",
-													"package": "@lit-protocol/vincent-tool-sdk",
-													"refersToTypeParameter": true
-												}
-											}
-										}
-									],
-									"groups": [
-										{
-											"title": "Properties",
-											"children": [
-												139,
-												135,
-												136,
-												134,
-												130,
-												131,
-												137,
-												138,
-												132,
-												133
-											]
-										}
-									],
-									"sources": [
-										{
-											"fileName": "types.ts",
-											"line": 85,
-											"character": 17,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L85"
-										}
-									]
-								}
-							}
-						},
-						{
 							"id": 123,
 							"name": "ipfsCid",
 							"variant": "declaration",
@@ -3485,7 +2307,7 @@
 									"fileName": "types.ts",
 									"line": 80,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L80"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L80"
 								}
 							],
 							"type": {
@@ -3507,7 +2329,7 @@
 									"fileName": "types.ts",
 									"line": 82,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L82"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L82"
 								}
 							],
 							"type": {
@@ -3590,7 +2412,7 @@
 									"fileName": "types.ts",
 									"line": 81,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L81"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L81"
 								}
 							],
 							"type": {
@@ -3623,7 +2445,7 @@
 															"fileName": "types.ts",
 															"line": 81,
 															"character": 24,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L81"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L81"
 														}
 													],
 													"type": {
@@ -3648,7 +2470,7 @@
 													"fileName": "types.ts",
 													"line": 81,
 													"character": 22,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L81"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L81"
 												}
 											]
 										}
@@ -3661,7 +2483,6 @@
 						{
 							"title": "Properties",
 							"children": [
-								128,
 								123,
 								127,
 								124
@@ -3673,7 +2494,7 @@
 							"fileName": "types.ts",
 							"line": 79,
 							"character": 4,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/types.ts#L79"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/types.ts#L79"
 						}
 					]
 				}
@@ -3690,7 +2511,7 @@
 					"fileName": "policyCore/bundledPolicy/bundledPolicy.ts",
 					"line": 6,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/bundledPolicy.ts#L6"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/bundledPolicy.ts#L6"
 				}
 			],
 			"signatures": [
@@ -3705,7 +2526,7 @@
 							"fileName": "policyCore/bundledPolicy/bundledPolicy.ts",
 							"line": 6,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/bundledPolicy.ts#L6"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/bundledPolicy/bundledPolicy.ts#L6"
 						}
 					],
 					"typeParameters": [
@@ -3861,7 +2682,7 @@
 					"fileName": "toolCore/bundledTool/bundledTool.ts",
 					"line": 6,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/bundledTool.ts#L6"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/bundledTool.ts#L6"
 				}
 			],
 			"signatures": [
@@ -3876,7 +2697,7 @@
 							"fileName": "toolCore/bundledTool/bundledTool.ts",
 							"line": 6,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/bundledTool.ts#L6"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/bundledTool/bundledTool.ts#L6"
 						}
 					],
 					"typeParameters": [
@@ -4017,7 +2838,7 @@
 					"fileName": "policyCore/vincentPolicy.ts",
 					"line": 35,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L35"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L35"
 				}
 			],
 			"signatures": [
@@ -4080,7 +2901,7 @@
 							"fileName": "policyCore/vincentPolicy.ts",
 							"line": 35,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L35"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L35"
 						}
 					],
 					"typeParameters": [
@@ -4888,7 +3709,7 @@
 					"fileName": "toolCore/vincentTool.ts",
 					"line": 28,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/vincentTool.ts#L28"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/vincentTool.ts#L28"
 				}
 			],
 			"signatures": [
@@ -4927,7 +3748,7 @@
 							"fileName": "toolCore/vincentTool.ts",
 							"line": 28,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/vincentTool.ts#L28"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/vincentTool.ts#L28"
 						}
 					],
 					"typeParameters": [
@@ -5457,7 +4278,7 @@
 					"fileName": "policyCore/vincentPolicy.ts",
 					"line": 302,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L302"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L302"
 				}
 			],
 			"signatures": [
@@ -5480,7 +4301,7 @@
 							"fileName": "policyCore/vincentPolicy.ts",
 							"line": 302,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L302"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L302"
 						}
 					],
 					"typeParameters": [
@@ -5960,7 +4781,7 @@
 													"fileName": "policyCore/vincentPolicy.ts",
 													"line": 317,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L317"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L317"
 												}
 											],
 											"type": {
@@ -6181,7 +5002,7 @@
 													"fileName": "policyCore/vincentPolicy.ts",
 													"line": 340,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L340"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L340"
 												}
 											],
 											"type": {
@@ -6250,7 +5071,7 @@
 													"fileName": "policyCore/vincentPolicy.ts",
 													"line": 316,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L316"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L316"
 												}
 											],
 											"type": {
@@ -6277,7 +5098,7 @@
 											"fileName": "policyCore/vincentPolicy.ts",
 											"line": 315,
 											"character": 10,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L315"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L315"
 										}
 									]
 								}
@@ -6304,7 +5125,7 @@
 											"fileName": "policyCore/vincentPolicy.ts",
 											"line": 373,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L373"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L373"
 										}
 									],
 									"type": {
@@ -6327,7 +5148,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 384,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L384"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L384"
 														}
 													],
 													"type": {
@@ -6383,7 +5204,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 379,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L379"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L379"
 														}
 													],
 													"type": {
@@ -6405,7 +5226,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 380,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L380"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L380"
 														}
 													],
 													"type": {
@@ -6427,7 +5248,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 378,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L378"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L378"
 														}
 													],
 													"type": {
@@ -6449,7 +5270,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 374,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L374"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L374"
 														}
 													],
 													"type": {
@@ -6471,7 +5292,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 375,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L375"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L375"
 														}
 													],
 													"type": {
@@ -6493,7 +5314,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 382,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L382"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L382"
 														}
 													],
 													"type": {
@@ -6547,7 +5368,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 383,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L383"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L383"
 														}
 													],
 													"type": {
@@ -6610,7 +5431,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 376,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L376"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L376"
 														}
 													],
 													"type": {
@@ -6632,7 +5453,7 @@
 															"fileName": "policyCore/vincentPolicy.ts",
 															"line": 377,
 															"character": 6,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L377"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L377"
 														}
 													],
 													"type": {
@@ -6666,7 +5487,7 @@
 													"fileName": "policyCore/vincentPolicy.ts",
 													"line": 373,
 													"character": 19,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L373"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L373"
 												}
 											]
 										}
@@ -6683,7 +5504,7 @@
 											"fileName": "policyCore/vincentPolicy.ts",
 											"line": 371,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L371"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L371"
 										}
 									],
 									"type": {
@@ -6705,7 +5526,7 @@
 											"fileName": "policyCore/vincentPolicy.ts",
 											"line": 372,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L372"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L372"
 										}
 									],
 									"type": {
@@ -6774,7 +5595,7 @@
 											"fileName": "policyCore/vincentPolicy.ts",
 											"line": 370,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L370"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L370"
 										}
 									],
 									"type": {
@@ -6986,7 +5807,7 @@
 									"fileName": "policyCore/vincentPolicy.ts",
 									"line": 369,
 									"character": 19,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L369"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/policyCore/vincentPolicy.ts#L369"
 								}
 							]
 						}
@@ -7005,7 +5826,7 @@
 					"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 					"line": 18,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L18"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L18"
 				}
 			],
 			"signatures": [
@@ -7036,7 +5857,7 @@
 							"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 							"line": 18,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L18"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L18"
 						}
 					],
 					"typeParameters": [
@@ -7073,7 +5894,7 @@
 															"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 															"line": 21,
 															"character": 4,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L21"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L21"
 														}
 													],
 													"type": {
@@ -7092,7 +5913,7 @@
 															"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 															"line": 20,
 															"character": 4,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L20"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L20"
 														}
 													],
 													"type": {
@@ -7115,7 +5936,7 @@
 																			"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 																			"line": 20,
 																			"character": 21,
-																			"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L20"
+																			"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L20"
 																		}
 																	],
 																	"type": {
@@ -7137,7 +5958,7 @@
 																	"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 																	"line": 20,
 																	"character": 19,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L20"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L20"
 																}
 															]
 														}
@@ -7158,7 +5979,7 @@
 													"fileName": "toolCore/helpers/supportedPoliciesForTool.ts",
 													"line": 19,
 													"character": 34,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L19"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts#L19"
 												}
 											]
 										}
@@ -7263,7 +6084,7 @@
 					"fileName": "handlers/vincentPolicyHandler.ts",
 					"line": 32,
 					"character": 22,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L32"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L32"
 				}
 			],
 			"signatures": [
@@ -7278,7 +6099,7 @@
 							"fileName": "handlers/vincentPolicyHandler.ts",
 							"line": 32,
 							"character": 22,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L32"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L32"
 						}
 					],
 					"typeParameters": [
@@ -7500,12 +6321,12 @@
 													"fileName": "handlers/vincentPolicyHandler.ts",
 													"line": 56,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L56"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L56"
 												}
 											],
 											"type": {
 												"type": "reference",
-												"target": 220,
+												"target": -1,
 												"name": "PolicyConsumerContext",
 												"package": "@lit-protocol/vincent-tool-sdk"
 											}
@@ -7521,7 +6342,7 @@
 													"fileName": "handlers/vincentPolicyHandler.ts",
 													"line": 55,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L55"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L55"
 												}
 											],
 											"type": {
@@ -7540,7 +6361,7 @@
 													"fileName": "handlers/vincentPolicyHandler.ts",
 													"line": 43,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L43"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L43"
 												}
 											],
 											"type": {
@@ -7626,7 +6447,7 @@
 											"fileName": "handlers/vincentPolicyHandler.ts",
 											"line": 42,
 											"character": 3,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L42"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentPolicyHandler.ts#L42"
 										}
 									]
 								}
@@ -7662,7 +6483,7 @@
 					"fileName": "handlers/vincentToolHandler.ts",
 					"line": 104,
 					"character": 13,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L104"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L104"
 				}
 			],
 			"signatures": [
@@ -7677,7 +6498,7 @@
 							"fileName": "handlers/vincentToolHandler.ts",
 							"line": 104,
 							"character": 34,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L104"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L104"
 						}
 					],
 					"typeParameters": [
@@ -7803,12 +6624,12 @@
 													"fileName": "handlers/vincentToolHandler.ts",
 													"line": 124,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L124"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L124"
 												}
 											],
 											"type": {
 												"type": "reference",
-												"target": 218,
+												"target": -1,
 												"name": "ToolConsumerContext",
 												"package": "@lit-protocol/vincent-tool-sdk"
 											}
@@ -7824,7 +6645,7 @@
 													"fileName": "handlers/vincentToolHandler.ts",
 													"line": 125,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L125"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L125"
 												}
 											],
 											"type": {
@@ -7858,7 +6679,7 @@
 													"fileName": "handlers/vincentToolHandler.ts",
 													"line": 114,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L114"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L114"
 												}
 											],
 											"type": {
@@ -7930,7 +6751,7 @@
 											"fileName": "handlers/vincentToolHandler.ts",
 											"line": 113,
 											"character": 3,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L113"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L113"
 										}
 									]
 								}
@@ -7950,7 +6771,7 @@
 									"fileName": "handlers/vincentToolHandler.ts",
 									"line": 127,
 									"character": 9,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L127"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L127"
 								}
 							],
 							"signatures": [
@@ -7965,7 +6786,7 @@
 											"fileName": "handlers/vincentToolHandler.ts",
 											"line": 127,
 											"character": 9,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1e9f56520d6e862cbfaca054c0653ef803f6a2bb/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L127"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/09dab3c2dec0e2d0f9e9decfafa07d2c85f1ac61/packages/libs/tool-sdk/src/lib/handlers/vincentToolHandler.ts#L127"
 										}
 									],
 									"type": {
@@ -7995,10 +6816,7 @@
 		{
 			"title": "Interfaces",
 			"children": [
-				144,
-				223,
-				220,
-				218
+				223
 			]
 		},
 		{
@@ -8682,10 +7500,6 @@
 			"sourceFileName": "src/lib/policyCore/bundledPolicy/types.ts",
 			"qualifiedName": "__type.vincentPolicy"
 		},
-		"111": {
-			"sourceFileName": "src/lib/policyCore/bundledPolicy/types.ts",
-			"qualifiedName": "__type.[___bundledPolicyBrand]"
-		},
 		"112": {
 			"sourceFileName": "src/lib/policyCore/bundledPolicy/types.ts",
 			"qualifiedName": "VP"
@@ -8709,10 +7523,6 @@
 		"117": {
 			"sourceFileName": "src/lib/toolCore/bundledTool/types.ts",
 			"qualifiedName": "__type.vincentTool"
-		},
-		"118": {
-			"sourceFileName": "src/lib/toolCore/bundledTool/types.ts",
-			"qualifiedName": "__type.[___bundledToolBrand]"
 		},
 		"119": {
 			"sourceFileName": "src/lib/toolCore/bundledTool/types.ts",
@@ -8750,54 +7560,6 @@
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "__type.toolParameterMappings"
 		},
-		"128": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.__schemaTypes"
-		},
-		"129": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type"
-		},
-		"130": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.evalAllowResultSchema"
-		},
-		"131": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.evalDenyResultSchema"
-		},
-		"132": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.precheckAllowResultSchema"
-		},
-		"133": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.precheckDenyResultSchema"
-		},
-		"134": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commitParamsSchema"
-		},
-		"135": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commitAllowResultSchema"
-		},
-		"136": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commitDenyResultSchema"
-		},
-		"137": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.evaluate"
-		},
-		"138": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.precheck"
-		},
-		"139": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commit"
-		},
 		"140": {
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "ToolParamsSchema"
@@ -8813,54 +7575,6 @@
 		"143": {
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "IpfsCid"
-		},
-		"144": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "BaseContext"
-		},
-		"145": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "BaseContext.toolIpfsCid"
-		},
-		"146": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "BaseContext.appId"
-		},
-		"147": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "BaseContext.appVersion"
-		},
-		"148": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "BaseContext.delegation"
-		},
-		"149": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type"
-		},
-		"150": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.delegateeAddress"
-		},
-		"151": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.delegatorPkpInfo"
-		},
-		"152": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type"
-		},
-		"153": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.tokenId"
-		},
-		"154": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.ethAddress"
-		},
-		"155": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.publicKey"
 		},
 		"156": {
 			"sourceFileName": "src/lib/types.ts",
@@ -8978,46 +7692,6 @@
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "__type.vincentPolicy"
 		},
-		"185": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.__schemaTypes"
-		},
-		"186": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type"
-		},
-		"187": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.evalAllowResultSchema"
-		},
-		"188": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.evalDenyResultSchema"
-		},
-		"189": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commitParamsSchema"
-		},
-		"190": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commitAllowResultSchema"
-		},
-		"191": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commitDenyResultSchema"
-		},
-		"192": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.evaluate"
-		},
-		"193": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.precheck"
-		},
-		"194": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.commit"
-		},
 		"195": {
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "VincentTool"
@@ -9045,30 +7719,6 @@
 		"201": {
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "__type.supportedPolicies"
-		},
-		"202": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.__schemaTypes"
-		},
-		"203": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type"
-		},
-		"204": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.executeSuccessSchema"
-		},
-		"205": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.executeFailSchema"
-		},
-		"206": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.precheckSuccessSchema"
-		},
-		"207": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "__type.precheckFailSchema"
 		},
 		"208": {
 			"sourceFileName": "src/lib/types.ts",
@@ -9109,26 +7759,6 @@
 		"217": {
 			"sourceFileName": "src/lib/types.ts",
 			"qualifiedName": "PrecheckFn"
-		},
-		"218": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "ToolConsumerContext"
-		},
-		"219": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "ToolConsumerContext.delegatorPkpEthAddress"
-		},
-		"220": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "PolicyConsumerContext"
-		},
-		"221": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "PolicyConsumerContext.delegatorPkpEthAddress"
-		},
-		"222": {
-			"sourceFileName": "src/lib/types.ts",
-			"qualifiedName": "PolicyConsumerContext.toolIpfsCid"
 		},
 		"223": {
 			"sourceFileName": "src/lib/toolCore/toolDef/context/types.ts",
