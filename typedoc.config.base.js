@@ -27,4 +27,5 @@ module.exports = {
     },
   },
   customCss: './docs/custom.css',
+  favicon: 'docs/vincent-logo.svg',
 };
