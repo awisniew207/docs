@@ -292,6 +292,23 @@ async function runToolPolicyPrechecks<
   };
 }
 
+/** A VincentToolClient provides a type-safe interface for executing tools, for both `precheck()`
+ * and `execute()` functionality.
+ *
+ * @typeParam IpfsCid {@removeTypeParameterCompletely}
+ * @typeParam ToolParamsSchema {@removeTypeParameterCompletely}
+ * @typeParam PkgNames {@removeTypeParameterCompletely}
+ * @typeParam PolicyMap {@removeTypeParameterCompletely}
+ * @typeParam PoliciesByPackageName {@removeTypeParameterCompletely}
+ * @typeParam ExecuteSuccessSchema {@removeTypeParameterCompletely}
+ * @typeParam ExecuteFailSchema {@removeTypeParameterCompletely}
+ * @typeParam PrecheckSuccessSchema {@removeTypeParameterCompletely}
+ * @typeParam PrecheckFailSchema {@removeTypeParameterCompletely}
+ *
+ * @param params
+ * @param {ethers.Signer} params.ethersSigner  - An ethers signer that has been configured with your delegatee key
+ * @param {BundledVincentTool} params.bundledVincentTool - The bundled vincent tool
+ */
 export function getVincentToolClient<
   const IpfsCid extends string,
   ToolParamsSchema extends z.ZodType,
