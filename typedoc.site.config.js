@@ -10,7 +10,7 @@
 module.exports = {
   extends: './typedoc.config.base.js',
   $schema: 'https://typedoc.org/schema.json',
-  // readme: 'docs/Why-Vincent.md',
+  readme: './docs/src/Why-Vincent.md',
   entryPointStrategy: 'merge',
   entryPoints: [
     './packages/libs/app-sdk/docs/json',
