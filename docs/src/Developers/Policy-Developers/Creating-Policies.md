@@ -3,8 +3,6 @@ category: Developers
 title: Creating Vincent Policies
 ---
 
-# <<<<<<<< HEAD:packages/libs/app-sdk/docs/Developers/Policy-Developers/Creating-Policies.md
-
 # What is a Vincent Policy?
 
 <!-- TODO Link to Vincent Tool definition when it's available -->
@@ -42,8 +40,6 @@ A Vincent Policy is a function built using [Lit Actions](https://developer.litpr
 - **Transaction Pattern Analysis**: Monitor spending patterns and flag suspicious activity that deviates from normal behavior
 - **Circuit Breakers**: Automatically disable tools when unusual activity is detected or system-wide limits are reached
 - **Emergency Stops**: Implement admin-controlled emergency stops that can pause policy-governed operations
-
-> > > > > > > > 6f72b58b (chore: Restructure repo):packages/libs/app-sdk/docs/Developers/Creating-Policies.md
 
 # How a Vincent Policy Works
 
