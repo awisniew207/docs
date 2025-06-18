@@ -55,110 +55,6 @@
 		},
 		{
 			"id": 3,
-			"name": "Quick Start",
-			"variant": "document",
-			"kind": 8388608,
-			"flags": {},
-			"content": [
-				{
-					"kind": "text",
-					"text": "# Quick Start\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Demo\n  </p>\n  <p>Try out the <a href=\"https://demo.heyvincent.ai/\">Dollar-Cost-Averaging demo</a> that buys top memecoins on Base.</p>\n  <p>You can follow the <a href=\"https://github.com/LIT-Protocol/vincent-dca\">end-to-end code</a> for the DCA demo.</p>\n</div>\n\nIn this Quick Start guide you'll learn how to register your first Vincent app:\n\n## 1. Creating Tools & Policies\n\n- **Tools:** Vincent Tools are [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) that are used to define the specific operations that your Vincent app can perform on _behalf_ of your users. As a Vincent App developer, you can prompt your users to permit these Tools access to their Agent Wallet using the Vincent [Consent Page]("
-				},
-				{
-					"kind": "relative-link",
-					"text": "../Users/Onboarding.md",
-					"target": 3
-				},
-				{
-					"kind": "text",
-					"text": "). This enables your application to perform these specific operations on behalf of the user, fully programmatically according to the guardrails they set via Policies.\n\n- **Policies:** Users can set guardrails for the Tools they permit which dictate the operating conditions for that Tool. Each Tool can have any number of Policies associated with it, such as maximum daily spending limits or multi-factor authentication (MFA). The Vincent delegation system ensures that all of these policies are met before a given Tool can be executed using the delegated user's Agent Wallet. Just like Tools, Policies are also Lit Actions and your job as the app developer is to provide the the user with a set of optional Policies for each Tool using the Consent Page.\n\n- **Policy Variables:** Each Policy can optionally have multiple Policy Vars. For example, max spend policy can have two vars: spend duration (hourly/daily/weekly) and max spend amount ($). These Policy Vars values are fully configurable by the user.\n\n- **Writing your own Tools & Policies:** If none of the available Tool/Policies meet your needs you can [write your own Lit Actions]("
-				},
-				{
-					"kind": "relative-link",
-					"text": "./Custom-Tools.md"
-				},
-				{
-					"kind": "text",
-					"text": ") that signs using the user's delegated wallet.\n\n- **Selecting from existing Tool-Policy Registry:** You can select any of the following available Tools & their Policies to get quickly off the ground and register your Vincent App.\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Note\n  </p>\n  <p>The Vincent Tool Registry will be published soon. Join the <a href=\"https://t.me/c/2038294753/4\">Lit Builders Circle</a> to stay up to date.</p>\n</div>\n\n**Available Tools & Policies:**\n| Tool | IPFS Cid |\n|------|--------|\n| ERC20 Token Approval | QmPZ46EiurxMb7DmE9McFyzHfg2B6ZGEERui2tnNNX7cky |\n| Uniswap Tool | QmZbh52JYnutuFURnpwfywfiiHuFoJpqFyFzNiMtbiDNkK |\n\n<br>\n\n| Policy         | IPFS Cid                                       |\n| -------------- | ---------------------------------------------- |\n| Spending Limit | QmZrG2DFvVDgo3hZgpUn31TUgrHYfLQA2qEpAo3tnKmzhQ |\n\nIt's an ever expanding list and we're actively adding more Tools & Policies to the Registry.\n\n**Note:** The DCA example uses both the ERC20 Token Approval Tool & the Uniswap Tool because the user's first need to approve the ERC20 tokens to be used by the Uniswap contracts. Then they can set a spending limit for the Uniswap Tool.\n\n## 2. Registering an App using the App Dashboard\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> App Dashboard\n  </p>\n  <p>Please follow the below steps to register your App using the <a href=\"https://dashboard.heyvincent.ai/\">Dashboard</a>.</p>\n  <p>Registering an App requires that you have gas on our Yellowstone blockchain. You can use the <a href=\"https://chronicle-yellowstone-faucet.getlit.dev/\">faucet</a> to get some tokens for registering your App.</p>\n</div>\n\n- **Management Wallet:** Once you've selected your Tools & Policies (IPFS Cids) head over to the App Dashboard where you need to connect your EOA wallet. This is your App management account which is used for adding Delegatees, registering Vincent Apps on-chain and publishing newer versions of your existing Vincent Apps.\n\n![Connect App Management Wallet]("
-				},
-				{
-					"kind": "relative-link",
-					"text": "./images/connect-app-management-wallet.png",
-					"target": 4
-				},
-				{
-					"kind": "text",
-					"text": ")\n\n- **Create New App:** After you logged in and have selected the Tools & Policies you want to register your App with, you can create a new App by clicking on the \"Create New App\" button.\n\n![Create New App]("
-				},
-				{
-					"kind": "relative-link",
-					"text": "./images/create-new-app.png",
-					"target": 5
-				},
-				{
-					"kind": "text",
-					"text": ")\n\n- **Delegatees:** Delegatees are EOA wallets generated in the App Dashboard that are allowed to execute the permitted Tools on behalf of your users. You need to register these Delegatee addresses on-chain and the Tools check whether the executor matches the on-chain Delegatee registered for the App.\n\n![Add Delegatees]("
-				},
-				{
-					"kind": "relative-link",
-					"text": "./images/add-delegatee.png",
-					"target": 6
-				},
-				{
-					"kind": "text",
-					"text": ")\n\n## 3. Using the Vincent SDK\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Vincent SDK\n  </p>\n  <p>Please refer to the Vincent SDK API docs for a more comprehensive guide: <a href=\"https://sdk-docs.heyvincent.ai/\">https://sdk-docs.heyvincent.ai/</a></p>\n</div>\n\n- **[Handle User Login](https://sdk-docs.heyvincent.ai/Vincent_Web_App/VincentWebAppClient.html#redirecttoconsentpage):** You can use the Vincent Consent Page to sign-in users to your App instead of implementing a separate User Login flow. You need to provide a redirectUri in the URLSearch params ("
-				},
-				{
-					"kind": "code",
-					"text": "`https://dashboard.heyvincent.ai/appId/160/consent?redirectUri=http://localhost:3000`"
-				},
-				{
-					"kind": "text",
-					"text": ") to receive the signed JWT from the user's Agent Wallet after they log in on the Vincent Consent Page. This can be used as the User's Auth for your App, for example, use it as the user's access token for your API requests.\n\n- Install the Vincent SDK using NPM:\n\n"
-				},
-				{
-					"kind": "code",
-					"text": "```bash\nnpm install @lit-protocol/vincent-app-sdk\n```"
-				},
-				{
-					"kind": "text",
-					"text": "\n\n"
-				},
-				{
-					"kind": "code",
-					"text": "```javascript\nimport { getVincentWebAppClient } from '@lit-protocol/vincent-app-sdk';\n\nconst vincentAppClient = getVincentWebAppClient({ appId: MY_APP_ID });\n\n// ... In your app logic:\nif (vincentAppClient.isLogin()) {\n  // Handle app logic for the user has just logged in\n  const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(EXPECTED_AUDIENCE);\n  // Store `jwt` for later usage; the user is now logged in.\n} else {\n  // Handle app logic for the user is already logged in (check for stored & unexpired JWT)\n  // Handle app logic for the user is not yet logged in\n  vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });\n}\n```"
-				},
-				{
-					"kind": "text",
-					"text": "\n\n- **[Execute Tools for User's Wallet](https://sdk-docs.heyvincent.ai/Vincent_Tools/VincentToolClient.html#execute):** This is where you provide all your AI-Agentic logic in the "
-				},
-				{
-					"kind": "code",
-					"text": "`params`"
-				},
-				{
-					"kind": "text",
-					"text": " object of the "
-				},
-				{
-					"kind": "code",
-					"text": "`execute()`"
-				},
-				{
-					"kind": "text",
-					"text": " function, for example, the tokens to buy and at what price.\n\n"
-				},
-				{
-					"kind": "code",
-					"text": "```javascript\nimport { getVincentToolClient } from '@lit-protocol/vincent-app-sdk';\nimport { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';\n\n// One of delegatee signers from your app's Vincent Dashboard\nconst delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');\n\n// Initialize the Vincent Tool Client\nconst toolClient = getVincentToolClient({\n  ethersSigner: delegateeSigner,\n  bundledVincentTool: erc20BundledTool,\n});\nconst delegatorPkpEthAddress = '0x09182301238'; // The delegator PKP Eth Address\n\nconst toolParams = {\n  chainId: '8453', // The chain where the tx will be executed\n  tokenIn: '0x1234...', // The ERC20 token address\n  amountIn: '1000000000000000000', // The amount to approve (in wei)\n  rpcUrl: 'https://mainnet.base.org', // The RPC to send the transaction through\n};\n\n// Run precheck to see if tool should be executed\nconst precheckResult = await client.precheck(toolParams, {\n  delegatorPkpEthAddress,\n});\n\nif (precheckResult.success === true) {\n  // Execute the Vincent Tool\n  const executeResult = await client.execute(toolParams, {\n    delegatorPkpEthAddress,\n  });\n\n  // ...tool has executed, you can check `executeResult` for details\n}\n```"
-				}
-			],
-			"frontmatter": {
-				"category": "Developers"
-			}
-		},
-		{
-			"id": 4,
 			"name": "Getting Started",
 			"variant": "document",
 			"kind": 8388608,
@@ -171,7 +67,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./App-Agent-Developers/Getting-Started.md",
-					"target": 8
+					"target": 3
 				},
 				{
 					"kind": "text",
@@ -180,7 +76,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Tool-Developers/Getting-Started.md",
-					"target": 9
+					"target": 4
 				},
 				{
 					"kind": "text",
@@ -189,7 +85,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Policy-Developers/Getting-Started.md",
-					"target": 10
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -201,7 +97,7 @@
 			}
 		},
 		{
-			"id": 5,
+			"id": 4,
 			"name": "App & Agent Developers",
 			"variant": "document",
 			"kind": 8388608,
@@ -214,7 +110,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Creating-Apps.md",
-					"target": 12
+					"target": 7
 				},
 				{
 					"kind": "text",
@@ -223,7 +119,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Executing-Tools.md",
-					"target": 13
+					"target": 8
 				},
 				{
 					"kind": "text",
@@ -235,7 +131,7 @@
 			}
 		},
 		{
-			"id": 6,
+			"id": 5,
 			"name": "Tool Developers",
 			"variant": "document",
 			"kind": 8388608,
@@ -248,7 +144,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Policy-Developers/Getting-Started.md",
-					"target": 10
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -260,7 +156,843 @@
 			}
 		},
 		{
+			"id": 6,
+			"name": "Policy Developers",
+			"variant": "document",
+			"kind": 8388608,
+			"flags": {},
+			"content": [
+				{
+					"kind": "text",
+					"text": "# What is a Vincent Policy?\n\nA Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and is a programmable guardrail for [Vincent Tool]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Tool-Developers/Getting-Started.md",
+					"target": 4
+				},
+				{
+					"kind": "text",
+					"text": ") executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Tools on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.\n\n## Key Capabilities of Vincent Policies\n\n- **Flexible Data Access:** Read and write both on and off-chain data to any blockchain network or HTTP-accessible API or database\n- **Stateful Policy Management:** Persist data across executions to track cumulative metrics and implement sophisticated rules like spending limits, rate limiting, and usage quotas\n- **Cryptographic Capabilities:** Utilize Lit Protocol's [Encryption and Access Control ](https://developer.litprotocol.com/sdk/access-control/intro) features for computing over private data within Lit's secure [Trusted Execution Environment (TEE)](https://en.wikipedia.org/wiki/Trusted_execution_environment)\n- **Type-Safe Development:** Strongly-typed Zod schemas ensure parameter validation and clear interfaces between Vincent Tools and Policies, and both utilize packages installed from NPM to extend functionality\n\n## Real-World Policy Examples\n\n**Financial Controls**\n\n- **Daily Spending Limits**: Track cumulative spending by storing transaction amounts on or off-chain and deny Vincent Tool execution when limits are exceeded\n- **Multi-Signature Requirements**: Require additional approvals for high-value transactions by integrating with on or off-chain approval systems\n- **Token Allowlists**: Restrict transactions to specific token types or verified contract addresses\n\n**Access Management**\n\n- **Membership Gates**: Verify ownership of on-chain assets (like NFTs), or off-chain data (like Discord roles) before allowing access to premium features\n- **Time-Based Restrictions**: Only allow Vincent Tool execution during specific hours, days, or based on cooldown periods\n\n**Usage Limits**\n\n- **Rate Limiting**: Track API usage frequency and implement cooldown periods between executions\n- **Compliance Monitoring**: Enforce regulatory requirements by checking transaction amounts against legal limits\n- **Geographic Restrictions**: Use IP geolocation APIs to restrict access based on user location\n\n**Risk Management**\n\n- **Transaction Pattern Analysis**: Monitor spending patterns and flag suspicious activity that deviates from normal behavior\n- **Circuit Breakers**: Automatically disable tools when unusual activity is detected or system-wide limits are reached\n- **Emergency Stops**: Implement admin-controlled emergency stops that can pause policy-governed operations"
+				}
+			],
+			"frontmatter": {
+				"category": "Developers"
+			}
+		},
+		{
 			"id": 7,
+			"name": "Creating Vincent Apps",
+			"variant": "document",
+			"kind": 8388608,
+			"flags": {},
+			"content": [
+				{
+					"kind": "text",
+					"text": "# How a Vincent App Works\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Note\n  </p>\n  <p>In this guide, you'll create and register your first Vincent App using the <a href=\"https://dashboard.heyvincent.ai/\">Vincent App Dashboard</a>. You’ll select from existing Vincent Tools and Policies, configure your App metadata, and register the App Delegatees whom are authorized to execute your App's Tools.</p>\n  <p>If you're unfamiliar with what a Vincent App is, checkout the <a href=\""
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Getting-Started.md",
+					"target": 3
+				},
+				{
+					"kind": "text",
+					"text": "\">Getting Started</a> guide to learn more.</p>\n</div>\n\nA Vincent App is composed of four key elements:\n\n1. **Vincent Tools**: Modular, executable functions that define the operations your App can perform on behalf of its Users.\n\n- Tools can interact with blockchains, APIs, databases, or any service reachable via JavaScript and HTTP requests.\n- Each Tool is immutable once published and can only be executed under the conditions explicitly approved by the User ensuring transparent, tamper-proof behavior.\n\n2. **Vincent Policies**: Programmable guardrails that govern when and how Vincent Tools can be executed.\n\n- Policies are immutable once published, and are configurable per User ensuring that every Tool execution is tightly scoped to each User’s explicit intent.\n\n3. **Vincent App Delegatees**: Ethereum addresses authorized by your App to execute Tools on behalf of Vincent Users.\n\n4. **Vincent Agent Wallets**: Non-custodial wallets that enable secure, automated interactions between your Vincent App and its Users.\n\n- Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Tool.\n\n# Defining Your Vincent App\n\nBefore registering your Vincent App, you’ll need to decide on the core components that make up its behavior and the Policies your App Users will use to govern its execution.\n\n# 1. Selecting Vincent Tools\n\nVincent Tools define the executable operations your App can perform on behalf of its Users such as swapping tokens, transferring assets, or querying APIs.\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Note\n  </p>\n  <p>A Vincent Tool Registry that contains a list of all the available Vincent Tools and their associated Policies will be available soon.</p>\n\n  <p>For now you'll need to manually copy and paste the IPFS CID of each Vincent Tool you'd like to use in your App into the Vincent App Dashboard when registering your App.</p>\n  <p>The below table includes links to the IPFS CID of each Tool that will be automatically updated as new iterations of the Tool are published.</p>\n\n  <p>Join the <a href=\"https://t.me/+aa73FAF9Vp82ZjJh\">Vincent Community</a> to stay up to date.</p>\n</div>\n\nThe following Vincent Tools have been published by the Vincent team and are available to use in your Vincent App:\n\n| Tool                                                                                                        | Description                                                                                                                                          | IPFS CID                                                                                                                             |\n| ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |\n| [ERC20 Token Approval](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/tool-erc20-approval) | Allows Vincent Apps to get token approvals from Vincent Users to execute ERC20 token transfers                                                       | [Link](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/tool-erc20-approval/src/generated/vincent-tool-metadata.json) |\n| [Uniswap Swap Tool](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/tool-uniswap-swap)      | Allows Vincent Apps to perform swaps using Uniswap on any [chain supported by the Uniswap SDK](https://api-docs.uniswap.org/guides/supported_chains) | [Link](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/tool-uniswap-swap/src/generated/vincent-tool-metadata.json)   |\n\nAdditionally, you can checkout the [Creating a Vincent Tool]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Tool-Developers/Creating-Tools.md",
+					"target": 9
+				},
+				{
+					"kind": "text",
+					"text": ") guide to learn how to create your own Vincent Tools to perform any on or off-chain action your Vincent App needs.\n\n# 2. Selecting Vincent Policies\n\nVincent Policies are programmable constraints that govern when and how each Vincent Tool can be executed.\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Note\n  </p>\n  <p>Similar to selecting which Vincent Tools you'd like your App to use, you'll need to manually copy and paste the IPFS CID of each Vincent Policy you'd like to use for each Tool into the Vincent App Dashboard when registering your App.</p>\n  <p>The below table includes links to the IPFS CID of each Policy that will be automatically updated as new iterations of the Policy are published.</p>\n</div>\n\nThe following Vincent Policies have been published by the Vincent team and are available to use in your Vincent App:\n\n| Tool                                                                                                          | Description                                                                                       | IPFS CID                                                                                                                                 |\n| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |\n| [Daily Spending Limit](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/policy-spending-limit) | Allows Vincent Users to restrict the amount of USD spent per day on their behalf by a Vincent App | [Link](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/policy-spending-limit/src/generated/vincent-policy-metadata.json) |\n\nAdditionally, you can checkout the [Creating a Vincent Policy]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Policy-Developers/Creating-Policies.md",
+					"target": 10
+				},
+				{
+					"kind": "text",
+					"text": ") guide to learn how to create your own Vincent Policies to govern the execution of Vincent Tools.\n\n# 3. Registering Your Vincent App\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Before registering your Vincent App\n  </p>\n  <p>Registering an App requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href=\"https://chronicle-yellowstone-faucet.getlit.dev/\">this faucet</a> to get the Lit test tokens used to pay for registering your App.</p>\n</div>\n\nOnce you've selected your Vincent Tools and Policies, you'll need to register your App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/).\n\n## Connecting your App Management Wallet to the App Dashboard\n\nBefore you can register your App, you'll need to connect an Ethereum wallet to the App Dashboard.\n\nThis wallet will be the Vincent App Manager for your new App and is responsible for creating new App Versions, defining which Vincent Tools and Policies are used in each App Version, as well as the managing the App Delegatees that are permitted to execute Tools on behalf of your App's Vincent Users.\n\n![Connect App Management Wallet]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/connect-app-management-wallet.png",
+					"target": 11
+				},
+				{
+					"kind": "text",
+					"text": ")\n\n## Creating your App\n\nAfter connecting your Vincent App Manager wallet to the App Dashboard, you can create a new App by clicking on the "
+				},
+				{
+					"kind": "code",
+					"text": "`Create New App`"
+				},
+				{
+					"kind": "text",
+					"text": " button which will take you to the following screen:\n\n![Create New App]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/create-new-app.png",
+					"target": 12
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nOn this screen you'll need to define the following:\n\n### Application Name & Description\n\nThis is the name of your App that will be used to identify your App within the Vincent ecosystem, and the description used to detail what your App is offering to do on behalf of its Users.\n\nIt's also displayed to the Vincent User when they are interacting with the Vincent Consent page to permit delegation to your App and configure their Policy parameters.\n\nIn this example image, "
+				},
+				{
+					"kind": "code",
+					"text": "`Automated Memecoin Dollar-Cost-Averaging`"
+				},
+				{
+					"kind": "text",
+					"text": " is the name of the Vincent App, and "
+				},
+				{
+					"kind": "code",
+					"text": "`This demo agent automatically identifies and purchases the top-performing Base memecoin on your predefined schedule.`"
+				},
+				{
+					"kind": "text",
+					"text": " is the description of the App:\n\n![Consent UI]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/consent-ui.png",
+					"target": 13
+				},
+				{
+					"kind": "text",
+					"text": ")\n\n### App Mode\n\nDefines the current deployment status of your App.\n\nThis setting will be used to filter the Apps displayed in the Vincent App Registry, so that "
+				},
+				{
+					"kind": "code",
+					"text": "`DEV`"
+				},
+				{
+					"kind": "text",
+					"text": " and "
+				},
+				{
+					"kind": "code",
+					"text": "`TEST`"
+				},
+				{
+					"kind": "text",
+					"text": " Apps are not displayed to Vincent Users when looking at the Registry. Use:\n\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`DEV`"
+				},
+				{
+					"kind": "text",
+					"text": " If you're currently developing the Vincent App and it's not ready to be used by your Vincent Users\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`TEST`"
+				},
+				{
+					"kind": "text",
+					"text": " If you're currently testing the Vincent App with your Vincent Users, and want to make the distinction that your App is not yet ready for production\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`PROD`"
+				},
+				{
+					"kind": "text",
+					"text": " If you've finished development and your App is ready to be used by your Vincent Users\n\n### Authorized Redirect URIs\n\nThis is a list of URLs that are authorized to receive the Json Web Token (JWT) from the Vincent Consent page.\n\nAfter Vincent Users have permitted delegation to your App, or are logging back into your App using Vincent, these redirect URIs are the only valid locations they can be redirected to from the Vincent Consent page back to your App.\n\nIncluded in the URL parameters of the redirect URI is a Json Web Token (JWT) that is given to your App to identify the Vincent User and the App Version they've authorized. This allows you to know which Vincent Tools and Policies the User has permitted your App to execute on their behalf.\n\n### Tools\n\nThis section is where you'll define the IPFS CIDs of each Vincent Tool that will be used in your App. You can copy and paste the IPFS CID of each Tool you'd like your App to use into this section.\n\nFor the available Tools, see the [Selecting Vincent Tools](#1-selecting-vincent-tools) section which contains links to the IPFS CIDs for each Tool, or use the IPFS CID of any custom Tool you've developed.\n\n> **Note:** The [Creating a Vincent Tool]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Tool-Developers/Creating-Tools.md",
+					"target": 9
+				},
+				{
+					"kind": "text",
+					"text": ") guide contains instructions for how to create your own Vincent Tools to perform any on or off-chain action your Vincent App needs.\n\n#### Policies\n\nEach Vincent Tool has a list of supported Vincent Policies that can govern the execution of the Tool. It's up to you to select which Policies your Users can configure for each Tool your App uses.\n\nYou can add Policies for each Tool by clicking the "
+				},
+				{
+					"kind": "code",
+					"text": "`Add Policy`"
+				},
+				{
+					"kind": "text",
+					"text": " button and copy and pasting the IPFS CID of each Policy.\n\nFor the Tools mentioned in the [Selecting Vincent Tools](#1-selecting-vincent-tools) section, the following Policies are supported:\n\n| Tool                                                                                                        | Supported Policies                                                                                            | Policy IPFS CID                                                                                                                          |\n| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |\n| [ERC20 Token Approval](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/tool-erc20-approval) | None                                                                                                          | -                                                                                                                                        |\n| [Uniswap Swap Tool](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/tool-uniswap-swap)      | [Daily Spending Limit](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/policy-spending-limit) | [Link](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/policy-spending-limit/src/generated/vincent-policy-metadata.json) |\n\n#### Policy Parameters\n\nEach Policy has parameters that can be configured by the Vincent User to explicitly define the conditions under which the Tool can be executed.\n\nThis section is where you'll define the parameters Users can configure for each Tool Policy.\n\nEach Policy has a parameter name and type, where the name and type of each parameter must match what the Policy is expecting.\n\nFor the Policies mentioned in the [Selecting Vincent Policies](#2-selecting-vincent-policies) section, the following parameters are supported:\n\n| Policy                                                                                                        | Parameter Name                    | Parameter Type |\n| ------------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------- |\n| [Daily Spending Limit](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/policy-spending-limit) | "
+				},
+				{
+					"kind": "code",
+					"text": "`maxDailySpendingLimitInUsdCents`"
+				},
+				{
+					"kind": "text",
+					"text": " | "
+				},
+				{
+					"kind": "code",
+					"text": "`uint256`"
+				},
+				{
+					"kind": "text",
+					"text": "      |\n\nAfter defining the above details for your App, you can click on the "
+				},
+				{
+					"kind": "code",
+					"text": "`Submit Application`"
+				},
+				{
+					"kind": "text",
+					"text": " button to create your App. This will prompt you to sign a transaction using your App Management Wallet to register your App on-chain using the Lit Protocol [Chronicle Yellowstone blockchain](https://developer.litprotocol.com/connecting-to-a-lit-network/lit-blockchains/chronicle-yellowstone).\n\n## Adding Delegatees to your App\n\nIn order to execute your App's Vincent Tools, you'll need to register App Delegatees. These delegatees are defined as Ethereum addresses that are authorized by your App to execute the Tools that Vincent Users have permitted for your App.\n\nAfter creating your App, you'll be redirected to the dashboard overview screen. Click the box with the name of the App you just created, and you'll be taken to the App's settings screen.\n\nNext click the "
+				},
+				{
+					"kind": "code",
+					"text": "`Manage Delegatees`"
+				},
+				{
+					"kind": "text",
+					"text": " button to add the App Delegatees you'd like to authorize to execute your App's Vincent Tools:\n\n![Manage Delegatees]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/vincent-app-manage-delegatees.png",
+					"target": 14
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nYou will now be given two buttons:\n\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`Generate Delegatee`"
+				},
+				{
+					"kind": "text",
+					"text": " - This will generate a new Ethereum wallet giving you the private key and Ethereum address of the new wallet\n  - Use this option if you don't have an existing wallet you'd like to use as an App Delegatee\n- "
+				},
+				{
+					"kind": "code",
+					"text": "`Add Delegatee`"
+				},
+				{
+					"kind": "text",
+					"text": " - This will prompt you to provide the Ethereum address of an existing wallet you'd like to authorize as an App Delegatee\n\nWhether you choose to generate a new wallet or add an existing wallet, you'll be prompted to sign a transaction using your App Management Wallet to register the App Delegatee on-chain using the Lit Protocol [Chronicle Yellowstone blockchain](https://developer.litprotocol.com/connecting-to-a-lit-network/lit-blockchains/chronicle-yellowstone).\n\n## Generating Your App Link\n\nAt this point you have registered and configured your Vincent App, and it's ready to start having Vincent Users delegate to it.\n\nIn order to do this, User needs to have a link to the Vincent Consent page that has your App's metadata. This link can be generated for you by clicking the "
+				},
+				{
+					"kind": "code",
+					"text": "`Generate App URL`"
+				},
+				{
+					"kind": "text",
+					"text": " button on the App's settings screen:\n\n![Generate App URL]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../images/vincent-app-generate-app-url.png",
+					"target": 15
+				},
+				{
+					"kind": "text",
+					"text": ")\n\nYou will be prompted to select which Authorized Redirect URI (you configured in the [Creating your App](#creating-your-app) section) you'd like Users to be redirected to after they've permitted delegation to your App, or are logging back into your App using Vincent.\n\nAfter selecting the Authorized Redirect URI, click on the "
+				},
+				{
+					"kind": "code",
+					"text": "`Copy Application URL`"
+				},
+				{
+					"kind": "text",
+					"text": " button to copy the link to the Vincent Consent page for your App to your clipboard. The link will look similar to:\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```\nhttps://dashboard.heyvincent.ai/appId/526/consent?redirectUri=https%3A%2F%2Fyour-redirect-uri.com\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nYou can now share this link to allow Users to delegate the ability to execute your App's Vincent Tools on their behalf.\n\n# Wrapping Up\n\nYou’ve now learned how to create and register a Vincent App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/).\n\nFrom selecting Tools and Policies to configuring App metadata and adding Delegatees, you’ve completed the full setup process to launch your Vincent App and start executing Vincent Tools on behalf of your Vincent Users.\n\nHere’s a quick recap of what you covered:\n\n- **Understanding the Core Concepts:** A Vincent App is composed of the following components that work together to enable trusted automation without sacrificing User control:\n  - Vincent Tools (what your App can do)\n  - Vincent Policies (User defined guardrails)\n  - App Delegatees (Ethereum addresses authorized to execute Tools)\n- **Selecting Vincent Tools:** Choose from existing Tools like ERC20 Approvals or Uniswap Swaps, or build your own Tools to define the actions your App can perform on behalf of it's Users.\n- **Selecting Vincent Policies:** Add programmable constraints to each Tool such as spending limits or token allowlists that ensure each execution respects the User’s intent.\n- **Registering Your App:** Use the Vincent App Dashboard to define your App including details such as it's name, description, authorized redirect URIs, and the selected Tools and Policies.\n- **Adding Delegatees:** Specify the Ethereum addresses that will act on behalf of your Vincent App to execute Tools Users have permitted.\n- **Generating Your App Link:** Generate a Vincent Consent URL that lets Users delegatee access to their Vincent Agent Wallets, so that your App Delegatees can execute Tools on their behalf.\n\n## Next Steps\n\n- If your App requires the ability to perform an action not offered by existing Vincent Tools, checkout how to get started with [Creating a Vincent Tool]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Tool-Developers/Getting-Started.md",
+					"target": 4
+				},
+				{
+					"kind": "text",
+					"text": ") to learn how to perform any on or off-chain action your Vincent App needs.\n- If the existing Vincent Policies don't meet your App's needs, checkout how to get started with [Creating a Vincent Policy]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "../Policy-Developers/Getting-Started.md",
+					"target": 5
+				},
+				{
+					"kind": "text",
+					"text": ") to learn how to create your own Vincent Policies to govern the execution of Vincent Tools."
+				}
+			],
+			"frontmatter": {
+				"category": "Developers"
+			}
+		},
+		{
+			"id": 8,
+			"name": "Executing Vincent Tools",
+			"variant": "document",
+			"kind": 8388608,
+			"flags": {},
+			"content": [
+				{
+					"kind": "text",
+					"text": "# Using the Vincent Tool Client to Execute Tools\n\nAs a Vincent App Developer, you need a structured way to execute Vincent Tools for your Vincent App Users.\n\nThe Vincent App SDK provides a streamlined, type-safe interface called the Vincent Tool Client which manages the entire execution flow of a Vincent Tool. From handling the precheck validations to confirm all prerequisites are met and Tool execution is likely to succeed, to executing the Tool's logic to perform the permitted actions on behalf of the Vincent User.\n\nThis guide will walk you through the process of using the Tool Client to execute Vincent Tools.\n\n# How the Vincent Tool Client Works\n\nThe Vincent App SDK exports a function called "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentToolClient`"
+				},
+				{
+					"kind": "text",
+					"text": " that creates a wrapper around the Vincent Tool you'd like to execute on behalf of an App User. This function returns an instance of the Tool Client with two methods that are used to execute the Tool:\n\n1. **Precheck**: Executes the Vincent Tool's "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function to provide quick and cost-free feedback on whether the Tool execution is likely to succeed. This function also:\n\n   - Validates the Tool parameters you provide against the Vincent Tool's requirements\n   - Evaluates the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function for any Vincent Policies the User has configured for your App\n     - **Note:** Execution of the Tool's "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " logic will **not** happen unless all of the registered Vincent Policies pass their prechecks\n   - Returns the results of the Vincent Tool and Policy "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " functions, providing context on why the precheck logic has determined Tool execution is likely to succeed or fail\n\n2. **Execute**: Executes the Vincent Tool using the Lit Protocol network to perform the programmed tool actions on behalf of your App User. This function also:\n   - Validates Tool parameters and evaluates Policies registered by the User for your App\n     - **Note:** Execution of the Tool's logic will **not** happen unless all of the registered Policies permit execution\n   - Executes the "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " function of any Policies that have defined a "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " function\n     - **Note:** Policy "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " functions give each Policy the opportunity to update any state they depend on for their policy logic after the Tool has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Tool has successfully transferred funds from the User's Agent Wallet)\n   - Returns the execution results of both the Tool and any evaluated Policies\n\n# Creating a Tool Client\n\nTo create an instance of the Tool Client, import the "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentToolClient`"
+				},
+				{
+					"kind": "text",
+					"text": " function from the "
+				},
+				{
+					"kind": "code",
+					"text": "`@lit-protocol/vincent-app-sdk`"
+				},
+				{
+					"kind": "text",
+					"text": " package. This function takes two parameters: a Vincent Tool definition and an ethers signer, returning an instance of the Tool Client.\n\nThe following code uses an example Vincent Tool package for reference:\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { ethers } from 'ethers';\nimport { getVincentToolClient } from '@lit-protocol/vincent-app-sdk';\nimport { bundledVincentTool } from '@example-org/vincent-tool-example-erc20-transfer';\n\nconst ethersSigner = new ethers.Wallet(process.env.VINCENT_APP_DELEGATEE_PRIVATE_KEY);\n\nconst toolClient = getVincentToolClient({\n  bundledVincentTool,\n  ethersSigner,\n});\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nThe two required parameters for the "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentToolClient`"
+				},
+				{
+					"kind": "text",
+					"text": " function are:\n\n1. "
+				},
+				{
+					"kind": "code",
+					"text": "`bundledVincentTool`"
+				},
+				{
+					"kind": "text",
+					"text": ": The definition of the Vincent Tool you want to execute on behalf of the App User, imported from a Vincent Tool package\n   - This tool definition is exported by the author of the Vincent Tool package and defines properties like the expected input parameters of the Tool, the Vincent Policies supported by the Tool, and the Tool's expected return values\n   - The Tool Client handles wrapping this tool definition, providing you with a simple interface for executing the Tool, abstracting away the complexity of the Tool's implementation\n2. "
+				},
+				{
+					"kind": "code",
+					"text": "`ethersSigner`"
+				},
+				{
+					"kind": "text",
+					"text": ": An Ethers.js signer that will be used to sign the request to execute the Tool using the Lit Protocol network\n   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Tool for. You can see how to add a delegatee to your Vincent App [here]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Quick-Start.md#2-registering-an-app-using-the-app-dashboard"
+				},
+				{
+					"kind": "text",
+					"text": ")\n\n# Executing the Tool Client's "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function\n\nAfter creating an instance of the Tool Client, the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function is now configured and ready to be executed:\n\n> **Note:** While not mandatory, it's recommended to execute the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function before every execution of the Tool Client's "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function as it's quick, cost-free, and can provide important context on the current state that the Tool and it's Policies depend on (e.g. the amount of funds left to spend for a spending limit policy).\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { ethers } from 'ethers';\nimport { getVincentToolClient } from '@lit-protocol/vincent-app-sdk';\nimport { bundledVincentTool } from '@example-org/vincent-tool-example-erc20-transfer';\n\nconst ethersSigner = new ethers.Wallet(process.env.VINCENT_APP_DELEGATEE_PRIVATE_KEY);\n\nconst toolClient = getVincentToolClient({\n  bundledVincentTool,\n  ethersSigner,\n});\n\nconst precheckResult = await toolClient.precheck({\n  toolParams: {\n    tokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base\n    recipientAddress: '0x1234567890123456789012345678901234567890',\n    amount: 100,\n  },\n  context: {\n    // The ETH address of the App User's Agent Wallet you are executing the Tool on behalf of\n    delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',\n  },\n});\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nThe "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function takes two arguments:\n\n1. An object that contains the input parameters for the Tool that has the structure of the Tool's Zod schema: "
+				},
+				{
+					"kind": "code",
+					"text": "`ToolParamsSchema`"
+				},
+				{
+					"kind": "text",
+					"text": "\n\n> **Note:** Because Vincent Tool definitions are strongly typed, your code editor should display the expected input parameters for the Tool\n>\n> If for whatever reason the type inference is not working, check the Tool's documentation for the expected input parameters\n\n2. An object that contains:\n   - "
+				},
+				{
+					"kind": "code",
+					"text": "`rpcUrl`"
+				},
+				{
+					"kind": "text",
+					"text": ": An optional parameter to override the default RPC URL used to communicate with the Lit Protocol network\n     - This RPC URL is used to fetch the on-chain data about your Vincent App, what App Version (if any) the Vincent User has authorized, and the on-chain Policy parameters configured by the User for your App\n     - Most developers do **not** need to provide this property, and the default RPC URL should be used\n   - "
+				},
+				{
+					"kind": "code",
+					"text": "`delegatorPkpEthAddress`"
+				},
+				{
+					"kind": "text",
+					"text": ": A required parameter that is the Ethereum address of the App User's Agent Wallet you'll be executing the Tool on behalf of\n\n## Precheck Results\n\n<!-- TODO Link to PrecheckSuccessSchema typedoc interface when it's available -->\n\nThe return type of the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function depends on the overall success or failure of the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function, as well as the results of any evaluated Policies. If all Policies are expecting to permit Tool execution, and the Tool's "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function is expecting Tool execution to succeed, the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function will return a "
+				},
+				{
+					"kind": "code",
+					"text": "`ToolResponse`"
+				},
+				{
+					"kind": "text",
+					"text": " with a success result that has the structure of the Tool's Zod schema: "
+				},
+				{
+					"kind": "code",
+					"text": "`PrecheckSuccessSchema`"
+				},
+				{
+					"kind": "text",
+					"text": ".\n\nIf "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " returns a success result, you can execute the Tool's "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function with reasonable confidence that the Tool should execute successfully.\n\n<!-- TODO Link to PrecheckFailSchema typedoc interface when it's available -->\n\nHowever, if one of the evaluated Policies returns a deny response, signifying it's expecting to deny Tool execution, or all Policies permit execution, but the Tool's "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function is expecting Tool execution to fail, the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function will return a "
+				},
+				{
+					"kind": "code",
+					"text": "`ToolResponse`"
+				},
+				{
+					"kind": "text",
+					"text": " with a failure result that has the structure of the Tool's Zod schema: "
+				},
+				{
+					"kind": "code",
+					"text": "`PrecheckFailSchema`"
+				},
+				{
+					"kind": "text",
+					"text": ".\n\nIf "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " returns a failure result, you should check the "
+				},
+				{
+					"kind": "code",
+					"text": "`error`"
+				},
+				{
+					"kind": "text",
+					"text": " property on the result object to see if there was a known error that occurred during the execution of the Tool's "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function. Additionally, if one of the evaluated Polices has denied Tool execution, you should check the result object's "
+				},
+				{
+					"kind": "code",
+					"text": "`context.policiesContext`"
+				},
+				{
+					"kind": "text",
+					"text": " property to see which Policy denied Tool execution and why.\n\n# Executing the Tool Client's "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function\n\n<div class=\"info-box\">\n  <p class=\"info-box-title\">\n    <span class=\"info-icon\">Info</span> Before executing the Tool\n  </p>\n  <p>Executing a Tool using the Lit Protocol network requires a <a href=\"https://developer.litprotocol.com/paying-for-lit/capacity-credits\">Lit Capacity Credit</a> minted for the Ethereum Address you're using for the "
+				},
+				{
+					"kind": "code",
+					"text": "`ethersSigner`"
+				},
+				{
+					"kind": "text",
+					"text": " when creating the Tool Client instance with "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentToolClient`"
+				},
+				{
+					"kind": "text",
+					"text": ".</p>\n  <p>In order to mint a Capacity Credit, you'll need to have tokens on Lit Protocol's Yellowstone blockchain. You can use <a href=\"https://chronicle-yellowstone-faucet.getlit.dev/\">this faucet</a> to get the Lit test tokens used to pay for minting a Capacity Credit.</p>\n  <p>To mint a Capacity Credit using the Lit Explorer, please see <a href=\"https://developer.litprotocol.com/paying-for-lit/minting-capacity-credit/via-explorer\">this guide</a>. To mint a Credit programmatically, refer to <a href=\"https://developer.litprotocol.com/paying-for-lit/minting-capacity-credit/via-contract\">this guide</a>.</p>\n</div>\n\nAfter executing the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function and getting a success result, you can execute the Tool Client's "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function to perform the programmed action of the Vincent Tool.\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { ethers } from 'ethers';\nimport { getVincentToolClient } from '@lit-protocol/vincent-app-sdk';\nimport { bundledVincentTool } from '@example-org/vincent-tool-example-erc20-transfer';\n\nconst ethersSigner = new ethers.Wallet(process.env.VINCENT_APP_DELEGATEE_PRIVATE_KEY);\n\nconst toolClient = getVincentToolClient({\n  bundledVincentTool,\n  ethersSigner,\n});\n\nconst executeResult = await toolClient.execute({\n  toolParams: {\n    tokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base\n    recipientAddress: '0x1234567890123456789012345678901234567890',\n    amount: 100,\n  },\n  context: {\n    // The ETH address of the Agent Wallet you are executing the Tool on behalf of\n    delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',\n  },\n});\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nThe "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function takes two arguments similar to the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " function:\n\n1. An object that contains the input parameters for the Tool that has the structure of the Tool's Zod schema: "
+				},
+				{
+					"kind": "code",
+					"text": "`ToolParamsSchema`"
+				},
+				{
+					"kind": "text",
+					"text": "\n\n> **Note:** Because Vincent Tool definitions are strongly typed, your code editor should display the expected input parameters for the Tool\n>\n> If for whatever reason the type inference is not working, check the Tool's documentation for the expected input parameters\n\n2. An object that contains:\n   - "
+				},
+				{
+					"kind": "code",
+					"text": "`delegatorPkpEthAddress`"
+				},
+				{
+					"kind": "text",
+					"text": ": A required parameter that is the Ethereum address of the Vincent User's Agent Wallet you'll be executing the Tool on behalf of\n\n## Execute Results\n\nThe return type of the "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function depends on whether all evaluated Policies permitted Tool execution, as well as if the Tool's execution was successful.\n\nIf one of the Policies returns a deny response, or an error occurs during the execution of the Tool's logic, the "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function will return a failure result with the structure of the Tool's Zod schema: "
+				},
+				{
+					"kind": "code",
+					"text": "`ExecuteFailSchema`"
+				},
+				{
+					"kind": "text",
+					"text": ".\n\nAdditionally, Vincent Policies have an optional "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " function (as covered in the [How Vincent Policies Work](#how-the-tool-client-sdk-works) section), which is executed for each Policy that has defined a "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " function after the Tool's logic is executed successfully. If one of the "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " functions were to fail during execution or return a deny response, the "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function will return a failure result.\n\nIf all evaluated Policies permit execution, the Tool's execution is successful, and all the Policy "
+				},
+				{
+					"kind": "code",
+					"text": "`commit`"
+				},
+				{
+					"kind": "text",
+					"text": " functions are executed successfully, the "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " function will return a success result with the structure of the Tool's Zod schema: "
+				},
+				{
+					"kind": "code",
+					"text": "`ExecuteSuccessSchema`"
+				},
+				{
+					"kind": "text",
+					"text": ".\n\n# Wrapping Up\n\nYou now have a complete understanding of how to execute Vincent Tools using the Tool Client. From running prechecks to evaluate Tool readiness, to executing Tools on behalf of App Users with Policy-enforced constraints, the Tool Client simplifies the full lifecycle of Vincent Tool execution.\n\nAs a quick recap:\n\n- Import the "
+				},
+				{
+					"kind": "code",
+					"text": "`bundledVincentTool`"
+				},
+				{
+					"kind": "text",
+					"text": " tool definition from the Vincent Tool package you're using\n- Use "
+				},
+				{
+					"kind": "code",
+					"text": "`getVincentToolClient`"
+				},
+				{
+					"kind": "text",
+					"text": " to create an instance of the Tool Client for a specific Vincent Tool\n- Always run the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " method first to validate Tool parameters, ensure all user-configured Vincent Policies permit execution, and check whether the Tool's execution is likely to succeed\n- If the "
+				},
+				{
+					"kind": "code",
+					"text": "`precheck`"
+				},
+				{
+					"kind": "text",
+					"text": " passes, use the "
+				},
+				{
+					"kind": "code",
+					"text": "`execute`"
+				},
+				{
+					"kind": "text",
+					"text": " method on the Tool Client to execute the Tool’s logic\n- After successful execution of the Tool's logic, any evaluated Vincent Policies with commit functions will automatically update their internal state, keeping your App compliant with the User's defined Policy limits\n\n## Next Steps\n\nIf you're interested in creating your own Vincent Tool and Policies, checkout the [Creating Tools]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Creating-Tools.md"
+				},
+				{
+					"kind": "text",
+					"text": ") and [Creating Policies]("
+				},
+				{
+					"kind": "relative-link",
+					"text": "./Creating-Policies.md"
+				},
+				{
+					"kind": "text",
+					"text": ") guides."
+				}
+			],
+			"frontmatter": {
+				"category": "Developers"
+			}
+		},
+		{
+			"id": 9,
 			"name": "Creating Vincent Tools",
 			"variant": "document",
 			"kind": 8388608,
@@ -1736,32 +2468,7 @@
 			}
 		},
 		{
-			"id": 8,
-			"name": "Policy Developers",
-			"variant": "document",
-			"kind": 8388608,
-			"flags": {},
-			"content": [
-				{
-					"kind": "text",
-					"text": "# What is a Vincent Policy?\n\nA Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and is a programmable guardrail for [Vincent Tool]("
-				},
-				{
-					"kind": "relative-link",
-					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 9
-				},
-				{
-					"kind": "text",
-					"text": ") executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Tools on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.\n\n## Key Capabilities of Vincent Policies\n\n- **Flexible Data Access:** Read and write both on and off-chain data to any blockchain network or HTTP-accessible API or database\n- **Stateful Policy Management:** Persist data across executions to track cumulative metrics and implement sophisticated rules like spending limits, rate limiting, and usage quotas\n- **Cryptographic Capabilities:** Utilize Lit Protocol's [Encryption and Access Control ](https://developer.litprotocol.com/sdk/access-control/intro) features for computing over private data within Lit's secure [Trusted Execution Environment (TEE)](https://en.wikipedia.org/wiki/Trusted_execution_environment)\n- **Type-Safe Development:** Strongly-typed Zod schemas ensure parameter validation and clear interfaces between Vincent Tools and Policies, and both utilize packages installed from NPM to extend functionality\n\n## Real-World Policy Examples\n\n**Financial Controls**\n\n- **Daily Spending Limits**: Track cumulative spending by storing transaction amounts on or off-chain and deny Vincent Tool execution when limits are exceeded\n- **Multi-Signature Requirements**: Require additional approvals for high-value transactions by integrating with on or off-chain approval systems\n- **Token Allowlists**: Restrict transactions to specific token types or verified contract addresses\n\n**Access Management**\n\n- **Membership Gates**: Verify ownership of on-chain assets (like NFTs), or off-chain data (like Discord roles) before allowing access to premium features\n- **Time-Based Restrictions**: Only allow Vincent Tool execution during specific hours, days, or based on cooldown periods\n\n**Usage Limits**\n\n- **Rate Limiting**: Track API usage frequency and implement cooldown periods between executions\n- **Compliance Monitoring**: Enforce regulatory requirements by checking transaction amounts against legal limits\n- **Geographic Restrictions**: Use IP geolocation APIs to restrict access based on user location\n\n**Risk Management**\n\n- **Transaction Pattern Analysis**: Monitor spending patterns and flag suspicious activity that deviates from normal behavior\n- **Circuit Breakers**: Automatically disable tools when unusual activity is detected or system-wide limits are reached\n- **Emergency Stops**: Implement admin-controlled emergency stops that can pause policy-governed operations"
-				}
-			],
-			"frontmatter": {
-				"category": "Developers"
-			}
-		},
-		{
-			"id": 9,
+			"id": 10,
 			"name": "Creating Vincent Policies",
 			"variant": "document",
 			"kind": 8388608,
@@ -1769,7 +2476,7 @@
 			"content": [
 				{
 					"kind": "text",
-					"text": "# <<<<<<<< HEAD:packages/libs/app-sdk/docs/Developers/Policy-Developers/Creating-Policies.md\n\n# What is a Vincent Policy?\n\n<!-- TODO Link to Vincent Tool definition when it's available -->\n\nA Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and is a programmable guardrail for Vincent Tool executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Tools on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.\n\n## Key Capabilities of Vincent Policies\n\n- **Flexible Data Access:** Read and write both on and off-chain data to any blockchain network or HTTP-accessible API or database\n- **Stateful Policy Management:** Persist data across executions to track cumulative metrics and implement sophisticated rules like spending limits, rate limiting, and usage quotas\n- **Cryptographic Capabilities:** Utilize Lit Protocol's [Encryption and Access Control ](https://developer.litprotocol.com/sdk/access-control/intro) features for computing over private data within Lit's secure [Trusted Execution Environment (TEE)](https://en.wikipedia.org/wiki/Trusted_execution_environment)\n- **Type-Safe Development:** Strongly-typed Zod schemas ensure parameter validation and clear interfaces between Vincent Tools and Policies, and both utilize packages installed from NPM to extend functionality\n\n### Real-World Policy Examples\n\n**Financial Controls**\n\n- **Daily Spending Limits**: Track cumulative spending by storing transaction amounts on or off-chain and deny Vincent Tool execution when limits are exceeded\n- **Multi-Signature Requirements**: Require additional approvals for high-value transactions by integrating with on or off-chain approval systems\n- **Token Allowlists**: Restrict transactions to specific token types or verified contract addresses\n\n**Access Management**\n\n- **Membership Gates**: Verify ownership of on-chain assets (like NFTs), or off-chain data (like Discord roles) before allowing access to premium features\n- **Time-Based Restrictions**: Only allow Vincent Tool execution during specific hours, days, or based on cooldown periods\n\n**Usage Limits**\n\n- **Rate Limiting**: Track API usage frequency and implement cooldown periods between executions\n- **Compliance Monitoring**: Enforce regulatory requirements by checking transaction amounts against legal limits\n- **Geographic Restrictions**: Use IP geolocation APIs to restrict access based on user location\n\n**Risk Management**\n\n- **Transaction Pattern Analysis**: Monitor spending patterns and flag suspicious activity that deviates from normal behavior\n- **Circuit Breakers**: Automatically disable tools when unusual activity is detected or system-wide limits are reached\n- **Emergency Stops**: Implement admin-controlled emergency stops that can pause policy-governed operations\n\n> > > > > > > > 6f72b58b (chore: Restructure repo):packages/libs/app-sdk/docs/Developers/Creating-Policies.md\n\n# How a Vincent Policy Works\n\nA Vincent Policy consists of three main lifecycle methods executed in the following order:\n\n1. **Precheck**: Executed by the Vincent Tool's "
+					"text": "# What is a Vincent Policy?\n\n<!-- TODO Link to Vincent Tool definition when it's available -->\n\nA Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and is a programmable guardrail for Vincent Tool executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Tools on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.\n\n## Key Capabilities of Vincent Policies\n\n- **Flexible Data Access:** Read and write both on and off-chain data to any blockchain network or HTTP-accessible API or database\n- **Stateful Policy Management:** Persist data across executions to track cumulative metrics and implement sophisticated rules like spending limits, rate limiting, and usage quotas\n- **Cryptographic Capabilities:** Utilize Lit Protocol's [Encryption and Access Control ](https://developer.litprotocol.com/sdk/access-control/intro) features for computing over private data within Lit's secure [Trusted Execution Environment (TEE)](https://en.wikipedia.org/wiki/Trusted_execution_environment)\n- **Type-Safe Development:** Strongly-typed Zod schemas ensure parameter validation and clear interfaces between Vincent Tools and Policies, and both utilize packages installed from NPM to extend functionality\n\n### Real-World Policy Examples\n\n**Financial Controls**\n\n- **Daily Spending Limits**: Track cumulative spending by storing transaction amounts on or off-chain and deny Vincent Tool execution when limits are exceeded\n- **Multi-Signature Requirements**: Require additional approvals for high-value transactions by integrating with on or off-chain approval systems\n- **Token Allowlists**: Restrict transactions to specific token types or verified contract addresses\n\n**Access Management**\n\n- **Membership Gates**: Verify ownership of on-chain assets (like NFTs), or off-chain data (like Discord roles) before allowing access to premium features\n- **Time-Based Restrictions**: Only allow Vincent Tool execution during specific hours, days, or based on cooldown periods\n\n**Usage Limits**\n\n- **Rate Limiting**: Track API usage frequency and implement cooldown periods between executions\n- **Compliance Monitoring**: Enforce regulatory requirements by checking transaction amounts against legal limits\n- **Geographic Restrictions**: Use IP geolocation APIs to restrict access based on user location\n\n**Risk Management**\n\n- **Transaction Pattern Analysis**: Monitor spending patterns and flag suspicious activity that deviates from normal behavior\n- **Circuit Breakers**: Automatically disable tools when unusual activity is detected or system-wide limits are reached\n- **Emergency Stops**: Implement admin-controlled emergency stops that can pause policy-governed operations\n\n# How a Vincent Policy Works\n\nA Vincent Policy consists of three main lifecycle methods executed in the following order:\n\n1. **Precheck**: Executed by the Vincent Tool's "
 				},
 				{
 					"kind": "code",
@@ -2941,7 +3648,7 @@
 			}
 		},
 		{
-			"id": 10,
+			"id": 11,
 			"name": "Onboarding",
 			"variant": "document",
 			"kind": 8388608,
@@ -2996,7 +3703,7 @@
 			}
 		},
 		{
-			"id": 11,
+			"id": 12,
 			"name": "Contact Us",
 			"variant": "document",
 			"kind": 8388608,
@@ -3026,7 +3733,8 @@
 				8,
 				9,
 				10,
-				11
+				11,
+				12
 			]
 		}
 	],
@@ -3046,20 +3754,21 @@
 				6,
 				7,
 				8,
-				9
+				9,
+				10
 			]
 		},
 		{
 			"title": "Users",
 			"children": [
 				2,
-				10
+				11
 			]
 		},
 		{
 			"title": "Contact",
 			"children": [
-				11
+				12
 			]
 		}
 	],
@@ -3083,36 +3792,38 @@
 		"entries": {
 			"1": "docs/src/Why-Vincent.md",
 			"2": "docs/src/Concepts.md",
-			"3": "docs/src/Users/Onboarding.md",
-			"4": "docs/src/Developers/images/connect-app-management-wallet.png",
-			"5": "docs/src/Developers/images/create-new-app.png",
-			"6": "docs/src/Developers/images/add-delegatee.png",
-			"7": "docs/src/Developers/Quick-Start.md",
-			"8": "docs/src/Developers/App-Agent-Developers/Getting-Started.md",
-			"9": "docs/src/Developers/Tool-Developers/Getting-Started.md",
-			"10": "docs/src/Developers/Policy-Developers/Getting-Started.md",
-			"11": "docs/src/Developers/Getting-Started.md",
-			"12": "docs/src/Developers/App-Agent-Developers/Creating-Apps.md",
-			"13": "docs/src/Developers/App-Agent-Developers/Executing-Tools.md",
-			"14": "docs/src/Developers/Tool-Developers/Creating-Tools.md",
-			"15": "docs/src/Developers/Policy-Developers/Creating-Policies.md",
+			"3": "docs/src/Developers/App-Agent-Developers/Getting-Started.md",
+			"4": "docs/src/Developers/Tool-Developers/Getting-Started.md",
+			"5": "docs/src/Developers/Policy-Developers/Getting-Started.md",
+			"6": "docs/src/Developers/Getting-Started.md",
+			"7": "docs/src/Developers/App-Agent-Developers/Creating-Apps.md",
+			"8": "docs/src/Developers/App-Agent-Developers/Executing-Tools.md",
+			"9": "docs/src/Developers/Tool-Developers/Creating-Tools.md",
+			"10": "docs/src/Developers/Policy-Developers/Creating-Policies.md",
+			"11": "docs/src/Developers/images/connect-app-management-wallet.png",
+			"12": "docs/src/Developers/images/create-new-app.png",
+			"13": "docs/src/Developers/images/consent-ui.png",
+			"14": "docs/src/Developers/images/vincent-app-manage-delegatees.png",
+			"15": "docs/src/Developers/images/vincent-app-generate-app-url.png",
 			"16": "docs/src/Users/images/login.png",
 			"17": "docs/src/Users/images/consent-page.png",
 			"18": "docs/src/Users/images/consent-update.png",
-			"19": "docs/src/Contact-Us.md"
+			"19": "docs/src/Users/Onboarding.md",
+			"20": "docs/src/Contact-Us.md"
 		},
 		"reflections": {
 			"1": 1,
 			"2": 2,
-			"3": 10,
-			"7": 3,
-			"8": 5,
-			"9": 6,
-			"10": 8,
-			"11": 4,
-			"14": 7,
-			"15": 9,
-			"19": 11
+			"3": 4,
+			"4": 5,
+			"5": 6,
+			"6": 3,
+			"7": 7,
+			"8": 8,
+			"9": 9,
+			"10": 10,
+			"19": 11,
+			"20": 12
 		}
 	}
 }
