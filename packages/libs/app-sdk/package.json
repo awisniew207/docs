@@ -1,11 +1,14 @@
 {
   "name": "@lit-protocol/vincent-app-sdk",
-  "version": "0.0.7",
+  "version": "1.0.0",
   "description": "Vincent SDK for browser and backend",
   "author": "Lit Protocol",
   "license": "ISC",
   "access": "public",
   "packageManager": "pnpm@10.7.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": "^20.11.1",
     "pnpm": "10.7.0"
