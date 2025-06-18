@@ -3,8 +3,6 @@ category: Developers
 title: Creating Vincent Policies
 ---
 
-# <<<<<<<< HEAD:packages/libs/app-sdk/docs/Developers/Policy-Developers/Creating-Policies.md
-
 # What is a Vincent Policy?
 
 <!-- TODO Link to Vincent Tool definition when it's available -->
