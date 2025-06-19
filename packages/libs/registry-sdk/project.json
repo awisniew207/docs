@@ -20,14 +20,7 @@
         "outputPath": "packages/libs/registry-sdk/dist",
         "main": "packages/libs/registry-sdk/src/index.ts",
         "tsConfig": "packages/libs/registry-sdk/tsconfig.lib.json",
-        "assets": [
-          "packages/libs/registry-sdk/*.md",
-          {
-            "input": "packages/libs/registry-sdk/src/generated/",
-            "glob": "**/!(*.ts)",
-            "output": "./"
-          }
-        ],
+        "assets": ["packages/libs/registry-sdk/*.md"],
         "formats": ["cjs"]
       }
     }

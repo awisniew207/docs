@@ -29,6 +29,9 @@
     },
     {
       "path": "./packages/libs/tool-sdk"
+    },
+    {
+      "path": "./packages/apps/registry-backend"
     }
   ]
 }
