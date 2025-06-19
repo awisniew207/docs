@@ -7,7 +7,7 @@ title: Upgrading Vincent Apps
 
 Vincent Apps are versioned to guarantee trust and transparency. Once a Vincent App Version is published, its set of Tools and Policies it uses are immutable. This ensures that Users know exactly what actions they’ve authorized and that App Managers cannot alter those permissions without explicit re-authorization from the User.
 
-### Why this matters
+### Why This Matters
 
 Vincent Users don’t just delegate to your App, they delegate to a specific App Version. This Version defines the exact set of Tools and Policies that your App can execute on their behalf, and can never be changed. This gives your Users confidence that the set of Tools they've authorized, and are governing with their configured Policies, will never change without their explicit consent.
 
