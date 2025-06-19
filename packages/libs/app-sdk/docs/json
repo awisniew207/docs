@@ -6,7 +6,7 @@
 	"flags": {},
 	"children": [
 		{
-			"id": 109,
+			"id": 157,
 			"name": "expressAuthHelpers",
 			"variant": "declaration",
 			"kind": 4,
@@ -21,7 +21,7 @@
 						"kind": "inline-tag",
 						"tag": "@link",
 						"text": "getAuthenticateUserExpressHandler",
-						"target": 118
+						"target": 166
 					},
 					{
 						"kind": "text",
@@ -31,7 +31,7 @@
 						"kind": "inline-tag",
 						"tag": "@link",
 						"text": "authenticatedRequestHandler",
-						"target": 110
+						"target": 158
 					},
 					{
 						"kind": "text",
@@ -77,7 +77,7 @@
 						"content": [
 							{
 								"kind": "text",
-								"text": "Vincent SDK API"
+								"text": "API Methods"
 							}
 						]
 					}
@@ -85,7 +85,7 @@
 			},
 			"children": [
 				{
-					"id": 110,
+					"id": 158,
 					"name": "authenticatedRequestHandler",
 					"variant": "declaration",
 					"kind": 64,
@@ -154,12 +154,12 @@
 							"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 							"line": 61,
 							"character": 13,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L61"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L61"
 						}
 					],
 					"signatures": [
 						{
-							"id": 111,
+							"id": 159,
 							"name": "authenticatedRequestHandler",
 							"variant": "signature",
 							"kind": 4096,
@@ -169,12 +169,12 @@
 									"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 									"line": 62,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L62"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L62"
 								}
 							],
 							"parameters": [
 								{
-									"id": 112,
+									"id": 160,
 									"name": "handler",
 									"variant": "param",
 									"kind": 32768,
@@ -193,7 +193,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 113,
+									"id": 161,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -203,12 +203,12 @@
 											"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 											"line": 62,
 											"character": 44,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L62"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L62"
 										}
 									],
 									"signatures": [
 										{
-											"id": 114,
+											"id": 162,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -218,12 +218,12 @@
 													"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 													"line": 62,
 													"character": 44,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L62"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L62"
 												}
 											],
 											"parameters": [
 												{
-													"id": 115,
+													"id": 163,
 													"name": "req",
 													"variant": "param",
 													"kind": 32768,
@@ -240,7 +240,7 @@
 													}
 												},
 												{
-													"id": 116,
+													"id": 164,
 													"name": "res",
 													"variant": "param",
 													"kind": 32768,
@@ -257,7 +257,7 @@
 													}
 												},
 												{
-													"id": 117,
+													"id": 165,
 													"name": "next",
 													"variant": "param",
 													"kind": 32768,
@@ -306,7 +306,7 @@
 					]
 				},
 				{
-					"id": 118,
+					"id": 166,
 					"name": "getAuthenticateUserExpressHandler",
 					"variant": "declaration",
 					"kind": 64,
@@ -391,12 +391,12 @@
 							"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 							"line": 113,
 							"character": 13,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L113"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L113"
 						}
 					],
 					"signatures": [
 						{
-							"id": 119,
+							"id": 167,
 							"name": "getAuthenticateUserExpressHandler",
 							"variant": "signature",
 							"kind": 4096,
@@ -406,12 +406,12 @@
 									"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 									"line": 114,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L114"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L114"
 								}
 							],
 							"parameters": [
 								{
-									"id": 120,
+									"id": 168,
 									"name": "allowedAudience",
 									"variant": "param",
 									"kind": 32768,
@@ -425,7 +425,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 121,
+									"id": 169,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -435,12 +435,12 @@
 											"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 											"line": 114,
 											"character": 31,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L114"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L114"
 										}
 									],
 									"signatures": [
 										{
-											"id": 122,
+											"id": 170,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -450,12 +450,12 @@
 													"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/express.ts",
 													"line": 114,
 													"character": 31,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L114"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/express.ts#L114"
 												}
 											],
 											"parameters": [
 												{
-													"id": 123,
+													"id": 171,
 													"name": "req",
 													"variant": "param",
 													"kind": 32768,
@@ -472,7 +472,7 @@
 													}
 												},
 												{
-													"id": 124,
+													"id": 172,
 													"name": "res",
 													"variant": "param",
 													"kind": 32768,
@@ -489,7 +489,7 @@
 													}
 												},
 												{
-													"id": 125,
+													"id": 173,
 													"name": "next",
 													"variant": "param",
 													"kind": 32768,
@@ -533,8 +533,8 @@
 				{
 					"title": "Functions",
 					"children": [
-						110,
-						118
+						158,
+						166
 					]
 				}
 			],
@@ -543,12 +543,12 @@
 					"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/index.ts",
 					"line": 1,
 					"character": 0,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/index.ts#L1"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/index.ts#L1"
 				}
 			]
 		},
 		{
-			"id": 1,
+			"id": 3,
 			"name": "jwt",
 			"variant": "declaration",
 			"kind": 4,
@@ -566,7 +566,7 @@
 						"content": [
 							{
 								"kind": "text",
-								"text": "Vincent SDK API"
+								"text": "API Methods"
 							}
 						]
 					}
@@ -574,7 +574,7 @@
 			},
 			"children": [
 				{
-					"id": 5,
+					"id": 7,
 					"name": "decode",
 					"variant": "declaration",
 					"kind": 64,
@@ -589,7 +589,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentJWT",
-								"target": 29
+								"target": 31
 							},
 							{
 								"kind": "text",
@@ -617,12 +617,12 @@
 							"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 							"line": 32,
 							"character": 13,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L32"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L32"
 						}
 					],
 					"signatures": [
 						{
-							"id": 6,
+							"id": 8,
 							"name": "decode",
 							"variant": "signature",
 							"kind": 4096,
@@ -651,12 +651,12 @@
 									"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 									"line": 32,
 									"character": 13,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L32"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L32"
 								}
 							],
 							"parameters": [
 								{
-									"id": 7,
+									"id": 9,
 									"name": "jwt",
 									"variant": "param",
 									"kind": 32768,
@@ -677,7 +677,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 29,
+								"target": 31,
 								"name": "VincentJWT",
 								"package": "@lit-protocol/vincent-app-sdk"
 							}
@@ -685,7 +685,7 @@
 					]
 				},
 				{
-					"id": 12,
+					"id": 14,
 					"name": "isExpired",
 					"variant": "declaration",
 					"kind": 64,
@@ -700,7 +700,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentWebAppClient.redirectToConsentPage",
-								"target": 87
+								"target": 121
 							},
 							{
 								"kind": "text",
@@ -731,12 +731,12 @@
 							"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 							"line": 73,
 							"character": 13,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L73"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L73"
 						}
 					],
 					"signatures": [
 						{
-							"id": 13,
+							"id": 15,
 							"name": "isExpired",
 							"variant": "signature",
 							"kind": 4096,
@@ -765,19 +765,19 @@
 									"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 									"line": 73,
 									"character": 13,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L73"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L73"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14,
+									"id": 16,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 29,
+										"target": 31,
 										"name": "VincentJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -791,7 +791,7 @@
 					]
 				},
 				{
-					"id": 8,
+					"id": 10,
 					"name": "verify",
 					"variant": "declaration",
 					"kind": 64,
@@ -822,12 +822,12 @@
 							"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 							"line": 48,
 							"character": 13,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L48"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L48"
 						}
 					],
 					"signatures": [
 						{
-							"id": 9,
+							"id": 11,
 							"name": "verify",
 							"variant": "signature",
 							"kind": 4096,
@@ -842,7 +842,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "VincentJWT",
-										"target": 29
+										"target": 31
 									},
 									{
 										"kind": "text",
@@ -852,7 +852,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "VincentJWT",
-										"target": 29
+										"target": 31
 									},
 									{
 										"kind": "text",
@@ -876,12 +876,12 @@
 									"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 									"line": 48,
 									"character": 13,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L48"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L48"
 								}
 							],
 							"parameters": [
 								{
-									"id": 10,
+									"id": 12,
 									"name": "jwt",
 									"variant": "param",
 									"kind": 32768,
@@ -900,7 +900,7 @@
 									}
 								},
 								{
-									"id": 11,
+									"id": 13,
 									"name": "expectedAudience",
 									"variant": "param",
 									"kind": 32768,
@@ -921,7 +921,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 29,
+								"target": 31,
 								"name": "VincentJWT",
 								"package": "@lit-protocol/vincent-app-sdk"
 							}
@@ -933,9 +933,9 @@
 				{
 					"title": "Functions",
 					"children": [
-						5,
-						12,
-						8
+						7,
+						14,
+						10
 					]
 				}
 			],
@@ -944,19 +944,361 @@
 					"fileName": "packages/libs/app-sdk/src/jwt/index.ts",
 					"line": 1,
 					"character": 0,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/index.ts#L1"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/index.ts#L1"
 				}
 			]
 		},
 		{
-			"id": 126,
+			"id": 143,
+			"name": "BaseToolContext",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "BaseToolContext is returned with tool execution results, and contains information about the app, delegation, and\npolicy evaluation results for any policies that the user had enabled for the tool."
+					}
+				],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 146,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isInherited": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+							"line": 238,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					},
+					"inheritedFrom": {
+						"type": "reference",
+						"target": -1,
+						"name": "BaseContext.appId"
+					}
+				},
+				{
+					"id": 147,
+					"name": "appVersion",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isInherited": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+							"line": 239,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					},
+					"inheritedFrom": {
+						"type": "reference",
+						"target": -1,
+						"name": "BaseContext.appVersion"
+					}
+				},
+				{
+					"id": 148,
+					"name": "delegation",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isInherited": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+							"line": 240,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 149,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 150,
+									"name": "delegateeAddress",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+											"line": 241,
+											"character": 8
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 151,
+									"name": "delegatorPkpInfo",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+											"line": 242,
+											"character": 8
+										}
+									],
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 152,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"children": [
+												{
+													"id": 154,
+													"name": "ethAddress",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+															"line": 244,
+															"character": 12
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "string"
+													}
+												},
+												{
+													"id": 155,
+													"name": "publicKey",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+															"line": 245,
+															"character": 12
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "string"
+													}
+												},
+												{
+													"id": 153,
+													"name": "tokenId",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+															"line": 243,
+															"character": 12
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "string"
+													}
+												}
+											],
+											"groups": [
+												{
+													"title": "Properties",
+													"children": [
+														154,
+														155,
+														153
+													]
+												}
+											],
+											"sources": [
+												{
+													"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+													"line": 242,
+													"character": 26
+												}
+											]
+										}
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										150,
+										151
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+									"line": 240,
+									"character": 16
+								}
+							]
+						}
+					},
+					"inheritedFrom": {
+						"type": "reference",
+						"target": -1,
+						"name": "BaseContext.delegation"
+					}
+				},
+				{
+					"id": 144,
+					"name": "policiesContext",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/tool-sdk/dist/src/lib/toolCore/toolConfig/context/types.d.ts",
+							"line": 9,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 156,
+						"name": "Policies",
+						"package": "@lit-protocol/vincent-tool-sdk",
+						"qualifiedName": "BaseToolContext.Policies",
+						"refersToTypeParameter": true
+					}
+				},
+				{
+					"id": 145,
+					"name": "toolIpfsCid",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isInherited": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+							"line": 237,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"inheritedFrom": {
+						"type": "reference",
+						"target": -1,
+						"name": "BaseContext.toolIpfsCid"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						146,
+						147,
+						148,
+						144,
+						145
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/tool-sdk/dist/src/lib/toolCore/toolConfig/context/types.d.ts",
+					"line": 8,
+					"character": 17
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 156,
+					"name": "Policies",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {}
+				}
+			],
+			"extendedTypes": [
+				{
+					"type": "reference",
+					"target": {
+						"sourceFileName": "../tool-sdk/src/lib/types.ts",
+						"qualifiedName": "BaseContext"
+					},
+					"name": "BaseContext",
+					"package": "@lit-protocol/vincent-tool-sdk"
+				}
+			]
+		},
+		{
+			"id": 174,
 			"name": "ExpressAuthHelpers",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
 			"children": [
 				{
-					"id": 128,
+					"id": 176,
 					"name": "AuthenticatedRequest",
 					"variant": "declaration",
 					"kind": 1024,
@@ -964,9 +1306,9 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/types.ts",
-							"line": 39,
+							"line": 42,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/types.ts#L39"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/types.ts#L42"
 						}
 					],
 					"type": {
@@ -980,7 +1322,7 @@
 					}
 				},
 				{
-					"id": 127,
+					"id": 175,
 					"name": "AuthenticatedRequestHandler",
 					"variant": "declaration",
 					"kind": 1024,
@@ -988,9 +1330,9 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/types.ts",
-							"line": 38,
+							"line": 41,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/types.ts#L38"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/types.ts#L41"
 						}
 					],
 					"type": {
@@ -1008,22 +1350,870 @@
 				{
 					"title": "Properties",
 					"children": [
-						128,
-						127
+						176,
+						175
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "packages/libs/app-sdk/src/express-authentication-middleware/types.ts",
-					"line": 37,
+					"line": 40,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/express-authentication-middleware/types.ts#L37"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/express-authentication-middleware/types.ts#L40"
 				}
 			]
 		},
 		{
-			"id": 29,
+			"id": 140,
+			"name": "RedirectToVincentConsentPageParams",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 141,
+					"name": "redirectUri",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/app/types.ts",
+							"line": 14,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L14"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						141
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/app/types.ts",
+					"line": 13,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L13"
+				}
+			]
+		},
+		{
+			"id": 87,
+			"name": "ToolClientContext",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 88,
+					"name": "delegatorPkpEthAddress",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 119,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L119"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						88
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 118,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L118"
+				}
+			]
+		},
+		{
+			"id": 93,
+			"name": "ToolResponseFailure",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 97,
+					"name": "context",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 84,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L84"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 143,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"qualifiedName": "PolicyEvaluationResultContext"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 99,
+										"name": "Policies",
+										"package": "@lit-protocol/vincent-app-sdk",
+										"qualifiedName": "ToolResponseFailure.Policies",
+										"refersToTypeParameter": true
+									}
+								],
+								"name": "PolicyEvaluationResultContext",
+								"package": "@lit-protocol/vincent-tool-sdk"
+							}
+						],
+						"name": "BaseToolContext",
+						"package": "@lit-protocol/vincent-tool-sdk"
+					}
+				},
+				{
+					"id": 95,
+					"name": "error",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 82,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L82"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 96,
+					"name": "result",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 83,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L83"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 98,
+						"name": "Result",
+						"package": "@lit-protocol/vincent-app-sdk",
+						"qualifiedName": "ToolResponseFailure.Result",
+						"refersToTypeParameter": true
+					}
+				},
+				{
+					"id": 94,
+					"name": "success",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 81,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L81"
+						}
+					],
+					"type": {
+						"type": "literal",
+						"value": false
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						97,
+						95,
+						96,
+						94
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 80,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L80"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 98,
+					"name": "Result",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {}
+				},
+				{
+					"id": 99,
+					"name": "Policies",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 100,
+			"name": "ToolResponseFailureNoResult",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 104,
+					"name": "context",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 92,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L92"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 143,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"qualifiedName": "PolicyEvaluationResultContext"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 105,
+										"name": "Policies",
+										"package": "@lit-protocol/vincent-app-sdk",
+										"qualifiedName": "ToolResponseFailureNoResult.Policies",
+										"refersToTypeParameter": true
+									}
+								],
+								"name": "PolicyEvaluationResultContext",
+								"package": "@lit-protocol/vincent-tool-sdk"
+							}
+						],
+						"name": "BaseToolContext",
+						"package": "@lit-protocol/vincent-tool-sdk"
+					}
+				},
+				{
+					"id": 102,
+					"name": "error",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 90,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L90"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 103,
+					"name": "result",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 91,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L91"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "undefined"
+					}
+				},
+				{
+					"id": 101,
+					"name": "success",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 89,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L89"
+						}
+					],
+					"type": {
+						"type": "literal",
+						"value": false
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						104,
+						102,
+						103,
+						101
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 88,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L88"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 105,
+					"name": "Policies",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 106,
+			"name": "ToolResponseSuccess",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 109,
+					"name": "context",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 69,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L69"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 143,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"qualifiedName": "PolicyEvaluationResultContext"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 111,
+										"name": "Policies",
+										"package": "@lit-protocol/vincent-app-sdk",
+										"qualifiedName": "ToolResponseSuccess.Policies",
+										"refersToTypeParameter": true
+									}
+								],
+								"name": "PolicyEvaluationResultContext",
+								"package": "@lit-protocol/vincent-tool-sdk"
+							}
+						],
+						"name": "BaseToolContext",
+						"package": "@lit-protocol/vincent-tool-sdk"
+					}
+				},
+				{
+					"id": 108,
+					"name": "result",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 68,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L68"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 110,
+						"name": "Result",
+						"package": "@lit-protocol/vincent-app-sdk",
+						"qualifiedName": "ToolResponseSuccess.Result",
+						"refersToTypeParameter": true
+					}
+				},
+				{
+					"id": 107,
+					"name": "success",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 67,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L67"
+						}
+					],
+					"type": {
+						"type": "literal",
+						"value": true
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						109,
+						108,
+						107
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 66,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L66"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 110,
+					"name": "Result",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {}
+				},
+				{
+					"id": 111,
+					"name": "Policies",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 112,
+			"name": "ToolResponseSuccessNoResult",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 115,
+					"name": "context",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 76,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L76"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 143,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"qualifiedName": "PolicyEvaluationResultContext"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 116,
+										"name": "Policies",
+										"package": "@lit-protocol/vincent-app-sdk",
+										"qualifiedName": "ToolResponseSuccessNoResult.Policies",
+										"refersToTypeParameter": true
+									}
+								],
+								"name": "PolicyEvaluationResultContext",
+								"package": "@lit-protocol/vincent-tool-sdk"
+							}
+						],
+						"name": "BaseToolContext",
+						"package": "@lit-protocol/vincent-tool-sdk"
+					}
+				},
+				{
+					"id": 114,
+					"name": "result",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 75,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L75"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "undefined"
+					}
+				},
+				{
+					"id": 113,
+					"name": "success",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 74,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L74"
+						}
+					],
+					"type": {
+						"type": "literal",
+						"value": true
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						115,
+						114,
+						113
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 73,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L73"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 116,
+					"name": "Policies",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 138,
+			"name": "VincentAppClientConfig",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 139,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/app/types.ts",
+							"line": 7,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L7"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						139
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/app/types.ts",
+					"line": 6,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L6"
+				}
+			]
+		},
+		{
+			"id": 31,
 			"name": "VincentJWT",
 			"variant": "declaration",
 			"kind": 256,
@@ -1034,11 +2224,22 @@
 						"kind": "text",
 						"text": "Interface representing a decoded Vincent JWT\n\n VincentJWT"
 					}
+				],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
 				]
 			},
 			"children": [
 				{
-					"id": 33,
+					"id": 35,
 					"name": "data",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1050,7 +2251,7 @@
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
 							"line": 10,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L10"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L10"
 						}
 					],
 					"type": {
@@ -1064,7 +2265,7 @@
 					}
 				},
 				{
-					"id": 31,
+					"id": 33,
 					"name": "header",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1076,7 +2277,7 @@
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
 							"line": 7,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L7"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L7"
 						}
 					],
 					"type": {
@@ -1096,7 +2297,7 @@
 					}
 				},
 				{
-					"id": 30,
+					"id": 32,
 					"name": "payload",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1112,14 +2313,14 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-							"line": 70,
+							"line": 74,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L70"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L74"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 34,
+						"target": 36,
 						"name": "VincentJWTPayload",
 						"package": "@lit-protocol/vincent-app-sdk"
 					},
@@ -1130,7 +2331,7 @@
 					}
 				},
 				{
-					"id": 32,
+					"id": 34,
 					"name": "signature",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1142,7 +2343,7 @@
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
 							"line": 9,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L9"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L9"
 						}
 					],
 					"type": {
@@ -1160,19 +2361,19 @@
 				{
 					"title": "Properties",
 					"children": [
+						35,
 						33,
-						31,
-						30,
-						32
+						32,
+						34
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-					"line": 69,
+					"line": 73,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L69"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L73"
 				}
 			],
 			"extendedTypes": [
@@ -1188,7 +2389,7 @@
 			]
 		},
 		{
-			"id": 34,
+			"id": 36,
 			"name": "VincentJWTPayload",
 			"variant": "declaration",
 			"kind": 256,
@@ -1199,11 +2400,22 @@
 						"kind": "text",
 						"text": "Extended payload interface for Vincent-specific JWTs.\n\n VincentJWTPayload"
 					}
+				],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
 				]
 			},
 			"children": [
 				{
-					"id": 36,
+					"id": 38,
 					"name": "app",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1219,22 +2431,22 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-							"line": 52,
+							"line": 54,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L52"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L54"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 37,
+							"id": 39,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 38,
+									"id": 40,
 									"name": "id",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1242,9 +2454,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-											"line": 53,
+											"line": 55,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L53"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L55"
 										}
 									],
 									"type": {
@@ -1253,7 +2465,7 @@
 									}
 								},
 								{
-									"id": 39,
+									"id": 41,
 									"name": "version",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1261,9 +2473,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-											"line": 54,
+											"line": 56,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L54"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L56"
 										}
 									],
 									"type": {
@@ -1276,24 +2488,24 @@
 								{
 									"title": "Properties",
 									"children": [
-										38,
-										39
+										40,
+										41
 									]
 								}
 							],
 							"sources": [
 								{
 									"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-									"line": 52,
+									"line": 54,
 									"character": 7,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L52"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L54"
 								}
 							]
 						}
 					}
 				},
 				{
-					"id": 46,
+					"id": 48,
 					"name": "aud",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1332,7 +2544,7 @@
 					}
 				},
 				{
-					"id": 40,
+					"id": 42,
 					"name": "authentication",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1348,22 +2560,22 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-							"line": 56,
+							"line": 58,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L56"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L58"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 41,
+							"id": 43,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 42,
+									"id": 44,
 									"name": "type",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1371,9 +2583,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-											"line": 57,
+											"line": 59,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L57"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L59"
 										}
 									],
 									"type": {
@@ -1382,7 +2594,7 @@
 									}
 								},
 								{
-									"id": 43,
+									"id": 45,
 									"name": "value",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1392,9 +2604,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-											"line": 58,
+											"line": 60,
 											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L58"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L60"
 										}
 									],
 									"type": {
@@ -1407,24 +2619,24 @@
 								{
 									"title": "Properties",
 									"children": [
-										42,
-										43
+										44,
+										45
 									]
 								}
 							],
 							"sources": [
 								{
 									"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-									"line": 56,
+									"line": 58,
 									"character": 18,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L56"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L58"
 								}
 							]
 						}
 					}
 				},
 				{
-					"id": 49,
+					"id": 51,
 					"name": "exp",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1451,7 +2663,7 @@
 					}
 				},
 				{
-					"id": 47,
+					"id": 49,
 					"name": "iat",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1478,7 +2690,7 @@
 					}
 				},
 				{
-					"id": 44,
+					"id": 46,
 					"name": "iss",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1505,7 +2717,7 @@
 					}
 				},
 				{
-					"id": 48,
+					"id": 50,
 					"name": "nbf",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1532,7 +2744,7 @@
 					}
 				},
 				{
-					"id": 35,
+					"id": 37,
 					"name": "pkp",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1548,9 +2760,9 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-							"line": 51,
+							"line": 53,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L51"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L53"
 						}
 					],
 					"type": {
@@ -1565,7 +2777,7 @@
 					}
 				},
 				{
-					"id": 50,
+					"id": 52,
 					"name": "rexp",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1592,7 +2804,7 @@
 					}
 				},
 				{
-					"id": 45,
+					"id": 47,
 					"name": "sub",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1623,30 +2835,30 @@
 				{
 					"title": "Properties",
 					"children": [
-						36,
-						46,
-						40,
-						49,
-						47,
-						44,
+						38,
 						48,
-						35,
+						42,
+						51,
+						49,
+						46,
 						50,
-						45
+						37,
+						52,
+						47
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-					"line": 50,
+					"line": 52,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L50"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L52"
 				}
 			],
 			"indexSignatures": [
 				{
-					"id": 51,
+					"id": 53,
 					"name": "__index",
 					"variant": "signature",
 					"kind": 8192,
@@ -1654,14 +2866,14 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/jwt/types.ts",
-							"line": 50,
+							"line": 52,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/jwt/types.ts#L50"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/jwt/types.ts#L52"
 						}
 					],
 					"parameters": [
 						{
-							"id": 52,
+							"id": 54,
 							"name": "x",
 							"variant": "param",
 							"kind": 32768,
@@ -1692,7 +2904,408 @@
 			]
 		},
 		{
-			"id": 86,
+			"id": 70,
+			"name": "VincentToolClient",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "The Vincent Tool Client is used to interact with Vincent tools.\n\n- Precheck tool parameters and policies\n- Execute tools remotely"
+					}
+				],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 77,
+					"name": "execute",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 59,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L59"
+						}
+					],
+					"signatures": [
+						{
+							"id": 78,
+							"name": "execute",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Executes the tool with the given parameters.\n\nThis method validates the tool parameters, executes the tool remotely, and returns the result."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "A promise that resolves to a ToolResponse containing the execution result"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+									"line": 59,
+									"character": 2,
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L59"
+								}
+							],
+							"parameters": [
+								{
+									"id": 79,
+									"name": "rawToolParams",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The parameters to be passed to the tool"
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+											"qualifiedName": "TypeOf"
+										},
+										"typeArguments": [
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "ToolParamsSchema",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.ToolParamsSchema",
+												"refersToTypeParameter": true
+											}
+										],
+										"name": "TypeOf",
+										"package": "zod"
+									}
+								},
+								{
+									"id": 80,
+									"name": "context",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The context for the tool execution, including the delegator PKP Ethereum address"
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": 87,
+										"name": "ToolClientContext",
+										"package": "@lit-protocol/vincent-app-sdk"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 89,
+										"typeArguments": [
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "ExecuteSuccessSchema",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.ExecuteSuccessSchema",
+												"refersToTypeParameter": true
+											},
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "ExecuteFailSchema",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.ExecuteFailSchema",
+												"refersToTypeParameter": true
+											},
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "PoliciesByPackageName",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.PoliciesByPackageName",
+												"refersToTypeParameter": true
+											}
+										],
+										"name": "ToolResponse",
+										"package": "@lit-protocol/vincent-app-sdk"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 71,
+					"name": "precheck",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"line": 42,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L42"
+						}
+					],
+					"signatures": [
+						{
+							"id": 72,
+							"name": "precheck",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Performs a precheck of the tool parameters and policies.\n\nThis method validates the tool parameters and checks if the policies allow the tool to be executed."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "A promise that resolves to a ToolResponse containing the precheck result"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+									"line": 42,
+									"character": 2,
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L42"
+								}
+							],
+							"parameters": [
+								{
+									"id": 73,
+									"name": "rawToolParams",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The parameters to be passed to the tool"
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+											"qualifiedName": "TypeOf"
+										},
+										"typeArguments": [
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "ToolParamsSchema",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.ToolParamsSchema",
+												"refersToTypeParameter": true
+											}
+										],
+										"name": "TypeOf",
+										"package": "zod"
+									}
+								},
+								{
+									"id": 74,
+									"name": "context",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The context for the tool execution, including the delegator PKP Ethereum address"
+											}
+										]
+									},
+									"type": {
+										"type": "intersection",
+										"types": [
+											{
+												"type": "reference",
+												"target": 87,
+												"name": "ToolClientContext",
+												"package": "@lit-protocol/vincent-app-sdk"
+											},
+											{
+												"type": "reflection",
+												"declaration": {
+													"id": 75,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"children": [
+														{
+															"id": 76,
+															"name": "rpcUrl",
+															"variant": "declaration",
+															"kind": 1024,
+															"flags": {
+																"isOptional": true
+															},
+															"sources": [
+																{
+																	"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+																	"line": 45,
+																	"character": 6,
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L45"
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "string"
+															}
+														}
+													],
+													"groups": [
+														{
+															"title": "Properties",
+															"children": [
+																76
+															]
+														}
+													],
+													"sources": [
+														{
+															"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+															"line": 44,
+															"character": 33,
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L44"
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 89,
+										"typeArguments": [
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "PrecheckSuccessSchema",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.PrecheckSuccessSchema",
+												"refersToTypeParameter": true
+											},
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "PrecheckFailSchema",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.PrecheckFailSchema",
+												"refersToTypeParameter": true
+											},
+											{
+												"type": "reference",
+												"target": -1,
+												"name": "PoliciesByPackageName",
+												"package": "@lit-protocol/vincent-app-sdk",
+												"qualifiedName": "VincentToolClient.PoliciesByPackageName",
+												"refersToTypeParameter": true
+											}
+										],
+										"name": "ToolResponse",
+										"package": "@lit-protocol/vincent-app-sdk"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Methods",
+					"children": [
+						77,
+						71
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 25,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L25"
+				}
+			]
+		},
+		{
+			"id": 120,
 			"name": "VincentWebAppClient",
 			"variant": "declaration",
 			"kind": 256,
@@ -1710,7 +3323,7 @@
 						"content": [
 							{
 								"kind": "text",
-								"text": "Vincent Web App"
+								"text": "Interfaces"
 							}
 						]
 					}
@@ -1718,7 +3331,7 @@
 			},
 			"children": [
 				{
-					"id": 97,
+					"id": 128,
 					"name": "decodeVincentLoginJWT",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1733,7 +3346,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentWebAppClient.redirectToConsentPage",
-								"target": 87
+								"target": 121
 							},
 							{
 								"kind": "text",
@@ -1759,15 +3372,15 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/app/types.ts",
-							"line": 93,
+							"line": 91,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L93"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L91"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 98,
+							"id": 129,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -1775,14 +3388,14 @@
 							"sources": [
 								{
 									"fileName": "packages/libs/app-sdk/src/app/types.ts",
-									"line": 93,
+									"line": 91,
 									"character": 25,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L93"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L91"
 								}
 							],
 							"signatures": [
 								{
-									"id": 99,
+									"id": 130,
 									"name": "__type",
 									"variant": "signature",
 									"kind": 4096,
@@ -1808,14 +3421,14 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/app/types.ts",
-											"line": 93,
+											"line": 91,
 											"character": 25,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L93"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L91"
 										}
 									],
 									"parameters": [
 										{
-											"id": 100,
+											"id": 131,
 											"name": "expectedAudience",
 											"variant": "param",
 											"kind": 32768,
@@ -1852,14 +3465,14 @@
 											{
 												"type": "reflection",
 												"declaration": {
-													"id": 101,
+													"id": 132,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
 													"flags": {},
 													"children": [
 														{
-															"id": 102,
+															"id": 133,
 															"name": "decodedJWT",
 															"variant": "declaration",
 															"kind": 1024,
@@ -1867,20 +3480,20 @@
 															"sources": [
 																{
 																	"fileName": "packages/libs/app-sdk/src/app/types.ts",
-																	"line": 95,
+																	"line": 93,
 																	"character": 9,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L95"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L93"
 																}
 															],
 															"type": {
 																"type": "reference",
-																"target": 29,
+																"target": 31,
 																"name": "VincentJWT",
 																"package": "@lit-protocol/vincent-app-sdk"
 															}
 														},
 														{
-															"id": 103,
+															"id": 134,
 															"name": "jwtStr",
 															"variant": "declaration",
 															"kind": 1024,
@@ -1888,9 +3501,9 @@
 															"sources": [
 																{
 																	"fileName": "packages/libs/app-sdk/src/app/types.ts",
-																	"line": 95,
+																	"line": 93,
 																	"character": 33,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L95"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L93"
 																}
 															],
 															"type": {
@@ -1903,17 +3516,17 @@
 														{
 															"title": "Properties",
 															"children": [
-																102,
-																103
+																133,
+																134
 															]
 														}
 													],
 													"sources": [
 														{
 															"fileName": "packages/libs/app-sdk/src/app/types.ts",
-															"line": 95,
+															"line": 93,
 															"character": 7,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L95"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L93"
 														}
 													]
 												}
@@ -1926,7 +3539,7 @@
 					}
 				},
 				{
-					"id": 94,
+					"id": 125,
 					"name": "isLogin",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1941,7 +3554,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentWebAppClient.redirectToConsentPage",
-								"target": 87
+								"target": 121
 							},
 							{
 								"kind": "text",
@@ -1958,15 +3571,15 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/app/types.ts",
-							"line": 78,
+							"line": 76,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L78"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L76"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 95,
+							"id": 126,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -1974,14 +3587,14 @@
 							"sources": [
 								{
 									"fileName": "packages/libs/app-sdk/src/app/types.ts",
-									"line": 78,
+									"line": 76,
 									"character": 11,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L78"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L76"
 								}
 							],
 							"signatures": [
 								{
-									"id": 96,
+									"id": 127,
 									"name": "__type",
 									"variant": "signature",
 									"kind": 4096,
@@ -2015,9 +3628,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/app/types.ts",
-											"line": 78,
+											"line": 76,
 											"character": 11,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L78"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L76"
 										}
 									],
 									"type": {
@@ -2030,7 +3643,7 @@
 					}
 				},
 				{
-					"id": 87,
+					"id": 121,
 					"name": "redirectToConsentPage",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2053,7 +3666,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentWebAppClient.isLogin",
-								"target": 94
+								"target": 125
 							},
 							{
 								"kind": "text",
@@ -2063,7 +3676,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentWebAppClient.decodeVincentLoginJWT",
-								"target": 97
+								"target": 128
 							},
 							{
 								"kind": "text",
@@ -2073,7 +3686,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "VincentJWT",
-								"target": 29
+								"target": 31
 							},
 							{
 								"kind": "text",
@@ -2107,15 +3720,15 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/app/types.ts",
-							"line": 64,
+							"line": 62,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L64"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L62"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 88,
+							"id": 122,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -2123,14 +3736,14 @@
 							"sources": [
 								{
 									"fileName": "packages/libs/app-sdk/src/app/types.ts",
-									"line": 64,
+									"line": 62,
 									"character": 25,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L64"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L62"
 								}
 							],
 							"signatures": [
 								{
-									"id": 89,
+									"id": 123,
 									"name": "__type",
 									"variant": "signature",
 									"kind": 4096,
@@ -2138,64 +3751,23 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/app/types.ts",
-											"line": 64,
+											"line": 62,
 											"character": 25,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L64"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L62"
 										}
 									],
 									"parameters": [
 										{
-											"id": 90,
+											"id": 124,
 											"name": "redirectConfig",
 											"variant": "param",
 											"kind": 32768,
 											"flags": {},
 											"type": {
-												"type": "reflection",
-												"declaration": {
-													"id": 91,
-													"name": "__type",
-													"variant": "declaration",
-													"kind": 65536,
-													"flags": {},
-													"children": [
-														{
-															"id": 92,
-															"name": "redirectUri",
-															"variant": "declaration",
-															"kind": 1024,
-															"flags": {},
-															"sources": [
-																{
-																	"fileName": "packages/libs/app-sdk/src/app/types.ts",
-																	"line": 16,
-																	"character": 2,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L16"
-																}
-															],
-															"type": {
-																"type": "intrinsic",
-																"name": "string"
-															}
-														}
-													],
-													"groups": [
-														{
-															"title": "Properties",
-															"children": [
-																92
-															]
-														}
-													],
-													"sources": [
-														{
-															"fileName": "packages/libs/app-sdk/src/app/types.ts",
-															"line": 15,
-															"character": 17,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L15"
-														}
-													]
-												}
+												"type": "reference",
+												"target": 140,
+												"name": "RedirectToVincentConsentPageParams",
+												"package": "@lit-protocol/vincent-app-sdk"
 											}
 										}
 									],
@@ -2209,7 +3781,7 @@
 					}
 				},
 				{
-					"id": 104,
+					"id": 135,
 					"name": "removeLoginJWTFromURI",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2240,15 +3812,15 @@
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/app/types.ts",
-							"line": 122,
+							"line": 120,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L122"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L120"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 105,
+							"id": 136,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -2256,14 +3828,14 @@
 							"sources": [
 								{
 									"fileName": "packages/libs/app-sdk/src/app/types.ts",
-									"line": 122,
+									"line": 120,
 									"character": 25,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L122"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L120"
 								}
 							],
 							"signatures": [
 								{
-									"id": 106,
+									"id": 137,
 									"name": "__type",
 									"variant": "signature",
 									"kind": 4096,
@@ -2271,9 +3843,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/app/types.ts",
-											"line": 122,
+											"line": 120,
 											"character": 25,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L122"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L120"
 										}
 									],
 									"type": {
@@ -2290,49 +3862,320 @@
 				{
 					"title": "Properties",
 					"children": [
-						97,
-						94,
-						87,
-						104
+						128,
+						125,
+						121,
+						135
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "packages/libs/app-sdk/src/app/types.ts",
-					"line": 31,
+					"line": 29,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L31"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/types.ts#L29"
 				}
 			]
 		},
 		{
-			"id": 53,
+			"id": 89,
+			"name": "ToolResponse",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"sources": [
+				{
+					"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+					"line": 96,
+					"character": 12,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/types.ts#L96"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 90,
+					"name": "SuccessSchema",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+									"qualifiedName": "ZodType"
+								},
+								"name": "z.ZodType",
+								"package": "zod",
+								"qualifiedName": "ZodType"
+							},
+							{
+								"type": "intrinsic",
+								"name": "undefined"
+							}
+						]
+					}
+				},
+				{
+					"id": 91,
+					"name": "FailSchema",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+									"qualifiedName": "ZodType"
+								},
+								"name": "z.ZodType",
+								"package": "zod",
+								"qualifiedName": "ZodType"
+							},
+							{
+								"type": "intrinsic",
+								"name": "undefined"
+							}
+						]
+					}
+				},
+				{
+					"id": 92,
+					"name": "Policies",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "any"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			],
+			"type": {
+				"type": "union",
+				"types": [
+					{
+						"type": "conditional",
+						"checkType": {
+							"type": "reference",
+							"target": 90,
+							"name": "SuccessSchema",
+							"package": "@lit-protocol/vincent-app-sdk",
+							"refersToTypeParameter": true
+						},
+						"extendsType": {
+							"type": "reference",
+							"target": {
+								"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+								"qualifiedName": "ZodType"
+							},
+							"name": "z.ZodType",
+							"package": "zod",
+							"qualifiedName": "ZodType"
+						},
+						"trueType": {
+							"type": "reference",
+							"target": 106,
+							"typeArguments": [
+								{
+									"type": "reference",
+									"target": {
+										"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+										"qualifiedName": "TypeOf"
+									},
+									"typeArguments": [
+										{
+											"type": "reference",
+											"target": 90,
+											"name": "SuccessSchema",
+											"package": "@lit-protocol/vincent-app-sdk",
+											"refersToTypeParameter": true
+										}
+									],
+									"name": "z.infer",
+									"package": "zod",
+									"qualifiedName": "TypeOf"
+								},
+								{
+									"type": "reference",
+									"target": 92,
+									"name": "Policies",
+									"package": "@lit-protocol/vincent-app-sdk",
+									"refersToTypeParameter": true
+								}
+							],
+							"name": "ToolResponseSuccess",
+							"package": "@lit-protocol/vincent-app-sdk"
+						},
+						"falseType": {
+							"type": "reference",
+							"target": 112,
+							"typeArguments": [
+								{
+									"type": "reference",
+									"target": 92,
+									"name": "Policies",
+									"package": "@lit-protocol/vincent-app-sdk",
+									"refersToTypeParameter": true
+								}
+							],
+							"name": "ToolResponseSuccessNoResult",
+							"package": "@lit-protocol/vincent-app-sdk"
+						}
+					},
+					{
+						"type": "conditional",
+						"checkType": {
+							"type": "reference",
+							"target": 91,
+							"name": "FailSchema",
+							"package": "@lit-protocol/vincent-app-sdk",
+							"refersToTypeParameter": true
+						},
+						"extendsType": {
+							"type": "reference",
+							"target": {
+								"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+								"qualifiedName": "ZodType"
+							},
+							"name": "z.ZodType",
+							"package": "zod",
+							"qualifiedName": "ZodType"
+						},
+						"trueType": {
+							"type": "reference",
+							"target": 93,
+							"typeArguments": [
+								{
+									"type": "reference",
+									"target": {
+										"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
+										"qualifiedName": "TypeOf"
+									},
+									"typeArguments": [
+										{
+											"type": "reference",
+											"target": 91,
+											"name": "FailSchema",
+											"package": "@lit-protocol/vincent-app-sdk",
+											"refersToTypeParameter": true
+										}
+									],
+									"name": "z.infer",
+									"package": "zod",
+									"qualifiedName": "TypeOf"
+								},
+								{
+									"type": "reference",
+									"target": 92,
+									"name": "Policies",
+									"package": "@lit-protocol/vincent-app-sdk",
+									"refersToTypeParameter": true
+								}
+							],
+							"name": "ToolResponseFailure",
+							"package": "@lit-protocol/vincent-app-sdk"
+						},
+						"falseType": {
+							"type": "reference",
+							"target": 100,
+							"typeArguments": [
+								{
+									"type": "reference",
+									"target": 92,
+									"name": "Policies",
+									"package": "@lit-protocol/vincent-app-sdk",
+									"refersToTypeParameter": true
+								}
+							],
+							"name": "ToolResponseFailureNoResult",
+							"package": "@lit-protocol/vincent-app-sdk"
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": 1,
 			"name": "disconnectVincentToolClients",
 			"variant": "declaration",
 			"kind": 64,
 			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "This method closes any registered event listeners maintained by Vincent Tool Clients, allowing your process to exit gracefully."
+					}
+				],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "API Methods"
+							}
+						]
+					}
+				]
+			},
 			"sources": [
 				{
-					"fileName": "packages/libs/app-sdk/src/internal/LitNodeClient/getLitNodeClient.ts",
-					"line": 26,
-					"character": 22,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/internal/LitNodeClient/getLitNodeClient.ts#L26"
+					"fileName": "packages/libs/app-sdk/src/index.ts",
+					"line": 10,
+					"character": 6,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/index.ts#L10"
 				}
 			],
 			"signatures": [
 				{
-					"id": 54,
+					"id": 2,
 					"name": "disconnectVincentToolClients",
 					"variant": "signature",
 					"kind": 4096,
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/internal/LitNodeClient/getLitNodeClient.ts",
-							"line": 26,
-							"character": 22,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/internal/LitNodeClient/getLitNodeClient.ts#L26"
+							"fileName": "packages/libs/app-sdk/src/index.ts",
+							"line": 10,
+							"character": 6,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/index.ts#L10"
 						}
 					],
 					"type": {
@@ -2362,9 +4205,9 @@
 			"sources": [
 				{
 					"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-					"line": 295,
+					"line": 314,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L295"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L314"
 				}
 			],
 			"signatures": [
@@ -2374,297 +4217,47 @@
 					"variant": "signature",
 					"kind": 4096,
 					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "A VincentToolClient provides a type-safe interface for executing tools, for both "
+							},
+							{
+								"kind": "code",
+								"text": "`precheck()`"
+							},
+							{
+								"kind": "text",
+								"text": "\nand "
+							},
+							{
+								"kind": "code",
+								"text": "`execute()`"
+							},
+							{
+								"kind": "text",
+								"text": " functionality."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@category",
+								"content": [
+									{
+										"kind": "text",
+										"text": "API Methods"
+									}
+								]
+							}
+						]
+					},
 					"sources": [
 						{
 							"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-							"line": 295,
+							"line": 314,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L295"
-						}
-					],
-					"typeParameters": [
-						{
-							"id": 57,
-							"name": "IpfsCid",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {
-								"isConst": true
-							},
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 58,
-							"name": "ToolParamsSchema",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodType"
-								},
-								"typeArguments": [
-									{
-										"type": "intrinsic",
-										"name": "any"
-									},
-									{
-										"type": "reference",
-										"target": {
-											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-											"qualifiedName": "ZodTypeDef"
-										},
-										"name": "ZodTypeDef",
-										"package": "zod"
-									},
-									{
-										"type": "intrinsic",
-										"name": "any"
-									}
-								],
-								"name": "ZodType",
-								"package": "zod"
-							}
-						},
-						{
-							"id": 59,
-							"name": "PkgNames",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 60,
-							"name": "PolicyMap",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../tool-sdk/src/lib/toolCore/helpers/supportedPoliciesForTool.ts",
-									"qualifiedName": "ToolPolicyMap"
-								},
-								"typeArguments": [
-									{
-										"type": "intrinsic",
-										"name": "any"
-									},
-									{
-										"type": "reference",
-										"target": 59,
-										"name": "PkgNames",
-										"package": "@lit-protocol/vincent-app-sdk",
-										"refersToTypeParameter": true
-									}
-								],
-								"name": "ToolPolicyMap",
-								"package": "@lit-protocol/vincent-tool-sdk"
-							}
-						},
-						{
-							"id": 61,
-							"name": "PoliciesByPackageName",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "mapped",
-								"parameter": "K",
-								"parameterType": {
-									"type": "intrinsic",
-									"name": "string"
-								},
-								"templateType": {
-									"type": "intrinsic",
-									"name": "any"
-								}
-							}
-						},
-						{
-							"id": 62,
-							"name": "ExecuteSuccessSchema",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodType"
-								},
-								"typeArguments": [
-									{
-										"type": "intrinsic",
-										"name": "any"
-									},
-									{
-										"type": "reference",
-										"target": {
-											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-											"qualifiedName": "ZodTypeDef"
-										},
-										"name": "ZodTypeDef",
-										"package": "zod"
-									},
-									{
-										"type": "intrinsic",
-										"name": "any"
-									}
-								],
-								"name": "ZodType",
-								"package": "zod"
-							},
-							"default": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodUndefined"
-								},
-								"name": "ZodUndefined",
-								"package": "zod"
-							}
-						},
-						{
-							"id": 63,
-							"name": "ExecuteFailSchema",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodType"
-								},
-								"typeArguments": [
-									{
-										"type": "intrinsic",
-										"name": "any"
-									},
-									{
-										"type": "reference",
-										"target": {
-											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-											"qualifiedName": "ZodTypeDef"
-										},
-										"name": "ZodTypeDef",
-										"package": "zod"
-									},
-									{
-										"type": "intrinsic",
-										"name": "any"
-									}
-								],
-								"name": "ZodType",
-								"package": "zod"
-							},
-							"default": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodUndefined"
-								},
-								"name": "ZodUndefined",
-								"package": "zod"
-							}
-						},
-						{
-							"id": 64,
-							"name": "PrecheckSuccessSchema",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodType"
-								},
-								"typeArguments": [
-									{
-										"type": "intrinsic",
-										"name": "any"
-									},
-									{
-										"type": "reference",
-										"target": {
-											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-											"qualifiedName": "ZodTypeDef"
-										},
-										"name": "ZodTypeDef",
-										"package": "zod"
-									},
-									{
-										"type": "intrinsic",
-										"name": "any"
-									}
-								],
-								"name": "ZodType",
-								"package": "zod"
-							},
-							"default": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodUndefined"
-								},
-								"name": "ZodUndefined",
-								"package": "zod"
-							}
-						},
-						{
-							"id": 65,
-							"name": "PrecheckFailSchema",
-							"variant": "typeParam",
-							"kind": 131072,
-							"flags": {},
-							"type": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodType"
-								},
-								"typeArguments": [
-									{
-										"type": "intrinsic",
-										"name": "any"
-									},
-									{
-										"type": "reference",
-										"target": {
-											"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-											"qualifiedName": "ZodTypeDef"
-										},
-										"name": "ZodTypeDef",
-										"package": "zod"
-									},
-									{
-										"type": "intrinsic",
-										"name": "any"
-									}
-								],
-								"name": "ZodType",
-								"package": "zod"
-							},
-							"default": {
-								"type": "reference",
-								"target": {
-									"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-									"qualifiedName": "ZodUndefined"
-								},
-								"name": "ZodUndefined",
-								"package": "zod"
-							}
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L314"
 						}
 					],
 					"parameters": [
@@ -2692,9 +4285,9 @@
 											"sources": [
 												{
 													"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-													"line": 306,
+													"line": 325,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L306"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L325"
 												}
 											],
 											"type": {
@@ -2713,56 +4306,56 @@
 														"typeArguments": [
 															{
 																"type": "reference",
-																"target": 58,
+																"target": -1,
 																"name": "ToolParamsSchema",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 59,
+																"target": -1,
 																"name": "PkgNames",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 60,
+																"target": -1,
 																"name": "PolicyMap",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 61,
+																"target": -1,
 																"name": "PoliciesByPackageName",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 62,
+																"target": -1,
 																"name": "ExecuteSuccessSchema",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 63,
+																"target": -1,
 																"name": "ExecuteFailSchema",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 64,
+																"target": -1,
 																"name": "PrecheckSuccessSchema",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
 															},
 															{
 																"type": "reference",
-																"target": 65,
+																"target": -1,
 																"name": "PrecheckFailSchema",
 																"package": "@lit-protocol/vincent-app-sdk",
 																"refersToTypeParameter": true
@@ -2781,7 +4374,7 @@
 													},
 													{
 														"type": "reference",
-														"target": 57,
+														"target": -1,
 														"name": "IpfsCid",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
@@ -2797,12 +4390,20 @@
 											"variant": "declaration",
 											"kind": 1024,
 											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "An ethers signer that has been configured with your delegatee key"
+													}
+												]
+											},
 											"sources": [
 												{
 													"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-													"line": 321,
+													"line": 340,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L321"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L340"
 												}
 											],
 											"type": {
@@ -2829,9 +4430,9 @@
 									"sources": [
 										{
 											"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-											"line": 305,
+											"line": 324,
 											"character": 10,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L305"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L324"
 										}
 									]
 								}
@@ -2839,329 +4440,60 @@
 						}
 					],
 					"type": {
-						"type": "reflection",
-						"declaration": {
-							"id": 70,
-							"name": "__type",
-							"variant": "declaration",
-							"kind": 65536,
-							"flags": {},
-							"children": [
-								{
-									"id": 77,
-									"name": "execute",
-									"variant": "declaration",
-									"kind": 2048,
-									"flags": {},
-									"sources": [
-										{
-											"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-											"line": 428,
-											"character": 10,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L428"
-										}
-									],
-									"signatures": [
-										{
-											"id": 78,
-											"name": "execute",
-											"variant": "signature",
-											"kind": 4096,
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-													"line": 428,
-													"character": 10,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L428"
-												}
-											],
-											"parameters": [
-												{
-													"id": 79,
-													"name": "rawToolParams",
-													"variant": "param",
-													"kind": 32768,
-													"flags": {},
-													"type": {
-														"type": "reference",
-														"target": {
-															"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-															"qualifiedName": "TypeOf"
-														},
-														"typeArguments": [
-															{
-																"type": "reference",
-																"target": 58,
-																"name": "ToolParamsSchema",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															}
-														],
-														"name": "TypeOf",
-														"package": "zod"
-													}
-												},
-												{
-													"id": 80,
-													"name": "context",
-													"variant": "param",
-													"kind": 32768,
-													"flags": {},
-													"type": {
-														"type": "reference",
-														"target": {
-															"sourceFileName": "src/toolClient/types.ts",
-															"qualifiedName": "ToolClientContext"
-														},
-														"name": "ToolClientContext",
-														"package": "@lit-protocol/vincent-app-sdk"
-													}
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": {
-													"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
-													"qualifiedName": "Promise"
-												},
-												"typeArguments": [
-													{
-														"type": "reference",
-														"target": {
-															"sourceFileName": "src/toolClient/types.ts",
-															"qualifiedName": "ToolResponse"
-														},
-														"typeArguments": [
-															{
-																"type": "reference",
-																"target": 62,
-																"name": "ExecuteSuccessSchema",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															},
-															{
-																"type": "reference",
-																"target": 63,
-																"name": "ExecuteFailSchema",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															},
-															{
-																"type": "reference",
-																"target": 61,
-																"name": "PoliciesByPackageName",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															}
-														],
-														"name": "ToolResponse",
-														"package": "@lit-protocol/vincent-app-sdk"
-													}
-												],
-												"name": "Promise",
-												"package": "typescript"
-											}
-										}
-									]
-								},
-								{
-									"id": 71,
-									"name": "precheck",
-									"variant": "declaration",
-									"kind": 2048,
-									"flags": {},
-									"sources": [
-										{
-											"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-											"line": 334,
-											"character": 10,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L334"
-										}
-									],
-									"signatures": [
-										{
-											"id": 72,
-											"name": "precheck",
-											"variant": "signature",
-											"kind": 4096,
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-													"line": 334,
-													"character": 10,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L334"
-												}
-											],
-											"parameters": [
-												{
-													"id": 73,
-													"name": "rawToolParams",
-													"variant": "param",
-													"kind": 32768,
-													"flags": {},
-													"type": {
-														"type": "reference",
-														"target": {
-															"sourceFileName": "../../../node_modules/.pnpm/zod@3.25.64/node_modules/zod/dist/types/v3/types.d.ts",
-															"qualifiedName": "TypeOf"
-														},
-														"typeArguments": [
-															{
-																"type": "reference",
-																"target": 58,
-																"name": "ToolParamsSchema",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															}
-														],
-														"name": "TypeOf",
-														"package": "zod"
-													}
-												},
-												{
-													"id": 74,
-													"name": "__namedParameters",
-													"variant": "param",
-													"kind": 32768,
-													"flags": {},
-													"type": {
-														"type": "intersection",
-														"types": [
-															{
-																"type": "reference",
-																"target": {
-																	"sourceFileName": "src/toolClient/types.ts",
-																	"qualifiedName": "ToolClientContext"
-																},
-																"name": "ToolClientContext",
-																"package": "@lit-protocol/vincent-app-sdk"
-															},
-															{
-																"type": "reflection",
-																"declaration": {
-																	"id": 75,
-																	"name": "__type",
-																	"variant": "declaration",
-																	"kind": 65536,
-																	"flags": {},
-																	"children": [
-																		{
-																			"id": 76,
-																			"name": "rpcUrl",
-																			"variant": "declaration",
-																			"kind": 1024,
-																			"flags": {
-																				"isOptional": true
-																			},
-																			"sources": [
-																				{
-																					"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-																					"line": 340,
-																					"character": 8,
-																					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L340"
-																				}
-																			],
-																			"type": {
-																				"type": "intrinsic",
-																				"name": "string"
-																			}
-																		}
-																	],
-																	"groups": [
-																		{
-																			"title": "Properties",
-																			"children": [
-																				76
-																			]
-																		}
-																	],
-																	"sources": [
-																		{
-																			"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-																			"line": 339,
-																			"character": 29,
-																			"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L339"
-																		}
-																	]
-																}
-															}
-														]
-													}
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": {
-													"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
-													"qualifiedName": "Promise"
-												},
-												"typeArguments": [
-													{
-														"type": "reference",
-														"target": {
-															"sourceFileName": "src/toolClient/types.ts",
-															"qualifiedName": "ToolResponse"
-														},
-														"typeArguments": [
-															{
-																"type": "reference",
-																"target": 64,
-																"name": "PrecheckSuccessSchema",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															},
-															{
-																"type": "reference",
-																"target": 65,
-																"name": "PrecheckFailSchema",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															},
-															{
-																"type": "reference",
-																"target": 61,
-																"name": "PoliciesByPackageName",
-																"package": "@lit-protocol/vincent-app-sdk",
-																"refersToTypeParameter": true
-															}
-														],
-														"name": "ToolResponse",
-														"package": "@lit-protocol/vincent-app-sdk"
-													}
-												],
-												"name": "Promise",
-												"package": "typescript"
-											}
-										}
-									]
-								}
-							],
-							"groups": [
-								{
-									"title": "Methods",
-									"children": [
-										77,
-										71
-									]
-								}
-							],
-							"sources": [
-								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
-									"line": 333,
-									"character": 9,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L333"
-								}
-							]
-						}
+						"type": "reference",
+						"target": 70,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": -1,
+								"name": "ToolParamsSchema",
+								"package": "@lit-protocol/vincent-app-sdk",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": -1,
+								"name": "PoliciesByPackageName",
+								"package": "@lit-protocol/vincent-app-sdk",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": -1,
+								"name": "ExecuteSuccessSchema",
+								"package": "@lit-protocol/vincent-app-sdk",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": -1,
+								"name": "ExecuteFailSchema",
+								"package": "@lit-protocol/vincent-app-sdk",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": -1,
+								"name": "PrecheckSuccessSchema",
+								"package": "@lit-protocol/vincent-app-sdk",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": -1,
+								"name": "PrecheckFailSchema",
+								"package": "@lit-protocol/vincent-app-sdk",
+								"refersToTypeParameter": true
+							}
+						],
+						"name": "VincentToolClient",
+						"package": "@lit-protocol/vincent-app-sdk"
 					}
 				}
 			]
 		},
 		{
-			"id": 81,
+			"id": 117,
 			"name": "getVincentWebAppClient",
 			"variant": "declaration",
 			"kind": 64,
@@ -3176,7 +4508,7 @@
 						"kind": "inline-tag",
 						"tag": "@link",
 						"text": "VincentWebAppClient",
-						"target": 86
+						"target": 120
 					},
 					{
 						"kind": "text",
@@ -3197,7 +4529,7 @@
 						"content": [
 							{
 								"kind": "text",
-								"text": "Vincent SDK API"
+								"text": "API Methods"
 							}
 						]
 					}
@@ -3208,12 +4540,12 @@
 					"fileName": "packages/libs/app-sdk/src/app/app.ts",
 					"line": 27,
 					"character": 13,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/app.ts#L27"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/app.ts#L27"
 				}
 			],
 			"signatures": [
 				{
-					"id": 82,
+					"id": 118,
 					"name": "getVincentWebAppClient",
 					"variant": "signature",
 					"kind": 4096,
@@ -3223,165 +4555,103 @@
 							"fileName": "packages/libs/app-sdk/src/app/app.ts",
 							"line": 27,
 							"character": 38,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/app.ts#L27"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/13eb1b5d6b0ad698f8738341e8e9ada0d2b4b96b/packages/libs/app-sdk/src/app/app.ts#L27"
 						}
 					],
 					"parameters": [
 						{
-							"id": 83,
+							"id": 119,
 							"name": "appClientConfig",
 							"variant": "param",
 							"kind": 32768,
 							"flags": {},
 							"type": {
-								"type": "reflection",
-								"declaration": {
-									"id": 84,
-									"name": "__type",
-									"variant": "declaration",
-									"kind": 65536,
-									"flags": {},
-									"children": [
-										{
-											"id": 85,
-											"name": "appId",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "packages/libs/app-sdk/src/app/types.ts",
-													"line": 8,
-													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L8"
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"groups": [
-										{
-											"title": "Properties",
-											"children": [
-												85
-											]
-										}
-									],
-									"sources": [
-										{
-											"fileName": "packages/libs/app-sdk/src/app/types.ts",
-											"line": 7,
-											"character": 17,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/app/types.ts#L7"
-										}
-									]
-								}
+								"type": "reference",
+								"target": 138,
+								"name": "VincentAppClientConfig",
+								"package": "@lit-protocol/vincent-app-sdk"
 							}
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 86,
+						"target": 120,
 						"name": "VincentWebAppClient",
 						"package": "@lit-protocol/vincent-app-sdk"
 					}
 				}
 			]
-		},
-		{
-			"id": 108,
-			"name": "RedirectToVincentConsentPageParams",
-			"variant": "reference",
-			"kind": 4194304,
-			"flags": {},
-			"sources": [
-				{
-					"fileName": "packages/libs/app-sdk/src/index.ts",
-					"line": 15,
-					"character": 2,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/index.ts#L15"
-				}
-			],
-			"target": 91
-		},
-		{
-			"id": 107,
-			"name": "VincentAppClientConfig",
-			"variant": "reference",
-			"kind": 4194304,
-			"flags": {},
-			"sources": [
-				{
-					"fileName": "packages/libs/app-sdk/src/index.ts",
-					"line": 14,
-					"character": 2,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/8e21b5da26217bce6eb8963c7b9c9ea95c6a2290/packages/libs/app-sdk/src/index.ts#L14"
-				}
-			],
-			"target": 84
 		}
 	],
 	"groups": [
 		{
 			"title": "Namespaces",
 			"children": [
-				109,
-				1
+				157,
+				3
 			]
 		},
 		{
 			"title": "Interfaces",
 			"children": [
-				126,
-				29,
-				34,
-				86
+				143,
+				174,
+				140,
+				87,
+				93,
+				100,
+				106,
+				112,
+				138,
+				31,
+				36,
+				70,
+				120
+			]
+		},
+		{
+			"title": "Type Aliases",
+			"children": [
+				89
 			]
 		},
 		{
 			"title": "Functions",
 			"children": [
-				53,
+				1,
 				55,
-				81
-			]
-		},
-		{
-			"title": "References",
-			"children": [
-				108,
-				107
+				117
 			]
 		}
 	],
 	"categories": [
 		{
-			"title": "Vincent SDK API",
+			"title": "API Methods",
 			"children": [
-				109,
+				157,
+				3,
 				1,
-				81
-			]
-		},
-		{
-			"title": "Vincent Web App",
-			"children": [
-				86
-			]
-		},
-		{
-			"title": "API",
-			"children": [
-				126,
-				29,
-				34,
-				53,
 				55,
-				108,
-				107
+				117
+			]
+		},
+		{
+			"title": "Interfaces",
+			"children": [
+				143,
+				174,
+				140,
+				87,
+				93,
+				100,
+				106,
+				112,
+				138,
+				31,
+				36,
+				70,
+				120,
+				89
 			]
 		}
 	],
@@ -3551,148 +4821,148 @@
 			"qualifiedName": ""
 		},
 		"1": {
+			"sourceFileName": "src/index.ts",
+			"qualifiedName": "disconnectVincentToolClients"
+		},
+		"2": {
+			"sourceFileName": "src/internal/LitNodeClient/getLitNodeClient.ts",
+			"qualifiedName": "disconnectVincentToolClients"
+		},
+		"3": {
 			"sourceFileName": "src/jwt/index.ts",
 			"qualifiedName": ""
 		},
-		"5": {
+		"7": {
 			"sourceFileName": "src/jwt/index.ts",
 			"qualifiedName": "decode"
-		},
-		"6": {
-			"sourceFileName": "src/jwt/core/validate.ts",
-			"qualifiedName": "decode"
-		},
-		"7": {
-			"sourceFileName": "src/jwt/core/validate.ts",
-			"qualifiedName": "jwt"
 		},
 		"8": {
-			"sourceFileName": "src/jwt/index.ts",
-			"qualifiedName": "verify"
+			"sourceFileName": "src/jwt/core/validate.ts",
+			"qualifiedName": "decode"
 		},
 		"9": {
 			"sourceFileName": "src/jwt/core/validate.ts",
-			"qualifiedName": "verify"
+			"qualifiedName": "jwt"
 		},
 		"10": {
-			"sourceFileName": "src/jwt/core/validate.ts",
-			"qualifiedName": "jwt"
+			"sourceFileName": "src/jwt/index.ts",
+			"qualifiedName": "verify"
 		},
 		"11": {
 			"sourceFileName": "src/jwt/core/validate.ts",
-			"qualifiedName": "expectedAudience"
+			"qualifiedName": "verify"
 		},
 		"12": {
+			"sourceFileName": "src/jwt/core/validate.ts",
+			"qualifiedName": "jwt"
+		},
+		"13": {
+			"sourceFileName": "src/jwt/core/validate.ts",
+			"qualifiedName": "expectedAudience"
+		},
+		"14": {
 			"sourceFileName": "src/jwt/index.ts",
 			"qualifiedName": "isExpired"
 		},
-		"13": {
+		"15": {
 			"sourceFileName": "src/jwt/core/utils/isJWTExpired.ts",
 			"qualifiedName": "isExpired"
 		},
-		"14": {
+		"16": {
 			"sourceFileName": "src/jwt/core/utils/isJWTExpired.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"29": {
+		"31": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWT"
 		},
-		"30": {
+		"32": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWT.payload"
 		},
-		"31": {
+		"33": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTDecoded.header"
 		},
-		"32": {
+		"34": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTDecoded.signature"
 		},
-		"33": {
+		"35": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTDecoded.data"
 		},
-		"34": {
+		"36": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTPayload"
 		},
-		"35": {
+		"37": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTPayload.pkp"
 		},
-		"36": {
+		"38": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTPayload.app"
 		},
-		"37": {
-			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "__type"
-		},
-		"38": {
-			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "__type.id"
-		},
 		"39": {
 			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "__type.version"
+			"qualifiedName": "__type"
 		},
 		"40": {
 			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "VincentJWTPayload.authentication"
+			"qualifiedName": "__type.id"
 		},
 		"41": {
 			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "__type"
+			"qualifiedName": "__type.version"
 		},
 		"42": {
 			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "__type.type"
+			"qualifiedName": "VincentJWTPayload.authentication"
 		},
 		"43": {
 			"sourceFileName": "src/jwt/types.ts",
-			"qualifiedName": "__type.value"
+			"qualifiedName": "__type"
 		},
 		"44": {
-			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.iss"
+			"sourceFileName": "src/jwt/types.ts",
+			"qualifiedName": "__type.type"
 		},
 		"45": {
-			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.sub"
+			"sourceFileName": "src/jwt/types.ts",
+			"qualifiedName": "__type.value"
 		},
 		"46": {
 			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.aud"
+			"qualifiedName": "JWTPayload.iss"
 		},
 		"47": {
 			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.iat"
+			"qualifiedName": "JWTPayload.sub"
 		},
 		"48": {
 			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.nbf"
+			"qualifiedName": "JWTPayload.aud"
 		},
 		"49": {
 			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.exp"
+			"qualifiedName": "JWTPayload.iat"
 		},
 		"50": {
 			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.rexp"
+			"qualifiedName": "JWTPayload.nbf"
 		},
 		"51": {
 			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
-			"qualifiedName": "JWTPayload.__index"
+			"qualifiedName": "JWTPayload.exp"
+		},
+		"52": {
+			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
+			"qualifiedName": "JWTPayload.rexp"
 		},
 		"53": {
-			"sourceFileName": "src/internal/LitNodeClient/getLitNodeClient.ts",
-			"qualifiedName": "disconnectLitNodeClientInstance"
-		},
-		"54": {
-			"sourceFileName": "src/internal/LitNodeClient/getLitNodeClient.ts",
-			"qualifiedName": "disconnectLitNodeClientInstance"
+			"sourceFileName": "../../../node_modules/.pnpm/did-jwt@8.0.17/node_modules/did-jwt/src/JWT.ts",
+			"qualifiedName": "JWTPayload.__index"
 		},
 		"55": {
 			"sourceFileName": "src/toolClient/vincentToolClient.ts",
@@ -3701,42 +4971,6 @@
 		"56": {
 			"sourceFileName": "src/toolClient/vincentToolClient.ts",
 			"qualifiedName": "getVincentToolClient"
-		},
-		"57": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "IpfsCid"
-		},
-		"58": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "ToolParamsSchema"
-		},
-		"59": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "PkgNames"
-		},
-		"60": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "PolicyMap"
-		},
-		"61": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "PoliciesByPackageName"
-		},
-		"62": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "ExecuteSuccessSchema"
-		},
-		"63": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "ExecuteFailSchema"
-		},
-		"64": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "PrecheckSuccessSchema"
-		},
-		"65": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "PrecheckFailSchema"
 		},
 		"66": {
 			"sourceFileName": "src/toolClient/vincentToolClient.ts",
@@ -3755,234 +4989,402 @@
 			"qualifiedName": "__type.ethersSigner"
 		},
 		"70": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__object"
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "VincentToolClient"
 		},
 		"71": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__object.precheck"
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "VincentToolClient.precheck"
 		},
 		"72": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__object.precheck"
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "VincentToolClient.precheck"
 		},
 		"73": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/toolClient/types.ts",
 			"qualifiedName": "rawToolParams"
 		},
 		"74": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__1"
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "context"
 		},
 		"75": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/toolClient/types.ts",
 			"qualifiedName": "__type"
 		},
 		"76": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/toolClient/types.ts",
 			"qualifiedName": "__type.rpcUrl"
 		},
 		"77": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__object.execute"
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "VincentToolClient.execute"
 		},
 		"78": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__object.execute"
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "VincentToolClient.execute"
 		},
 		"79": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/toolClient/types.ts",
 			"qualifiedName": "rawToolParams"
 		},
 		"80": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/toolClient/types.ts",
 			"qualifiedName": "context"
 		},
-		"81": {
+		"87": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolClientContext"
+		},
+		"88": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolClientContext.delegatorPkpEthAddress"
+		},
+		"89": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponse"
+		},
+		"90": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "SuccessSchema"
+		},
+		"91": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "FailSchema"
+		},
+		"92": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "Policies"
+		},
+		"93": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure"
+		},
+		"94": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure.success"
+		},
+		"95": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure.error"
+		},
+		"96": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure.result"
+		},
+		"97": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure.context"
+		},
+		"98": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure.Result"
+		},
+		"99": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailure.Policies"
+		},
+		"100": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailureNoResult"
+		},
+		"101": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailureNoResult.success"
+		},
+		"102": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailureNoResult.error"
+		},
+		"103": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailureNoResult.result"
+		},
+		"104": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailureNoResult.context"
+		},
+		"105": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseFailureNoResult.Policies"
+		},
+		"106": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccess"
+		},
+		"107": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccess.success"
+		},
+		"108": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccess.result"
+		},
+		"109": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccess.context"
+		},
+		"110": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccess.Result"
+		},
+		"111": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccess.Policies"
+		},
+		"112": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccessNoResult"
+		},
+		"113": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccessNoResult.success"
+		},
+		"114": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccessNoResult.result"
+		},
+		"115": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccessNoResult.context"
+		},
+		"116": {
+			"sourceFileName": "src/toolClient/types.ts",
+			"qualifiedName": "ToolResponseSuccessNoResult.Policies"
+		},
+		"117": {
 			"sourceFileName": "src/app/app.ts",
 			"qualifiedName": "getVincentWebAppClient"
 		},
-		"82": {
+		"118": {
 			"sourceFileName": "src/app/app.ts",
 			"qualifiedName": "getVincentWebAppClient"
 		},
-		"83": {
+		"119": {
 			"sourceFileName": "src/app/app.ts",
 			"qualifiedName": "appClientConfig"
 		},
-		"84": {
-			"sourceFileName": "src/app/types.ts",
-			"qualifiedName": "VincentAppClientConfig"
-		},
-		"85": {
-			"sourceFileName": "src/app/types.ts",
-			"qualifiedName": "VincentAppClientConfig.appId"
-		},
-		"86": {
+		"120": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "VincentWebAppClient"
 		},
-		"87": {
+		"121": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "VincentWebAppClient.redirectToConsentPage"
 		},
-		"88": {
+		"122": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"89": {
+		"123": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"90": {
+		"124": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "redirectConfig"
 		},
-		"91": {
-			"sourceFileName": "src/app/types.ts",
-			"qualifiedName": "RedirectToVincentConsentPageParams"
-		},
-		"92": {
-			"sourceFileName": "src/app/types.ts",
-			"qualifiedName": "RedirectToVincentConsentPageParams.redirectUri"
-		},
-		"94": {
+		"125": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "VincentWebAppClient.isLogin"
 		},
-		"95": {
+		"126": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"96": {
+		"127": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"97": {
+		"128": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "VincentWebAppClient.decodeVincentLoginJWT"
 		},
-		"98": {
+		"129": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"99": {
+		"130": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"100": {
+		"131": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "expectedAudience"
 		},
-		"101": {
+		"132": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"102": {
+		"133": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type.decodedJWT"
 		},
-		"103": {
+		"134": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type.jwtStr"
 		},
-		"104": {
+		"135": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "VincentWebAppClient.removeLoginJWTFromURI"
 		},
-		"105": {
+		"136": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"106": {
+		"137": {
 			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "__type"
 		},
-		"107": {
-			"sourceFileName": "src/index.ts",
+		"138": {
+			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "VincentAppClientConfig"
 		},
-		"108": {
-			"sourceFileName": "src/index.ts",
+		"139": {
+			"sourceFileName": "src/app/types.ts",
+			"qualifiedName": "VincentAppClientConfig.appId"
+		},
+		"140": {
+			"sourceFileName": "src/app/types.ts",
 			"qualifiedName": "RedirectToVincentConsentPageParams"
 		},
-		"109": {
+		"141": {
+			"sourceFileName": "src/app/types.ts",
+			"qualifiedName": "RedirectToVincentConsentPageParams.redirectUri"
+		},
+		"143": {
+			"sourceFileName": "../tool-sdk/src/lib/toolCore/toolConfig/context/types.ts",
+			"qualifiedName": "BaseToolContext"
+		},
+		"144": {
+			"sourceFileName": "../tool-sdk/src/lib/toolCore/toolConfig/context/types.ts",
+			"qualifiedName": "BaseToolContext.policiesContext"
+		},
+		"145": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "BaseContext.toolIpfsCid"
+		},
+		"146": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "BaseContext.appId"
+		},
+		"147": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "BaseContext.appVersion"
+		},
+		"148": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "BaseContext.delegation"
+		},
+		"149": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type"
+		},
+		"150": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type.delegateeAddress"
+		},
+		"151": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type.delegatorPkpInfo"
+		},
+		"152": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type"
+		},
+		"153": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type.tokenId"
+		},
+		"154": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type.ethAddress"
+		},
+		"155": {
+			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"qualifiedName": "__type.publicKey"
+		},
+		"156": {
+			"sourceFileName": "../tool-sdk/src/lib/toolCore/toolConfig/context/types.ts",
+			"qualifiedName": "BaseToolContext.Policies"
+		},
+		"157": {
 			"sourceFileName": "src/express-authentication-middleware/index.ts",
 			"qualifiedName": ""
 		},
-		"110": {
+		"158": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "authenticatedRequestHandler"
 		},
-		"111": {
+		"159": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "authenticatedRequestHandler"
 		},
-		"112": {
+		"160": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "handler"
 		},
-		"113": {
+		"161": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"114": {
+		"162": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"115": {
+		"163": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "req"
 		},
-		"116": {
+		"164": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "res"
 		},
-		"117": {
+		"165": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "next"
 		},
-		"118": {
+		"166": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "getAuthenticateUserExpressHandler"
 		},
-		"119": {
+		"167": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "getAuthenticateUserExpressHandler"
 		},
-		"120": {
+		"168": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "allowedAudience"
 		},
-		"121": {
+		"169": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"122": {
+		"170": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"123": {
+		"171": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "req"
 		},
-		"124": {
+		"172": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "res"
 		},
-		"125": {
+		"173": {
 			"sourceFileName": "src/express-authentication-middleware/express.ts",
 			"qualifiedName": "next"
 		},
-		"126": {
+		"174": {
 			"sourceFileName": "src/express-authentication-middleware/types.ts",
 			"qualifiedName": "ExpressAuthHelpers"
 		},
-		"127": {
+		"175": {
 			"sourceFileName": "src/express-authentication-middleware/types.ts",
 			"qualifiedName": "ExpressAuthHelpers.AuthenticatedRequestHandler"
 		},
-		"128": {
+		"176": {
 			"sourceFileName": "src/express-authentication-middleware/types.ts",
 			"qualifiedName": "ExpressAuthHelpers.AuthenticatedRequest"
 		}
@@ -3995,8 +5397,8 @@
 		},
 		"reflections": {
 			"1": 0,
-			"2": 1,
-			"3": 109
+			"2": 3,
+			"3": 157
 		}
 	}
 }

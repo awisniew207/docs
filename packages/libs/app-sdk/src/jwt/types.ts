@@ -46,6 +46,8 @@ export interface JWTConfig {
  * @property {string} app - The app associated with the JWT.
  * @property {string} pkp - The PKP associated with the JWT.
  * @property {string} authentication - The authentication method used to generate the JWT.
+ *
+ * @category Interfaces
  */
 export interface VincentJWTPayload extends JWTPayload {
   pkp: IRelayPKP;
@@ -65,6 +67,8 @@ export interface VincentJWTPayload extends JWTPayload {
  * @interface VincentJWT
  * @extends { JWTDecoded } Extends the payload provided by the JWTDecoded type from `did-jwt` with Vincent-specific properties
  * @property {VincentJWTPayload} payload - The payload of the JWT
+ *
+ * @category Interfaces
  */
 export interface VincentJWT extends JWTDecoded {
   payload: VincentJWTPayload;

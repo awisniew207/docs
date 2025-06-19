@@ -1,5 +1,4 @@
 ---
-category: Intro
 title: Why Vincent?
 ---
 

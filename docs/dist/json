@@ -14,15 +14,16 @@
 			"content": [
 				{
 					"kind": "text",
-					"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [quick start]("
+					"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [Getting Started]("
 				},
 				{
 					"kind": "relative-link",
-					"text": "../docs/Developers/Quick-Start.md"
+					"text": "./Developers/Getting-Started.md",
+					"target": 1
 				},
 				{
 					"kind": "text",
-					"text": ").\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
+					"text": ") page.\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
 				}
 			],
 			"frontmatter": {
@@ -67,7 +68,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./App-Agent-Developers/Getting-Started.md",
-					"target": 3
+					"target": 4
 				},
 				{
 					"kind": "text",
@@ -76,7 +77,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -85,7 +86,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Policy-Developers/Getting-Started.md",
-					"target": 5
+					"target": 6
 				},
 				{
 					"kind": "text",
@@ -153,7 +154,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Policy-Developers/Getting-Started.md",
-					"target": 5
+					"target": 6
 				},
 				{
 					"kind": "text",
@@ -178,7 +179,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -203,7 +204,7 @@
 				{
 					"kind": "relative-link",
 					"text": "./Getting-Started.md",
-					"target": 3
+					"target": 4
 				},
 				{
 					"kind": "text",
@@ -428,7 +429,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -437,7 +438,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Policy-Developers/Getting-Started.md",
-					"target": 5
+					"target": 6
 				},
 				{
 					"kind": "text",
@@ -569,7 +570,23 @@
 				},
 				{
 					"kind": "text",
-					"text": "\n5. The verified JWT can now be stored and used to:\n   - Authenticate requests to your backend APIs\n   - Execute Vincent Tools on behalf of the User\n\n# How the Vincent Web App Client Works\n\nThe "
+					"text": " in your frontend\n   - **Note:** For your backend it's **critical** that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method from the "
+				},
+				{
+					"kind": "code",
+					"text": "`@lit-protocol/vincent-app-sdk`"
+				},
+				{
+					"kind": "text",
+					"text": " package, and as shown [here](#verifying-the-vincent-jwt-on-your-backend).\n5. The verified JWT can now be stored and used to:\n   - Authenticate requests to your backend APIs\n   - Execute Vincent Tools on behalf of the User\n\n# How the Vincent Web App Client Works\n\nThe "
 				},
 				{
 					"kind": "code",
@@ -724,7 +741,55 @@
 				},
 				{
 					"kind": "text",
-					"text": ") you've configured for your App.\n\n# Wrapping Up\n\nBy integrating the Vincent Web App Client, your App now supports secure authentication for Vincent Users.\n\nYou’ve learned how to:\n\n- Redirect users to the Vincent Consent Page using "
+					"text": ") you've configured for your App.\n\n## Verifying the Vincent JWT on your backend\n\nIt's critical that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method from the "
+				},
+				{
+					"kind": "code",
+					"text": "`@lit-protocol/vincent-app-sdk`"
+				},
+				{
+					"kind": "text",
+					"text": " package, and as shown here:\n\n"
+				},
+				{
+					"kind": "code",
+					"text": "```typescript\nimport { jwt } from '@lit-protocol/vincent-app-sdk';\n\nconst { verify } = jwt;\n\nconst vincentJwtSubmittedToBackend = '...';\nconst jwtAudience = 'https://my-redirect-uri.com';\n\nconst decodedVincentJWT = verify(vincentJwtSubmittedToBackend, jwtAudience);\n```"
+				},
+				{
+					"kind": "text",
+					"text": "\n\nWhere the "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method takes two arguments:\n\n- The Vincent JWT string that was returned to you by the Vincent Consent flow\n- The "
+				},
+				{
+					"kind": "code",
+					"text": "`jwtAudience`"
+				},
+				{
+					"kind": "text",
+					"text": " string, which is the redirect URI that received the JWT from the Vincent Consent Page\n\nThe "
+				},
+				{
+					"kind": "code",
+					"text": "`verify`"
+				},
+				{
+					"kind": "text",
+					"text": " method will throw an error if the JWT is invalid, expired, or mis-scoped, otherwise it's considered valid and was created specifically for your App.\n\n# Wrapping Up\n\nBy integrating the Vincent Web App Client, your App now supports secure authentication for Vincent Users.\n\nYou’ve learned how to:\n\n- Redirect users to the Vincent Consent Page using "
 				},
 				{
 					"kind": "code",
@@ -762,7 +827,7 @@
 				{
 					"kind": "relative-link",
 					"text": "../Tool-Developers/Getting-Started.md",
-					"target": 4
+					"target": 5
 				},
 				{
 					"kind": "text",
@@ -907,7 +972,9 @@
 				},
 				{
 					"kind": "relative-link",
-					"text": "./Quick-Start.md#2-registering-an-app-using-the-app-dashboard"
+					"text": "./Creating-Apps.md#adding-delegatees-to-your-app",
+					"target": 7,
+					"targetAnchor": "adding-delegatees-to-your-app"
 				},
 				{
 					"kind": "text",
@@ -1315,7 +1382,8 @@
 				},
 				{
 					"kind": "relative-link",
-					"text": "./Creating-Tools.md"
+					"text": "../Tool-Developers/Creating-Tools.md",
+					"target": 10
 				},
 				{
 					"kind": "text",
@@ -1323,7 +1391,8 @@
 				},
 				{
 					"kind": "relative-link",
-					"text": "./Creating-Policies.md"
+					"text": "../Policy-Developers/Creating-Policies.md",
+					"target": 11
 				},
 				{
 					"kind": "text",
@@ -4121,26 +4190,27 @@
 	"readme": [
 		{
 			"kind": "text",
-			"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [quick start]("
+			"text": "# Start Here\n\nVincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n[Demo](https://demo.heyvincent.ai/) |\n[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)\n\n## Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n## Get Started in Minutes\n\nIf you're a developer looking to deploy your first Vincent-enabled application or tool, head on over to the [Getting Started]("
 		},
 		{
 			"kind": "relative-link",
-			"text": "../docs/Developers/Quick-Start.md"
+			"text": "./Developers/Getting-Started.md",
+			"target": 1
 		},
 		{
 			"kind": "text",
-			"text": ").\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
+			"text": ") page.\n\nIf you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).\n\n## Support\n\nIf you have any issues with the Vincent SDK, general questions about Vincent, or specific feature requests, please post them on the official [Vincent GitHub Repo](https://github.com/LIT-Protocol/Vincent/issues).\n\n## Join the Community\n\nWe want to hear from you! Join the [official Lit Protocol builders channel](https://t.me/c/2038294753/1) on Telegram to join the conversation and share your feedback.\n\nTo stay up to date on the latest updates, follow Lit on [X](https://x.com/LitProtocol)."
 		}
 	],
 	"symbolIdMap": {},
 	"files": {
 		"entries": {
-			"1": "docs/src/Why-Vincent.md",
-			"2": "docs/src/Concepts.md",
-			"3": "docs/src/Developers/App-Agent-Developers/Getting-Started.md",
-			"4": "docs/src/Developers/Tool-Developers/Getting-Started.md",
-			"5": "docs/src/Developers/Policy-Developers/Getting-Started.md",
-			"6": "docs/src/Developers/Getting-Started.md",
+			"1": "docs/src/Developers/Getting-Started.md",
+			"2": "docs/src/Why-Vincent.md",
+			"3": "docs/src/Concepts.md",
+			"4": "docs/src/Developers/App-Agent-Developers/Getting-Started.md",
+			"5": "docs/src/Developers/Tool-Developers/Getting-Started.md",
+			"6": "docs/src/Developers/Policy-Developers/Getting-Started.md",
 			"7": "docs/src/Developers/App-Agent-Developers/Creating-Apps.md",
 			"8": "docs/src/Developers/App-Agent-Developers/Auth-Users.md",
 			"9": "docs/src/Developers/App-Agent-Developers/Executing-Tools.md",
@@ -4159,12 +4229,12 @@
 			"22": "docs/src/Contact-Us.md"
 		},
 		"reflections": {
-			"1": 1,
-			"2": 2,
-			"3": 4,
-			"4": 5,
-			"5": 6,
-			"6": 3,
+			"1": 3,
+			"2": 1,
+			"3": 2,
+			"4": 4,
+			"5": 5,
+			"6": 6,
 			"7": 7,
 			"8": 8,
 			"9": 9,

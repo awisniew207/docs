@@ -370,6 +370,7 @@ export type ToolLifecycleFunction<
  * @typeParam ExecuteFn {@removeTypeParameterCompletely}
  * @typeParam PrecheckFn {@removeTypeParameterCompletely}
  *
+ * @category Interfaces
  */
 export type VincentTool<
   ToolParamsSchema extends z.ZodType,

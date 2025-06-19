@@ -61,6 +61,7 @@ import {
   type ToolClientContext,
   type ToolResponse,
   type RemoteVincentToolExecutionResult,
+  type VincentToolClient,
 } from './types';
 
 import { isRemoteVincentToolExecutionResult, isToolResponseFailure } from './typeGuards';
@@ -307,8 +308,9 @@ async function runToolPolicyPrechecks<
  *
  * @param params
  * @param {ethers.Signer} params.ethersSigner  - An ethers signer that has been configured with your delegatee key
- * @param {BundledVincentTool} params.bundledVincentTool - The bundled vincent tool
- */
+ *
+ * @category API Methods
+ * */
 export function getVincentToolClient<
   const IpfsCid extends string,
   ToolParamsSchema extends z.ZodType,
@@ -336,7 +338,14 @@ export function getVincentToolClient<
     IpfsCid
   >;
   ethersSigner: ethers.Signer;
-}) {
+}): VincentToolClient<
+  ToolParamsSchema,
+  PoliciesByPackageName,
+  ExecuteSuccessSchema,
+  ExecuteFailSchema,
+  PrecheckSuccessSchema,
+  PrecheckFailSchema
+> {
   const { bundledVincentTool, ethersSigner } = params;
   const { ipfsCid, vincentTool } = bundledVincentTool;
 

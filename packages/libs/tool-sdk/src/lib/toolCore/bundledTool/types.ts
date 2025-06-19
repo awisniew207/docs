@@ -14,6 +14,8 @@ export type __bundledToolBrand = typeof __bundledToolBrand;
  *
  * @typeParam VT - The Vincent Tool that was bundled for usage
  * @typeParam IpfsCid - The IPFS CID that the bundled tool was published to
+ *
+ * @category Interfaces
  */
 export type BundledVincentTool<
   VT extends VincentTool<any, any, any, any, any, any, any, any, any, any>,
