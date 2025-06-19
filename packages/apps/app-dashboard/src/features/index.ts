@@ -5,17 +5,14 @@ const getEnvironment = (): string => {
   if (typeof window !== 'undefined') {
     const url = window.location.href;
     const env = url.includes('vercel') ? 'STAGING' : 'PRODUCTION';
-    console.log('🔍 Environment Detection:', { url, env });
     return env;
   }
-  console.log('🔍 Server-side fallback: PRODUCTION');
   return 'PRODUCTION';
 };
 
 const envVarName = 'VITE_NEW_DASHBOARD';
 const detectedEnv = getEnvironment();
 
-// Custom implementation that bypasses process.env lookup
 function getFeatureFlagsWithEnvironment(environment: string): Features {
   const featureState = Flags;
 
@@ -50,8 +47,6 @@ function getFeatureFlagsWithEnvironment(environment: string): Features {
     },
   });
 }
-
-console.log('🔍 Using environment directly:', detectedEnv);
 
 const Features = getFeatureFlagsWithEnvironment(detectedEnv);
 
