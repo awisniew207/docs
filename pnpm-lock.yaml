@@ -11,9 +11,6 @@ importers:
 
   .:
     dependencies:
-      '@lit-protocol/flags':
-        specifier: ^1.0.0
-        version: 1.0.5
       tslib:
         specifier: 2.8.1
         version: 2.8.1
@@ -24,6 +21,9 @@ importers:
       '@eslint/js':
         specifier: ^9.25.1
         version: 9.29.0
+      '@lit-protocol/flags':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@nx/esbuild':
         specifier: 20.8.0
         version: 20.8.0(@babel/traverse@7.27.4)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.5.29(@swc/helpers@0.5.17))(esbuild@0.19.12)(nx@20.8.0(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.5.29(@swc/helpers@0.5.17)))
@@ -392,6 +392,9 @@ importers:
 
   packages/apps/registry-backend:
     dependencies:
+      '@lit-protocol/flags':
+        specifier: 2.0.0
+        version: 2.0.0
       '@lit-protocol/vincent-registry-sdk':
         specifier: ^1.0.2
         version: 1.0.2(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
@@ -2110,8 +2113,8 @@ packages:
   '@lit-protocol/crypto@7.2.0':
     resolution: {integrity: sha512-Y1UyofhMXAHwbu6R14CZIHoEbXvVHrvD8kiL6C4LX0bYvfCsm73XEvTAQc80uRIg6GhfZHNBgqdaGpwJ2YjX8A==}
 
-  '@lit-protocol/flags@1.0.5':
-    resolution: {integrity: sha512-E7NZJi/6A710UgDQzoWCeYLUPaktG6+iJ12b+z/lmUS4+QYd8z7J5vo5CnqiRCwEFi5zU2DvT867MellCbGueQ==}
+  '@lit-protocol/flags@2.0.0':
+    resolution: {integrity: sha512-EbeNHZQgNxwPADrLOXHW5GP6HaXGjlMDq6FYvQiX5mG5ogYouu1CdWzfIv8oRqKmHlg/RUgU/8OWn9gBR9afZw==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
     hasBin: true
 
@@ -4615,6 +4618,7 @@ packages:
 
   bun@1.2.16:
     resolution: {integrity: sha512-sjZH6rr1P6yu44+XPA8r+ZojwmK9Kbz9lO6KAA/4HRIupdpC31k7b93crLBm19wEYmd6f2+3+57/7tbOcmHbGg==}
+    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -12176,7 +12180,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@lit-protocol/flags@1.0.5': {}
+  '@lit-protocol/flags@2.0.0': {}
 
   '@lit-protocol/lit-auth-client@7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:

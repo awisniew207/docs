@@ -33,12 +33,12 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@lit-protocol/flags": "^1.0.0",
     "tslib": "2.8.1"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.44.2",
     "@eslint/js": "^9.25.1",
+    "@lit-protocol/flags": "^2.0.0",
     "@nx/esbuild": "20.8.0",
     "@nx/eslint": "20.8.0",
     "@nx/eslint-plugin": "20.8.0",
