@@ -13,11 +13,11 @@ Vincent Users don’t just delegate to your App, they delegate to a specific App
 
 # When Should You Create a New Version?
 
-As the Vincent App Manager, you can create a new version of your App whenever you want to. Some common occurrences of when you'll need to create a new Version are when you want to:
+As the Vincent App Manager, you can create a new version of your App whenever you want to. Some common occasions of when you'll need to create a new Version are:
 
-- Add new Vincent Tools or remove existing ones
-- Upgrade existing Tools to newer iterations
-- Change or add the Vincent Policies available to be used with your App's selected Tools
+- Adding new Vincent Tools or removing existing ones
+- Upgrading existing Tools to newer iterations
+- Changing or adding the Vincent Policies available to be used with your App's selected Tools
 
 ## When a New Version isn't Required
 
