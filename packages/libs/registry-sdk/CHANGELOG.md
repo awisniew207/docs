@@ -1,3 +1,23 @@
+## 1.0.3 (2025-06-19)
+
+### 🩹 Fixes
+
+- Fix regression in OpenAPI spec - remove /api/v1 prefix ([bcc809b7](https://github.com/LIT-Protocol/Vincent/commit/bcc809b7))
+- Fixed the response of POST /policy to only return the Policy, not the PolicyVersion ([455702af](https://github.com/LIT-Protocol/Vincent/commit/455702af))
+
+  Added a new ChangeOwner schema for changing the owner address of tools and policies
+  Added appId property on CreateApp. We need this because:
+  The contract will generate the unique appId, which is sent by the client to our registry
+  New EditApp schema. The OpenAPI spec was using the schema for CreateApp, but since it'll include an appId, tools, and policies, we can no longer use it. It also removes managerAddress from the schema, since (I believe) we decided that it cannot be changed as the app manager
+  Created a simple GetToolPolicy schema in base.ts. Since the packageName is part of the route parameters and not the request body, we can't have a shared schema for the OpenAPI routes and rendering forms on the FE here. Because of this, we'll use this simple schema for the forms, and it will take the given packageName and use it as a route parameter. I couldn't think of a implementation for this that allows for a shared schema without making packageName part of the request body. This will cover rendering forms for GET tool/policy version(s)
+
+- Add `creationSchemas` export with ZOD schemas for creation payloads ([455702af](https://github.com/LIT-Protocol/Vincent/commit/455702af))
+- Add `version` to policy creation schema ([455702af](https://github.com/LIT-Protocol/Vincent/commit/455702af))
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 1.0.2 (2025-06-01)
 
 ### 🩹 Fixes
