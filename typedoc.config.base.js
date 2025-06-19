@@ -8,7 +8,12 @@
 
 module.exports = {
   $schema: 'https://typedoc.org/schema.json',
-  plugin: ['typedoc-material-theme', 'typedoc-plugin-extras', 'typedoc-plugin-zod'],
+  plugin: [
+    'typedoc-material-theme',
+    'typedoc-plugin-extras',
+    'typedoc-plugin-zod',
+    './typedoc-remove-type-params-plugin.mjs',
+  ],
   externalSymbolLinkMappings: {
     '@lit-protocol/types': {
       '*': 'https://v7-api-doc-lit-js-sdk.vercel.app/modules/types_src.html',

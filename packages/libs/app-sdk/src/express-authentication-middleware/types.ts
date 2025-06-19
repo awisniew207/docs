@@ -34,6 +34,9 @@ export interface AuthenticatedRequest<P = any, ResBody = any, ReqBody = any, Req
   };
 }
 
+/**
+ * @category Interfaces
+ */
 export interface ExpressAuthHelpers {
   AuthenticatedRequestHandler: AuthenticatedRequestHandler;
   AuthenticatedRequest: AuthenticatedRequest;

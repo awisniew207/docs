@@ -1,4 +1,4 @@
-// src/lib/policyDef/context/policyDefContext.ts
+// src/lib/policyConfig/context/policyConfigContext.ts
 
 import { z } from 'zod';
 import { BaseContext } from '../../../types';
@@ -25,7 +25,7 @@ interface CreatePolicyContextParams<
  * Creates a policy execution context to be passed into lifecycle methods
  * like `evaluate`, `precheck`, and `commit`. This context includes strongly
  * typed `allow()` and `deny()` helpers based on optional Zod schemas, and is used
- * internally by VincentPolicyDef wrappers to standardize response structure.
+ * internally by VincentPolicyConfig wrappers to standardize response structure.
  */
 export function createPolicyContext<
   AllowSchema extends z.ZodType = z.ZodUndefined,

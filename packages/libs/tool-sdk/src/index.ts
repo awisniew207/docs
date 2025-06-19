@@ -11,10 +11,10 @@ export { supportedPoliciesForTool } from './lib/toolCore/helpers/supportedPolici
 export type { BundledVincentPolicy } from './lib/policyCore/bundledPolicy/types';
 export type { BundledVincentTool } from './lib/toolCore/bundledTool/types';
 export type {
-  PolicyDefLifecycleFunction,
-  PolicyDefCommitFunction,
-} from './lib/policyCore/policyDef/types';
-export type { PolicyContext } from './lib/policyCore/policyDef/context/types';
+  PolicyConfigLifecycleFunction,
+  PolicyConfigCommitFunction,
+} from './lib/policyCore/policyConfig/types';
+export type { PolicyContext } from './lib/policyCore/policyConfig/context/types';
 
 export type {
   VincentToolPolicy,
@@ -25,4 +25,4 @@ export type {
   PolicyConsumerContext,
 } from './lib/types';
 
-export type { BaseToolContext } from './lib/toolCore/toolDef/context/types';
+export type { BaseToolContext } from './lib/toolCore/toolConfig/context/types';

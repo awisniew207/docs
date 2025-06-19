@@ -53,7 +53,9 @@
     "typedoc:watch:json": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm typedoc --watch --logLevel Verbose --options ./typedoc.json.config.js"],
+        "commands": [
+          "pnpm typedoc --watch --logLevel Verbose --options ./typedoc-configs/json.config.js"
+        ],
         "cwd": "{projectRoot}",
         "tty": true
       }

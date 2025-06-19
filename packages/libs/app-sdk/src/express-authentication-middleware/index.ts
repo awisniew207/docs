@@ -36,7 +36,7 @@
  * {@includeCode ./express.ts#expressHandlerTSDocExample}
  *
  * @module expressAuthHelpers
- * @category Vincent SDK API
+ * @category API Methods
  * */
 
 import { authenticatedRequestHandler, getAuthenticateUserExpressHandler } from './express';

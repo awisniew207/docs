@@ -32,7 +32,7 @@ const policy1CommitAllowResult = z.object({ success: z.boolean() });
 const policy1CommitDenyResult = z.object({ errorCode: z.number() });
 
 // Create policies with full type inference
-const policyDef1 = createVincentPolicy({
+const PolicyConfig1 = createVincentPolicy({
   packageName: 'extra-rate-limit' as const,
   toolParamsSchema: policy1Schema,
   userParamsSchema: userParams1Schema,
@@ -79,7 +79,7 @@ const policyDef1 = createVincentPolicy({
 const policy1 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
-    policyDef1,
+    PolicyConfig1,
     'QmX7Dqn4zYhJVvXYwKr8cFX5Xp7gVpqK5r8QHwvF8zYjXa' as const,
   ),
   toolParameterMappings: {
@@ -110,7 +110,7 @@ const policy2CommitAllowResult = z.object({
 });
 const policy2CommitDenyResult = z.object({ failureReason: z.string() });
 
-const policyDef2 = createVincentPolicy({
+const PolicyConfig2 = createVincentPolicy({
   packageName: 'rate-limit' as const,
   toolParamsSchema: policy2Schema,
   userParamsSchema: userParams2Schema,
@@ -170,7 +170,7 @@ const policyDef2 = createVincentPolicy({
 const policy2 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
-    policyDef2,
+    PolicyConfig2,
     'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' as const,
   ),
   toolParameterMappings: {
@@ -202,7 +202,7 @@ const policy3EvalDenyResult = z.object({
 });
 
 // Create policy3 without a commit function
-const policyDef3 = createVincentPolicy({
+const PolicyConfig3 = createVincentPolicy({
   packageName: 'vincent-tool-sdk' as const,
   toolParamsSchema: policy3ToolParams,
   userParamsSchema: policy3UserParams,
@@ -234,7 +234,7 @@ const policyDef3 = createVincentPolicy({
 const policy3 = createVincentToolPolicy({
   toolParamsSchema: myToolSchema,
   bundledVincentPolicy: asBundledVincentPolicy(
-    policyDef3,
+    PolicyConfig3,
     'QmYwAasdPJzv5CZA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' as const,
   ),
   toolParameterMappings: {

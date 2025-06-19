@@ -13,7 +13,7 @@ import {
  *
  * @category Interfaces
  */
-export type PolicyDefLifecycleFunction<
+export type PolicyConfigLifecycleFunction<
   ToolParams extends z.ZodType,
   UserParams extends z.ZodType = z.ZodUndefined,
   AllowResult extends z.ZodType = z.ZodUndefined,
@@ -40,7 +40,7 @@ export type PolicyDefLifecycleFunction<
  *
  * @category Interfaces
  */
-export type PolicyDefCommitFunction<
+export type PolicyConfigCommitFunction<
   CommitParams extends z.ZodType = z.ZodUndefined,
   CommitAllowResult extends z.ZodType = z.ZodUndefined,
   CommitDenyResult extends z.ZodType = z.ZodUndefined,
@@ -58,8 +58,20 @@ export type PolicyDefCommitFunction<
   >
 >;
 
-/** @inline */
-export type VincentPolicyDef<
+/**
+ * @typeParam PackageName {@removeTypeParameterCompletely}
+ * @typeParam PolicyToolParams {@removeTypeParameterCompletely}
+ * @typeParam UserParams {@removeTypeParameterCompletely}
+ * @typeParam PrecheckAllowResult {@removeTypeParameterCompletely}
+ * @typeParam PrecheckDenyResult {@removeTypeParameterCompletely}
+ * @typeParam EvalAllowResult {@removeTypeParameterCompletely}
+ * @typeParam EvalDenyResult {@removeTypeParameterCompletely}
+ * @typeParam CommitParams {@removeTypeParameterCompletely}
+ * @typeParam CommitAllowResult {@removeTypeParameterCompletely}
+ * @typeParam CommitDenyResult {@removeTypeParameterCompletely}
+ * @typeParam CommitDenyResult {@removeTypeParameterCompletely}
+ */
+export type VincentPolicyConfig<
   PackageName extends string,
   PolicyToolParams extends z.ZodType,
   UserParams extends z.ZodType = z.ZodUndefined,
@@ -70,7 +82,7 @@ export type VincentPolicyDef<
   CommitParams extends z.ZodType = z.ZodUndefined,
   CommitAllowResult extends z.ZodType = z.ZodUndefined,
   CommitDenyResult extends z.ZodType = z.ZodUndefined,
-  EvaluateFn = PolicyDefLifecycleFunction<
+  EvaluateFn = PolicyConfigLifecycleFunction<
     PolicyToolParams,
     UserParams,
     EvalAllowResult,
@@ -78,13 +90,15 @@ export type VincentPolicyDef<
   >,
   PrecheckFn =
     | undefined
-    | PolicyDefLifecycleFunction<
+    | PolicyConfigLifecycleFunction<
         PolicyToolParams,
         UserParams,
         PrecheckAllowResult,
         PrecheckDenyResult
       >,
-  CommitFn = undefined | PolicyDefCommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
+  CommitFn =
+    | undefined
+    | PolicyConfigCommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>,
 > = {
   packageName: PackageName;
   toolParamsSchema: PolicyToolParams;

@@ -1,4 +1,4 @@
-// src/lib/toolCore/toolDef/context/resultCreators.ts
+// src/lib/toolCore/toolConfig/context/resultCreators.ts
 
 import {
   ContextSuccess,

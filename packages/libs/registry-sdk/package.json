@@ -4,6 +4,9 @@
   "description": "Vincent Registry API definitions and generated code",
   "packageManager": "pnpm@10.7.0",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "generate-openapi": "pnpx ts-node src/utils/generate-openapi.ts",
     "generate-rtk-client": "pnpx @rtk-query/codegen-openapi rtk-client-config.js",
