@@ -60,3 +60,66 @@
   text-indent: -9999px;
   overflow: hidden;
 }
+
+/* Warning box styling */
+.warning-box {
+  background-color: #fff3cd;
+  border-left: 8px solid #f39c12;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark theme overrides */
+[data-theme='dark'] .warning-box {
+  background-color: #2d1f0f;
+  border-left: 8px solid #f1c40f;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* OS theme overrides */
+@media (prefers-color-scheme: dark) {
+  .warning-box {
+    background-color: #2d1f0f;
+    border-left: 8px solid #f1c40f;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Warning box title */
+.warning-box-title {
+  color: #d68910;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+/* Dark theme title override */
+[data-theme='dark'] .warning-box-title {
+  color: #f1c40f;
+}
+
+/* OS theme title overrides */
+@media (prefers-color-scheme: dark) {
+  .warning-box-title {
+    color: #f1c40f;
+  }
+}
+
+/* Warning icon - using inline SVG data URI */
+.warning-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath d='M12 2L1.5 21h21L12 2z' fill='%23f39c12'/%3E%3Cpath d='M12 8v6' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='18' r='1' fill='white'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  text-indent: -9999px;
+  overflow: hidden;
+}
