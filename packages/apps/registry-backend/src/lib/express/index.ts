@@ -4,7 +4,7 @@ import cors from 'cors';
 import express, { type Express } from 'express';
 import * as OpenApiValidator from 'express-openapi-validator';
 
-import { openApiJson } from '@lit-protocol/vincent-rest-api';
+import { openApiJson } from '@lit-protocol/vincent-registry-sdk';
 
 import { env } from '../../env';
 import { registerRoutes as registerToolRoutes } from './tool/routes';

@@ -31,7 +31,7 @@
 
 ### ⚠️ Breaking Changes
 
-- ## Initial Release: vincent-rest-api ([13d6bf5](https://github.com/LIT-Protocol/Vincent/commit/13d6bf5))
+- ## Initial Release: vincent-registry-sdk ([13d6bf5](https://github.com/LIT-Protocol/Vincent/commit/13d6bf5))
 
   ### Features
 
