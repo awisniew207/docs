@@ -65,10 +65,6 @@
       "generatorOptions": {
         "preserveLocalDependencyProtocols": true
       }
-    },
-    "git": {
-      "tagArgs": "-f",
-      "pushArgs": "--force-with-lease"
     }
   },
   "targetDefaults": {
