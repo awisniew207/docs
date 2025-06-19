@@ -7,6 +7,7 @@ const toolSchema = new Schema(
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
     activeVersion: { type: String, required: true },
+    isDeleted: { type: Boolean, default: false },
   } as const,
   { timestamps: true },
 );
@@ -48,6 +49,7 @@ export const toolVersionSchema = new Schema(
     // FIXME: Should these last 2 be [{ packageName, version}]?
     supportedPolicies: [{ type: String }],
     policiesNotInRegistry: [{ type: String }],
+    isDeleted: { type: Boolean, default: false },
   } as const,
   { timestamps: true },
 );

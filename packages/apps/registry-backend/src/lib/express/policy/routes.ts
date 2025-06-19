@@ -4,6 +4,7 @@ import { requirePolicyVersion, withPolicyVersion } from './requirePolicyVersion'
 
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
+import { Features } from '../../../features';
 
 export function registerRoutes(app: Express) {
   // List all policies
@@ -160,10 +161,14 @@ export function registerRoutes(app: Express) {
     await withSession(async (mongoSession) => {
       const { packageName } = req.params;
 
-      // FIXME: Would be nice if this was an atomic transaction
       await mongoSession.withTransaction(async (session) => {
-        await Policy.findOneAndDelete({ packageName }).session(session);
-        await PolicyVersion.deleteMany({ packageName }).session(session);
+        if (Features.HARD_DELETE_DOCS) {
+          await Policy.findOneAndDelete({ packageName }).session(session);
+          await PolicyVersion.deleteMany({ packageName }).session(session);
+        } else {
+          await Policy.updateMany({ packageName }, { isDeleted: true }).session(session);
+          await PolicyVersion.updateMany({ packageName }, { isDeleted: true }).session(session);
+        }
       });
       res.json({ message: 'Policy and associated versions deleted successfully' });
       return;

@@ -7,6 +7,7 @@ const policySchema = new Schema(
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
     activeVersion: { type: String, required: true },
+    isDeleted: { type: Boolean, default: false },
   } as const,
   { timestamps: true },
 );
@@ -46,6 +47,7 @@ export const policyVersionSchema = new Schema(
       uiSchema: { type: String, required: true },
       jsonSchema: { type: String, required: true },
     },
+    isDeleted: { type: Boolean, default: false },
   } as const,
   { timestamps: true },
 );

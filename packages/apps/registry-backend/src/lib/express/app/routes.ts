@@ -4,6 +4,7 @@ import type { Express } from 'express';
 import { requireApp, withApp } from './requireApp';
 import { requireAppVersion, withAppVersion } from './requireAppVersion';
 import { withSession } from '../../mongo/withSession';
+import { Features } from '../../../features';
 
 const NEW_APP_APPVERSION = 1;
 
@@ -224,9 +225,15 @@ export function registerRoutes(app: Express) {
       const { appId } = req.params;
 
       await mongoSession.withTransaction(async (session) => {
-        await App.findOneAndDelete({ appId }).session(session);
-        await AppVersion.deleteMany({ appId }).session(session);
-        await AppTool.deleteMany({ appId }).session(session);
+        if (Features.HARD_DELETE_DOCS) {
+          await App.findOneAndDelete({ appId }).session(session);
+          await AppVersion.deleteMany({ appId }).session(session);
+          await AppTool.deleteMany({ appId }).session(session);
+        } else {
+          await App.updateMany({ appId }, { isDeleted: true }).session(session);
+          await AppVersion.updateMany({ appId }, { isDeleted: true }).session(session);
+          await AppTool.updateMany({ appId }, { isDeleted: true }).session(session);
+        }
       });
 
       res.json({ message: 'App and associated data deleted successfully' });

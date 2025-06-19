@@ -6,6 +6,7 @@ import { getPackageInfo } from '../../npm';
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
 import { generateRandomCid } from '../../util';
+import { Features } from '../../../features';
 
 export function registerRoutes(app: Express) {
   // Get all tools
@@ -180,8 +181,13 @@ export function registerRoutes(app: Express) {
       const { packageName } = req.params;
 
       await mongoSession.withTransaction(async (session) => {
-        await Tool.findOneAndDelete({ packageName }).session(session);
-        await ToolVersion.deleteMany({ packageName }).session(session);
+        if (Features.HARD_DELETE_DOCS) {
+          await Tool.findOneAndDelete({ packageName }).session(session);
+          await ToolVersion.deleteMany({ packageName }).session(session);
+        } else {
+          await Tool.updateMany({ packageName }, { isDeleted: true }).session(session);
+          await ToolVersion.updateMany({ packageName }, { isDeleted: true }).session(session);
+        }
       });
 
       res.json({ message: 'Tool and associated versions deleted successfully' });
