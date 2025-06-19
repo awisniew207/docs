@@ -23,15 +23,15 @@ export const policyVersionSchema = new Schema(
     keywords: [{ type: String }],
     dependencies: [{ type: String }],
     author: {
-      name: { type: String, required: true },
-      email: { type: String, required: true },
-      url: { type: String, required: true },
+      name: { type: String },
+      email: { type: String },
+      url: { type: String },
     },
     contributors: [
       {
-        name: { type: String, required: true },
-        email: { type: String, required: true },
-        url: { type: String, required: true },
+        name: { type: String },
+        email: { type: String },
+        url: { type: String },
       },
     ],
     homepage: { type: String },
