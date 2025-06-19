@@ -78,6 +78,15 @@
         "cwd": "{projectRoot}"
       }
     },
+    "flag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm lit-flags --configPath ./src/features"],
+        "cwd": "{projectRoot}",
+        "tty": true,
+        "parallel": false
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],

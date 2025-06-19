@@ -1,0 +1,12 @@
+{
+  "name": "registry-backend",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/apps/registry-backend/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {},
+    "clean": {},
+    "flag": {}
+  }
+}
