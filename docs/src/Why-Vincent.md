@@ -4,10 +4,10 @@ title: Why Vincent?
 
 # Start Here
 
-<div class="warning-box">
-  <div class="warning-box-title">
-    <span class="warning-icon">Warning</span> Vincent is in Alpha
-  </div>
+<div class="box warning-box">
+  <p class="box-title warning-box-title">
+    <span class="box-icon warning-icon">Warning</span> Vincent is in Alpha
+  </p>
   <p>The Vincent App Registry is under active development and is subject to change.</p>
   <p>Vincent Apps and their registered delegations created during the Alpha phase <strong>will not persist</strong> after the App Registry is finalized.</p>
 </div>
