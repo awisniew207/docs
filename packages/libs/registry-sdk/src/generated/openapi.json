@@ -5,11 +5,6 @@
     "version": "1.0.0",
     "description": "API for Vincent App, Tool, and Policy Registry"
   },
-  "servers": [
-    {
-      "url": "/api/v1"
-    }
-  ],
   "components": {
     "schemas": {
       "Error": {

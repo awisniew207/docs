@@ -396,8 +396,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0
       '@lit-protocol/vincent-registry-sdk':
-        specifier: ^1.0.2
-        version: 1.0.2(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
+        specifier: workspace:*
+        version: link:../../libs/registry-sdk
       '@t3-oss/env-core':
         specifier: ^0.13.6
         version: 0.13.8(typescript@5.8.3)(zod@3.25.64)
@@ -2160,9 +2160,6 @@ packages:
   '@lit-protocol/vincent-app-sdk@1.0.1':
     resolution: {integrity: sha512-ibDdrZWdrd7RkrJhqLhio/mZPACn0Hc5W7GRNzfTdFr88xu9KRjr0YwfHyc4Q1qevq6nXltZQpuno7pBKUEcxg==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
-
-  '@lit-protocol/vincent-registry-sdk@1.0.2':
-    resolution: {integrity: sha512-zFFUbRXkIAdgL92akTk3/2QGAbsZt20oVvaJpx8SEFfbfSz1PHn/VM2sYUa+hUeutl/p3EE8mqFNvjjplVgxPQ==}
 
   '@lit-protocol/vincent-tool-sdk@1.0.1':
     resolution: {integrity: sha512-wSGlLCFnL/uTqWnK3N4pQvOhPniKTG1Te3UAs+lOj+hjiiFfDQ7WPpTMqEZ7koMz8Xviq4bZTCeMOPdX5exFvA==}
@@ -4618,7 +4615,6 @@ packages:
 
   bun@1.2.16:
     resolution: {integrity: sha512-sjZH6rr1P6yu44+XPA8r+ZojwmK9Kbz9lO6KAA/4HRIupdpC31k7b93crLBm19wEYmd6f2+3+57/7tbOcmHbGg==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -12692,16 +12688,6 @@ snapshots:
       - typescript
       - uploadthing
       - utf-8-validate
-
-  '@lit-protocol/vincent-registry-sdk@1.0.2(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)':
-    dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@3.25.64)
-      '@reduxjs/toolkit': 2.8.2(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
-      tslib: 2.8.1
-      zod: 3.25.64
-    transitivePeerDependencies:
-      - react
-      - react-redux
 
   '@lit-protocol/vincent-tool-sdk@1.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
