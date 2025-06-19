@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@lit-protocol/flags": "2.0.0",
-    "@lit-protocol/vincent-registry-sdk": "^1.0.2",
+    "@lit-protocol/vincent-registry-sdk": "workspace:*",
     "@t3-oss/env-core": "^0.13.6",
     "bs58": "^6.0.0",
     "cors": "^2.8.5",
