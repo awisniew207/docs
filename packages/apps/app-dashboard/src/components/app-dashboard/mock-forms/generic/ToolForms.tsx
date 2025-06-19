@@ -13,19 +13,27 @@ import { vincentApiClient } from '../vincentApiClient';
 import { z } from 'zod';
 import { StatusMessage } from '@/utils/shared/statusMessage';
 import { useState } from 'react';
+import { useAccount } from 'wagmi';
 
 export function CreateToolForm() {
   const [createTool, { isLoading }] = vincentApiClient.useCreateToolMutation();
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
+  const { address } = useAccount();
 
   const handleSubmit = async (data: any) => {
     setError(null);
     setResult(null);
 
     try {
+      // Automatically include the connected wallet address as the author
+      const toolData = {
+        ...data,
+        authorWalletAddress: address,
+      };
+      
       const response = await createTool({
-        createTool: data,
+        createTool: toolData,
       }).unwrap();
 
       setResult(response);

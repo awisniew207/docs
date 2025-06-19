@@ -11,7 +11,7 @@ export default function ToolsPage() {
       tools={tools}
       isLoading={loading.tools}
       error={errors.tools}
-      onCreateClick={() => navigate('/create-tool')}
+      onCreateClick={() => navigate('/developer/create-tool')}
     />
   );
 }

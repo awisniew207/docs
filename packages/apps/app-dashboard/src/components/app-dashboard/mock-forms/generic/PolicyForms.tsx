@@ -10,13 +10,21 @@ import {
 import { VersionChanges, ChangeOwner } from '../schemas/base';
 import { vincentApiClient } from '../vincentApiClient';
 import { z } from 'zod';
+import { useAccount } from 'wagmi';
 
 export function CreatePolicyForm() {
   const [createPolicy, { isLoading }] = vincentApiClient.useCreatePolicyMutation();
+  const { address } = useAccount();
 
   const handleSubmit = async (data: any) => {
     try {
-      const result = await createPolicy({ createPolicyDef: data }).unwrap();
+      // Automatically include the connected wallet address as the author
+      const policyData = {
+        ...data,
+        authorWalletAddress: address,
+      };
+      
+      const result = await createPolicy({ createPolicyDef: policyData }).unwrap();
       alert(`Success! Policy created: ${JSON.stringify(result, null, 2)}`);
     } catch (error: any) {
       alert(`Error: ${error?.data?.message || error?.message || 'Unknown error'}`);

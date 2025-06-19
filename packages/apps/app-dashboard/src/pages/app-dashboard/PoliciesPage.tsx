@@ -11,7 +11,7 @@ export default function PoliciesPage() {
       policies={policies}
       isLoading={loading.policies}
       error={errors.policies}
-      onCreateClick={() => navigate('/create-policy')}
+      onCreateClick={() => navigate('/developer/create-policy')}
     />
   );
 }
