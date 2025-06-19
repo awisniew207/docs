@@ -1,4 +1,4 @@
-import { baseVincentRtkApi as api } from '../lib/baseVincentRtkApi';
+import { baseVincentRtkApiNode as api } from '../lib/baseVincentRtkApiNode';
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     listApps: build.query<ListAppsApiResponse, ListAppsApiArg>({
@@ -141,7 +141,7 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as vincentApiClient };
+export { injectedRtkApi as vincentApiClientNode };
 export type ListAppsApiResponse = /** status 200 Successful operation */ AppDefRead[];
 export type ListAppsApiArg = void;
 export type CreateAppApiResponse = /** status 200 Successful operation */ AppDefRead;
@@ -778,46 +778,3 @@ export type PolicyVersionDefRead = {
 };
 export type PolicyVersionsArray = PolicyVersionDef[];
 export type PolicyVersionsArrayRead = PolicyVersionDefRead[];
-export const {
-  useListAppsQuery,
-  useLazyListAppsQuery,
-  useCreateAppMutation,
-  useGetAppQuery,
-  useLazyGetAppQuery,
-  useEditAppMutation,
-  useDeleteAppMutation,
-  useGetAppVersionsQuery,
-  useLazyGetAppVersionsQuery,
-  useCreateAppVersionMutation,
-  useGetAppVersionQuery,
-  useLazyGetAppVersionQuery,
-  useEditAppVersionMutation,
-  useEnableAppVersionMutation,
-  useDisableAppVersionMutation,
-  useListAllToolsQuery,
-  useLazyListAllToolsQuery,
-  useCreateToolMutation,
-  useGetToolQuery,
-  useLazyGetToolQuery,
-  useEditToolMutation,
-  useGetToolVersionsQuery,
-  useLazyGetToolVersionsQuery,
-  useChangeToolOwnerMutation,
-  useCreateToolVersionMutation,
-  useGetToolVersionQuery,
-  useLazyGetToolVersionQuery,
-  useEditToolVersionMutation,
-  useListAllPoliciesQuery,
-  useLazyListAllPoliciesQuery,
-  useCreatePolicyMutation,
-  useGetPolicyQuery,
-  useLazyGetPolicyQuery,
-  useEditPolicyMutation,
-  useCreatePolicyVersionMutation,
-  useGetPolicyVersionQuery,
-  useLazyGetPolicyVersionQuery,
-  useEditPolicyVersionMutation,
-  useGetPolicyVersionsQuery,
-  useLazyGetPolicyVersionsQuery,
-  useChangePolicyOwnerMutation,
-} = injectedRtkApi;
