@@ -5,16 +5,16 @@
   },
   "features": {
     "VITE_NEW_DASHBOARD": {
-      "createdAt": "2025-06-19T21:45:50.518Z",
+      "createdAt": "2025-06-19T22:35:17.939Z",
       "createdBy": "awisniew207",
       "PRODUCTION": {
         "enabled": false,
-        "lastEditedAt": "2025-06-19T21:46:38.189Z",
+        "lastEditedAt": "2025-06-19T22:35:17.938Z",
         "lastEditedBy": "awisniew207"
       },
       "STAGING": {
         "enabled": true,
-        "lastEditedAt": "2025-06-19T21:45:50.518Z",
+        "lastEditedAt": "2025-06-19T22:35:17.939Z",
         "lastEditedBy": "awisniew207"
       }
     }

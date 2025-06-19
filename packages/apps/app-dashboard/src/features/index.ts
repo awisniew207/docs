@@ -1,5 +1,3 @@
-import { getFeatureFlags } from '@lit-protocol/flags';
-
 import Flags from './featureState.json';
 import type { Features } from './features';
 
@@ -17,16 +15,44 @@ const getEnvironment = (): string => {
 const envVarName = 'VITE_NEW_DASHBOARD';
 const detectedEnv = getEnvironment();
 
-if (typeof globalThis !== 'undefined') {
-  globalThis.process = globalThis.process || {};
-  globalThis.process.env = globalThis.process.env || {};
-  globalThis.process.env[envVarName] = detectedEnv;
-  console.log('🔍 Set env var:', envVarName, '=', detectedEnv);
+// Custom implementation that bypasses process.env lookup
+function getFeatureFlagsWithEnvironment(environment: string): Features {
+  const featureState = Flags;
+
+  if (typeof featureState !== 'object') {
+    throw Error('invalid flags');
+  }
+
+  const { environments, features } = featureState;
+
+  if (!Object.values(environments).includes(environment)) {
+    throw Error(
+      `invalid environment "${environment}", ${envVarName} must be set to one of:
+      ${Object.values(environments).join(', ')}`,
+    );
+  }
+
+  return new Proxy({} as Features, {
+    get(_, flag) {
+      if (flag === '__esModule') {
+        return { value: true };
+      }
+      const flagName = String(flag);
+      const feature = (features as any)[flagName];
+      if (!feature) {
+        throw Error(`invalid feature: "${flagName}"`);
+      }
+      const envEntry = feature[environment];
+      if (!envEntry) {
+        throw Error(`${flagName} missing definition for environment: "${environment}"`);
+      }
+      return envEntry.enabled;
+    },
+  });
 }
 
-const Features = getFeatureFlags({
-  envVarName,
-  featureState: Flags,
-}) as Features;
+console.log('🔍 Using environment directly:', detectedEnv);
+
+const Features = getFeatureFlagsWithEnvironment(detectedEnv);
 
 export { Features };
