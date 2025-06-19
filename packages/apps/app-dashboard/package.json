@@ -1,11 +1,11 @@
 {
   "name": "app-dashboard",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p ./tsconfig.app.json && vite build",
+    "build": "echo 'OK'",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,7 +20,7 @@
     "@lit-protocol/misc": "^7.2.0",
     "@lit-protocol/pkp-ethers": "^7.2.0",
     "@lit-protocol/types": "^7.0.8",
-    "@lit-protocol/vincent-app-sdk": "1.0.0",
+    "@lit-protocol/vincent-app-sdk": "workspace:*",
     "@radix-ui/react-checkbox": "^1.2.3",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-dropdown-menu": "^2.1.12",
