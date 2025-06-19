@@ -20,6 +20,7 @@ import { VincentContracts } from '@/services';
 import { Network } from '@/services';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { mapTypeToEnum } from '@/services/types';
+import { Features } from '@/features';
 
 // Tool schema
 const toolSchema = z.object({
@@ -710,7 +711,25 @@ export default function CreateAppScreen({ onBack, onSuccess }: CreateAppScreenPr
               </div>
 
               <div className="mt-6">
-                {form.getValues().tools.length > 0 && (
+                {Features.VITE_NEW_DASHBOARD && (
+                  <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4">
+                    <p className="font-medium">Info:</p>
+                    <ul className="list-disc ml-5 text-sm">
+                      <li>Each Tool IPFS CID must be unique across the entire application</li>
+                      <li>
+                        Each Policy IPFS CID must be unique across the entire application. Does this
+                        show on the Vercel preview?{' '}
+                      </li>
+                      <li>
+                        Each Parameter name must be unique across ALL policies in the application
+                      </li>
+                    </ul>
+                    <p className="mt-2 text-sm">
+                      Duplicate values will prevent the form from submitting.
+                    </p>
+                  </div>
+                )}
+                {!Features.VITE_NEW_DASHBOARD && (
                   <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4">
                     <p className="font-medium">Info:</p>
                     <ul className="list-disc ml-5 text-sm">

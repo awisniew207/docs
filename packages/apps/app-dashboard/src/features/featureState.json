@@ -1,0 +1,22 @@
+{
+  "environments": {
+    "PRODUCTION": "PRODUCTION",
+    "STAGING": "STAGING"
+  },
+  "features": {
+    "VITE_NEW_DASHBOARD": {
+      "createdAt": "2025-06-19T21:45:50.518Z",
+      "createdBy": "awisniew207",
+      "PRODUCTION": {
+        "enabled": false,
+        "lastEditedAt": "2025-06-19T21:46:38.189Z",
+        "lastEditedBy": "awisniew207"
+      },
+      "STAGING": {
+        "enabled": true,
+        "lastEditedAt": "2025-06-19T21:45:50.518Z",
+        "lastEditedBy": "awisniew207"
+      }
+    }
+  }
+}
