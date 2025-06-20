@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAccount, useSignMessage } from 'wagmi';
 import { SiweMessage, generateNonce } from 'siwe';
@@ -16,17 +16,20 @@ interface SIWEData {
 const SIWE_STORAGE_KEY = 'vincentDeveloperSIWE';
 const SIWE_EXPIRATION_HOURS = 72;
 
-// Global storage for current SIWE token to be used in requests
-let currentSIWEToken: string | null = null;
-
-// Global promise to prevent concurrent authentication attempts
-let authenticationPromise: Promise<boolean> | null = null;
-
 /**
  * Get current SIWE token for request headers
  */
 export const getCurrentSIWEToken = (): string | null => {
-  return currentSIWEToken;
+  const storedSIWE = localStorage.getItem(SIWE_STORAGE_KEY);
+  if (storedSIWE) {
+    try {
+      const siweData: SIWEData = JSON.parse(storedSIWE);
+      return siweData.signature;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 };
 
 /**
@@ -49,14 +52,6 @@ const validateSIWEData = async (siweData: SIWEData, currentAddress: string): Pro
   } catch (error) {
     return false;
   }
-};
-
-/**
- * Removes invalid SIWE data from localStorage
- */
-const clearInvalidSIWE = (): void => {
-  localStorage.removeItem(SIWE_STORAGE_KEY);
-  currentSIWEToken = null;
 };
 
 /**
@@ -85,14 +80,21 @@ export function useVincentApiWithSIWE() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const currentSIWEToken = useRef<string | null>(null);
+  const authenticationPromise = useRef<Promise<boolean> | null>(null);
 
   /**
    * Check and set up SIWE token on component mount or address change
    */
   useEffect(() => {
+    const clearInvalidSIWE = (): void => {
+      localStorage.removeItem(SIWE_STORAGE_KEY);
+      currentSIWEToken.current = null;
+    };
+
     const initializeSIWE = async () => {
       if (!isConnected || !address) {
-        currentSIWEToken = null;
+        currentSIWEToken.current = null;
         return;
       }
 
@@ -101,7 +103,7 @@ export function useVincentApiWithSIWE() {
         try {
           const siweData: SIWEData = JSON.parse(storedSIWE);
           if (await validateSIWEData(siweData, address)) {
-            currentSIWEToken = siweData.signature;
+            currentSIWEToken.current = siweData.signature;
           } else {
             clearInvalidSIWE();
           }
@@ -119,8 +121,8 @@ export function useVincentApiWithSIWE() {
    */
   const authenticateWithSIWE = useCallback(async (): Promise<boolean> => {
     // If already authenticating, return the existing promise
-    if (authenticationPromise) {
-      return authenticationPromise;
+    if (authenticationPromise.current) {
+      return authenticationPromise.current;
     }
 
     if (!isConnected || !address) {
@@ -128,7 +130,7 @@ export function useVincentApiWithSIWE() {
     }
 
     // Create a new authentication promise
-    authenticationPromise = (async () => {
+    authenticationPromise.current = (async () => {
       setIsAuthenticating(true);
 
       try {
@@ -143,7 +145,7 @@ export function useVincentApiWithSIWE() {
         };
 
         localStorage.setItem(SIWE_STORAGE_KEY, JSON.stringify(newSIWEData));
-        currentSIWEToken = signature;
+        currentSIWEToken.current = signature;
         return true;
       } catch (error) {
         throw new Error('SIWE authentication failed');
@@ -153,10 +155,10 @@ export function useVincentApiWithSIWE() {
     })();
 
     try {
-      return await authenticationPromise;
+      return await authenticationPromise.current;
     } finally {
       // Clear the promise after completion
-      authenticationPromise = null;
+      authenticationPromise.current = null;
     }
   }, [address, isConnected, signMessageAsync]);
 
@@ -164,7 +166,7 @@ export function useVincentApiWithSIWE() {
    * Check if SIWE authentication is available
    */
   const hasSIWEAuthentication = useCallback(() => {
-    return currentSIWEToken !== null;
+    return currentSIWEToken.current !== null;
   }, []);
 
   // Create a wrapper for query hooks without authentication (GET requests)
@@ -187,7 +189,7 @@ export function useVincentApiWithSIWE() {
               if (!isConnected || !address) {
                 throw new Error('Wallet not connected');
               }
-              if (!currentSIWEToken) {
+              if (!currentSIWEToken.current) {
                 await authenticateWithSIWE();
               }
             }
