@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
-import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+//import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAccount, useSignMessage } from 'wagmi';
 import { SiweMessage, generateNonce } from 'siwe';
 import { yellowstone } from '@/config/chains';
@@ -170,7 +170,7 @@ export function useVincentApiWithSIWE() {
   }, []);
 
   // Create a wrapper for query hooks without authentication (GET requests)
-  const createQueryWrapper = useCallback(<T extends (...args: any[]) => any>(originalHook: T) => {
+  /*const createQueryWrapper = useCallback(<T extends (...args: any[]) => any>(originalHook: T) => {
     return (args: Parameters<T>[0], options?: Parameters<T>[1]) => {
       // No authentication needed for GET requests
       return originalHook(args, options);
@@ -203,7 +203,7 @@ export function useVincentApiWithSIWE() {
       };
     },
     [isConnected, address, authenticateWithSIWE],
-  );
+  );*/
 
   return {
     authenticateWithSIWE,
