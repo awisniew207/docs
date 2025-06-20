@@ -22,14 +22,18 @@ const BooleanOrBooleanStringSchema = z
 
 const ONE_HOUR = 60 * 60 * 1000;
 
+// TODO make http server required params truly required and hide http ones at stdio
 export const env = createEnv({
   emptyStringAsUndefined: true,
   runtimeEnv: process.env,
   server: {
+    EXPECTED_AUDIENCE: z.string().optional(),
     HTTP_PORT: z.coerce.number().default(3000),
     HTTP_TRANSPORT_CLEAN_INTERVAL: z.coerce.number().default(ONE_HOUR),
     HTTP_TRANSPORT_TTL: z.coerce.number().default(ONE_HOUR),
+    SIWE_EXPIRATION_TIME: z.coerce.number().default(5 * 60 * 1000),
     VINCENT_APP_JSON_DEFINITION: z.string(),
     VINCENT_DELEGATEE_PRIVATE_KEY: z.string(),
+    VINCENT_MCP_BASE_URL: z.string().optional(),
   },
 });

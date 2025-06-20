@@ -55,7 +55,7 @@ export type ParameterType = z.infer<typeof ParameterTypeEnum>;
  * Mapping of parameter types to their corresponding Zod validation schemas
  *
  * This map provides validation logic for each supported parameter type.
- * It is used by the buildParamDefinitions function to create Zod schemas for tool parameters.
+ * It is used by the buildMcpParamDefinitions function to create Zod schemas for tool parameters.
  *
  * @internal
  */
@@ -104,6 +104,7 @@ const ZodSchemaMap: Record<ParameterType, z.ZodTypeAny> = {
  * validation schema from the ZodSchemaMap.
  *
  * @param params - Array of Vincent parameter definitions
+ * @param addDelegatorPkpAddress - Whether to add the delegator eth address as a param
  * @returns A Zod schema shape that can be used to create a validation schema
  *
  * @example
@@ -121,19 +122,24 @@ const ZodSchemaMap: Record<ParameterType, z.ZodTypeAny> = {
  *   }
  * ];
  *
- * const paramSchema = buildParamDefinitions(parameters);
+ * const paramSchema = buildMcpParamDefinitions(parameters);
  * const validationSchema = z.object(paramSchema);
  * ```
  */
-export function buildParamDefinitions(params: VincentParameter[]): ZodRawShape {
+export function buildMcpParamDefinitions(
+  params: VincentParameter[],
+  addDelegatorPkpAddress: boolean
+): ZodRawShape {
   const zodSchema = {} as ZodRawShape;
 
-  // Always add the delegator PKP Eth address
-  zodSchema['pkpEthAddress'] = z
-    .string()
-    .describe(
-      "The delegator's PKP address that will execute the swap. For example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045."
-    );
+  // Add the delegator PKP Eth address as a param. Delegatee is using the MCP and must specify which delegator to execute tools for
+  if (addDelegatorPkpAddress) {
+    zodSchema['pkpEthAddress'] = z
+      .string()
+      .describe(
+        "The delegator's PKP address that will execute the swap. For example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045."
+      );
+  }
 
   // Add the rest of the parameters
   params.forEach((param) => {
@@ -185,61 +191,94 @@ export function buildMcpToolName(vincentAppDef: VincentAppDef, toolName: string)
   return `${vincentAppDef.name.toLowerCase().replace(' ', '-')}-V${vincentAppDef.version}-${toolName}`;
 }
 
-// TODO CB AG really needs a function that returns an object. Refactor buildToolCallback to coexist with this in a safe parsing way
-// export function buildVincentActionCallback() {}
-
 /**
- * Creates a callback function for handling tool execution requests
+ * Creates a IPFS CID based Vincent Tool callback function to use in other contexts such as Agent Kits
  *
  * @param litNodeClient - The Lit Node client used to execute the tool
- * @param delegateeSigner - The Ethereum signer used to execute the tool
+ * @param delegateeSigner - The delegatee signer used to trigger the tool
+ * @param delegatorPkpEthAddress - The delegator to execute the tool in behalf of
  * @param vincentToolDefWithIPFS - The tool definition with its IPFS CID
  * @returns A callback function that executes the tool with the provided arguments
  * @internal
  */
-export function buildToolCallback(
+export function buildVincentToolCallback(
   litNodeClient: LitNodeClient,
   delegateeSigner: Signer,
+  delegatorPkpEthAddress: string | undefined,
   vincentToolDefWithIPFS: VincentToolDefWithIPFS
 ) {
-  // const vincentToolCallback = buildVincentActionCallback(vincentToolDefWithIPFS);
-
   return async (
     args: ZodRawShape,
     _extra: RequestHandlerExtra<ServerRequest, ServerNotification>
-  ): Promise<CallToolResult> => {
-    // const response = await vincentToolCallback(delegateeSigner, args);
-    const sessionSigs = await generateSessionSigs({ ethersSigner: delegateeSigner, litNodeClient });
-    const result = await litNodeClient.executeJs({
-      ipfsId: vincentToolDefWithIPFS.ipfsCid,
-      sessionSigs,
-      jsParams: {
-        toolParams: args,
-        context: {
-          delegatorPkpEthAddress: args.pkpEthAddress,
+  ): Promise<{ success: boolean; error?: string; result?: object }> => {
+    try {
+      const sessionSigs = await generateSessionSigs({
+        ethersSigner: delegateeSigner,
+        litNodeClient,
+      });
+      const executeJsResponse = await litNodeClient.executeJs({
+        ipfsId: vincentToolDefWithIPFS.ipfsCid,
+        sessionSigs,
+        jsParams: {
+          toolParams: args,
+          context: {
+            delegatorPkpEthAddress: delegatorPkpEthAddress || args.pkpEthAddress,
+          },
         },
-      },
-    });
+      });
 
-    const success = result.success;
-    if (!success) {
-      throw new Error(JSON.stringify(result, null, 2));
-    }
-
-    let response = result.response;
-    if (typeof response === 'string') {
-      try {
-        response = JSON.parse(response);
-      } catch {
-        // keep the original response
+      const executeJsSuccess = executeJsResponse.success || false;
+      if (!executeJsSuccess) {
+        throw new Error(JSON.stringify(executeJsResponse, null, 2));
       }
+
+      const toolExecutionResponse = JSON.parse(executeJsResponse.response as string);
+      const { toolExecutionResult } = toolExecutionResponse;
+      const { success, error, result } = toolExecutionResult;
+
+      return { success, error, result };
+    } catch (e) {
+      const error = `Could not successfully execute Vincent Tool. Reason (${(e as Error).message})`;
+      return { success: false, error };
     }
+  };
+}
+
+/**
+ * Creates an MCP tool callback function for handling Vincent Tool execution requests
+ * It is basically an MCP specific version wrapper of buildVincentToolCallback
+ *
+ * @param litNodeClient - The Lit Node client used to execute the tool
+ * @param delegateeSigner - The delegatee signer used to trigger the tool
+ * @param delegatorPkpEthAddress - The delegator to execute the tool in behalf of
+ * @param vincentToolDefWithIPFS - The tool definition with its IPFS CID
+ * @returns A callback function that executes the tool with the provided arguments
+ * @internal
+ */
+export function buildMcpToolCallback(
+  litNodeClient: LitNodeClient,
+  delegateeSigner: Signer,
+  delegatorPkpEthAddress: string | undefined,
+  vincentToolDefWithIPFS: VincentToolDefWithIPFS
+) {
+  const vincentToolCallback = buildVincentToolCallback(
+    litNodeClient,
+    delegateeSigner,
+    delegatorPkpEthAddress,
+    vincentToolDefWithIPFS
+  );
+
+  return async (
+    args: ZodRawShape,
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+  ): Promise<CallToolResult> => {
+    const { success, error, result } = await vincentToolCallback(args, extra);
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({ success, response }),
+          text: JSON.stringify({ success, error, result }),
         },
       ],
     };

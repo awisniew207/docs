@@ -11,17 +11,22 @@ import { LIT_NETWORK } from '@lit-protocol/constants';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { utils } from '@lit-protocol/vincent-app-sdk';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ethers } from 'ethers';
+import { Signer } from 'ethers';
 
 import {
   buildMcpToolName,
-  buildParamDefinitions,
-  buildToolCallback,
+  buildMcpParamDefinitions,
+  buildMcpToolCallback,
   VincentAppDef,
   VincentAppDefSchema,
 } from './definitions';
 
 const { getDelegatorsAgentPkpInfo } = utils;
+
+export interface DelegationMcpServerConfig {
+  delegateeSigner: Signer;
+  delegatorPkpEthAddress: string | undefined;
+}
 
 /**
  * Creates an MCP server for a Vincent application
@@ -31,8 +36,8 @@ const { getDelegatorsAgentPkpInfo } = utils;
  *
  * Check (MCP Typescript SDK docs)[https://github.com/modelcontextprotocol/typescript-sdk] for more details on MCP server definition.
  *
- * @param delegateeSigner - The Ethereum signer used to execute the tools
  * @param vincentAppDefinition - The Vincent application definition containing the tools to register
+ * @param {DelegationMcpServerConfig} config - The server configuration
  * @returns A configured MCP server instance
  *
  * @example
@@ -75,9 +80,10 @@ const { getDelegatorsAgentPkpInfo } = utils;
  * ```
  */
 export async function getVincentAppServer(
-  delegateeSigner: ethers.Signer,
-  vincentAppDefinition: VincentAppDef
+  vincentAppDefinition: VincentAppDef,
+  config: DelegationMcpServerConfig
 ): Promise<McpServer> {
+  const { delegateeSigner, delegatorPkpEthAddress } = config;
   const _vincentAppDefinition = VincentAppDefSchema.parse(vincentAppDefinition);
 
   const server = new McpServer({
@@ -92,32 +98,37 @@ export async function getVincentAppServer(
   await litNodeClient.connect();
 
   // Tool to get the delegators info
-  server.tool(
-    buildMcpToolName(_vincentAppDefinition, 'get-delegators-info'),
-    `Tool to get the delegators info for the ${_vincentAppDefinition.name} Vincent App. Info includes the PKP token ID, ETH address, and public key for each delegator.`,
-    async () => {
-      const appId = parseInt(_vincentAppDefinition.id, 10);
-      const appVersion = parseInt(_vincentAppDefinition.version, 10);
+  if (!delegatorPkpEthAddress) {
+    server.tool(
+      buildMcpToolName(_vincentAppDefinition, 'get-delegators-info'),
+      `Tool to get the delegators info for the ${_vincentAppDefinition.name} Vincent App. Info includes the PKP token ID, ETH address, and public key for each delegator.`,
+      async () => {
+        const appId = parseInt(_vincentAppDefinition.id, 10);
+        const appVersion = parseInt(_vincentAppDefinition.version, 10);
 
-      const delegatorsPkpInfo = await getDelegatorsAgentPkpInfo(appId, appVersion);
+        const delegatorsPkpInfo = await getDelegatorsAgentPkpInfo(appId, appVersion);
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(delegatorsPkpInfo),
-          },
-        ],
-      };
-    }
-  );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(delegatorsPkpInfo),
+            },
+          ],
+        };
+      }
+    );
+  }
 
   Object.entries(_vincentAppDefinition.tools).forEach(([toolIpfsCid, tool]) => {
     server.tool(
       buildMcpToolName(_vincentAppDefinition, tool.name),
       tool.description,
-      buildParamDefinitions(tool.parameters),
-      buildToolCallback(litNodeClient, delegateeSigner, { ipfsCid: toolIpfsCid, ...tool })
+      buildMcpParamDefinitions(tool.parameters, !delegatorPkpEthAddress),
+      buildMcpToolCallback(litNodeClient, delegateeSigner, delegatorPkpEthAddress, {
+        ipfsCid: toolIpfsCid,
+        ...tool,
+      })
     );
   });
 

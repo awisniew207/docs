@@ -9,14 +9,15 @@
  * @category Vincent MCP
  */
 
-import { LIT_EVM_CHAINS } from '@lit-protocol/constants';
 import { getVincentAppServer, VincentAppDef } from '@lit-protocol/vincent-mcp-sdk';
-import { ethers } from 'ethers';
+import { Signer } from 'ethers';
 
-import { env } from './env';
 import { extendVincentServer } from './extensions';
 
-const { VINCENT_DELEGATEE_PRIVATE_KEY } = env;
+export interface ServerConfig {
+  delegateeSigner: Signer;
+  delegatorPkpEthAddress: string | undefined;
+}
 
 /**
  * Creates an extended MCP server for a Vincent application
@@ -29,6 +30,7 @@ const { VINCENT_DELEGATEE_PRIVATE_KEY } = env;
  * and then extended with additional capabilities using the `extendVincentServer` function.
  *
  * @param vincentAppDef - The Vincent application definition containing the tools to register
+ * @param {ServerConfig} serverConfig - The server configuration
  * @returns A configured and extended MCP server instance
  *
  * @example
@@ -55,13 +57,13 @@ const { VINCENT_DELEGATEE_PRIVATE_KEY } = env;
  * await server.connect(stdio);
  * ```
  */
-export async function getServer(vincentAppDef: VincentAppDef) {
-  const delegateeSigner = new ethers.Wallet(
-    VINCENT_DELEGATEE_PRIVATE_KEY,
-    new ethers.providers.StaticJsonRpcProvider(LIT_EVM_CHAINS.yellowstone.rpcUrls[0]),
-  );
+export async function getServer(vincentAppDef: VincentAppDef, serverConfig: ServerConfig) {
+  const { delegateeSigner, delegatorPkpEthAddress } = serverConfig;
 
-  const server = await getVincentAppServer(delegateeSigner, vincentAppDef);
+  const server = await getVincentAppServer(vincentAppDef, {
+    delegateeSigner,
+    delegatorPkpEthAddress,
+  });
   extendVincentServer(server, vincentAppDef, delegateeSigner);
 
   return server;

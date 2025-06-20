@@ -1,6 +1,6 @@
 {
   "id": "485",
-  "version": "2",
+  "version": "4",
   "name": "Uniswap Swap",
   "description": "This app offers tools to approve ERC20 token allowances and perform swaps on uniswap",
   "tools": {
