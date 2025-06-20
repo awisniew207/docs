@@ -1,7 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAccount, useSignMessage } from 'wagmi';
-import { verifyMessage } from 'viem';
+import { SiweMessage, generateNonce } from 'siwe';
+import { yellowstone } from '@/config/chains';
 
 /**
  * SIWE validation and authentication utilities
@@ -10,14 +11,10 @@ interface SIWEData {
   message: string;
   signature: string;
   address: string;
-  domain: string;
-  expirationTime: string;
-  issuedAt: string;
 }
 
 const SIWE_STORAGE_KEY = 'vincentDeveloperSIWE';
 const SIWE_EXPIRATION_HOURS = 72;
-const domain = window.location.hostname;
 
 // Global storage for current SIWE token to be used in requests
 let currentSIWEToken: string | null = null;
@@ -37,23 +34,18 @@ export const getCurrentSIWEToken = (): string | null => {
  */
 const validateSIWEData = async (siweData: SIWEData, currentAddress: string): Promise<boolean> => {
   try {
-    // Check expiration
-    if (new Date(siweData.expirationTime) <= new Date()) return false;
+    const siweMessage = new SiweMessage(siweData.message);
 
-    // Check address match
-    if (siweData.address.toLowerCase() !== currentAddress.toLowerCase()) return false;
+    // Check address match first, critical for security
+    if (siweMessage.address.toLowerCase() !== currentAddress.toLowerCase()) return false;
 
-    // Check domain
-    if (siweData.domain !== domain) return false;
-
-    // Verify signature
-    const isValidSignature = await verifyMessage({
-      address: siweData.address as `0x${string}`,
-      message: siweData.message,
-      signature: siweData.signature as `0x${string}`,
+    const result = await siweMessage.verify({
+      signature: siweData.signature,
+      domain: window.location.hostname,
+      time: new Date().toISOString(),
     });
 
-    return isValidSignature;
+    return result.success;
   } catch (error) {
     return false;
   }
@@ -68,45 +60,26 @@ const clearInvalidSIWE = (): void => {
 };
 
 /**
- * Generates a cryptographically secure nonce
- */
-const generateSecureNonce = (): string => {
-  if (crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
-};
-
-/**
  * Generates a new SIWE message
  */
-const generateSIWEMessage = (address: string): string => {
-  const issuedAt = new Date().toISOString();
-  const expirationTime = new Date(
-    Date.now() + SIWE_EXPIRATION_HOURS * 60 * 60 * 1000,
-  ).toISOString();
-  const nonce = generateSecureNonce();
+const generateSIWEMessage = (address: string): SiweMessage => {
+  const expirationTime = new Date(Date.now() + SIWE_EXPIRATION_HOURS * 60 * 60 * 1000);
 
-  return `${domain} wants you to sign in with your Ethereum account:
-${address}
-
-Vincent Developer Registry Access
-
-URI: ${domain}
-Version: 1
-Chain ID: 175188
-Nonce: ${nonce}
-Issued At: ${issuedAt}
-Expiration Time: ${expirationTime}`;
+  return new SiweMessage({
+    domain: window.location.hostname,
+    address,
+    statement: 'Vincent Developer Registry Access',
+    uri: window.location.origin,
+    version: '1',
+    chainId: yellowstone.id,
+    nonce: generateNonce(),
+    issuedAt: new Date().toISOString(),
+    expirationTime: expirationTime.toISOString(),
+  });
 };
 
 /**
  * Hook that wraps vincentApiClient hooks and handles SIWE authentication for registry changes
- *
- * @returns Object containing wrapped API hooks with automatic SIWE authentication and utility functions
  */
 export function useVincentApiWithSIWE() {
   const { address, isConnected } = useAccount();
@@ -127,7 +100,6 @@ export function useVincentApiWithSIWE() {
       if (storedSIWE) {
         try {
           const siweData: SIWEData = JSON.parse(storedSIWE);
-
           if (await validateSIWEData(siweData, address)) {
             currentSIWEToken = siweData.signature;
           } else {
@@ -155,23 +127,19 @@ export function useVincentApiWithSIWE() {
       throw new Error('Wallet not connected');
     }
 
-    // New authentication promise
+    // Create a new authentication promise
     authenticationPromise = (async () => {
       setIsAuthenticating(true);
 
       try {
-        const message = generateSIWEMessage(address);
+        const siweMessage = generateSIWEMessage(address);
+        const message = siweMessage.prepareMessage();
         const signature = await signMessageAsync({ message });
 
         const newSIWEData: SIWEData = {
           message,
           signature,
           address,
-          domain,
-          expirationTime: new Date(
-            Date.now() + SIWE_EXPIRATION_HOURS * 60 * 60 * 1000,
-          ).toISOString(),
-          issuedAt: new Date().toISOString(),
         };
 
         localStorage.setItem(SIWE_STORAGE_KEY, JSON.stringify(newSIWEData));
@@ -219,8 +187,6 @@ export function useVincentApiWithSIWE() {
               if (!isConnected || !address) {
                 throw new Error('Wallet not connected');
               }
-
-              // Ensure we have authentication before proceeding
               if (!currentSIWEToken) {
                 await authenticateWithSIWE();
               }
