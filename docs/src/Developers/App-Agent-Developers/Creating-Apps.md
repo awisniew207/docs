@@ -5,9 +5,17 @@ title: Creating Vincent Apps
 
 # How a Vincent App Works
 
-<div class="info-box">
-  <p class="info-box-title">
-    <span class="info-icon">Info</span> Note
+<div class="box warning-box">
+  <p class="box-title warning-box-title">
+    <span class="box-icon warning-icon">Warning</span> Vincent is in Alpha
+  </p>
+  <p>The Vincent App Registry is under active development and is subject to change.</p>
+  <p>Vincent Apps and their registered delegations created during the Alpha phase <strong>will not persist</strong> after the App Registry is finalized.</p>
+</div>
+
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
   </p>
   <p>In this guide, you'll create and register your first Vincent App using the <a href="https://dashboard.heyvincent.ai/">Vincent App Dashboard</a>. You’ll select from existing Vincent Tools and Policies, configure your App metadata, and register the App Delegatees whom are authorized to execute your App's Tools.</p>
   <p>If you're unfamiliar with what a Vincent App is, checkout the <a href="./Getting-Started.md">Getting Started</a> guide to learn more.</p>
@@ -39,8 +47,8 @@ Before registering your Vincent App, you’ll need to decide on the core compone
 Vincent Tools define the executable operations your App can perform on behalf of its Users such as swapping tokens, transferring assets, or querying APIs.
 
 <div class="info-box">
-  <p class="info-box-title">
-    <span class="info-icon">Info</span> Note
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
   </p>
   <p>A Vincent Tool Registry that contains a list of all the available Vincent Tools and their associated Policies will be available soon.</p>
 
@@ -63,9 +71,9 @@ Additionally, you can checkout the [Creating a Vincent Tool](../Tool-Developers/
 
 Vincent Policies are programmable constraints that govern when and how each Vincent Tool can be executed.
 
-<div class="info-box">
-  <p class="info-box-title">
-    <span class="info-icon">Info</span> Note
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
   </p>
   <p>Similar to selecting which Vincent Tools you'd like your App to use, you'll need to manually copy and paste the IPFS CID of each Vincent Policy you'd like to use for each Tool into the Vincent App Dashboard when registering your App.</p>
   <p>The below table includes links to the IPFS CID of each Policy that will be automatically updated as new iterations of the Policy are published.</p>
@@ -81,9 +89,9 @@ Additionally, you can checkout the [Creating a Vincent Policy](../Policy-Develop
 
 # 3. Registering Your Vincent App
 
-<div class="info-box">
-  <p class="info-box-title">
-    <span class="info-icon">Info</span> Before registering your Vincent App
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Before registering your Vincent App
   </p>
   <p>Registering an App requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href="https://chronicle-yellowstone-faucet.getlit.dev/">this faucet</a> to get the Lit test tokens used to pay for registering your App.</p>
 </div>

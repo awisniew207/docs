@@ -40,9 +40,9 @@ Each App Version includes:
 
 # Creating a New Version
 
-<div class="info-box">
-  <p class="info-box-title">
-    <span class="info-icon">Info</span> Before creating a new App Version
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Before creating a new App Version
   </p>
   <p>Creating a new App Version requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href="https://chronicle-yellowstone-faucet.getlit.dev/">this faucet</a> to get the Lit test tokens used to pay for creating the new App Version.</p>
 </div>
