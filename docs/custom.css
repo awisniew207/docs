@@ -7,9 +7,16 @@
   border-left: 8px solid;
 }
 
-/* Dark theme box overrides */
-[data-theme='dark'] .box {
+/* Dark theme box overrides - for explicit dark theme */
+:root[data-theme='dark'] .box {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark theme box overrides - for OS preference */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='os'] .box {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* Box title common styling */
@@ -41,10 +48,18 @@
   border-left-color: #3498db;
 }
 
-/* Dark theme info box overrides */
-[data-theme='dark'] .info-box {
+/* Dark theme info box overrides - for explicit dark theme */
+:root[data-theme='dark'] .info-box {
   background-color: #1a2b3c;
   border-left-color: #4a9eff;
+}
+
+/* Dark theme info box overrides - for OS preference */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='os'] .info-box {
+    background-color: #1a2b3c;
+    border-left-color: #4a9eff;
+  }
 }
 
 /* Info box title */
@@ -52,9 +67,16 @@
   color: #2980b9;
 }
 
-/* Dark theme info title override */
-[data-theme='dark'] .info-box-title {
+/* Dark theme info title override - for explicit dark theme */
+:root[data-theme='dark'] .info-box-title {
   color: #4a9eff;
+}
+
+/* Dark theme info title override - for OS preference */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='os'] .info-box-title {
+    color: #4a9eff;
+  }
 }
 
 /* Info icon - using inline SVG data URI */
@@ -68,10 +90,18 @@
   border-left-color: #f39c12;
 }
 
-/* Dark theme warning box overrides */
-[data-theme='dark'] .warning-box {
+/* Dark theme warning box overrides - for explicit dark theme */
+:root[data-theme='dark'] .warning-box {
   background-color: #2d1f0f;
   border-left-color: #f1c40f;
+}
+
+/* Dark theme warning box overrides - for OS preference */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='os'] .warning-box {
+    background-color: #2d1f0f;
+    border-left-color: #f1c40f;
+  }
 }
 
 /* Warning box title */
@@ -79,9 +109,16 @@
   color: #d68910;
 }
 
-/* Dark theme warning title override */
-[data-theme='dark'] .warning-box-title {
+/* Dark theme warning title override - for explicit dark theme */
+:root[data-theme='dark'] .warning-box-title {
   color: #f1c40f;
+}
+
+/* Dark theme warning title override - for OS preference */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='os'] .warning-box-title {
+    color: #f1c40f;
+  }
 }
 
 /* Warning icon - using inline SVG data URI */
