@@ -11,6 +11,7 @@ import {
   buildMcpToolName,
   buildMcpParamDefinitions,
   buildMcpToolCallback,
+  buildVincentToolCallback,
   VincentAppDefSchema,
   VincentToolDefSchema,
 } from './definitions';
@@ -34,6 +35,7 @@ export {
   buildMcpToolName,
   buildMcpParamDefinitions,
   buildMcpToolCallback,
+  buildVincentToolCallback,
   getVincentAppServer,
   VincentAppDefSchema,
   VincentToolDefSchema,

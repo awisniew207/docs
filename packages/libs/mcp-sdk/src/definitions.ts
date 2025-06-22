@@ -209,7 +209,7 @@ export function buildVincentToolCallback(
 ) {
   return async (
     args: ZodRawShape,
-    _extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+    _extra?: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<{ success: boolean; error?: string; result?: object }> => {
     try {
       const sessionSigs = await generateSessionSigs({
@@ -294,7 +294,7 @@ export const VincentParameterSchema = z.object({
   name: z.string(),
   type: ParameterTypeEnum,
   description: z.string(),
-  optional: z.boolean().default(false),
+  optional: z.boolean().default(false).optional(),
 });
 
 /**
