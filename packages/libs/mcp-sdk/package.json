@@ -30,6 +30,7 @@
     "@lit-protocol/auth-helpers": "^7.2.0",
     "@lit-protocol/constants": "^7.2.0",
     "@lit-protocol/lit-node-client": "^7.2.0",
+    "@lit-protocol/types": "7.2.0",
     "@lit-protocol/vincent-app-sdk": "workspace:*",
     "@lit-protocol/vincent-tool-sdk": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.11.2",

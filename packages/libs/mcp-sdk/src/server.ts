@@ -9,7 +9,11 @@
 
 import { LIT_NETWORK } from '@lit-protocol/constants';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import type { LitNodeClientConfig } from '@lit-protocol/types';
 import { utils } from '@lit-protocol/vincent-app-sdk';
+import type { Implementation } from '@modelcontextprotocol/sdk/types.js';
+import type { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js';
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Signer } from 'ethers';
 
@@ -26,6 +30,35 @@ const { getDelegatorsAgentPkpInfo } = utils;
 export interface DelegationMcpServerConfig {
   delegateeSigner: Signer;
   delegatorPkpEthAddress: string | undefined;
+}
+
+export interface LitServerOptions extends ServerOptions {
+  litNodeClientOptions: LitNodeClientConfig;
+}
+
+export class VincentMcpServer extends McpServer {
+  litNodeClient: LitNodeClient;
+
+  constructor(serverInfo: Implementation, options?: LitServerOptions) {
+    super(serverInfo, options);
+
+    const litNodeClientOptions = options?.litNodeClientOptions || {};
+    this.litNodeClient = new LitNodeClient({
+      debug: true,
+      litNetwork: LIT_NETWORK.Datil,
+      ...litNodeClientOptions,
+    });
+  }
+
+  override async connect(transport: Transport): Promise<void> {
+    await super.connect(transport);
+
+    await this.litNodeClient.connect();
+  }
+
+  override async close(): Promise<void> {
+    await this.litNodeClient.disconnect();
+  }
 }
 
 /**
@@ -86,16 +119,10 @@ export async function getVincentAppServer(
   const { delegateeSigner, delegatorPkpEthAddress } = config;
   const _vincentAppDefinition = VincentAppDefSchema.parse(vincentAppDefinition);
 
-  const server = new McpServer({
+  const server = new VincentMcpServer({
     name: _vincentAppDefinition.name,
     version: _vincentAppDefinition.version,
   });
-
-  const litNodeClient = new LitNodeClient({
-    debug: true,
-    litNetwork: LIT_NETWORK.Datil,
-  });
-  await litNodeClient.connect();
 
   // Tool to get the delegators info
   if (!delegatorPkpEthAddress) {
@@ -125,7 +152,7 @@ export async function getVincentAppServer(
       buildMcpToolName(_vincentAppDefinition, tool.name),
       tool.description,
       buildMcpParamDefinitions(tool.parameters, !delegatorPkpEthAddress),
-      buildMcpToolCallback(litNodeClient, delegateeSigner, delegatorPkpEthAddress, {
+      buildMcpToolCallback(server.litNodeClient, delegateeSigner, delegatorPkpEthAddress, {
         ipfsCid: toolIpfsCid,
         ...tool,
       })
