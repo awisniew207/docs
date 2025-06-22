@@ -1,4 +1,4 @@
-import { baseVincentRtkApiReact as api } from '../lib/baseVincentRtkApiReact';
+import { baseVincentRtkApiReact as api } from '../lib/internal/baseVincentRtkApiReact';
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     listApps: build.query<ListAppsApiResponse, ListAppsApiArg>({

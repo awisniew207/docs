@@ -1,0 +1,16 @@
+// Empty API that will be extended with the generated endpoints
+import { createApi, type BaseQueryFn } from '@reduxjs/toolkit/query/react';
+
+let baseQueryFn: BaseQueryFn = () => {
+  throw new Error('You must call `setBaseQueryFn` before you can use the vincent RTK client.');
+};
+
+export const setBaseQueryFn = (baseQuery: BaseQueryFn) => {
+  baseQueryFn = baseQuery;
+};
+
+export const baseVincentRtkApiReact = createApi({
+  reducerPath: 'vincentApi',
+  baseQuery: (...args) => baseQueryFn(...args),
+  endpoints: () => ({}),
+});

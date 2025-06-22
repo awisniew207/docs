@@ -3,7 +3,7 @@
  */
 const config = {
   schemaFile: './src/generated/openapi.json',
-  apiFile: './src/lib/baseVincentRtkApiReact.ts',
+  apiFile: './src/lib/internal/baseVincentRtkApiReact.ts',
   apiImport: 'baseVincentRtkApiReact',
   outputFile: './src/generated/vincentApiClientReact.ts',
   exportName: 'vincentApiClientReact',

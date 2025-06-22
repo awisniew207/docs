@@ -9,8 +9,9 @@ import { CreateApp, CreateAppVersion } from './lib/schemas/app';
 import { CreateTool, CreateToolVersion } from './lib/schemas/tool';
 import { CreatePolicy, CreatePolicyVersion } from './lib/schemas/policy';
 
-export { vincentApiClientReact } from './generated/vincentApiClientReact';
-export { vincentApiClientNode } from './generated/vincentApiClientNode';
+export * as nodeClient from './nodeClient';
+export * as reactClient from './reactClient';
+
 export { openApiJson, openAPIRegistry };
 
 export const docSchemas = {
