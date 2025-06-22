@@ -7,7 +7,11 @@ const config = {
   apiImport: 'baseVincentRtkApiReact',
   outputFile: './src/generated/vincentApiClientReact.ts',
   exportName: 'vincentApiClientReact',
-  hooks: true,
+  hooks: {
+    queries: true,
+    lazyQueries: true,
+    mutations: true,
+  },
 };
 
 module.exports = config;
