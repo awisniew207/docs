@@ -33,6 +33,33 @@ export const author = z.object({
   }),
 });
 
+export const fromPackageJson = z.object({
+  repository: z.array(z.string()).openapi({
+    description: 'Repository URLs',
+  }),
+  description: z.string().openapi({
+    description: 'Policy description',
+    example: 'This policy is a foo bar policy',
+  }),
+  keywords: z.array(z.string()).openapi({
+    description: 'Keywords for the policy',
+    example: ['defi', 'memecoin'],
+  }),
+  dependencies: z.array(z.string()).openapi({
+    description: 'Dependencies of the policy',
+  }),
+  author: author.openapi({
+    description: 'Author information',
+  }),
+  contributors: z.array(contributor).openapi({
+    description: 'Contributors information',
+  }),
+  homepage: z.string().url().optional().openapi({
+    description: 'Policy homepage',
+    example: 'https://example-vincent-homepage.com',
+  }),
+});
+
 // Request body for changing a tool/policy owner
 export const changeOwner = z.object({
   authorWalletAddress: z.string().openapi({
