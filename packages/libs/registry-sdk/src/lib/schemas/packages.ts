@@ -1,8 +1,8 @@
 import { z } from './openApiZod';
-import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../openApi/constants';
+import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../constants';
 
 // Contributors on NPM package
-export const Contributor = z.object({
+export const contributor = z.object({
   name: z.string().openapi({
     description: 'Name of the contributor',
     example: 'Contributor Name',
@@ -18,7 +18,7 @@ export const Contributor = z.object({
 });
 
 // Authors from NPM package
-export const Author = z.object({
+export const author = z.object({
   name: z.string().openapi({
     description: 'Name of the author',
     example: 'Developer Name',
@@ -34,7 +34,7 @@ export const Author = z.object({
 });
 
 // Request body for changing a tool/policy owner
-export const ChangeOwner = z.object({
+export const changeOwner = z.object({
   authorWalletAddress: z.string().openapi({
     description: 'New owner address',
     example: EXAMPLE_WALLET_ADDRESS,
