@@ -8,7 +8,7 @@ import { fromPackageJson } from './packages';
  * Any schemas that use subsets of tool properties should be composed from this using builder functions
  * instead of `ToolDef`, which also includes MongoDB-maintained props and is the complete API response
  */
-export const tool = z
+const tool = z
   .object({
     packageName: z.string().openapi({
       description: 'Tool NPM package name',
@@ -51,7 +51,7 @@ function buildCreateToolSchema() {
     .strict();
 }
 
-export const createTool = buildCreateToolSchema();
+export const toolCreate = buildCreateToolSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditToolSchema() {
@@ -68,20 +68,18 @@ function buildEditToolSchema() {
     .strict();
 }
 
-export const editTool = buildEditToolSchema();
+export const toolEdit = buildEditToolSchema();
 
-/** ToolDef describes a complete tool document, with all properties including those that are database-backend
+/** toolRead describes a complete tool document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
- *
- * Do not duplicate these definitions into other schemas like `edit` or `create`.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `tool` instead
  */
-export const toolDef = z.object({ ...baseDocAttributes.shape, ...tool.shape }).strict();
+export const toolRead = z.object({ ...baseDocAttributes.shape, ...tool.shape }).strict();
 
 /** toolVersion describes all properties on a tool version that are NOT controlled by the DB backend */
-export const toolVersion = z
+const toolVersion = z
   .object({
     packageName: tool.shape.packageName,
     version: z.string().openapi({
@@ -120,16 +118,14 @@ function buildCreateToolVersionSchema() {
   return z.object({ changes, packageName, version }).strict();
 }
 
-export const createToolVersion = buildCreateToolVersionSchema();
+export const toolVersionCreate = buildCreateToolVersionSchema();
 
-/** ToolVersionDef describes a complete tool version document, with all properties including those that are database-backend
+/** toolVersionRead describes a complete tool version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
- *
- * Do not duplicate these definitions into other schemas like `edit` or `create`.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `toolVersion` instead
  */
-export const toolVersionDef = z
+export const toolVersionRead = z
   .object({ ...baseDocAttributes.shape, ...toolVersion.shape })
   .strict();

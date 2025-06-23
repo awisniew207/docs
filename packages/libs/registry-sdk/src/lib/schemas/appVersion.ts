@@ -2,7 +2,7 @@ import { z } from './openApiZod';
 
 import { baseDocAttributes } from './base';
 
-export const appVersion = z
+const appVersion = z
   .object({
     appId: z.number().openapi({
       description: 'Application ID',
@@ -42,7 +42,7 @@ function buildCreateAppVersionSchema() {
     .strict();
 }
 
-export const createAppVersion = buildCreateAppVersionSchema();
+export const appVersionCreate = buildCreateAppVersionSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditAppVersionSchema() {
@@ -60,7 +60,7 @@ function buildEditAppVersionSchema() {
     .strict();
 }
 
-export const editAppVersion = buildEditAppVersionSchema();
+export const appVersionEdit = buildEditAppVersionSchema();
 
 const appVersionTool = z
   .object({
@@ -111,32 +111,28 @@ function buildCreateAppVersionToolSchema() {
     .strict();
 }
 
-export const createAppVersionTool = buildCreateAppVersionToolSchema();
+export const appVersionToolCreate = buildCreateAppVersionToolSchema();
 
-/** appVersionToolDef describes a complete application version's tool document, with all properties including those that are database-backend
+/** appVersionToolRead describes a complete application version's tool document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
- *
- * Do not duplicate these definitions into other schemas like `edit` or `create`.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `appVersionTool` instead
  */
-export const appVersionToolDef = z
+export const appVersionToolRead = z
   .object({
     ...baseDocAttributes.shape,
     ...appVersionTool.shape,
   })
   .strict();
 
-/** appVersionDef describes a complete application version document, with all properties including those that are database-backend
+/** appVersionRead describes a complete application version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
- *
- * Do not duplicate these definitions into other schemas like `edit` or `create`.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `appVersion` instead
  */
-export const appVersionDef = z
+export const appVersionRead = z
   .object({
     ...baseDocAttributes.shape,
     ...appVersion.shape,

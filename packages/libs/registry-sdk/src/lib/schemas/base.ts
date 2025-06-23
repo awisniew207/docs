@@ -20,14 +20,6 @@ export const errorResult = z.object({
   }),
 });
 
-// Request body for updating a tool version
-export const versionChanges = z.object({
-  changes: z.string().openapi({
-    description: 'Updated changelog information',
-    example: 'Updated changelog information',
-  }),
-});
-
 // Response body for deleting an application
 export const deleteResult = z.object({
   message: z.string().openapi({

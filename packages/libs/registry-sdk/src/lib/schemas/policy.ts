@@ -8,7 +8,7 @@ import { EXAMPLE_WALLET_ADDRESS } from '../constants';
  * Any schemas that use subsets of policy properties should be composed from this using builder functions
  * instead of `PolicyDef`, which also includes MongoDB-maintained props and is the complete API response
  */
-export const policy = z
+const policy = z
   .object({
     packageName: z.string().openapi({
       description: 'Policy NPM package name',
@@ -50,7 +50,7 @@ function buildCreatePolicySchema() {
     .strict();
 }
 
-export const createPolicy = buildCreatePolicySchema();
+export const policyCreate = buildCreatePolicySchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditPolicySchema() {
@@ -67,20 +67,18 @@ function buildEditPolicySchema() {
     .strict();
 }
 
-export const editPolicy = buildEditPolicySchema();
+export const policyEdit = buildEditPolicySchema();
 
-/** PolicyDef describes a complete policy document, with all properties including those that are database-backend
+/** policyRead describes a complete policy document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
- *
- * Do not duplicate these definitions into other schemas like `edit` or `create`.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `policy` instead
  */
-export const policyDef = z.object({ ...baseDocAttributes.shape, ...policy.shape }).strict();
+export const policyRead = z.object({ ...baseDocAttributes.shape, ...policy.shape }).strict();
 
 /** policyVersion describes all properties on a policy version that are NOT controlled by the DB backend */
-export const policyVersion = z
+const policyVersion = z
   .object({
     packageName: policy.shape.packageName,
     version: z.string().openapi({
@@ -127,16 +125,14 @@ function buildCreatePolicyVersionSchema() {
   return z.object({ changes, packageName, version }).strict();
 }
 
-export const createPolicyVersion = buildCreatePolicyVersionSchema();
+export const policyVersionCreate = buildCreatePolicyVersionSchema();
 
-/** PolicyVersionDef describes a complete policy version document, with all properties including those that are database-backend
+/** policyVersionRead describes a complete policy version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
- *
- * Do not duplicate these definitions into other schemas like `edit` or `create`.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `policyVersion` instead
  */
-export const policyVersionDef = z
+export const policyVersionRead = z
   .object({ ...baseDocAttributes.shape, ...policyVersion.shape })
   .strict();
