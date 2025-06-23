@@ -96,8 +96,9 @@ export const policyVersion = z
     ...fromPackageJson.shape,
 
     ipfsCid: z.string().openapi({
-      description: 'IPFS CID',
+      description: 'IPFS CID of the code that implements this policy.',
       example: 'QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo',
+      readOnly: true,
     }),
     parameters: z
       .object({
@@ -113,6 +114,7 @@ export const policyVersion = z
       .optional() // Until we get support for these shipped :)
       .openapi({
         description: 'Schema parameters',
+        readOnly: true,
       }),
   })
   .strict();
