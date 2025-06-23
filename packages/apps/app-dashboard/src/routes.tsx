@@ -1,4 +1,4 @@
-import { Outlet, RouteObject } from 'react-router-dom';
+import { Outlet, RouteObject } from 'react-router';
 import AppLayout from './components/layout/AppLayout';
 import UserLayout from './components/layout/UserLayout';
 import { AppProviders, UserProviders } from './providers';
@@ -12,6 +12,7 @@ import AdvancedFunctions from './pages/appId/[appId]/advanced-functions';
 import Consent from './pages/appId/[appId]/consent';
 import Delegatee from './pages/appId/[appId]/delegatee';
 import ToolPolicies from './pages/appId/[appId]/tool-policies';
+import { AppDashboard } from '@/pages/developer-dashboard';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -23,6 +24,20 @@ const routes: RouteObject[] = [
       {
         path: '/',
         element: <Home />,
+      },
+      {
+        path: '/developer',
+        element: <AppDashboard.ConnectWallet />,
+      },
+      {
+        path: '/developer/*',
+        element: <Outlet />,
+        children: [
+          {
+            path: 'dashboard',
+            element: <AppDashboard.Dashboard />,
+          },
+        ],
       },
       {
         path: '/create-app',
