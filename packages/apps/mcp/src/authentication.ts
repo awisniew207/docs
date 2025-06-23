@@ -11,6 +11,12 @@ const { verify } = jwt;
 
 const YELLOWSTONE = LIT_EVM_CHAINS.yellowstone;
 
+if (!EXPECTED_AUDIENCE || !VINCENT_MCP_BASE_URL) {
+  throw new Error(
+    '"EXPECTED_AUDIENCE" or "VINCENT_MCP_BASE_URL" environment variable missing. They are required for proper authentication',
+  );
+}
+
 /**
  * Any address can request a SIWE msg
  * @param address
@@ -46,9 +52,15 @@ export async function authenticateWithSiwe(
   const siweMsg = new SiweMessage(messageToSign);
   const verification = await siweMsg.verify({ signature });
 
-  const { address, nonce } = verification.data;
+  const { address, domain, nonce, uri } = verification.data;
 
-  if (!verification.success || !nonceManager.consumeNonce(address, nonce)) {
+  if (
+    !verification.success ||
+    !nonceManager.consumeNonce(address, nonce) ||
+    // @ts-expect-error Env var is defined or this module would have thrown
+    domain !== new URL(VINCENT_MCP_BASE_URL).host || // Env var is defined or this module would have thrown
+    uri !== EXPECTED_AUDIENCE
+  ) {
     throw new Error('SIWE message verification failed');
   }
 
@@ -59,7 +71,7 @@ export async function authenticateWithSiwe(
  * JWT AUTHENTICATION. ONLY FOR DELEGATORS
  */
 export function verifyDelegatorJwt(jwt: string, appId: string, appVersion: string): string {
-  // @ts-expect-error only http will import this file which should have this as required property (check env.ts)
+  // @ts-expect-error Env var is defined or this module would have thrown
   const decodedJwt = verify(jwt, EXPECTED_AUDIENCE);
   const { id, version } = decodedJwt.payload.app;
   if (id !== appId || version !== parseInt(appVersion)) {
