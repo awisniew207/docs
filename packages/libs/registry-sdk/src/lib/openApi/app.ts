@@ -1,23 +1,17 @@
 import { z } from '../schemas/openApiZod';
 
-import {
-  AppDef,
-  AppVersionDef,
-  AppVersionWithTools,
-  CreateApp,
-  CreateAppVersion,
-  EditApp,
-} from '../schemas/app';
-import { DeleteResponseSchema, ErrorSchema, VersionChangesSchema } from './baseRegistry';
+import { appRead, appCreate, appEdit } from '../schemas/app';
+import { appVersionRead, appVersionCreate, appVersionEdit } from '../schemas/appVersion';
+import { DeleteResponse, ErrorResponse } from './baseRegistry';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
 export function addToRegistry(registry: OpenAPIRegistry) {
-  const CreateAppSchema = registry.register('CreateApp', CreateApp);
-  const EditAppSchema = registry.register('EditApp', EditApp);
-  const AppDefSchema = registry.register('AppDef', AppDef);
-  const CreateAppVersionSchema = registry.register('CreateAppVersion', CreateAppVersion);
-  const AppVersionDefSchema = registry.register('AppVersionDef', AppVersionDef);
-  const AppVersionWithToolsSchema = registry.register('AppVersionWithTools', AppVersionWithTools);
+  const AppCreate = registry.register('AppCreate', appCreate);
+  const AppEdit = registry.register('AppEdit', appEdit);
+  const AppRead = registry.register('AppRead', appRead);
+  const AppVersionCreate = registry.register('AppVersionCreate', appVersionCreate);
+  const AppVersionEdit = registry.register('AppVersionEdit', appVersionEdit);
+  const AppVersionRead = registry.register('AppVersionRead', appVersionRead);
 
   // GET /apps - List all applications
   registry.registerPath({
@@ -31,7 +25,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(AppDefSchema),
+            schema: z.array(AppRead).openapi('AppList'),
           },
         },
       },
@@ -39,7 +33,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -57,7 +51,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: EditAppSchema,
+            schema: AppEdit,
           },
         },
         description: 'Developer-defined application information',
@@ -69,7 +63,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppDefSchema,
+            schema: AppRead,
           },
         },
       },
@@ -83,7 +77,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -114,7 +108,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppDefSchema,
+            schema: AppRead,
           },
         },
       },
@@ -125,7 +119,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -155,7 +149,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: CreateAppSchema,
+            schema: AppCreate,
           },
         },
         description: 'Developer-defined updated application details',
@@ -167,7 +161,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppDefSchema,
+            schema: AppRead,
           },
         },
       },
@@ -181,7 +175,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -212,7 +206,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully deleted',
         content: {
           'application/json': {
-            schema: DeleteResponseSchema,
+            schema: DeleteResponse,
           },
         },
       },
@@ -226,7 +220,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -257,7 +251,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(AppVersionDef).openapi('AppVersionsArray'),
+            schema: z.array(AppVersionRead).openapi('AppVersionList'),
           },
         },
       },
@@ -268,7 +262,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -298,7 +292,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: CreateAppVersionSchema,
+            schema: AppVersionCreate,
           },
         },
         description: 'Developer-defined version details',
@@ -310,7 +304,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -324,7 +318,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -365,7 +359,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionWithToolsSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -376,7 +370,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -416,7 +410,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: AppVersionEdit,
           },
         },
         description: 'Update version changes field',
@@ -428,7 +422,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -442,7 +436,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -483,7 +477,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -497,7 +491,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -538,7 +532,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -552,7 +546,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
