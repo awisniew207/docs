@@ -6,7 +6,7 @@ import { disconnectLitNodeClientInstance as disconnectVincentToolClients } from 
 
 export { disconnectVincentToolClients };
 
-export { getVincentToolClient } from './toolClient';
+export { generateVincentToolSessionSigs, getVincentToolClient } from './toolClient';
 
 export { getVincentWebAppClient } from './app';
 export type {

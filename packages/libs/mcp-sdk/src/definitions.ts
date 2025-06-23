@@ -8,21 +8,15 @@
  * @category Vincent MCP SDK
  */
 
-import {
-  createSiweMessageWithRecaps,
-  generateAuthSig,
-  LitActionResource,
-  LitPKPResource,
-} from '@lit-protocol/auth-helpers';
-import { LIT_ABILITY } from '@lit-protocol/constants';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import { generateVincentToolSessionSigs } from '@lit-protocol/vincent-app-sdk';
 import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
 import {
   CallToolResult,
   ServerRequest,
   ServerNotification,
 } from '@modelcontextprotocol/sdk/types.js';
-import { ethers, Signer } from 'ethers';
+import { Signer } from 'ethers';
 import { z, type ZodRawShape } from 'zod';
 
 /**
@@ -153,40 +147,6 @@ export function buildMcpParamDefinitions(
   return zodSchema;
 }
 
-// TODO this is likely duplicated. If not should be moved somewhere to be reused
-const generateSessionSigs = async ({
-  litNodeClient,
-  ethersSigner,
-}: {
-  litNodeClient: LitNodeClient;
-  ethersSigner: ethers.Signer;
-}) => {
-  return litNodeClient.getSessionSigs({
-    chain: 'ethereum',
-    resourceAbilityRequests: [
-      { resource: new LitPKPResource('*'), ability: LIT_ABILITY.PKPSigning },
-      { resource: new LitActionResource('*'), ability: LIT_ABILITY.LitActionExecution },
-    ],
-    authNeededCallback: async ({ resourceAbilityRequests, uri }) => {
-      const [walletAddress, nonce] = await Promise.all([
-        ethersSigner.getAddress(),
-        litNodeClient.getLatestBlockhash(),
-      ]);
-
-      const toSign = await createSiweMessageWithRecaps({
-        uri: uri || 'http://localhost:3000',
-        expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(),
-        resources: resourceAbilityRequests || [],
-        walletAddress,
-        nonce,
-        litNodeClient,
-      });
-
-      return await generateAuthSig({ signer: ethersSigner, toSign });
-    },
-  });
-};
-
 export function buildMcpToolName(vincentAppDef: VincentAppDef, toolName: string) {
   return `${vincentAppDef.name.toLowerCase().replace(' ', '-')}-V${vincentAppDef.version}-${toolName}`;
 }
@@ -212,7 +172,7 @@ export function buildVincentToolCallback(
     _extra?: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<{ success: boolean; error?: string; result?: object }> => {
     try {
-      const sessionSigs = await generateSessionSigs({
+      const sessionSigs = await generateVincentToolSessionSigs({
         ethersSigner: delegateeSigner,
         litNodeClient,
       });
