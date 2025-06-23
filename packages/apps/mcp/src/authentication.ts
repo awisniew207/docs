@@ -1,6 +1,8 @@
 import { LIT_EVM_CHAINS } from '@lit-protocol/constants';
 import { jwt } from '@lit-protocol/vincent-app-sdk';
-import { generateNonce, SiweMessage } from 'siwe';
+import { SiweMessage } from 'siwe';
+
+import { nonceManager } from './nonceManager';
 
 import { env } from './env';
 
@@ -14,7 +16,7 @@ const YELLOWSTONE = LIT_EVM_CHAINS.yellowstone;
  * @param address
  */
 export function getSiweMessageToAuthenticate(address: string) {
-  const nonce = generateNonce();
+  const nonce = nonceManager.getNonce(address);
 
   const message = new SiweMessage({
     address,
@@ -44,11 +46,13 @@ export async function authenticateWithSiwe(
   const siweMsg = new SiweMessage(messageToSign);
   const verification = await siweMsg.verify({ signature });
 
-  if (!verification.success) {
+  const { address, nonce } = verification.data;
+
+  if (!verification.success || !nonceManager.consumeNonce(address, nonce)) {
     throw new Error('SIWE message verification failed');
   }
 
-  return verification.data.address;
+  return address;
 }
 
 /**
