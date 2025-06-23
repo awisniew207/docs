@@ -89,7 +89,7 @@ export function DashboardContent({
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() =>
-                window.open('https://docs.heyvincent.ai/documents/Quick_Start.html', '_blank')
+                window.open('https://docs.heyvincent.ai/documents/Getting_Started.html', '_blank')
               }
             >
               View Docs
