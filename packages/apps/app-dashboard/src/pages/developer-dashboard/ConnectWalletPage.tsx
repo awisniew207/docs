@@ -22,16 +22,16 @@ export default function ConnectWalletScreen() {
         <title>Vincent | Developer Dashboard</title>
         <meta name="description" content="Connect your wallet to Vincent Developer Dashboard" />
       </Helmet>
-      <div className="flex flex-col items-center justify-between flex-1 bg-white text-center font-sans relative">
-        <main className="flex flex-col items-center flex-1 justify-center">
+      <div className="fixed inset-0 flex flex-col justify-center items-center bg-white text-center font-sans">
+        <div className="flex flex-col items-center max-w-lg mx-auto px-4">
           <img
             src="/vincent-main-logo.png"
             alt="Vincent by Lit Protocol - Assistant for user owned automation"
-            className="max-w-[400px] mb-5"
+            className="max-w-[400px] w-full mb-8"
           />
-          <h1 className="text-4xl font-medium text-gray-900 mb-4 mt-0">Developer Dashboard</h1>
+          <h1 className="text-4xl font-medium text-gray-900 mb-8">Developer Dashboard</h1>
 
-          <div className="mb-2.5">
+          <div className="mb-6">
             <ConnectButton.Custom>
               {({
                 account,
@@ -64,7 +64,7 @@ export default function ConnectWalletScreen() {
                       if (!connected) {
                         return (
                           <button
-                            className="bg-gray-900 text-white px-5 py-2.5 rounded-[20px] font-medium mx-2.5 inline-block border-none cursor-pointer hover:bg-gray-800 transition-colors"
+                            className="bg-gray-900 text-white px-6 py-3 rounded-[20px] font-medium border-none cursor-pointer hover:bg-gray-800 transition-colors"
                             onClick={openConnectModal}
                           >
                             Connect Wallet
@@ -75,7 +75,7 @@ export default function ConnectWalletScreen() {
                       if (chain.unsupported) {
                         return (
                           <button
-                            className="bg-red-600 text-white px-5 py-2.5 rounded-[20px] font-medium mx-2.5 inline-block border-none cursor-pointer hover:bg-red-700 transition-colors"
+                            className="bg-red-600 text-white px-6 py-3 rounded-[20px] font-medium border-none cursor-pointer hover:bg-red-700 transition-colors"
                             onClick={openChainModal}
                           >
                             Unsupported network
@@ -84,15 +84,15 @@ export default function ConnectWalletScreen() {
                       }
 
                       return (
-                        <div className="flex gap-2.5 justify-center flex-wrap">
+                        <div className="flex gap-3 justify-center flex-wrap">
                           <button
-                            className="bg-transparent text-gray-900 px-5 py-2.5 rounded-[20px] font-medium mx-2.5 inline-block border border-gray-900 cursor-pointer hover:bg-gray-100 transition-colors"
+                            className="bg-transparent text-gray-900 px-5 py-2.5 rounded-[20px] font-medium border border-gray-900 cursor-pointer hover:bg-gray-100 transition-colors"
                             onClick={openChainModal}
                           >
                             {chain.name}
                           </button>
                           <button
-                            className="bg-transparent text-gray-900 px-5 py-2.5 rounded-[20px] font-medium mx-2.5 inline-block border border-gray-900 cursor-pointer hover:bg-gray-100 transition-colors"
+                            className="bg-transparent text-gray-900 px-5 py-2.5 rounded-[20px] font-medium border border-gray-900 cursor-pointer hover:bg-gray-100 transition-colors"
                             onClick={openAccountModal}
                           >
                             {account.displayName}
@@ -106,7 +106,7 @@ export default function ConnectWalletScreen() {
             </ConnectButton.Custom>
           </div>
 
-          <div className="mt-2.5 mb-[30px]">
+          <div className="mb-8">
             <a
               target="_blank"
               href="https://docs.heyvincent.ai/"
@@ -118,8 +118,10 @@ export default function ConnectWalletScreen() {
             </a>
           </div>
 
-          <ProtectedByLit />
-        </main>
+          <div className="w-full max-w-md">
+            <ProtectedByLit />
+          </div>
+        </div>
 
         <Footer />
       </div>
