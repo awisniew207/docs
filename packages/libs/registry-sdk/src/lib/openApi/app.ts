@@ -277,10 +277,10 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /app/{appId}/version - Create an application version
+  // POST /app/{appId}/version/{version} - Create an application version
   registry.registerPath({
     method: 'post',
-    path: '/app/{appId}/version',
+    path: '/app/{appId}/version/{version}',
     tags: ['app/version'],
     summary: 'Creates an application version',
     operationId: 'createAppVersion',
@@ -293,6 +293,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         schema: {
           type: 'number',
           example: 5,
+        },
+      },
+      {
+        name: 'version',
+        in: 'path',
+        description: 'Version number to create',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '1.0.0',
         },
       },
     ],

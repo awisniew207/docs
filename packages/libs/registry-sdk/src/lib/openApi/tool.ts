@@ -287,10 +287,10 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /tool/{packageName}/version - Create a tool version
+  // POST /tool/{packageName}/version/{version} - Create a tool version
   registry.registerPath({
     method: 'post',
-    path: '/tool/{packageName}/version',
+    path: '/tool/{packageName}/version/{version}',
     tags: ['tool/version'],
     summary: 'Creates a tool version',
     operationId: 'createToolVersion',
@@ -303,6 +303,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         schema: {
           type: 'string',
           example: '@vincent/foo-bar',
+        },
+      },
+      {
+        name: 'version',
+        in: 'path',
+        description: 'Version number to create',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '1.0.0',
         },
       },
     ],

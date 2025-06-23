@@ -187,10 +187,10 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /policy/{packageName}/version - Create a new policy version
+  // POST /policy/{packageName}/version/{version} - Create a new policy version
   registry.registerPath({
     method: 'post',
-    path: '/policy/{packageName}/version',
+    path: '/policy/{packageName}/version/{version}',
     tags: ['policy/version'],
     summary: 'Creates a new policy version',
     operationId: 'createPolicyVersion',
@@ -203,6 +203,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         schema: {
           type: 'string',
           example: '@vincent/foo-bar-policy',
+        },
+      },
+      {
+        name: 'version',
+        in: 'path',
+        description: 'Version number to create',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '1.0.0',
         },
       },
     ],
