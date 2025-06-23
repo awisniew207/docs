@@ -1,7 +1,13 @@
 import { z } from '../schemas/openApiZod';
 
 import { appRead, appCreate, appEdit } from '../schemas/app';
-import { appVersionRead, appVersionCreate, appVersionEdit } from '../schemas/appVersion';
+import {
+  appVersionRead,
+  appVersionCreate,
+  appVersionEdit,
+  appVersionToolCreate,
+  appVersionToolRead,
+} from '../schemas/appVersion';
 import { DeleteResponse, ErrorResponse } from './baseRegistry';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
@@ -12,6 +18,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   const AppVersionCreate = registry.register('AppVersionCreate', appVersionCreate);
   const AppVersionEdit = registry.register('AppVersionEdit', appVersionEdit);
   const AppVersionRead = registry.register('AppVersionRead', appVersionRead);
+  const AppVersionToolCreate = registry.register('AppVersionToolCreate', appVersionToolCreate);
+  const AppVersionToolRead = registry.register('AppVersionToolRead', appVersionToolRead);
 
   // GET /apps - List all applications
   registry.registerPath({
@@ -533,6 +541,134 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         content: {
           'application/json': {
             schema: AppVersionRead,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // GET /app/{appId}/version/{appVersion}/tools - List all tools for an application version
+  registry.registerPath({
+    method: 'get',
+    path: '/app/{appId}/version/{appVersion}/tools',
+    tags: ['app/version/tool'],
+    summary: 'Lists all tools for an application version',
+    operationId: 'listAppVersionTools',
+    parameters: [
+      {
+        name: 'appId',
+        in: 'path',
+        description: 'ID of the application',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 5,
+        },
+      },
+      {
+        name: 'appVersion',
+        in: 'path',
+        description: 'Version number of the application',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 2,
+        },
+      },
+    ],
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: z.array(AppVersionToolRead).openapi('AppVersionToolList'),
+          },
+        },
+      },
+      404: {
+        description: 'Application or version not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Create a tool for an application version
+  registry.registerPath({
+    method: 'post',
+    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
+    tags: ['app/version/tool'],
+    summary: 'Creates a tool for an application version',
+    operationId: 'createAppVersionTool',
+    parameters: [
+      {
+        name: 'appId',
+        in: 'path',
+        description: 'ID of the application',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 5,
+        },
+      },
+      {
+        name: 'appVersion',
+        in: 'path',
+        description: 'Version number of the application',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 2,
+        },
+      },
+      {
+        name: 'toolPackageName',
+        in: 'path',
+        description: 'Name of the tool package',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '@vincent/foo-bar',
+        },
+      },
+    ],
+    request: {
+      body: {
+        content: {
+          'application/json': {
+            schema: AppVersionToolCreate,
+          },
+        },
+        description: 'Tool configuration for the application version',
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: AppVersionToolRead,
           },
         },
       },
