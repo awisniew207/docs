@@ -10,8 +10,8 @@
 
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import { generateVincentToolSessionSigs } from '@lit-protocol/vincent-app-sdk';
-import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
-import {
+import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
+import type {
   CallToolResult,
   ServerRequest,
   ServerNotification,
