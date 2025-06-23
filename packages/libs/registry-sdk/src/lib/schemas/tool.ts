@@ -120,6 +120,16 @@ function buildCreateToolVersionSchema() {
 
 export const toolVersionCreate = buildCreateToolVersionSchema();
 
+// Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
+function buildEditToolVersionSchema() {
+  const { changes, packageName, version } = toolVersion.shape;
+
+  // Required props
+  return z.object({ changes, packageName, version }).strict();
+}
+
+export const toolVersionEdit = buildEditToolVersionSchema();
+
 /** toolVersionRead describes a complete tool version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *

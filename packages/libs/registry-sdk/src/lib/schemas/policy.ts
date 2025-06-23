@@ -127,6 +127,16 @@ function buildCreatePolicyVersionSchema() {
 
 export const policyVersionCreate = buildCreatePolicyVersionSchema();
 
+// Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
+function buildEditPolicyVersionSchema() {
+  const { changes, packageName, version } = policyVersion.shape;
+
+  // Required props
+  return z.object({ changes, packageName, version }).strict();
+}
+
+export const policyVersionEdit = buildEditPolicyVersionSchema();
+
 /** policyVersionRead describes a complete policy version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
