@@ -152,7 +152,7 @@ export const myTokenSwapTool = createVincentTool({
   supportedPolicies: [
     createVincentToolPolicy({
       toolParamsSchema,
-      policyDef: dailySpendPolicy,
+      PolicyConfig: dailySpendPolicy,
       toolParameterMappings: { buy: 'buyAmount' },
     }),
   ],
@@ -202,53 +202,6 @@ export const myTokenSwapTool = createVincentTool({
 });
 ```
 
----
-
-## 👨‍💻 Consumer Usage (with Inference!)
-
-### Note: These are low-level interfaces that are not typically used by app, tool or policy developers directly. Consumers at this level are our LIT action wrappers and the LitToolClient -- see @lit-protocol/vincent-app-sdk for the LitToolClient.
-
-Tool and policy authors export their tool and policies like this:
-
-```ts
-export const myTool = createVincentTool(...);
-export const limitPolicy = createVincentPolicy(...);
-```
-
-Then, consumers can use:
-
-```ts
-import { myTool } from 'awesome-tool-package';
-
-const typedTool = createVincentTool(myTool.__vincentToolDef);
-
-typedTool.execute(
-  { amount: 50, action: 'transfer' },
-  {
-    delegation: { delegatee: 'a', delegator: 'b' },
-    policiesContext: {
-      evaluatedPolicies: ['limit-check', 'type-check'],
-      allowedPolicies: {
-        'limit-check': { result: { approved: true } },
-        'type-check': { result: { allowed: true } },
-      },
-    },
-  },
-); // ✅ fully typed and schema validated
-```
-
----
-
-## 🔧 Summary of Create Functions
-
-| Function                                           | Purpose                                                                           |
-| -------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `createVincentPolicy(def)`                         | Defines a reusable, type-safe policy with lifecycle methods                       |
-| `createVincentToolPolicy({ policyDef, mappings })` | Adapts a policy to a tool’s parameter schema                                      |
-| `createVincentTool(def)`                           | Composes policies and schemas into a type-safe tool with `execute` and `precheck` |
-
----
-
 ## 🧠 Tip
 
-Tool and policy authors should export the result of `createVincentPolicy` / `createVincentTool()`
+Tool and policy authors should export the result of `createVincentPolicy()` / `createVincentTool()`

@@ -1,16 +1,14 @@
 import { VincentJWT } from '../jwt/types';
 
 /**
- * @inline
- * @hidden
+ * @category Interfaces
  */
 export interface VincentAppClientConfig {
   appId: string;
 }
 
 /**
- * @inline
- * @hidden
+ * @category Interfaces
  */
 export interface RedirectToVincentConsentPageParams {
   redirectUri: string;
@@ -26,7 +24,7 @@ export interface RedirectToVincentConsentPageParams {
  * - Consent page redirection
  * - Authentication helpers that are browser specific
  *
- * @category Vincent Web App
+ * @category Interfaces
  */
 export interface VincentWebAppClient {
   /**

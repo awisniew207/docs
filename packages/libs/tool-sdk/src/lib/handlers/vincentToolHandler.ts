@@ -16,7 +16,7 @@ import { validatePolicies } from '../toolCore/helpers/validatePolicies';
 import { ToolPolicyMap } from '../toolCore/helpers';
 import { z } from 'zod';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
-import type { BaseToolContext } from '../toolCore/toolDef/context/types';
+import type { BaseToolContext } from '../toolCore/toolConfig/context/types';
 
 declare const LitAuth: {
   authSigAddress: string;

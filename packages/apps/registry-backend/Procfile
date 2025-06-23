@@ -1,0 +1,1 @@
+web: cd packages/apps/registry-backend && pnpm start

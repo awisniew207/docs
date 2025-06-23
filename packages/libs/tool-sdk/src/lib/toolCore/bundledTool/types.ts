@@ -11,12 +11,17 @@ export type __bundledToolBrand = typeof __bundledToolBrand;
  * A VincentTool bundled with an IPFS CID and uniquely branded.
  * This ensures only correctly constructed objects are assignable.
  *
- * @hidden
+ *
+ * @typeParam VT - The Vincent Tool that was bundled for usage
+ * @typeParam IpfsCid - The IPFS CID that the bundled tool was published to
+ *
+ * @category Interfaces
  */
 export type BundledVincentTool<
   VT extends VincentTool<any, any, any, any, any, any, any, any, any, any>,
   IpfsCid extends string = string,
 > = {
+  /* @type string */
   readonly ipfsCid: IpfsCid;
   readonly vincentTool: VT;
   /** @hidden */

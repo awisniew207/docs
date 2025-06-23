@@ -11,12 +11,12 @@ import {
 import {
   createExecutionToolContext,
   createPrecheckToolContext,
-} from './toolDef/context/toolContext';
+} from './toolConfig/context/toolContext';
 import { wrapFailure, wrapNoResultFailure, wrapSuccess } from './helpers/resultCreators';
 import { getSchemaForToolResult, validateOrFail } from './helpers/zod';
 import { isToolFailureResult } from './helpers/typeGuards';
 import { ToolPolicyMap } from './helpers';
-import { ToolDefLifecycleFunction, VincentToolDef } from './toolDef/types';
+import { ToolConfigLifecycleFunction, VincentToolConfig } from './toolConfig/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -56,6 +56,15 @@ import { ToolDefLifecycleFunction, VincentToolDef } from './toolDef/types';
  *   });
  * ```
  *
+ * @typeParam ToolParamsSchema {@removeTypeParameterCompletely}
+ * @typeParam PkgNames {@removeTypeParameterCompletely}
+ * @typeParam PolicyMap {@removeTypeParameterCompletely}
+ * @typeParam PolicyMapByPackageName {@removeTypeParameterCompletely}
+ * @typeParam PrecheckSuccessSchema {@removeTypeParameterCompletely}
+ * @typeParam PrecheckFailSchema {@removeTypeParameterCompletely}
+ * @typeParam ExecuteSuccessSchema {@removeTypeParameterCompletely}
+ * @typeParam ExecuteFailSchema {@removeTypeParameterCompletely}
+ *
  * @category API Methods
  */
 export function createVincentTool<
@@ -68,7 +77,7 @@ export function createVincentTool<
   ExecuteSuccessSchema extends z.ZodType = z.ZodUndefined,
   ExecuteFailSchema extends z.ZodType = z.ZodUndefined,
 >(
-  toolDef: VincentToolDef<
+  ToolConfig: VincentToolConfig<
     ToolParamsSchema,
     PkgNames,
     PolicyMap,
@@ -77,13 +86,13 @@ export function createVincentTool<
     PrecheckFailSchema,
     ExecuteSuccessSchema,
     ExecuteFailSchema,
-    ToolDefLifecycleFunction<
+    ToolConfigLifecycleFunction<
       ToolParamsSchema,
       PolicyEvaluationResultContext<PolicyMapByPackageName>,
       PrecheckSuccessSchema,
       PrecheckFailSchema
     >,
-    ToolDefLifecycleFunction<
+    ToolConfigLifecycleFunction<
       ToolParamsSchema,
       ToolExecutionPolicyContext<PolicyMapByPackageName>,
       ExecuteSuccessSchema,
@@ -91,11 +100,11 @@ export function createVincentTool<
     >
   >,
 ) {
-  const { policyByPackageName } = toolDef.supportedPolicies;
+  const { policyByPackageName } = ToolConfig.supportedPolicies;
 
-  const executeSuccessSchema = (toolDef.executeSuccessSchema ??
+  const executeSuccessSchema = (ToolConfig.executeSuccessSchema ??
     z.undefined()) as ExecuteSuccessSchema;
-  const executeFailSchema = (toolDef.executeFailSchema ?? z.undefined()) as ExecuteFailSchema;
+  const executeFailSchema = (ToolConfig.executeFailSchema ?? z.undefined()) as ExecuteFailSchema;
   const execute: ToolLifecycleFunction<
     ToolParamsSchema,
     ToolExecutionPolicyEvaluationResult<PolicyMapByPackageName>,
@@ -112,7 +121,7 @@ export function createVincentTool<
 
       const parsedToolParams = validateOrFail(
         toolParams,
-        toolDef.toolParamsSchema,
+        ToolConfig.toolParamsSchema,
         'execute',
         'input',
       );
@@ -121,7 +130,7 @@ export function createVincentTool<
         return wrapFailure(parsedToolParams);
       }
 
-      const result = await toolDef.execute(
+      const result = await ToolConfig.execute(
         { toolParams: parsedToolParams },
         {
           ...context,
@@ -129,7 +138,7 @@ export function createVincentTool<
         },
       );
 
-      console.log('toolDef execute result', result);
+      console.log('ToolConfig execute result', result);
 
       const { schemaToUse } = getSchemaForToolResult({
         value: result,
@@ -149,10 +158,10 @@ export function createVincentTool<
     }
   };
 
-  const precheckSuccessSchema = (toolDef.precheckSuccessSchema ??
+  const precheckSuccessSchema = (ToolConfig.precheckSuccessSchema ??
     z.undefined()) as PrecheckSuccessSchema;
-  const precheckFailSchema = (toolDef.precheckFailSchema ?? z.undefined()) as PrecheckFailSchema;
-  const { precheck: precheckFn } = toolDef;
+  const precheckFailSchema = (ToolConfig.precheckFailSchema ?? z.undefined()) as PrecheckFailSchema;
+  const { precheck: precheckFn } = ToolConfig;
 
   const precheck = precheckFn
     ? ((async ({ toolParams }, baseToolContext) => {
@@ -165,7 +174,7 @@ export function createVincentTool<
 
           const parsedToolParams = validateOrFail(
             toolParams,
-            toolDef.toolParamsSchema,
+            ToolConfig.toolParamsSchema,
             'precheck',
             'input',
           );
@@ -176,7 +185,7 @@ export function createVincentTool<
 
           const result = await precheckFn({ toolParams }, context);
 
-          console.log('toolDef precheck result', JSON.stringify(result));
+          console.log('ToolConfig precheck result', JSON.stringify(result));
           const { schemaToUse } = getSchemaForToolResult({
             value: result,
             successResultSchema: precheckSuccessSchema,
@@ -202,17 +211,18 @@ export function createVincentTool<
     : undefined;
 
   return {
-    packageName: toolDef.packageName,
+    packageName: ToolConfig.packageName,
     execute,
     precheck,
-    supportedPolicies: toolDef.supportedPolicies,
+    supportedPolicies: ToolConfig.supportedPolicies,
     policyByPackageName,
-    toolParamsSchema: toolDef.toolParamsSchema,
+    toolParamsSchema: ToolConfig.toolParamsSchema,
+    /** @hidden */
     __schemaTypes: {
-      precheckSuccessSchema: toolDef.precheckSuccessSchema,
-      precheckFailSchema: toolDef.precheckFailSchema,
-      executeSuccessSchema: toolDef.executeSuccessSchema,
-      executeFailSchema: toolDef.executeFailSchema,
+      precheckSuccessSchema: ToolConfig.precheckSuccessSchema,
+      precheckFailSchema: ToolConfig.precheckFailSchema,
+      executeSuccessSchema: ToolConfig.executeSuccessSchema,
+      executeFailSchema: ToolConfig.executeFailSchema,
     },
   } as VincentTool<
     ToolParamsSchema,

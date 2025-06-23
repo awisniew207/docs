@@ -1,0 +1,22 @@
+{
+  "environments": {
+    "PRODUCTION": "PRODUCTION",
+    "STAGING": "STAGING"
+  },
+  "features": {
+    "HARD_DELETE_DOCS": {
+      "createdAt": "2025-06-19T05:16:30.448Z",
+      "createdBy": "Daryl Collins",
+      "PRODUCTION": {
+        "enabled": false,
+        "lastEditedAt": "2025-06-19T05:16:30.447Z",
+        "lastEditedBy": "Daryl Collins"
+      },
+      "STAGING": {
+        "enabled": true,
+        "lastEditedAt": "2025-06-19T05:16:30.448Z",
+        "lastEditedBy": "Daryl Collins"
+      }
+    }
+  }
+}

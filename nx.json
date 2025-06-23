@@ -62,15 +62,14 @@
     "projectsRelationship": "independent",
     "releaseTagPattern": "vincent/{projectName}/{version}",
     "versionPlans": true,
+    "changelog": {
+      "projectChangelogs": true
+    },
     "version": {
       "preVersionCommand": "pnpm dlx nx run-many --target=build --all",
       "generatorOptions": {
         "preserveLocalDependencyProtocols": true
       }
-    },
-    "git": {
-      "tagArgs": "-f",
-      "pushArgs": "--force-with-lease"
     }
   },
   "targetDefaults": {
@@ -79,6 +78,15 @@
       "options": {
         "commands": ["rm -rf ./node_modules", "rm -rf ./dist"],
         "cwd": "{projectRoot}"
+      }
+    },
+    "flag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm lit-flags --configPath ./src/features"],
+        "cwd": "{projectRoot}",
+        "tty": true,
+        "parallel": false
       }
     },
     "lint": {
