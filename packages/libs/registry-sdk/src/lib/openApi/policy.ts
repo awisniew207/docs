@@ -1,14 +1,23 @@
 import { z } from '../schemas/openApiZod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
-import { CreatePolicy, EditPolicy, PolicyDef, PolicyVersionDef } from '../schemas/policy';
-import { ErrorSchema, VersionChangesSchema, ChangeOwnerSchema } from './baseRegistry';
+import {
+  policyCreate,
+  policyEdit,
+  policyRead,
+  policyVersionCreate,
+  policyVersionEdit,
+  policyVersionRead,
+} from '../schemas/policy';
+import { ErrorResponse, ChangeOwner } from './baseRegistry';
 
 export function addToRegistry(registry: OpenAPIRegistry) {
-  const CreatePolicySchema = registry.register('CreatePolicyDef', CreatePolicy);
-  const EditPolicySchema = registry.register('EditPolicyDef', EditPolicy);
-  const PolicyDefSchema = registry.register('PolicyDef', PolicyDef);
-  const PolicyVersionDefSchema = registry.register('PolicyVersionDef', PolicyVersionDef);
+  const PolicyCreate = registry.register('PolicyCreate', policyCreate);
+  const PolicyEdit = registry.register('PolicyEdit', policyEdit);
+  const PolicyRead = registry.register('PolicyRead', policyRead);
+  const PolicyVersionCreate = registry.register('PolicyVersionCreate', policyVersionCreate);
+  const PolicyVersionEdit = registry.register('PolicyVersionEdit', policyVersionEdit);
+  const PolicyVersionRead = registry.register('PolicyVersionRead', policyVersionRead);
 
   registry.registerPath({
     method: 'get',
@@ -21,7 +30,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(PolicyDefSchema),
+            schema: z.array(PolicyRead).openapi('PolicyList'),
           },
         },
       },
@@ -29,7 +38,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -47,7 +56,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: CreatePolicySchema,
+            schema: PolicyCreate,
           },
         },
         description: 'Developer-defined policy details',
@@ -59,7 +68,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -73,7 +82,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -104,7 +113,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -115,7 +124,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -145,7 +154,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: EditPolicySchema,
+            schema: PolicyEdit,
           },
         },
         description: 'Developer-defined updated policy details',
@@ -157,7 +166,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -171,7 +180,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -201,7 +210,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: PolicyVersionCreate,
           },
         },
         description: 'Developer-defined version details',
@@ -213,7 +222,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyVersionDefSchema,
+            schema: PolicyVersionRead,
           },
         },
       },
@@ -227,7 +236,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -268,7 +277,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyVersionDefSchema,
+            schema: PolicyVersionRead,
           },
         },
       },
@@ -279,7 +288,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -310,7 +319,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(PolicyVersionDefSchema).openapi('PolicyVersionsArray'),
+            schema: z.array(PolicyVersionRead).openapi('PolicyVersionList'),
           },
         },
       },
@@ -321,7 +330,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -351,7 +360,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: ChangeOwnerSchema,
+            schema: ChangeOwner,
           },
         },
         description: 'Developer-defined updated policy details',
@@ -363,7 +372,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -377,7 +386,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -417,7 +426,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: PolicyVersionEdit,
           },
         },
         description: 'Update version changes field',
@@ -429,7 +438,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyVersionDefSchema,
+            schema: PolicyVersionRead,
           },
         },
       },
@@ -443,7 +452,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
