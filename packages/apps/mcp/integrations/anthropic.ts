@@ -40,7 +40,6 @@ async function delegateeUsage() {
         tool_configuration: {
           enabled: true,
         },
-        // authorization_token: 'esto llega en el Bearer',
       },
     ],
     messages: [
