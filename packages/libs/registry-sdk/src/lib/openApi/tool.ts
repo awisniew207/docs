@@ -1,14 +1,24 @@
 import { z } from '../schemas/openApiZod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
-import { CreateTool, EditTool, ToolDef, ToolVersionDef } from '../schemas/tool';
-import { ErrorSchema, VersionChangesSchema, ChangeOwnerSchema } from './baseRegistry';
+import {
+  toolCreate,
+  toolEdit,
+  toolRead,
+  toolVersionCreate,
+  toolVersionEdit,
+  toolVersionRead,
+} from '../schemas/tool';
+import { ErrorResponse, ChangeOwner } from './baseRegistry';
 
 export function addToRegistry(registry: OpenAPIRegistry) {
-  const CreateToolSchema = registry.register('CreateTool', CreateTool);
-  const EditToolSchema = registry.register('EditTool', EditTool);
-  const ToolDefSchema = registry.register('ToolDef', ToolDef);
-  const ToolVersionDefSchema = registry.register('ToolVersionDef', ToolVersionDef);
+  const ToolCreate = registry.register('ToolCreate', toolCreate);
+  const ToolEdit = registry.register('ToolEdit', toolEdit);
+  const ToolRead = registry.register('ToolRead', toolRead);
+
+  const ToolVersionCreate = registry.register('ToolVersionCreate', toolVersionCreate);
+  const ToolVersionEdit = registry.register('ToolVersionEdit', toolVersionEdit);
+  const ToolVersionRead = registry.register('ToolVersionRead', toolVersionRead);
 
   // GET /tools - List all tools
   registry.registerPath({
@@ -22,7 +32,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(ToolDefSchema),
+            schema: z.array(ToolRead).openapi('ToolList'),
           },
         },
       },
@@ -30,7 +40,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -48,7 +58,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: CreateToolSchema,
+            schema: ToolCreate,
           },
         },
         description: 'Developer-defined tool details',
@@ -60,7 +70,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -74,7 +84,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -105,7 +115,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -116,7 +126,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -146,7 +156,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: EditToolSchema,
+            schema: ToolEdit,
           },
         },
         description: 'Developer-defined updated tool details',
@@ -158,7 +168,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -172,7 +182,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -203,7 +213,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(ToolVersionDefSchema),
+            schema: z.array(ToolVersionRead).openapi('ToolVersionList'),
           },
         },
       },
@@ -214,7 +224,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -244,7 +254,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: ChangeOwnerSchema,
+            schema: ChangeOwner,
           },
         },
         description: 'Developer-defined updated tool details',
@@ -256,7 +266,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -270,7 +280,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -300,7 +310,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: ToolVersionCreate,
           },
         },
         description: 'Developer-defined version details',
@@ -312,7 +322,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolVersionDefSchema,
+            schema: ToolVersionRead,
           },
         },
       },
@@ -326,7 +336,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -367,7 +377,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolVersionDefSchema,
+            schema: ToolVersionRead,
           },
         },
       },
@@ -378,7 +388,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -418,7 +428,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: ToolVersionEdit,
           },
         },
         description: 'Update version changes field',
@@ -430,7 +440,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolVersionDefSchema,
+            schema: ToolVersionRead,
           },
         },
       },
@@ -444,7 +454,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
