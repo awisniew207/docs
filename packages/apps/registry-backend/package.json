@@ -13,6 +13,9 @@
     "dist",
     "src/lib/express/static/openapi.html"
   ],
+  "bin": {
+    "apiServer": "./dist/bin/apiServer.mjs"
+  },
   "packageManager": "pnpm@10.7.0",
   "engines": {
     "node": "^20.11.1",
