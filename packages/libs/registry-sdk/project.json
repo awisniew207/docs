@@ -38,7 +38,7 @@
       "outputs": ["{options.outputPath}"],
       "dependsOn": ["generate-all"],
       "options": {
-        "outputPath": "packages/libs/registry-sdk/dist",
+        "outputPath": "{projectRoot}/dist",
         "main": "packages/libs/registry-sdk/src/index.ts",
         "tsConfig": "packages/libs/registry-sdk/tsconfig.lib.json",
         "formats": ["cjs"]
