@@ -72,6 +72,13 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.appVersionToolCreate,
       }),
     }),
+    editAppVersionTool: build.mutation<EditAppVersionToolApiResponse, EditAppVersionToolApiArg>({
+      query: (queryArg) => ({
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.appVersion))}/tool/${encodeURIComponent(String(queryArg.toolPackageName))}`,
+        method: 'PUT',
+        body: queryArg.appVersionToolEdit,
+      }),
+    }),
     listAllTools: build.query<ListAllToolsApiResponse, ListAllToolsApiArg>({
       query: () => ({ url: `/tools` }),
     }),
@@ -276,6 +283,18 @@ export type CreateAppVersionToolApiArg = {
   toolPackageName: string;
   /** Tool configuration for the application version */
   appVersionToolCreate: AppVersionToolCreate;
+};
+export type EditAppVersionToolApiResponse =
+  /** status 200 Successful operation */ AppVersionToolRead;
+export type EditAppVersionToolApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** Version # of the target application version */
+  appVersion: number;
+  /** The NPM package name */
+  toolPackageName: string;
+  /** Updated tool configuration for the application version */
+  appVersionToolEdit: AppVersionToolEdit;
 };
 export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolListRead;
 export type ListAllToolsApiArg = void;
@@ -578,6 +597,10 @@ export type AppVersionToolCreate = {
   hiddenSupportedPolicies?: string[];
   /** Tool version */
   toolVersion: string;
+};
+export type AppVersionToolEdit = {
+  /** Policies that are supported by this tool, but are hidden from users of this app specifically */
+  hiddenSupportedPolicies?: string[];
 };
 export type Tool = {
   /** Timestamp when this was last modified */
@@ -907,6 +930,7 @@ export const {
   useListAppVersionToolsQuery,
   useLazyListAppVersionToolsQuery,
   useCreateAppVersionToolMutation,
+  useEditAppVersionToolMutation,
   useListAllToolsQuery,
   useLazyListAllToolsQuery,
   useCreateToolMutation,

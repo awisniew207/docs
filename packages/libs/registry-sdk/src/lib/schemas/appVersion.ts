@@ -103,6 +103,20 @@ function buildCreateAppVersionToolSchema() {
 
 export const appVersionToolCreate = buildCreateAppVersionToolSchema();
 
+// Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
+function buildEditAppVersionToolSchema() {
+  const { hiddenSupportedPolicies } = appVersionTool.shape;
+
+  return z
+    .object({
+      // Only hiddenSupportedPolicies can be edited
+      hiddenSupportedPolicies,
+    })
+    .strict();
+}
+
+export const appVersionToolEdit = buildEditAppVersionToolSchema();
+
 /** appVersionToolDoc describes a complete application version's tool document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
