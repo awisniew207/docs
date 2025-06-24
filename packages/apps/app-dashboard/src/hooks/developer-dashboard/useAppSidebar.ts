@@ -137,13 +137,10 @@ export function useAppSidebar() {
   const navigate = useNavigate();
   const params = useParams();
 
-  // Show sidebar only when wallet is connected
   const shouldShowSidebar = isConnected && location.pathname.startsWith('/developer');
 
-  // Use reducer for state management
   const [state, dispatch] = useReducer(sidebarReducer, initialState);
 
-  // Get apps data for sidebar (only if sidebar should be shown)
   const {
     data: apiApps,
     error: appsError,
@@ -152,7 +149,6 @@ export function useAppSidebar() {
     skip: !shouldShowSidebar,
   });
 
-  // Get tools data for sidebar (only if sidebar should be shown)
   const {
     data: allTools,
     error: toolsError,
@@ -161,7 +157,6 @@ export function useAppSidebar() {
     skip: !shouldShowSidebar,
   });
 
-  // Get policies data for sidebar (only if sidebar should be shown)
   const {
     data: allPolicies,
     error: policiesError,
@@ -177,7 +172,6 @@ export function useAppSidebar() {
     );
   }, [apiApps, address]);
 
-  // Filter tools by owner
   const filteredTools = useMemo(() => {
     if (!address || !allTools || allTools.length === 0) return [];
     return allTools.filter(
@@ -185,7 +179,6 @@ export function useAppSidebar() {
     );
   }, [allTools, address]);
 
-  // Filter policies by owner
   const filteredPolicies = useMemo(() => {
     if (!address || !allPolicies || allPolicies.length === 0) return [];
     return allPolicies.filter(
@@ -193,7 +186,6 @@ export function useAppSidebar() {
     );
   }, [allPolicies, address]);
 
-  // Helper function to safely find app by ID
   const findAppById = useCallback(
     (appId: number): App | null => {
       if (!filteredApps || filteredApps.length === 0) return null;
@@ -202,7 +194,6 @@ export function useAppSidebar() {
     [filteredApps],
   );
 
-  // Helper function to safely find tool by package name
   const findToolByPackageName = useCallback(
     (packageName: string): Tool | null => {
       if (!filteredTools || filteredTools.length === 0) return null;
@@ -211,7 +202,6 @@ export function useAppSidebar() {
     [filteredTools],
   );
 
-  // Helper function to safely find policy by package name
   const findPolicyByPackageName = useCallback(
     (packageName: string): Policy | null => {
       if (!filteredPolicies || filteredPolicies.length === 0) return null;
@@ -221,7 +211,6 @@ export function useAppSidebar() {
   );
 
   useEffect(() => {
-    // Don't process routes if we're still loading data or don't have sidebar showing
     if (!shouldShowSidebar || appsLoading || toolsLoading || policiesLoading) {
       return;
     }
@@ -262,14 +251,13 @@ export function useAppSidebar() {
       } else if (pathname === '/developer/create-policy') {
         dispatch({ type: 'SET_FORM', payload: 'create-policy' });
       } else if (pathname.startsWith('/developer/appId/') || params.appId) {
-        // Handle app-specific routes using params OR pathname parsing
         let appIdStr: string;
 
         if (params.appId) {
           appIdStr = params.appId;
         } else {
           // Extract appId from pathname: /developer/appId/123
-          const parts = pathname.split('/'); // ['', 'developer', 'appId', '123']
+          const parts = pathname.split('/'); // ['', 'developer', 'appId', '123'] TEMP: This is a hack to get the appId from the pathname
           appIdStr = parts[3];
         }
 
@@ -284,7 +272,7 @@ export function useAppSidebar() {
         const app = findAppById(appId);
         if (!app) {
           console.warn(`App with ID ${appId} not found`);
-          // Still proceed with navigation state but with null app
+          return;
         }
 
         // Expand the full navigation hierarchy
@@ -293,7 +281,7 @@ export function useAppSidebar() {
 
         if (params.versionId || pathname.includes('/version/')) {
           // On a specific version page - expand all the way down
-          const versionNumber = params.versionId || pathname.split('/version/')[1];
+          const versionNumber = params.versionId || pathname.split('/version/')[1]; // TEMP: This is a hack to get the version number from the pathname
           appView = `version-${versionNumber}`;
           menusToExpand.add('app-versions');
         } else if (pathname.includes('/versions')) {
@@ -323,7 +311,7 @@ export function useAppSidebar() {
           }
         } else {
           // Extract packageName from pathname: /developer/toolId/package-name
-          const parts = pathname.split('/'); // ['', 'developer', 'toolId', 'package-name']
+          const parts = pathname.split('/'); // ['', 'developer', 'toolId', 'package-name'] TEMP: This is a hack to get the package name from the pathname
           try {
             packageName = decodeURIComponent(parts[3]);
           } catch (error) {
@@ -335,7 +323,7 @@ export function useAppSidebar() {
         const tool = findToolByPackageName(packageName);
         if (!tool) {
           console.warn(`Tool with package name ${packageName} not found`);
-          // Still proceed with navigation state but with null tool
+          return;
         }
 
         // Expand the full navigation hierarchy
@@ -386,7 +374,7 @@ export function useAppSidebar() {
         const policy = findPolicyByPackageName(packageName);
         if (!policy) {
           console.warn(`Policy with package name ${packageName} not found`);
-          // Still proceed with navigation state but with null policy
+          return;
         }
 
         // Expand the full navigation hierarchy
