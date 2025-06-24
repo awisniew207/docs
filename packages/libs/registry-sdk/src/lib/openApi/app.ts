@@ -11,6 +11,18 @@ import {
 import { DeleteResponse, ErrorResponse } from './baseRegistry';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
+const appIdParam = z
+  .number()
+  .openapi({ param: { description: 'ID of the target application', example: 132 } });
+
+const appVersionParam = z
+  .number()
+  .openapi({ param: { description: 'Version # of the target application version', example: 3 } });
+
+const packageNameParam = z
+  .string()
+  .openapi({ param: { description: 'The NPM package name', example: '@vincent/foo-bar' } });
+
 export function addToRegistry(registry: OpenAPIRegistry) {
   const AppCreate = registry.register('AppCreate', appCreate);
   const AppEdit = registry.register('AppEdit', appEdit);
@@ -101,18 +113,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Fetches an application',
     operationId: 'getApp',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to retrieve',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
+    request: {
+      params: z.object({ appId: appIdParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -143,19 +146,10 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Edits an application',
     operationId: 'editApp',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to edit',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
       body: {
         content: {
           'application/json': {
@@ -199,18 +193,11 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Deletes an application',
     operationId: 'deleteApp',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to delete',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
+    },
     responses: {
       200: {
         description: 'OK - Resource successfully deleted',
@@ -244,18 +231,11 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Fetches all versions of an application',
     operationId: 'getAppVersions',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application whose versions will be fetched',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -286,29 +266,11 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Creates an application version',
     operationId: 'createAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to create a new version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to create',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
       body: {
         content: {
           'application/json': {
@@ -352,28 +314,12 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Fetches an application version',
     operationId: 'getAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to retrieve a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to retrieve',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -404,29 +350,11 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Edits an application version',
     operationId: 'editAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to edit a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to edit',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
       body: {
         content: {
           'application/json': {
@@ -470,28 +398,12 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Enables an application version',
     operationId: 'enableAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to enable a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to enable',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -525,28 +437,12 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Disables an application version',
     operationId: 'disableAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to disable a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to enable',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -580,28 +476,12 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version/tool'],
     summary: 'Lists all tools for an application version',
     operationId: 'listAppVersionTools',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'appVersion',
-        in: 'path',
-        description: 'Version number of the application',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -632,39 +512,12 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version/tool'],
     summary: 'Creates a tool for an application version',
     operationId: 'createAppVersionTool',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'appVersion',
-        in: 'path',
-        description: 'Version number of the application',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-      {
-        name: 'toolPackageName',
-        in: 'path',
-        description: 'Name of the tool package',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+        appVersion: appVersionParam,
+        toolPackageName: packageNameParam,
+      }),
       body: {
         content: {
           'application/json': {

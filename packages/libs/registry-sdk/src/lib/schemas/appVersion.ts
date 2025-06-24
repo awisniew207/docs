@@ -73,6 +73,7 @@ const appVersionTool = z
     appVersion: z.number().openapi({
       description: 'Application version',
       example: 2,
+      readOnly: true,
     }),
     toolPackageName: z.string().openapi({
       description: 'Tool package name',
