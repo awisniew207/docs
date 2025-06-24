@@ -20,6 +20,9 @@ module.exports = async function globalSetup() {
         ...process.env,
         MONGODB_URI: mongoUri,
         MONGO_DB_NAME: 'test',
+        CORS_ALLOWED_DOMAIN: 'http://localhost:3000',
+        IS_DEVELOPMENT: '1',
+        LIT_FEATURE_ENV: 'STAGING', // Enable hard deletes
       },
     },
     waitOnScheme: {
