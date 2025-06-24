@@ -136,7 +136,7 @@ describe('Tool API Integration Tests', () => {
       const result = await store.dispatch(
         api.endpoints.createToolVersion.initiate({
           packageName: testPackageName,
-          version: testToolVersion,
+          version: '1.0.1',
           toolVersionCreate: toolVersionData,
         }),
       );
@@ -148,7 +148,7 @@ describe('Tool API Integration Tests', () => {
       expectAssertObject(data);
 
       expect(data).toHaveProperty('changes', toolVersionData.changes);
-      expect(data).toHaveProperty('version', testToolVersion);
+      expect(data).toHaveProperty('version', '1.0.1');
     });
   });
 
@@ -289,6 +289,44 @@ describe('Tool API Integration Tests', () => {
       expectAssertObject(updatedData);
 
       expect(updatedData).toHaveProperty('authorWalletAddress', newOwnerAddress);
+    });
+  });
+
+  describe('DELETE /tool/{packageName}', () => {
+    it('should delete a tool and all its versions', async () => {
+      // First, delete the tool
+      const result = await store.dispatch(
+        api.endpoints.deleteTool.initiate({ packageName: testPackageName }),
+      );
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      // Verify the message in the response
+      expect(data).toHaveProperty('message');
+      expect(data.message).toContain('deleted successfully');
+
+      // Reset the API cache
+      store.dispatch(api.util.resetApiState());
+
+      // Verify the tool is deleted by checking for a 404
+      const getResult = await store.dispatch(
+        api.endpoints.getTool.initiate({ packageName: testPackageName }),
+      );
+
+      verboseLog(getResult);
+      expect(getResult).toHaveProperty('error');
+      expect(getResult.isError).toBe(true);
+
+      if (getResult.isError) {
+        const { error } = getResult;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(404);
+      }
     });
   });
 });
