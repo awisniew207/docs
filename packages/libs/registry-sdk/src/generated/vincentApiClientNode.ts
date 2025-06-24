@@ -423,6 +423,8 @@ export type Error = {
   message: string;
 };
 export type AppCreate = {
+  /** Identifies if an application is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
   /** Contact email for the application manager */
   contactEmail?: string;
   /** This should be a landing page for the app. */
@@ -439,6 +441,10 @@ export type AppCreate = {
   description?: string;
 };
 export type AppEdit = {
+  /** The name of the application */
+  name?: string;
+  /** Description of the application */
+  description?: string;
   /** Contact email for the application manager */
   contactEmail?: string;
   /** This should be a landing page for the app. */
@@ -451,9 +457,6 @@ export type AppEdit = {
   deploymentStatus?: 'dev' | 'test' | 'prod';
   /** Active version of the application */
   activeVersion?: number;
-  /** The name of the application */
-  name: string;
-  description: string;
 };
 export type DeleteResponse = {
   /** Success message */
@@ -494,8 +497,6 @@ export type AppVersionCreate = {
 export type AppVersionEdit = {
   /** Describes what changed between this version and the previous version. */
   changes?: string;
-  /** Whether this version is enabled or not */
-  enabled?: boolean;
 };
 export type AppVersionTool = {
   /** Timestamp when this was last modified */

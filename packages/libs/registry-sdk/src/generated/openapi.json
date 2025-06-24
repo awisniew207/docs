@@ -54,6 +54,17 @@
       "AppCreate": {
         "type": "object",
         "properties": {
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "default": "dev",
+            "description": "Identifies if an application is in development, test, or production.",
+            "example": "dev"
+          },
           "contactEmail": {
             "type": "string",
             "format": "email",
@@ -107,6 +118,16 @@
       "AppEdit": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the application",
+            "example": "Memecoin DCA App"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the application",
+            "example": "This is a memecoin DCA App."
+          },
           "contactEmail": {
             "type": "string",
             "format": "email",
@@ -143,7 +164,6 @@
               "test",
               "prod"
             ],
-            "default": "dev",
             "description": "Identifies if an application is in development, test, or production.",
             "example": "dev"
           },
@@ -151,20 +171,8 @@
             "type": "number",
             "description": "Active version of the application",
             "example": 1
-          },
-          "name": {
-            "type": "string",
-            "description": "The name of the application",
-            "example": "Memecoin DCA App"
-          },
-          "description": {
-            "type": "string"
           }
         },
-        "required": [
-          "name",
-          "description"
-        ],
         "additionalProperties": false
       },
       "App": {
@@ -242,7 +250,6 @@
               "test",
               "prod"
             ],
-            "default": "dev",
             "description": "Identifies if an application is in development, test, or production.",
             "example": "dev"
           },
@@ -280,11 +287,6 @@
             "type": "string",
             "description": "Describes what changed between this version and the previous version.",
             "example": "I am a changelog trapped in a computer!"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Whether this version is enabled or not",
-            "example": true
           }
         },
         "additionalProperties": false

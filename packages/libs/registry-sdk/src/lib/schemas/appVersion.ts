@@ -43,12 +43,12 @@ export const appVersionCreate = buildCreateAppVersionSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditAppVersionSchema() {
-  const { changes, enabled } = appVersion.shape;
+  const { changes } = appVersion.shape;
 
   return z
     .object({
       // Optional
-      ...z.object({ changes, enabled }).partial().strict().shape,
+      ...z.object({ changes }).partial().strict().shape,
     })
     .strict();
 }

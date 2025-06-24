@@ -35,8 +35,16 @@ export function registerRoutes(app: Express) {
   // Create new App
   app.post('/app', async (req, res) => {
     await withSession(async (mongoSession) => {
-      const { name, description, contactEmail, appUserUrl, logo, redirectUris, managerAddress } =
-        req.body;
+      const {
+        name,
+        deploymentStatus,
+        description,
+        contactEmail,
+        appUserUrl,
+        logo,
+        redirectUris,
+        managerAddress,
+      } = req.body;
 
       const triedAppIds = new Set<number>();
       let appId: number;
@@ -70,7 +78,7 @@ export function registerRoutes(app: Express) {
           appUserUrl,
           logo,
           redirectUris,
-          deploymentStatus: 'dev',
+          deploymentStatus,
           managerAddress,
         });
 
@@ -110,7 +118,8 @@ export function registerRoutes(app: Express) {
     '/app/:appId',
     requireApp(),
     withApp(async (req, res) => {
-      const updatedApp = await req.vincentApp.updateOne(req.body, { new: true }).lean();
+      Object.assign(req.vincentApp, req.body);
+      const updatedApp = await req.vincentApp.save();
 
       res.json(updatedApp);
       return;
@@ -184,17 +193,9 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireAppVersion(),
     withAppVersion(async (req, res) => {
-      const { vincentApp, vincentAppVersion } = req;
+      const { vincentAppVersion } = req;
 
-      const appTools = await AppTool.find({
-        appId: vincentApp.appId,
-        appVersion: vincentAppVersion.version,
-      }).lean();
-
-      res.json({
-        version: vincentAppVersion.version,
-        tools: appTools,
-      });
+      res.json(vincentAppVersion);
       return;
     }),
   );
@@ -207,10 +208,9 @@ export function registerRoutes(app: Express) {
     withAppVersion(async (req, res) => {
       const { vincentAppVersion } = req;
 
-      const version = await vincentAppVersion
-        .updateOne({ changes: req.body.changes }, { new: true })
-        .lean();
+      Object.assign(vincentAppVersion, req.body);
 
+      const version = await vincentAppVersion.save();
       res.json(version);
       return;
     }),
@@ -224,9 +224,8 @@ export function registerRoutes(app: Express) {
     withAppVersion(async (req, res) => {
       const { vincentAppVersion } = req;
 
-      const updatedAppVersion = await vincentAppVersion
-        .updateOne({ enabled: false }, { new: true })
-        .lean();
+      Object.assign(vincentAppVersion, { enabled: false });
+      const updatedAppVersion = await vincentAppVersion.save();
 
       res.json(updatedAppVersion);
       return;
@@ -241,9 +240,8 @@ export function registerRoutes(app: Express) {
     withAppVersion(async (req, res) => {
       const { vincentAppVersion } = req;
 
-      const updatedAppVersion = await vincentAppVersion
-        .updateOne({ enabled: true }, { new: true })
-        .lean();
+      Object.assign(vincentAppVersion, { enabled: true });
+      const updatedAppVersion = await vincentAppVersion.save();
 
       res.json(updatedAppVersion);
       return;

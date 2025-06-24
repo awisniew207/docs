@@ -65,10 +65,9 @@ const app = z
         example: ['https://myapp.example.com', 'https://myapp.example.com/subpage'],
       })
       .optional(),
-    deploymentStatus: z.enum(['dev', 'test', 'prod']).optional().default('dev').openapi({
+    deploymentStatus: z.enum(['dev', 'test', 'prod']).optional().openapi({
       description: 'Identifies if an application is in development, test, or production.',
       example: 'dev',
-      default: 'dev',
     }),
     managerAddress: z.string().openapi({
       description: `App manager's wallet address. Derived from the authorization signature provided by the creator.`,
@@ -80,14 +79,23 @@ const app = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateAppSchema() {
-  const { name, description, contactEmail, appUserUrl, logo, redirectUris, managerAddress } =
-    app.shape;
+  const {
+    name,
+    deploymentStatus,
+    description,
+    contactEmail,
+    appUserUrl,
+    logo,
+    redirectUris,
+    managerAddress,
+  } = app.shape;
 
   return z
     .object({
       // Optional
       ...z
         .object({
+          deploymentStatus: deploymentStatus.default('dev'),
           contactEmail,
           appUserUrl,
           logo,
@@ -127,6 +135,8 @@ function buildEditAppSchema() {
       // Optional
       ...z
         .object({
+          name,
+          description,
           contactEmail,
           appUserUrl,
           logo,
@@ -135,15 +145,6 @@ function buildEditAppSchema() {
           activeVersion,
         })
         .partial()
-        .strict().shape,
-
-      // Required
-      ...z
-        .object({
-          name,
-          description,
-        })
-        .required()
         .strict().shape,
     })
     .strict();

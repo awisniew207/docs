@@ -8,13 +8,11 @@ const verboseLog = (value: any) => {
   logIfVerbose(value, VERBOSE_LOGGING);
 };
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('App API Integration Tests', () => {
   beforeAll(async () => {
     verboseLog('App API Integration Tests');
   });
-
-  // FIXME: baseUrl shouldn't be in here.
-  const baseUrl = `http://localhost:${process.env.PORT || 3000}`;
 
   let testAppId: number | undefined;
   const testAppVersion = 1;
@@ -63,7 +61,7 @@ describe('App API Integration Tests', () => {
 
   describe('GET /app/:appId', () => {
     it('should return a specific app', async () => {
-      const result = await store.dispatch(api.endpoints.getApp.initiate({ appId: testAppId }));
+      const result = await store.dispatch(api.endpoints.getApp.initiate({ appId: testAppId! }));
       verboseLog(result);
       expect(result).not.toHaveProperty('error');
 
@@ -78,12 +76,13 @@ describe('App API Integration Tests', () => {
         api.endpoints.getApp.initiate({ appId: Number(Math.random() * 1000000) }),
       );
 
-      expect(result).not.toHaveProperty('error');
+      expect(result).toHaveProperty('error');
 
       expect(result.isError).toBe(true);
       if (result.isError) {
         const { error } = result;
         expectAssertObject(error);
+        // @ts-expect-error it's a test
         expect(error.status).toBe(404);
       }
     });
@@ -92,43 +91,29 @@ describe('App API Integration Tests', () => {
   describe('PUT /app/:appId', () => {
     it('should update an app', async () => {
       const updateData = {
-        description: 'Updated test app description',
+        description: 'Updated test app description!',
       };
 
       const result = await store.dispatch(
         api.endpoints.editApp.initiate({
-          appId: testAppId,
-          createApp: updateData,
+          appId: testAppId!,
+          appEdit: updateData,
         }),
       );
-      expect(result.isSuccess).toBe(true);
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
 
-      // Verify the update
-      const getResult = await store.dispatch(api.endpoints.getApp.initiate({ appId: testAppId }));
-      expect(getResult.data.description).toBe(updateData.description);
-    });
-  });
+      // Reset the API cache so we can verify the change
+      store.dispatch(api.util.resetApiState());
 
-  describe('POST /app/:appId/owner', () => {
-    it('should change the app owner', async () => {
-      const newOwnerData = {
-        managerAddress: '0xabcdef1234567890abcdef1234567890abcdef12',
-      };
+      const getResult = await store.dispatch(api.endpoints.getApp.initiate({ appId: testAppId! }));
 
-      // Since there's no changeAppOwner endpoint in the vincentApiClientNode,
-      // we need to make a direct fetch request
-      const response = await fetch(`${baseUrl}/app/${testAppId}/owner`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newOwnerData),
-      });
-      expect(response.status).toBe(200);
+      verboseLog(getResult);
 
-      // Verify the owner change
-      const getResult = await store.dispatch(api.endpoints.getApp.initiate({ appId: testAppId }));
-      expect(getResult.data.managerAddress).toBe(newOwnerData.managerAddress);
+      const { data } = getResult;
+      expectAssertObject(data);
+
+      expect(data).toHaveProperty('description', updateData.description);
     });
   });
 
@@ -140,131 +125,232 @@ describe('App API Integration Tests', () => {
 
       const result = await store.dispatch(
         api.endpoints.createAppVersion.initiate({
-          appId: testAppId,
-          createAppVersion: versionData,
+          appId: testAppId!,
+          appVersionCreate: versionData,
         }),
       );
 
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.changes).toBe(versionData.changes);
-      expect(result.data.version).toBe(2); // Since the first version is 1
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      expect(data).toHaveProperty('changes', versionData.changes);
+      expect(data).toHaveProperty('version', 2);
     });
   });
 
   describe('GET /app/:appId/versions', () => {
     it('should list all versions of an app', async () => {
+      store.dispatch(api.util.resetApiState());
+
       const result = await store.dispatch(
-        api.endpoints.getAppVersions.initiate({ appId: testAppId }),
+        api.endpoints.getAppVersions.initiate({ appId: testAppId! }),
       );
-      expect(result.isSuccess).toBe(true);
-      expect(Array.isArray(result.data)).toBe(true);
-      expect(result.data.length).toBeGreaterThan(0);
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertArray(data);
+
+      expect(data).toHaveLength(2);
     });
   });
 
   describe('GET /app/:appId/version/:version', () => {
     it('should get a specific app version', async () => {
+      store.dispatch(api.util.resetApiState());
+
       const result = await store.dispatch(
         api.endpoints.getAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
+          appId: testAppId!,
+          version: 2,
         }),
       );
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.version).toBe(testAppVersion);
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      store.dispatch(api.util.resetApiState());
+      expect(data).toHaveProperty('version', 2);
     });
 
     it('should return 404 for non-existent version', async () => {
       const result = await store.dispatch(
         api.endpoints.getAppVersion.initiate({
-          appId: testAppId,
+          appId: testAppId!,
           version: 999,
         }),
       );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+
       expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(404);
+      if (result.isError) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(404);
+      }
     });
   });
 
   describe('PUT /app/:appId/version/:version', () => {
     it('should update an app version', async () => {
-      const updateData = {
-        changes: 'Updated changes description',
-      };
+      store.dispatch(api.util.resetApiState());
 
-      const result = await store.dispatch(
-        api.endpoints.editAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
-          versionChanges: updateData,
-        }),
-      );
+      const changes = 'Updated changes description for appVersion 1' as const;
 
-      expect(result.isSuccess).toBe(true);
+      {
+        const result = await store.dispatch(
+          api.endpoints.editAppVersion.initiate({
+            appId: testAppId!,
+            version: testAppVersion,
+            appVersionEdit: {
+              changes,
+            },
+          }),
+        );
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
 
-      // Verify the update
-      const getResult = await store.dispatch(
-        api.endpoints.getAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
-        }),
-      );
-      expect(getResult.data.changes).toBe(updateData.changes);
+        const { data } = result;
+        expectAssertObject(data);
+      }
+
+      store.dispatch(api.util.resetApiState());
+
+      {
+        // Verify the update
+        const getResult = await store.dispatch(
+          api.endpoints.getAppVersion.initiate({
+            appId: testAppId!,
+            version: testAppVersion,
+          }),
+        );
+
+        verboseLog(getResult);
+        expect(getResult).not.toHaveProperty('error');
+
+        const { data } = getResult;
+        expectAssertObject(data);
+        expect(data).toHaveProperty('changes', changes);
+      }
     });
   });
 
   describe('POST /app/:appId/version/:version/disable', () => {
     it('should disable an app version', async () => {
-      const result = await store.dispatch(
-        api.endpoints.disableAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
-        }),
-      );
-      expect(result.isSuccess).toBe(true);
+      {
+        const result = await store.dispatch(
+          api.endpoints.disableAppVersion.initiate({
+            appId: testAppId!,
+            version: testAppVersion,
+          }),
+        );
 
-      // Verify the version is disabled
-      const getResult = await store.dispatch(
-        api.endpoints.getAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
-        }),
-      );
-      expect(getResult.data.enabled).toBe(false);
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
+
+        const { data } = result;
+        expectAssertObject(data);
+      }
+
+      store.dispatch(api.util.resetApiState());
+
+      {
+        const getResult = await store.dispatch(
+          api.endpoints.getAppVersion.initiate({
+            appId: testAppId!,
+            version: testAppVersion,
+          }),
+        );
+
+        verboseLog(getResult);
+        expect(getResult).not.toHaveProperty('error');
+
+        const { data } = getResult;
+        expectAssertObject(data);
+        expect(data).toHaveProperty('enabled', false);
+      }
     });
   });
 
   describe('POST /app/:appId/version/:version/enable', () => {
     it('should enable an app version', async () => {
-      const result = await store.dispatch(
-        api.endpoints.enableAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
-        }),
-      );
-      expect(result.isSuccess).toBe(true);
+      {
+        const result = await store.dispatch(
+          api.endpoints.enableAppVersion.initiate({
+            appId: testAppId!,
+            version: testAppVersion,
+          }),
+        );
 
-      // Verify the version is enabled
-      const getResult = await store.dispatch(
-        api.endpoints.getAppVersion.initiate({
-          appId: testAppId,
-          version: testAppVersion,
-        }),
-      );
-      expect(getResult.data.enabled).toBe(true);
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
+
+        const { data } = result;
+        expectAssertObject(data);
+      }
+
+      store.dispatch(api.util.resetApiState());
+
+      {
+        const getResult = await store.dispatch(
+          api.endpoints.getAppVersion.initiate({
+            appId: testAppId!,
+            version: testAppVersion,
+          }),
+        );
+
+        verboseLog(getResult);
+        expect(getResult).not.toHaveProperty('error');
+
+        const { data } = getResult;
+        expectAssertObject(data);
+        expect(data).toHaveProperty('enabled', true);
+      }
     });
   });
 
   describe('DELETE /app/:appId', () => {
     it('should delete an app and its versions', async () => {
-      const result = await store.dispatch(api.endpoints.deleteApp.initiate({ appId: testAppId }));
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.message).toContain('deleted successfully');
+      {
+        const result = await store.dispatch(
+          api.endpoints.deleteApp.initiate({ appId: testAppId! }),
+        );
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
 
-      // Verify the deletion
-      const getResult = await store.dispatch(api.endpoints.getApp.initiate({ appId: testAppId }));
-      expect(getResult.isError).toBe(true);
-      expect(getResult.error.status).toBe(404);
+        const { data } = result;
+        expectAssertObject(data);
+
+        expect(data).toHaveProperty('message');
+        expect(data.message).toContain('deleted successfully');
+      }
+
+      store.dispatch(api.util.resetApiState());
+
+      {
+        // Verify the deletion
+        const getResult = await store.dispatch(
+          api.endpoints.getApp.initiate({ appId: testAppId! }),
+        );
+
+        expect(getResult.isError).toBe(true);
+        if (getResult.isError) {
+          const { error } = getResult;
+          expectAssertObject(error);
+          // @ts-expect-error it's a test
+          expect(error.status).toBe(404);
+        }
+      }
     });
   });
 });
