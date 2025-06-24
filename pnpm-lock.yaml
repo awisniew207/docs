@@ -174,6 +174,9 @@ importers:
       '@lit-protocol/contracts-sdk':
         specifier: ^7.2.0
         version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/flags':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@lit-protocol/lit-auth-client':
         specifier: ^7.2.0
         version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -193,8 +196,8 @@ importers:
         specifier: 1.0.1
         version: 1.0.1(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-registry-sdk':
-        specifier: ^1.0.3
-        version: 1.0.3(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
+        specifier: ^1.0.4
+        version: 1.0.4(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
       '@radix-ui/react-checkbox':
         specifier: ^1.2.3
         version: 1.3.2(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2210,6 +2213,11 @@ packages:
     engines: {node: ^20.11.1, pnpm: 10.7.0}
     hasBin: true
 
+  '@lit-protocol/flags@2.1.0':
+    resolution: {integrity: sha512-rb3jtVLAWBL074M1dqexpprdUvUmrFbMOGQ0rbEYoWT+ZRH+6aaO0G3k/kKnqVVva6nv2TBnibr5bBrVo1p28g==}
+    engines: {node: ^20.11.1, pnpm: 10.7.0}
+    hasBin: true
+
   '@lit-protocol/lit-auth-client@7.2.0':
     resolution: {integrity: sha512-0JkIsBKnBXmcrf4seImGsGsrxw5ITdUAddU8/cpBWU7b4p0P9tSjotsSDO0vcaGbeYohERQ5Yan3iL0TnjShyQ==}
 
@@ -2253,8 +2261,8 @@ packages:
     resolution: {integrity: sha512-ibDdrZWdrd7RkrJhqLhio/mZPACn0Hc5W7GRNzfTdFr88xu9KRjr0YwfHyc4Q1qevq6nXltZQpuno7pBKUEcxg==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
 
-  '@lit-protocol/vincent-registry-sdk@1.0.3':
-    resolution: {integrity: sha512-cdu7Jl1LMADyA6qWcISKd8eFeV+SNKhmKwPrR7C0LIP7RyJ42pfVvD1K5rA4RWx31guQEys/qxoRk2W8Ol2WpA==}
+  '@lit-protocol/vincent-registry-sdk@1.0.4':
+    resolution: {integrity: sha512-zYLS1dkuJjyFRk6bMk5Wvm3AbnINXUevreK1BrfpARHhJ6AMM/ayzYG3a95E6W8Y7rxgiPBbja1PhPtrXTtZQw==}
 
   '@lit-protocol/vincent-tool-sdk@1.0.1':
     resolution: {integrity: sha512-wSGlLCFnL/uTqWnK3N4pQvOhPniKTG1Te3UAs+lOj+hjiiFfDQ7WPpTMqEZ7koMz8Xviq4bZTCeMOPdX5exFvA==}
@@ -4719,7 +4727,6 @@ packages:
 
   bun@1.2.16:
     resolution: {integrity: sha512-sjZH6rr1P6yu44+XPA8r+ZojwmK9Kbz9lO6KAA/4HRIupdpC31k7b93crLBm19wEYmd6f2+3+57/7tbOcmHbGg==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -12330,6 +12337,8 @@ snapshots:
 
   '@lit-protocol/flags@2.0.0': {}
 
+  '@lit-protocol/flags@2.1.0': {}
+
   '@lit-protocol/lit-auth-client@7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abi': 5.7.0
@@ -12841,7 +12850,7 @@ snapshots:
       - uploadthing
       - utf-8-validate
 
-  '@lit-protocol/vincent-registry-sdk@1.0.3(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)':
+  '@lit-protocol/vincent-registry-sdk@1.0.4(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.3.4(zod@3.25.64)
       '@reduxjs/toolkit': 2.8.2(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
