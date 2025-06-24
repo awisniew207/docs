@@ -252,7 +252,7 @@ export function useAppSidebar() {
           type: 'SET_LIST_VIEW',
           payload: {
             listView: 'policy',
-            expandedMenus: new Set(['policy']),
+            expandedMenus: new Set(['policy', 'my-policies']),
           },
         });
       } else if (pathname === '/developer/create-app') {
