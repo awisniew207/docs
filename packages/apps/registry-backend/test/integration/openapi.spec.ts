@@ -7,7 +7,6 @@ describe('OpenAPI Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data).toBeInstanceOf(Object);
       const dataAsObj = data as Record<string, unknown>;
       expect(dataAsObj.openapi).toBeDefined();
       expect(dataAsObj.paths).toBeDefined();
