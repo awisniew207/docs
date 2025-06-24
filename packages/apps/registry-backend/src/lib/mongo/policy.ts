@@ -19,10 +19,13 @@ export const policyVersionSchema = new Schema(
     packageName: { type: String, required: true },
     version: { type: String, required: true, index: true },
     changes: { type: String, required: true },
-    repository: { type: String, required: true },
+    repository: {
+      type: { type: String },
+      url: { type: String },
+    },
     description: { type: String, required: true },
     keywords: [{ type: String }],
-    dependencies: [{ type: String }],
+    dependencies: { type: Object, required: true },
     author: {
       name: { type: String },
       email: { type: String },

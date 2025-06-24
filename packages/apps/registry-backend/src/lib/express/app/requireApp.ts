@@ -11,6 +11,7 @@ export const requireApp = (paramName = 'appId') => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const appId = req.params[paramName];
 
+    // FIXME: Return error 400 if appId can't be parseInt'd
     try {
       const app = await App.findOne({ appId: parseInt(appId) });
 

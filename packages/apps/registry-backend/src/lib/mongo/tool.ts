@@ -25,7 +25,7 @@ export const toolVersionSchema = new Schema(
     },
     description: { type: String, required: true },
     keywords: [{ type: String }],
-    dependencies: [{ type: Object }],
+    dependencies: { type: Object, required: true },
     author: {
       name: { type: String },
       email: { type: String },
