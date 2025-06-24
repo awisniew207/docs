@@ -81,11 +81,12 @@ export function AppList({
         <div key={app.appId}>
           <button
             onClick={() => onAppSelection(app)}
-            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out ${
+            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
               selectedApp?.appId === app.appId
                 ? 'bg-blue-50 text-blue-700 font-medium'
                 : 'text-gray-500 hover:bg-gray-50'
             }`}
+            style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
             aria-label={`Select app ${app.name}`}
             aria-pressed={selectedApp?.appId === app.appId}
           >
@@ -112,13 +113,14 @@ export function AppList({
                       <button
                         onClick={() => handleAppViewNavigation(appItem.id)}
                         disabled={hasVersionsError}
-                        className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors ${
+                        className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors focus:outline-none ${
                           hasVersionsError
                             ? 'text-gray-400 cursor-not-allowed'
                             : selectedAppView === appItem.id
                               ? 'bg-blue-50 text-blue-700 font-medium'
                               : 'text-gray-700 hover:bg-gray-50'
                         }`}
+                        style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                         aria-label={appItem.label}
                         aria-expanded={isAppSubmenuExpanded}
                         aria-controls={`submenu-${appItem.id}`}
@@ -159,13 +161,14 @@ export function AppList({
                                 key={subMenuItem.id}
                                 onClick={() => handleAppSubmenuNavigation(subMenuItem.id)}
                                 disabled={subMenuItem.disabled}
-                                className={`w-full text-left px-4 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out ${
+                                className={`w-full text-left px-4 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
                                   subMenuItem.disabled
                                     ? 'text-gray-400 cursor-not-allowed'
                                     : selectedAppView === subMenuItem.id
                                       ? 'bg-blue-50 text-blue-700 font-medium'
                                       : 'text-gray-600 hover:bg-gray-50'
                                 }`}
+                                style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                                 aria-label={subMenuItem.label}
                                 aria-pressed={
                                   !subMenuItem.disabled && selectedAppView === subMenuItem.id
@@ -185,11 +188,12 @@ export function AppList({
                   <button
                     key={appItem.id}
                     onClick={() => handleAppViewNavigation(appItem.id)}
-                    className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out text-sm ${
+                    className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out text-sm focus:outline-none ${
                       selectedAppView === appItem.id
                         ? 'bg-blue-50 text-blue-700 font-medium'
                         : 'text-gray-600 hover:bg-gray-50'
                     }`}
+                    style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                     aria-label={appItem.label}
                     aria-pressed={selectedAppView === appItem.id}
                   >

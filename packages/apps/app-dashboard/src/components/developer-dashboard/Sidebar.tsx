@@ -261,7 +261,7 @@ export function Sidebar({
                 onClick={() => onMenuSelection(item.id)}
                 className={`w-full flex items-center ${
                   isCollapsed ? 'justify-center' : ''
-                } px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out ${
+                } px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
                   item.id === 'dashboard' &&
                   !selectedForm &&
                   !selectedListView &&
@@ -286,7 +286,7 @@ export function Sidebar({
         <button
           className={`w-full flex items-center ${
             isCollapsed ? 'justify-center' : ''
-          } px-3 py-2 text-left text-gray-600 hover:text-gray-800 transition-colors rounded-lg`}
+          } px-3 py-2 text-left text-gray-600 hover:text-gray-800 transition-colors rounded-lg focus:outline-none`}
           onClick={() =>
             window.open('https://docs.heyvincent.ai/documents/Getting_Started.html', '_blank')
           }
