@@ -54,14 +54,15 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /policy - Create a new policy
+  // POST /policy/{packageName} - Create a new policy
   registry.registerPath({
     method: 'post',
-    path: '/policy',
+    path: '/policy/{packageName}',
     tags: ['policy'],
     summary: 'Creates a new policy',
     operationId: 'createPolicy',
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {

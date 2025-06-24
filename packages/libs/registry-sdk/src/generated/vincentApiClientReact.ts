@@ -133,7 +133,11 @@ const injectedRtkApi = api.injectEndpoints({
       query: () => ({ url: `/policies` }),
     }),
     createPolicy: build.mutation<CreatePolicyApiResponse, CreatePolicyApiArg>({
-      query: (queryArg) => ({ url: `/policy`, method: 'POST', body: queryArg.policyCreate }),
+      query: (queryArg) => ({
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}`,
+        method: 'POST',
+        body: queryArg.policyCreate,
+      }),
     }),
     getPolicy: build.query<GetPolicyApiResponse, GetPolicyApiArg>({
       query: (queryArg) => ({ url: `/policy/${encodeURIComponent(String(queryArg.packageName))}` }),
@@ -340,6 +344,8 @@ export type ListAllPoliciesApiResponse = /** status 200 Successful operation */ 
 export type ListAllPoliciesApiArg = void;
 export type CreatePolicyApiResponse = /** status 200 Successful operation */ PolicyRead;
 export type CreatePolicyApiArg = {
+  /** The NPM package name */
+  packageName: string;
   /** Developer-defined policy details */
   policyCreate: PolicyCreate;
 };

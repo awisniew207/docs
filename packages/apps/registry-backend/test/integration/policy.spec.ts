@@ -22,7 +22,6 @@ describe('Policy API Integration Tests', () => {
     description: 'Test policy for integration tests',
     activeVersion: '1.0.0',
     authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
-    packageName: '@vincent/test-policy',
   };
 
   // Test data for creating a policy version
@@ -44,17 +43,17 @@ describe('Policy API Integration Tests', () => {
   describe('POST /policy', () => {
     it('should create a new policy', async () => {
       // Generate a unique package name for testing
-      testPackageName = `@vincent/test-policy-${Date.now()}`;
+      testPackageName = `@lit-protocol/vincent-policy-spending-limit`;
       testPolicyVersion = policyData.activeVersion;
 
       // Update the package name in the policy data
       const testData = {
         ...policyData,
-        packageName: testPackageName,
       };
 
       const result = await store.dispatch(
         api.endpoints.createPolicy.initiate({
+          packageName: testPackageName,
           policyCreate: testData,
         }),
       );

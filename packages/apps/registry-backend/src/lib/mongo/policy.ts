@@ -42,8 +42,8 @@ export const policyVersionSchema = new Schema(
     homepage: { type: String },
     ipfsCid: { type: String, required: true },
     parameters: {
-      uiSchema: { type: String, required: true },
-      jsonSchema: { type: String, required: true },
+      uiSchema: { type: String },
+      jsonSchema: { type: String },
     },
     isDeleted: { type: Boolean, default: false },
   } as const,

@@ -6,6 +6,7 @@ import { requirePackage, withValidPackage } from '../package/requirePackage';
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
+import { generateRandomCid } from '../../util';
 
 export function registerRoutes(app: Express) {
   // List all policies
@@ -27,7 +28,7 @@ export function registerRoutes(app: Express) {
 
   // Create new Policy
   app.post(
-    '/policy',
+    '/policy/:packageName',
     requirePackage('packageName', 'activeVersion'),
     withValidPackage(async (req, res) => {
       const { authorWalletAddress, description, activeVersion, title } = req.body;
@@ -47,6 +48,7 @@ export function registerRoutes(app: Express) {
         const policyVersion = new PolicyVersion({
           changes: 'Initial version',
           packageName: packageInfo.name,
+          description: packageInfo.description,
           version: packageInfo.version,
           repository: packageInfo.repository,
           keywords: packageInfo.keywords || [],
@@ -54,6 +56,7 @@ export function registerRoutes(app: Express) {
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
+          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
         });
 
         // Save both in a transaction
@@ -121,6 +124,7 @@ export function registerRoutes(app: Express) {
 
         const policyVersion = new PolicyVersion({
           ...req.body,
+          description: packageInfo.description,
           packageName: packageInfo.name,
           version: packageInfo.version,
           repository: packageInfo.repository,
@@ -129,6 +133,7 @@ export function registerRoutes(app: Express) {
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
+          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
         });
 
         try {

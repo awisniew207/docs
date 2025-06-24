@@ -2362,13 +2362,25 @@
         }
       }
     },
-    "/policy": {
+    "/policy/{packageName}": {
       "post": {
         "tags": [
           "policy"
         ],
         "summary": "Creates a new policy",
         "operationId": "createPolicy",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
         "requestBody": {
           "description": "Developer-defined policy details",
           "required": true,
@@ -2408,9 +2420,7 @@
             }
           }
         }
-      }
-    },
-    "/policy/{packageName}": {
+      },
       "get": {
         "tags": [
           "policy"
