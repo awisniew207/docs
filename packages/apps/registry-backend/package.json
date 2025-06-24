@@ -21,7 +21,6 @@
   "dependencies": {
     "@lit-protocol/flags": "2.0.0",
     "@lit-protocol/vincent-registry-sdk": "workspace:*",
-    "@reduxjs/toolkit": "^2.8.2",
     "@t3-oss/env-core": "^0.13.6",
     "bs58": "^6.0.0",
     "cors": "^2.8.5",
@@ -35,6 +34,7 @@
     "zod": "^3.25.42"
   },
   "devDependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
     "@tsconfig/node20": "^20.1.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.2",
