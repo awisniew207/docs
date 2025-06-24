@@ -26,11 +26,27 @@ export function validateNpmPackageName(packageName: string): void {
 /**
  * Validates a semantic version string
  * @param version The version string to validate
- * @throws Error if the version is not a valid semver
+ * @throws Error if the version is not a valid semver or contains range modifiers
  */
 export function validateSemver(version: string): void {
+  // Check if it's a valid semver
   if (!semver.valid(version)) {
     throw new Error(`Invalid semantic version: ${version}. Must be a valid semver (e.g., 1.0.0).`);
+  }
+
+  // Check for range modifiers by comparing the cleaned version with the original
+  // If they're different, it means the original had range modifiers
+  if (version !== semver.clean(version)) {
+    throw new Error(
+      `Invalid semantic version: ${version}. Version must be explicit and Invalid semantic version (^, ~, >, <, etc.).`,
+    );
+  }
+
+  // Additional check to ensure no range syntax is used
+  if (/[\^~><= ]/.test(version)) {
+    throw new Error(
+      `Invalid semantic version: ${version}. Version must be explicit and Invalid semantic version (^, ~, >, <, etc.).`,
+    );
   }
 }
 
