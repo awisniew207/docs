@@ -53,6 +53,7 @@
       "tool-sdk",
       "app-sdk",
       "registry-sdk",
+      "registry-backend",
       "policy-spending-limit",
       "tool-erc20-approval",
       "tool-uniswap-swap"
