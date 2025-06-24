@@ -76,7 +76,17 @@ function sidebarReducer(state: SidebarState, action: SidebarAction): SidebarStat
         expandedMenus: action.payload.expandedMenus,
       };
 
-    case 'SET_FORM':
+    case 'SET_FORM': {
+      // Determine which parent menu should be expanded based on form type
+      const expandedMenus = new Set<string>();
+      if (action.payload === 'create-app') {
+        expandedMenus.add('app');
+      } else if (action.payload === 'create-tool') {
+        expandedMenus.add('tool');
+      } else if (action.payload === 'create-policy') {
+        expandedMenus.add('policy');
+      }
+
       return {
         ...state,
         selectedForm: action.payload,
@@ -87,7 +97,9 @@ function sidebarReducer(state: SidebarState, action: SidebarAction): SidebarStat
         selectedToolView: null,
         selectedPolicy: null,
         selectedPolicyView: null,
+        expandedMenus,
       };
+    }
 
     case 'SET_APP_STATE':
       return {
