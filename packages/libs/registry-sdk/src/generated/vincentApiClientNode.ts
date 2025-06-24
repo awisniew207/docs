@@ -92,6 +92,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.toolEdit,
       }),
     }),
+    deleteTool: build.mutation<DeleteToolApiResponse, DeleteToolApiArg>({
+      query: (queryArg) => ({
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}`,
+        method: 'DELETE',
+      }),
+    }),
     getToolVersions: build.query<GetToolVersionsApiResponse, GetToolVersionsApiArg>({
       query: (queryArg) => ({
         url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/versions`,
@@ -137,6 +143,12 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/policy/${encodeURIComponent(String(queryArg.packageName))}`,
         method: 'PUT',
         body: queryArg.policyEdit,
+      }),
+    }),
+    deletePolicy: build.mutation<DeletePolicyApiResponse, DeletePolicyApiArg>({
+      query: (queryArg) => ({
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}`,
+        method: 'DELETE',
       }),
     }),
     createPolicyVersion: build.mutation<CreatePolicyVersionApiResponse, CreatePolicyVersionApiArg>({
@@ -282,6 +294,11 @@ export type EditToolApiArg = {
   /** Developer-defined updated tool details */
   toolEdit: ToolEdit;
 };
+export type DeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type DeleteToolApiArg = {
+  /** The NPM package name */
+  packageName: string;
+};
 export type GetToolVersionsApiResponse = /** status 200 Successful operation */ ToolVersionListRead;
 export type GetToolVersionsApiArg = {
   /** The NPM package name */
@@ -337,6 +354,11 @@ export type EditPolicyApiArg = {
   packageName: string;
   /** Developer-defined updated policy details */
   policyEdit: PolicyEdit;
+};
+export type DeletePolicyApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type DeletePolicyApiArg = {
+  /** The NPM package name */
+  packageName: string;
 };
 export type CreatePolicyVersionApiResponse =
   /** status 200 Successful operation */ PolicyVersionRead;

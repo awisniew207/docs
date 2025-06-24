@@ -31,7 +31,7 @@
           "message": {
             "type": "string",
             "description": "Success message",
-            "example": "Application successfully deleted"
+            "example": "Successfully deleted"
           }
         },
         "required": [
@@ -1987,6 +1987,50 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "tool"
+        ],
+        "summary": "Deletes a tool and all its versions",
+        "operationId": "deleteTool",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/tool/{packageName}/versions": {
@@ -2456,6 +2500,50 @@
           },
           "422": {
             "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "policy"
+        ],
+        "summary": "Deletes a policy and all its versions",
+        "operationId": "deletePolicy",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Policy not found"
           },
           "default": {
             "description": "Unexpected error",

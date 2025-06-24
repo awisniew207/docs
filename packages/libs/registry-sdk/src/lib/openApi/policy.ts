@@ -9,7 +9,7 @@ import {
   policyVersionEdit,
   policyVersionDoc,
 } from '../schemas/policy';
-import { ErrorResponse, ChangeOwner } from './baseRegistry';
+import { ErrorResponse, ChangeOwner, DeleteResponse } from './baseRegistry';
 
 const packageNameParam = z
   .string()
@@ -365,6 +365,39 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       },
       422: {
         description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // DELETE /policy/{packageName} - Delete a policy and all its versions
+  registry.registerPath({
+    method: 'delete',
+    path: '/policy/{packageName}',
+    tags: ['policy'],
+    summary: 'Deletes a policy and all its versions',
+    operationId: 'deletePolicy',
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Policy not found',
       },
       default: {
         description: 'Unexpected error',

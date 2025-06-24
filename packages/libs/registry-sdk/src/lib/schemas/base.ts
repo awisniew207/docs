@@ -24,6 +24,6 @@ export const errorResult = z.object({
 export const deleteResult = z.object({
   message: z.string().openapi({
     description: 'Success message',
-    example: 'Application successfully deleted',
+    example: 'Successfully deleted',
   }),
 });
