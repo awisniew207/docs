@@ -3,11 +3,11 @@ import { resolve } from 'path';
 
 module.exports = async function globalSetup() {
   await setupDevServer({
-    command: 'pnpm dev',
+    command: 'pnpm nx dev',
     launchTimeout: 30000,
     port: Number(process.env.PORT || 3000),
     options: {
-      cwd: resolve(__dirname, '../../../'),
+      cwd: resolve(__dirname, '../../'),
     },
     waitOnScheme: {
       delay: 1000,
