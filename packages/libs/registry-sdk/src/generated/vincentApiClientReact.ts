@@ -383,6 +383,8 @@ export type App = {
   redirectUris?: string[];
   /** Identifies if an application is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** App manager's wallet address. Derived from the authorization signature provided by the creator. */
+  managerAddress: string;
 };
 export type AppRead = {
   /** Document ID */
@@ -421,6 +423,16 @@ export type Error = {
   message: string;
 };
 export type AppCreate = {
+  /** Contact email for the application manager */
+  contactEmail?: string;
+  /** This should be a landing page for the app. */
+  appUserUrl?: string;
+  /** Base64 encoded logo image */
+  logo?: string;
+  /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
+  redirectUris?: string[];
+  /** App manager's wallet address. Derived from the authorization signature provided by the creator. */
+  managerAddress?: string;
   /** The name of the application */
   name: string;
   /** Description of the application */

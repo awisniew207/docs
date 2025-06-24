@@ -54,6 +54,40 @@
       "AppCreate": {
         "type": "object",
         "properties": {
+          "contactEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Contact email for the application manager",
+            "example": "contact@example.com"
+          },
+          "appUserUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "This should be a landing page for the app.",
+            "example": "https://myapplication.example.com/"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "example": [
+              "https://myapp.example.com",
+              "https://myapp.example.com/subpage"
+            ]
+          },
+          "managerAddress": {
+            "type": "string",
+            "description": "App manager's wallet address. Derived from the authorization signature provided by the creator.",
+            "example": "0x123456789012345678901234567890123456abcd"
+          },
           "name": {
             "type": "string",
             "description": "The name of the application",
@@ -215,8 +249,7 @@
           "managerAddress": {
             "type": "string",
             "description": "App manager's wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd",
-            "readOnly": true
+            "example": "0x123456789012345678901234567890123456abcd"
           }
         },
         "required": [
