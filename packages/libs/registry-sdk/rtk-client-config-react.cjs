@@ -12,6 +12,7 @@ const config = {
     lazyQueries: true,
     mutations: true,
   },
+  encodePathParams: true,
 };
 
 module.exports = config;

@@ -8,59 +8,66 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({ url: `/app`, method: 'POST', body: queryArg.appCreate }),
     }),
     getApp: build.query<GetAppApiResponse, GetAppApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.appId}` }),
+      query: (queryArg) => ({ url: `/app/${encodeURIComponent(String(queryArg.appId))}` }),
     }),
     editApp: build.mutation<EditAppApiResponse, EditAppApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}`,
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}`,
         method: 'PUT',
         body: queryArg.appEdit,
       }),
     }),
     deleteApp: build.mutation<DeleteAppApiResponse, DeleteAppApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.appId}`, method: 'DELETE' }),
+      query: (queryArg) => ({
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}`,
+        method: 'DELETE',
+      }),
     }),
     getAppVersions: build.query<GetAppVersionsApiResponse, GetAppVersionsApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.appId}/versions` }),
+      query: (queryArg) => ({ url: `/app/${encodeURIComponent(String(queryArg.appId))}/versions` }),
     }),
     createAppVersion: build.mutation<CreateAppVersionApiResponse, CreateAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}/version`,
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version`,
         method: 'POST',
         body: queryArg.appVersionCreate,
       }),
     }),
     getAppVersion: build.query<GetAppVersionApiResponse, GetAppVersionApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.appId}/version/${queryArg.version}` }),
+      query: (queryArg) => ({
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}`,
+      }),
     }),
     editAppVersion: build.mutation<EditAppVersionApiResponse, EditAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}/version/${queryArg.version}`,
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}`,
         method: 'PUT',
         body: queryArg.appVersionEdit,
       }),
     }),
     enableAppVersion: build.mutation<EnableAppVersionApiResponse, EnableAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}/version/${queryArg.version}/enable`,
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}/enable`,
         method: 'POST',
       }),
     }),
     disableAppVersion: build.mutation<DisableAppVersionApiResponse, DisableAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}/version/${queryArg.version}/disable`,
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}/disable`,
         method: 'POST',
       }),
     }),
     listAppVersionTools: build.query<ListAppVersionToolsApiResponse, ListAppVersionToolsApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.appId}/version/${queryArg.version}/tools` }),
+      query: (queryArg) => ({
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}/tools`,
+      }),
     }),
     createAppVersionTool: build.mutation<
       CreateAppVersionToolApiResponse,
       CreateAppVersionToolApiArg
     >({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}/version/${queryArg.appVersion}/tool/${queryArg.toolPackageName}`,
+        url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.appVersion))}/tool/${encodeURIComponent(String(queryArg.toolPackageName))}`,
         method: 'POST',
         body: queryArg.appVersionToolCreate,
       }),
@@ -70,44 +77,48 @@ const injectedRtkApi = api.injectEndpoints({
     }),
     createTool: build.mutation<CreateToolApiResponse, CreateToolApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.packageName}`,
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}`,
         method: 'POST',
         body: queryArg.toolCreate,
       }),
     }),
     getTool: build.query<GetToolApiResponse, GetToolApiArg>({
-      query: (queryArg) => ({ url: `/tool/${queryArg.packageName}` }),
+      query: (queryArg) => ({ url: `/tool/${encodeURIComponent(String(queryArg.packageName))}` }),
     }),
     editTool: build.mutation<EditToolApiResponse, EditToolApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.packageName}`,
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}`,
         method: 'PUT',
         body: queryArg.toolEdit,
       }),
     }),
     getToolVersions: build.query<GetToolVersionsApiResponse, GetToolVersionsApiArg>({
-      query: (queryArg) => ({ url: `/tool/${queryArg.packageName}/versions` }),
+      query: (queryArg) => ({
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/versions`,
+      }),
     }),
     changeToolOwner: build.mutation<ChangeToolOwnerApiResponse, ChangeToolOwnerApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.packageName}/owner`,
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/owner`,
         method: 'PUT',
         body: queryArg.changeOwner,
       }),
     }),
     createToolVersion: build.mutation<CreateToolVersionApiResponse, CreateToolVersionApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.packageName}/version/${queryArg.version}`,
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
         method: 'POST',
         body: queryArg.toolVersionCreate,
       }),
     }),
     getToolVersion: build.query<GetToolVersionApiResponse, GetToolVersionApiArg>({
-      query: (queryArg) => ({ url: `/tool/${queryArg.packageName}/version/${queryArg.version}` }),
+      query: (queryArg) => ({
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
+      }),
     }),
     editToolVersion: build.mutation<EditToolVersionApiResponse, EditToolVersionApiArg>({
       query: (queryArg) => ({
-        url: `/tool/${queryArg.packageName}/version/${queryArg.version}`,
+        url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
         method: 'PUT',
         body: queryArg.toolVersionEdit,
       }),
@@ -119,38 +130,42 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({ url: `/policy`, method: 'POST', body: queryArg.policyCreate }),
     }),
     getPolicy: build.query<GetPolicyApiResponse, GetPolicyApiArg>({
-      query: (queryArg) => ({ url: `/policy/${queryArg.packageName}` }),
+      query: (queryArg) => ({ url: `/policy/${encodeURIComponent(String(queryArg.packageName))}` }),
     }),
     editPolicy: build.mutation<EditPolicyApiResponse, EditPolicyApiArg>({
       query: (queryArg) => ({
-        url: `/policy/${queryArg.packageName}`,
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}`,
         method: 'PUT',
         body: queryArg.policyEdit,
       }),
     }),
     createPolicyVersion: build.mutation<CreatePolicyVersionApiResponse, CreatePolicyVersionApiArg>({
       query: (queryArg) => ({
-        url: `/policy/${queryArg.packageName}/version/${queryArg.version}`,
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
         method: 'POST',
         body: queryArg.policyVersionCreate,
       }),
     }),
     getPolicyVersion: build.query<GetPolicyVersionApiResponse, GetPolicyVersionApiArg>({
-      query: (queryArg) => ({ url: `/policy/${queryArg.packageName}/version/${queryArg.version}` }),
+      query: (queryArg) => ({
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
+      }),
     }),
     editPolicyVersion: build.mutation<EditPolicyVersionApiResponse, EditPolicyVersionApiArg>({
       query: (queryArg) => ({
-        url: `/policy/${queryArg.packageName}/version/${queryArg.version}`,
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
         method: 'PUT',
         body: queryArg.policyVersionEdit,
       }),
     }),
     getPolicyVersions: build.query<GetPolicyVersionsApiResponse, GetPolicyVersionsApiArg>({
-      query: (queryArg) => ({ url: `/policy/${queryArg.packageName}/versions` }),
+      query: (queryArg) => ({
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/versions`,
+      }),
     }),
     changePolicyOwner: build.mutation<ChangePolicyOwnerApiResponse, ChangePolicyOwnerApiArg>({
       query: (queryArg) => ({
-        url: `/policy/${queryArg.packageName}/owner`,
+        url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/owner`,
         method: 'PUT',
         body: queryArg.changeOwner,
       }),

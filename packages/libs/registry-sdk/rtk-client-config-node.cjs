@@ -7,6 +7,7 @@ const config = {
   apiImport: 'baseVincentRtkApiNode',
   outputFile: './src/generated/vincentApiClientNode.ts',
   exportName: 'vincentApiClientNode',
+  encodePathParams: true,
 };
 
 module.exports = config;
