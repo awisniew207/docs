@@ -105,8 +105,14 @@ export function FormRenderer({
     const placeholder = metadata.description || '';
     const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
 
+    // Handle ZodOptional wrapper - get the inner type (recursively unwrap multiple layers)
+    let innerSchema = fieldSchema;
+    while (innerSchema._def?.typeName === 'ZodOptional') {
+      innerSchema = innerSchema._def.innerType;
+    }
+
     // Special handling for logo field - render as image upload
-    if (key === 'logo' && fieldSchema._def.typeName === 'ZodString') {
+    if (key === 'logo' && innerSchema._def?.typeName === 'ZodString') {
       const currentValue = (watchedValues as any)[key];
       const hasImage = currentValue || imagePreview;
 
@@ -166,7 +172,7 @@ export function FormRenderer({
     }
 
     // Special handling for tools field - render as EntitySelector
-    if ((key === 'tools' || key === 'policies') && fieldSchema._def.typeName === 'ZodArray') {
+    if ((key === 'tools' || key === 'policies') && innerSchema._def?.typeName === 'ZodArray') {
       const currentValues = (watchedValues as any)[key] || [];
       return (
         <div key={key} className="mb-3">
@@ -181,7 +187,7 @@ export function FormRenderer({
     }
 
     // Number Field
-    if (fieldSchema._def.typeName === 'ZodNumber') {
+    if (innerSchema._def?.typeName === 'ZodNumber') {
       return (
         <div key={key} className="mb-3">
           <label htmlFor={key} className="block text-xs font-medium text-gray-700 mb-1">
@@ -200,9 +206,9 @@ export function FormRenderer({
     }
 
     // String Field
-    if (fieldSchema._def.typeName === 'ZodString') {
+    if (innerSchema._def?.typeName === 'ZodString') {
       // Email Field
-      if (fieldSchema._def.checks?.some((check: any) => check.kind === 'email')) {
+      if (innerSchema._def?.checks?.some((check: any) => check.kind === 'email')) {
         return (
           <div key={key} className="mb-3">
             <label htmlFor={key} className="block text-xs font-medium text-gray-700 mb-1">
@@ -221,7 +227,7 @@ export function FormRenderer({
       }
 
       // URL Field
-      if (fieldSchema._def.checks?.some((check: any) => check.kind === 'url')) {
+      if (innerSchema._def?.checks?.some((check: any) => check.kind === 'url')) {
         return (
           <div key={key} className="mb-3">
             <label htmlFor={key} className="block text-xs font-medium text-gray-700 mb-1">
@@ -280,8 +286,8 @@ export function FormRenderer({
     }
 
     // Enum Field
-    if (fieldSchema._def.typeName === 'ZodEnum') {
-      const options = fieldSchema._def.values;
+    if (innerSchema._def?.typeName === 'ZodEnum') {
+      const options = innerSchema._def.values;
       return (
         <div key={key} className="mb-3">
           <label htmlFor={key} className="block text-xs font-medium text-gray-700 mb-1">
@@ -305,10 +311,10 @@ export function FormRenderer({
     }
 
     // Array Field
-    if (fieldSchema._def.typeName === 'ZodArray') {
+    if (innerSchema._def?.typeName === 'ZodArray') {
       const currentValues = (watchedValues as any)[key] || [''];
 
-      const elementSchema = fieldSchema._def.type;
+      const elementSchema = innerSchema._def.type;
       const inputType = elementSchema?._def?.checks?.some((check: any) => check.kind === 'url')
         ? 'url'
         : 'text';

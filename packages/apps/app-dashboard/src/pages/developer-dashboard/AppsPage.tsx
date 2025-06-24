@@ -13,7 +13,7 @@ export default function AppsPage() {
       error={error}
       sortOption={sortOption}
       onSortChange={setSortOption}
-      onCreateClick={() => navigate('/create-app')}
+      onCreateClick={() => navigate('/developer/create-app')}
       onAppClick={(app: any) => navigate(`/developer/appId/${app.appId}`)}
     />
   );

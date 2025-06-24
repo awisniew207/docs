@@ -45,6 +45,10 @@ const routes: RouteObject[] = [
             element: <AppDashboard.Apps />,
           },
           {
+            path: 'create-app',
+            element: <AppDashboard.CreateApp />,
+          },
+          {
             path: 'appId/:appId/*',
             element: <AppDetailWithProvider />,
             children: [
@@ -62,7 +66,7 @@ const routes: RouteObject[] = [
               },
               {
                 path: 'version/:versionId/edit',
-                element: <AppDetail.Version />,
+                element: <AppDetail.EditVersion />,
               },
               {
                 path: 'edit-app',

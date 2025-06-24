@@ -7,28 +7,77 @@ import { useParams } from 'react-router-dom';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useState } from 'react';
+import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 
-// Local Zod schemas since the SDK only exports TypeScript types, not Zod schemas
-const AppCreate = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().optional(),
-  contactEmail: z.string().email().optional(),
-  appUserUrl: z.string().url().optional(),
-  logo: z.string().optional(),
-  redirectUris: z.array(z.string().url()).optional(),
-  deploymentStatus: z.enum(['dev', 'test', 'prod']).optional(),
-  managerAddress: z.string().optional(),
-});
+// Build proper form validation schemas from the SDK doc schemas
+function buildCreateAppFormValidationSchema() {
+  // Get the original fields with their types preserved
+  const { name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus } =
+    docSchemas.appDoc.shape;
 
-const AppEdit = AppCreate.partial();
+  return z
+    .object({
+      // Required fields
+      name,
 
-const AppVersionCreate = z.object({
-  changes: z.string().optional(),
-});
+      // Optional fields - use the original schema definitions
+      description,
+      contactEmail,
+      appUserUrl,
+      logo,
+      redirectUris,
+      deploymentStatus, // Remove .default('dev') to preserve enum structure
+    })
+    .strict();
+}
 
-const AppVersionEdit = z.object({
-  changes: z.string().optional(),
-});
+function buildEditAppFormValidationSchema() {
+  // Get the original fields with their types preserved
+  const { name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus } =
+    docSchemas.appDoc.shape;
+
+  return z
+    .object({
+      // All fields optional for editing
+      name,
+      description,
+      contactEmail,
+      appUserUrl,
+      logo,
+      redirectUris,
+      deploymentStatus,
+    })
+    .partial()
+    .strict();
+}
+
+function buildCreateAppVersionFormValidationSchema() {
+  const { changes } = docSchemas.appVersionDoc.shape;
+
+  return z
+    .object({
+      changes,
+    })
+    .partial()
+    .strict();
+}
+
+function buildEditAppVersionFormValidationSchema() {
+  const { changes } = docSchemas.appVersionDoc.shape;
+
+  return z
+    .object({
+      changes,
+    })
+    .partial()
+    .strict();
+}
+
+// Create schemas using the builders
+const AppCreate = buildCreateAppFormValidationSchema();
+const AppEdit = buildEditAppFormValidationSchema();
+const AppVersionCreate = buildCreateAppVersionFormValidationSchema();
+const AppVersionEdit = buildEditAppVersionFormValidationSchema();
 
 // Create local DeleteApp schema since it doesn't exist in the SDK
 const createDeleteAppSchema = (appId: string) =>
@@ -100,10 +149,8 @@ export function CreateAppForm() {
         description="Create a new blockchain application"
         defaultValues={{
           redirectUris: [''],
-          tools: [],
-          managerAddress: address || '',
         }}
-        hiddenFields={['managerAddress', 'appId']}
+        hiddenFields={['_id', 'createdAt', 'updatedAt', 'appId', 'activeVersion', 'managerAddress']}
         isLoading={isLoading}
       />
     </div>
@@ -176,6 +223,7 @@ export function EditAppForm({
         redirectUris: [''],
       }}
       initialData={appData}
+      hiddenFields={['_id', 'createdAt', 'updatedAt', 'appId', 'activeVersion', 'managerAddress']}
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
