@@ -1,25 +1,6 @@
 import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-//import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-
-// FIXME: Mock hooks!!! import issue from vincent-registry-sdk. To be fixed.
-const useListAppsQuery = () => ({
-  data: [] as any[],
-  error: null,
-  isLoading: false,
-});
-
-const useListAllToolsQuery = () => ({
-  data: [] as any[],
-  error: null,
-  isLoading: false,
-});
-
-const useListAllPoliciesQuery = () => ({
-  data: [] as any[],
-  error: null,
-  isLoading: false,
-});
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 interface DashboardData {
   apps: any[];
@@ -40,30 +21,23 @@ interface DashboardData {
 export function useDashboardData(): DashboardData {
   const { address } = useAccount();
 
-  const { data: apiApps = [], error: appsError, isLoading: appsLoading } = useListAppsQuery();
+  const {
+    data: apiApps = [],
+    error: appsError,
+    isLoading: appsLoading,
+  } = vincentApiClient.useListAppsQuery();
 
   const {
     data: allTools = [],
     error: toolsError,
     isLoading: toolsLoading,
-  } = useListAllToolsQuery();
+  } = vincentApiClient.useListAllToolsQuery();
 
   const {
     data: allPolicies = [],
     error: policiesError,
     isLoading: policiesLoading,
-  } = useListAllPoliciesQuery();
-
-  /* FIXME
-  const { data: apiApps = [], error: appsError, isLoading: appsLoading } = 
-    vincentApiClient.useListAppsQuery(undefined, { skip: !address });
-
-  const { data: allTools = [], error: toolsError, isLoading: toolsLoading } = 
-    vincentApiClient.useListAllToolsQuery(undefined, { skip: !address });
-
-  const { data: allPolicies = [], error: policiesError, isLoading: policiesLoading } = 
-    vincentApiClient.useListAllPoliciesQuery(undefined, { skip: !address });
-  */
+  } = vincentApiClient.useListAllPoliciesQuery();
 
   // Filter data by user address
   const filteredApps = useMemo(() => {
