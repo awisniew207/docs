@@ -87,7 +87,8 @@ export function registerRoutes(app: Express) {
     '/policy/:packageName',
     requirePolicy(),
     withPolicy(async (req, res) => {
-      const updatedPolicy = await req.vincentPolicy.updateOne(req.body, { new: true }).lean();
+      Object.assign(req.vincentPolicy, req.body);
+      const updatedPolicy = await req.vincentPolicy.save();
 
       res.json(updatedPolicy);
       return;
@@ -95,15 +96,14 @@ export function registerRoutes(app: Express) {
   );
 
   // Change Policy Owner
-  app.post(
+  app.put(
     '/policy/:packageName/owner',
     requirePolicy(),
     withPolicy(async (req, res) => {
       const { authorWalletAddress } = req.body;
 
-      const updatedPolicy = await req.vincentPolicy
-        .updateOne({ authorWalletAddress }, { new: true })
-        .lean();
+      req.vincentPolicy.authorWalletAddress = authorWalletAddress;
+      const updatedPolicy = await req.vincentPolicy.save();
 
       res.json(updatedPolicy);
       return;
@@ -183,9 +183,8 @@ export function registerRoutes(app: Express) {
     withPolicyVersion(async (req, res) => {
       const { vincentPolicyVersion } = req;
 
-      const updatedVersion = await vincentPolicyVersion
-        .updateOne({ changes: req.body.changes }, { new: true })
-        .lean();
+      Object.assign(vincentPolicyVersion, req.body);
+      const updatedVersion = await vincentPolicyVersion.save();
 
       res.json(updatedVersion);
       return;

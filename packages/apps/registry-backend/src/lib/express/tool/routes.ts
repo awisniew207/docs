@@ -89,7 +89,8 @@ export function registerRoutes(app: Express) {
     '/tool/:packageName',
     requireTool(),
     withTool(async (req, res) => {
-      const updatedTool = await req.vincentTool.updateOne(req.body, { new: true }).lean();
+      Object.assign(req.vincentTool, req.body);
+      const updatedTool = await req.vincentTool.save();
 
       res.json(updatedTool);
       return;
@@ -97,15 +98,14 @@ export function registerRoutes(app: Express) {
   );
 
   // Change Tool Owner
-  app.post(
+  app.put(
     '/tool/:packageName/owner',
     requireTool(),
     withTool(async (req, res) => {
       const { authorWalletAddress } = req.body;
 
-      const updatedTool = await req.vincentTool
-        .updateOne({ authorWalletAddress }, { new: true })
-        .lean();
+      req.vincentTool.authorWalletAddress = authorWalletAddress;
+      const updatedTool = await req.vincentTool.save();
 
       res.json(updatedTool);
       return;
@@ -187,9 +187,8 @@ export function registerRoutes(app: Express) {
     withToolVersion(async (req, res) => {
       const { vincentToolVersion } = req;
 
-      const updatedVersion = await vincentToolVersion
-        .updateOne({ changes: req.body.changes }, { new: true })
-        .lean();
+      Object.assign(vincentToolVersion, req.body);
+      const updatedVersion = await vincentToolVersion.save();
 
       res.json(updatedVersion);
       return;
