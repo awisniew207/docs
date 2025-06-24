@@ -138,7 +138,7 @@ export function useAppSidebar() {
   const params = useParams();
 
   // Show sidebar only when wallet is connected
-  const shouldShowSidebar = isConnected;
+  const shouldShowSidebar = isConnected && location.pathname.startsWith('/developer');
 
   // Use reducer for state management
   const [state, dispatch] = useReducer(sidebarReducer, initialState);
