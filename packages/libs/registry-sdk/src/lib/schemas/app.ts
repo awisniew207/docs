@@ -120,9 +120,14 @@ function buildEditAppSchema() {
         .strict().shape,
 
       // Required
-      appId: appId,
-      name: name,
-      description: description,
+      ...z
+        .object({
+          appId,
+          name,
+          description,
+        })
+        .required()
+        .strict().shape,
     })
     .strict();
 }
@@ -133,7 +138,7 @@ function buildEditAppSchema() {
  */
 export const appEdit = buildEditAppSchema();
 
-/** appDef describes a complete application document, with all properties including those that are database-backend
+/** appDoc describes a complete application document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * Do not duplicate these definitions into other schemas like `edit` or `create`.
@@ -141,4 +146,4 @@ export const appEdit = buildEditAppSchema();
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `app` instead
  */
-export const appRead = z.object({ ...baseDocAttributes.shape, ...app.shape }).strict();
+export const appDoc = z.object({ ...baseDocAttributes.shape, ...app.shape }).strict();

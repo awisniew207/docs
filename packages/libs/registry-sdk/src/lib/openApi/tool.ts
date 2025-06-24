@@ -4,21 +4,21 @@ import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 import {
   toolCreate,
   toolEdit,
-  toolRead,
+  toolDoc,
   toolVersionCreate,
   toolVersionEdit,
-  toolVersionRead,
+  toolVersionDoc,
 } from '../schemas/tool';
 import { ErrorResponse, ChangeOwner } from './baseRegistry';
 
 export function addToRegistry(registry: OpenAPIRegistry) {
   const ToolCreate = registry.register('ToolCreate', toolCreate);
   const ToolEdit = registry.register('ToolEdit', toolEdit);
-  const ToolRead = registry.register('ToolRead', toolRead);
+  const ToolRead = registry.register('Tool', toolDoc);
 
   const ToolVersionCreate = registry.register('ToolVersionCreate', toolVersionCreate);
   const ToolVersionEdit = registry.register('ToolVersionEdit', toolVersionEdit);
-  const ToolVersionRead = registry.register('ToolVersionRead', toolVersionRead);
+  const ToolVersionRead = registry.register('ToolVersion', toolVersionDoc);
 
   // GET /tools - List all tools
   registry.registerPath({

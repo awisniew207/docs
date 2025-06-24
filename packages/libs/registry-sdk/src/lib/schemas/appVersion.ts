@@ -12,6 +12,7 @@ const appVersion = z
     version: z.number().openapi({
       description: 'App Version number',
       example: 1,
+      readOnly: true,
     }),
     enabled: z.boolean().openapi({
       description: 'Whether this version is enabled or not',
@@ -113,26 +114,26 @@ function buildCreateAppVersionToolSchema() {
 
 export const appVersionToolCreate = buildCreateAppVersionToolSchema();
 
-/** appVersionToolRead describes a complete application version's tool document, with all properties including those that are database-backend
+/** appVersionToolDoc describes a complete application version's tool document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `appVersionTool` instead
  */
-export const appVersionToolRead = z
+export const appVersionToolDoc = z
   .object({
     ...baseDocAttributes.shape,
     ...appVersionTool.shape,
   })
   .strict();
 
-/** appVersionRead describes a complete application version document, with all properties including those that are database-backend
+/** appVersionDoc describes a complete application version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `appVersion` instead
  */
-export const appVersionRead = z
+export const appVersionDoc = z
   .object({
     ...baseDocAttributes.shape,
     ...appVersion.shape,

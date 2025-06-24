@@ -4,20 +4,21 @@ import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 import {
   policyCreate,
   policyEdit,
-  policyRead,
+  policyDoc,
   policyVersionCreate,
   policyVersionEdit,
-  policyVersionRead,
+  policyVersionDoc,
 } from '../schemas/policy';
 import { ErrorResponse, ChangeOwner } from './baseRegistry';
 
 export function addToRegistry(registry: OpenAPIRegistry) {
   const PolicyCreate = registry.register('PolicyCreate', policyCreate);
   const PolicyEdit = registry.register('PolicyEdit', policyEdit);
-  const PolicyRead = registry.register('PolicyRead', policyRead);
+  const PolicyRead = registry.register('Policy', policyDoc);
+
   const PolicyVersionCreate = registry.register('PolicyVersionCreate', policyVersionCreate);
   const PolicyVersionEdit = registry.register('PolicyVersionEdit', policyVersionEdit);
-  const PolicyVersionRead = registry.register('PolicyVersionRead', policyVersionRead);
+  const PolicyVersionRead = registry.register('PolicyVersion', policyVersionDoc);
 
   registry.registerPath({
     method: 'get',

@@ -1,13 +1,32 @@
 import { registry as openAPIRegistry } from './lib/openApi/baseRegistry';
 import openApiJson from './generated/openapi.json';
 
-import { AppDef, AppVersionDef, AppToolDef } from './lib/schemas/app';
-import { ToolDef, ToolVersionDef } from './lib/schemas/tool';
-import { PolicyDef, PolicyVersionDef } from './lib/schemas/policy';
+import { appCreate, appEdit, appDoc } from './lib/schemas/app';
+import {
+  appVersionCreate,
+  appVersionEdit,
+  appVersionDoc,
+  appVersionToolCreate,
+  appVersionToolDoc,
+} from './lib/schemas/appVersion';
 
-import { CreateApp, CreateAppVersion } from './lib/schemas/app';
-import { CreateTool, CreateToolVersion } from './lib/schemas/tool';
-import { CreatePolicy, CreatePolicyVersion } from './lib/schemas/policy';
+import {
+  toolCreate,
+  toolEdit,
+  toolDoc,
+  toolVersionCreate,
+  toolVersionEdit,
+  toolVersionDoc,
+} from './lib/schemas/tool';
+
+import {
+  policyCreate,
+  policyEdit,
+  policyDoc,
+  policyVersionCreate,
+  policyVersionEdit,
+  policyVersionDoc,
+} from './lib/schemas/policy';
 
 export * as nodeClient from './nodeClient';
 export * as reactClient from './reactClient';
@@ -15,20 +34,30 @@ export * as reactClient from './reactClient';
 export { openApiJson, openAPIRegistry };
 
 export const docSchemas = {
-  AppDef,
-  AppVersionDef,
-  AppToolDef,
-  ToolDef,
-  ToolVersionDef,
-  PolicyDef,
-  PolicyVersionDef,
-};
+  appDoc,
+  appEdit,
+  appCreate,
 
-export const creationSchemas = {
-  CreateApp,
-  CreateAppVersion,
-  CreateTool,
-  CreateToolVersion,
-  CreatePolicy,
-  CreatePolicyVersion,
+  appVersionCreate,
+  appVersionEdit,
+  appVersionDoc,
+
+  appVersionToolCreate,
+  appVersionToolDoc,
+
+  toolCreate,
+  toolEdit,
+  toolDoc,
+
+  toolVersionCreate,
+  toolVersionEdit,
+  toolVersionDoc,
+
+  policyCreate,
+  policyEdit,
+  policyDoc,
+
+  policyVersionCreate,
+  policyVersionEdit,
+  policyVersionDoc,
 };

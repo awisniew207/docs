@@ -1,12 +1,12 @@
 import { z } from '../schemas/openApiZod';
 
-import { appRead, appCreate, appEdit } from '../schemas/app';
+import { appDoc, appCreate, appEdit } from '../schemas/app';
 import {
-  appVersionRead,
+  appVersionDoc,
   appVersionCreate,
   appVersionEdit,
   appVersionToolCreate,
-  appVersionToolRead,
+  appVersionToolDoc,
 } from '../schemas/appVersion';
 import { DeleteResponse, ErrorResponse } from './baseRegistry';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
@@ -14,12 +14,14 @@ import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 export function addToRegistry(registry: OpenAPIRegistry) {
   const AppCreate = registry.register('AppCreate', appCreate);
   const AppEdit = registry.register('AppEdit', appEdit);
-  const AppRead = registry.register('AppRead', appRead);
+  const AppRead = registry.register('App', appDoc);
+
   const AppVersionCreate = registry.register('AppVersionCreate', appVersionCreate);
   const AppVersionEdit = registry.register('AppVersionEdit', appVersionEdit);
-  const AppVersionRead = registry.register('AppVersionRead', appVersionRead);
+  const AppVersionRead = registry.register('AppVersion', appVersionDoc);
+
   const AppVersionToolCreate = registry.register('AppVersionToolCreate', appVersionToolCreate);
-  const AppVersionToolRead = registry.register('AppVersionToolRead', appVersionToolRead);
+  const AppVersionToolRead = registry.register('AppVersionTool', appVersionToolDoc);
 
   // GET /apps - List all applications
   registry.registerPath({
@@ -59,7 +61,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: AppEdit,
+            schema: AppCreate,
           },
         },
         description: 'Developer-defined application information',
@@ -157,7 +159,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: AppCreate,
+            schema: AppEdit,
           },
         },
         description: 'Developer-defined updated application details',

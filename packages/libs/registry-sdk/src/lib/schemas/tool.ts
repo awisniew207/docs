@@ -70,13 +70,13 @@ function buildEditToolSchema() {
 
 export const toolEdit = buildEditToolSchema();
 
-/** toolRead describes a complete tool document, with all properties including those that are database-backend
+/** toolDoc describes a complete tool document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `tool` instead
  */
-export const toolRead = z.object({ ...baseDocAttributes.shape, ...tool.shape }).strict();
+export const toolDoc = z.object({ ...baseDocAttributes.shape, ...tool.shape }).strict();
 
 /** toolVersion describes all properties on a tool version that are NOT controlled by the DB backend */
 const toolVersion = z
@@ -130,12 +130,12 @@ function buildEditToolVersionSchema() {
 
 export const toolVersionEdit = buildEditToolVersionSchema();
 
-/** toolVersionRead describes a complete tool version document, with all properties including those that are database-backend
+/** toolVersionDoc describes a complete tool version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `toolVersion` instead
  */
-export const toolVersionRead = z
+export const toolVersionDoc = z
   .object({ ...baseDocAttributes.shape, ...toolVersion.shape })
   .strict();

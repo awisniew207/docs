@@ -69,13 +69,13 @@ function buildEditPolicySchema() {
 
 export const policyEdit = buildEditPolicySchema();
 
-/** policyRead describes a complete policy document, with all properties including those that are database-backend
+/** policyDoc describes a complete policy document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `policy` instead
  */
-export const policyRead = z.object({ ...baseDocAttributes.shape, ...policy.shape }).strict();
+export const policyDoc = z.object({ ...baseDocAttributes.shape, ...policy.shape }).strict();
 
 /** policyVersion describes all properties on a policy version that are NOT controlled by the DB backend */
 const policyVersion = z
@@ -137,12 +137,12 @@ function buildEditPolicyVersionSchema() {
 
 export const policyVersionEdit = buildEditPolicyVersionSchema();
 
-/** policyVersionRead describes a complete policy version document, with all properties including those that are database-backend
+/** policyVersionDoc describes a complete policy version document, with all properties including those that are database-backend
  * specific like _id and updated/created at timestamps.
  *
  * All schemas that need to be composed as subsets of this schema
  * should be derived using builder functions from `policyVersion` instead
  */
-export const policyVersionRead = z
+export const policyVersionDoc = z
   .object({ ...baseDocAttributes.shape, ...policyVersion.shape })
   .strict();
