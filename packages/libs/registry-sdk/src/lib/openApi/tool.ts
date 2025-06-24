@@ -11,6 +11,14 @@ import {
 } from '../schemas/tool';
 import { ErrorResponse, ChangeOwner } from './baseRegistry';
 
+const packageNameParam = z
+  .string()
+  .openapi({ param: { description: 'The NPM package name', example: '@vincent/foo-bar' } });
+
+const toolVersionParam = z
+  .string()
+  .openapi({ param: { description: 'NPM semver of the target tool version', example: '2.1.0' } });
+
 export function addToRegistry(registry: OpenAPIRegistry) {
   const ToolCreate = registry.register('ToolCreate', toolCreate);
   const ToolEdit = registry.register('ToolEdit', toolEdit);
@@ -98,18 +106,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: 'Fetches a tool',
     operationId: 'getTool',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -140,19 +139,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: 'Edits a tool',
     operationId: 'editTool',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
@@ -196,18 +184,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: 'Fetches all versions of a tool',
     operationId: 'getToolVersions',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to fetch versions for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -238,19 +217,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: "Changes a tool's owner",
     operationId: 'changeToolOwner',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to change the owner of',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
@@ -294,29 +262,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool/version'],
     summary: 'Creates a tool version',
     operationId: 'createToolVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to create a new version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to create',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
       body: {
         content: {
           'application/json': {
@@ -360,28 +307,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool/version'],
     summary: 'Fetches a tool version',
     operationId: 'getToolVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to retrieve a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -412,29 +340,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool/version'],
     summary: 'Edits a tool version',
     operationId: 'editToolVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to edit a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
       body: {
         content: {
           'application/json': {
