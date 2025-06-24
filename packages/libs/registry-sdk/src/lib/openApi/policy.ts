@@ -11,6 +11,14 @@ import {
 } from '../schemas/policy';
 import { ErrorResponse, ChangeOwner } from './baseRegistry';
 
+const packageNameParam = z
+  .string()
+  .openapi({ param: { description: 'The NPM package name', example: '@vincent/foo-bar' } });
+
+const policyVersionParam = z
+  .string()
+  .openapi({ param: { description: 'NPM semver of the target policy version', example: '2.1.0' } });
+
 export function addToRegistry(registry: OpenAPIRegistry) {
   const PolicyCreate = registry.register('PolicyCreate', policyCreate);
   const PolicyEdit = registry.register('PolicyEdit', policyEdit);
@@ -97,18 +105,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: 'Fetches a policy',
     operationId: 'getPolicy',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -139,19 +138,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: 'Edits a policy',
     operationId: 'editPolicy',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
@@ -195,29 +183,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy/version'],
     summary: 'Creates a new policy version',
     operationId: 'createPolicyVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to create a new version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to create',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
       body: {
         content: {
           'application/json': {
@@ -261,28 +228,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy/version'],
     summary: 'Fetches a policy version',
     operationId: 'getPolicyVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to retrieve a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -313,18 +261,9 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: 'Fetches all versions of a policy',
     operationId: 'getPolicyVersions',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to fetch versions for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
@@ -355,19 +294,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: "Changes a policy's owner",
     operationId: 'changePolicyOwner',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to change the owner of',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
@@ -411,29 +339,8 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy/version'],
     summary: 'Edits a policy version',
     operationId: 'editPolicyVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to edit a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
     request: {
+      params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
       body: {
         content: {
           'application/json': {
