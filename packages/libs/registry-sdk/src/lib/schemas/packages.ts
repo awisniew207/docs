@@ -1,8 +1,8 @@
 import { z } from './openApiZod';
-import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../openApi/constants';
+import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../constants';
 
 // Contributors on NPM package
-export const Contributor = z.object({
+export const contributor = z.object({
   name: z.string().openapi({
     description: 'Name of the contributor',
     example: 'Contributor Name',
@@ -18,7 +18,7 @@ export const Contributor = z.object({
 });
 
 // Authors from NPM package
-export const Author = z.object({
+export const author = z.object({
   name: z.string().openapi({
     description: 'Name of the author',
     example: 'Developer Name',
@@ -33,8 +33,35 @@ export const Author = z.object({
   }),
 });
 
+export const fromPackageJson = z.object({
+  repository: z.array(z.string()).openapi({
+    description: 'Repository URLs',
+  }),
+  description: z.string().openapi({
+    description: 'Policy description',
+    example: 'This policy is a foo bar policy',
+  }),
+  keywords: z.array(z.string()).openapi({
+    description: 'Keywords for the policy',
+    example: ['defi', 'memecoin'],
+  }),
+  dependencies: z.array(z.string()).openapi({
+    description: 'Dependencies of the policy',
+  }),
+  author: author.openapi({
+    description: 'Author information',
+  }),
+  contributors: z.array(contributor).openapi({
+    description: 'Contributors information',
+  }),
+  homepage: z.string().url().optional().openapi({
+    description: 'Policy homepage',
+    example: 'https://example-vincent-homepage.com',
+  }),
+});
+
 // Request body for changing a tool/policy owner
-export const ChangeOwner = z.object({
+export const changeOwner = z.object({
   authorWalletAddress: z.string().openapi({
     description: 'New owner address',
     example: EXAMPLE_WALLET_ADDRESS,

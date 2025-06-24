@@ -16,7 +16,7 @@ const openApiDocument = generator.generateDocument({
   openapi: '3.0.0',
   info: {
     title: 'Vincent Registry API',
-    version: '1.0.0',
+    version: '1.0.3',
     description: 'API for Vincent App, Tool, and Policy Registry',
   },
 });

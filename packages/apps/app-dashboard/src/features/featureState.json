@@ -1,0 +1,22 @@
+{
+  "environments": {
+    "PRODUCTION": "PRODUCTION",
+    "STAGING": "STAGING"
+  },
+  "features": {
+    "VITE_LIT_FEATURE_ENV": {
+      "createdAt": "2025-06-23T19:08:26.045Z",
+      "createdBy": "awisniew207",
+      "PRODUCTION": {
+        "enabled": false,
+        "lastEditedAt": "2025-06-23T19:08:26.045Z",
+        "lastEditedBy": "awisniew207"
+      },
+      "STAGING": {
+        "enabled": true,
+        "lastEditedAt": "2025-06-23T19:08:26.045Z",
+        "lastEditedBy": "awisniew207"
+      }
+    }
+  }
+}

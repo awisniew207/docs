@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 interface DashboardData {
   apps: any[];

@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useCallback, useReducer } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 // Type definitions
 interface App {

@@ -3,6 +3,12 @@
   "references": [
     {
       "path": "../../libs/registry-sdk"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
     }
   ]
 }

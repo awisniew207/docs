@@ -11,7 +11,7 @@ export async function connectToMongoDB(
   mongoUri: string,
   dbName?: string,
 ): Promise<mongoose.Connection> {
-  console.info(`Connecting to MongoDB @ ${mongoUri}`);
+  console.info(`Connecting to MongoDB @ ${mongoUri} / ${dbName}`);
 
   let config = undefined;
 

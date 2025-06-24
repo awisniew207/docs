@@ -1,6 +1,6 @@
 import { FileText, GitBranch } from 'lucide-react';
 import { useMemo } from 'react';
-import { vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 interface PolicyListProps {
   policies: any[]; // FIXME: When we export the types for the policies, we can use them here
