@@ -37,12 +37,11 @@ const policy = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreatePolicySchema() {
-  const { packageName, activeVersion, title, description } = policy.shape;
+  const { activeVersion, title, description } = policy.shape;
 
   return z
     .object({
       // Required
-      packageName,
       activeVersion,
       title,
       description,
@@ -54,15 +53,12 @@ export const policyCreate = buildCreatePolicySchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditPolicySchema() {
-  const { activeVersion, title, description, packageName } = policy.shape;
+  const { activeVersion, title, description } = policy.shape;
 
   return z
     .object({
       // Optional
       ...z.object({ activeVersion, title, description }).partial().strict().shape,
-
-      // Required
-      packageName,
     })
     .strict();
 }
@@ -119,20 +115,20 @@ const policyVersion = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreatePolicyVersionSchema() {
-  const { changes, packageName, version } = policyVersion.shape;
+  const { changes } = policyVersion.shape;
 
   // Required props
-  return z.object({ changes, packageName, version }).strict();
+  return z.object({ changes }).strict();
 }
 
 export const policyVersionCreate = buildCreatePolicyVersionSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditPolicyVersionSchema() {
-  const { changes, packageName, version } = policyVersion.shape;
+  const { changes } = policyVersion.shape;
 
   // Required props
-  return z.object({ changes, packageName, version }).strict();
+  return z.object({ changes }).strict();
 }
 
 export const policyVersionEdit = buildEditPolicyVersionSchema();

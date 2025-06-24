@@ -25,7 +25,7 @@ const injectedRtkApi = api.injectEndpoints({
     }),
     createAppVersion: build.mutation<CreateAppVersionApiResponse, CreateAppVersionApiArg>({
       query: (queryArg) => ({
-        url: `/app/${queryArg.appId}/version/${queryArg.version}`,
+        url: `/app/${queryArg.appId}/version`,
         method: 'POST',
         body: queryArg.appVersionCreate,
       }),
@@ -53,7 +53,7 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     listAppVersionTools: build.query<ListAppVersionToolsApiResponse, ListAppVersionToolsApiArg>({
-      query: (queryArg) => ({ url: `/app/${queryArg.appId}/version/${queryArg.appVersion}/tools` }),
+      query: (queryArg) => ({ url: `/app/${queryArg.appId}/version/${queryArg.version}/tools` }),
     }),
     createAppVersionTool: build.mutation<
       CreateAppVersionToolApiResponse,
@@ -69,7 +69,11 @@ const injectedRtkApi = api.injectEndpoints({
       query: () => ({ url: `/tools` }),
     }),
     createTool: build.mutation<CreateToolApiResponse, CreateToolApiArg>({
-      query: (queryArg) => ({ url: `/tool`, method: 'POST', body: queryArg.toolCreate }),
+      query: (queryArg) => ({
+        url: `/tool/${queryArg.packageName}`,
+        method: 'POST',
+        body: queryArg.toolCreate,
+      }),
     }),
     getTool: build.query<GetToolApiResponse, GetToolApiArg>({
       query: (queryArg) => ({ url: `/tool/${queryArg.packageName}` }),
@@ -164,12 +168,12 @@ export type CreateAppApiArg = {
 };
 export type GetAppApiResponse = /** status 200 Successful operation */ AppRead;
 export type GetAppApiArg = {
-  /** ID of the application to retrieve */
+  /** ID of the target application */
   appId: number;
 };
 export type EditAppApiResponse = /** status 200 Successful operation */ AppRead;
 export type EditAppApiArg = {
-  /** ID of the application to edit */
+  /** ID of the target application */
   appId: number;
   /** Developer-defined updated application details */
   appEdit: AppEdit;
@@ -177,173 +181,170 @@ export type EditAppApiArg = {
 export type DeleteAppApiResponse =
   /** status 200 OK - Resource successfully deleted */ DeleteResponse;
 export type DeleteAppApiArg = {
-  /** ID of the application to delete */
+  /** ID of the target application */
   appId: number;
 };
 export type GetAppVersionsApiResponse = /** status 200 Successful operation */ AppVersionListRead;
 export type GetAppVersionsApiArg = {
-  /** ID of the application whose versions will be fetched */
+  /** ID of the target application */
   appId: number;
 };
 export type CreateAppVersionApiResponse = /** status 200 Successful operation */ AppVersionRead;
 export type CreateAppVersionApiArg = {
-  /** ID of the application to create a new version for */
+  /** ID of the target application */
   appId: number;
-  /** Version number to create */
-  version: string;
   /** Developer-defined version details */
   appVersionCreate: AppVersionCreate;
 };
 export type GetAppVersionApiResponse = /** status 200 Successful operation */ AppVersionRead;
 export type GetAppVersionApiArg = {
-  /** ID of the application to retrieve a version for */
+  /** ID of the target application */
   appId: number;
-  /** Version number to retrieve */
+  /** Version # of the target application version */
   version: number;
 };
 export type EditAppVersionApiResponse = /** status 200 Successful operation */ AppVersionRead;
 export type EditAppVersionApiArg = {
-  /** ID of the application to edit a version for */
+  /** ID of the target application */
   appId: number;
-  /** Version number to edit */
+  /** Version # of the target application version */
   version: number;
   /** Update version changes field */
   appVersionEdit: AppVersionEdit;
 };
 export type EnableAppVersionApiResponse = /** status 200 Successful operation */ AppVersionRead;
 export type EnableAppVersionApiArg = {
-  /** ID of the application to enable a version for */
+  /** ID of the target application */
   appId: number;
-  /** Version number to enable */
+  /** Version # of the target application version */
   version: number;
 };
 export type DisableAppVersionApiResponse = /** status 200 Successful operation */ AppVersionRead;
 export type DisableAppVersionApiArg = {
-  /** ID of the application to disable a version for */
+  /** ID of the target application */
   appId: number;
-  /** Version number to enable */
+  /** Version # of the target application version */
   version: number;
 };
 export type ListAppVersionToolsApiResponse =
   /** status 200 Successful operation */ AppVersionToolListRead;
 export type ListAppVersionToolsApiArg = {
-  /** ID of the application */
+  /** ID of the target application */
   appId: number;
-  /** Version number of the application */
-  appVersion: number;
+  /** Version # of the target application version */
+  version: number;
 };
 export type CreateAppVersionToolApiResponse =
   /** status 200 Successful operation */ AppVersionToolRead;
 export type CreateAppVersionToolApiArg = {
-  /** ID of the application */
+  /** ID of the target application */
   appId: number;
-  /** Version number of the application */
+  /** Version # of the target application version */
   appVersion: number;
-  /** Name of the tool package */
+  /** The NPM package name */
   toolPackageName: string;
   /** Tool configuration for the application version */
   appVersionToolCreate: AppVersionToolCreate;
 };
 export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolListRead;
 export type ListAllToolsApiArg = void;
-export type CreateToolApiResponse = /** status 200 Successful operation */ ToolReadRead;
+export type CreateToolApiResponse = /** status 200 Successful operation */ ToolRead;
 export type CreateToolApiArg = {
+  /** The NPM package name */
+  packageName: string;
   /** Developer-defined tool details */
   toolCreate: ToolCreate;
 };
-export type GetToolApiResponse = /** status 200 Successful operation */ ToolReadRead;
+export type GetToolApiResponse = /** status 200 Successful operation */ ToolRead;
 export type GetToolApiArg = {
-  /** Package name of the tool to retrieve */
+  /** The NPM package name */
   packageName: string;
 };
-export type EditToolApiResponse = /** status 200 Successful operation */ ToolReadRead;
+export type EditToolApiResponse = /** status 200 Successful operation */ ToolRead;
 export type EditToolApiArg = {
-  /** Package name of the tool to edit */
+  /** The NPM package name */
   packageName: string;
   /** Developer-defined updated tool details */
   toolEdit: ToolEdit;
 };
 export type GetToolVersionsApiResponse = /** status 200 Successful operation */ ToolVersionListRead;
 export type GetToolVersionsApiArg = {
-  /** Package name of the tool to fetch versions for */
+  /** The NPM package name */
   packageName: string;
 };
-export type ChangeToolOwnerApiResponse = /** status 200 Successful operation */ ToolReadRead;
+export type ChangeToolOwnerApiResponse = /** status 200 Successful operation */ ToolRead;
 export type ChangeToolOwnerApiArg = {
-  /** Package name of the tool to change the owner of */
+  /** The NPM package name */
   packageName: string;
   /** Developer-defined updated tool details */
   changeOwner: ChangeOwner;
 };
-export type CreateToolVersionApiResponse =
-  /** status 200 Successful operation */ ToolVersionReadRead;
+export type CreateToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionRead;
 export type CreateToolVersionApiArg = {
-  /** Package name of the tool to create a new version for */
+  /** The NPM package name */
   packageName: string;
-  /** Version number to create */
+  /** NPM semver of the target tool version */
   version: string;
   /** Developer-defined version details */
   toolVersionCreate: ToolVersionCreate;
 };
-export type GetToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionReadRead;
+export type GetToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionRead;
 export type GetToolVersionApiArg = {
-  /** Package name of the tool to retrieve a version for */
+  /** The NPM package name */
   packageName: string;
-  /** Version number to retrieve */
+  /** NPM semver of the target tool version */
   version: string;
 };
-export type EditToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionReadRead;
+export type EditToolVersionApiResponse = /** status 200 Successful operation */ ToolVersionRead;
 export type EditToolVersionApiArg = {
-  /** Package name of the tool to edit a version for */
+  /** The NPM package name */
   packageName: string;
-  /** Version number to edit */
+  /** NPM semver of the target tool version */
   version: string;
   /** Update version changes field */
   toolVersionEdit: ToolVersionEdit;
 };
 export type ListAllPoliciesApiResponse = /** status 200 Successful operation */ PolicyListRead;
 export type ListAllPoliciesApiArg = void;
-export type CreatePolicyApiResponse = /** status 200 Successful operation */ PolicyReadRead;
+export type CreatePolicyApiResponse = /** status 200 Successful operation */ PolicyRead;
 export type CreatePolicyApiArg = {
   /** Developer-defined policy details */
   policyCreate: PolicyCreate;
 };
-export type GetPolicyApiResponse = /** status 200 Successful operation */ PolicyReadRead;
+export type GetPolicyApiResponse = /** status 200 Successful operation */ PolicyRead;
 export type GetPolicyApiArg = {
-  /** Package name of the policy to retrieve */
+  /** The NPM package name */
   packageName: string;
 };
-export type EditPolicyApiResponse = /** status 200 Successful operation */ PolicyReadRead;
+export type EditPolicyApiResponse = /** status 200 Successful operation */ PolicyRead;
 export type EditPolicyApiArg = {
-  /** Package name of the policy to edit */
+  /** The NPM package name */
   packageName: string;
   /** Developer-defined updated policy details */
   policyEdit: PolicyEdit;
 };
 export type CreatePolicyVersionApiResponse =
-  /** status 200 Successful operation */ PolicyVersionReadRead;
+  /** status 200 Successful operation */ PolicyVersionRead;
 export type CreatePolicyVersionApiArg = {
-  /** Package name of the policy to create a new version for */
+  /** The NPM package name */
   packageName: string;
-  /** Version number to create */
+  /** NPM semver of the target policy version */
   version: string;
   /** Developer-defined version details */
   policyVersionCreate: PolicyVersionCreate;
 };
-export type GetPolicyVersionApiResponse =
-  /** status 200 Successful operation */ PolicyVersionReadRead;
+export type GetPolicyVersionApiResponse = /** status 200 Successful operation */ PolicyVersionRead;
 export type GetPolicyVersionApiArg = {
-  /** Package name of the policy to retrieve a version for */
+  /** The NPM package name */
   packageName: string;
-  /** Version number to retrieve */
+  /** NPM semver of the target policy version */
   version: string;
 };
-export type EditPolicyVersionApiResponse =
-  /** status 200 Successful operation */ PolicyVersionReadRead;
+export type EditPolicyVersionApiResponse = /** status 200 Successful operation */ PolicyVersionRead;
 export type EditPolicyVersionApiArg = {
-  /** Package name of the policy to edit a version for */
+  /** The NPM package name */
   packageName: string;
-  /** Version number to edit */
+  /** NPM semver of the target policy version */
   version: string;
   /** Update version changes field */
   policyVersionEdit: PolicyVersionEdit;
@@ -351,12 +352,12 @@ export type EditPolicyVersionApiArg = {
 export type GetPolicyVersionsApiResponse =
   /** status 200 Successful operation */ PolicyVersionListRead;
 export type GetPolicyVersionsApiArg = {
-  /** Package name of the policy to fetch versions for */
+  /** The NPM package name */
   packageName: string;
 };
-export type ChangePolicyOwnerApiResponse = /** status 200 Successful operation */ PolicyReadRead;
+export type ChangePolicyOwnerApiResponse = /** status 200 Successful operation */ PolicyRead;
 export type ChangePolicyOwnerApiArg = {
-  /** Package name of the policy to change the owner of */
+  /** The NPM package name */
   packageName: string;
   /** Developer-defined updated policy details */
   changeOwner: ChangeOwner;
@@ -442,25 +443,6 @@ export type AppEdit = {
   name: string;
   description: string;
 };
-export type AppEditRead = {
-  /** Contact email for the application manager */
-  contactEmail?: string;
-  /** This should be a landing page for the app. */
-  appUserUrl?: string;
-  /** Base64 encoded logo image */
-  logo?: string;
-  /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
-  redirectUris?: string[];
-  /** Identifies if an application is in development, test, or production. */
-  deploymentStatus?: 'dev' | 'test' | 'prod';
-  /** Active version of the application */
-  activeVersion?: number;
-  /** Application ID */
-  appId: number;
-  /** The name of the application */
-  name: string;
-  description: string;
-};
 export type DeleteResponse = {
   /** Success message */
   message: string;
@@ -497,37 +479,17 @@ export type AppVersionCreate = {
   /** Describes what changed between this version and the previous version. */
   changes?: string;
 };
-export type AppVersionCreateRead = {
-  /** Describes what changed between this version and the previous version. */
-  changes?: string;
-  /** Application ID */
-  appId: number;
-  /** App Version number */
-  version: number;
-};
 export type AppVersionEdit = {
   /** Describes what changed between this version and the previous version. */
   changes?: string;
   /** Whether this version is enabled or not */
   enabled?: boolean;
 };
-export type AppVersionEditRead = {
-  /** Describes what changed between this version and the previous version. */
-  changes?: string;
-  /** Whether this version is enabled or not */
-  enabled?: boolean;
-  /** Application ID */
-  appId: number;
-  /** App Version number */
-  version: number;
-};
 export type AppVersionTool = {
   /** Timestamp when this was last modified */
   updatedAt: string;
   /** Timestamp when this was created */
   createdAt: string;
-  /** Application version */
-  appVersion: number;
   /** Tool package name */
   toolPackageName: string;
   /** Tool version */
@@ -558,26 +520,10 @@ export type AppVersionToolListRead = AppVersionToolRead[];
 export type AppVersionToolCreate = {
   /** Policies that are supported by this tool, but are hidden from users of this app specifically */
   hiddenSupportedPolicies?: string[];
-  /** Application version */
-  appVersion: number;
-  /** Tool package name */
-  toolPackageName: string;
   /** Tool version */
   toolVersion: string;
 };
-export type AppVersionToolCreateRead = {
-  /** Policies that are supported by this tool, but are hidden from users of this app specifically */
-  hiddenSupportedPolicies?: string[];
-  /** Application ID */
-  appId: number;
-  /** Application version */
-  appVersion: number;
-  /** Tool package name */
-  toolPackageName: string;
-  /** Tool version */
-  toolVersion: string;
-};
-export type ToolRead = {
+export type Tool = {
   /** Timestamp when this was last modified */
   updatedAt: string;
   /** Timestamp when this was created */
@@ -591,7 +537,7 @@ export type ToolRead = {
   /** Active version of the tool */
   activeVersion: string;
 };
-export type ToolReadRead = {
+export type ToolRead = {
   /** Document ID */
   _id: string;
   /** Timestamp when this was last modified */
@@ -609,11 +555,9 @@ export type ToolReadRead = {
   /** Active version of the tool */
   activeVersion: string;
 };
-export type ToolList = ToolRead[];
-export type ToolListRead = ToolReadRead[];
+export type ToolList = Tool[];
+export type ToolListRead = ToolRead[];
 export type ToolCreate = {
-  /** Tool NPM package name */
-  packageName: string;
   /** Active version of the tool */
   activeVersion: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
@@ -628,10 +572,8 @@ export type ToolEdit = {
   title?: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description?: string;
-  /** Tool NPM package name */
-  packageName: string;
 };
-export type ToolVersionRead = {
+export type ToolVersion = {
   /** Timestamp when this was last modified */
   updatedAt: string;
   /** Timestamp when this was created */
@@ -671,7 +613,7 @@ export type ToolVersionRead = {
   /** Policy homepage */
   homepage?: string;
 };
-export type ToolVersionReadRead = {
+export type ToolVersionRead = {
   /** Document ID */
   _id: string;
   /** Timestamp when this was last modified */
@@ -717,8 +659,8 @@ export type ToolVersionReadRead = {
   /** IPFS CID of the code that implements this tool. */
   ipfsCid: string;
 };
-export type ToolVersionList = ToolVersionRead[];
-export type ToolVersionListRead = ToolVersionReadRead[];
+export type ToolVersionList = ToolVersion[];
+export type ToolVersionListRead = ToolVersionRead[];
 export type ChangeOwner = {
   /** New owner address */
   authorWalletAddress: string;
@@ -726,20 +668,12 @@ export type ChangeOwner = {
 export type ToolVersionCreate = {
   /** Changelog information for this version */
   changes: string;
-  /** Tool NPM package name */
-  packageName: string;
-  /** Tool version - must be an exact semver. */
-  version: string;
 };
 export type ToolVersionEdit = {
   /** Changelog information for this version */
   changes: string;
-  /** Tool NPM package name */
-  packageName: string;
-  /** Tool version - must be an exact semver. */
-  version: string;
 };
-export type PolicyRead = {
+export type Policy = {
   /** Timestamp when this was last modified */
   updatedAt: string;
   /** Timestamp when this was created */
@@ -753,7 +687,7 @@ export type PolicyRead = {
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
   title: string;
 };
-export type PolicyReadRead = {
+export type PolicyRead = {
   /** Document ID */
   _id: string;
   /** Timestamp when this was last modified */
@@ -771,11 +705,9 @@ export type PolicyReadRead = {
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
   title: string;
 };
-export type PolicyList = PolicyRead[];
-export type PolicyListRead = PolicyReadRead[];
+export type PolicyList = Policy[];
+export type PolicyListRead = PolicyRead[];
 export type PolicyCreate = {
-  /** Policy NPM package name */
-  packageName: string;
   /** Active version of the policy; must be an exact semver */
   activeVersion: string;
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
@@ -790,10 +722,8 @@ export type PolicyEdit = {
   title?: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description?: string;
-  /** Policy NPM package name */
-  packageName: string;
 };
-export type PolicyVersionRead = {
+export type PolicyVersion = {
   /** Timestamp when this was last modified */
   updatedAt: string;
   /** Timestamp when this was created */
@@ -833,7 +763,7 @@ export type PolicyVersionRead = {
   /** Policy homepage */
   homepage?: string;
 };
-export type PolicyVersionReadRead = {
+export type PolicyVersionRead = {
   /** Document ID */
   _id: string;
   /** Timestamp when this was last modified */
@@ -887,18 +817,10 @@ export type PolicyVersionReadRead = {
 export type PolicyVersionCreate = {
   /** Changelog information for this version */
   changes: string;
-  /** Policy NPM package name */
-  packageName: string;
-  /** Policy version - must be an exact semver */
-  version: string;
 };
 export type PolicyVersionEdit = {
   /** Changelog information for this version */
   changes: string;
-  /** Policy NPM package name */
-  packageName: string;
-  /** Policy version - must be an exact semver */
-  version: string;
 };
-export type PolicyVersionList = PolicyVersionRead[];
-export type PolicyVersionListRead = PolicyVersionReadRead[];
+export type PolicyVersionList = PolicyVersion[];
+export type PolicyVersionListRead = PolicyVersionRead[];

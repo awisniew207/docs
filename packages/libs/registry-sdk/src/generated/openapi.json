@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Vincent Registry API",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "API for Vincent App, Tool, and Policy Registry"
   },
   "components": {
@@ -118,12 +118,6 @@
             "description": "Active version of the application",
             "example": 1
           },
-          "appId": {
-            "type": "number",
-            "description": "Application ID",
-            "example": 12345,
-            "readOnly": true
-          },
           "name": {
             "type": "string",
             "description": "The name of the application",
@@ -134,7 +128,6 @@
           }
         },
         "required": [
-          "appId",
           "name",
           "description"
         ],
@@ -243,24 +236,8 @@
             "type": "string",
             "description": "Describes what changed between this version and the previous version.",
             "example": "I am a changelog trapped in a computer!"
-          },
-          "appId": {
-            "type": "number",
-            "description": "Application ID",
-            "example": 12312345,
-            "readOnly": true
-          },
-          "version": {
-            "type": "number",
-            "description": "App Version number",
-            "example": 1,
-            "readOnly": true
           }
         },
-        "required": [
-          "appId",
-          "version"
-        ],
         "additionalProperties": false
       },
       "AppVersionEdit": {
@@ -275,24 +252,8 @@
             "type": "boolean",
             "description": "Whether this version is enabled or not",
             "example": true
-          },
-          "appId": {
-            "type": "number",
-            "description": "Application ID",
-            "example": 12312345,
-            "readOnly": true
-          },
-          "version": {
-            "type": "number",
-            "description": "App Version number",
-            "example": 1,
-            "readOnly": true
           }
         },
-        "required": [
-          "appId",
-          "version"
-        ],
         "additionalProperties": false
       },
       "AppVersion": {
@@ -360,22 +321,6 @@
               "@vincent/foo-bar-policy-2"
             ]
           },
-          "appId": {
-            "type": "number",
-            "description": "Application ID",
-            "example": 5,
-            "readOnly": true
-          },
-          "appVersion": {
-            "type": "number",
-            "description": "Application version",
-            "example": 2
-          },
-          "toolPackageName": {
-            "type": "string",
-            "description": "Tool package name",
-            "example": "@vincent/foo-bar"
-          },
           "toolVersion": {
             "type": "string",
             "description": "Tool version",
@@ -383,9 +328,6 @@
           }
         },
         "required": [
-          "appId",
-          "appVersion",
-          "toolPackageName",
           "toolVersion"
         ],
         "additionalProperties": false
@@ -417,7 +359,8 @@
           "appVersion": {
             "type": "number",
             "description": "Application version",
-            "example": 2
+            "example": 2,
+            "readOnly": true
           },
           "toolPackageName": {
             "type": "string",
@@ -455,11 +398,6 @@
       "ToolCreate": {
         "type": "object",
         "properties": {
-          "packageName": {
-            "type": "string",
-            "description": "Tool NPM package name",
-            "example": "@lit-protocol/vincent-erc20-approval-tool"
-          },
           "activeVersion": {
             "type": "string",
             "description": "Active version of the tool",
@@ -477,7 +415,6 @@
           }
         },
         "required": [
-          "packageName",
           "activeVersion",
           "description"
         ],
@@ -500,19 +437,11 @@
             "type": "string",
             "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Tool NPM package name",
-            "example": "@lit-protocol/vincent-erc20-approval-tool"
           }
         },
-        "required": [
-          "packageName"
-        ],
         "additionalProperties": false
       },
-      "ToolRead": {
+      "Tool": {
         "type": "object",
         "properties": {
           "_id": {
@@ -575,22 +504,10 @@
             "type": "string",
             "description": "Changelog information for this version",
             "example": "Ensure commit() is run on spending policy limit for users who have it enabled."
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Tool NPM package name",
-            "example": "@lit-protocol/vincent-erc20-approval-tool"
-          },
-          "version": {
-            "type": "string",
-            "description": "Tool version - must be an exact semver.",
-            "example": "1.0.0"
           }
         },
         "required": [
-          "changes",
-          "packageName",
-          "version"
+          "changes"
         ],
         "additionalProperties": false
       },
@@ -601,26 +518,14 @@
             "type": "string",
             "description": "Changelog information for this version",
             "example": "Ensure commit() is run on spending policy limit for users who have it enabled."
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Tool NPM package name",
-            "example": "@lit-protocol/vincent-erc20-approval-tool"
-          },
-          "version": {
-            "type": "string",
-            "description": "Tool version - must be an exact semver.",
-            "example": "1.0.0"
           }
         },
         "required": [
-          "changes",
-          "packageName",
-          "version"
+          "changes"
         ],
         "additionalProperties": false
       },
-      "ToolVersionRead": {
+      "ToolVersion": {
         "type": "object",
         "properties": {
           "_id": {
@@ -786,11 +691,6 @@
       "PolicyCreate": {
         "type": "object",
         "properties": {
-          "packageName": {
-            "type": "string",
-            "description": "Policy NPM package name",
-            "example": "@lit-protocol/vincent-policy-spending-limit"
-          },
           "activeVersion": {
             "type": "string",
             "description": "Active version of the policy; must be an exact semver",
@@ -808,7 +708,6 @@
           }
         },
         "required": [
-          "packageName",
           "activeVersion",
           "title",
           "description"
@@ -832,19 +731,11 @@
             "type": "string",
             "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "This policy is a foo bar policy"
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Policy NPM package name",
-            "example": "@lit-protocol/vincent-policy-spending-limit"
           }
         },
-        "required": [
-          "packageName"
-        ],
         "additionalProperties": false
       },
-      "PolicyRead": {
+      "Policy": {
         "type": "object",
         "properties": {
           "_id": {
@@ -908,22 +799,10 @@
             "type": "string",
             "description": "Changelog information for this version",
             "example": "Resolved issue with checking for spending limits on the wrong chain."
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Policy NPM package name",
-            "example": "@lit-protocol/vincent-policy-spending-limit"
-          },
-          "version": {
-            "type": "string",
-            "description": "Policy version - must be an exact semver",
-            "example": "1.0.0"
           }
         },
         "required": [
-          "changes",
-          "packageName",
-          "version"
+          "changes"
         ],
         "additionalProperties": false
       },
@@ -934,26 +813,14 @@
             "type": "string",
             "description": "Changelog information for this version",
             "example": "Resolved issue with checking for spending limits on the wrong chain."
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Policy NPM package name",
-            "example": "@lit-protocol/vincent-policy-spending-limit"
-          },
-          "version": {
-            "type": "string",
-            "description": "Policy version - must be an exact semver",
-            "example": "1.0.0"
           }
         },
         "required": [
-          "changes",
-          "packageName",
-          "version"
+          "changes"
         ],
         "additionalProperties": false
       },
-      "PolicyVersionRead": {
+      "PolicyVersion": {
         "type": "object",
         "properties": {
           "_id": {
@@ -1145,25 +1012,25 @@
       "ToolList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/ToolRead"
+          "$ref": "#/components/schemas/Tool"
         }
       },
       "ToolVersionList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/ToolVersionRead"
+          "$ref": "#/components/schemas/ToolVersion"
         }
       },
       "PolicyList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/PolicyRead"
+          "$ref": "#/components/schemas/Policy"
         }
       },
       "PolicyVersionList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/PolicyVersionRead"
+          "$ref": "#/components/schemas/PolicyVersion"
         }
       }
     },
@@ -1258,14 +1125,14 @@
         "operationId": "getApp",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to retrieve",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1302,14 +1169,14 @@
         "operationId": "editApp",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to edit",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1360,14 +1227,14 @@
         "operationId": "deleteApp",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to delete",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1409,14 +1276,14 @@
         "operationId": "getAppVersions",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application whose versions will be fetched",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1446,7 +1313,7 @@
         }
       }
     },
-    "/app/{appId}/version/{version}": {
+    "/app/{appId}/version": {
       "post": {
         "tags": [
           "app/version"
@@ -1455,24 +1322,14 @@
         "operationId": "createAppVersion",
         "parameters": [
           {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
             "name": "appId",
-            "in": "path",
-            "description": "ID of the application to create a new version for",
-            "required": true,
-            "schema": {
-              "type": "number",
-              "example": 5
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to create",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1514,7 +1371,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/app/{appId}/version/{version}": {
       "get": {
         "tags": [
           "app/version"
@@ -1523,24 +1382,24 @@
         "operationId": "getAppVersion",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to retrieve a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to retrieve",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1577,24 +1436,24 @@
         "operationId": "editAppVersion",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to edit a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to edit",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1647,24 +1506,24 @@
         "operationId": "enableAppVersion",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to enable a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to enable",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1706,24 +1565,24 @@
         "operationId": "disableAppVersion",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to disable a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to enable",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1756,7 +1615,7 @@
         }
       }
     },
-    "/app/{appId}/version/{appVersion}/tools": {
+    "/app/{appId}/version/{version}/tools": {
       "get": {
         "tags": [
           "app/version/tool"
@@ -1765,24 +1624,24 @@
         "operationId": "listAppVersionTools",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "appVersion",
-            "in": "path",
-            "description": "Version number of the application",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1821,34 +1680,34 @@
         "operationId": "createAppVersionTool",
         "parameters": [
           {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
             "name": "appId",
-            "in": "path",
-            "description": "ID of the application",
-            "required": true,
-            "schema": {
-              "type": "number",
-              "example": 5
-            }
+            "in": "path"
           },
           {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
             "name": "appVersion",
-            "in": "path",
-            "description": "Version number of the application",
-            "required": true,
-            "schema": {
-              "type": "number",
-              "example": 2
-            }
+            "in": "path"
           },
           {
-            "name": "toolPackageName",
-            "in": "path",
-            "description": "Name of the tool package",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1923,13 +1782,25 @@
         }
       }
     },
-    "/tool": {
+    "/tool/{packageName}": {
       "post": {
         "tags": [
           "tool"
         ],
         "summary": "Creates a new tool",
         "operationId": "createTool",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
         "requestBody": {
           "description": "Developer-defined tool details",
           "required": true,
@@ -1947,7 +1818,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolRead"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -1969,9 +1840,7 @@
             }
           }
         }
-      }
-    },
-    "/tool/{packageName}": {
+      },
       "get": {
         "tags": [
           "tool"
@@ -1980,14 +1849,14 @@
         "operationId": "getTool",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1996,7 +1865,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolRead"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -2024,14 +1893,14 @@
         "operationId": "editTool",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2051,7 +1920,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolRead"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -2084,14 +1953,14 @@
         "operationId": "getToolVersions",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to fetch versions for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2130,14 +1999,14 @@
         "operationId": "changeToolOwner",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to change the owner of",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2157,7 +2026,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolRead"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -2190,24 +2059,24 @@
         "operationId": "createToolVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to create a new version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to create",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2227,7 +2096,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolVersionRead"
+                  "$ref": "#/components/schemas/ToolVersion"
                 }
               }
             }
@@ -2258,24 +2127,24 @@
         "operationId": "getToolVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to retrieve a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2284,7 +2153,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolVersionRead"
+                  "$ref": "#/components/schemas/ToolVersion"
                 }
               }
             }
@@ -2312,24 +2181,24 @@
         "operationId": "editToolVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to edit a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2349,7 +2218,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolVersionRead"
+                  "$ref": "#/components/schemas/ToolVersion"
                 }
               }
             }
@@ -2428,7 +2297,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyRead"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
@@ -2461,14 +2330,14 @@
         "operationId": "getPolicy",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2477,7 +2346,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyRead"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
@@ -2505,14 +2374,14 @@
         "operationId": "editPolicy",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2532,7 +2401,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyRead"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
@@ -2565,24 +2434,24 @@
         "operationId": "createPolicyVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to create a new version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to create",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2602,7 +2471,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionRead"
+                  "$ref": "#/components/schemas/PolicyVersion"
                 }
               }
             }
@@ -2633,24 +2502,24 @@
         "operationId": "getPolicyVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to retrieve a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2659,7 +2528,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionRead"
+                  "$ref": "#/components/schemas/PolicyVersion"
                 }
               }
             }
@@ -2687,24 +2556,24 @@
         "operationId": "editPolicyVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to edit a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2724,7 +2593,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionRead"
+                  "$ref": "#/components/schemas/PolicyVersion"
                 }
               }
             }
@@ -2757,14 +2626,14 @@
         "operationId": "getPolicyVersions",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to fetch versions for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2803,14 +2672,14 @@
         "operationId": "changePolicyOwner",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to change the owner of",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2830,7 +2699,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyRead"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }

@@ -93,7 +93,6 @@ export const appCreate = buildCreateAppSchema();
 function buildEditAppSchema() {
   // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
   const {
-    appId,
     contactEmail,
     activeVersion,
     redirectUris,
@@ -122,7 +121,6 @@ function buildEditAppSchema() {
       // Required
       ...z
         .object({
-          appId,
           name,
           description,
         })

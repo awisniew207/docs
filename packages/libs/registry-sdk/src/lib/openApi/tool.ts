@@ -55,14 +55,15 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /tool - Create a new tool
+  // POST /tool/{packageName} - Create a new tool
   registry.registerPath({
     method: 'post',
-    path: '/tool',
+    path: '/tool/{packageName}',
     tags: ['tool'],
     summary: 'Creates a new tool',
     operationId: 'createTool',
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {

@@ -29,16 +29,12 @@ const appVersion = z
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateAppVersionSchema() {
   // New app versions are always enabled === false; the property cannot be set by creator
-  const { appId, version, changes } = appVersion.shape;
+  const { changes } = appVersion.shape;
 
   return z
     .object({
       // Optional
       ...z.object({ changes }).partial().strict().shape,
-
-      // Required
-      appId,
-      version,
     })
     .strict();
 }
@@ -47,16 +43,12 @@ export const appVersionCreate = buildCreateAppVersionSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditAppVersionSchema() {
-  const { appId, version, changes, enabled } = appVersion.shape;
+  const { changes, enabled } = appVersion.shape;
 
   return z
     .object({
       // Optional
       ...z.object({ changes, enabled }).partial().strict().shape,
-
-      // Required
-      appId,
-      version,
     })
     .strict();
 }
@@ -96,8 +88,7 @@ const appVersionTool = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateAppVersionToolSchema() {
-  const { appId, appVersion, toolPackageName, toolVersion, hiddenSupportedPolicies } =
-    appVersionTool.shape;
+  const { toolVersion, hiddenSupportedPolicies } = appVersionTool.shape;
 
   return z
     .object({
@@ -105,9 +96,6 @@ function buildCreateAppVersionToolSchema() {
       ...z.object({ hiddenSupportedPolicies }).partial().strict().shape,
 
       // Required
-      appId,
-      appVersion,
-      toolPackageName,
       toolVersion,
     })
     .strict();

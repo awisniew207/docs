@@ -262,14 +262,13 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   // POST /app/{appId}/version/{version} - Create an application version
   registry.registerPath({
     method: 'post',
-    path: '/app/{appId}/version/{version}',
+    path: '/app/{appId}/version',
     tags: ['app/version'],
     summary: 'Creates an application version',
     operationId: 'createAppVersion',
     request: {
       params: z.object({
         appId: appIdParam,
-        version: appVersionParam,
       }),
       body: {
         content: {
@@ -469,10 +468,10 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // GET /app/{appId}/version/{appVersion}/tools - List all tools for an application version
+  // GET /app/{appId}/version/{version}/tools - List all tools for an application version
   registry.registerPath({
     method: 'get',
-    path: '/app/{appId}/version/{appVersion}/tools',
+    path: '/app/{appId}/version/{version}/tools',
     tags: ['app/version/tool'],
     summary: 'Lists all tools for an application version',
     operationId: 'listAppVersionTools',

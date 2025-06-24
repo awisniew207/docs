@@ -38,12 +38,11 @@ const tool = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateToolSchema() {
-  const { packageName, activeVersion, title, description } = tool.shape;
+  const { activeVersion, title, description } = tool.shape;
 
   return z
     .object({
       // Required
-      packageName,
       activeVersion,
       title,
       description,
@@ -55,15 +54,12 @@ export const toolCreate = buildCreateToolSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditToolSchema() {
-  const { activeVersion, title, description, packageName } = tool.shape;
+  const { activeVersion, title, description } = tool.shape;
 
   return z
     .object({
       // Optional
       ...z.object({ activeVersion, title, description }).partial().strict().shape,
-
-      // Required
-      packageName,
     })
     .strict();
 }
@@ -112,20 +108,20 @@ const toolVersion = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateToolVersionSchema() {
-  const { changes, packageName, version } = toolVersion.shape;
+  const { changes } = toolVersion.shape;
 
   // Required props
-  return z.object({ changes, packageName, version }).strict();
+  return z.object({ changes }).strict();
 }
 
 export const toolVersionCreate = buildCreateToolVersionSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditToolVersionSchema() {
-  const { changes, packageName, version } = toolVersion.shape;
+  const { changes } = toolVersion.shape;
 
   // Required props
-  return z.object({ changes, packageName, version }).strict();
+  return z.object({ changes }).strict();
 }
 
 export const toolVersionEdit = buildEditToolVersionSchema();
