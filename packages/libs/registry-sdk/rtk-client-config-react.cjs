@@ -3,15 +3,16 @@
  */
 const config = {
   schemaFile: './src/generated/openapi.json',
-  apiFile: './src/lib/baseVincentRtkApi.ts',
-  apiImport: 'baseVincentRtkApi',
-  outputFile: './src/generated/vincentApiClient.ts',
-  exportName: 'vincentApiClient',
+  apiFile: './src/lib/internal/baseVincentRtkApiReact.ts',
+  apiImport: 'baseVincentRtkApiReact',
+  outputFile: './src/generated/vincentApiClientReact.ts',
+  exportName: 'vincentApiClientReact',
   hooks: {
     queries: true,
     lazyQueries: true,
     mutations: true,
   },
+  encodePathParams: true,
 };
 
 module.exports = config;

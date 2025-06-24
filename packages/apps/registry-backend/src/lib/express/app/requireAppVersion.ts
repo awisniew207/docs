@@ -12,6 +12,7 @@ export const requireAppVersion = (versionParam = 'version') => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const reqWithApp = req as RequestWithApp;
 
+    // FIXME: Return error 400 if appId or appVersion can't be parseInt'd
     // Ensure app middleware ran first
     if (!reqWithApp.vincentApp) {
       res.status(500).json({

@@ -7,6 +7,11 @@ import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
 
 const NEW_APP_APPVERSION = 1;
+const MAX_APPID_RETRY_ATTEMPTS = 20;
+
+function generateRandomAppId(): number {
+  return Math.floor(Math.random() * (100_000_000 - 1000)) + 1000;
+}
 
 export function registerRoutes(app: Express) {
   // List all apps
@@ -31,43 +36,77 @@ export function registerRoutes(app: Express) {
   app.post('/app', async (req, res) => {
     await withSession(async (mongoSession) => {
       const {
-        appId,
         name,
+        deploymentStatus,
         description,
         contactEmail,
         appUserUrl,
         logo,
         redirectUris,
-        deploymentStatus,
         managerAddress,
       } = req.body;
 
-      const appVersion = new AppVersion({
-        appId,
-        version: NEW_APP_APPVERSION,
-        changes: 'Initial version',
-        enabled: true,
-      });
-
-      const app = new App({
-        activeVersion: NEW_APP_APPVERSION,
-        appId,
-        name,
-        description,
-        contactEmail,
-        appUserUrl,
-        logo,
-        redirectUris,
-        deploymentStatus,
-        managerAddress,
-      });
-
+      const triedAppIds = new Set<number>();
+      let appId: number;
       let appDef;
+      let success = false;
+      let attempts = 0;
 
-      await mongoSession.withTransaction(async (session) => {
-        await appVersion.save({ session });
-        appDef = await app.save({ session });
-      });
+      while (!success && attempts < MAX_APPID_RETRY_ATTEMPTS) {
+        attempts++;
+
+        // Generate a new appId that we haven't tried yet
+        do {
+          appId = generateRandomAppId();
+        } while (triedAppIds.has(appId));
+
+        triedAppIds.add(appId);
+
+        const appVersion = new AppVersion({
+          appId,
+          version: NEW_APP_APPVERSION,
+          changes: 'Initial version',
+          enabled: true,
+        });
+
+        const appDoc = new App({
+          activeVersion: NEW_APP_APPVERSION,
+          appId,
+          name,
+          description,
+          contactEmail,
+          appUserUrl,
+          logo,
+          redirectUris,
+          deploymentStatus,
+          managerAddress,
+        });
+
+        try {
+          await mongoSession.withTransaction(async (session) => {
+            await appVersion.save({ session });
+            appDef = await appDoc.save({ session });
+          });
+          success = true;
+        } catch (error: any) {
+          // Check if the error is due to duplicate appId
+          if (error.code === 11000 && error.keyPattern && error.keyPattern.appId) {
+            // This is a duplicate key error for appId, try again with a new appId
+            continue;
+          } else {
+            // This is some other error, re-throw it
+            throw error;
+          }
+        }
+      }
+
+      if (!success) {
+        res.status(500).json({
+          error: 'Failed to generate unique appId after maximum attempts',
+          attempts: MAX_APPID_RETRY_ATTEMPTS,
+        });
+        return;
+      }
 
       res.status(201).json(appDef);
       return;
@@ -79,7 +118,8 @@ export function registerRoutes(app: Express) {
     '/app/:appId',
     requireApp(),
     withApp(async (req, res) => {
-      const updatedApp = await req.vincentApp.updateOne(req.body, { new: true }).lean();
+      Object.assign(req.vincentApp, req.body);
+      const updatedApp = await req.vincentApp.save();
 
       res.json(updatedApp);
       return;
@@ -153,17 +193,9 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireAppVersion(),
     withAppVersion(async (req, res) => {
-      const { vincentApp, vincentAppVersion } = req;
+      const { vincentAppVersion } = req;
 
-      const appTools = await AppTool.find({
-        appId: vincentApp.appId,
-        appVersion: vincentAppVersion.version,
-      }).lean();
-
-      res.json({
-        version: vincentAppVersion.version,
-        tools: appTools,
-      });
+      res.json(vincentAppVersion);
       return;
     }),
   );
@@ -176,10 +208,9 @@ export function registerRoutes(app: Express) {
     withAppVersion(async (req, res) => {
       const { vincentAppVersion } = req;
 
-      const version = await vincentAppVersion
-        .updateOne({ changes: req.body.changes }, { new: true })
-        .lean();
+      Object.assign(vincentAppVersion, req.body);
 
+      const version = await vincentAppVersion.save();
       res.json(version);
       return;
     }),
@@ -193,9 +224,8 @@ export function registerRoutes(app: Express) {
     withAppVersion(async (req, res) => {
       const { vincentAppVersion } = req;
 
-      const updatedAppVersion = await vincentAppVersion
-        .updateOne({ enabled: false }, { new: true })
-        .lean();
+      Object.assign(vincentAppVersion, { enabled: false });
+      const updatedAppVersion = await vincentAppVersion.save();
 
       res.json(updatedAppVersion);
       return;
@@ -210,9 +240,8 @@ export function registerRoutes(app: Express) {
     withAppVersion(async (req, res) => {
       const { vincentAppVersion } = req;
 
-      const updatedAppVersion = await vincentAppVersion
-        .updateOne({ enabled: true }, { new: true })
-        .lean();
+      Object.assign(vincentAppVersion, { enabled: true });
+      const updatedAppVersion = await vincentAppVersion.save();
 
       res.json(updatedAppVersion);
       return;
