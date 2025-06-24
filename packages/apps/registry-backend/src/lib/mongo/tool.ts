@@ -3,6 +3,7 @@ import { uniquePackageVersion } from './indexes';
 
 const toolSchema = new Schema(
   {
+    title: { type: String, required: true },
     packageName: { type: String, required: true, unique: true },
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
@@ -39,12 +40,6 @@ export const toolVersionSchema = new Schema(
       },
     ],
     homepage: { type: String },
-    status: {
-      type: String,
-      required: true,
-      enum: ['validating', 'invalid', 'error', 'ready'],
-      default: 'validating',
-    },
     ipfsCid: { type: String, required: true },
     // FIXME: Should these last 2 be [{ packageName, version}]?
     supportedPolicies: [{ type: String }],

@@ -2,7 +2,6 @@ import { Tool, ToolVersion } from '../../mongo/tool';
 import { requireTool, withTool } from './requireTool';
 import { requireToolVersion, withToolVersion } from './requireToolVersion';
 import { requirePackage, withValidPackage } from '../package/requirePackage';
-import { getPackageInfo } from '../../npm';
 
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
@@ -29,21 +28,21 @@ export function registerRoutes(app: Express) {
 
   // Create new Tool
   app.post(
-    '/tool',
+    '/tool/:packageName',
     requirePackage(),
     withValidPackage(async (req, res) => {
-      const { packageName, authorWalletAddress, description, version } = req.body;
+      const { authorWalletAddress, description, title } = req.body;
       const packageInfo = req.vincentPackage;
 
       await withSession(async (mongoSession) => {
         const toolVersion = new ToolVersion({
-          packageName,
-          version: version,
+          packageName: packageInfo.name,
+          version: packageInfo.version,
           changes: 'Initial version',
           repository: packageInfo.repository,
-          description,
+          description: packageInfo.description,
           keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || [],
+          dependencies: packageInfo.dependencies || {},
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
@@ -54,22 +53,33 @@ export function registerRoutes(app: Express) {
         });
 
         const tool = new Tool({
-          packageName,
-          authorWalletAddress,
+          title,
+          packageName: packageInfo.name,
+          authorWalletAddress, // FIXME: Derive from authentication SIWE
           description,
-          activeVersion: version,
+          activeVersion: packageInfo.version,
         });
 
         let /*savedToolVersion,*/ savedTool;
 
-        await mongoSession.withTransaction(async (session) => {
-          await toolVersion.save({ session });
-          savedTool = await tool.save({ session });
-        });
+        try {
+          await mongoSession.withTransaction(async (session) => {
+            await toolVersion.save({ session });
+            savedTool = await tool.save({ session });
+          });
 
-        // FIXME: If we take a toolVersion as an input, should we return both docs in the response?
-        res.status(201).json(savedTool);
-        return;
+          res.status(201).json(savedTool);
+          return;
+        } catch (error: any) {
+          if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
+            res.status(409).json({
+              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+            });
+            return;
+          }
+
+          throw error;
+        }
       });
     }),
   );
@@ -102,36 +112,44 @@ export function registerRoutes(app: Express) {
     }),
   );
 
-  // Create new Tool Version
+  // Create a new Tool Version
   app.post(
     '/tool/:packageName/version/:version',
     requireTool(),
     requirePackage(),
     withTool(
       withValidPackage(async (req, res) => {
-        const { version } = req.params;
         const packageInfo = req.vincentPackage;
 
         const toolVersion = new ToolVersion({
-          packageName: req.vincentTool.packageName,
-          version: version,
+          packageName: packageInfo.name,
+          version: packageInfo.version,
           changes: req.body.changes,
-          description: req.body.description,
+          description: packageInfo.description,
           repository: packageInfo.repository,
           keywords: packageInfo.keywords || [],
           dependencies: packageInfo.dependencies || [],
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
-          status: 'validating',
           supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
           policiesNotInRegistry: [],
           ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
         });
 
-        const savedVersion = await toolVersion.save();
-        res.status(201).json(savedVersion);
-        return;
+        try {
+          const savedVersion = await toolVersion.save();
+          res.status(201).json(savedVersion);
+          return;
+        } catch (error: any) {
+          if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
+            res.status(409).json({
+              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+            });
+            return;
+          }
+          throw error;
+        }
       }),
     ),
   );

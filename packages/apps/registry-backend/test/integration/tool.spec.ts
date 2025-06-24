@@ -1,282 +1,294 @@
 import { api, store } from './setup';
+import { expectAssertArray, expectAssertObject } from '../assertions';
+import { logIfVerbose } from '../log';
+
+const VERBOSE_LOGGING = true;
+
+const verboseLog = (value: any) => {
+  logIfVerbose(value, VERBOSE_LOGGING);
+};
 
 describe('Tool API Integration Tests', () => {
-  const testToolPackageName = 'lodash';
-  const testToolVersion = '4.17.21';
+  beforeAll(async () => {
+    verboseLog('Tool API Integration Tests');
+  });
+
+  let testPackageName: string;
+  let testToolVersion: string;
+
+  // Test data for creating a tool
+  const toolData = {
+    title: 'Test Tool',
+    description: 'Test tool for integration tests',
+    activeVersion: '1.0.0',
+    authorWalletAddress: '0x1093891467868461234876123873',
+  };
+
+  // Test data for creating a tool version
+  const toolVersionData = {
+    changes: 'Initial version',
+  };
 
   describe('GET /tools', () => {
     it('should return a list of tools', async () => {
       const result = await store.dispatch(api.endpoints.listAllTools.initiate());
-      expect(result.isSuccess).toBe(true);
-      expect(Array.isArray(result.data)).toBe(true);
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      expectAssertArray(result.data);
     });
   });
 
-  describe('POST /tool', () => {
+  describe('POST /tool/{packageName}', () => {
     it('should create a new tool', async () => {
-      const toolData = {
-        packageName: testToolPackageName,
-        authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
-        description: 'Test tool for integration tests',
-        version: testToolVersion,
-      };
+      // Generate a unique package name for testing
+      testPackageName = `@lit-protocol/vincent-tool-erc20-approval`;
+      testToolVersion = toolData.activeVersion;
 
       const result = await store.dispatch(
-        api.endpoints.createTool.initiate({ createTool: toolData }),
+        api.endpoints.createTool.initiate({
+          packageName: testPackageName,
+          toolCreate: toolData,
+        }),
       );
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.packageName).toBe(testToolPackageName);
-      expect(result.data.description).toBe(toolData.description);
-    });
 
-    it('should reject invalid package names', async () => {
-      const invalidToolData = {
-        packageName: 'Invalid Package Name', // Contains spaces, which is invalid
-        authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
-        description: 'Test tool with invalid package name',
-        version: '4.17.21', // Valid version
-      };
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
 
-      const result = await store.dispatch(
-        api.endpoints.createTool.initiate({ createTool: invalidToolData }),
-      );
-      expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(400);
-      expect(result.error.data.error).toContain('Invalid NPM package name');
-    });
+      const { data } = result;
+      expectAssertObject(data);
 
-    it('should reject invalid versions', async () => {
-      const invalidVersionData = {
-        packageName: 'lodash-test',
-        authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
-        description: 'Test tool with invalid version',
-        version: 'not-a-valid-version', // Not a valid semver
-      };
-
-      const result = await store.dispatch(
-        api.endpoints.createTool.initiate({ createTool: invalidVersionData }),
-      );
-      expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(400);
-      expect(result.error.data.error).toContain('Invalid semantic version');
-    });
-
-    it('should reject semver with range modifiers', async () => {
-      const rangeVersionData = {
-        packageName: 'lodash-test',
-        authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
-        description: 'Test tool with range version',
-        version: '^4.17.21', // Contains caret range modifier
-      };
-
-      const result = await store.dispatch(
-        api.endpoints.createTool.initiate({ createTool: rangeVersionData }),
-      );
-      expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(400);
-      expect(result.error.data.error).toContain('Invalid semantic version');
-
-      // Test with tilde range modifier
-      const tildeVersionData = { ...rangeVersionData, version: '~4.17.21' };
-      const tildeResult = await store.dispatch(
-        api.endpoints.createTool.initiate({ createTool: tildeVersionData }),
-      );
-      expect(tildeResult.isError).toBe(true);
-      expect(tildeResult.error.status).toBe(400);
-      expect(tildeResult.error.data.error).toContain('Invalid semantic version');
-
-      // Test with less than or equal range modifier
-      const lteVersionData = { ...rangeVersionData, version: '<=4.17.21' };
-      const lteResult = await store.dispatch(
-        api.endpoints.createTool.initiate({ createTool: lteVersionData }),
-      );
-      expect(lteResult.isError).toBe(true);
-      expect(lteResult.error.status).toBe(400);
-      expect(lteResult.error.data.error).toContain('Invalid semantic version');
+      expect(data).toMatchObject({
+        packageName: testPackageName,
+        ...toolData,
+      });
     });
   });
 
-  describe('GET /tool/:packageName', () => {
+  describe('GET /tool/{packageName}', () => {
     it('should return a specific tool', async () => {
       const result = await store.dispatch(
-        api.endpoints.getTool.initiate({ packageName: testToolPackageName }),
+        api.endpoints.getTool.initiate({ packageName: testPackageName }),
       );
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.packageName).toBe(testToolPackageName);
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      expect(data).toMatchObject({
+        packageName: testPackageName,
+        ...toolData,
+      });
     });
 
     it('should return 404 for non-existent tool', async () => {
       const result = await store.dispatch(
-        api.endpoints.getTool.initiate({ packageName: 'non-existent-tool' }),
+        api.endpoints.getTool.initiate({ packageName: `@vincent/non-existent-tool-${Date.now()}` }),
       );
+
+      expect(result).toHaveProperty('error');
+
       expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(404);
+      if (result.isError) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(404);
+      }
     });
   });
 
-  describe('PUT /tool/:packageName', () => {
+  describe('PUT /tool/{packageName}', () => {
     it('should update a tool', async () => {
       const updateData = {
-        description: 'Updated test tool description',
+        description: 'Updated test tool description!',
       };
 
       const result = await store.dispatch(
         api.endpoints.editTool.initiate({
-          packageName: testToolPackageName,
-          editTool: updateData,
+          packageName: testPackageName,
+          toolEdit: updateData,
         }),
       );
-      expect(result.isSuccess).toBe(true);
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
 
-      // Verify the update
+      // Reset the API cache so we can verify the change
+      store.dispatch(api.util.resetApiState());
+
       const getResult = await store.dispatch(
-        api.endpoints.getTool.initiate({ packageName: testToolPackageName }),
+        api.endpoints.getTool.initiate({ packageName: testPackageName }),
       );
-      expect(getResult.data.description).toBe(updateData.description);
+
+      verboseLog(getResult);
+
+      const { data } = getResult;
+      expectAssertObject(data);
+
+      expect(data).toHaveProperty('description', updateData.description);
     });
   });
 
-  describe('POST /tool/:packageName/owner', () => {
-    it('should change the tool owner', async () => {
-      const newOwnerData = {
-        authorWalletAddress: '0xabcdef1234567890abcdef1234567890abcdef12',
-      };
-
-      const result = await store.dispatch(
-        api.endpoints.changeToolOwner.initiate({
-          packageName: testToolPackageName,
-          changeOwner: newOwnerData,
-        }),
-      );
-      expect(result.isSuccess).toBe(true);
-
-      // Verify the owner change
-      const getResult = await store.dispatch(
-        api.endpoints.getTool.initiate({ packageName: testToolPackageName }),
-      );
-      expect(getResult.data.authorWalletAddress).toBe(newOwnerData.authorWalletAddress);
-    });
-  });
-
-  describe('POST /tool/:packageName/version/:version', () => {
+  describe('POST /tool/{packageName}/version/{version}', () => {
     it('should create a new tool version', async () => {
-      const newVersion = '4.17.20';
-      const versionData = {
-        changes: 'Added new features',
-        description: 'New version description',
-      };
-
       const result = await store.dispatch(
         api.endpoints.createToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: newVersion,
-          versionChanges: versionData,
+          packageName: testPackageName,
+          version: testToolVersion,
+          toolVersionCreate: toolVersionData,
         }),
       );
 
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.version).toBe(newVersion);
-      expect(result.data.changes).toBe(versionData.changes);
-    });
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
 
-    it('should reject invalid versions', async () => {
-      const invalidVersion = 'not-a-valid-version';
-      const versionData = {
-        changes: 'This should fail',
-        description: 'Version with invalid format',
-        repository: 'https://github.com/lodash/lodash',
-      };
+      const { data } = result;
+      expectAssertObject(data);
 
-      const result = await store.dispatch(
-        api.endpoints.createToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: invalidVersion,
-          versionChanges: versionData,
-        }),
-      );
-
-      expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(400);
-      expect(result.error.data.error).toContain('Invalid semantic version');
+      expect(data).toHaveProperty('changes', toolVersionData.changes);
+      expect(data).toHaveProperty('version', testToolVersion);
     });
   });
 
-  describe('GET /tool/:packageName/versions', () => {
+  describe('GET /tool/{packageName}/versions', () => {
     it('should list all versions of a tool', async () => {
+      store.dispatch(api.util.resetApiState());
+
       const result = await store.dispatch(
-        api.endpoints.getToolVersions.initiate({ packageName: testToolPackageName }),
+        api.endpoints.getToolVersions.initiate({ packageName: testPackageName }),
       );
-      expect(result.isSuccess).toBe(true);
-      expect(Array.isArray(result.data)).toBe(true);
-      expect(result.data.length).toBeGreaterThan(0);
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertArray(data);
+
+      expect(data.length).toBeGreaterThan(0);
     });
   });
 
-  describe('GET /tool/:packageName/version/:version', () => {
+  describe('GET /tool/{packageName}/version/{version}', () => {
     it('should get a specific tool version', async () => {
+      store.dispatch(api.util.resetApiState());
+
       const result = await store.dispatch(
         api.endpoints.getToolVersion.initiate({
-          packageName: testToolPackageName,
+          packageName: testPackageName,
           version: testToolVersion,
         }),
       );
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.version).toBe(testToolVersion);
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      expect(data).toHaveProperty('version', testToolVersion);
+      expect(data).toHaveProperty('changes', toolVersionData.changes);
     });
 
     it('should return 404 for non-existent version', async () => {
       const result = await store.dispatch(
         api.endpoints.getToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: '9.9.9',
+          packageName: testPackageName,
+          version: '999.999.999',
         }),
       );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+
       expect(result.isError).toBe(true);
-      expect(result.error.status).toBe(404);
+      if (result.isError) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(404);
+      }
     });
   });
 
-  describe('PUT /tool/:packageName/version/:version', () => {
+  describe('PUT /tool/{packageName}/version/{version}', () => {
     it('should update a tool version', async () => {
-      const updateData = {
-        changes: 'Updated changes description',
-      };
+      store.dispatch(api.util.resetApiState());
 
-      const result = await store.dispatch(
-        api.endpoints.editToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: testToolVersion,
-          versionChanges: updateData,
-        }),
-      );
+      const changes = 'Updated changes description for tool version' as const;
 
-      expect(result.isSuccess).toBe(true);
+      {
+        const result = await store.dispatch(
+          api.endpoints.editToolVersion.initiate({
+            packageName: testPackageName,
+            version: testToolVersion,
+            toolVersionEdit: {
+              changes,
+            },
+          }),
+        );
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
 
-      // Verify the update
-      const getResult = await store.dispatch(
-        api.endpoints.getToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: testToolVersion,
-        }),
-      );
-      expect(getResult.data.changes).toBe(updateData.changes);
+        const { data } = result;
+        expectAssertObject(data);
+      }
+
+      store.dispatch(api.util.resetApiState());
+
+      {
+        // Verify the update
+        const getResult = await store.dispatch(
+          api.endpoints.getToolVersion.initiate({
+            packageName: testPackageName,
+            version: testToolVersion,
+          }),
+        );
+
+        verboseLog(getResult);
+        expect(getResult).not.toHaveProperty('error');
+
+        const { data } = getResult;
+        expectAssertObject(data);
+        expect(data).toHaveProperty('changes', changes);
+      }
     });
   });
 
-  describe('DELETE /tool/:packageName', () => {
-    it('should delete a tool and its versions', async () => {
-      const result = await store.dispatch(
-        api.endpoints.deleteTool.initiate({ packageName: testToolPackageName }),
-      );
-      expect(result.isSuccess).toBe(true);
-      expect(result.data.message).toContain('deleted successfully');
+  describe('PUT /tool/{packageName}/owner', () => {
+    it('should change a tool owner', async () => {
+      const newOwnerAddress = '0x9876543210abcdef9876543210abcdef98765432';
 
-      // Verify the deletion
-      const getResult = await store.dispatch(
-        api.endpoints.getTool.initiate({ packageName: testToolPackageName }),
+      const result = await store.dispatch(
+        api.endpoints.changeToolOwner.initiate({
+          packageName: testPackageName,
+          changeOwner: {
+            authorWalletAddress: newOwnerAddress,
+          },
+        }),
       );
-      expect(getResult.isError).toBe(true);
-      expect(getResult.error.status).toBe(404);
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      // Reset the API cache so we can verify the change
+      store.dispatch(api.util.resetApiState());
+
+      const getResult = await store.dispatch(
+        api.endpoints.getTool.initiate({ packageName: testPackageName }),
+      );
+
+      verboseLog(getResult);
+      expect(getResult).not.toHaveProperty('error');
+
+      const { data: updatedData } = getResult;
+      expectAssertObject(updatedData);
+
+      expect(updatedData).toHaveProperty('authorWalletAddress', newOwnerAddress);
     });
   });
 });

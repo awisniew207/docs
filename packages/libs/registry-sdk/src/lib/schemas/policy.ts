@@ -18,7 +18,7 @@ const policy = z
       description:
         'Author wallet address. Derived from the authorization signature provided by the creator.',
       example: EXAMPLE_WALLET_ADDRESS,
-      readOnly: true,
+      // readOnly: true, // FIXME: Enable this when we ship SIWE authentication
     }),
     description: z.string().openapi({
       description: 'Policy description - displayed to users in the dashboard/Vincent Explorer UI',
@@ -37,7 +37,7 @@ const policy = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreatePolicySchema() {
-  const { activeVersion, title, description } = policy.shape;
+  const { activeVersion, title, description, authorWalletAddress } = policy.shape;
 
   return z
     .object({
@@ -45,6 +45,7 @@ function buildCreatePolicySchema() {
       activeVersion,
       title,
       description,
+      authorWalletAddress, // FIXME: Remove this when we ship SIWE authentication
     })
     .strict();
 }

@@ -30,13 +30,14 @@ export function registerRoutes(app: Express) {
     '/policy',
     requirePackage('packageName', 'activeVersion'),
     withValidPackage(async (req, res) => {
-      const { packageName, authorWalletAddress, description, activeVersion, version } = req.body;
+      const { authorWalletAddress, description, activeVersion, title } = req.body;
       const packageInfo = req.vincentPackage;
 
       await withSession(async (mongoSession) => {
         // Create the policy
         const policy = new Policy({
-          packageName,
+          title,
+          packageName: packageInfo.name,
           authorWalletAddress,
           description,
           activeVersion, // FIXME: Should this be an entire PolicyVersion? Otherwise it must be optional.
@@ -44,13 +45,12 @@ export function registerRoutes(app: Express) {
 
         // Create initial policy version
         const policyVersion = new PolicyVersion({
-          ...version,
-          packageName,
-          version: activeVersion,
-          status: 'ready',
+          changes: 'Initial version',
+          packageName: packageInfo.name,
+          version: packageInfo.version,
           repository: packageInfo.repository,
           keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || [],
+          dependencies: packageInfo.dependencies || {},
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
@@ -59,14 +59,25 @@ export function registerRoutes(app: Express) {
         // Save both in a transaction
         let savedPolicy;
 
-        await mongoSession.withTransaction(async (session) => {
-          savedPolicy = await policy.save({ session });
-          await policyVersion.save({ session });
-        });
+        try {
+          await mongoSession.withTransaction(async (session) => {
+            savedPolicy = await policy.save({ session });
+            await policyVersion.save({ session });
+          });
 
-        // Return only the policy to match OpenAPI spec
-        res.status(201).json(savedPolicy);
-        return;
+          // Return only the policy to match OpenAPI spec
+          res.status(201).json(savedPolicy);
+          return;
+        } catch (error: any) {
+          if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
+            res.status(409).json({
+              message: `The policy ${packageInfo.name} is already in the Vincent Registry.`,
+            });
+            return;
+          }
+
+          throw error;
+        }
       });
     }),
   );
@@ -106,22 +117,34 @@ export function registerRoutes(app: Express) {
     requirePackage(),
     withPolicy(
       withValidPackage(async (req, res) => {
-        const { version } = req.params;
         const packageInfo = req.vincentPackage;
 
         const policyVersion = new PolicyVersion({
           ...req.body,
-          packageName: req.vincentPolicy.packageName,
-          version: version,
-          status: 'ready',
+          packageName: packageInfo.name,
+          version: packageInfo.version,
+          repository: packageInfo.repository,
           keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || [],
+          dependencies: packageInfo.dependencies || {},
+          author: packageInfo.author,
           contributors: packageInfo.contributors || [],
+          homepage: packageInfo.homepage,
         });
 
-        const savedVersion = await policyVersion.save();
-        res.status(201).json(savedVersion);
-        return;
+        try {
+          const savedVersion = await policyVersion.save();
+
+          res.status(201).json(savedVersion);
+          return;
+        } catch (error: any) {
+          if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
+            res.status(409).json({
+              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+            });
+            return;
+          }
+          throw error;
+        }
       }),
     ),
   );

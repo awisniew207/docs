@@ -22,7 +22,7 @@ const tool = z
       description:
         'Author wallet address. Derived from the authorization signature provided by the creator.',
       example: EXAMPLE_WALLET_ADDRESS,
-      readOnly: true,
+      // readOnly: true, // FIXME: Enable this when we ship SIWE authentication
     }),
     description: z.string().openapi({
       description: 'Tool description - displayed to users in the dashboard/Vincent Explorer UI',
@@ -38,7 +38,7 @@ const tool = z
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateToolSchema() {
-  const { activeVersion, title, description } = tool.shape;
+  const { activeVersion, title, description, authorWalletAddress } = tool.shape;
 
   return z
     .object({
@@ -46,6 +46,7 @@ function buildCreateToolSchema() {
       activeVersion,
       title,
       description,
+      authorWalletAddress, // FIXME: Remove this when we have SIWE authentication live
     })
     .strict();
 }

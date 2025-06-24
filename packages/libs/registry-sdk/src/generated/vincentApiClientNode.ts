@@ -560,6 +560,8 @@ export type Tool = {
   packageName: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
   title?: string;
+  /** Author wallet address. Derived from the authorization signature provided by the creator. */
+  authorWalletAddress: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Active version of the tool */
@@ -592,6 +594,8 @@ export type ToolCreate = {
   title?: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Author wallet address. Derived from the authorization signature provided by the creator. */
+  authorWalletAddress: string;
 };
 export type ToolEdit = {
   /** Active version of the tool */
@@ -708,6 +712,8 @@ export type Policy = {
   createdAt: string;
   /** Policy NPM package name */
   packageName: string;
+  /** Author wallet address. Derived from the authorization signature provided by the creator. */
+  authorWalletAddress: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Active version of the policy; must be an exact semver */
@@ -742,6 +748,8 @@ export type PolicyCreate = {
   title: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Author wallet address. Derived from the authorization signature provided by the creator. */
+  authorWalletAddress: string;
 };
 export type PolicyEdit = {
   /** Active version of the policy; must be an exact semver */
