@@ -35,7 +35,7 @@ import { env } from './env';
 import { getServer } from './server';
 import { transportManager } from './transportManager';
 
-const { HTTP_PORT, VINCENT_APP_JSON_DEFINITION, VINCENT_DELEGATEE_PRIVATE_KEY } = env;
+const { PORT, VINCENT_APP_JSON_DEFINITION, VINCENT_DELEGATEE_PRIVATE_KEY } = env;
 
 const YELLOWSTONE = LIT_EVM_CHAINS.yellowstone;
 
@@ -206,6 +206,6 @@ app.delete('/mcp', async (req: Request, res: Response) => {
   return returnWithError(res, 405, 'Method not allowed');
 });
 
-app.listen(HTTP_PORT, () => {
-  console.log(`MCP Stateless Streamable HTTP Server listening on port ${HTTP_PORT}`);
+app.listen(PORT, () => {
+  console.log(`MCP Stateless Streamable HTTP Server listening on port ${PORT}`);
 });

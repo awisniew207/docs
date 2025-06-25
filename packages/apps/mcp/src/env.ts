@@ -29,7 +29,7 @@ export const env = createEnv({
   runtimeEnv: process.env,
   server: {
     EXPECTED_AUDIENCE: z.string().optional(),
-    HTTP_PORT: z.coerce.number().default(3000),
+    PORT: z.coerce.number().default(3000),
     HTTP_TRANSPORT_CLEAN_INTERVAL: z.coerce.number().default(ONE_HOUR),
     HTTP_TRANSPORT_TTL: z.coerce.number().default(ONE_HOUR),
     SIWE_EXPIRATION_TIME: z.coerce.number().default(ONE_HOUR),
