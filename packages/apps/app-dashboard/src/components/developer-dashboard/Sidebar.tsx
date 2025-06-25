@@ -271,6 +271,7 @@ export function Sidebar({
                     ? 'bg-blue-50 text-blue-700 font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
+                style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                 title={isCollapsed ? item.label : undefined}
               >
                 <Icon className="h-5 w-5 flex-shrink-0 transition-transform duration-200" />
