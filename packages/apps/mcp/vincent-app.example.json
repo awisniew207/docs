@@ -1,10 +1,10 @@
 {
   "id": "485",
-  "version": "4",
+  "version": "5",
   "name": "Uniswap Swap",
   "description": "This app offers tools to approve ERC20 token allowances and perform swaps on uniswap",
   "tools": {
-    "QmQtRByug18aRyceD21RnFu6QZeDhzmzoYC8zjj6x8ketw": {
+    "QmWHK5KsJitDwW1zHRoiJQdQECASzSjjphp4Rg8YqB6BsX": {
       "name": "erc20-approval",
       "description": "Allow an ERC20 token spending, up to a limit, to the Uniswap v3 Router contract. This is necessary to make trades on Uniswap.",
       "parameters": [
@@ -16,7 +16,7 @@
         {
           "name": "rpcUrl",
           "type": "string",
-          "description": "The RPC URL to use for the transaction"
+          "description": "The RPC URL to use for the transaction. Must support the chainId specified."
         },
         {
           "name": "spenderAddress",
@@ -40,7 +40,7 @@
         }
       ]
     },
-    "Qmaj8RSBA8orrjD8fnRyXf8YXFyYUonhdgK72HP85FQFsX": {
+    "QmSJWXQsmbp1Bbe7QKYugnJadnvGZJa1uf5y3gLvy6ZftU": {
       "name": "uniswap-swap",
       "description": "Executes a swap in Uniswap selling an specific amount of the input token to get another token. The necessary allowance for the input token must be approved for the Uniswap v3 Router contract.",
       "parameters": [
@@ -52,12 +52,12 @@
         {
           "name": "rpcUrlForUniswap",
           "type": "string",
-          "description": ""
+          "description": "An RPC endpoint for any chain that is supported by the @uniswap/sdk-core package. Must work for the chain specified in chainIdForUniswap"
         },
         {
           "name": "ethRpcUrl",
           "type": "string",
-          "description": ""
+          "description": "An Ethereum Mainnet RPC Endpoint. This is used to check USD <> ETH prices via Chainlink."
         },
         {
           "name": "tokenInAddress",
@@ -83,24 +83,6 @@
           "name": "tokenOutDecimals",
           "type": "number",
           "description": "ERC20 Token to buy decimals. For example 18 for WETH on Base."
-        },
-        {
-          "name": "poolFee",
-          "type": "number",
-          "description": "",
-          "optional": true
-        },
-        {
-          "name": "slippageTolerance",
-          "type": "number",
-          "description": "",
-          "optional": true
-        },
-        {
-          "name": "swapDeadline",
-          "type": "number",
-          "description": "",
-          "optional": true
         }
       ]
     }
