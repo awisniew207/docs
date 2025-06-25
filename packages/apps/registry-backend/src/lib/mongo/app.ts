@@ -41,7 +41,7 @@ export const AppToolSchema = new Schema(
     appId: { type: Number, required: true },
     appVersion: { type: Number, required: true },
     toolPackageName: { type: String, required: true },
-    toolVersion: { type: Number, required: true },
+    toolVersion: { type: String, required: true },
     hiddenSupportedPolicies: [{ type: String }],
     isDeleted: { type: Boolean, default: false },
   } as const,

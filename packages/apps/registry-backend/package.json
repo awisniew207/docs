@@ -1,7 +1,7 @@
 {
   "name": "@lit-protocol/registry-backend",
-  "version": "0.0.2",
-  "private": false,
+  "version": "0.1.0",
+  "private": true,
   "type:": "module",
   "scripts": {
     "build": "pnpm unbuild",
@@ -13,13 +13,16 @@
     "dist",
     "src/lib/express/static/openapi.html"
   ],
+  "bin": {
+    "apiServer": "./dist/bin/apiServer.mjs"
+  },
   "packageManager": "pnpm@10.7.0",
   "engines": {
     "node": "^20.11.1",
     "pnpm": "10.7.0"
   },
   "dependencies": {
-    "@lit-protocol/flags": "2.0.0",
+    "@lit-protocol/flags": "^2.1.0",
     "@lit-protocol/vincent-registry-sdk": "workspace:*",
     "@t3-oss/env-core": "^0.13.6",
     "bs58": "^6.0.0",

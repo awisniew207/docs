@@ -367,6 +367,23 @@
         ],
         "additionalProperties": false
       },
+      "AppVersionToolEdit": {
+        "type": "object",
+        "properties": {
+          "hiddenSupportedPolicies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Policies that are supported by this tool, but are hidden from users of this app specifically",
+            "example": [
+              "@vincent/foo-bar-policy-1",
+              "@vincent/foo-bar-policy-2"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
       "AppVersionTool": {
         "type": "object",
         "properties": {
@@ -1779,6 +1796,87 @@
           },
           "400": {
             "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "app/version/tool"
+        ],
+        "summary": "Edits a tool for an application version",
+        "operationId": "editAppVersionTool",
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "appVersion",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated tool configuration for the application version",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppVersionToolEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppVersionTool"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application, version, or tool not found"
           },
           "422": {
             "description": "Validation exception"

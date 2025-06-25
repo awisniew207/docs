@@ -1,6 +1,6 @@
 {
   "extends": ["@tsconfig/node20/tsconfig.json", "./tsconfig.json"],
-  "include": ["src/**/*.ts", "src/*.ts"],
+  "include": ["src/**/*.ts", "src/*.ts", "src/**/*.json"],
   "strictNullChecks": true,
   "allowJs": true,
   "types": ["jest", "node"],
@@ -9,7 +9,8 @@
     "module": "esnext",
     "moduleResolution": "Bundler",
     "strict": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "resolveJsonModule": true
   },
   "references": [
     {

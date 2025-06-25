@@ -1,3 +1,13 @@
+## 2.1.0 (2025-06-25)
+
+### 🚀 Features
+
+- Add endpoint to allow editing of `supportedPolicies` for app tools. ([2615143d](https://github.com/LIT-Protocol/Vincent/commit/2615143d))
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 # 2.0.0 (2025-06-24)
 
 ### 🚀 Features
