@@ -1,7 +1,7 @@
 {
   "name": "@lit-protocol/registry-backend",
   "version": "0.0.2",
-  "private": false,
+  "private": true,
   "type:": "module",
   "scripts": {
     "build": "pnpm unbuild",
