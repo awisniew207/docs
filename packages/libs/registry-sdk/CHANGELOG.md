@@ -1,3 +1,13 @@
+## 2.2.0 (2025-06-25)
+
+### 🚀 Features
+
+- Add `policiesNotInRegistry` to `toolVersion` type ([cd6bc46c](https://github.com/LIT-Protocol/Vincent/commit/cd6bc46c))
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 2.1.0 (2025-06-25)
 
 ### 🚀 Features
