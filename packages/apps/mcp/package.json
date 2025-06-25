@@ -30,7 +30,7 @@
   },
   "main": "./dist/stdio.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/public dist/src/public",
     "build:watch": "tsc --watch",
     "dev:stdio": "tsx src/stdio.ts",
     "dev:http": "tsx watch --env-file=.env src/http.ts",

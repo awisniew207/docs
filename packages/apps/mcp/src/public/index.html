@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vincent MCP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+<div class="container">
+  <header class="main-header">
+    <h1 class="text-4xl md:text-5xl font-bold">Vincent Model Context Protocol Server</h1>
+    <p class="text-lg md:text-xl text-gray-400 mt-2">Your gateway to decentralized, user-controlled AI agents.</p>
+  </header>
+
+  <main class="content-grid">
+    <div id="app-definition" class="app-definition">
+      <div class="app-header">
+        <div class="app-title-row">
+          <h2 id="app-name" class="app-name">Loading app definition...</h2>
+          <span id="app-version" class="app-version"></span>
+        </div>
+        <p id="app-description" class="app-description"></p>
+        <div class="app-actions">
+          <button id="approve-button" class="action-button">Approve Vincent App</button>
+          <button id="connect-button" class="action-button" disabled title="You must approve Vincent App first">
+            Connect Vincent MCP
+          </button>
+        </div>
+      </div>
+      <div id="tools-container" class="tools-container"></div>
+    </div>
+  </main>
+
+  <!-- MCP Connection Modal -->
+  <div id="mcp-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Connect Vincent App using Model Context Protocol</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>You can connect the Vincent App <span id="modal-app-name"></span> MCP to any LLM Client that supports the remote Model Context Protocol. Just add this link to the connections modal provided in your client:</p>
+        <div class="connection-link-container">
+          <input type="text" id="mcp-connection-link" readonly class="connection-link" />
+          <button id="copy-link-btn" class="copy-button" title="Copy to clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-button close-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <p><a href="https://docs.heyvincent.ai/" target="_blank" rel="noopener noreferrer">Vincent</a>
+      by <a href="https://developer.litprotocol.com/" target="_blank" rel="noopener noreferrer">Lit
+        Protocol</a>.</p>
+  </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -15,6 +15,7 @@
  */
 
 import fs from 'node:fs';
+import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 import { LIT_EVM_CHAINS } from '@lit-protocol/constants';
@@ -50,6 +51,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 function returnWithError(res: Response, httpStatus: number, message: string): void {
   res.status(httpStatus).json({
     jsonrpc: '2.0',
@@ -60,6 +63,14 @@ function returnWithError(res: Response, httpStatus: number, message: string): vo
     id: null,
   });
 }
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/appDef', (req, res) => {
+  res.sendFile(VINCENT_APP_JSON_DEFINITION);
+});
 
 app.get('/siwe', async (req: Request, res: Response) => {
   try {
