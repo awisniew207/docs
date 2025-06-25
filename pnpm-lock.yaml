@@ -22,8 +22,8 @@ importers:
         specifier: ^9.25.1
         version: 9.29.0
       '@lit-protocol/flags':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       '@nx/esbuild':
         specifier: 21.2.1
         version: 21.2.1(@babel/traverse@7.27.4)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.5.29(@swc/helpers@0.5.17))(esbuild@0.19.12)(nx@21.2.1(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.5.29(@swc/helpers@0.5.17)))
@@ -408,8 +408,8 @@ importers:
   packages/apps/registry-backend:
     dependencies:
       '@lit-protocol/flags':
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       '@lit-protocol/vincent-registry-sdk':
         specifier: workspace:*
         version: link:../../libs/registry-sdk
@@ -2154,11 +2154,6 @@ packages:
 
   '@lit-protocol/crypto@7.2.0':
     resolution: {integrity: sha512-Y1UyofhMXAHwbu6R14CZIHoEbXvVHrvD8kiL6C4LX0bYvfCsm73XEvTAQc80uRIg6GhfZHNBgqdaGpwJ2YjX8A==}
-
-  '@lit-protocol/flags@2.0.0':
-    resolution: {integrity: sha512-EbeNHZQgNxwPADrLOXHW5GP6HaXGjlMDq6FYvQiX5mG5ogYouu1CdWzfIv8oRqKmHlg/RUgU/8OWn9gBR9afZw==}
-    engines: {node: ^20.11.1, pnpm: 10.7.0}
-    hasBin: true
 
   '@lit-protocol/flags@2.1.0':
     resolution: {integrity: sha512-rb3jtVLAWBL074M1dqexpprdUvUmrFbMOGQ0rbEYoWT+ZRH+6aaO0G3k/kKnqVVva6nv2TBnibr5bBrVo1p28g==}
@@ -12472,8 +12467,6 @@ snapshots:
       - bufferutil
       - typescript
       - utf-8-validate
-
-  '@lit-protocol/flags@2.0.0': {}
 
   '@lit-protocol/flags@2.1.0': {}
 
