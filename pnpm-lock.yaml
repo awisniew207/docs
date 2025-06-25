@@ -417,8 +417,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@lit-protocol/vincent-registry-sdk':
-        specifier: ^2.2.0
-        version: 2.2.0(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
+        specifier: workspace:*
+        version: link:../../libs/registry-sdk
       '@t3-oss/env-core':
         specifier: ^0.13.6
         version: 0.13.8(typescript@5.8.3)(zod@3.25.64)
