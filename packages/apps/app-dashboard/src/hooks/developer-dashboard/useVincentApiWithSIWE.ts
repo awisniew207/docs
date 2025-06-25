@@ -183,21 +183,18 @@ export function useVincentApiWithSIWE() {
       return () => {
         const [originalMutation, mutationResult] = originalHook();
 
-        const wrappedMutation = useCallback(
-          async (args: any) => {
-            if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
-              if (!isConnected || !address) {
-                throw new Error('Wallet not connected');
-              }
-              if (!currentSIWEToken.current) {
-                await authenticateWithSIWE();
-              }
+        const wrappedMutation = async (args: any) => {
+          if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+            if (!isConnected || !address) {
+              throw new Error('Wallet not connected');
             }
+            if (!currentSIWEToken.current) {
+              await authenticateWithSIWE();
+            }
+          }
 
-            return originalMutation(args);
-          },
-          [originalMutation],
-        );
+          return originalMutation(args);
+        };
 
         return [wrappedMutation, mutationResult] as const;
       };
