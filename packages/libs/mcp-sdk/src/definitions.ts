@@ -176,11 +176,13 @@ export function buildVincentToolCallback(
         ethersSigner: delegateeSigner,
         litNodeClient,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { pkpEthAddress, ...toolParams } = args; // Just discarding pkpEthAddres to not pass it as param
       const executeJsResponse = await litNodeClient.executeJs({
         ipfsId: vincentToolDefWithIPFS.ipfsCid,
         sessionSigs,
         jsParams: {
-          toolParams: args,
+          toolParams,
           context: {
             delegatorPkpEthAddress: delegatorPkpEthAddress || args.pkpEthAddress,
           },
