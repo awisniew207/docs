@@ -131,7 +131,7 @@ export function buildMcpParamDefinitions(
     zodSchema['pkpEthAddress'] = z
       .string()
       .describe(
-        "The delegator's PKP address that will execute the swap. For example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045."
+        "The delegator's PKP address. The delegatee executes this tool on behalf of this delegator. Any PKP signing will be done by this delegator PKP. For example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045."
       );
   }
 
