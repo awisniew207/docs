@@ -16,6 +16,9 @@ describe('Policy API Integration Tests', () => {
   let testPackageName: string;
   let testPolicyVersion: string;
 
+  // Expected IPFS CID for the policy package
+  const expectedPolicyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3';
+
   // Test data for creating a policy
   const policyData = {
     title: 'Test Policy',
@@ -161,6 +164,10 @@ describe('Policy API Integration Tests', () => {
 
       expect(data).toHaveProperty('changes', policyVersionData.changes);
       expect(data).toHaveProperty('version', '1.0.1');
+
+      // Verify ipfsCid is set
+      expect(data).toHaveProperty('ipfsCid', 'QmNoWR1d2z6WwLB3Z2Lx3Uf38Y5V1u1DothS1xPJm9P8QH');
+      // expect(typeof data.ipfsCid).toBe('string');
     });
   });
 
@@ -201,6 +208,9 @@ describe('Policy API Integration Tests', () => {
 
       expect(data).toHaveProperty('version', testPolicyVersion);
       expect(data).toHaveProperty('changes', policyVersionData.changes);
+
+      // Verify ipfsCid is set
+      expect(data).toHaveProperty('ipfsCid', expectedPolicyIpfsCid);
     });
 
     it('should return 404 for non-existent version', async () => {
