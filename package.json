@@ -38,7 +38,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.44.2",
     "@eslint/js": "^9.25.1",
-    "@lit-protocol/flags": "^2.0.0",
+    "@lit-protocol/flags": "^2.1.0",
     "@nx/esbuild": "21.2.1",
     "@nx/eslint": "21.2.1",
     "@nx/eslint-plugin": "21.2.1",

@@ -3,7 +3,7 @@ import { AppVersion } from '../../mongo/app';
 
 import { RequestWithApp } from './requireApp';
 
-interface RequestWithAppAndVersion extends RequestWithApp {
+export interface RequestWithAppAndVersion extends RequestWithApp {
   vincentAppVersion: InstanceType<typeof AppVersion>;
 }
 

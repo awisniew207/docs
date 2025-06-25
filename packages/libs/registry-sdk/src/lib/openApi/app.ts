@@ -6,6 +6,7 @@ import {
   appVersionCreate,
   appVersionEdit,
   appVersionToolCreate,
+  appVersionToolEdit,
   appVersionToolDoc,
 } from '../schemas/appVersion';
 import { DeleteResponse, ErrorResponse } from './baseRegistry';
@@ -33,6 +34,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   const AppVersionRead = registry.register('AppVersion', appVersionDoc);
 
   const AppVersionToolCreate = registry.register('AppVersionToolCreate', appVersionToolCreate);
+  const AppVersionToolEdit = registry.register('AppVersionToolEdit', appVersionToolEdit);
   const AppVersionToolRead = registry.register('AppVersionTool', appVersionToolDoc);
 
   // GET /apps - List all applications
@@ -538,6 +540,58 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       },
       400: {
         description: 'Invalid input',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // PUT /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Edit a tool for an application version
+  registry.registerPath({
+    method: 'put',
+    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
+    tags: ['app/version/tool'],
+    summary: 'Edits a tool for an application version',
+    operationId: 'editAppVersionTool',
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        appVersion: appVersionParam,
+        toolPackageName: packageNameParam,
+      }),
+      body: {
+        content: {
+          'application/json': {
+            schema: AppVersionToolEdit,
+          },
+        },
+        description: 'Updated tool configuration for the application version',
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: AppVersionToolRead,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Application, version, or tool not found',
       },
       422: {
         description: 'Validation exception',

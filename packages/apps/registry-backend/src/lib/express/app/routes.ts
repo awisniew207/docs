@@ -3,6 +3,7 @@ import { App, AppTool, AppVersion } from '../../mongo/app';
 import type { Express } from 'express';
 import { requireApp, withApp } from './requireApp';
 import { requireAppVersion, withAppVersion } from './requireAppVersion';
+import { requireAppTool, withAppTool } from './requireAppTool';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
 
@@ -244,6 +245,110 @@ export function registerRoutes(app: Express) {
       const updatedAppVersion = await vincentAppVersion.save();
 
       res.json(updatedAppVersion);
+      return;
+    }),
+  );
+
+  // List App Version Tools
+  app.get(
+    '/app/:appId/version/:version/tools',
+    requireApp(),
+    requireAppVersion(),
+    withAppVersion(async (req, res) => {
+      const { appId, version } = req.params;
+
+      const tools = await AppTool.find({
+        appId: Number(appId),
+        appVersion: Number(version),
+        isDeleted: { $ne: true },
+      }).lean();
+
+      res.json(tools);
+      return;
+    }),
+  );
+
+  // Create App Version Tool
+  app.post(
+    '/app/:appId/version/:version/tool/:toolPackageName',
+    requireApp(),
+    requireAppVersion(),
+    withAppVersion(async (req, res) => {
+      const { appId, version, toolPackageName } = req.params;
+      const { toolVersion, hiddenSupportedPolicies } = req.body;
+
+      try {
+        const appTool = new AppTool({
+          appId: Number(appId),
+          appVersion: Number(version),
+          toolPackageName,
+          toolVersion,
+          hiddenSupportedPolicies,
+        });
+
+        const savedAppTool = await appTool.save();
+        res.status(201).json(savedAppTool);
+        return;
+      } catch (error: any) {
+        if (error.code === 11000 && error.keyPattern) {
+          res.status(409).json({
+            message: `The tool ${toolPackageName} is already associated with this app version.`,
+          });
+          return;
+        }
+        throw error;
+      }
+    }),
+  );
+
+  // Get App Version Tool
+  app.get(
+    '/app/:appId/version/:version/tool/:toolPackageName',
+    requireApp(),
+    requireAppVersion(),
+    requireAppTool(),
+    withAppTool(async (req, res) => {
+      const { vincentAppTool } = req;
+      res.json(vincentAppTool);
+      return;
+    }),
+  );
+
+  // Update App Version Tool
+  app.put(
+    '/app/:appId/version/:version/tool/:toolPackageName',
+    requireApp(),
+    requireAppVersion(),
+    requireAppTool(),
+    withAppTool(async (req, res) => {
+      const { vincentAppTool } = req;
+      const { hiddenSupportedPolicies } = req.body;
+
+      Object.assign(vincentAppTool, { hiddenSupportedPolicies });
+      const updatedAppTool = await vincentAppTool.save();
+
+      res.json(updatedAppTool);
+      return;
+    }),
+  );
+
+  // Delete App Version Tool
+  app.delete(
+    '/app/:appId/version/:version/tool/:toolPackageName',
+    requireApp(),
+    requireAppVersion(),
+    requireAppTool(),
+    withAppTool(async (req, res) => {
+      const { vincentAppTool } = req;
+
+      if (Features.HARD_DELETE_DOCS) {
+        await vincentAppTool.deleteOne();
+      } else {
+        Object.assign(vincentAppTool, { isDeleted: true });
+        await vincentAppTool.save();
+      }
+
+      res.json({ message: 'App version tool deleted successfully' });
       return;
     }),
   );
