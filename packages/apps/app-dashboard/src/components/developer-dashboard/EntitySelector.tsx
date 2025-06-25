@@ -73,6 +73,26 @@ export function EntitySelector({
         minWidth: 250,
         sortable: true,
         filter: true,
+        cellRenderer: (params: any) => {
+          const packageName = params.value;
+          const version = params.data?.activeVersion;
+          if (!packageName) return '';
+
+          // Link to specific version if available, otherwise general package page
+          const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${version}`;
+
+          // Return a React component for the link
+          return (
+            <a
+              href={npmUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              {packageName}
+            </a>
+          );
+        },
       },
       {
         headerName: 'Version',
@@ -101,15 +121,23 @@ export function EntitySelector({
         minWidth: 200,
         sortable: true,
         filter: true,
+        valueGetter: (params) => {
+          // Use title if it exists, otherwise use package name
+          return params.data?.title || params.data?.packageName || '';
+        },
       });
     } else if (entityType === 'policy') {
       baseColumns.unshift({
         headerName: 'Policy Name',
-        field: 'policyTitle',
+        field: 'title',
         flex: 2,
         minWidth: 200,
         sortable: true,
         filter: true,
+        valueGetter: (params) => {
+          // Use title if it exists, otherwise use package name
+          return params.data?.title || params.data?.packageName || '';
+        },
       });
     }
 

@@ -26,6 +26,8 @@ function buildCreateAppFormValidationSchema() {
       logo,
       redirectUris,
       deploymentStatus,
+      // Tools for initial version (UI only, not submitted)
+      tools: z.array(z.string()).optional().describe('Tools to include in the initial version'),
     })
     .strict();
 }
@@ -54,7 +56,13 @@ function buildCreateAppVersionFormValidationSchema() {
     .min(1, 'Changes description is required')
     .describe('Describes what changed between this version and the previous version.');
 
-  return z.object({ changes: changesField }).strict();
+  return z
+    .object({
+      changes: changesField,
+      // Tools for this version
+      tools: z.array(z.string()).optional().describe('Tools to include in this version'),
+    })
+    .strict();
 }
 
 function buildEditAppVersionFormValidationSchema() {
@@ -107,8 +115,10 @@ export function CreateAppForm() {
     setResult(null);
 
     try {
-      const appDataForApi = { ...data, managerAddress: address };
-      const response = await createApp({ appCreate: appDataForApi });
+      // Exclude tools from app creation (tools are associated with versions, not apps)
+      const { tools, ...appDataForApi } = data;
+      const appSubmissionData = { ...appDataForApi, managerAddress: address };
+      const response = await createApp({ appCreate: appSubmissionData });
       setResult(response);
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
@@ -126,7 +136,7 @@ export function CreateAppForm() {
       onSubmit={handleSubmit}
       title="Create App"
       description="Create a new blockchain application"
-      defaultValues={{ redirectUris: [''] }}
+      defaultValues={{ redirectUris: [''], tools: [] }}
       hiddenFields={['_id', 'createdAt', 'updatedAt', 'appId', 'activeVersion', 'managerAddress']}
       isLoading={isLoading}
     />
@@ -330,7 +340,7 @@ export function CreateAppVersionForm({
       onSubmit={handleSubmit}
       title="Create App Version"
       description="Create a new version of an application"
-      defaultValues={{ changes: '' }}
+      defaultValues={{ changes: '', tools: [] }}
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
