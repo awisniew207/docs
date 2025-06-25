@@ -46,14 +46,6 @@ export function registerRoutes(app: Express) {
         packageInfo.dependencies || {},
       );
 
-      // If there are policies not in registry, throw an error
-      if (policiesNotInRegistry.length > 0) {
-        res.status(400).json({
-          message: `The following policies exist in the registry but not at the specified versions: ${policiesNotInRegistry.join(', ')}`,
-        });
-        return;
-      }
-
       await withSession(async (mongoSession) => {
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
@@ -153,14 +145,6 @@ export function registerRoutes(app: Express) {
           packageInfo.dependencies || {},
         );
 
-        // If there are policies not in registry, throw an error
-        if (policiesNotInRegistry.length > 0) {
-          res.status(400).json({
-            message: `The following policies exist in the registry but not at the specified versions: ${policiesNotInRegistry.join(', ')}`,
-          });
-          return;
-        }
-
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
           version: packageInfo.version,
@@ -184,7 +168,7 @@ export function registerRoutes(app: Express) {
         } catch (error: any) {
           if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
             res.status(409).json({
-              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+              message: `The tool ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
             });
             return;
           }

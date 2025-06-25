@@ -12,7 +12,7 @@ import { Policy, PolicyVersion } from './mongo/policy';
 
 // Module-level verbose logging control
 // const ENABLE_VERBOSE_LOGGING = process.env.VINCENT_VERBOSE_LOGGING === 'true' || false;
-const ENABLE_VERBOSE_LOGGING = true;
+const ENABLE_VERBOSE_LOGGING = false;
 
 /**
  * Debug logging utility

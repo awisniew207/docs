@@ -166,7 +166,7 @@ export function registerRoutes(app: Express) {
         } catch (error: any) {
           if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
             res.status(409).json({
-              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+              message: `The policy ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
             });
             return;
           }

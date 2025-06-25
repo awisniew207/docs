@@ -7,6 +7,7 @@ import './tool.spec';
 import './policy.spec';
 import './app.spec';
 import './appVersionTool.spec';
+import './supportedPolicies.spec';
 
 // This empty test ensures that the file is recognized as a test file
 describe('Integration Test Suite', () => {
