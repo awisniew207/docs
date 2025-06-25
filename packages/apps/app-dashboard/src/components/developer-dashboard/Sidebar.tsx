@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Button } from '@/components/ui/button';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { AppList } from './sidebar/AppList';
 import { ToolList } from './sidebar/ToolList';
 import { PolicyList } from './sidebar/PolicyList';
@@ -73,6 +73,14 @@ export function Sidebar({
     setIsCollapsed(!isCollapsed);
   };
 
+  // Update main content margin when sidebar width changes
+  useEffect(() => {
+    const mainContent = document.querySelector('.main-content-area') as HTMLElement;
+    if (mainContent) {
+      mainContent.style.marginLeft = isCollapsed ? '64px' : '320px';
+    }
+  }, [isCollapsed]);
+
   // Memoize menu items to prevent unnecessary re-renders
   const menuItems = useMemo(
     () => [
@@ -119,7 +127,7 @@ export function Sidebar({
 
   return (
     <div
-      className={`${isCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 h-screen flex flex-col transition-all duration-300`}
+      className={`${isCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 h-screen flex flex-col transition-all duration-300 fixed top-0 left-0 z-40`}
     >
       {/* Header with toggle button */}
       <div className="flex items-center justify-between p-4 border-b border-gray-100">

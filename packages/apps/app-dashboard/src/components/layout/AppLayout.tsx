@@ -17,7 +17,9 @@ function AppLayout({ children, className }: ComponentProps<'div'>) {
       {sidebarProps.shouldShowSidebar && (
         <Sidebar {...sidebarProps} apps={apps} tools={tools} policies={policies} />
       )}
-      <div className="flex-1 overflow-auto">
+      <div
+        className={`main-content-area flex-1 overflow-auto transition-all duration-300 ${sidebarProps.shouldShowSidebar ? 'ml-80' : ''}`}
+      >
         <div className="p-8">{children}</div>
       </div>
     </div>
