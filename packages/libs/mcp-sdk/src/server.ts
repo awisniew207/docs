@@ -145,7 +145,44 @@ export async function getVincentAppServer(
         };
       }
     );
+  } else {
+    server.tool(
+      buildMcpToolName(_vincentAppDefinition, 'get-current-agent-pkp-address'),
+      `Tool to get the your agent pkp eth address in use for the ${_vincentAppDefinition.name} Vincent App MCP.`,
+      async () => {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: delegatorPkpEthAddress,
+            },
+          ],
+        };
+      }
+    );
   }
+
+  server.tool(
+    buildMcpToolName(_vincentAppDefinition, 'get-current-vincent-app-info'),
+    `Tool to get the ${_vincentAppDefinition.name} Vincent App info.`,
+    async () => {
+      const appInfo = {
+        id: _vincentAppDefinition.id,
+        name: _vincentAppDefinition.name,
+        version: _vincentAppDefinition.version,
+        description: _vincentAppDefinition.description,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(appInfo),
+          },
+        ],
+      };
+    }
+  );
 
   Object.entries(_vincentAppDefinition.tools).forEach(([toolIpfsCid, tool]) => {
     server.tool(
