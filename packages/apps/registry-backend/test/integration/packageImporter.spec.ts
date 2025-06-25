@@ -1,4 +1,6 @@
-import { importPackage } from '../../src/lib/packageImporter';
+import { importPackage, identifySupportedPolicies } from '../../src/lib/packageImporter';
+import { Policy, PolicyVersion } from '../../src/lib/mongo/policy';
+import mongoose from 'mongoose';
 
 describe('packageImporter integration tests', () => {
   // Define real packages to use for testing
@@ -90,6 +92,103 @@ describe('packageImporter integration tests', () => {
           type: 'tool',
         }),
       ).rejects.toThrow(/Metadata file.*not found/);
+    });
+  });
+
+  describe('identifySupportedPolicies', () => {
+    // Mock policy data
+    const testPolicy1 = {
+      packageName: '@lit-protocol/test-policy-1',
+      title: 'Test Policy 1',
+      description: 'Test policy 1 for testing',
+      activeVersion: '1.0.0',
+      authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
+    };
+
+    const testPolicy2 = {
+      packageName: '@lit-protocol/test-policy-2',
+      title: 'Test Policy 2',
+      description: 'Test policy 2 for testing',
+      activeVersion: '1.0.0',
+      authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
+    };
+
+    // Mock policy version data
+    const testPolicyVersion1 = {
+      packageName: '@lit-protocol/test-policy-1',
+      version: '1.0.0',
+      changes: 'Initial version',
+      description: 'Test policy 1 for testing',
+      dependencies: {},
+      ipfsCid: 'QmTestCid1',
+    };
+
+    beforeAll(async () => {
+      // Clean up any existing test policies
+      await Policy.deleteMany({
+        packageName: { $in: [testPolicy1.packageName, testPolicy2.packageName] },
+      });
+      await PolicyVersion.deleteMany({
+        packageName: { $in: [testPolicy1.packageName, testPolicy2.packageName] },
+      });
+
+      // Create test policies in the database
+      await Policy.create(testPolicy1);
+      await Policy.create(testPolicy2);
+
+      // Create test policy version only for policy 1
+      await PolicyVersion.create(testPolicyVersion1);
+    });
+
+    afterAll(async () => {
+      // Clean up test policies
+      await Policy.deleteMany({
+        packageName: { $in: [testPolicy1.packageName, testPolicy2.packageName] },
+      });
+      await PolicyVersion.deleteMany({
+        packageName: { $in: [testPolicy1.packageName, testPolicy2.packageName] },
+      });
+    });
+
+    it('should identify supported policies correctly', async () => {
+      const dependencies = {
+        [testPolicy1.packageName]: '1.0.0', // Policy with version in registry
+        [testPolicy2.packageName]: '1.0.0', // Policy without version in registry
+        lodash: '4.17.21', // Not a policy
+        express: '^4.18.2', // Non-explicit semver
+      };
+
+      const result = await identifySupportedPolicies(dependencies);
+
+      expect(result.supportedPolicies).toContain(testPolicy1.packageName);
+      expect(result.supportedPolicies).not.toContain(testPolicy2.packageName);
+      expect(result.supportedPolicies).not.toContain('lodash');
+      expect(result.supportedPolicies).not.toContain('express');
+      expect(result.supportedPolicies.length).toBe(1);
+
+      expect(result.policiesNotInRegistry).toContain(`${testPolicy2.packageName}@1.0.0`);
+      expect(result.policiesNotInRegistry.length).toBe(1);
+    });
+
+    it('should skip packages with non-explicit semvers', async () => {
+      const dependencies = {
+        [testPolicy1.packageName]: '^1.0.0', // Non-explicit semver
+        lodash: '~4.17.21', // Non-explicit semver
+        express: '>4.18.2', // Non-explicit semver
+        react: '*', // Non-explicit semver
+      };
+
+      const result = await identifySupportedPolicies(dependencies);
+
+      expect(result.supportedPolicies.length).toBe(0);
+      expect(result.policiesNotInRegistry.length).toBe(0);
+    });
+
+    it('should handle empty dependencies object', async () => {
+      const result = await identifySupportedPolicies({});
+
+      expect(result.supportedPolicies.length).toBe(0);
+      expect(result.policiesNotInRegistry.length).toBe(0);
     });
   });
 });

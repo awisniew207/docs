@@ -8,6 +8,7 @@ const execAsync = util.promisify(exec);
 
 import * as fs from 'fs-extra';
 import * as tar from 'tar';
+import { Policy, PolicyVersion } from './mongo/policy';
 
 // Module-level verbose logging control
 // const ENABLE_VERBOSE_LOGGING = process.env.VINCENT_VERBOSE_LOGGING === 'true' || false;
@@ -185,6 +186,106 @@ async function readPackageMetadata(
       `Failed to read metadata from ${metadataFileName}: ${(error as Error).message}`,
     );
   }
+}
+
+/**
+ * Identifies supported policies from dependencies
+ * @param dependencies Dependencies object from package.json
+ * @returns Object containing supportedPolicies and policiesNotInRegistry arrays
+ */
+export async function identifySupportedPolicies(dependencies: Record<string, string>): Promise<{
+  supportedPolicies: Record<string, string>;
+  policiesNotInRegistry: string[];
+}> {
+  debugLog('Identifying supported policies from dependencies', {
+    dependenciesCount: Object.keys(dependencies).length,
+  });
+
+  const supportedPolicies: Record<string, string> = {};
+  const policiesNotInRegistry: string[] = [];
+
+  // Filter out dependencies with non-explicit semvers
+  const explicitDependencies = Object.entries(dependencies).filter(
+    ([_, version]) =>
+      !version.startsWith('^') &&
+      !version.startsWith('~') &&
+      !version.includes('*') &&
+      !version.includes('>') &&
+      !version.includes('<'),
+  );
+
+  if (explicitDependencies.length === 0) {
+    debugLog('No dependencies with explicit semvers found');
+    return { supportedPolicies, policiesNotInRegistry };
+  }
+
+  // Extract package names for batch query
+  const packageNames = explicitDependencies.map(([packageName]) => packageName);
+
+  // Batch query to find all policies with matching package names
+  const policies = await Policy.find({
+    packageName: { $in: packageNames }, // Limit: 16MB of packageNames
+    isDeleted: false,
+  }).lean();
+
+  if (policies.length === 0) {
+    debugLog('No policies found for any dependencies');
+    return { supportedPolicies, policiesNotInRegistry };
+  }
+
+  // Create a map of package names to versions for quick lookup
+  const dependencyVersions = new Map(explicitDependencies);
+
+  // Create a set of policy package names for quick lookup
+  const policyPackageNames = new Set(policies.map((policy) => policy.packageName));
+
+  // Create an array of packageName/version pairs for batch query
+  const policyVersionQueries = explicitDependencies
+    .filter(([packageName]) => policyPackageNames.has(packageName))
+    .map(([packageName, version]) => ({
+      packageName,
+      version,
+      isDeleted: false,
+    }));
+
+  if (policyVersionQueries.length === 0) {
+    debugLog('No dependencies match any policies');
+    return { supportedPolicies, policiesNotInRegistry };
+  }
+
+  // Batch query to find all policy versions with matching package names and versions
+  const policyVersions = await PolicyVersion.find({ $or: policyVersionQueries }).lean();
+
+  // Create a set of packageName@version strings for quick lookup
+  const policyVersionSet = new Set(policyVersions.map((pv) => `${pv.packageName}@${pv.version}`));
+
+  // Process each policy package
+  for (const packageName of policyPackageNames) {
+    const version = dependencyVersions.get(packageName);
+    if (!version) continue; // Make TypeScript happy <3 :)
+
+    const versionKey = `${packageName}@${version}`;
+
+    if (policyVersionSet.has(versionKey)) {
+      // If PolicyVersion exists, add to supportedPolicies
+      debugLog('Found matching PolicyVersion, adding to supportedPolicies', {
+        packageName,
+        version,
+      });
+      supportedPolicies[packageName] = version;
+    } else {
+      // If Policy exists but PolicyVersion doesn't, add to policiesNotInRegistry
+      debugLog('Policy exists but no matching PolicyVersion found', { packageName, version });
+      policiesNotInRegistry.push(versionKey);
+    }
+  }
+
+  debugLog('Completed identifying supported policies', {
+    supportedPoliciesCount: supportedPolicies.length,
+    policiesNotInRegistryCount: policiesNotInRegistry.length,
+  });
+
+  return { supportedPolicies, policiesNotInRegistry };
 }
 
 /**

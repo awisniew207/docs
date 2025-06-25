@@ -6,7 +6,7 @@ import { requirePackage, withValidPackage } from '../package/requirePackage';
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
-import { importPackage } from '../../packageImporter';
+import { importPackage, identifySupportedPolicies } from '../../packageImporter';
 
 export function registerRoutes(app: Express) {
   // Get all tools
@@ -41,6 +41,19 @@ export function registerRoutes(app: Express) {
         type: 'tool',
       });
 
+      // Identify supported policies from dependencies
+      const { supportedPolicies, policiesNotInRegistry } = await identifySupportedPolicies(
+        packageInfo.dependencies || {},
+      );
+
+      // If there are policies not in registry, throw an error
+      if (policiesNotInRegistry.length > 0) {
+        res.status(400).json({
+          message: `The following policies exist in the registry but not at the specified versions: ${policiesNotInRegistry.join(', ')}`,
+        });
+        return;
+      }
+
       await withSession(async (mongoSession) => {
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
@@ -54,8 +67,8 @@ export function registerRoutes(app: Express) {
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
           status: 'validating',
-          supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
-          policiesNotInRegistry: [],
+          supportedPolicies,
+          policiesNotInRegistry,
           ipfsCid,
         });
 
@@ -135,6 +148,19 @@ export function registerRoutes(app: Express) {
           type: 'tool',
         });
 
+        // Identify supported policies from dependencies
+        const { supportedPolicies, policiesNotInRegistry } = await identifySupportedPolicies(
+          packageInfo.dependencies || {},
+        );
+
+        // If there are policies not in registry, throw an error
+        if (policiesNotInRegistry.length > 0) {
+          res.status(400).json({
+            message: `The following policies exist in the registry but not at the specified versions: ${policiesNotInRegistry.join(', ')}`,
+          });
+          return;
+        }
+
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
           version: packageInfo.version,
@@ -142,12 +168,12 @@ export function registerRoutes(app: Express) {
           description: packageInfo.description,
           repository: packageInfo.repository,
           keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || [],
+          dependencies: packageInfo.dependencies || {},
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
-          supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
-          policiesNotInRegistry: [],
+          supportedPolicies,
+          policiesNotInRegistry,
           ipfsCid,
         });
 
