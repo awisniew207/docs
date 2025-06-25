@@ -1,4 +1,4 @@
-import { CreateAppForm } from '@/components/developer-dashboard/AppForms';
+import { CreateAppForm } from '@/components/developer-dashboard/app/AppForms';
 
 export default function CreateAppPage() {
   return (

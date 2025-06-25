@@ -1,5 +1,5 @@
-import { FormRenderer } from './FormRenderer';
-import { EntitySelector } from './EntitySelector';
+import { FormRenderer } from '../FormRenderer';
+import { EntitySelector } from '../EntitySelector';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { z } from 'zod';
 import Loading from '@/components/layout/Loading';

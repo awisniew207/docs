@@ -1,8 +1,8 @@
-import { EditAppForm } from '@/components/developer-dashboard/AppForms';
+import { EditAppForm } from '@/components/developer-dashboard/app/AppForms';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/AppDetailContext';
-import { useAddressCheck } from '@/hooks/developer-dashboard/useAddressCheck';
+import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 
 export default function AppEdit() {
   const { app, appError, appLoading } = useAppDetail();

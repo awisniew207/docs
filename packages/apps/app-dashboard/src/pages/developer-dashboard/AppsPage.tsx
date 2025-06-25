@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { AppsList } from '@/components/developer-dashboard/ui/ResourceLists';
-import { useAppFilters } from '@/hooks/developer-dashboard/useAppFilters';
+import { useAppFilters } from '@/hooks/developer-dashboard/app/useAppFilters';
 
 export default function AppsPage() {
   const navigate = useNavigate();

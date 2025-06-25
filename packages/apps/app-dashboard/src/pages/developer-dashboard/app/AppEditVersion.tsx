@@ -1,8 +1,8 @@
-import { EditAppVersionForm } from '@/components/developer-dashboard/AppVersionForms';
+import { EditAppVersionForm } from '@/components/developer-dashboard/app/AppVersionForms';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/AppDetailContext';
-import { useAddressCheck } from '@/hooks/developer-dashboard/useAddressCheck';
+import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 
 export default function AppEditVersion() {
   const { app, appError, appLoading, versionData, versionError, versionLoading, versionId } =

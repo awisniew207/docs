@@ -1,8 +1,8 @@
-import { DeleteAppForm } from '@/components/developer-dashboard/AppForms';
+import { DeleteAppForm } from '@/components/developer-dashboard/app/AppForms';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/AppDetailContext';
-import { useAddressCheck } from '@/hooks/developer-dashboard/useAddressCheck';
+import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 
 export default function AppDelete() {
   const { app, appError, appLoading } = useAppDetail();

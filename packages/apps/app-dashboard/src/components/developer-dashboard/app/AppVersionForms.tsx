@@ -1,4 +1,4 @@
-import { FormRenderer } from './FormRenderer';
+import { FormRenderer } from '../FormRenderer';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { z } from 'zod';
 import { useUrlAppId } from '@/components/consent/hooks/useUrlAppId';

@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode } from 'react';
 import { useParams } from 'react-router';
-import { useAppData } from '@/hooks/developer-dashboard/useAppData';
+import { useAppData } from '@/hooks/developer-dashboard/app/useAppData';
 import { useViewType } from '@/hooks/developer-dashboard/useViewType';
 
 interface AppDetailContextType {

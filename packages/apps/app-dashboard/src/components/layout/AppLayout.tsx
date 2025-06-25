@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
-import { Sidebar } from '@/components/developer-dashboard/Sidebar';
-import { useAppSidebar } from '@/hooks/developer-dashboard/useAppSidebar';
+import { Sidebar } from '@/components/developer-dashboard/sidebar/Sidebar';
+import { useAppSidebar } from '@/hooks/developer-dashboard/app/useAppSidebar';
 import { useDashboardData } from '@/hooks/developer-dashboard/useDashboardData';
 import { useWalletProtection } from '@/hooks/developer-dashboard/useWalletProtection';
 

@@ -1,8 +1,8 @@
-import { AppVersionsListView } from '@/components/developer-dashboard/AppVersionsListView';
+import { AppVersionsListView } from '@/components/developer-dashboard/app/AppVersionsListView';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/AppDetailContext';
-import { useAddressCheck } from '@/hooks/developer-dashboard/useAddressCheck';
+import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 
 export default function AppVersions() {
   const { appId, app, appError, appLoading, versions, versionsError, versionsLoading } =

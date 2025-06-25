@@ -3,7 +3,7 @@ import AppLayout from './components/layout/AppLayout';
 import UserLayout from './components/layout/UserLayout';
 import { AppProviders, UserProviders } from './providers';
 import { wrap } from './utils/components';
-import { AppDetailProvider } from './components/developer-dashboard/AppDetailContext';
+import { AppDetailProvider } from './components/developer-dashboard/app/AppDetailContext';
 
 import Home from './pages/index';
 import Withdraw from './pages/withdraw';

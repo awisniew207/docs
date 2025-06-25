@@ -12,9 +12,9 @@ import {
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Button } from '@/components/ui/button';
 import { useState, useMemo, useEffect } from 'react';
-import { AppList } from './sidebar/AppList';
-import { ToolList } from './sidebar/ToolList';
-import { PolicyList } from './sidebar/PolicyList';
+import { AppList } from './AppList';
+import { ToolList } from './ToolList';
+import { PolicyList } from './PolicyList';
 
 interface SidebarProps {
   expandedMenus: Set<string>;

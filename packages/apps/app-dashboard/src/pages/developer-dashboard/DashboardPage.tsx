@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { DashboardContent } from '@/components/developer-dashboard/DashboardContent';
+import { DashboardContent } from '@/components/developer-dashboard/app/DashboardContent';
 import { useDashboardData } from '@/hooks/developer-dashboard/useDashboardData';
 import Loading from '@/components/layout/Loading';
 import { MenuId } from '@/types/developer-dashboard/menuId';

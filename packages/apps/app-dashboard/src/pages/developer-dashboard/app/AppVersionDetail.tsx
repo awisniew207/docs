@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router';
 import { Edit, Plus, Power, PowerOff } from 'lucide-react';
-import { VersionDetails } from '@/components/developer-dashboard/VersionDetails';
+import { VersionDetails } from '@/components/developer-dashboard/app/VersionDetails';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/AppDetailContext';
-import { useAddressCheck } from '@/hooks/developer-dashboard/useAddressCheck';
+import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useState } from 'react';
