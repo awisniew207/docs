@@ -5,8 +5,8 @@ import { requirePackage, withValidPackage } from '../package/requirePackage';
 
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
-import { generateRandomCid } from '../../util';
 import { Features } from '../../../features';
+import { importPackage } from '../../packageImporter';
 
 export function registerRoutes(app: Express) {
   // Get all tools
@@ -34,6 +34,13 @@ export function registerRoutes(app: Express) {
       const { authorWalletAddress, description, title } = req.body;
       const packageInfo = req.vincentPackage;
 
+      // Import the package to get the metadata
+      const { ipfsCid } = await importPackage({
+        packageName: packageInfo.name,
+        version: packageInfo.version,
+        type: 'tool',
+      });
+
       await withSession(async (mongoSession) => {
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
@@ -49,7 +56,7 @@ export function registerRoutes(app: Express) {
           status: 'validating',
           supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
           policiesNotInRegistry: [],
-          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
+          ipfsCid,
         });
 
         const tool = new Tool({
@@ -60,7 +67,7 @@ export function registerRoutes(app: Express) {
           activeVersion: packageInfo.version,
         });
 
-        let /*savedToolVersion,*/ savedTool;
+        let savedTool;
 
         try {
           await mongoSession.withTransaction(async (session) => {
@@ -121,6 +128,13 @@ export function registerRoutes(app: Express) {
       withValidPackage(async (req, res) => {
         const packageInfo = req.vincentPackage;
 
+        // Import the package to get the metadata
+        const { ipfsCid } = await importPackage({
+          packageName: packageInfo.name,
+          version: packageInfo.version,
+          type: 'tool',
+        });
+
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
           version: packageInfo.version,
@@ -134,7 +148,7 @@ export function registerRoutes(app: Express) {
           homepage: packageInfo.homepage,
           supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
           policiesNotInRegistry: [],
-          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
+          ipfsCid,
         });
 
         try {
