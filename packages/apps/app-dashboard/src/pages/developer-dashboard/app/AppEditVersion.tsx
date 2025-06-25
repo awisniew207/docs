@@ -21,5 +21,5 @@ export default function AppEditVersion() {
     return <StatusMessage message="App version not found" type="error" />;
   }
 
-  return <EditAppVersionForm hideHeader={false} />;
+  return <EditAppVersionForm versionData={versionData} hideHeader={false} />;
 }

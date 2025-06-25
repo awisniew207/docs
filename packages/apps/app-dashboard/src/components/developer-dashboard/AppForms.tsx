@@ -9,36 +9,33 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useState } from 'react';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 
-// Build proper form validation schemas from the SDK doc schemas
+// =============================================================================
+// SCHEMA BUILDERS
+// =============================================================================
+
 function buildCreateAppFormValidationSchema() {
-  // Get the original fields with their types preserved
   const { name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus } =
     docSchemas.appDoc.shape;
 
   return z
     .object({
-      // Required fields
-      name,
-
-      // Optional fields - use the original schema definitions
+      name, // Required
       description,
       contactEmail,
       appUserUrl,
       logo,
       redirectUris,
-      deploymentStatus, // Remove .default('dev') to preserve enum structure
+      deploymentStatus,
     })
     .strict();
 }
 
 function buildEditAppFormValidationSchema() {
-  // Get the original fields with their types preserved
   const { name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus } =
     docSchemas.appDoc.shape;
 
   return z
     .object({
-      // All fields optional for editing
       name,
       description,
       contactEmail,
@@ -52,37 +49,19 @@ function buildEditAppFormValidationSchema() {
 }
 
 function buildCreateAppVersionFormValidationSchema() {
-  // Create a new string field with the same description as the original
   const changesField = z
     .string()
     .min(1, 'Changes description is required')
     .describe('Describes what changed between this version and the previous version.');
 
-  return z
-    .object({
-      changes: changesField,
-    })
-    .strict();
+  return z.object({ changes: changesField }).strict();
 }
 
 function buildEditAppVersionFormValidationSchema() {
   const { changes } = docSchemas.appVersionDoc.shape;
-
-  return z
-    .object({
-      changes,
-    })
-    .partial()
-    .strict();
+  return z.object({ changes }).partial().strict();
 }
 
-// Create schemas using the builders
-const AppCreate = buildCreateAppFormValidationSchema();
-const AppEdit = buildEditAppFormValidationSchema();
-const AppVersionCreate = buildCreateAppVersionFormValidationSchema();
-const AppVersionEdit = buildEditAppVersionFormValidationSchema();
-
-// Create local DeleteApp schema since it doesn't exist in the SDK
 const createDeleteAppSchema = (appId: string) =>
   z.object({
     confirmation: z
@@ -94,6 +73,19 @@ const createDeleteAppSchema = (appId: string) =>
       }),
   });
 
+// =============================================================================
+// VALIDATION SCHEMAS
+// =============================================================================
+
+const AppCreate = buildCreateAppFormValidationSchema();
+const AppEdit = buildEditAppFormValidationSchema();
+const AppVersionCreate = buildCreateAppVersionFormValidationSchema();
+const AppVersionEdit = buildEditAppVersionFormValidationSchema();
+
+// =============================================================================
+// APP FORMS
+// =============================================================================
+
 export function CreateAppForm() {
   const vincentApi = useVincentApiWithSIWE();
   const [createApp, { isLoading }] = vincentApi.useCreateAppMutation();
@@ -101,7 +93,6 @@ export function CreateAppForm() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Show loading if wallet is not connected yet (required for creating apps)
   if (!isConnected || !address) {
     return <Loading />;
   }
@@ -116,46 +107,29 @@ export function CreateAppForm() {
     setResult(null);
 
     try {
-      // Prepare app data (backend generates its own appId)
-      const appDataForApi = {
-        ...data,
-        managerAddress: address,
-      };
-
-      const response = await createApp({
-        appCreate: appDataForApi,
-      });
-
+      const appDataForApi = { ...data, managerAddress: address };
+      const response = await createApp({ appCreate: appDataForApi });
       setResult(response);
-      // Refresh the page after successful submission
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
       setError(error?.data?.message || error?.message || 'Failed to create app');
     }
   };
 
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
+  if (error) return <StatusMessage message={error} type="error" />;
+  if (result)
     return <StatusMessage message="App created successfully! Refreshing page..." type="success" />;
-  }
 
   return (
-    <div>
-      <FormRenderer
-        schema={AppCreate}
-        onSubmit={handleSubmit}
-        title="Create App"
-        description="Create a new blockchain application"
-        defaultValues={{
-          redirectUris: [''],
-        }}
-        hiddenFields={['_id', 'createdAt', 'updatedAt', 'appId', 'activeVersion', 'managerAddress']}
-        isLoading={isLoading}
-      />
-    </div>
+    <FormRenderer
+      schema={AppCreate}
+      onSubmit={handleSubmit}
+      title="Create App"
+      description="Create a new blockchain application"
+      defaultValues={{ redirectUris: [''] }}
+      hiddenFields={['_id', 'createdAt', 'updatedAt', 'appId', 'activeVersion', 'managerAddress']}
+      isLoading={isLoading}
+    />
   );
 }
 
@@ -173,17 +147,13 @@ export function EditAppForm({
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Show loading if we don't have appData yet (required for editing)
-  if (!appData) {
-    return <Loading />;
-  }
+  if (!appData) return <Loading />;
 
   const handleSubmit = async (data: any) => {
     if (!isConnected || !address) {
       setError('Wallet not connected');
       return;
     }
-
     if (!appId) {
       setError('No app ID found in URL');
       return;
@@ -193,28 +163,20 @@ export function EditAppForm({
     setResult(null);
 
     try {
-      const { ...editAppData } = data;
-
       const response = await editApp({
         appId: parseInt(appId),
-        appEdit: editAppData,
+        appEdit: data,
       });
-
       setResult(response);
-      // Refresh the page after successful submission
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
       setError(error?.data?.message || error?.message || 'Failed to update app');
     }
   };
 
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
+  if (error) return <StatusMessage message={error} type="error" />;
+  if (result)
     return <StatusMessage message="App updated successfully! Refreshing page..." type="success" />;
-  }
 
   return (
     <FormRenderer
@@ -222,9 +184,7 @@ export function EditAppForm({
       onSubmit={handleSubmit}
       title="Edit App"
       description="Update an existing application"
-      defaultValues={{
-        redirectUris: [''],
-      }}
+      defaultValues={{ redirectUris: [''] }}
       initialData={{
         name: appData.name,
         description: appData.description,
@@ -255,10 +215,7 @@ export function DeleteAppForm({
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Show loading if we don't have appData yet (required for deletion context)
-  if (!appData) {
-    return <Loading />;
-  }
+  if (!appData) return <Loading />;
 
   const handleSubmit = async (data: any) => {
     if (!appId) {
@@ -266,49 +223,37 @@ export function DeleteAppForm({
       return;
     }
 
-    // Additional validation - check if the confirmation matches
     const expectedConfirmation = `I want to delete app ${appId}`;
     if (data.confirmation !== expectedConfirmation) {
       setError(`Please type exactly: "${expectedConfirmation}"`);
       return;
     }
 
-    // Confirmation dialog
     const confirmDelete = window.confirm(
       `Are you sure you want to delete app ID ${appId}? This action cannot be undone.`,
     );
-    if (!confirmDelete) {
-      return;
-    }
+    if (!confirmDelete) return;
 
     setError(null);
     setResult(null);
 
     try {
-      const response = await deleteApp({
-        appId: parseInt(appId),
-      });
-
+      const response = await deleteApp({ appId: parseInt(appId) });
       setResult(response);
-      // Refresh the page after successful submission
       navigate('/developer/dasboard/apps');
     } catch (error: any) {
       setError(error?.data?.message || error?.message || 'Failed to delete app');
     }
   };
 
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
+  if (error) return <StatusMessage message={error} type="error" />;
+  if (result)
     return (
       <StatusMessage
         message="App deleted successfully! Redirecting to dashboard..."
         type="success"
       />
     );
-  }
 
   return (
     <FormRenderer
@@ -323,6 +268,10 @@ export function DeleteAppForm({
   );
 }
 
+// =============================================================================
+// APP VERSION FORMS
+// =============================================================================
+
 export function CreateAppVersionForm({
   appData,
   hideHeader = false,
@@ -336,10 +285,7 @@ export function CreateAppVersionForm({
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Show loading if we don't have appData yet (required for context)
-  if (!appData) {
-    return <Loading />;
-  }
+  if (!appData) return <Loading />;
 
   const handleSubmit = async (data: any) => {
     if (!appId) {
@@ -351,10 +297,9 @@ export function CreateAppVersionForm({
     setResult(null);
 
     try {
-      const { ...versionDataForApi } = data;
       const result = await createAppVersion({
         appId: parseInt(appId),
-        appVersionCreate: versionDataForApi,
+        appVersionCreate: data,
       });
 
       if ('error' in result) {
@@ -364,25 +309,20 @@ export function CreateAppVersionForm({
       }
 
       setResult(result);
-      // Refresh the page after successful submission
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
       setError(error?.data?.message || error?.message || 'Failed to create app version');
     }
   };
 
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
+  if (error) return <StatusMessage message={error} type="error" />;
+  if (result)
     return (
       <StatusMessage
         message="App version created successfully! Refreshing page..."
         type="success"
       />
     );
-  }
 
   return (
     <FormRenderer
@@ -390,70 +330,10 @@ export function CreateAppVersionForm({
       onSubmit={handleSubmit}
       title="Create App Version"
       description="Create a new version of an application"
-      defaultValues={{
-        changes: '',
-      }}
+      defaultValues={{ changes: '' }}
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
-  );
-}
-
-export function GetAppVersionsForm() {
-  const vincentApi = useVincentApiWithSIWE();
-  const [getAppVersions, { isLoading }] = vincentApi.useLazyGetAppVersionsQuery({} as any);
-  const { appId } = useUrlAppId();
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
-
-  // Show loading if we don't have appId yet (required for the API call)
-  if (!appId) {
-    return <Loading />;
-  }
-
-  const handleSubmit = async () => {
-    setError(null);
-    setResult(null);
-
-    try {
-      const data = await getAppVersions({ appId: parseInt(appId) });
-      setResult(data);
-    } catch (error: any) {
-      setError(error?.data?.message || error?.message || 'Failed to get app versions');
-    }
-  };
-
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
-    return (
-      <div>
-        <StatusMessage message="App versions retrieved successfully!" type="success" />
-        <pre className="mt-4 p-4 bg-gray-100 rounded overflow-auto">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      </div>
-    );
-  }
-
-  // Create a minimal schema for the form (no fields needed since appId comes from URL)
-  const EmptySchema = z.object({});
-
-  return (
-    <div>
-      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-        <p className="text-blue-800">App ID from URL: {appId}</p>
-      </div>
-      <FormRenderer
-        schema={EmptySchema}
-        onSubmit={handleSubmit}
-        title="Get App Versions"
-        description="Fetch all versions of an application"
-        isLoading={isLoading}
-      />
-    </div>
   );
 }
 
@@ -470,45 +350,35 @@ export function EditAppVersionForm({
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Show loading if we don't have required params or version data
-  if (!appId || !versionId || !versionData) {
-    return <Loading />;
-  }
+  if (!appId || !versionId) return <Loading />;
 
   const handleSubmit = async (data: any) => {
     setError(null);
     setResult(null);
 
     try {
-      const { ...versionDataForApi } = data;
       const response = await editAppVersion({
         appId: parseInt(appId),
         version: parseInt(versionId),
-        appVersionEdit: versionDataForApi,
+        appVersionEdit: data,
       });
-
       setResult(response);
-      // Refresh the page after successful submission
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
       setError(error?.data?.message || error?.message || 'Failed to edit app version');
     }
   };
 
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
+  if (error) return <StatusMessage message={error} type="error" />;
+  if (result)
     return (
       <StatusMessage
         message="App version updated successfully! Refreshing page..."
         type="success"
       />
     );
-  }
 
-  // If we have a version from URL path, only show the changes field
+  // Specific version editing
   if (versionId) {
     const ChangesOnlySchema = z.object({
       changes: z
@@ -517,29 +387,26 @@ export function EditAppVersionForm({
     });
 
     return (
-      <div>
-        <FormRenderer
-          schema={ChangesOnlySchema}
-          onSubmit={handleSubmit}
-          title={`Edit App Version ${versionId}`}
-          description="Update the changelog for this specific app version"
-          initialData={{
-            changes: versionData?.changes || '',
-          }}
-          isLoading={isLoading}
-          hideHeader={hideHeader}
-        />
-      </div>
+      <FormRenderer
+        schema={ChangesOnlySchema}
+        onSubmit={handleSubmit}
+        title={`Edit App Version ${versionId}`}
+        description="Update the changelog for this specific app version"
+        initialData={{ changes: versionData?.changes || '' }}
+        isLoading={isLoading}
+        hideHeader={hideHeader}
+      />
     );
   }
 
-  // Original form with version selector for backward compatibility
+  // General version editing (backward compatibility)
   return (
     <FormRenderer
       schema={AppVersionEdit}
       onSubmit={handleSubmit}
       title="Edit App Version"
       description="Update changes for a specific app version"
+      initialData={{ changes: versionData?.changes || '' }}
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
