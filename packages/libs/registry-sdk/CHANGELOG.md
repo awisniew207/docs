@@ -1,3 +1,51 @@
+## 2.1.0 (2025-06-25)
+
+### 🚀 Features
+
+- Add endpoint to allow editing of `supportedPolicies` for app tools. ([2615143d](https://github.com/LIT-Protocol/Vincent/commit/2615143d))
+
+### ❤️ Thank You
+
+- Daryl Collins
+
+# 2.0.0 (2025-06-24)
+
+### 🚀 Features
+
+- Enabled lazy hook generation ([cb414c1f](https://github.com/LIT-Protocol/Vincent/commit/cb414c1f))
+
+### ⚠️ Breaking Changes
+
+- ## Add NodeJS RTK client support ([4263b314](https://github.com/LIT-Protocol/Vincent/commit/4263b314))
+
+  ### Configurable `baseQueryFn`
+
+  Consumers of the registry-sdk can now set their own baseQueryFn on the exported client singletons. The package-level exports have been renamed to avoid same-name nested variables which are awkward to destructure. See examples below for usage.
+
+  #### React Client
+
+  ```typescript
+  import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+  import { reactClient } from '@lit-protocol/vincent-registry-sdk';
+  const { vincentApiClientReact, setBaseQueryFn } = reactClient;
+  setBaseQueryFn(fetchBaseQuery({ baseUrl: `https://registry.heyvincent.ai` }));
+  // Use the API client per https://redux-toolkit.js.org/rtk-query/api/created-api/hooks
+  ```
+
+  #### NodeJS Client
+
+  ```typescript
+  import { fetchBaseQuery } from '@reduxjs/toolkit/query';
+  import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
+  const { vincentApiClientNode, setBaseQueryFn } = nodeClient;
+  setBaseQueryFn(fetchBaseQuery({ baseUrl: `http://localhost:3000` }));
+  // Use the API Client per https://redux-toolkit.js.org/rtk-query/usage/usage-without-react-hooks
+  ```
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 1.0.4 (2025-06-20)
 
 ### 🩹 Fixes

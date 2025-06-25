@@ -54,6 +54,7 @@
       "app-sdk",
       "mcp-sdk",
       "registry-sdk",
+      "registry-backend",
       "policy-spending-limit",
       "tool-erc20-approval",
       "tool-uniswap-swap",
@@ -66,10 +67,7 @@
       "projectChangelogs": true
     },
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many --target=build --all",
-      "generatorOptions": {
-        "preserveLocalDependencyProtocols": true
-      }
+      "preVersionCommand": "pnpm dlx nx run-many --target=build --all"
     }
   },
   "targetDefaults": {

@@ -1,23 +1,41 @@
 import { z } from '../schemas/openApiZod';
 
+import { appDoc, appCreate, appEdit } from '../schemas/app';
 import {
-  AppDef,
-  AppVersionDef,
-  AppVersionWithTools,
-  CreateApp,
-  CreateAppVersion,
-  EditApp,
-} from '../schemas/app';
-import { DeleteResponseSchema, ErrorSchema, VersionChangesSchema } from './baseRegistry';
+  appVersionDoc,
+  appVersionCreate,
+  appVersionEdit,
+  appVersionToolCreate,
+  appVersionToolEdit,
+  appVersionToolDoc,
+} from '../schemas/appVersion';
+import { DeleteResponse, ErrorResponse } from './baseRegistry';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
+const appIdParam = z
+  .number()
+  .openapi({ param: { description: 'ID of the target application', example: 132 } });
+
+const appVersionParam = z
+  .number()
+  .openapi({ param: { description: 'Version # of the target application version', example: 3 } });
+
+const packageNameParam = z
+  .string()
+  .openapi({ param: { description: 'The NPM package name', example: '@vincent/foo-bar' } });
+
 export function addToRegistry(registry: OpenAPIRegistry) {
-  const CreateAppSchema = registry.register('CreateApp', CreateApp);
-  const EditAppSchema = registry.register('EditApp', EditApp);
-  const AppDefSchema = registry.register('AppDef', AppDef);
-  const CreateAppVersionSchema = registry.register('CreateAppVersion', CreateAppVersion);
-  const AppVersionDefSchema = registry.register('AppVersionDef', AppVersionDef);
-  const AppVersionWithToolsSchema = registry.register('AppVersionWithTools', AppVersionWithTools);
+  const AppCreate = registry.register('AppCreate', appCreate);
+  const AppEdit = registry.register('AppEdit', appEdit);
+  const AppRead = registry.register('App', appDoc);
+
+  const AppVersionCreate = registry.register('AppVersionCreate', appVersionCreate);
+  const AppVersionEdit = registry.register('AppVersionEdit', appVersionEdit);
+  const AppVersionRead = registry.register('AppVersion', appVersionDoc);
+
+  const AppVersionToolCreate = registry.register('AppVersionToolCreate', appVersionToolCreate);
+  const AppVersionToolEdit = registry.register('AppVersionToolEdit', appVersionToolEdit);
+  const AppVersionToolRead = registry.register('AppVersionTool', appVersionToolDoc);
 
   // GET /apps - List all applications
   registry.registerPath({
@@ -31,7 +49,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(AppDefSchema),
+            schema: z.array(AppRead).openapi('AppList'),
           },
         },
       },
@@ -39,7 +57,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -57,7 +75,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: EditAppSchema,
+            schema: AppCreate,
           },
         },
         description: 'Developer-defined application information',
@@ -69,7 +87,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppDefSchema,
+            schema: AppRead,
           },
         },
       },
@@ -83,7 +101,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -97,24 +115,15 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Fetches an application',
     operationId: 'getApp',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to retrieve',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
+    request: {
+      params: z.object({ appId: appIdParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppDefSchema,
+            schema: AppRead,
           },
         },
       },
@@ -125,7 +134,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -139,23 +148,14 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Edits an application',
     operationId: 'editApp',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to edit',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
       body: {
         content: {
           'application/json': {
-            schema: CreateAppSchema,
+            schema: AppEdit,
           },
         },
         description: 'Developer-defined updated application details',
@@ -167,7 +167,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppDefSchema,
+            schema: AppRead,
           },
         },
       },
@@ -181,7 +181,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -195,24 +195,17 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Deletes an application',
     operationId: 'deleteApp',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to delete',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
+    },
     responses: {
       200: {
         description: 'OK - Resource successfully deleted',
         content: {
           'application/json': {
-            schema: DeleteResponseSchema,
+            schema: DeleteResponse,
           },
         },
       },
@@ -226,7 +219,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -240,24 +233,17 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app'],
     summary: 'Fetches all versions of an application',
     operationId: 'getAppVersions',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application whose versions will be fetched',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(AppVersionDef).openapi('AppVersionsArray'),
+            schema: z.array(AppVersionRead).openapi('AppVersionList'),
           },
         },
       },
@@ -268,37 +254,28 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
     },
   });
 
-  // POST /app/{appId}/version - Create an application version
+  // POST /app/{appId}/version/{version} - Create an application version
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/version',
     tags: ['app/version'],
     summary: 'Creates an application version',
     operationId: 'createAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to create a new version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+      }),
       body: {
         content: {
           'application/json': {
-            schema: CreateAppVersionSchema,
+            schema: AppVersionCreate,
           },
         },
         description: 'Developer-defined version details',
@@ -310,7 +287,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -324,7 +301,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -338,34 +315,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Fetches an application version',
     operationId: 'getAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to retrieve a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to retrieve',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionWithToolsSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -376,7 +337,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -390,33 +351,15 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Edits an application version',
     operationId: 'editAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to edit a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to edit',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
     request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: AppVersionEdit,
           },
         },
         description: 'Update version changes field',
@@ -428,7 +371,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -442,7 +385,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -456,34 +399,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Enables an application version',
     operationId: 'enableAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to enable a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to enable',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -497,7 +424,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -511,34 +438,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['app/version'],
     summary: 'Disables an application version',
     operationId: 'disableAppVersion',
-    parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'ID of the application to disable a version for',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 5,
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to enable',
-        required: true,
-        schema: {
-          type: 'number',
-          example: 2,
-        },
-      },
-    ],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionDefSchema,
+            schema: AppVersionRead,
           },
         },
       },
@@ -552,7 +463,144 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // GET /app/{appId}/version/{version}/tools - List all tools for an application version
+  registry.registerPath({
+    method: 'get',
+    path: '/app/{appId}/version/{version}/tools',
+    tags: ['app/version/tool'],
+    summary: 'Lists all tools for an application version',
+    operationId: 'listAppVersionTools',
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: z.array(AppVersionToolRead).openapi('AppVersionToolList'),
+          },
+        },
+      },
+      404: {
+        description: 'Application or version not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Create a tool for an application version
+  registry.registerPath({
+    method: 'post',
+    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
+    tags: ['app/version/tool'],
+    summary: 'Creates a tool for an application version',
+    operationId: 'createAppVersionTool',
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        appVersion: appVersionParam,
+        toolPackageName: packageNameParam,
+      }),
+      body: {
+        content: {
+          'application/json': {
+            schema: AppVersionToolCreate,
+          },
+        },
+        description: 'Tool configuration for the application version',
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: AppVersionToolRead,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // PUT /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Edit a tool for an application version
+  registry.registerPath({
+    method: 'put',
+    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
+    tags: ['app/version/tool'],
+    summary: 'Edits a tool for an application version',
+    operationId: 'editAppVersionTool',
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        appVersion: appVersionParam,
+        toolPackageName: packageNameParam,
+      }),
+      body: {
+        content: {
+          'application/json': {
+            schema: AppVersionToolEdit,
+          },
+        },
+        description: 'Updated tool configuration for the application version',
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: AppVersionToolRead,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Application, version, or tool not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
           },
         },
       },
