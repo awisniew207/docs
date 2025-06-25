@@ -101,8 +101,18 @@ export function FormRenderer({
     const error = (errors as any)[key]?.message as string | undefined;
 
     const metadata = fieldSchema._def?.openapi?.metadata || {};
+    const describeDescription = fieldSchema._def?.description;
 
-    const placeholder = metadata.description || '';
+    // Handle ZodEffects (created by .refine()) - check innerType for description
+    let actualDescription = describeDescription;
+    if (
+      fieldSchema._def?.typeName === 'ZodEffects' &&
+      fieldSchema._def?.schema?._def?.description
+    ) {
+      actualDescription = fieldSchema._def.schema._def.description;
+    }
+
+    const placeholder = metadata.description || actualDescription || '';
     const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
 
     // Handle ZodOptional wrapper - get the inner type (recursively unwrap multiple layers)
@@ -278,8 +288,12 @@ export function FormRenderer({
             type="text"
             id={key}
             className={`w-full px-2 py-1.5 text-sm border rounded-md ${error ? 'border-red-500' : 'border-gray-300'}`}
-            placeholder={placeholder}
+            placeholder={key === 'confirmation' ? '' : placeholder}
           />
+          {/* Show placeholder as helper text for confirmation fields with long text */}
+          {key === 'confirmation' && placeholder && (
+            <p className="text-xs text-gray-600 mt-1">{placeholder}</p>
+          )}
           {error && <p className="text-red-500 text-xs mt-0.5">{error}</p>}
         </div>
       );
@@ -383,8 +397,12 @@ export function FormRenderer({
           type="text"
           id={key}
           className={`w-full px-2 py-1.5 text-sm border rounded-md ${error ? 'border-red-500' : 'border-gray-300'}`}
-          placeholder={placeholder}
+          placeholder={key === 'confirmation' ? '' : placeholder}
         />
+        {/* Show placeholder as helper text for confirmation fields with long text */}
+        {key === 'confirmation' && placeholder && (
+          <p className="text-xs text-gray-600 mt-1">{placeholder}</p>
+        )}
         {error && <p className="text-red-500 text-xs mt-0.5">{error}</p>}
       </div>
     );

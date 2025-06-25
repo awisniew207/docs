@@ -3,7 +3,7 @@ import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApi
 import { z } from 'zod';
 import { useUrlAppId } from '@/components/consent/hooks/useUrlAppId';
 import { useAccount } from 'wagmi';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useState } from 'react';
@@ -52,13 +52,16 @@ function buildEditAppFormValidationSchema() {
 }
 
 function buildCreateAppVersionFormValidationSchema() {
-  const { changes } = docSchemas.appVersionDoc.shape;
+  // Create a new string field with the same description as the original
+  const changesField = z
+    .string()
+    .min(1, 'Changes description is required')
+    .describe('Describes what changed between this version and the previous version.');
 
   return z
     .object({
-      changes,
+      changes: changesField,
     })
-    .partial()
     .strict();
 }
 
@@ -85,7 +88,8 @@ const createDeleteAppSchema = (appId: string) =>
     confirmation: z
       .string()
       .min(1, 'Confirmation is required')
-      .refine((val) => val === `I want to delete app ${appId}`, {
+      .describe(`Type exactly: "I want to delete app ${appId}" to confirm deletion`)
+      .refine((val: string) => val === `I want to delete app ${appId}`, {
         message: `Please type exactly: "I want to delete app ${appId}"`,
       }),
   });
@@ -112,16 +116,14 @@ export function CreateAppForm() {
     setResult(null);
 
     try {
-      // Generate appId and prepare app data
-      const appId = Math.floor(Math.random() * 10000);
+      // Prepare app data (backend generates its own appId)
       const appDataForApi = {
         ...data,
-        appId,
         managerAddress: address,
       };
 
       const response = await createApp({
-        createApp: appDataForApi,
+        appCreate: appDataForApi,
       });
 
       setResult(response);
@@ -192,9 +194,10 @@ export function EditAppForm({
 
     try {
       const { ...editAppData } = data;
+
       const response = await editApp({
         appId: parseInt(appId),
-        createApp: { ...editAppData, managerAddress: address },
+        appEdit: editAppData,
       });
 
       setResult(response);
@@ -222,69 +225,19 @@ export function EditAppForm({
       defaultValues={{
         redirectUris: [''],
       }}
-      initialData={appData}
+      initialData={{
+        name: appData.name,
+        description: appData.description,
+        contactEmail: appData.contactEmail,
+        appUserUrl: appData.appUserUrl,
+        logo: appData.logo,
+        redirectUris: appData.redirectUris,
+        deploymentStatus: appData.deploymentStatus,
+      }}
       hiddenFields={['_id', 'createdAt', 'updatedAt', 'appId', 'activeVersion', 'managerAddress']}
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
-  );
-}
-
-export function GetAppForm() {
-  const vincentApi = useVincentApiWithSIWE();
-  const [getApp, { isLoading }] = vincentApi.useLazyGetAppQuery({} as any);
-  const { appId } = useUrlAppId();
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
-
-  // Show loading if we don't have appId yet (required for the API call)
-  if (!appId) {
-    return <Loading />;
-  }
-
-  const handleSubmit = async () => {
-    setError(null);
-    setResult(null);
-
-    try {
-      const data = await getApp({ appId: parseInt(appId) });
-      setResult(data);
-    } catch (error: any) {
-      setError(error?.data?.message || error?.message || 'Failed to get app');
-    }
-  };
-
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
-    return (
-      <div>
-        <StatusMessage message="App retrieved successfully!" type="success" />
-        <pre className="mt-4 p-4 bg-gray-100 rounded overflow-auto">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      </div>
-    );
-  }
-
-  // Create a minimal schema for the form (no fields needed since appId comes from URL)
-  const EmptySchema = z.object({});
-
-  return (
-    <div>
-      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-        <p className="text-blue-800">App ID from URL: {appId}</p>
-      </div>
-      <FormRenderer
-        schema={EmptySchema}
-        onSubmit={handleSubmit}
-        title="Get App"
-        description="Fetch an application by its ID from the URL"
-        isLoading={isLoading}
-      />
-    </div>
   );
 }
 
@@ -298,6 +251,7 @@ export function DeleteAppForm({
   const vincentApi = useVincentApiWithSIWE();
   const [deleteApp, { isLoading }] = vincentApi.useDeleteAppMutation();
   const { appId } = useUrlAppId();
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
@@ -336,8 +290,8 @@ export function DeleteAppForm({
       });
 
       setResult(response);
-      // Navigate back to dashboard after successful deletion
-      setTimeout(() => (window.location.href = '/developer'), 2000);
+      // Refresh the page after successful submission
+      navigate('/developer/dasboard/apps');
     } catch (error: any) {
       setError(error?.data?.message || error?.message || 'Failed to delete app');
     }
@@ -400,7 +354,7 @@ export function CreateAppVersionForm({
       const { ...versionDataForApi } = data;
       const result = await createAppVersion({
         appId: parseInt(appId),
-        createAppVersion: versionDataForApi,
+        appVersionCreate: versionDataForApi,
       });
 
       if ('error' in result) {
@@ -437,9 +391,8 @@ export function CreateAppVersionForm({
       title="Create App Version"
       description="Create a new version of an application"
       defaultValues={{
-        tools: [''],
+        changes: '',
       }}
-      initialData={appData}
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
@@ -504,15 +457,21 @@ export function GetAppVersionsForm() {
   );
 }
 
-export function EditAppVersionForm({ hideHeader = false }: { hideHeader?: boolean }) {
+export function EditAppVersionForm({
+  versionData,
+  hideHeader = false,
+}: {
+  versionData?: any;
+  hideHeader?: boolean;
+}) {
   const vincentApi = useVincentApiWithSIWE();
   const [editAppVersion, { isLoading }] = vincentApi.useEditAppVersionMutation();
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Show loading if we don't have required params
-  if (!appId || !versionId) {
+  // Show loading if we don't have required params or version data
+  if (!appId || !versionId || !versionData) {
     return <Loading />;
   }
 
@@ -525,7 +484,7 @@ export function EditAppVersionForm({ hideHeader = false }: { hideHeader?: boolea
       const response = await editAppVersion({
         appId: parseInt(appId),
         version: parseInt(versionId),
-        versionChanges: versionDataForApi,
+        appVersionEdit: versionDataForApi,
       });
 
       setResult(response);
@@ -552,7 +511,9 @@ export function EditAppVersionForm({ hideHeader = false }: { hideHeader?: boolea
   // If we have a version from URL path, only show the changes field
   if (versionId) {
     const ChangesOnlySchema = z.object({
-      changes: z.string().min(1, 'Changes description is required'),
+      changes: z
+        .string()
+        .describe('Describes what changed between this version and the previous version.'),
     });
 
     return (
@@ -562,6 +523,9 @@ export function EditAppVersionForm({ hideHeader = false }: { hideHeader?: boolea
           onSubmit={handleSubmit}
           title={`Edit App Version ${versionId}`}
           description="Update the changelog for this specific app version"
+          initialData={{
+            changes: versionData?.changes || '',
+          }}
           isLoading={isLoading}
           hideHeader={hideHeader}
         />
@@ -579,87 +543,5 @@ export function EditAppVersionForm({ hideHeader = false }: { hideHeader?: boolea
       isLoading={isLoading}
       hideHeader={hideHeader}
     />
-  );
-}
-
-export function GetAllAppsForm() {
-  const vincentApi = useVincentApiWithSIWE();
-  const [listApps, { isLoading }] = vincentApi.useLazyListAppsQuery({} as any);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
-
-  const handleSubmit = async () => {
-    setError(null);
-    setResult(null);
-
-    try {
-      const data = await listApps({});
-      setResult(data);
-    } catch (error: any) {
-      setError(error?.data?.message || error?.message || 'Failed to get all apps');
-    }
-  };
-
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
-  }
-
-  if (result) {
-    return (
-      <div>
-        <StatusMessage message="Apps retrieved successfully!" type="success" />
-        <pre className="mt-4 p-4 bg-gray-100 rounded overflow-auto">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      </div>
-    );
-  }
-
-  // Create a minimal schema for the form (no fields needed)
-  const EmptySchema = z.object({});
-
-  return (
-    <FormRenderer
-      schema={EmptySchema}
-      onSubmit={handleSubmit}
-      title="Get All Apps"
-      description="Fetch all applications from the system"
-      isLoading={isLoading}
-    />
-  );
-}
-
-export function SIWEAuthenticationStatus() {
-  const vincentApi = useVincentApiWithSIWE();
-  const { address, isConnected } = useAccount();
-
-  if (!isConnected || !address) {
-    return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-        <p className="text-yellow-800">Please connect your wallet to enable registry changes.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-      <h3 className="text-lg font-semibold text-blue-900 mb-2">SIWE Authentication Status</h3>
-      <p className="text-blue-800 mb-3">Connected wallet: {address}</p>
-      <p className="text-blue-800 mb-3">
-        Authentication status:{' '}
-        {vincentApi.hasSIWEAuthentication() ? '✅ Authenticated' : '❌ Not authenticated'}
-      </p>
-      <button
-        onClick={vincentApi.authenticateWithSIWE}
-        disabled={vincentApi.isAuthenticating}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {vincentApi.isAuthenticating ? 'Authenticating...' : 'Sign Message for Registry Access'}
-      </button>
-      <p className="text-sm text-blue-600 mt-2">
-        Note: Registry changes (create, edit, delete) require SIWE authentication. Authentication
-        will be automatically triggered when needed.
-      </p>
-    </div>
   );
 }

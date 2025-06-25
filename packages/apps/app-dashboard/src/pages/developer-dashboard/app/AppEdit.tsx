@@ -6,7 +6,6 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/useAddressCheck';
 
 export default function AppEdit() {
   const { app, appError, appLoading } = useAppDetail();
-  console.log('app', app);
 
   useAddressCheck(app);
 
