@@ -38,7 +38,7 @@ export function AppList({
   const appMenuItems = useMemo(() => {
     if (!selectedApp) return [];
 
-    return [
+    const baseMenuItems = [
       { id: 'app-details', label: 'App Details', icon: FileText },
       {
         id: 'app-versions',
@@ -53,6 +53,8 @@ export function AppList({
             : [{ id: 'no-versions', label: 'No versions available', disabled: true }],
       },
     ];
+
+    return baseMenuItems;
   }, [selectedApp, sortedVersions]);
 
   const handleAppViewNavigation = (viewId: string) => {
@@ -64,6 +66,7 @@ export function AppList({
 
   const handleAppSubmenuNavigation = (submenuId: string) => {
     if (submenuId.startsWith('version-')) {
+      // Handle version navigation (e.g., "version-1")
       const versionNumber = submenuId.replace('version-', '');
       onAppViewSelection(`version-${versionNumber}`);
     } else {

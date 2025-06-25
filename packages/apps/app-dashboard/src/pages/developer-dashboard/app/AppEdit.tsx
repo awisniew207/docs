@@ -17,5 +17,16 @@ export default function AppEdit() {
     return <StatusMessage message="App not found" type="error" />;
   }
 
-  return <EditAppForm appData={app} hideHeader={false} />;
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold text-gray-900">Edit App</h1>
+          <p className="text-gray-600 mt-2">Update your application settings and configuration</p>
+        </div>
+      </div>
+
+      <EditAppForm appData={app} />
+    </div>
+  );
 }

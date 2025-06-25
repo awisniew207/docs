@@ -1,12 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 interface VersionDetailsProps {
   version: number;
+  appId: number;
   appName?: string;
   versionData: any; // The fetched version data
 }
 
-export function VersionDetails({ version, versionData }: VersionDetailsProps) {
+export function VersionDetails({ version, appId, versionData }: VersionDetailsProps) {
+  // Fetch tools for this specific version
+  const {
+    data: versionTools,
+    isLoading: toolsLoading,
+    error: toolsError,
+  } = vincentApiClient.useListAppVersionToolsQuery({
+    appId,
+    version,
+  });
+
   if (!versionData) {
     return (
       <div className="p-6">
@@ -48,18 +60,39 @@ export function VersionDetails({ version, versionData }: VersionDetailsProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {versionData.tools && versionData.tools.length > 0 ? (
-            <div className="space-y-2">
-              {versionData.tools.map((tool: any, index: number) => {
-                return (
-                  <div key={index} className="p-3 bg-gray-50 rounded-lg border">
-                    <div className="font-medium text-gray-900">Tool {index + 1}</div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {typeof tool === 'string' ? tool : String(JSON.stringify(tool, null, 2))}
+          {toolsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mr-2"></div>
+              <span className="text-gray-600">Loading tools...</span>
+            </div>
+          ) : toolsError ? (
+            <div className="text-center py-8">
+              <div className="text-red-400 text-lg mb-2">⚠️</div>
+              <p className="text-red-600">Error loading tools</p>
+            </div>
+          ) : versionTools && versionTools.length > 0 ? (
+            <div className="space-y-3">
+              {versionTools.map((tool: any, index: number) => (
+                <div
+                  key={tool.toolPackageName || index}
+                  className="p-4 bg-gray-50 rounded-lg border"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{tool.toolPackageName}</div>
+                      <div className="text-sm text-gray-600 mt-1">Version: {tool.toolVersion}</div>
+                      {tool.hiddenSupportedPolicies && tool.hiddenSupportedPolicies.length > 0 && (
+                        <div className="text-sm text-gray-500 mt-1">
+                          Hidden policies: {tool.hiddenSupportedPolicies.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Added: {new Date(tool.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-8">

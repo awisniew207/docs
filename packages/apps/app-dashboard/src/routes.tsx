@@ -65,6 +65,10 @@ const routes: RouteObject[] = [
                 element: <AppDetail.Version />,
               },
               {
+                path: 'version/:versionId/tools',
+                element: <AppDetail.VersionTools />,
+              },
+              {
                 path: 'version/:versionId/edit',
                 element: <AppDetail.EditVersion />,
               },

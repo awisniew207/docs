@@ -243,6 +243,14 @@ export function useVincentApiWithSIWE() {
       vincentApiClient.useDisableAppVersionMutation,
       'POST',
     ),
+    useCreateAppVersionToolMutation: createMutationWrapper(
+      vincentApiClient.useCreateAppVersionToolMutation,
+      'POST',
+    ),
+    useEditAppVersionToolMutation: createMutationWrapper(
+      vincentApiClient.useEditAppVersionToolMutation,
+      'PUT',
+    ),
     useCreateToolMutation: createMutationWrapper(vincentApiClient.useCreateToolMutation, 'POST'),
     useEditToolMutation: createMutationWrapper(vincentApiClient.useEditToolMutation, 'PUT'),
     useChangeToolOwnerMutation: createMutationWrapper(

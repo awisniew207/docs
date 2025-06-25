@@ -189,7 +189,10 @@ export function FormRenderer({
           <EntitySelector
             entityType="tool"
             selectedEntities={currentValues}
-            onChange={(selected) => setValue(key as any, selected)}
+            onChange={(selectedTools) => {
+              // Store the complete tool objects so we have version info
+              setValue(key, selectedTools);
+            }}
             error={error}
           />
         </div>

@@ -14,6 +14,7 @@ export function useViewType() {
     if (path.endsWith('/delete-app')) return AppViewType.APP_DELETE;
     if (path.endsWith('/create-app-version')) return AppViewType.APP_CREATE_VERSION;
     if (path.endsWith('/versions')) return AppViewType.APP_VERSIONS;
+    if (path.match(/\/version\/\d+\/tools$/)) return AppViewType.APP_VERSION;
     if (versionId) return AppViewType.APP_VERSION;
 
     return AppViewType.APP_DETAILS;

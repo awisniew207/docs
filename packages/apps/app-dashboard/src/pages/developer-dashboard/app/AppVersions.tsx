@@ -26,7 +26,6 @@ export default function AppVersions() {
   return (
     <AppVersionsListView
       versions={versions || []}
-      appName={app.name}
       appId={appId}
       latestVersion={app.latestVersion}
       isLoading={versionsLoading}

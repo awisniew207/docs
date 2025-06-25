@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Power, PowerOff } from 'lucide-react';
 
 interface AppVersionsListViewProps {
   versions: any[];
-  appName?: string;
   appId: number;
   latestVersion?: number;
   isLoading: boolean;
@@ -12,7 +12,6 @@ interface AppVersionsListViewProps {
 
 export function AppVersionsListView({
   versions,
-  appName,
   appId,
   latestVersion,
   isLoading,
@@ -52,7 +51,7 @@ export function AppVersionsListView({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">{appName} - App Versions</h1>
+          <h1 className="text-3xl font-bold text-gray-900">App Versions</h1>
           <p className="text-gray-600 mt-2">Manage and view all versions of your application</p>
         </div>
       </div>
@@ -97,23 +96,22 @@ export function AppVersionsListView({
                     <div className="border-b border-gray-100 pb-3 last:border-b-0">
                       <div className="flex flex-col sm:flex-row sm:justify-between">
                         <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                          Tools Count
-                        </span>
-                        <div className="mt-1 sm:mt-0 sm:text-right">
-                          <span className="text-gray-900 text-sm">
-                            {version.tools ? version.tools.length : 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="border-b border-gray-100 pb-3 last:border-b-0">
-                      <div className="flex flex-col sm:flex-row sm:justify-between">
-                        <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
                           Status
                         </span>
                         <div className="mt-1 sm:mt-0 sm:text-right">
-                          <span className="inline-block px-2 py-1 rounded text-sm font-medium bg-green-100 text-green-800">
-                            ACTIVE
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium ${
+                              version.enabled
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {version.enabled ? (
+                              <Power className="h-3 w-3" />
+                            ) : (
+                              <PowerOff className="h-3 w-3" />
+                            )}
+                            {version.enabled ? 'ENABLED' : 'DISABLED'}
                           </span>
                         </div>
                       </div>

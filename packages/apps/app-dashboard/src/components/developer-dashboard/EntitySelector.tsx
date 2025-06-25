@@ -16,8 +16,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface EntitySelectorProps {
   entityType: 'tool' | 'policy';
-  selectedEntities: string[]; // Array of package names
-  onChange: (selectedEntities: string[]) => void;
+  selectedEntities: any[]; // Array of complete entity objects
+  onChange: (selectedEntities: any[]) => void; // Always complete tool/policy objects
   error?: string;
   disabled?: boolean;
 }
@@ -149,11 +149,12 @@ export function EntitySelector({
     (params: GridReadyEvent) => {
       setGridApi(params.api);
 
-      // Pre-select rows based on selectedEntities (package names)
+      // Pre-select rows based on selectedEntities package names
       if (selectedEntities.length > 0) {
+        const selectedPackageNames = selectedEntities.map((entity) => entity.packageName);
         params.api.forEachNode((node: IRowNode) => {
           const entityPackageName = node.data?.packageName;
-          if (entityPackageName && selectedEntities.includes(entityPackageName)) {
+          if (entityPackageName && selectedPackageNames.includes(entityPackageName)) {
             node.setSelected(true);
           }
         });
@@ -166,8 +167,8 @@ export function EntitySelector({
   const onSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       const selectedRows = event.api.getSelectedRows();
-      const selectedPackageNames = selectedRows.map((entity: any) => entity.packageName);
-      onChange(selectedPackageNames);
+      // Always pass complete objects
+      onChange(selectedRows);
     },
     [onChange],
   );
@@ -175,9 +176,11 @@ export function EntitySelector({
   // Update selection when selectedEntities prop changes
   useEffect(() => {
     if (gridApi) {
+      const selectedPackageNames = selectedEntities.map((entity) => entity.packageName);
       gridApi.forEachNode((node: IRowNode) => {
         const entityPackageName = node.data?.packageName;
-        const shouldBeSelected = entityPackageName && selectedEntities.includes(entityPackageName);
+        const shouldBeSelected =
+          entityPackageName && selectedPackageNames.includes(entityPackageName);
         if (node.isSelected() !== shouldBeSelected) {
           node.setSelected(!!shouldBeSelected);
         }
@@ -230,7 +233,8 @@ export function EntitySelector({
 
       {selectedEntities.length > 0 && (
         <div className="text-sm text-gray-600">
-          <strong>Selected {entityType}s:</strong> {selectedEntities.join(', ')}
+          <strong>Selected {entityType}s:</strong>{' '}
+          {selectedEntities.map((entity) => entity.packageName).join(', ')}
         </div>
       )}
 
