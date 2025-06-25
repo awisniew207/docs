@@ -118,7 +118,7 @@ export function extendVincentServer(
       pkpEthAddress: z
         .string()
         .describe(
-          "The delegator's PKP address that will execute the swap. For example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045.",
+          'The PKP address to query the balance for. For example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045.',
         ),
     },
     async ({ chainId, pkpEthAddress }) => {
