@@ -48,9 +48,7 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
       <div className="bg-white border rounded-lg">
         <div className="p-6 border-b border-gray-100">
           <h3 className="text-lg font-medium text-gray-900">App Management</h3>
-          <p className="text-gray-600 text-sm mt-1">
-            Manage your application settings and versions
-          </p>
+          <p className="text-gray-600 text-sm mt-1">Manage your application settings</p>
         </div>
         <div className="p-6">
           <div className="flex flex-wrap gap-3">

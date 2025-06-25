@@ -31,6 +31,11 @@ export default function AppVersionDetail() {
     { skip: !appId || !versionId },
   );
 
+  const { refetch: refetchVersionsList } = vincentApiClient.useGetAppVersionsQuery(
+    { appId },
+    { skip: !appId },
+  );
+
   useAddressCheck(app);
 
   const onEnableVersion = () => {
@@ -41,6 +46,7 @@ export default function AppVersionDetail() {
       versionId,
       enableAppVersion,
       refetchVersionData,
+      refetchVersionsList,
       setStatusMessage,
     });
   };
@@ -53,6 +59,7 @@ export default function AppVersionDetail() {
       versionId,
       disableAppVersion,
       refetchVersionData,
+      refetchVersionsList,
       setStatusMessage,
     });
   };

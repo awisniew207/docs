@@ -4,6 +4,7 @@ interface BaseActionParams {
   appId: number;
   versionId: number;
   refetchVersionData: () => Promise<any>;
+  refetchVersionsList: () => Promise<any>;
   setStatusMessage: (
     message: { message: string; type: 'success' | 'error' | 'warning' } | null,
   ) => void;
@@ -25,6 +26,7 @@ export const handleEnableVersion = async ({
   versionId,
   enableAppVersion,
   refetchVersionData,
+  refetchVersionsList,
   setStatusMessage,
 }: EnableVersionParams) => {
   try {
@@ -46,6 +48,9 @@ export const handleEnableVersion = async ({
     // Refetch version data to show the updated status
     await refetchVersionData();
 
+    // Refetch versions list to update the App Versions page
+    await refetchVersionsList();
+
     // Clear success message after a delay
     setTimeout(() => setStatusMessage(null), 3000);
   } catch (error: unknown) {
@@ -64,6 +69,7 @@ export const handleDisableVersion = async ({
   versionId,
   disableAppVersion,
   refetchVersionData,
+  refetchVersionsList,
   setStatusMessage,
 }: DisableVersionParams) => {
   const confirmed = window.confirm(
@@ -90,6 +96,9 @@ export const handleDisableVersion = async ({
 
     // Refetch version data to show the updated status
     await refetchVersionData();
+
+    // Refetch versions list to update the App Versions page
+    await refetchVersionsList();
 
     // Clear success message after a delay
     setTimeout(() => setStatusMessage(null), 3000);
