@@ -36,7 +36,6 @@
     "dev:http": "tsx watch --env-file=.env src/http.ts",
     "inspector": "npx @modelcontextprotocol/inspector",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "mintRlI": "tsx --env-file=.env ./src/bin/mintRLINft.ts",
     "integration:openAI": "tsx --env-file=.env ./integrations/openAI.ts",
     "integration:anthropic": "tsx --env-file=.env ./integrations/anthropic.ts"
   },
