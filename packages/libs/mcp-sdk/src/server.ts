@@ -142,7 +142,7 @@ export async function getVincentAppServer(
   if (delegatorPkpEthAddress) {
     server.tool(
       buildMcpToolName(_vincentAppDefinition, 'get-current-agent-pkp-address'),
-      `Tool to get the your agent pkp eth address in use for the ${_vincentAppDefinition.name} Vincent App MCP.`,
+      `Tool to get your agent pkp eth address in use for the ${_vincentAppDefinition.name} Vincent App MCP.`,
       async () => {
         return {
           content: [
