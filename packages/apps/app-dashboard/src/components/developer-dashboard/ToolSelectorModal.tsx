@@ -143,11 +143,17 @@ export function ToolSelectorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-7xl h-[85vh] flex flex-col">
+      <DialogContent
+        className="w-[85vw] max-w-6xl h-[70vh] flex flex-col !max-w-none"
+        style={{ width: '85vw', maxWidth: '72rem' }}
+      >
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Add Tools to App Version</DialogTitle>
           <DialogDescription>
             Click any tool to add it immediately to your app version.
+            {existingTools.length > 0 && ` (${existingTools.length} tools already added)`}
+            {filteredTools.length < availableTools.length &&
+              ` • Showing ${filteredTools.length} of ${availableTools.length} available tools`}
           </DialogDescription>
         </DialogHeader>
 
@@ -159,7 +165,6 @@ export function ToolSelectorModal({
               defaultColDef={DEFAULT_COL_DEF}
               onCellClicked={handleCellClick}
               getRowClass={getRowClass}
-              suppressRowClickSelection={true}
               rowHeight={50}
               suppressHorizontalScroll={false}
               alwaysShowHorizontalScroll={true}

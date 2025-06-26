@@ -160,7 +160,7 @@ export function AppRoute() {
 
   // App-level routes (when no versionId) - route based on URL path
   if (location.pathname.endsWith('/edit-app')) {
-    return <AppEdit app={app} refetchApps={refetchApps} />;
+    return <AppEdit app={app} appVersions={appVersions || []} refetchApps={refetchApps} />;
   }
 
   if (location.pathname.endsWith('/delete-app')) {

@@ -3,13 +3,13 @@ import { Power, PowerOff } from 'lucide-react';
 
 interface AppVersionsListViewProps {
   versions: any[];
-  latestVersion?: number;
+  activeVersion?: number;
   onVersionClick: (version: number) => void;
 }
 
 export function AppVersionsListView({
   versions,
-  latestVersion,
+  activeVersion,
   onVersionClick,
 }: AppVersionsListViewProps) {
   const handleVersionClick = (version: number) => {
@@ -45,20 +45,20 @@ export function AppVersionsListView({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <CardTitle className="text-lg">Version {version.version}</CardTitle>
-                    {version.version === latestVersion && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Latest
+                    {version.version === activeVersion && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        Active
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {version.isEnabled ? (
+                    {version.enabled ? (
                       <Power className="h-4 w-4 text-green-600" />
                     ) : (
                       <PowerOff className="h-4 w-4 text-gray-400" />
                     )}
                     <span className="text-sm text-gray-500">
-                      {version.isEnabled ? 'Enabled' : 'Disabled'}
+                      {version.enabled ? 'Enabled' : 'Disabled'}
                     </span>
                   </div>
                 </div>

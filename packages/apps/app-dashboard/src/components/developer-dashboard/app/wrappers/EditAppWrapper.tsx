@@ -7,10 +7,11 @@ import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/
 
 interface EditAppWrapperProps {
   app: any;
-  refetchApps: () => void;
+  appVersions: any[];
+  refetchApps: () => Promise<any>;
 }
 
-export function EditAppWrapper({ app, refetchApps }: EditAppWrapperProps) {
+export function EditAppWrapper({ app, appVersions, refetchApps }: EditAppWrapperProps) {
   const vincentApi = useVincentApiWithSIWE();
   const [editApp, { isLoading }] = vincentApi.useEditAppMutation();
   const navigate = useNavigate();
@@ -55,5 +56,12 @@ export function EditAppWrapper({ app, refetchApps }: EditAppWrapperProps) {
   };
 
   // Render pure form component - app is guaranteed to exist
-  return <EditAppForm appData={app} onSubmit={handleSubmit} isSubmitting={isLoading} />;
+  return (
+    <EditAppForm
+      appData={app}
+      appVersions={appVersions}
+      onSubmit={handleSubmit}
+      isSubmitting={isLoading}
+    />
+  );
 }

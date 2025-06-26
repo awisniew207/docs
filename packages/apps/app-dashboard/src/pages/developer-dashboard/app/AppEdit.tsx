@@ -2,10 +2,11 @@ import { EditAppWrapper } from '@/components/developer-dashboard/app/wrappers/Ed
 
 interface AppEditProps {
   app: any;
-  refetchApps: () => void;
+  appVersions: any[];
+  refetchApps: () => Promise<any>;
 }
 
-export default function AppEdit({ app, refetchApps }: AppEditProps) {
+export default function AppEdit({ app, appVersions, refetchApps }: AppEditProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -15,7 +16,7 @@ export default function AppEdit({ app, refetchApps }: AppEditProps) {
         </div>
       </div>
 
-      <EditAppWrapper app={app} refetchApps={refetchApps} />
+      <EditAppWrapper app={app} appVersions={appVersions} refetchApps={refetchApps} />
     </div>
   );
 }

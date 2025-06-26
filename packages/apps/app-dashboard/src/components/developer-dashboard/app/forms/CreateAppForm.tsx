@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ToolSelectionSchema } from '@/utils/developer-dashboard/app-forms';
 import {
   TextField,
   LongTextField,
@@ -24,11 +23,6 @@ export const CreateAppSchema = z
       .array(z.string().url('Please enter valid URLs'))
       .min(1, 'At least one redirect URI is required'),
     deploymentStatus: z.enum(['dev', 'test', 'prod']),
-    // Tools for initial version with proper typing
-    tools: z
-      .array(ToolSelectionSchema)
-      .optional()
-      .describe('Tools to include in the initial version'),
   })
   .strict();
 
@@ -50,7 +44,6 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
     resolver: zodResolver(CreateAppSchema),
     defaultValues: {
       redirectUris: [''],
-      tools: [],
       deploymentStatus: undefined,
     },
   });
@@ -144,9 +137,6 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
               options={deploymentStatusOptions}
               required
             />
-
-            {/* TODO: Add EntitySelector for tools field */}
-            {/* For now, tools will be empty array as set in defaultValues */}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Creating App...' : 'Create App'}

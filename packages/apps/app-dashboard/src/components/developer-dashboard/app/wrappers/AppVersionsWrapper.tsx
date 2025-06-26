@@ -4,10 +4,10 @@ import { AppVersionsListView } from '../views/AppVersionsListView';
 interface AppVersionsWrapperProps {
   versions: any[];
   appId: number;
-  latestVersion?: number;
+  activeVersion?: number;
 }
 
-export function AppVersionsWrapper({ versions, appId, latestVersion }: AppVersionsWrapperProps) {
+export function AppVersionsWrapper({ versions, appId, activeVersion }: AppVersionsWrapperProps) {
   const navigate = useNavigate();
 
   const handleVersionClick = (version: number) => {
@@ -17,7 +17,7 @@ export function AppVersionsWrapper({ versions, appId, latestVersion }: AppVersio
   return (
     <AppVersionsListView
       versions={versions}
-      latestVersion={latestVersion}
+      activeVersion={activeVersion}
       onVersionClick={handleVersionClick}
     />
   );

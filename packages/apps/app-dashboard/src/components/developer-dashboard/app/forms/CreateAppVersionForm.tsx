@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ToolSelectionSchema } from '@/utils/developer-dashboard/app-forms';
 import { LongTextField } from '../../form-fields';
 
 export const CreateAppVersionSchema = z
@@ -13,8 +12,6 @@ export const CreateAppVersionSchema = z
       .string()
       .min(1, 'Changes description is required')
       .describe('Describes what changed between this version and the previous version.'),
-    // Tools for this version with proper typing
-    tools: z.array(ToolSelectionSchema).optional().describe('Tools to include in this version'),
   })
   .strict();
 
@@ -35,7 +32,6 @@ export function CreateAppVersionForm({
     resolver: zodResolver(CreateAppVersionSchema),
     defaultValues: {
       changes: '',
-      tools: [],
     },
   });
 
@@ -63,10 +59,6 @@ export function CreateAppVersionForm({
               rows={4}
               required
             />
-
-            {/* TODO: Add EntitySelector for tools field when needed */}
-            {/* For now, tools will be empty array as set in defaultValues */}
-
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Creating Version...' : 'Create Version'}
             </Button>

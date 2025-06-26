@@ -14,7 +14,6 @@ export function CreateAppVersionWrapper({ app, refetchVersions }: CreateAppVersi
   const vincentApi = useVincentApiWithSIWE();
   const [createAppVersion, { isLoading: isCreatingVersion }] =
     vincentApi.useCreateAppVersionMutation();
-  //const [createAppVersionTool] = vincentApi.useCreateAppVersionToolMutation();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
@@ -36,12 +35,9 @@ export function CreateAppVersionWrapper({ app, refetchVersions }: CreateAppVersi
     setIsProcessing(true);
 
     try {
-      // Extract tools from data before creating the version
-      const { tools, ...versionData } = data;
-
       const versionResult = await createAppVersion({
         appId: app.appId,
-        appVersionCreate: versionData,
+        appVersionCreate: data,
       });
 
       if ('error' in versionResult) {
@@ -61,7 +57,10 @@ export function CreateAppVersionWrapper({ app, refetchVersions }: CreateAppVersi
       await refetchVersions();
 
       // Navigate to the new version's detail page with delay
-      navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${newVersionNumber}`);
+      navigateWithDelay(
+        navigate,
+        `/developer/appId/${app.appId}/version/${newVersionNumber}/tools`,
+      );
     } catch (error: unknown) {
       setError(getErrorMessage(error, 'Failed to create app version'));
     } finally {

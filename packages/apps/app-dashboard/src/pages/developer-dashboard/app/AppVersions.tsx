@@ -14,7 +14,7 @@ export default function AppVersions({ app, appVersions }: AppVersionsProps) {
     <AppVersionsWrapper
       versions={appVersions}
       appId={app.appId}
-      latestVersion={app.activeVersion}
+      activeVersion={app.activeVersion}
     />
   );
 }

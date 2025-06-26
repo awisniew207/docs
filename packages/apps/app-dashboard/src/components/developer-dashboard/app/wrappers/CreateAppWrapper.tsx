@@ -44,10 +44,9 @@ export function CreateAppWrapper({ refetchApps }: CreateAppWrapperProps) {
     setIsProcessing(true);
 
     try {
-      const { tools, ...appDataForApi } = data;
+      const { ...appDataForApi } = data;
       const appSubmissionData = { ...appDataForApi, managerAddress: address };
 
-      // Step 1: Create the app (this automatically creates version 1)
       const appResponse = await createApp({ appCreate: appSubmissionData });
 
       if ('error' in appResponse) {

@@ -40,9 +40,9 @@ interface DeveloperDataContextType {
   findPolicyByPackageName: (packageName: string) => Policy | null;
 
   // Refetch functions
-  refetchApps: () => void;
-  refetchTools: () => void;
-  refetchPolicies: () => void;
+  refetchApps: () => Promise<any>;
+  refetchTools: () => Promise<any>;
+  refetchPolicies: () => Promise<any>;
 
   // Version hooks - expose the actual hooks
   useAppVersions: typeof vincentApiClient.useGetAppVersionsQuery;

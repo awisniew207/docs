@@ -21,14 +21,17 @@ export const EditAppSchema = z
     logo: z.string().optional(),
     redirectUris: z.array(z.string().url()),
     deploymentStatus: z.enum(['dev', 'test', 'prod']),
+    activeVersion: z.coerce.number().positive().int(),
   })
   .partial()
+  .required({ activeVersion: true })
   .strict();
 
 export type EditAppFormData = z.infer<typeof EditAppSchema>;
 
 interface EditAppFormProps {
   appData: any;
+  appVersions: any[];
   onSubmit: (data: EditAppFormData) => Promise<void>;
   isSubmitting?: boolean;
 }
@@ -39,7 +42,12 @@ const deploymentStatusOptions = [
   { value: 'prod', label: 'Production' },
 ];
 
-export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditAppFormProps) {
+export function EditAppForm({
+  appData,
+  appVersions,
+  onSubmit,
+  isSubmitting = false,
+}: EditAppFormProps) {
   const form = useForm<EditAppFormData>({
     resolver: zodResolver(EditAppSchema),
     defaultValues: {
@@ -50,6 +58,7 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
       logo: appData.logo,
       redirectUris: appData.redirectUris,
       deploymentStatus: appData.deploymentStatus,
+      activeVersion: appData.activeVersion,
     },
   });
 
@@ -63,6 +72,14 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
     clearErrors,
     formState: { errors },
   } = form;
+
+  // Create version options from appVersions, showing enabled/disabled status for all versions
+  const versionOptions = appVersions
+    .map((version) => ({
+      value: version.version.toString(),
+      label: `Version ${version.version} (${version.enabled ? 'Enabled' : 'Disabled'})`,
+    }))
+    .sort((a, b) => parseInt(b.value) - parseInt(a.value));
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -133,6 +150,16 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               setValue={setValue}
               label="Deployment Status"
               options={deploymentStatusOptions}
+            />
+
+            <SelectField
+              name="activeVersion"
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+              label="Active Version"
+              options={versionOptions}
+              required
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
