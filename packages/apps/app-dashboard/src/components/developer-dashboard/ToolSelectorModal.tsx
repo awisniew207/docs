@@ -12,8 +12,9 @@ import {
   ICellRendererParams,
   ModuleRegistry,
   AllCommunityModule,
-  CellClickedEvent,
+  RowClickedEvent,
 } from 'ag-grid-community';
+import { Tool } from '@/contexts/DeveloperDataContext';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -42,18 +43,22 @@ const TOOL_GRID_COLUMNS: ColDef[] = [
     minWidth: 180,
     suppressNavigable: true,
     cellRenderer: (params: ICellRendererParams) => {
-      const handlePackageClick = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const packageName = params.value;
-        const version = params.data.activeVersion;
-        const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${version}`;
-        window.open(npmUrl, '_blank');
-      };
-
       return (
-        <div className="flex items-center h-full" onClick={handlePackageClick}>
+        <div className="flex items-center h-full">
           <span
+            ref={(ref) => {
+              if (!ref) return;
+
+              ref.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const packageName = params.value;
+                const version = params.data.activeVersion;
+                const npmUrl = `https://www.npmjs.com/package/${packageName}/v/${version}`;
+                window.open(npmUrl, '_blank');
+              };
+            }}
             className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-mono cursor-pointer"
             title={`View ${params.value} on npm`}
           >
@@ -104,9 +109,9 @@ const DEFAULT_COL_DEF = {
 interface ToolSelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onToolAdd: (tool: any) => Promise<void>;
+  onToolAdd: (tool: Tool) => Promise<void>;
   existingTools: string[];
-  availableTools: any[];
+  availableTools: Tool[];
 }
 
 export function ToolSelectorModal({
@@ -119,14 +124,9 @@ export function ToolSelectorModal({
   // Filter out already added tools
   const filteredTools = availableTools.filter((tool) => !existingTools.includes(tool.packageName));
 
-  const handleCellClick = async (event: CellClickedEvent) => {
+  const handleRowClick = async (event: RowClickedEvent) => {
     const tool = event.data;
     if (!tool) {
-      return;
-    }
-
-    // Don't add tool if user clicked on the package name column
-    if (event.column?.getColId() === 'packageName') {
       return;
     }
 
@@ -137,12 +137,18 @@ export function ToolSelectorModal({
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
   const getRowClass = () => {
     return 'cursor-pointer hover:bg-gray-50';
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         className="w-[85vw] max-w-6xl h-[70vh] flex flex-col !max-w-none"
         style={{ width: '85vw', maxWidth: '72rem' }}
@@ -163,7 +169,7 @@ export function ToolSelectorModal({
               rowData={filteredTools}
               columnDefs={TOOL_GRID_COLUMNS}
               defaultColDef={DEFAULT_COL_DEF}
-              onCellClicked={handleCellClick}
+              onRowClicked={handleRowClick}
               getRowClass={getRowClass}
               rowHeight={50}
               suppressHorizontalScroll={false}
