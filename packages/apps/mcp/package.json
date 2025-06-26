@@ -31,7 +31,6 @@
   "main": "./dist/stdio.js",
   "scripts": {
     "build": "tsc && cp -r src/public dist/src/public",
-    "build:watch": "tsc --watch",
     "dev:http": "tsx watch --tsconfig ./tsconfig.app.json --env-file=.env src/http.ts",
     "inspector": "npx @modelcontextprotocol/inspector",
     "integration:openAI": "tsx --env-file=.env ./integrations/openAI.ts",

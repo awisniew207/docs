@@ -29,7 +29,7 @@ import express, { Request, Response } from 'express';
 import {
   authenticateWithSiwe,
   getSiweMessageToAuthenticate,
-  verifyDelegatorJwt,
+  authenticateWithJwt,
 } from './authentication';
 import { env } from './env';
 import { getServer } from './server';
@@ -139,7 +139,7 @@ app.post('/mcp', async (req: Request, res: Response) => {
       try {
         authenticatedAddress = usingSiwe
           ? await authenticateWithSiwe(siweMessage, siweSignature)
-          : verifyDelegatorJwt(jwt, vincentAppDef.id, vincentAppDef.version);
+          : authenticateWithJwt(jwt, vincentAppDef.id, vincentAppDef.version);
       } catch (e) {
         console.error(`Client authentication failed: ${(e as Error).message}`);
         return returnWithError(
