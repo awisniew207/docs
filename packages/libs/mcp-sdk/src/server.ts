@@ -25,7 +25,7 @@ import {
   VincentAppDefSchema,
 } from './definitions';
 
-const { getDelegatorsAgentPkpInfo } = utils;
+const { getDelegatorsAgentPkpAddresses } = utils;
 
 export interface DelegationMcpServerConfig {
   delegateeSigner: Signer;
@@ -127,19 +127,19 @@ export async function getVincentAppServer(
   // Tool to get the delegators info
   if (!delegatorPkpEthAddress) {
     server.tool(
-      buildMcpToolName(_vincentAppDefinition, 'get-delegators-info'),
-      `Tool to get the delegators info for the ${_vincentAppDefinition.name} Vincent App. Info includes the PKP token ID, ETH address, and public key for each delegator.`,
+      buildMcpToolName(_vincentAppDefinition, 'get-delegators-eth-addresses'),
+      `Tool to get the delegators pkp Eth addresses for the ${_vincentAppDefinition.name} Vincent App.`,
       async () => {
         const appId = parseInt(_vincentAppDefinition.id, 10);
         const appVersion = parseInt(_vincentAppDefinition.version, 10);
 
-        const delegatorsPkpInfo = await getDelegatorsAgentPkpInfo(appId, appVersion);
+        const delegatorsPkpEthAddresses = await getDelegatorsAgentPkpAddresses(appId, appVersion);
 
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(delegatorsPkpInfo),
+              text: JSON.stringify(delegatorsPkpEthAddresses),
             },
           ],
         };

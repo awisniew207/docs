@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { LIT_NETWORK } from '@lit-protocol/constants';
 
 import { getContract } from './contracts';
-import { getPkpInfo } from './pkp';
+import { getPkpEthAddress } from './pkp';
 
 /**
  * Fetches the delegated agent PKP token IDs for a specific app version
@@ -32,32 +32,61 @@ export async function fetchDelegatedAgentPKPTokenIds(appId: number, version: num
     throw new Error(`Error fetching delegated agent PKP token IDs: ${error}`);
   }
 }
+async function processWithConcurrency<T, R>(
+  items: T[],
+  processFn: (item: T) => Promise<R>,
+  concurrencyLimit: number
+): Promise<R[]> {
+  const results: R[] = [];
+  let index = 0;
+
+  // Start initial set of promises
+  const workers = Array(concurrencyLimit)
+    .fill(null)
+    .map(async () => {
+      while (index < items.length) {
+        const currentIndex = index++;
+        if (currentIndex >= items.length) break;
+
+        try {
+          const result = await processFn(items[currentIndex]);
+          results[currentIndex] = result;
+        } catch (error) {
+          // Store the error but don't throw until all are done
+          results[currentIndex] = error as R;
+        }
+      }
+    });
+
+  await Promise.all(workers);
+  return results;
+}
 
 /**
- * Retrieves PKP information for all delegators of a specific app version
+ * Retrieves PKP Eth addresses for all delegators of a specific app version
  *
  * This function fetches the delegated agent PKP token IDs for a given app version
- * and then retrieves detailed PKP information for each token ID. This information
+ * and then retrieves the PKP Eth address for each token ID. This information
  * can be used to identify and interact with the PKPs that are authorized as agents
  * for the application.
  *
  * @param appId - The ID of the Vincent application
  * @param appVersion - The version number of the application
- * @returns An array of PKP information objects containing tokenId, ethAddress, and publicKey
+ * @returns An array of PKP Eth addresses
  *
  * @example
  * ```typescript
- * const pkpInfoArray = await getDelegatorsAgentPkpInfo(123, 1);
- * console.log(`Found ${pkpInfoArray.length} delegator PKPs`);
- * console.log(`First PKP address: ${pkpInfoArray[0].ethAddress}`);
+ * const pkpEthAddresses = await getDelegatorsAgentPkpAddresses(123, 1);
+ * console.log(`Found ${pkpEthAddresses.length} delegator PKPs`);
+ * console.log(`First PKP eth address: ${pkpEthAddresses[0]}`);
  * ```
  */
-export async function getDelegatorsAgentPkpInfo(appId: number, appVersion: number) {
+export async function getDelegatorsAgentPkpAddresses(appId: number, appVersion: number) {
   try {
     const delegators = await fetchDelegatedAgentPKPTokenIds(appId, appVersion);
-    const delegatorsPkpInfo = await Promise.all(delegators.map(getPkpInfo));
+    const delegatorsPkpEthAddresses = await processWithConcurrency(delegators, getPkpEthAddress, 5);
 
-    return delegatorsPkpInfo;
+    return delegatorsPkpEthAddresses;
   } catch (error) {
     throw new Error(`Error fetching delegators agent PKP info: ${error}`);
   }

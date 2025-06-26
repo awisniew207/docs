@@ -1,3 +1,3 @@
-import { fetchDelegatedAgentPKPTokenIds, getDelegatorsAgentPkpInfo } from './delegation';
+import { fetchDelegatedAgentPKPTokenIds, getDelegatorsAgentPkpAddresses } from './delegation';
 
-export { fetchDelegatedAgentPKPTokenIds, getDelegatorsAgentPkpInfo };
+export { fetchDelegatedAgentPKPTokenIds, getDelegatorsAgentPkpAddresses };
