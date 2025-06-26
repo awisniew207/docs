@@ -1,21 +1,13 @@
-import { DeleteAppForm } from '@/components/developer-dashboard/app/AppForms';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { DeleteAppWrapper } from '@/components/developer-dashboard/app/wrappers/DeleteAppWrapper';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 
-export default function AppDelete() {
-  const { app, appError, appLoading } = useAppDetail();
+interface AppDeleteProps {
+  app: any;
+  refetchApps: () => void;
+}
 
+export default function AppDelete({ app, refetchApps }: AppDeleteProps) {
   useAddressCheck(app);
 
-  // Loading state
-  if (appLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
-
-  return <DeleteAppForm appData={app} hideHeader={false} />;
+  return <DeleteAppWrapper app={app} refetchApps={refetchApps} />;
 }

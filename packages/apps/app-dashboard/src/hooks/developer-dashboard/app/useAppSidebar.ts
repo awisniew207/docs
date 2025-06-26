@@ -1,26 +1,7 @@
-import { useMemo, useEffect, useCallback, useReducer } from 'react';
+import { useEffect, useCallback, useReducer } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-
-// Type definitions
-interface App {
-  appId: number;
-  managerAddress: string;
-  [key: string]: any;
-}
-
-interface Tool {
-  packageName: string;
-  authorWalletAddress: string;
-  [key: string]: any;
-}
-
-interface Policy {
-  packageName: string;
-  authorWalletAddress: string;
-  [key: string]: any;
-}
+import { useDeveloperData, App, Tool, Policy } from '@/contexts/DeveloperDataContext';
 
 interface SidebarState {
   expandedMenus: Set<string>;
@@ -144,7 +125,7 @@ function sidebarReducer(state: SidebarState, action: SidebarAction): SidebarStat
 }
 
 export function useAppSidebar() {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
@@ -153,50 +134,14 @@ export function useAppSidebar() {
 
   const [state, dispatch] = useReducer(sidebarReducer, initialState);
 
+  // Use unified data context instead of individual API calls
   const {
-    data: apiApps,
-    error: appsError,
-    isLoading: appsLoading,
-  } = vincentApiClient.useListAppsQuery(undefined, {
-    skip: !shouldShowSidebar,
-  });
-
-  const {
-    data: allTools,
-    error: toolsError,
-    isLoading: toolsLoading,
-  } = vincentApiClient.useListAllToolsQuery(undefined, {
-    skip: !shouldShowSidebar,
-  });
-
-  const {
-    data: allPolicies,
-    error: policiesError,
-    isLoading: policiesLoading,
-  } = vincentApiClient.useListAllPoliciesQuery(undefined, {
-    skip: !shouldShowSidebar,
-  });
-
-  const filteredApps = useMemo(() => {
-    if (!address || !apiApps || apiApps.length === 0) return [];
-    return apiApps.filter(
-      (apiApp: App) => apiApp.managerAddress.toLowerCase() === address.toLowerCase(),
-    );
-  }, [apiApps, address]);
-
-  const filteredTools = useMemo(() => {
-    if (!address || !allTools || allTools.length === 0) return [];
-    return allTools.filter(
-      (tool: Tool) => tool.authorWalletAddress.toLowerCase() === address.toLowerCase(),
-    );
-  }, [allTools, address]);
-
-  const filteredPolicies = useMemo(() => {
-    if (!address || !allPolicies || allPolicies.length === 0) return [];
-    return allPolicies.filter(
-      (policy: Policy) => policy.authorWalletAddress.toLowerCase() === address.toLowerCase(),
-    );
-  }, [allPolicies, address]);
+    userApps: filteredApps,
+    userTools: filteredTools,
+    userPolicies: filteredPolicies,
+    isLoading,
+    hasErrors,
+  } = useDeveloperData();
 
   const findAppById = useCallback(
     (appId: number): App | null => {
@@ -223,7 +168,7 @@ export function useAppSidebar() {
   );
 
   useEffect(() => {
-    if (!shouldShowSidebar || appsLoading || toolsLoading || policiesLoading) {
+    if (!shouldShowSidebar || isLoading) {
       return;
     }
 
@@ -374,11 +319,11 @@ export function useAppSidebar() {
           }
         } else {
           // Extract packageName from pathname: /developer/policyId/package-name
-          const parts = pathname.split('/'); // ['', 'developer', 'policyId', 'package-name']
+          const parts = pathname.split('/'); // ['', 'developer', 'policyId', 'package-name'] TEMP: This is a hack to get the package name from the pathname
           try {
             packageName = decodeURIComponent(parts[3]);
           } catch (error) {
-            console.error(`Invalid policyId in pathname: ${pathname}`, error);
+            console.error(`Invalid packageName in pathname: ${pathname}`, error);
             return;
           }
         }
@@ -427,9 +372,7 @@ export function useAppSidebar() {
     filteredTools,
     filteredPolicies,
     shouldShowSidebar,
-    appsLoading,
-    toolsLoading,
-    policiesLoading,
+    isLoading,
     findAppById,
     findToolByPackageName,
     findPolicyByPackageName,
@@ -582,12 +525,14 @@ export function useAppSidebar() {
     selectedToolView: state.selectedToolView,
     selectedPolicy: state.selectedPolicy,
     selectedPolicyView: state.selectedPolicyView,
+
+    // Data from unified context
     apps: filteredApps,
     tools: filteredTools,
     policies: filteredPolicies,
-    // Loading and error states
-    isLoading: appsLoading || toolsLoading || policiesLoading,
-    hasErrors: !!(appsError || toolsError || policiesError),
+    isLoading,
+    hasErrors,
+
     // Handlers
     onToggleMenu: handleToggleMenu,
     onCategoryClick: handleCategoryClick,

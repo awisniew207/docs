@@ -1,37 +1,26 @@
-import { useState, useMemo } from 'react';
-import { useAccount } from 'wagmi';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { useMemo, useState } from 'react';
+import { useDeveloperData } from '@/contexts/DeveloperDataContext';
 
 export function useAppFilters() {
   const [sortOption, setSortOption] = useState<string>('all');
-  const { address } = useAccount();
 
-  const {
-    data: apiApps = [],
-    error: appsError,
-    isLoading: appsLoading,
-  } = vincentApiClient.useListAppsQuery();
+  const { userApps: apps, isLoading: loading, hasErrors: error } = useDeveloperData();
 
-  // Filter apps by user address
-  const userApps = useMemo(() => {
-    if (!address || !apiApps?.length) return [];
-    return apiApps.filter((app: any) => app.managerAddress.toLowerCase() === address.toLowerCase());
-  }, [apiApps, address]);
-
-  // Filter apps by deployment status
   const filteredApps = useMemo(() => {
-    if (sortOption === 'all') return userApps;
+    if (sortOption === 'all') {
+      return apps;
+    }
 
-    // Convert sortOption to deployment status value (0: DEV, 1: TEST, 2: PROD)
+    // Sort based on deployment status (0: DEV, 1: TEST, 2: PROD)
     const statusValue = sortOption === 'dev' ? 0 : sortOption === 'test' ? 1 : 2;
-    return userApps.filter((app: any) => app.deploymentStatus === statusValue);
-  }, [userApps, sortOption]);
+    return apps.filter((app: any) => app.deploymentStatus === statusValue);
+  }, [apps, sortOption]);
 
   return {
     sortOption,
     setSortOption,
     filteredApps,
-    loading: appsLoading,
-    error: appsError ? 'Failed to load apps' : null,
+    loading,
+    error,
   };
 }
