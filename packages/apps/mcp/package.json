@@ -33,7 +33,7 @@
     "build": "tsc && cp -r src/public dist/src/public",
     "build:watch": "tsc --watch",
     "dev:stdio": "tsx src/stdio.ts",
-    "dev:http": "tsx watch --env-file=.env src/http.ts",
+    "dev:http": "tsx watch --tsconfig ./tsconfig.app.json --env-file=.env src/http.ts",
     "inspector": "npx @modelcontextprotocol/inspector",
     "integration:openAI": "tsx --env-file=.env ./integrations/openAI.ts",
     "integration:anthropic": "tsx --env-file=.env ./integrations/anthropic.ts"
