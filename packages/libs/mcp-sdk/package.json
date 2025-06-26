@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-mcp-sdk",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "Vincent Model Context Protocol SDK",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -21,11 +21,6 @@
     "agents",
     "sdk"
   ],
-  "scripts": {
-    "type-tests": "./scripts/run-typecheck.sh",
-    "watch:type-tests": "chokidar 'src/**/*' --initial --await-write-finish --delay 100 --silent -c './scripts/run-typecheck.sh'",
-    "typecheck": "./scripts/precommit-check.sh"
-  },
   "dependencies": {
     "@lit-protocol/constants": "^7.2.0",
     "@lit-protocol/lit-node-client": "^7.2.0",
