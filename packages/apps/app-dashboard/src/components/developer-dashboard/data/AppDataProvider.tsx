@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useDeveloperData } from '@/contexts/DeveloperDataContext';
+import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import AppEdit from '@/pages/developer-dashboard/app/AppEdit';
@@ -9,6 +10,7 @@ import AppDelete from '@/pages/developer-dashboard/app/AppDelete';
 import CreateAppPage from '@/pages/developer-dashboard/CreateAppPage';
 import AppVersions from '@/pages/developer-dashboard/app/AppVersions';
 import AppVersionDetail from '@/pages/developer-dashboard/app/AppVersionDetail';
+import AppVersionTools from '@/pages/developer-dashboard/app/AppVersionTools';
 import AppCreateVersion from '@/pages/developer-dashboard/app/AppCreateVersion';
 import AppEditVersion from '@/pages/developer-dashboard/app/AppEditVersion';
 
@@ -22,12 +24,18 @@ export function AppRoute() {
   // Use unified data context for apps and version hooks
   const {
     userApps: apps,
+    allTools,
     isLoading,
     hasErrors,
     refetchApps,
     useAppVersions,
     useAppVersion,
+    useListAppVersionToolsQuery,
   } = useDeveloperData();
+
+  // Get Vincent API for mutations
+  const vincentApi = useVincentApiWithSIWE();
+  const [createAppVersionTool] = vincentApi.useCreateAppVersionToolMutation();
 
   // Find specific app for app-specific routes
   const app = useMemo(() => {
@@ -53,6 +61,41 @@ export function AppRoute() {
     { skip: !appId || !versionId },
   );
 
+  // Use version tools hook when we have both appId and versionId
+  const {
+    data: versionTools,
+    isLoading: versionToolsLoading,
+    error: versionToolsError,
+    refetch: refetchVersionTools,
+  } = useListAppVersionToolsQuery(
+    { appId: Number(appId!), version: Number(versionId!) },
+    { skip: !appId || !versionId },
+  );
+
+  // Handle tool addition at the data layer
+  const handleToolAdd = async (tool: any) => {
+    if (!appId || !versionId) {
+      throw new Error('App ID and Version ID are required');
+    }
+
+    const response = await createAppVersionTool({
+      appId: Number(appId),
+      appVersion: Number(versionId),
+      toolPackageName: tool.packageName,
+      appVersionToolCreate: {
+        toolVersion: tool.activeVersion,
+        hiddenSupportedPolicies: [],
+      },
+    });
+
+    if ('error' in response) {
+      throw new Error('Failed to add tool');
+    }
+
+    // Refetch version tools to update the cache
+    await refetchVersionTools();
+  };
+
   // Loading and error states for app data
   if (isLoading) return <Loading />;
   if (hasErrors) return <StatusMessage message="Failed to load apps" type="error" />;
@@ -67,10 +110,10 @@ export function AppRoute() {
   // Version-level routes (when versionId is present)
   if (versionId) {
     // Loading state for version data
-    if (versionLoading || versionsLoading) return <Loading />;
+    if (versionLoading || versionsLoading || versionToolsLoading) return <Loading />;
 
     // Error handling for version data
-    if (versionError || versionsError) {
+    if (versionError || versionsError || versionToolsError) {
       return <StatusMessage message="Error loading version data" type="error" />;
     }
 
@@ -90,11 +133,25 @@ export function AppRoute() {
       );
     }
 
+    if (location.pathname.endsWith('/tools')) {
+      return (
+        <AppVersionTools
+          app={app}
+          versionId={Number(versionId)}
+          versionTools={versionTools || []}
+          refetchVersionTools={refetchVersionTools}
+          onToolAdd={handleToolAdd}
+          availableTools={allTools}
+        />
+      );
+    }
+
     // Default version detail view
     return (
       <AppVersionDetail
         app={app}
         versionData={versionData}
+        versionTools={versionTools || []}
         refetchVersions={refetchVersions}
         refetchVersionData={refetchVersionData}
       />
@@ -111,13 +168,7 @@ export function AppRoute() {
   }
 
   if (location.pathname.endsWith('/versions')) {
-    return (
-      <AppVersions
-        app={app}
-        appVersions={versionsLoading ? [] : appVersions || []}
-        isLoading={versionsLoading}
-      />
-    );
+    return <AppVersions app={app} appVersions={appVersions || []} />;
   }
 
   if (location.pathname.endsWith('/create-app-version')) {

@@ -19,7 +19,6 @@ interface AppDetailsViewProps {
 
 export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps) {
   const displayData = AppDisplaySchema.parse(selectedApp);
-  const displayEntries: [string, any][] = Object.entries(displayData);
 
   const logoUrl = selectedApp.logo && selectedApp.logo.length >= 10 ? selectedApp.logo : null;
 
@@ -110,51 +109,126 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 gap-4">
-              {displayEntries.map(([key, value]) => (
-                <div key={key} className="border-b border-gray-100 pb-3 last:border-b-0">
+              <div className="border-b border-gray-100 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between">
+                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                    App ID
+                  </span>
+                  <div className="mt-1 sm:mt-0 sm:text-right">
+                    <span className="text-gray-900 text-sm">{displayData.appId}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-100 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between">
+                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                    Active Version
+                  </span>
+                  <div className="mt-1 sm:mt-0 sm:text-right">
+                    <span className="text-gray-900 text-sm">{displayData.activeVersion}</span>
+                  </div>
+                </div>
+              </div>
+
+              {displayData.contactEmail && (
+                <div className="border-b border-gray-100 pb-3">
                   <div className="flex flex-col sm:flex-row sm:justify-between">
                     <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                      Contact Email
                     </span>
                     <div className="mt-1 sm:mt-0 sm:text-right">
-                      {Array.isArray(value) ? (
-                        <div className="space-y-1">
-                          {value.map((item, index) => (
-                            <div key={index}>
-                              <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
-                                {item}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      ) : key === 'appUserUrl' ? (
-                        <a
-                          href={String(value)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm"
-                        >
-                          {String(value)}
-                        </a>
-                      ) : key === 'deploymentStatus' ? (
-                        <span
-                          className={`inline-block px-2 py-1 rounded text-sm font-medium ${
-                            value === 'production'
-                              ? 'bg-green-100 text-green-800'
-                              : value === 'staging'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          {String(value).toUpperCase()}
-                        </span>
-                      ) : (
-                        <span className="text-gray-900 text-sm">{String(value)}</span>
-                      )}
+                      <span className="text-gray-900 text-sm">{displayData.contactEmail}</span>
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {displayData.appUserUrl && (
+                <div className="border-b border-gray-100 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-between">
+                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                      App User URL
+                    </span>
+                    <div className="mt-1 sm:mt-0 sm:text-right">
+                      <a
+                        href={displayData.appUserUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline text-sm"
+                      >
+                        {displayData.appUserUrl}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {displayData.redirectUris && displayData.redirectUris.length > 0 && (
+                <div className="border-b border-gray-100 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-between">
+                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                      Redirect URIs
+                    </span>
+                    <div className="mt-1 sm:mt-0 sm:text-right">
+                      <div className="space-y-1">
+                        {displayData.redirectUris.map((uri, index) => (
+                          <div key={index}>
+                            <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
+                              {uri}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {displayData.deploymentStatus && (
+                <div className="border-b border-gray-100 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-between">
+                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                      Deployment Status
+                    </span>
+                    <div className="mt-1 sm:mt-0 sm:text-right">
+                      <span
+                        className={`inline-block px-2 py-1 rounded text-sm font-medium ${
+                          displayData.deploymentStatus === 'prod'
+                            ? 'bg-green-100 text-green-800'
+                            : displayData.deploymentStatus === 'test'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {displayData.deploymentStatus.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="border-b border-gray-100 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between">
+                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                    Created At
+                  </span>
+                  <div className="mt-1 sm:mt-0 sm:text-right">
+                    <span className="text-gray-900 text-sm">{displayData.createdAt}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between">
+                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                    Updated At
+                  </span>
+                  <div className="mt-1 sm:mt-0 sm:text-right">
+                    <span className="text-gray-900 text-sm">{displayData.updatedAt}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

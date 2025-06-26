@@ -1,22 +1,20 @@
-import { AppVersionsListView } from '@/components/developer-dashboard/app/AppVersionsListView';
+import { AppVersionsWrapper } from '@/components/developer-dashboard/app/wrappers/AppVersionsWrapper';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { App } from '@/contexts/DeveloperDataContext';
 
 interface AppVersionsProps {
   app: App;
   appVersions: any[];
-  isLoading: boolean;
 }
 
-export default function AppVersions({ app, appVersions, isLoading }: AppVersionsProps) {
+export default function AppVersions({ app, appVersions }: AppVersionsProps) {
   useAddressCheck(app);
 
   return (
-    <AppVersionsListView
+    <AppVersionsWrapper
       versions={appVersions}
       appId={app.appId}
       latestVersion={app.activeVersion}
-      isLoading={isLoading}
     />
   );
 }

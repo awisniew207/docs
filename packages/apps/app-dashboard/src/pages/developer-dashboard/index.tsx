@@ -1,5 +1,5 @@
 import ConnectWallet from './ConnectWalletPage';
-import Dashboard from './DashboardPage';
+import Dashboard from './DashboardRoute';
 import Apps from './AppsPage';
 import CreateApp from './CreateAppPage';
 

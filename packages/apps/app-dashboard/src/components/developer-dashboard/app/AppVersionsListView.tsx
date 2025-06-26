@@ -1,33 +1,19 @@
-import { useNavigate } from 'react-router';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Power, PowerOff } from 'lucide-react';
 
 interface AppVersionsListViewProps {
   versions: any[];
-  appId: number;
   latestVersion?: number;
-  isLoading: boolean;
+  onVersionClick: (version: number) => void;
 }
 
 export function AppVersionsListView({
   versions,
-  appId,
   latestVersion,
-  isLoading,
+  onVersionClick,
 }: AppVersionsListViewProps) {
-  const navigate = useNavigate();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
-        <span className="ml-2 text-gray-600">Loading versions...</span>
-      </div>
-    );
-  }
-
   const handleVersionClick = (version: number) => {
-    navigate(`/developer/appId/${appId}/version/${version}`);
+    onVersionClick(version);
   };
 
   return (
@@ -39,78 +25,49 @@ export function AppVersionsListView({
         </div>
       </div>
 
-      {versions && versions.length > 0 ? (
-        <div className="space-y-4">
-          {[...versions]
-            .sort((a, b) => b.version - a.version)
-            .map((version) => (
-              <Card
-                key={version.version}
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
-                onClick={() => handleVersionClick(version.version)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-gray-900 flex items-center justify-between">
-                    Version {version.version}
+      {versions.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-8 text-gray-500">
+              <p>No app versions found.</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {versions.map((version: any) => (
+            <Card
+              key={version.version}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleVersionClick(version.version)}
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CardTitle className="text-lg">Version {version.version}</CardTitle>
                     {version.version === latestVersion && (
-                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded text-sm">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         Latest
                       </span>
                     )}
-                  </CardTitle>
-                  <CardDescription className="text-gray-700">
-                    Click to view version details and manage settings
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 gap-4">
-                    {version.changes && (
-                      <div className="border-b border-gray-100 pb-3 last:border-b-0">
-                        <div className="flex flex-col sm:flex-row sm:justify-between">
-                          <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                            Changes
-                          </span>
-                          <div className="mt-1 sm:mt-0 sm:text-right">
-                            <span className="text-gray-900 text-sm">{version.changes}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    <div className="border-b border-gray-100 pb-3 last:border-b-0">
-                      <div className="flex flex-col sm:flex-row sm:justify-between">
-                        <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                          Status
-                        </span>
-                        <div className="mt-1 sm:mt-0 sm:text-right">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium ${
-                              version.enabled
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}
-                          >
-                            {version.enabled ? (
-                              <Power className="h-3 w-3" />
-                            ) : (
-                              <PowerOff className="h-3 w-3" />
-                            )}
-                            {version.enabled ? 'ENABLED' : 'DISABLED'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <div className="text-gray-400 text-6xl mb-4">📦</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">No Versions Found</h2>
-          <p className="text-gray-600 mb-6">
-            This app doesn't have any versions yet. Create your first version to get started.
-          </p>
+                  <div className="flex items-center gap-2">
+                    {version.isEnabled ? (
+                      <Power className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <PowerOff className="h-4 w-4 text-gray-400" />
+                    )}
+                    <span className="text-sm text-gray-500">
+                      {version.isEnabled ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </div>
+                </div>
+                <CardDescription>
+                  Created: {new Date(version.createdAt).toLocaleDateString()}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
         </div>
       )}
     </div>

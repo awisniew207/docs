@@ -1,24 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 interface VersionDetailsProps {
   version: number;
-  appId: number;
   appName?: string;
-  versionData: any; // The fetched version data
+  versionData: any;
+  tools: any[];
 }
 
-export function VersionDetails({ version, appId, versionData }: VersionDetailsProps) {
-  // Fetch tools for this specific version
-  const {
-    data: versionTools,
-    isLoading: toolsLoading,
-    error: toolsError,
-  } = vincentApiClient.useListAppVersionToolsQuery({
-    appId,
-    version,
-  });
-
+export function VersionDetails({ version, versionData, tools }: VersionDetailsProps) {
   if (!versionData) {
     return (
       <div className="p-6">
@@ -60,19 +49,9 @@ export function VersionDetails({ version, appId, versionData }: VersionDetailsPr
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {toolsLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mr-2"></div>
-              <span className="text-gray-600">Loading tools...</span>
-            </div>
-          ) : toolsError ? (
-            <div className="text-center py-8">
-              <div className="text-red-400 text-lg mb-2">⚠️</div>
-              <p className="text-red-600">Error loading tools</p>
-            </div>
-          ) : versionTools && versionTools.length > 0 ? (
+          {tools && tools.length > 0 ? (
             <div className="space-y-3">
-              {versionTools.map((tool: any, index: number) => (
+              {tools.map((tool: any, index: number) => (
                 <div
                   key={tool.toolPackageName || index}
                   className="p-4 bg-gray-50 rounded-lg border"

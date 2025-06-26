@@ -1,28 +1,27 @@
-import {
-  AppVersionToolsList,
-  CreateAppVersionToolsForm,
-} from '@/components/developer-dashboard/app/AppVersionToolForms';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { AppVersionToolsWrapper } from '@/components/developer-dashboard/app/wrappers/AppVersionToolsWrapper';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
+import { App } from '@/contexts/DeveloperDataContext';
 
-export default function AppVersionTools() {
-  const { appId, app, appError, appLoading, versionId } = useAppDetail();
+interface AppVersionToolsProps {
+  app: App;
+  versionId: number;
+  versionTools: any[];
+  refetchVersionTools: () => Promise<any>;
+  onToolAdd: (tool: any) => Promise<void>;
+  availableTools: any[];
+}
 
+export default function AppVersionTools({
+  app,
+  versionId,
+  versionTools,
+  refetchVersionTools,
+  onToolAdd,
+  availableTools,
+}: AppVersionToolsProps) {
   useAddressCheck(app);
 
-  // Loading state
-  if (appLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
-
-  if (!versionId) {
-    return <StatusMessage message="Version not found" type="error" />;
-  }
+  const appId = app.appId;
 
   return (
     <div className="space-y-6">
@@ -35,20 +34,14 @@ export default function AppVersionTools() {
         </div>
       </div>
 
-      {/* Add Tools Form */}
-      <CreateAppVersionToolsForm appId={appId} versionId={versionId} hideHeader={false} />
-
-      {/* Current Tools List */}
-      <div>
-        <div className="mb-4">
-          <h3 className="text-lg font-medium text-gray-900">Current Tools</h3>
-          <p className="text-gray-600 text-sm mt-1">
-            Tools currently associated with this version. Click the edit button to modify settings
-            inline.
-          </p>
-        </div>
-        <AppVersionToolsList appId={appId} versionId={versionId} />
-      </div>
+      <AppVersionToolsWrapper
+        appId={appId}
+        versionId={versionId}
+        tools={versionTools}
+        refetchVersionTools={refetchVersionTools}
+        onToolAdd={onToolAdd}
+        availableTools={availableTools}
+      />
     </div>
   );
 }

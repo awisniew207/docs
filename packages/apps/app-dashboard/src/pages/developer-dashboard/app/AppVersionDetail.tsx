@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { Edit, Plus, Power, PowerOff } from 'lucide-react';
-import { VersionDetails } from '@/components/developer-dashboard/app/VersionDetails';
+import { VersionDetailsWrapper } from '@/components/developer-dashboard/app/wrappers/VersionDetailsWrapper';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
@@ -14,6 +14,7 @@ import { App } from '@/contexts/DeveloperDataContext';
 interface AppVersionDetailProps {
   app: App;
   versionData: any;
+  versionTools: any[];
   refetchVersions: () => Promise<any>;
   refetchVersionData: () => Promise<any>;
 }
@@ -21,6 +22,7 @@ interface AppVersionDetailProps {
 export default function AppVersionDetail({
   app,
   versionData,
+  versionTools,
   refetchVersions,
   refetchVersionData,
 }: AppVersionDetailProps) {
@@ -153,11 +155,11 @@ export default function AppVersionDetail({
       </div>
 
       {/* Version Details */}
-      <VersionDetails
+      <VersionDetailsWrapper
         version={versionId}
-        appId={appId}
         appName={app.name}
         versionData={versionData}
+        tools={versionTools}
       />
     </div>
   );

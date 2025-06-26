@@ -47,6 +47,7 @@ interface DeveloperDataContextType {
   // Version hooks - expose the actual hooks
   useAppVersions: typeof vincentApiClient.useGetAppVersionsQuery;
   useAppVersion: typeof vincentApiClient.useGetAppVersionQuery;
+  useListAppVersionToolsQuery: typeof vincentApiClient.useListAppVersionToolsQuery;
 }
 
 const DeveloperDataContext = createContext<DeveloperDataContextType | undefined>(undefined);
@@ -183,6 +184,7 @@ export function DeveloperDataProvider({
     // Version hooks
     useAppVersions: vincentApiClient.useGetAppVersionsQuery,
     useAppVersion: vincentApiClient.useGetAppVersionQuery,
+    useListAppVersionToolsQuery: vincentApiClient.useListAppVersionToolsQuery,
   };
 
   return (
