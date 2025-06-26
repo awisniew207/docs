@@ -7,7 +7,7 @@ title: MCP - Model Context Protocol
 
 Any Vincent App can be converted into a Model Protocol Server (MCP) that can be consumed by any Large Language Model (LLM) with support for the MCP standard.
 
-We provide an [implementation of an MCP Server](https://github.com/LIT-Protocol/Vincent/tree/feature/main/packages/apps/mcp), connectable through STDIO and HTTP transports. You can use it (forking or [using `npx`](https://www.npmjs.com/package/@lit-protocol/vincent-mcp)) with your keys and Vincent Apps or you can customize the whole process to make your own Vincent MCP Server.
+We provide an [implementation of an MCP Server](https://github.com/LIT-Protocol/Vincent/tree/feature/main/packages/apps/mcp), connectable through STDIO and HTTP transports. You can use it (forking or [using `npx`](https://www.npmjs.com/package/@lit-protocol/vincent-mcp-server)) with your keys and Vincent Apps or you can customize the whole process to make your own Vincent MCP Server.
 
 By following this process, your Vincent App tools will be exposed to LLMs as a set of MCP tools. The MCP server can also be extended with custom tools and prompts to suit your specific needs.
 

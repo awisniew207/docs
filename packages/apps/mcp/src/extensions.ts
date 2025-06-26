@@ -76,7 +76,7 @@ function getLitSupportedChainData(chainId: number) {
  * import { VincentAppDef } from '@lit-protocol/vincent-mcp-sdk';
  * import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
  * import { ethers } from 'ethers';
- * import { extendVincentServer } from '@lit-protocol/vincent-mcp';
+ * import { extendVincentServer } from '@lit-protocol/vincent-mcp-server';
  *
  * // Create a base MCP server
  * const server = new McpServer({

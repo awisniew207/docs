@@ -22,7 +22,7 @@ You can run the Vincent MCP server directly using npx without downloading the re
 ### STDIO mode
 
 ```bash
-npx @lit-protocol/vincent-mcp stdio
+npx @lit-protocol/vincent-mcp-server stdio
 ```
 
 When setting this in the LLM client, pass it the necessary environment variables from your client.
@@ -30,7 +30,7 @@ When setting this in the LLM client, pass it the necessary environment variables
 ### HTTP mode
 
 ```bash
-npx @lit-protocol/vincent-mcp http
+npx @lit-protocol/vincent-mcp-server http
 ```
 
 In HTTP mode, the environment variables are configured on the server itself, not the client.
@@ -46,7 +46,7 @@ These commands require the following environment variables to be set:
 You can set these environment variables in your shell before running the commands, or use a tool like `dotenvx`:
 
 ```bash
-dotenvx run -f /path/to/.env -- npx @lit-protocol/vincent-mcp http
+dotenvx run -f /path/to/.env -- npx @lit-protocol/vincent-mcp-server http
 ```
 
 ## Local Running

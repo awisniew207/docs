@@ -36,7 +36,7 @@ export interface ServerConfig {
  * @example
  * ```typescript
  * import { getVincentAppServer, VincentAppDef } from '@lit-protocol/vincent-mcp-sdk';
- * import { getServer } from '@lit-protocol/vincent-mcp';
+ * import { getServer } from '@lit-protocol/vincent-mcp-server';
  * import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
  *
  * // Define your Vincent application

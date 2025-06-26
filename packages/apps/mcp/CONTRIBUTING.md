@@ -48,13 +48,13 @@ Alternatively, you can use Postman or any other MCP debugger. LLM clients should
 
 - For development: `pnpm dev:stdio`
 - For production: `node src/stdio.js` (ideally in build directory)
-- From npm directly: `npx @lit-protocol/vincent-mcp stdio`
+- From npm directly: `npx @lit-protocol/vincent-mcp-server stdio`
 
 ### HTTP Mode
 
 - For development: `pnpm dev:http`
 - For production: `node src/http.js` (ideally in build directory)
-- From npm directly: `npx @lit-protocol/vincent-mcp http`
+- From npm directly: `npx @lit-protocol/vincent-mcp-server http`
 
 ## Project Structure
 
