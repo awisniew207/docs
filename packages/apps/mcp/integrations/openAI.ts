@@ -36,11 +36,9 @@ async function delegateeUsage() {
         require_approval: 'never',
         server_url: `${VINCENT_MCP_BASE_URL}/mcp`, // The URL of the MCP server
         headers: {
-          'x-siwe-b64message': base64Message,
-          'x-siwe-signature': signature,
-          //   authorization: `Bearer ${jwt}`,
+          authorization: `SIWE-V1 b64message="${base64Message}" signature="${signature}"`,
         },
-        // Alternatively, you can pass the SIWE signature and message (base64 encoded) as query params. But using headers is preferred
+        // Alternatively, you can pass the SIWE signature and message (base64 encoded) as query params. But using the authorization header is preferred
         // server_url: `${VINCENT_MCP_BASE_URL}/mcp?b64message=${base64Message}&signature=${signature}`,
       },
     ],
@@ -79,8 +77,7 @@ async function delegatorUsage() {
         server_url: `${VINCENT_MCP_BASE_URL}/mcp`, // The URL of the MCP server
         headers: {
           // The jwt can be passed as an authorization header or the custom vincent jwt header
-          //   authorization: `Bearer ${jwt}`,
-          'x-vincent-jwt': jwt,
+          authorization: `Bearer ${jwt}`,
         },
         // Alternatively, you can pass the SIWE or JWT as query params. But using headers is preferred
         // server_url: `${VINCENT_MCP_BASE_URL}/mcp?jwt=${jwt}`,

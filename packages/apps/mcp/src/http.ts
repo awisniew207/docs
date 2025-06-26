@@ -53,6 +53,55 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+export interface ParsedSiweHeader {
+  /**
+   * The base64 encoded SIWE message.
+   */
+  b64message: string;
+  /**
+   * The hex encoded signature of the message.
+   */
+  signature: string;
+}
+
+/**
+ * Parses a SIWE-V1 Authorization header.
+ * * The expected format is: `Authorization: SIWE-V1 b64message="<base64_message>" signature="<hex_signature>"`
+ *
+ * @param header - The raw value from the `Authorization` HTTP header. Can be string, undefined, or null.
+ * @returns If header is present, an object containing the message and signature.
+ * @throws An error if the header is malformed or using an unsupported scheme.
+ */
+function parseSiweHeader(header: string | undefined | null): ParsedSiweHeader | undefined {
+  if (!header) return;
+
+  const [scheme, ...params] = header.split(' ');
+  const paramsStr = params.join(' ');
+
+  if (scheme !== 'SIWE-V1') {
+    throw new Error(`Unsupported authentication scheme. Expected "SIWE-V1", got "${scheme}".`);
+  }
+  if (!paramsStr) {
+    throw new Error('Authentication parameters are missing after the scheme.');
+  }
+
+  const regex = /b64message="([^"]*)"\s+signature="([^"]*)"/;
+  const match = paramsStr.match(regex);
+  if (!match) {
+    throw new Error('Invalid parameters format. Expected \'b64message="..." signature="..."\'.');
+  }
+
+  // const fullMatchedString = match[0];
+  const b64message = match[1];
+  const signature = match[2];
+
+  if (!b64message || !signature) {
+    throw new Error('Message or signature parameter is empty.');
+  }
+
+  return { b64message, signature };
+}
+
 function returnWithError(res: Response, httpStatus: number, message: string): void {
   res.status(httpStatus).json({
     jsonrpc: '2.0',
@@ -107,26 +156,39 @@ app.post('/mcp', async (req: Request, res: Response) => {
       });
 
       // Get all the possible authentications (Headers or Query params. Body is used for json rpc methods)
-      const jwt = (req.headers['authorization']?.split(' ')[1] ||
-        req.headers['x-vincent-jwt'] ||
-        req.query.jwt ||
-        '') as string;
-      const siweSignature = (req.headers['x-siwe-signature'] ||
-        req.query.signature ||
-        '') as string;
-      const siweB64Message = (req.headers['x-siwe-b64message'] ||
-        req.query.b64message ||
-        '') as string;
-      const siweMessage = siweB64Message ? Buffer.from(siweB64Message, 'base64').toString() : '';
+      let jwt = req.query.jwt as string;
+      let signature = req.query.signature as string;
+      let message = req.query.b64message
+        ? Buffer.from(req.query.b64message as string, 'base64').toString()
+        : undefined;
+      const [authenticationHeaderScheme, authenticationHeader] = (
+        req.headers['authorization'] || ''
+      ).split(' ');
+      switch (authenticationHeaderScheme) {
+        case 'Bearer': // Using JWT
+          jwt = authenticationHeader;
+          break;
+        case 'SIWE-V1': {
+          const parsedSiweMessage = parseSiweHeader(req.headers['authorization']);
+          if (parsedSiweMessage) {
+            signature = parsedSiweMessage.signature;
+            message = Buffer.from(parsedSiweMessage.b64message, 'base64').toString();
+          }
+          break;
+        }
+      }
 
-      const usingSiwe = !!`${siweMessage}${siweSignature}`;
-      if (usingSiwe && jwt) {
+      const usingJwt = !!jwt;
+      const usingSiwe = !!message || !!signature; // Just using one is considered using it
+
+      // Using both or none are incorrect
+      if (usingSiwe && usingJwt) {
         return returnWithError(
           res,
           401,
           'Authentication failed. Found both JWT and SIWE values. Choose one',
         );
-      } else if (!usingSiwe && !jwt) {
+      } else if (!usingSiwe && !usingJwt) {
         return returnWithError(
           res,
           401,
@@ -134,12 +196,15 @@ app.post('/mcp', async (req: Request, res: Response) => {
         );
       }
 
-      // Authenticate the user
+      // Only one authentication. Good. Authenticate the user now
       let authenticatedAddress;
       try {
+        // Do not separate these two. The corresponding one MUST run. If nothing runs and authenticatedAddress goes through empty user will have delegatee priviledge
         authenticatedAddress = usingSiwe
-          ? await authenticateWithSiwe(siweMessage, siweSignature)
-          : authenticateWithJwt(jwt, vincentAppDef.id, vincentAppDef.version);
+          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await authenticateWithSiwe(message!, signature!)
+          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            authenticateWithJwt(jwt!, vincentAppDef.id, vincentAppDef.version);
       } catch (e) {
         console.error(`Client authentication failed: ${(e as Error).message}`);
         return returnWithError(

@@ -34,7 +34,7 @@ async function delegateeUsage() {
     mcp_servers: [
       {
         type: 'url',
-        // Anthropic AI SDK does not yet support passing headers, so query params must be used to pass SIWE signature and base 64 encoded message
+        // Anthropic AI SDK mcp_servers only supports "authorization: Bearer" tokens, so query params must be used to pass SIWE signature and base 64 encoded message
         url: `${VINCENT_MCP_BASE_URL}/mcp?b64message=${base64Message}&signature=${signature}`, // The URL of the MCP server
         name: 'vincent-app',
         tool_configuration: {
@@ -132,7 +132,7 @@ async function delegatorUsage() {
         },
         authorization_token: jwt, // MCP Server receives headers['authorization'] = `Bearer ${jwt}`
         // Alternatively, you can pass the SIWE or JWT as query params. But using headers is preferred
-        // server_url: `${VINCENT_MCP_BASE_URL}/mcp?jwt=${jwt}`,
+        // url: `${VINCENT_MCP_BASE_URL}/mcp?jwt=${jwt}`,
       },
     ],
     messages: [
