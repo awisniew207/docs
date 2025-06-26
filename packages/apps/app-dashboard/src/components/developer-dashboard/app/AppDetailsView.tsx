@@ -1,21 +1,25 @@
+import { z } from 'zod';
+
+const AppDisplaySchema = z.object({
+  appId: z.number(),
+  activeVersion: z.number(),
+  contactEmail: z.string().optional(),
+  appUserUrl: z.string().optional(),
+  redirectUris: z.array(z.string()).optional(),
+  deploymentStatus: z.enum(['dev', 'staging', 'production']).optional(),
+  isDeleted: z.boolean().optional(),
+  createdAt: z.string().transform((date) => new Date(date).toLocaleString()),
+  updatedAt: z.string().transform((date) => new Date(date).toLocaleString()),
+});
+
 interface AppDetailsViewProps {
   selectedApp: any;
   onOpenModal: (contentType: string) => void;
 }
 
 export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps) {
-  // Filter out unnecessary fields and format dates
-  const filteredApp: [string, any][] = Object.entries(selectedApp)
-    .filter(
-      ([key]) => !['_id', '__v', 'logo', 'managerAddress', 'name', 'description'].includes(key),
-    )
-    .map((entry: [string, any]) => {
-      const [key, value] = entry;
-      if (key === 'createdAt' || key === 'updatedAt') {
-        return [key, new Date(value as string).toLocaleString()];
-      }
-      return [key, value];
-    });
+  const displayData = AppDisplaySchema.parse(selectedApp);
+  const displayEntries: [string, any][] = Object.entries(displayData);
 
   const logoUrl = selectedApp.logo && selectedApp.logo.length >= 10 ? selectedApp.logo : null;
 
@@ -106,54 +110,51 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 gap-4">
-              {filteredApp.map((entry: [string, any]) => {
-                const [key, value] = entry;
-                return (
-                  <div key={key} className="border-b border-gray-100 pb-3 last:border-b-0">
-                    <div className="flex flex-col sm:flex-row sm:justify-between">
-                      <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
-                      <div className="mt-1 sm:mt-0 sm:text-right">
-                        {Array.isArray(value) ? (
-                          <div className="space-y-1">
-                            {value.map((item, index) => (
-                              <div key={index}>
-                                <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
-                                  {item}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : key === 'appUserUrl' ? (
-                          <a
-                            href={String(value)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline text-sm"
-                          >
-                            {String(value)}
-                          </a>
-                        ) : key === 'deploymentStatus' ? (
-                          <span
-                            className={`inline-block px-2 py-1 rounded text-sm font-medium ${
-                              value === 'prod'
-                                ? 'bg-green-100 text-green-800'
-                                : value === 'test'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {String(value).toUpperCase()}
-                          </span>
-                        ) : (
-                          <span className="text-gray-900 text-sm">{String(value)}</span>
-                        )}
-                      </div>
+              {displayEntries.map(([key, value]) => (
+                <div key={key} className="border-b border-gray-100 pb-3 last:border-b-0">
+                  <div className="flex flex-col sm:flex-row sm:justify-between">
+                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <div className="mt-1 sm:mt-0 sm:text-right">
+                      {Array.isArray(value) ? (
+                        <div className="space-y-1">
+                          {value.map((item, index) => (
+                            <div key={index}>
+                              <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
+                                {item}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : key === 'appUserUrl' ? (
+                        <a
+                          href={String(value)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          {String(value)}
+                        </a>
+                      ) : key === 'deploymentStatus' ? (
+                        <span
+                          className={`inline-block px-2 py-1 rounded text-sm font-medium ${
+                            value === 'production'
+                              ? 'bg-green-100 text-green-800'
+                              : value === 'staging'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {String(value).toUpperCase()}
+                        </span>
+                      ) : (
+                        <span className="text-gray-900 text-sm">{String(value)}</span>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>

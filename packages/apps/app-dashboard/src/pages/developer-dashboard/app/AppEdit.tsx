@@ -1,22 +1,11 @@
-import { EditAppForm } from '@/components/developer-dashboard/app/AppForms';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
-import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
+import { EditAppWrapper } from '@/components/developer-dashboard/app/wrappers/EditAppWrapper';
 
-export default function AppEdit() {
-  const { app, appError, appLoading } = useAppDetail();
+interface AppEditProps {
+  app: any;
+  refetchApps: () => void;
+}
 
-  useAddressCheck(app);
-
-  // Loading state
-  if (appLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
-
+export default function AppEdit({ app, refetchApps }: AppEditProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -26,7 +15,7 @@ export default function AppEdit() {
         </div>
       </div>
 
-      <EditAppForm appData={app} />
+      <EditAppWrapper app={app} refetchApps={refetchApps} />
     </div>
   );
 }
