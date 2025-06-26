@@ -32,6 +32,7 @@ export async function fetchDelegatedAgentPKPTokenIds(appId: number, version: num
     throw new Error(`Error fetching delegated agent PKP token IDs: ${error}`);
   }
 }
+
 async function processWithConcurrency<T, R>(
   items: T[],
   processFn: (item: T) => Promise<R>,
