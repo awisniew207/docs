@@ -130,11 +130,7 @@ export function ToolSelectorModal({
       return;
     }
 
-    try {
-      await onToolAdd(tool);
-    } catch (error) {
-      console.error('Failed to add tool:', error);
-    }
+    await onToolAdd(tool);
   };
 
   const handleOpenChange = (open: boolean) => {
