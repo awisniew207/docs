@@ -6,9 +6,10 @@ import { exec } from 'node:child_process';
 
 const execAsync = util.promisify(exec);
 
-import * as fs from 'fs-extra';
+import fse from 'fs-extra';
 import * as tar from 'tar';
 import { Policy, PolicyVersion } from './mongo/policy';
+import { mkdtemp, mkdir } from 'node:fs/promises';
 
 // Module-level verbose logging control
 // const ENABLE_VERBOSE_LOGGING = process.env.VINCENT_VERBOSE_LOGGING === 'true' || false;
@@ -66,7 +67,7 @@ export interface ImportPackageOptions {
  */
 async function createTempDir(): Promise<string> {
   debugLog('Creating temporary directory');
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'vincent-package-'));
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'vincent-package-'));
   debugLog('Temporary directory created', { tempDir });
   return tempDir;
 }
@@ -78,7 +79,7 @@ async function createTempDir(): Promise<string> {
 async function cleanupTempDir(tempDir: string): Promise<void> {
   debugLog('Cleaning up temporary directory', { tempDir });
   try {
-    await fs.remove(tempDir);
+    await fse.remove(tempDir);
     debugLog('Temporary directory cleaned up successfully', { tempDir });
   } catch (error) {
     debugLog('Error cleaning up temporary directory', { tempDir, error: (error as Error).message });
@@ -116,7 +117,7 @@ async function downloadAndExtractPackage(
     // Create a directory to extract the package to
     const extractDir = path.join(tempDir, 'extracted');
     debugLog('Creating extraction directory', { extractDir });
-    await fs.mkdir(extractDir);
+    await mkdir(extractDir);
 
     // Extract the tarball
     debugLog('Extracting tarball', { tarballPath, extractDir });
@@ -160,11 +161,8 @@ async function readPackageMetadata(
 
   try {
     debugLog('Reading metadata file');
-    const metadataContent = await fs.readFile(metadataPath, 'utf-8');
-    debugLog('Metadata file read successfully', { contentLength: metadataContent.length });
-
-    const metadata = JSON.parse(metadataContent) as PackageMetadata;
-    debugLog('Metadata parsed successfully', { metadata });
+    const metadata = await fse.readJSON(metadataPath, 'utf-8');
+    debugLog(`Metadata file read successfully from ${metadataPath}`);
 
     if (!metadata.ipfsCid) {
       debugLog('Missing ipfsCid in metadata', { metadata });
