@@ -1,3 +1,18 @@
+## 0.2.0 (2025-06-25)
+
+### 🚀 Features
+
+- Implement detection of `supportedPolicies` and `policiesNotInRegistry` during toolVersion creation ([72881266](https://github.com/LIT-Protocol/Vincent/commit/72881266))
+- Implement loading of IPFS CID, uiSchema, jsonSchema from `vincent-tool-metadata.json` or `vincent-policy-metadata.json` files published in the NPM package. ([23dc7be0](https://github.com/LIT-Protocol/Vincent/commit/23dc7be0))
+
+### 🧱 Updated Dependencies
+
+- Updated registry-sdk to 2.2.0
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 0.1.0 (2025-06-25)
 
 ### 🚀 Features

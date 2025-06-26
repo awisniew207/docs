@@ -16,7 +16,7 @@ const AppSchema = new Schema(
       enum: ['dev', 'prod', 'test'],
     },
     managerAddress: { type: String, required: true },
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, index: true },
   } as const,
   { timestamps: true },
 );
@@ -43,7 +43,7 @@ export const AppToolSchema = new Schema(
     toolPackageName: { type: String, required: true },
     toolVersion: { type: String, required: true },
     hiddenSupportedPolicies: [{ type: String }],
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, index: true },
   } as const,
   { timestamps: true },
 );

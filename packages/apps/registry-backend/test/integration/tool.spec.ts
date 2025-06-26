@@ -16,6 +16,9 @@ describe('Tool API Integration Tests', () => {
   let testPackageName: string;
   let testToolVersion: string;
 
+  // Expected IPFS CID for the tool package
+  const expectedToolIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd';
+
   // Test data for creating a tool
   const toolData = {
     title: 'Test Tool',
@@ -149,6 +152,9 @@ describe('Tool API Integration Tests', () => {
 
       expect(data).toHaveProperty('changes', toolVersionData.changes);
       expect(data).toHaveProperty('version', '1.0.1');
+
+      // Verify ipfsCid is set
+      expect(data).toHaveProperty('ipfsCid', 'QmWHK5KsJitDwW1zHRoiJQdQECASzSjjphp4Rg8YqB6BsX');
     });
   });
 
@@ -189,6 +195,9 @@ describe('Tool API Integration Tests', () => {
 
       expect(data).toHaveProperty('version', testToolVersion);
       expect(data).toHaveProperty('changes', toolVersionData.changes);
+
+      // Verify ipfsCid is set
+      expect(data).toHaveProperty('ipfsCid', expectedToolIpfsCid);
     });
 
     it('should return 404 for non-existent version', async () => {
