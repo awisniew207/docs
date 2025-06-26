@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { DashboardContent } from '@/components/developer-dashboard/app/DashboardContent';
+import { DashboardContent } from '@/components/developer-dashboard/DashboardContent';
 import { MenuId } from '@/types/developer-dashboard/menuId';
 
 interface DashboardPageProps {

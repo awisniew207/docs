@@ -1,4 +1,4 @@
-import { VersionDetails } from '../VersionDetails';
+import { VersionDetails } from '../views/AppVersionDetails';
 
 interface VersionDetailsWrapperProps {
   version: number;

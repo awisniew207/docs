@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppVersionToolsList } from '../AppVersionToolsList';
+import { AppVersionToolsList } from '../views/AppVersionToolsList';
 import { CreateAppVersionToolsWrapper } from './CreateAppVersionToolsWrapper';
 
 interface AppVersionToolsWrapperProps {

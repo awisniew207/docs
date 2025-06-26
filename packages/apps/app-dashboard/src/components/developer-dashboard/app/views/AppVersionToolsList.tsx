@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Edit, X } from 'lucide-react';
-import { EditAppVersionToolWrapper } from './wrappers/EditAppVersionToolWrapper';
+import { EditAppVersionToolWrapper } from '../wrappers/EditAppVersionToolWrapper';
 
 interface AppVersionToolsListProps {
   tools: any[];

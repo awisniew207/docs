@@ -1,7 +1,7 @@
 import ConnectWallet from './ConnectWalletPage';
 import Dashboard from './DashboardRoute';
-import Apps from './AppsPage';
-import CreateApp from './CreateAppPage';
+import Apps from './app/AppsPage';
+import CreateApp from './app/CreateAppPage';
 
 export const AppDashboard = {
   Apps,

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useUrlAppId } from '@/components/consent/hooks/useUrlAppId';
-import { AppDetailsView } from '../AppDetailsView';
+import { AppDetailsView } from '../views/AppDetailsView';
 
 interface AppOverviewWrapperProps {
   app: any;

@@ -7,7 +7,7 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import AppEdit from '@/pages/developer-dashboard/app/AppEdit';
 import AppOverview from '@/pages/developer-dashboard/app/AppOverview';
 import AppDelete from '@/pages/developer-dashboard/app/AppDelete';
-import CreateAppPage from '@/pages/developer-dashboard/CreateAppPage';
+import CreateAppPage from '@/pages/developer-dashboard/app/CreateAppPage';
 import AppVersions from '@/pages/developer-dashboard/app/AppVersions';
 import AppVersionDetail from '@/pages/developer-dashboard/app/AppVersionDetail';
 import AppVersionTools from '@/pages/developer-dashboard/app/AppVersionTools';
