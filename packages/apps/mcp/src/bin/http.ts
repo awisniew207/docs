@@ -30,10 +30,10 @@ import {
   authenticateWithSiwe,
   getSiweMessageToAuthenticate,
   authenticateWithJwt,
-} from './authentication';
-import { env } from './env';
-import { getServer } from './server';
-import { transportManager } from './transportManager';
+} from '../authentication';
+import { env } from '../env';
+import { getServer } from '../server';
+import { transportManager } from '../transportManager';
 
 const { PORT, VINCENT_APP_JSON_DEFINITION, VINCENT_DELEGATEE_PRIVATE_KEY } = env;
 
@@ -51,7 +51,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 export interface ParsedSiweHeader {
   /**
@@ -114,7 +114,7 @@ function returnWithError(res: Response, httpStatus: number, message: string): vo
 }
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
 app.get('/appDef', (req, res) => {

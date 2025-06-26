@@ -19,6 +19,6 @@ const [sub] = process.argv.slice(2);
 if (sub === 'http') require('./http');
 else if (sub === 'stdio') require('./stdio');
 else {
-  console.error('usage: vincent-mcp <http|stdio>');
+  console.error('usage: npx @lit-protocol/vincent-mcp-server <http|stdio>');
   process.exit(1);
 }

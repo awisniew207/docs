@@ -15,7 +15,7 @@
  * @category Vincent MCP
  */
 
-import './bootstrap'; // Bootstrap console.log to a log file
+import '../bootstrap'; // Bootstrap console.log to a log file
 import { ethers } from 'ethers';
 
 import fs from 'node:fs';
@@ -24,8 +24,8 @@ import { LIT_EVM_CHAINS } from '@lit-protocol/constants';
 import { VincentAppDefSchema } from '@lit-protocol/vincent-mcp-sdk';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-import { env } from './env';
-import { getServer } from './server';
+import { env } from '../env';
+import { getServer } from '../server';
 
 const { VINCENT_APP_JSON_DEFINITION, VINCENT_DELEGATEE_PRIVATE_KEY } = env;
 

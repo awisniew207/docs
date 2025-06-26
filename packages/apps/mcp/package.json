@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-mcp-server",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "Vincent MCP Server",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -24,14 +24,12 @@
     "*.md"
   ],
   "bin": {
-    "vincent-mcp": "./dist/src/cli.js",
-    "http": "./dist/http.js",
-    "stdio": "./dist/stdio.js"
+    "vincent-mcp-server": "./dist/src/bin/cli.js"
   },
-  "main": "./dist/stdio.js",
+  "main": "./dist/src/bin/cli.js",
   "scripts": {
     "build": "tsc && cp -r src/public dist/src/public",
-    "dev:http": "tsx watch --tsconfig ./tsconfig.app.json --env-file=.env src/http.ts",
+    "dev:http": "tsx watch --tsconfig ./tsconfig.app.json --env-file=.env src/bin/http.ts",
     "inspector": "npx @modelcontextprotocol/inspector",
     "integration:openAI": "tsx --env-file=.env ./integrations/openAI.ts",
     "integration:anthropic": "tsx --env-file=.env ./integrations/anthropic.ts"
