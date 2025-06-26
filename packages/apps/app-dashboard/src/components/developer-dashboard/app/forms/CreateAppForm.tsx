@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ToolSelectionSchema } from '@/utils/developer-dashboard/app-forms';
 import {
   TextField,
   LongTextField,
@@ -12,24 +13,29 @@ import {
   ImageUploadField,
 } from '../../form-fields';
 
-export const EditAppSchema = z
+export const CreateAppSchema = z
   .object({
-    name: z.string().min(1),
-    description: z.string().min(10),
-    contactEmail: z.string().email(),
-    appUserUrl: z.string().url(),
+    name: z.string().min(1, 'App name is required'),
+    description: z.string().min(10, 'Description must be at least 10 characters'),
+    contactEmail: z.string().email('Please enter a valid email address'),
+    appUserUrl: z.string().url('Please enter a valid URL'),
     logo: z.string().optional(),
-    redirectUris: z.array(z.string().url()),
+    redirectUris: z
+      .array(z.string().url('Please enter valid URLs'))
+      .min(1, 'At least one redirect URI is required'),
     deploymentStatus: z.enum(['dev', 'test', 'prod']),
+    // Tools for initial version with proper typing
+    tools: z
+      .array(ToolSelectionSchema)
+      .optional()
+      .describe('Tools to include in the initial version'),
   })
-  .partial()
   .strict();
 
-export type EditAppFormData = z.infer<typeof EditAppSchema>;
+export type CreateAppFormData = z.infer<typeof CreateAppSchema>;
 
-interface EditAppFormProps {
-  appData: any;
-  onSubmit: (data: EditAppFormData) => Promise<void>;
+interface CreateAppFormProps {
+  onSubmit: (data: CreateAppFormData) => Promise<void>;
   isSubmitting?: boolean;
 }
 
@@ -39,17 +45,13 @@ const deploymentStatusOptions = [
   { value: 'prod', label: 'Production' },
 ];
 
-export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditAppFormProps) {
-  const form = useForm<EditAppFormData>({
-    resolver: zodResolver(EditAppSchema),
+export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormProps) {
+  const form = useForm<CreateAppFormData>({
+    resolver: zodResolver(CreateAppSchema),
     defaultValues: {
-      name: appData.name,
-      description: appData.description,
-      contactEmail: appData.contactEmail,
-      appUserUrl: appData.appUserUrl,
-      logo: appData.logo,
-      redirectUris: appData.redirectUris,
-      deploymentStatus: appData.deploymentStatus,
+      redirectUris: [''],
+      tools: [],
+      deploymentStatus: undefined,
     },
   });
 
@@ -65,10 +67,12 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
   } = form;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Edit App</CardTitle>
-        <CardDescription>Update an existing application</CardDescription>
+        <CardTitle>Create New App</CardTitle>
+        <CardDescription>
+          Create a new blockchain application and select initial tools
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -79,6 +83,7 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               errors={errors}
               label="App Name"
               placeholder="Enter app name"
+              required
             />
 
             <TextField
@@ -87,6 +92,7 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               errors={errors}
               label="Contact Email"
               placeholder="contact@example.com"
+              required
             />
 
             <LongTextField
@@ -96,6 +102,7 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               label="Description"
               placeholder="Describe your application"
               rows={4}
+              required
             />
 
             <TextField
@@ -104,6 +111,7 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               errors={errors}
               label="App User URL"
               placeholder="https://yourapp.com"
+              required
             />
 
             <ImageUploadField
@@ -124,6 +132,7 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               setValue={setValue}
               label="Redirect URIs"
               placeholder="https://yourapp.com/callback"
+              required
             />
 
             <SelectField
@@ -133,10 +142,14 @@ export function EditAppForm({ appData, onSubmit, isSubmitting = false }: EditApp
               setValue={setValue}
               label="Deployment Status"
               options={deploymentStatusOptions}
+              required
             />
 
+            {/* TODO: Add EntitySelector for tools field */}
+            {/* For now, tools will be empty array as set in defaultValues */}
+
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              Update App
+              {isSubmitting ? 'Creating App...' : 'Create App'}
             </Button>
           </form>
         </Form>

@@ -6,7 +6,7 @@ const AppDisplaySchema = z.object({
   contactEmail: z.string().optional(),
   appUserUrl: z.string().optional(),
   redirectUris: z.array(z.string()).optional(),
-  deploymentStatus: z.enum(['dev', 'staging', 'production']).optional(),
+  deploymentStatus: z.enum(['dev', 'test', 'prod']).optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.string().transform((date) => new Date(date).toLocaleString()),
   updatedAt: z.string().transform((date) => new Date(date).toLocaleString()),

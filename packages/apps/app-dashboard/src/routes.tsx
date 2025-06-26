@@ -7,7 +7,6 @@ import { AppRoute } from './components/developer-dashboard/data/AppDataProvider'
 
 import Home from './pages/index';
 import Withdraw from './pages/withdraw';
-import CreateApp from './pages/create-app';
 import AppDetails from './pages/appId/[appId]/index';
 import AdvancedFunctions from './pages/appId/[appId]/advanced-functions';
 import Consent from './pages/appId/[appId]/consent';
@@ -43,18 +42,14 @@ const routes: RouteObject[] = [
             element: <AppDashboard.Apps />,
           },
           {
-            path: 'create-app',
-            element: <AppDashboard.CreateApp />,
-          },
-          {
             path: 'appId/:appId/*',
             element: <AppRoute />,
           },
+          {
+            path: 'create-app/*',
+            element: <AppRoute />,
+          },
         ],
-      },
-      {
-        path: '/create-app',
-        element: <CreateApp />,
       },
       {
         path: '/appId/:appId',
