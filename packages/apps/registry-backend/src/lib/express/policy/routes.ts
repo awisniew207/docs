@@ -6,7 +6,7 @@ import { requirePackage, withValidPackage } from '../package/requirePackage';
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
-import { generateRandomCid } from '../../util';
+import { importPackage } from '../../packageImporter';
 
 export function registerRoutes(app: Express) {
   // List all policies
@@ -34,6 +34,13 @@ export function registerRoutes(app: Express) {
       const { authorWalletAddress, description, activeVersion, title } = req.body;
       const packageInfo = req.vincentPackage;
 
+      // Import the package to get the metadata
+      const { ipfsCid, uiSchema, jsonSchema } = await importPackage({
+        packageName: packageInfo.name,
+        version: packageInfo.version,
+        type: 'policy',
+      });
+
       await withSession(async (mongoSession) => {
         // Create the policy
         const policy = new Policy({
@@ -56,7 +63,11 @@ export function registerRoutes(app: Express) {
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
-          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
+          ipfsCid,
+          parameters: {
+            uiSchema: uiSchema ? JSON.stringify(uiSchema) : undefined,
+            jsonSchema: jsonSchema ? JSON.stringify(jsonSchema) : undefined,
+          },
         });
 
         // Save both in a transaction
@@ -122,21 +133,32 @@ export function registerRoutes(app: Express) {
       withValidPackage(async (req, res) => {
         const packageInfo = req.vincentPackage;
 
-        const policyVersion = new PolicyVersion({
-          ...req.body,
-          description: packageInfo.description,
-          packageName: packageInfo.name,
-          version: packageInfo.version,
-          repository: packageInfo.repository,
-          keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || {},
-          author: packageInfo.author,
-          contributors: packageInfo.contributors || [],
-          homepage: packageInfo.homepage,
-          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
-        });
-
         try {
+          // Import the package to get the metadata
+          const { ipfsCid, uiSchema, jsonSchema } = await importPackage({
+            packageName: packageInfo.name,
+            version: packageInfo.version,
+            type: 'policy',
+          });
+
+          const policyVersion = new PolicyVersion({
+            ...req.body,
+            description: packageInfo.description,
+            packageName: packageInfo.name,
+            version: packageInfo.version,
+            repository: packageInfo.repository,
+            keywords: packageInfo.keywords || [],
+            dependencies: packageInfo.dependencies || {},
+            author: packageInfo.author,
+            contributors: packageInfo.contributors || [],
+            homepage: packageInfo.homepage,
+            ipfsCid,
+            parameters: {
+              uiSchema: uiSchema ? JSON.stringify(uiSchema) : undefined,
+              jsonSchema: jsonSchema ? JSON.stringify(jsonSchema) : undefined,
+            },
+          });
+
           const savedVersion = await policyVersion.save();
 
           res.status(201).json(savedVersion);
@@ -144,7 +166,7 @@ export function registerRoutes(app: Express) {
         } catch (error: any) {
           if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
             res.status(409).json({
-              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+              message: `The policy ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
             });
             return;
           }

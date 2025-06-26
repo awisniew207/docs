@@ -104,6 +104,11 @@ const toolVersion = z
       example: 'QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo',
       readOnly: true,
     }),
+    policiesNotInRegistry: z.array(z.string()).openapi({
+      description: 'Policy versions that are not in the registry but are supported by this tool',
+      example: ['@lit-protocol/vincent-spending-limit-policy@1.0.1'],
+      readOnly: true,
+    }),
   })
   .strict();
 

@@ -725,6 +725,17 @@
             "description": "IPFS CID of the code that implements this tool.",
             "example": "QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo",
             "readOnly": true
+          },
+          "policiesNotInRegistry": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Policy versions that are not in the registry but are supported by this tool",
+            "example": [
+              "@lit-protocol/vincent-spending-limit-policy@1.0.1"
+            ],
+            "readOnly": true
           }
         },
         "required": [
@@ -741,7 +752,8 @@
           "author",
           "contributors",
           "supportedPolicies",
-          "ipfsCid"
+          "ipfsCid",
+          "policiesNotInRegistry"
         ],
         "additionalProperties": false
       },

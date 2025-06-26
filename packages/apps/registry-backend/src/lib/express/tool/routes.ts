@@ -5,8 +5,8 @@ import { requirePackage, withValidPackage } from '../package/requirePackage';
 
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
-import { generateRandomCid } from '../../util';
 import { Features } from '../../../features';
+import { importPackage, identifySupportedPolicies } from '../../packageImporter';
 
 export function registerRoutes(app: Express) {
   // Get all tools
@@ -34,6 +34,18 @@ export function registerRoutes(app: Express) {
       const { authorWalletAddress, description, title } = req.body;
       const packageInfo = req.vincentPackage;
 
+      // Import the package to get the metadata
+      const { ipfsCid } = await importPackage({
+        packageName: packageInfo.name,
+        version: packageInfo.version,
+        type: 'tool',
+      });
+
+      // Identify supported policies from dependencies
+      const { supportedPolicies, policiesNotInRegistry } = await identifySupportedPolicies(
+        packageInfo.dependencies || {},
+      );
+
       await withSession(async (mongoSession) => {
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
@@ -47,9 +59,9 @@ export function registerRoutes(app: Express) {
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
           status: 'validating',
-          supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
-          policiesNotInRegistry: [],
-          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
+          supportedPolicies,
+          policiesNotInRegistry,
+          ipfsCid,
         });
 
         const tool = new Tool({
@@ -60,7 +72,7 @@ export function registerRoutes(app: Express) {
           activeVersion: packageInfo.version,
         });
 
-        let /*savedToolVersion,*/ savedTool;
+        let savedTool;
 
         try {
           await mongoSession.withTransaction(async (session) => {
@@ -121,6 +133,18 @@ export function registerRoutes(app: Express) {
       withValidPackage(async (req, res) => {
         const packageInfo = req.vincentPackage;
 
+        // Import the package to get the metadata
+        const { ipfsCid } = await importPackage({
+          packageName: packageInfo.name,
+          version: packageInfo.version,
+          type: 'tool',
+        });
+
+        // Identify supported policies from dependencies
+        const { supportedPolicies, policiesNotInRegistry } = await identifySupportedPolicies(
+          packageInfo.dependencies || {},
+        );
+
         const toolVersion = new ToolVersion({
           packageName: packageInfo.name,
           version: packageInfo.version,
@@ -128,13 +152,13 @@ export function registerRoutes(app: Express) {
           description: packageInfo.description,
           repository: packageInfo.repository,
           keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || [],
+          dependencies: packageInfo.dependencies || {},
           author: packageInfo.author,
           contributors: packageInfo.contributors || [],
           homepage: packageInfo.homepage,
-          supportedPolicies: [], // FIXME: Identify supportedPolicies from the package.json dependencies
-          policiesNotInRegistry: [],
-          ipfsCid: generateRandomCid(), // FIXME: Load this from a JSON file in the package distribution
+          supportedPolicies,
+          policiesNotInRegistry,
+          ipfsCid,
         });
 
         try {
@@ -144,7 +168,7 @@ export function registerRoutes(app: Express) {
         } catch (error: any) {
           if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
             res.status(409).json({
-              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+              message: `The tool ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
             });
             return;
           }

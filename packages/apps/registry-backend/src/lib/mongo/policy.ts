@@ -1,5 +1,9 @@
 import { model, Schema } from 'mongoose';
-import { uniquePackageVersion } from './indexes';
+import {
+  undeletedByPackageIdentity,
+  undeletedByPackageName,
+  uniquePackageVersion,
+} from './indexes';
 
 const policySchema = new Schema(
   {
@@ -8,7 +12,7 @@ const policySchema = new Schema(
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
     activeVersion: { type: String, required: true },
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, index: true },
   } as const,
   { timestamps: true },
 );
@@ -45,11 +49,13 @@ export const policyVersionSchema = new Schema(
       uiSchema: { type: String },
       jsonSchema: { type: String },
     },
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, index: true },
   } as const,
   { timestamps: true },
 );
 
-policyVersionSchema.index(...uniquePackageVersion);
+policyVersionSchema.index(...uniquePackageVersion); // Constraint: Compound index to ensure unique package name + version combinations
+policyVersionSchema.index(...undeletedByPackageName); // Performance optimization
+policyVersionSchema.index(...undeletedByPackageIdentity); // Performance optimization
 
 export const PolicyVersion = model('PolicyVersion', policyVersionSchema);

@@ -741,6 +741,8 @@ export type ToolVersionRead = {
   supportedPolicies: string[];
   /** IPFS CID of the code that implements this tool. */
   ipfsCid: string;
+  /** Policy versions that are not in the registry but are supported by this tool */
+  policiesNotInRegistry: string[];
 };
 export type ToolVersionList = ToolVersion[];
 export type ToolVersionListRead = ToolVersionRead[];

@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { uniquePackageVersion } from './indexes';
+import { undeletedByPackageIdentity, uniquePackageVersion } from './indexes';
 
 const toolSchema = new Schema(
   {
@@ -8,7 +8,7 @@ const toolSchema = new Schema(
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
     activeVersion: { type: String, required: true },
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, index: true },
   } as const,
   { timestamps: true },
 );
@@ -41,14 +41,14 @@ export const toolVersionSchema = new Schema(
     ],
     homepage: { type: String },
     ipfsCid: { type: String, required: true },
-    // FIXME: Should these last 2 be [{ packageName, version}]?
-    supportedPolicies: [{ type: String }],
+    supportedPolicies: { type: Object },
     policiesNotInRegistry: [{ type: String }],
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, index: true },
   } as const,
   { timestamps: true },
 );
 
-toolVersionSchema.index(...uniquePackageVersion); // Compound index to ensure unique package name + version combinations
+toolVersionSchema.index(...uniquePackageVersion); // Constraint: Compound index to ensure unique package name + version combinations
+toolVersionSchema.index(...undeletedByPackageIdentity); // Performance optimization
 
 export const ToolVersion = model('ToolVersion', toolVersionSchema);
