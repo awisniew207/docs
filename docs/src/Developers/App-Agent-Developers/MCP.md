@@ -120,16 +120,16 @@ When the LLM or Agent decides to execute a tool, it will send a request to the M
 
 # MCP already implemented
 
-For an already working MCP Server that simply wraps your Vincent App you can check our [Vincent MCP package](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp)
+For an already working MCP Server that simply wraps your Vincent App you can check our [Vincent MCP package](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp/README.md)
 
 This MCP Server includes:
 
 - HTTP and STDIO transports
-- .env file support for environment definition
-- App definition with a custom JSON file to define which tools expose to LLMs
+- `.env` file support for environment definition
+- App definition with a custom JSON file to define which tools and params are exposed to LLMs
 - Support for delegatee and delegators in HTTP transport
-  - Delegators can authenticate with SIWE or their Vincent JWT
-  - Delegatees must identify with SIWE
+  - Delegators MUST authenticate with SIWE OR their Vincent JWT
+  - Delegatees MUST identify with SIWE
 - Client authentication support using headers or query params to maximize compatibility
 - Delegatee extras:
   - "get delegators" tool, to fetch the delegators info for the wrapped Vincent App
