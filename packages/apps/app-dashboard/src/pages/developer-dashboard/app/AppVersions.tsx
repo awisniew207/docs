@@ -1,35 +1,22 @@
 import { AppVersionsListView } from '@/components/developer-dashboard/app/AppVersionsListView';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
+import { App } from '@/contexts/DeveloperDataContext';
 
-export default function AppVersions() {
-  const { appId, app, appError, appLoading, versions, versionsError, versionsLoading } =
-    useAppDetail();
+interface AppVersionsProps {
+  app: App;
+  appVersions: any[];
+  isLoading: boolean;
+}
 
+export default function AppVersions({ app, appVersions, isLoading }: AppVersionsProps) {
   useAddressCheck(app);
-
-  // Loading state
-  if (appLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
-
-  // Versions error handling
-  if (versionsError) {
-    return <StatusMessage message="Error loading app versions" type="error" />;
-  }
 
   return (
     <AppVersionsListView
-      versions={versions || []}
-      appId={appId}
-      latestVersion={app.latestVersion}
-      isLoading={versionsLoading}
-      error={versionsError}
+      versions={appVersions}
+      appId={app.appId}
+      latestVersion={app.activeVersion}
+      isLoading={isLoading}
     />
   );
 }

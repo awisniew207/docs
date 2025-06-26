@@ -42,11 +42,41 @@ const routes: RouteObject[] = [
             element: <AppDashboard.Apps />,
           },
           {
-            path: 'appId/:appId/*',
+            path: 'create-app/*',
+            element: <AppRoute />,
+          },
+          // App-level routes
+          {
+            path: 'appId/:appId',
             element: <AppRoute />,
           },
           {
-            path: 'create-app/*',
+            path: 'appId/:appId/edit-app',
+            element: <AppRoute />,
+          },
+          {
+            path: 'appId/:appId/delete-app',
+            element: <AppRoute />,
+          },
+          {
+            path: 'appId/:appId/versions',
+            element: <AppRoute />,
+          },
+          {
+            path: 'appId/:appId/create-app-version',
+            element: <AppRoute />,
+          },
+          // Version-level routes
+          {
+            path: 'appId/:appId/version/:versionId',
+            element: <AppRoute />,
+          },
+          {
+            path: 'appId/:appId/version/:versionId/edit',
+            element: <AppRoute />,
+          },
+          {
+            path: 'appId/:appId/version/:versionId/tools',
             element: <AppRoute />,
           },
         ],

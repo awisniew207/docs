@@ -1,25 +1,11 @@
 import { createContext, useContext, useMemo, ReactNode } from 'react';
 import { useAccount } from 'wagmi';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { reactClient as vincentApiClient, docSchemas } from '@lit-protocol/vincent-registry-sdk';
 
-// Types - Export these for use in other files
-export interface App {
-  appId: number;
-  managerAddress: string;
-  [key: string]: any;
-}
-
-export interface Tool {
-  packageName: string;
-  authorWalletAddress: string;
-  [key: string]: any;
-}
-
-export interface Policy {
-  packageName: string;
-  authorWalletAddress: string;
-  [key: string]: any;
-}
+// Import actual types from SDK docSchemas
+export type App = typeof docSchemas.appDoc._type;
+export type Tool = typeof docSchemas.toolDoc._type;
+export type Policy = typeof docSchemas.policyDoc._type;
 
 interface DeveloperDataContextType {
   // Raw data
@@ -57,6 +43,10 @@ interface DeveloperDataContextType {
   refetchApps: () => void;
   refetchTools: () => void;
   refetchPolicies: () => void;
+
+  // Version hooks - expose the actual hooks
+  useAppVersions: typeof vincentApiClient.useGetAppVersionsQuery;
+  useAppVersion: typeof vincentApiClient.useGetAppVersionQuery;
 }
 
 const DeveloperDataContext = createContext<DeveloperDataContextType | undefined>(undefined);
@@ -189,6 +179,10 @@ export function DeveloperDataProvider({
     refetchApps,
     refetchTools,
     refetchPolicies,
+
+    // Version hooks
+    useAppVersions: vincentApiClient.useGetAppVersionsQuery,
+    useAppVersion: vincentApiClient.useGetAppVersionQuery,
   };
 
   return (

@@ -2,21 +2,29 @@ import { useNavigate } from 'react-router';
 import { Edit, Plus, Power, PowerOff } from 'lucide-react';
 import { VersionDetails } from '@/components/developer-dashboard/app/VersionDetails';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useState } from 'react';
 import {
   handleEnableVersion,
   handleDisableVersion,
 } from '@/utils/developer-dashboard/version-actions';
+import { App } from '@/contexts/DeveloperDataContext';
 
-export default function AppVersionDetail() {
+interface AppVersionDetailProps {
+  app: App;
+  versionData: any;
+  refetchVersions: () => Promise<any>;
+  refetchVersionData: () => Promise<any>;
+}
+
+export default function AppVersionDetail({
+  app,
+  versionData,
+  refetchVersions,
+  refetchVersionData,
+}: AppVersionDetailProps) {
   const navigate = useNavigate();
-  const { appId, app, appError, appLoading, versionData, versionError, versionLoading, versionId } =
-    useAppDetail();
   const vincentApi = useVincentApiWithSIWE();
   const [enableAppVersion, { isLoading: isEnabling }] = vincentApi.useEnableAppVersionMutation();
   const [disableAppVersion, { isLoading: isDisabling }] = vincentApi.useDisableAppVersionMutation();
@@ -25,18 +33,10 @@ export default function AppVersionDetail() {
     type: 'success' | 'error' | 'warning';
   } | null>(null);
 
-  // Get refetch function for the current version data
-  const { refetch: refetchVersionData } = vincentApiClient.useGetAppVersionQuery(
-    { appId, version: versionId || 0 },
-    { skip: !appId || !versionId },
-  );
-
-  const { refetch: refetchVersionsList } = vincentApiClient.useGetAppVersionsQuery(
-    { appId },
-    { skip: !appId },
-  );
-
   useAddressCheck(app);
+
+  const appId = app.appId;
+  const versionId = versionData.version;
 
   const onEnableVersion = () => {
     if (!appId || !versionId) return;
@@ -46,7 +46,7 @@ export default function AppVersionDetail() {
       versionId,
       enableAppVersion,
       refetchVersionData,
-      refetchVersionsList,
+      refetchVersionsList: refetchVersions,
       setStatusMessage,
     });
   };
@@ -59,27 +59,10 @@ export default function AppVersionDetail() {
       versionId,
       disableAppVersion,
       refetchVersionData,
-      refetchVersionsList,
+      refetchVersionsList: refetchVersions,
       setStatusMessage,
     });
   };
-
-  // Loading state
-  if (appLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
-
-  // Version specific error handling
-  if (versionError) {
-    return <StatusMessage message="Error loading version data" type="error" />;
-  }
-
-  if (!versionId) {
-    return <StatusMessage message="Version not found" type="error" />;
-  }
 
   const isVersionEnabled = versionData?.enabled ?? false;
   const isProcessing = isEnabling || isDisabling;
@@ -170,16 +153,12 @@ export default function AppVersionDetail() {
       </div>
 
       {/* Version Details */}
-      {versionLoading ? (
-        <Loading />
-      ) : (
-        <VersionDetails
-          version={versionId}
-          appId={appId}
-          appName={app.name}
-          versionData={versionData}
-        />
-      )}
+      <VersionDetails
+        version={versionId}
+        appId={appId}
+        appName={app.name}
+        versionData={versionData}
+      />
     </div>
   );
 }

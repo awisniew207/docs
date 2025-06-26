@@ -1,26 +1,23 @@
-import { EditAppVersionForm } from '@/components/developer-dashboard/app/AppVersionForms';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { EditAppVersionWrapper } from '@/components/developer-dashboard/app/wrappers/EditAppVersionWrapper';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
+import { App } from '@/contexts/DeveloperDataContext';
 
-export default function AppEditVersion() {
-  const { app, appError, appLoading, versionData, versionError, versionLoading, versionId } =
-    useAppDetail();
+interface AppEditVersionProps {
+  app: App;
+  versionData: any;
+  refetchVersions: () => Promise<any>;
+  refetchVersionData: () => Promise<any>;
+}
 
+export default function AppEditVersion({
+  app,
+  versionData,
+  refetchVersions,
+  refetchVersionData,
+}: AppEditVersionProps) {
   useAddressCheck(app);
 
-  // Loading state
-  if (appLoading || versionLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
-
-  if (versionError || !versionData) {
-    return <StatusMessage message="App version not found" type="error" />;
-  }
+  const versionId = versionData.version;
 
   return (
     <div className="space-y-6">
@@ -31,7 +28,12 @@ export default function AppEditVersion() {
         </div>
       </div>
 
-      <EditAppVersionForm versionData={versionData} />
+      <EditAppVersionWrapper
+        app={app}
+        versionData={versionData}
+        refetchVersions={refetchVersions}
+        refetchVersionData={refetchVersionData}
+      />
     </div>
   );
 }

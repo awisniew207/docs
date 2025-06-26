@@ -1,21 +1,14 @@
-import { CreateAppVersionForm } from '@/components/developer-dashboard/app/AppVersionForms';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
-import { useAppDetail } from '@/components/developer-dashboard/app/AppDetailContext';
+import { CreateAppVersionWrapper } from '@/components/developer-dashboard/app/wrappers/CreateAppVersionWrapper';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
+import { App } from '@/contexts/DeveloperDataContext';
 
-export default function AppCreateVersion() {
-  const { app, appError, appLoading } = useAppDetail();
+interface AppCreateVersionProps {
+  app: App;
+  refetchVersions: () => Promise<any>;
+}
 
+export default function AppCreateVersion({ app, refetchVersions }: AppCreateVersionProps) {
   useAddressCheck(app);
-
-  // Loading state
-  if (appLoading) return <Loading />;
-
-  // Error handling
-  if (appError || !app) {
-    return <StatusMessage message="App not found" type="error" />;
-  }
 
   return (
     <div className="space-y-6">
@@ -28,7 +21,7 @@ export default function AppCreateVersion() {
         </div>
       </div>
 
-      <CreateAppVersionForm appData={app} />
+      <CreateAppVersionWrapper app={app} refetchVersions={refetchVersions} />
     </div>
   );
 }

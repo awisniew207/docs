@@ -7,7 +7,6 @@ interface AppVersionsListViewProps {
   appId: number;
   latestVersion?: number;
   isLoading: boolean;
-  error?: any;
 }
 
 export function AppVersionsListView({
@@ -15,7 +14,6 @@ export function AppVersionsListView({
   appId,
   latestVersion,
   isLoading,
-  error,
 }: AppVersionsListViewProps) {
   const navigate = useNavigate();
 
@@ -24,21 +22,6 @@ export function AppVersionsListView({
       <div className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
         <span className="ml-2 text-gray-600">Loading versions...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-red-600">Error Loading Versions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-red-600">Failed to load app versions.</p>
-          </CardContent>
-        </Card>
       </div>
     );
   }
