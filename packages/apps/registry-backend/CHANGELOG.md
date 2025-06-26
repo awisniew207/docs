@@ -1,3 +1,16 @@
+## 0.2.1 (2025-06-26)
+
+### 🩹 Fixes
+
+- Fix mkdtemp not found in production deployment to Heroku ([92733bbd](https://github.com/LIT-Protocol/Vincent/commit/92733bbd))
+
+  - The ESM version of `fs-extra` doesn't pass through methods through; when we deploy to production, that's the package that gets used
+  - This was working coincidentally for local dev because of transpilation / CJS references. :sad_panda:
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 0.2.0 (2025-06-25)
 
 ### 🚀 Features
