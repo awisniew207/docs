@@ -31,7 +31,6 @@ module.exports = {
   entryPoints: ['./packages/libs/app-sdk/docs/json', './packages/libs/tool-sdk/docs/json'],
   name: 'Vincent Docs',
   out: './docs/dist/site',
-  customTitle: 'Why Vincent?',
   includeVersion: false,
   navigation: {
     includeCategories: true,
