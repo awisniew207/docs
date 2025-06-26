@@ -23,6 +23,7 @@ import {
   buildMcpToolCallback,
   VincentAppDef,
   VincentAppDefSchema,
+  VincentToolDefWithIPFS,
 } from './definitions';
 
 const { getDelegatorsAgentPkpAddresses } = utils;
@@ -58,6 +59,20 @@ export class VincentMcpServer extends McpServer {
 
   override async close(): Promise<void> {
     await this.litNodeClient.disconnect();
+  }
+
+  vincentTool(
+    name: string,
+    toolData: VincentToolDefWithIPFS,
+    delegateeSigner: Signer,
+    delegatorPkpEthAddress?: string
+  ) {
+    this.tool(
+      name,
+      toolData.description,
+      buildMcpParamDefinitions(toolData.parameters, !delegatorPkpEthAddress),
+      buildMcpToolCallback(this.litNodeClient, delegateeSigner, delegatorPkpEthAddress, toolData)
+    );
   }
 }
 
@@ -116,7 +131,7 @@ export async function getVincentAppServer(
   vincentAppDefinition: VincentAppDef,
   config: DelegationMcpServerConfig
 ): Promise<McpServer> {
-  const { delegateeSigner, delegatorPkpEthAddress } = config;
+  const { delegatorPkpEthAddress } = config;
   const _vincentAppDefinition = VincentAppDefSchema.parse(vincentAppDefinition);
 
   const server = new VincentMcpServer({
@@ -124,8 +139,23 @@ export async function getVincentAppServer(
     version: _vincentAppDefinition.version,
   });
 
-  // Tool to get the delegators info
-  if (!delegatorPkpEthAddress) {
+  if (delegatorPkpEthAddress) {
+    server.tool(
+      buildMcpToolName(_vincentAppDefinition, 'get-current-agent-pkp-address'),
+      `Tool to get the your agent pkp eth address in use for the ${_vincentAppDefinition.name} Vincent App MCP.`,
+      async () => {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: delegatorPkpEthAddress,
+            },
+          ],
+        };
+      }
+    );
+  } else {
+    // In delegatee mode (no delegator), user has to be able to fetch its delegators and select which one to operate on behalf of
     server.tool(
       buildMcpToolName(_vincentAppDefinition, 'get-delegators-eth-addresses'),
       `Tool to get the delegators pkp Eth addresses for the ${_vincentAppDefinition.name} Vincent App.`,
@@ -140,21 +170,6 @@ export async function getVincentAppServer(
             {
               type: 'text',
               text: JSON.stringify(delegatorsPkpEthAddresses),
-            },
-          ],
-        };
-      }
-    );
-  } else {
-    server.tool(
-      buildMcpToolName(_vincentAppDefinition, 'get-current-agent-pkp-address'),
-      `Tool to get the your agent pkp eth address in use for the ${_vincentAppDefinition.name} Vincent App MCP.`,
-      async () => {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: delegatorPkpEthAddress,
             },
           ],
         };
@@ -185,14 +200,11 @@ export async function getVincentAppServer(
   );
 
   Object.entries(_vincentAppDefinition.tools).forEach(([toolIpfsCid, tool]) => {
-    server.tool(
+    server.vincentTool(
       buildMcpToolName(_vincentAppDefinition, tool.name),
-      tool.description,
-      buildMcpParamDefinitions(tool.parameters, !delegatorPkpEthAddress),
-      buildMcpToolCallback(server.litNodeClient, delegateeSigner, delegatorPkpEthAddress, {
-        ipfsCid: toolIpfsCid,
-        ...tool,
-      })
+      { ipfsCid: toolIpfsCid, ...tool },
+      config.delegateeSigner,
+      config.delegatorPkpEthAddress
     );
   });
 
