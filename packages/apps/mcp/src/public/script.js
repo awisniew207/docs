@@ -99,66 +99,130 @@ function loadJwtToken(appId) {
   }
 }
 
+/**
+ * Shows a feedback message when copying to clipboard
+ * @param {string} message - The message to show
+ * @param {boolean} [isSuccess=true] - Whether the operation was successful
+ */
+function showCopyFeedback(message, isSuccess = true) {
+  // Remove any existing feedback
+  const existingFeedback = document.querySelector('.copy-feedback');
+  if (existingFeedback) {
+    existingFeedback.remove();
+  }
+
+  // Create feedback element
+  const feedback = document.createElement('div');
+  feedback.className = `copy-feedback ${isSuccess ? 'success' : 'error'}`;
+
+  // Add icon based on success/failure
+  const icon = document.createElement('span');
+  icon.innerHTML = isSuccess ? '✓' : '✕';
+  feedback.appendChild(icon);
+
+  // Add message
+  const text = document.createElement('span');
+  text.textContent = message;
+  feedback.appendChild(text);
+
+  // Add to document
+  document.body.appendChild(feedback);
+
+  // Remove after animation completes
+  setTimeout(() => {
+    feedback.remove();
+  }, 2000);
+}
+
+/**
+ * Shows the MCP connection modal with the connection link
+ */
 function showMCPConnectionModal() {
-  if (!appDefinition?.id) return;
+  if (!appDefinition?.id) {
+    console.error('No app definition found');
+    return;
+  }
 
   const jwtToken = localStorage.getItem(getJwtStorageKey(appDefinition.id));
-  if (!jwtToken) return;
+  if (!jwtToken) {
+    console.error('No JWT token found');
+    return;
+  }
 
   const modal = document.getElementById('mcp-modal');
   const connectionLink = document.getElementById('mcp-connection-link');
   const modalAppName = document.getElementById('modal-app-name');
+  const copyButton = document.getElementById('copy-link-btn');
+  const crossButton = document.querySelector('.modal-close');
+  const closeButton = document.querySelector('.close-modal');
 
-  if (!modal || !connectionLink || !modalAppName) return;
+  if (!modal || !connectionLink || !modalAppName || !copyButton || !crossButton || !closeButton) {
+    console.error('Required modal elements not found');
+    return;
+  }
 
+  // Set app name in modal
   modalAppName.textContent = appDefinition.name || 'Vincent App';
 
+  // Create connection URL
   const connectionUrl = `${window.location.origin}/mcp?jwt=${encodeURIComponent(jwtToken)}`;
   connectionLink.value = connectionUrl;
 
+  // Handle copy button click
+  const handleCopyClick = async () => {
+    try {
+      await navigator.clipboard.writeText(connectionUrl);
+      showCopyFeedback('Copied to clipboard!', true);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      showCopyFeedback('Failed to copy', false);
+    }
+  };
+
+  // Add event listeners
+  copyButton.onclick = handleCopyClick;
+  crossButton.onclick = closeModal;
+  closeButton.onclick = closeModal;
+
   // Show the modal
+  document.body.style.overflow = 'hidden';
   modal.classList.add('show');
 
-  // Select the text in the input. Ready to be copied.
-  connectionLink.select();
-
-  const copyButton = document.getElementById('copy-link-btn');
-  if (copyButton) {
-    copyButton.onclick = () => {
-      navigator.clipboard.writeText(connectionUrl).then(() => {
-        const originalText = copyButton.innerHTML;
-        copyButton.innerHTML = '✓ Copied!';
-        copyButton.style.minWidth = '80px';
-        setTimeout(() => {
-          copyButton.innerHTML = originalText;
-          copyButton.style.minWidth = '';
-        }, 2000);
-      });
-    };
-  }
+  // Focus the copy button for better keyboard navigation
+  copyButton.focus();
 }
 
+/**
+ * Closes the MCP connection modal
+ */
 function closeModal() {
   const modal = document.getElementById('mcp-modal');
   if (modal) {
+    document.body.style.overflow = '';
     modal.classList.remove('show');
   }
 }
 
+/**
+ * Initializes modal functionality
+ */
 function initModal() {
-  // Close modal when clicking the close button or outside the modal
-  document.querySelectorAll('.close-modal').forEach((button) => {
-    button.addEventListener('click', closeModal);
+  const modal = document.getElementById('mcp-modal');
+  if (!modal) return;
+
+  // Close when clicking outside content
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
   });
 
-  const modal = document.getElementById('mcp-modal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
-  }
+  // Close with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
