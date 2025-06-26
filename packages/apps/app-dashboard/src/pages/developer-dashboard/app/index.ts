@@ -1,19 +1,10 @@
-import AppOverview from './AppOverview';
-import AppVersions from './AppVersions';
-import AppVersionDetail from './AppVersionDetail';
-import AppVersionTools from './AppVersionTools';
-import AppEdit from './AppEdit';
-import AppDelete from './AppDelete';
-import AppCreateVersion from './AppCreateVersion';
-import AppEditVersion from './AppEditVersion';
-
-export const AppDetail = {
-  Overview: AppOverview,
-  Versions: AppVersions,
-  Version: AppVersionDetail,
-  VersionTools: AppVersionTools,
-  EditVersion: AppEditVersion,
-  Edit: AppEdit,
-  Delete: AppDelete,
-  CreateVersion: AppCreateVersion,
-};
+export { default as AppEdit } from './AppEdit';
+export { default as AppOverview } from './AppOverview';
+export { default as AppDelete } from './AppDelete';
+export { default as CreateAppPage } from './CreateAppPage';
+export { default as AppVersions } from './AppVersions';
+export { default as AppVersionDetail } from './AppVersionDetail';
+export { default as AppVersionTools } from './AppVersionTools';
+export { default as AppCreateVersion } from './AppCreateVersion';
+export { default as AppEditVersion } from './AppEditVersion';
+export { default as AppsPage } from './AppsPage';

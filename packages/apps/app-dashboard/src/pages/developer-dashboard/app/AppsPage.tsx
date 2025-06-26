@@ -1,18 +1,17 @@
 import { useNavigate } from 'react-router';
 import { AppsList } from '@/components/developer-dashboard/ui/ResourceLists';
-import { useAppFilters } from '@/hooks/developer-dashboard/app/useAppFilters';
+import { App } from '@/contexts/DeveloperDataContext';
 
-export default function AppsPage() {
+interface AppsPageProps {
+  apps: App[];
+}
+
+export default function AppsPage({ apps }: AppsPageProps) {
   const navigate = useNavigate();
-  const { sortOption, setSortOption, filteredApps, loading, error } = useAppFilters();
 
   return (
     <AppsList
-      apps={filteredApps}
-      isLoading={loading}
-      error={error}
-      sortOption={sortOption}
-      onSortChange={setSortOption}
+      apps={apps}
       onCreateClick={() => navigate('/developer/create-app')}
       onAppClick={(app: any) => navigate(`/developer/appId/${app.appId}`)}
     />

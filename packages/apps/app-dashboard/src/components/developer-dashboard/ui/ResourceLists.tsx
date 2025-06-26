@@ -2,23 +2,10 @@ import { useNavigate } from 'react-router';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { StatusFilterDropdown, FilterOption } from './StatusFilterDropdown';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-
-// Define filter options
-const statusFilterOptions: FilterOption[] = [
-  { id: 'all', label: 'All Applications' },
-  { id: 'dev', label: 'DEV' },
-  { id: 'test', label: 'TEST' },
-  { id: 'prod', label: 'PROD' },
-];
 
 interface AppsListProps {
   apps: any[];
-  isLoading: boolean;
-  error: any;
-  sortOption: string;
-  onSortChange: (option: string) => void;
   onCreateClick: () => void;
   onAppClick?: (app: any) => void;
 }
@@ -48,41 +35,13 @@ const formatDate = (dateString: string) => {
   });
 };
 
-export function AppsList({
-  apps,
-  isLoading,
-  error,
-  sortOption,
-  onSortChange,
-  onCreateClick,
-  onAppClick,
-}: AppsListProps) {
+export function AppsList({ apps, onCreateClick, onAppClick }: AppsListProps) {
   const navigate = useNavigate();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <p className="ml-4">Loading apps...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <StatusMessage message={`Failed to load your apps: ${error}`} type="error" />;
-  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Your Apps</h1>
-        <div className="flex gap-3">
-          <StatusFilterDropdown
-            options={statusFilterOptions}
-            selectedOptionId={sortOption}
-            onChange={onSortChange}
-          />
-        </div>
       </div>
 
       {apps.length === 0 ? (

@@ -4,15 +4,18 @@ import { useDeveloperData } from '@/contexts/DeveloperDataContext';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import AppEdit from '@/pages/developer-dashboard/app/AppEdit';
-import AppOverview from '@/pages/developer-dashboard/app/AppOverview';
-import AppDelete from '@/pages/developer-dashboard/app/AppDelete';
-import CreateAppPage from '@/pages/developer-dashboard/app/CreateAppPage';
-import AppVersions from '@/pages/developer-dashboard/app/AppVersions';
-import AppVersionDetail from '@/pages/developer-dashboard/app/AppVersionDetail';
-import AppVersionTools from '@/pages/developer-dashboard/app/AppVersionTools';
-import AppCreateVersion from '@/pages/developer-dashboard/app/AppCreateVersion';
-import AppEditVersion from '@/pages/developer-dashboard/app/AppEditVersion';
+import {
+  AppEdit,
+  AppOverview,
+  AppDelete,
+  CreateAppPage,
+  AppVersions,
+  AppVersionDetail,
+  AppVersionTools,
+  AppCreateVersion,
+  AppEditVersion,
+  AppsPage,
+} from '@/pages/developer-dashboard/app';
 
 /**
  * App Route Component - Uses unified data context and provides app-specific data as props
@@ -100,14 +103,44 @@ export function AppRoute() {
   if (isLoading) return <Loading />;
   if (hasErrors) return <StatusMessage message="Failed to load apps" type="error" />;
 
-  // Handle create-app route (no appId needed)
-  if (!appId) {
+  // === ROUTES WITHOUT appId ===
+
+  // Apps list page
+  if (location.pathname.endsWith('/apps')) {
+    return <AppsPage apps={apps} />;
+  }
+
+  // Create app page
+  if (location.pathname.endsWith('/create-app')) {
     return <CreateAppPage refetchApps={refetchApps} />;
   }
 
+  // === ROUTES WITH appId ===
+
+  // Ensure app exists
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
 
-  // Version-level routes (when versionId is present)
+  // App edit page
+  if (location.pathname.endsWith('/edit-app')) {
+    return <AppEdit app={app} appVersions={appVersions || []} refetchApps={refetchApps} />;
+  }
+
+  // App delete page
+  if (location.pathname.endsWith('/delete-app')) {
+    return <AppDelete app={app} refetchApps={refetchApps} />;
+  }
+
+  // App versions list page
+  if (location.pathname.endsWith('/versions')) {
+    return <AppVersions app={app} appVersions={appVersions || []} />;
+  }
+
+  // Create new version page
+  if (location.pathname.endsWith('/create-app-version')) {
+    return <AppCreateVersion app={app} refetchVersions={refetchVersions} />;
+  }
+
+  // === ROUTES WITH appId + versionId ===
   if (versionId) {
     // Loading state for version data
     if (versionLoading || versionsLoading || versionToolsLoading) return <Loading />;
@@ -121,7 +154,7 @@ export function AppRoute() {
       return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
     }
 
-    // Route based on URL path
+    // Version edit page
     if (location.pathname.endsWith('/edit')) {
       return (
         <AppEditVersion
@@ -133,6 +166,7 @@ export function AppRoute() {
       );
     }
 
+    // Version tools page
     if (location.pathname.endsWith('/tools')) {
       return (
         <AppVersionTools
@@ -146,7 +180,7 @@ export function AppRoute() {
       );
     }
 
-    // Default version detail view
+    // Default: version detail page
     return (
       <AppVersionDetail
         app={app}
@@ -158,23 +192,6 @@ export function AppRoute() {
     );
   }
 
-  // App-level routes (when no versionId) - route based on URL path
-  if (location.pathname.endsWith('/edit-app')) {
-    return <AppEdit app={app} appVersions={appVersions || []} refetchApps={refetchApps} />;
-  }
-
-  if (location.pathname.endsWith('/delete-app')) {
-    return <AppDelete app={app} refetchApps={refetchApps} />;
-  }
-
-  if (location.pathname.endsWith('/versions')) {
-    return <AppVersions app={app} appVersions={appVersions || []} />;
-  }
-
-  if (location.pathname.endsWith('/create-app-version')) {
-    return <AppCreateVersion app={app} refetchVersions={refetchVersions} />;
-  }
-
-  // Default app overview
+  // Default: app overview page
   return <AppOverview app={app} />;
 }

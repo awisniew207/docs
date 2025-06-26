@@ -39,7 +39,7 @@ const routes: RouteObject[] = [
           },
           {
             path: 'apps',
-            element: <AppDashboard.Apps />,
+            element: <AppRoute />,
           },
           {
             path: 'create-app/*',
