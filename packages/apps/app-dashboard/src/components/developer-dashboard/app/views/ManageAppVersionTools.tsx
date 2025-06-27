@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Edit, X } from 'lucide-react';
 import { EditAppVersionToolWrapper } from '../wrappers/EditAppVersionToolWrapper';
+import { AppVersionTool } from '@/contexts/DeveloperDataContext';
 
-interface AppVersionToolsListProps {
-  tools: any[];
+interface ManageAppVersionToolsProps {
+  tools: AppVersionTool[];
   appId: number;
   versionId: number;
   editingTool: string | null;
@@ -12,7 +13,7 @@ interface AppVersionToolsListProps {
   onEditSuccess: () => Promise<void>;
 }
 
-export function AppVersionToolsList({
+export function ManageAppVersionTools({
   tools,
   appId,
   versionId,
@@ -20,8 +21,8 @@ export function AppVersionToolsList({
   onEditTool,
   onCancelEdit,
   onEditSuccess,
-}: AppVersionToolsListProps) {
-  if (!tools || tools.length === 0) {
+}: ManageAppVersionToolsProps) {
+  if (tools.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
         <p>No tools assigned to this app version yet.</p>
@@ -32,7 +33,7 @@ export function AppVersionToolsList({
   return (
     <div className="space-y-4">
       <div className="grid gap-4">
-        {tools.map((tool: any) => (
+        {tools.map((tool) => (
           <div key={tool.toolPackageName} className="bg-white border rounded-lg p-4">
             {editingTool === tool.toolPackageName ? (
               // Edit mode - render wrapper
@@ -57,7 +58,7 @@ export function AppVersionToolsList({
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900">{tool.toolPackageName}</h4>
                   <p className="text-sm text-gray-500">Version: {tool.toolVersion}</p>
-                  {tool.hiddenSupportedPolicies?.length > 0 && (
+                  {tool.hiddenSupportedPolicies && tool.hiddenSupportedPolicies.length > 0 && (
                     <p className="text-sm text-gray-500 mt-1">
                       Hidden policies: {tool.hiddenSupportedPolicies.join(', ')}
                     </p>

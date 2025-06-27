@@ -1,10 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AppVersion, AppVersionTool } from '@/contexts/DeveloperDataContext';
+import { AppVersionToolsDisplay } from '@/components/developer-dashboard/app/views/AppVersionToolsDisplay';
 
 interface VersionDetailsProps {
   version: number;
   appName?: string;
-  versionData: any;
-  tools: any[];
+  versionData: AppVersion;
+  tools: AppVersionTool[];
 }
 
 export function VersionDetails({ version, versionData, tools }: VersionDetailsProps) {
@@ -25,7 +27,7 @@ export function VersionDetails({ version, versionData, tools }: VersionDetailsPr
 
   return (
     <div className="space-y-6">
-      {(versionData as any).changes && (
+      {versionData.changes && (
         <Card>
           <CardHeader>
             <CardTitle className="text-gray-900">Version Changes</CardTitle>
@@ -33,9 +35,7 @@ export function VersionDetails({ version, versionData, tools }: VersionDetailsPr
           </CardHeader>
           <CardContent>
             <div className="p-4 bg-gray-50 rounded-lg border">
-              <p className="text-gray-900 text-sm whitespace-pre-wrap">
-                {(versionData as any).changes}
-              </p>
+              <p className="text-gray-900 text-sm whitespace-pre-wrap">{versionData.changes}</p>
             </div>
           </CardContent>
         </Card>
@@ -49,36 +49,7 @@ export function VersionDetails({ version, versionData, tools }: VersionDetailsPr
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {tools && tools.length > 0 ? (
-            <div className="space-y-3">
-              {tools.map((tool: any, index: number) => (
-                <div
-                  key={tool.toolPackageName || index}
-                  className="p-4 bg-gray-50 rounded-lg border"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">{tool.toolPackageName}</div>
-                      <div className="text-sm text-gray-600 mt-1">Version: {tool.toolVersion}</div>
-                      {tool.hiddenSupportedPolicies && tool.hiddenSupportedPolicies.length > 0 && (
-                        <div className="text-sm text-gray-500 mt-1">
-                          Hidden policies: {tool.hiddenSupportedPolicies.join(', ')}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      Added: {new Date(tool.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <div className="text-gray-400 text-lg mb-2">📦</div>
-              <p className="text-gray-600">No tools associated with this version</p>
-            </div>
-          )}
+          <AppVersionToolsDisplay tools={tools} />
         </CardContent>
       </Card>
     </div>

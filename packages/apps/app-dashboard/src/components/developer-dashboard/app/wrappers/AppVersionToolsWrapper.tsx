@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppVersionToolsList } from '../views/AppVersionToolsList';
+import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsWrapper } from './CreateAppVersionToolsWrapper';
 
 interface AppVersionToolsWrapperProps {
@@ -55,7 +55,7 @@ export function AppVersionToolsWrapper({
             inline.
           </p>
         </div>
-        <AppVersionToolsList
+        <ManageAppVersionTools
           tools={tools || []}
           appId={appId}
           versionId={versionId}
