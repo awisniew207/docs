@@ -1,8 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Power, PowerOff } from 'lucide-react';
+import { AppVersion } from '@/contexts/DeveloperDataContext';
 
 interface AppVersionsListViewProps {
-  versions: any[];
+  versions: AppVersion[];
   activeVersion?: number;
   onVersionClick: (version: number) => void;
 }
@@ -12,10 +13,6 @@ export function AppVersionsListView({
   activeVersion,
   onVersionClick,
 }: AppVersionsListViewProps) {
-  const handleVersionClick = (version: number) => {
-    onVersionClick(version);
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -35,11 +32,11 @@ export function AppVersionsListView({
         </Card>
       ) : (
         <div className="grid gap-4">
-          {versions.map((version: any) => (
+          {versions.map((version) => (
             <Card
               key={version.version}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleVersionClick(version.version)}
+              onClick={() => onVersionClick(version.version)}
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
