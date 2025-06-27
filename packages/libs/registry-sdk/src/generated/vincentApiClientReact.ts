@@ -738,7 +738,9 @@ export type ToolVersionRead = {
   /** Policy homepage */
   homepage?: string;
   /** Supported policies. These are detected from 'dependencies' in the tool's package.json. */
-  supportedPolicies: string[];
+  supportedPolicies: {
+    [key: string]: string;
+  };
   /** IPFS CID of the code that implements this tool. */
   ipfsCid: string;
   /** Policy versions that are not in the registry but are supported by this tool */

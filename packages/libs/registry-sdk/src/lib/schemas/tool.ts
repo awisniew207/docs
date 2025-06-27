@@ -91,12 +91,12 @@ const toolVersion = z
     // Both tools and policies have quite a few properties read from their package.json entries
     ...fromPackageJson.shape,
 
-    supportedPolicies: z.array(z.string()).openapi({
+    supportedPolicies: z.record(z.string(), z.string()).openapi({
       description: `Supported policies. These are detected from 'dependencies' in the tool's package.json.`,
-      example: [
-        '@lit-protocol/vincent-spending-limit-policy@1.0.0',
-        '@lit-protocol/vincent-rate-limit-policy@0.0.1',
-      ],
+      example: {
+        '@lit-protocol/vincent-spending-limit-policy': '1.0.0',
+        '@lit-protocol/vincent-rate-limit-policy': '0.0.1',
+      },
       readOnly: true,
     }),
     ipfsCid: z.string().openapi({
