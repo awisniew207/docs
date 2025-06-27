@@ -1,10 +1,11 @@
+import { AppVersionTool } from '@/contexts/DeveloperDataContext';
 import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsWrapper } from './CreateAppVersionToolsWrapper';
 
 interface AppVersionToolsWrapperProps {
   appId: number;
   versionId: number;
-  tools: any[];
+  tools: AppVersionTool[];
   refetchVersionTools: () => Promise<any>;
   onToolAdd: (tool: any) => Promise<void>;
   availableTools: any[];
@@ -40,7 +41,7 @@ export function AppVersionToolsWrapper({
           </p>
         </div>
         <ManageAppVersionTools
-          tools={tools || []}
+          tools={tools}
           appId={appId}
           versionId={versionId}
           onEditSuccess={refetchVersionTools}
