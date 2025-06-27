@@ -4,26 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  TextField,
-  LongTextField,
-  ArrayField,
-  SelectField,
-  ImageUploadField,
-} from '../../form-fields';
+import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
+import { TextField, LongTextField, ArrayField, ImageUploadField } from '../../form-fields';
+import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
+
+const { appDoc } = docSchemas;
+
+const { name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus } =
+  appDoc.shape;
 
 export const CreateAppSchema = z
-  .object({
-    name: z.string().min(1, 'App name is required'),
-    description: z.string().min(10, 'Description must be at least 10 characters'),
-    contactEmail: z.string().email('Please enter a valid email address'),
-    appUserUrl: z.string().url('Please enter a valid URL'),
-    logo: z.string().optional(),
-    redirectUris: z
-      .array(z.string().url('Please enter valid URLs'))
-      .min(1, 'At least one redirect URI is required'),
-    deploymentStatus: z.enum(['dev', 'test', 'prod']),
-  })
+  .object({ name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus })
   .strict();
 
 export type CreateAppFormData = z.infer<typeof CreateAppSchema>;
@@ -33,18 +24,12 @@ interface CreateAppFormProps {
   isSubmitting?: boolean;
 }
 
-const deploymentStatusOptions = [
-  { value: 'dev', label: 'Development' },
-  { value: 'test', label: 'Test' },
-  { value: 'prod', label: 'Production' },
-];
-
 export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormProps) {
   const form = useForm<CreateAppFormData>({
     resolver: zodResolver(CreateAppSchema),
     defaultValues: {
       redirectUris: [''],
-      deploymentStatus: undefined,
+      deploymentStatus: 'dev',
     },
   });
 
@@ -127,16 +112,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
               placeholder="https://yourapp.com/callback"
               required
             />
-
-            <SelectField
-              name="deploymentStatus"
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              label="Deployment Status"
-              options={deploymentStatusOptions}
-              required
-            />
+            <DeploymentStatusSelectField errors={errors} watch={watch} setValue={setValue} />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Creating App...' : 'Create App'}
