@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Tool } from '@/contexts/DeveloperDataContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToolSelectorModal } from '../../ToolSelectorModal';
 import { Plus } from 'lucide-react';
 
 interface CreateAppVersionToolsFormProps {
   versionId: number;
-  onToolAdd: (tool: any) => Promise<void>;
+  onToolAdd: (tool: Tool) => Promise<void>;
   existingTools?: string[]; // Array of package names already added
-  availableTools: any[];
+  availableTools: Tool[];
 }
 
 export function CreateAppVersionToolsForm({
@@ -19,7 +20,7 @@ export function CreateAppVersionToolsForm({
 }: CreateAppVersionToolsFormProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleToolAdd = async (tool: any) => {
+  const handleToolAdd = async (tool: Tool) => {
     await onToolAdd(tool);
     setIsModalOpen(false);
   };
