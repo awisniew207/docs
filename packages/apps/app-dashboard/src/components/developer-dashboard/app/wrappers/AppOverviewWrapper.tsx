@@ -1,18 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { useUrlAppId } from '@/components/consent/hooks/useUrlAppId';
 import { AppDetailsView } from '../views/AppDetailsView';
+import { App } from '@/contexts/DeveloperDataContext';
 
 interface AppOverviewWrapperProps {
-  app: any;
+  app: App;
 }
 
 export function AppOverviewWrapper({ app }: AppOverviewWrapperProps) {
   const navigate = useNavigate();
   const { appId } = useUrlAppId();
 
-  const handleOpenModal = (modalType: string) => {
-    navigate(`/developer/appId/${appId}/${modalType}`);
+  const handleOpenMutation = (mutationType: string) => {
+    navigate(`/developer/appId/${appId}/${mutationType}`);
   };
 
-  return <AppDetailsView selectedApp={app} onOpenModal={handleOpenModal} />;
+  return <AppDetailsView selectedApp={app} onOpenMutation={handleOpenMutation} />;
 }

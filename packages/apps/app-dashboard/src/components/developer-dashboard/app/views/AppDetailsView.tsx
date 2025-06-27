@@ -4,10 +4,10 @@ import { Edit, Plus, Trash2 } from 'lucide-react';
 
 interface AppDetailsViewProps {
   selectedApp: App;
-  onOpenModal: (contentType: string) => void;
+  onOpenMutation: (mutationType: string) => void;
 }
 
-export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps) {
+export function AppDetailsView({ selectedApp, onOpenMutation }: AppDetailsViewProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -42,21 +42,21 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
         <div className="p-6">
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => onOpenModal('edit-app')}
+              onClick={() => onOpenMutation('edit-app')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
               <Edit className="h-4 w-4" />
               Edit App
             </button>
             <button
-              onClick={() => onOpenModal('create-app-version')}
+              onClick={() => onOpenMutation('create-app-version')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
               <Plus className="h-4 w-4" />
               Create App Version
             </button>
             <button
-              onClick={() => onOpenModal('delete-app')}
+              onClick={() => onOpenMutation('delete-app')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
