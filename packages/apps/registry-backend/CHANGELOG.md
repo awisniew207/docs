@@ -1,3 +1,17 @@
+## 0.2.2 (2025-06-27)
+
+### 🩹 Fixes
+
+- Fix type of `supportedPolicies` - it is an object, not a string array ([cd19e94f](https://github.com/LIT-Protocol/Vincent/commit/cd19e94f))
+
+### 🧱 Updated Dependencies
+
+- Updated registry-sdk to 2.2.1
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 0.2.1 (2025-06-26)
 
 ### 🩹 Fixes
