@@ -1,13 +1,10 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreateAppForm, type CreateAppFormData } from '../forms/CreateAppForm';
-import {
-  getErrorMessage,
-  navigateWithDelay /* type ToolSelection */,
-} from '@/utils/developer-dashboard/app-forms';
+import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 
 interface CreateAppWrapperProps {
   refetchApps: () => void;
@@ -15,63 +12,42 @@ interface CreateAppWrapperProps {
 
 export function CreateAppWrapper({ refetchApps }: CreateAppWrapperProps) {
   const vincentApi = useVincentApiWithSIWE();
-  const [createApp, { isLoading: isCreatingApp }] = vincentApi.useCreateAppMutation();
-  //const [createAppVersionTool] = vincentApi.useCreateAppVersionToolMutation();
-  const { address, isConnected } = useAccount();
+  const [createApp, { isLoading, isSuccess, isError, data, error }] =
+    vincentApi.useCreateAppMutation();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { address } = useAccount();
 
-  // Success state
-  if (result) {
-    return <StatusMessage message="App created successfully! Redirecting..." type="success" />;
+  useEffect(() => {
+    if (isSuccess && data) {
+      refetchApps();
+
+      const newAppId = data.appId;
+      if (newAppId) {
+        navigateWithDelay(navigate, `/developer/appId/${newAppId}`);
+      }
+    }
+  }, [isSuccess, data, refetchApps, navigate]);
+
+  // Show spinner while creating app or after success while refetching/navigating
+  if (isLoading) {
+    return <StatusMessage message="Creating app..." type="info" />;
+  }
+
+  if (isSuccess && data) {
+    return <StatusMessage message="App created successfully!" type="success" />;
   }
 
   // Error state
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
+  if (isError && error) {
+    const errorMessage = getErrorMessage(error, 'Failed to create app');
+    return <StatusMessage message={errorMessage} type="error" />;
   }
 
   const handleSubmit = async (data: CreateAppFormData) => {
-    if (!isConnected || !address) {
-      setError('Wallet not connected');
-      return;
-    }
-
-    setError(null);
-    setResult(null);
-    setIsProcessing(true);
-
-    try {
-      const { ...appDataForApi } = data;
-      const appSubmissionData = { ...appDataForApi, managerAddress: address };
-
-      const appResponse = await createApp({ appCreate: appSubmissionData });
-
-      if ('error' in appResponse) {
-        setError(getErrorMessage(appResponse.error, 'Failed to create app'));
-        return;
-      }
-
-      // Refetch apps to update cache
-      await refetchApps();
-
-      const newAppId = appResponse.data?.appId;
-
-      // Navigate to the new app's detail page with delay BEFORE setting result
-      navigateWithDelay(navigate, `/developer/appId/${newAppId}`);
-
-      // Set result AFTER navigation is scheduled
-      setResult({ message: 'App created successfully!' });
-    } catch (error: unknown) {
-      setError(getErrorMessage(error, 'Failed to create app'));
-    } finally {
-      setIsProcessing(false);
-    }
+    await createApp({
+      appCreate: { ...data, managerAddress: address },
+    });
   };
-
-  const isLoading = isCreatingApp || isProcessing;
 
   // Render pure form component
   return <CreateAppForm onSubmit={handleSubmit} isSubmitting={isLoading} />;

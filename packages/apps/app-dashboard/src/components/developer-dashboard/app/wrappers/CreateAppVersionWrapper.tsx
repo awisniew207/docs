@@ -32,8 +32,12 @@ export function CreateAppVersionWrapper({ app, refetchVersions }: CreateAppVersi
   }, [isSuccess, data, refetchVersions, navigate, app.appId]);
 
   // Show spinner while creating version or after success while refetching/navigating
-  if (isLoading || (isSuccess && data)) {
+  if (isLoading) {
     return <StatusMessage message="Creating app version..." type="info" />;
+  }
+
+  if (isSuccess && data) {
+    return <StatusMessage message="App version created successfully!" type="success" />;
   }
 
   // Error state
