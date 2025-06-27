@@ -8,39 +8,48 @@ import {
   TextField,
   LongTextField,
   ArrayField,
-  SelectField,
+  NumberSelectField,
   ImageUploadField,
 } from '../../form-fields';
+import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
+import { App, AppVersion } from '@/contexts/DeveloperDataContext';
+import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
+
+const { appDoc } = docSchemas;
+
+const {
+  name,
+  description,
+  contactEmail,
+  appUserUrl,
+  logo,
+  redirectUris,
+  deploymentStatus,
+  activeVersion,
+} = appDoc.shape;
 
 export const EditAppSchema = z
   .object({
-    name: z.string().min(1),
-    description: z.string().min(10),
-    contactEmail: z.string().email(),
-    appUserUrl: z.string().url(),
-    logo: z.string().optional(),
-    redirectUris: z.array(z.string().url()),
-    deploymentStatus: z.enum(['dev', 'test', 'prod']),
-    activeVersion: z.coerce.number().positive().int(),
+    name,
+    description,
+    contactEmail,
+    appUserUrl,
+    logo,
+    redirectUris,
+    deploymentStatus,
+    activeVersion,
   })
-  .partial()
-  .required({ activeVersion: true })
+  .required()
   .strict();
 
 export type EditAppFormData = z.infer<typeof EditAppSchema>;
 
 interface EditAppFormProps {
-  appData: any;
-  appVersions: any[];
+  appData: App;
+  appVersions: AppVersion[];
   onSubmit: (data: EditAppFormData) => Promise<void>;
   isSubmitting?: boolean;
 }
-
-const deploymentStatusOptions = [
-  { value: 'dev', label: 'Development' },
-  { value: 'test', label: 'Test' },
-  { value: 'prod', label: 'Production' },
-];
 
 export function EditAppForm({
   appData,
@@ -74,12 +83,10 @@ export function EditAppForm({
   } = form;
 
   // Create version options from appVersions, showing enabled/disabled status for all versions
-  const versionOptions = appVersions
-    .map((version) => ({
-      value: version.version.toString(),
-      label: `Version ${version.version} (${version.enabled ? 'Enabled' : 'Disabled'})`,
-    }))
-    .sort((a, b) => parseInt(b.value) - parseInt(a.value));
+  const versionOptions = appVersions.map((version) => ({
+    value: version.version,
+    label: `Version ${version.version} (${version.enabled ? 'Enabled' : 'Disabled'})`,
+  }));
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -143,16 +150,9 @@ export function EditAppForm({
               placeholder="https://yourapp.com/callback"
             />
 
-            <SelectField
-              name="deploymentStatus"
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              label="Deployment Status"
-              options={deploymentStatusOptions}
-            />
+            <DeploymentStatusSelectField errors={errors} watch={watch} setValue={setValue} />
 
-            <SelectField
+            <NumberSelectField
               name="activeVersion"
               errors={errors}
               watch={watch}
