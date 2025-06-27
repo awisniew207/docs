@@ -1,27 +1,13 @@
-import { z } from 'zod';
-
-const AppDisplaySchema = z.object({
-  appId: z.number(),
-  activeVersion: z.number(),
-  contactEmail: z.string().optional(),
-  appUserUrl: z.string().optional(),
-  redirectUris: z.array(z.string()).optional(),
-  deploymentStatus: z.enum(['dev', 'test', 'prod']).optional(),
-  isDeleted: z.boolean().optional(),
-  createdAt: z.string().transform((date) => new Date(date).toLocaleString()),
-  updatedAt: z.string().transform((date) => new Date(date).toLocaleString()),
-});
+import { App } from '@/contexts/DeveloperDataContext';
+import { AppDetail } from '@/components/developer-dashboard/ui/AppDetail';
+import { Edit, Plus, Trash2 } from 'lucide-react';
 
 interface AppDetailsViewProps {
-  selectedApp: any;
+  selectedApp: App;
   onOpenModal: (contentType: string) => void;
 }
 
 export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps) {
-  const displayData = AppDisplaySchema.parse(selectedApp);
-
-  const logoUrl = selectedApp.logo && selectedApp.logo.length >= 10 ? selectedApp.logo : null;
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -30,9 +16,9 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
           <p className="text-gray-600 mt-2">{selectedApp.description}</p>
         </div>
         <div className="ml-6 flex-shrink-0">
-          {logoUrl ? (
+          {selectedApp.logo && selectedApp.logo.length >= 10 ? (
             <img
-              src={logoUrl}
+              src={selectedApp.logo}
               alt="App logo"
               className="max-w-24 max-h-24 object-contain rounded-lg border shadow-sm bg-gray-50"
               onError={(e) => {
@@ -59,42 +45,21 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
               onClick={() => onOpenModal('edit-app')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <Edit className="h-4 w-4" />
               Edit App
             </button>
             <button
               onClick={() => onOpenModal('create-app-version')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+              <Plus className="h-4 w-4" />
               Create App Version
             </button>
             <button
               onClick={() => onOpenModal('delete-app')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
+              <Trash2 className="h-4 w-4" />
               Delete App
             </button>
           </div>
@@ -109,126 +74,70 @@ export function AppDetailsView({ selectedApp, onOpenModal }: AppDetailsViewProps
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 gap-4">
-              <div className="border-b border-gray-100 pb-3">
-                <div className="flex flex-col sm:flex-row sm:justify-between">
-                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                    App ID
-                  </span>
-                  <div className="mt-1 sm:mt-0 sm:text-right">
-                    <span className="text-gray-900 text-sm">{displayData.appId}</span>
-                  </div>
-                </div>
-              </div>
+              <AppDetail label="App ID">
+                <span className="text-gray-900 text-sm">{selectedApp.appId}</span>
+              </AppDetail>
 
-              <div className="border-b border-gray-100 pb-3">
-                <div className="flex flex-col sm:flex-row sm:justify-between">
-                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                    Active Version
-                  </span>
-                  <div className="mt-1 sm:mt-0 sm:text-right">
-                    <span className="text-gray-900 text-sm">{displayData.activeVersion}</span>
-                  </div>
-                </div>
-              </div>
+              <AppDetail label="Active Version">
+                <span className="text-gray-900 text-sm">{selectedApp.activeVersion}</span>
+              </AppDetail>
 
-              {displayData.contactEmail && (
-                <div className="border-b border-gray-100 pb-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between">
-                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                      Contact Email
-                    </span>
-                    <div className="mt-1 sm:mt-0 sm:text-right">
-                      <span className="text-gray-900 text-sm">{displayData.contactEmail}</span>
-                    </div>
-                  </div>
-                </div>
+              {selectedApp.contactEmail && (
+                <AppDetail label="Contact Email">
+                  <span className="text-gray-900 text-sm">{selectedApp.contactEmail}</span>
+                </AppDetail>
               )}
 
-              {displayData.appUserUrl && (
-                <div className="border-b border-gray-100 pb-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between">
-                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                      App User URL
-                    </span>
-                    <div className="mt-1 sm:mt-0 sm:text-right">
-                      <a
-                        href={displayData.appUserUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline text-sm"
-                      >
-                        {displayData.appUserUrl}
-                      </a>
-                    </div>
-                  </div>
-                </div>
+              {selectedApp.appUserUrl && (
+                <AppDetail label="App User URL">
+                  <a
+                    href={selectedApp.appUserUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    {selectedApp.appUserUrl}
+                  </a>
+                </AppDetail>
               )}
 
-              {displayData.redirectUris && displayData.redirectUris.length > 0 && (
-                <div className="border-b border-gray-100 pb-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between">
-                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                      Redirect URIs
-                    </span>
-                    <div className="mt-1 sm:mt-0 sm:text-right">
-                      <div className="space-y-1">
-                        {displayData.redirectUris.map((uri, index) => (
-                          <div key={index}>
-                            <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
-                              {uri}
-                            </span>
-                          </div>
-                        ))}
+              {selectedApp.redirectUris && selectedApp.redirectUris.length > 0 && (
+                <AppDetail label="Redirect URIs">
+                  <div className="space-y-1">
+                    {selectedApp.redirectUris.map((uri) => (
+                      <div key={uri}>
+                        <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
+                          {uri}
+                        </span>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                </div>
+                </AppDetail>
               )}
 
-              {displayData.deploymentStatus && (
-                <div className="border-b border-gray-100 pb-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between">
-                    <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                      Deployment Status
-                    </span>
-                    <div className="mt-1 sm:mt-0 sm:text-right">
-                      <span
-                        className={`inline-block px-2 py-1 rounded text-sm font-medium ${
-                          displayData.deploymentStatus === 'prod'
-                            ? 'bg-green-100 text-green-800'
-                            : displayData.deploymentStatus === 'test'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {displayData.deploymentStatus.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+              {selectedApp.deploymentStatus && (
+                <AppDetail label="Deployment Status">
+                  <span
+                    className={`inline-block px-2 py-1 rounded text-sm font-medium ${
+                      selectedApp.deploymentStatus === 'prod'
+                        ? 'bg-green-100 text-green-800'
+                        : selectedApp.deploymentStatus === 'test'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {selectedApp.deploymentStatus.toUpperCase()}
+                  </span>
+                </AppDetail>
               )}
 
-              <div className="border-b border-gray-100 pb-3">
-                <div className="flex flex-col sm:flex-row sm:justify-between">
-                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                    Created At
-                  </span>
-                  <div className="mt-1 sm:mt-0 sm:text-right">
-                    <span className="text-gray-900 text-sm">{displayData.createdAt}</span>
-                  </div>
-                </div>
-              </div>
+              <AppDetail label="Created At">
+                <span className="text-gray-900 text-sm">{selectedApp.createdAt}</span>
+              </AppDetail>
 
-              <div className="pb-3">
-                <div className="flex flex-col sm:flex-row sm:justify-between">
-                  <span className="font-medium text-gray-600 text-sm uppercase tracking-wide">
-                    Updated At
-                  </span>
-                  <div className="mt-1 sm:mt-0 sm:text-right">
-                    <span className="text-gray-900 text-sm">{displayData.updatedAt}</span>
-                  </div>
-                </div>
-              </div>
+              <AppDetail label="Updated At" isLast>
+                <span className="text-gray-900 text-sm">{selectedApp.updatedAt}</span>
+              </AppDetail>
             </div>
           </div>
         </div>
