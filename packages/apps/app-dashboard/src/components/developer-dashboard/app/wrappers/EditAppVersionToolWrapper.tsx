@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import {
   EditAppVersionToolForm,
   type EditAppVersionToolFormData,
 } from '../forms/EditAppVersionToolForm';
+import { AppVersionTool } from '@/contexts/DeveloperDataContext';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 
 interface EditAppVersionToolWrapperProps {
   appId: number;
   versionId: number;
-  tool: any;
+  tool: AppVersionTool;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -23,46 +24,39 @@ export function EditAppVersionToolWrapper({
   onCancel,
 }: EditAppVersionToolWrapperProps) {
   const vincentApi = useVincentApiWithSIWE();
-  const [editAppVersionTool, { isLoading }] = vincentApi.useEditAppVersionToolMutation();
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [editAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
+    vincentApi.useEditAppVersionToolMutation();
 
-  // Success state
-  if (result) {
+  useEffect(() => {
+    if (isSuccess && data) {
+      setTimeout(() => {
+        onSuccess();
+      }, 1500);
+    }
+  }, [isSuccess, data, onSuccess]);
+
+  // Show spinner while updating tool
+  if (isLoading) {
+    return <StatusMessage message="Updating tool..." type="info" />;
+  }
+
+  if (isSuccess && data) {
     return <StatusMessage message="Tool updated successfully!" type="success" />;
   }
 
   // Error state
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
+  if (isError && error) {
+    const errorMessage = getErrorMessage(error, 'Failed to update tool');
+    return <StatusMessage message={errorMessage} type="error" />;
   }
 
   const handleSubmit = async (data: EditAppVersionToolFormData) => {
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await editAppVersionTool({
-        appId,
-        appVersion: versionId,
-        toolPackageName: tool.toolPackageName,
-        appVersionToolEdit: data,
-      });
-
-      if ('error' in response) {
-        setError(getErrorMessage(response.error, 'Failed to update tool'));
-        return;
-      }
-
-      setResult({ message: 'Tool updated successfully!' });
-
-      // Call success callback after a brief delay to show success message
-      setTimeout(() => {
-        onSuccess();
-      }, 1000);
-    } catch (error: unknown) {
-      setError(getErrorMessage(error, 'Failed to update tool'));
-    }
+    await editAppVersionTool({
+      appId,
+      appVersion: versionId,
+      toolPackageName: tool.toolPackageName,
+      appVersionToolEdit: data,
+    });
   };
 
   return (
