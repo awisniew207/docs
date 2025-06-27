@@ -1,58 +1,49 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditAppForm, type EditAppFormData } from '../forms/EditAppForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
+import { App, AppVersion } from '@/contexts/DeveloperDataContext';
 
 interface EditAppWrapperProps {
-  app: any;
-  appVersions: any[];
-  refetchApps: () => Promise<any>;
+  app: App;
+  appVersions: AppVersion[];
+  refetchApps: () => Promise<void>;
 }
 
 export function EditAppWrapper({ app, appVersions, refetchApps }: EditAppWrapperProps) {
   const vincentApi = useVincentApiWithSIWE();
-  const [editApp, { isLoading }] = vincentApi.useEditAppMutation();
+  const [editApp, { isLoading, isSuccess, isError, data, error }] = vincentApi.useEditAppMutation();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
 
-  // Success state
-  if (result) {
+  useEffect(() => {
+    if (isSuccess && data) {
+      refetchApps();
+      navigateWithDelay(navigate, `/developer/appId/${app.appId}`);
+    }
+  }, [isSuccess, data, refetchApps, navigate, app.appId]);
+
+  // Show spinner while updating app or after success while refetching/navigating
+  if (isLoading) {
+    return <StatusMessage message="Updating app..." type="info" />;
+  }
+
+  if (isSuccess && data) {
     return <StatusMessage message="App updated successfully!" type="success" />;
   }
 
   // Error state
-  if (error) {
-    return <StatusMessage message={error} type="error" />;
+  if (isError && error) {
+    const errorMessage = getErrorMessage(error, 'Failed to update app');
+    return <StatusMessage message={errorMessage} type="error" />;
   }
 
   const handleSubmit = async (data: EditAppFormData) => {
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await editApp({
-        appId: parseInt(app.appId),
-        appEdit: data,
-      });
-
-      if ('error' in response) {
-        setError(getErrorMessage(response.error, 'Failed to update app'));
-        return;
-      }
-
-      setResult({ message: 'App updated successfully!' });
-
-      // Refetch apps to update cache
-      await refetchApps();
-
-      // Navigate back to app detail page with delay
-      navigateWithDelay(navigate, `/developer/appId/${app.appId}`);
-    } catch (error: unknown) {
-      setError(getErrorMessage(error, 'Failed to update app'));
-    }
+    await editApp({
+      appId: app.appId,
+      appEdit: data,
+    });
   };
 
   // Render pure form component - app is guaranteed to exist
