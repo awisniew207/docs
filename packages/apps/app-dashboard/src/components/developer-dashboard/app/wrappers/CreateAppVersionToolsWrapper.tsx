@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
+import { Tool } from '@/contexts/DeveloperDataContext';
 
 interface CreateAppVersionToolsWrapperProps {
   versionId: number;
   existingTools: string[];
-  onToolAdd: (tool: any) => Promise<void>;
-  availableTools: any[];
+  onToolAdd: (tool: Tool) => Promise<void>;
+  availableTools: Tool[];
 }
 
 export function CreateAppVersionToolsWrapper({
@@ -16,9 +17,9 @@ export function CreateAppVersionToolsWrapper({
   availableTools,
 }: CreateAppVersionToolsWrapperProps) {
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ message: string } | null>(null);
 
-  const handleToolAdd = async (tool: any) => {
+  const handleToolAdd = async (tool: Tool) => {
     setError(null);
     setResult(null);
 
