@@ -3,22 +3,21 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { App } from '@/contexts/DeveloperDataContext';
+import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LongTextField } from '../../form-fields';
 
-export const CreateAppVersionSchema = z
-  .object({
-    changes: z
-      .string()
-      .min(1, 'Changes description is required')
-      .describe('Describes what changed between this version and the previous version.'),
-  })
-  .strict();
+const { appVersionDoc } = docSchemas;
+
+const { changes } = appVersionDoc.shape;
+
+export const CreateAppVersionSchema = z.object({ changes }).strict();
 
 export type CreateAppVersionFormData = z.infer<typeof CreateAppVersionSchema>;
 
 interface CreateAppVersionFormProps {
-  appData: any;
+  appData: App;
   onSubmit: (data: CreateAppVersionFormData) => Promise<void>;
   isSubmitting?: boolean;
 }
