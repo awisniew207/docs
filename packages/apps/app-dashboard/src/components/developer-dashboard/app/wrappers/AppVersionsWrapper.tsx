@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router';
 import { AppVersionsListView } from '../views/AppVersionsListView';
+import { AppVersion } from '@/contexts/DeveloperDataContext';
 
 interface AppVersionsWrapperProps {
-  versions: any[];
+  versions: AppVersion[];
   appId: number;
   activeVersion?: number;
 }
