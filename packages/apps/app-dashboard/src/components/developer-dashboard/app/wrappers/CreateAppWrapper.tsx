@@ -20,11 +20,7 @@ export function CreateAppWrapper({ refetchApps }: CreateAppWrapperProps) {
   useEffect(() => {
     if (isSuccess && data) {
       refetchApps();
-
-      const newAppId = data.appId;
-      if (newAppId) {
-        navigateWithDelay(navigate, `/developer/appId/${newAppId}`);
-      }
+      navigateWithDelay(navigate, `/developer/appId/${data.appId}`);
     }
   }, [isSuccess, data, refetchApps, navigate]);
 

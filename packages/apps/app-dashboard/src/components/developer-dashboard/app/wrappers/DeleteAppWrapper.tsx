@@ -20,7 +20,6 @@ export function DeleteAppWrapper({ app, refetchApps }: DeleteAppWrapperProps) {
   useEffect(() => {
     if (isSuccess && data) {
       refetchApps();
-
       navigate('/developer/apps'); // Navigate immediately, no delay needed
     }
   }, [isSuccess, data, refetchApps, navigate]);

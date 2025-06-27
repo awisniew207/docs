@@ -20,14 +20,7 @@ export function CreateAppVersionWrapper({ app, refetchVersions }: CreateAppVersi
   useEffect(() => {
     if (isSuccess && data) {
       refetchVersions();
-
-      const newVersionNumber = data.version;
-      if (newVersionNumber) {
-        navigateWithDelay(
-          navigate,
-          `/developer/appId/${app.appId}/version/${newVersionNumber}/tools`,
-        );
-      }
+      navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${data.version}/tools`);
     }
   }, [isSuccess, data, refetchVersions, navigate, app.appId]);
 
