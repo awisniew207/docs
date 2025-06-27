@@ -6,8 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TextField } from '../../form-fields';
 
+function buildConfirmationString(appName: string): string {
+  return `I want to delete app ${appName}`;
+}
+
 const createDeleteAppSchema = (appName: string) => {
-  const expectedConfirmation = `I want to delete app ${appName}`;
+  const expectedConfirmation = buildConfirmationString(appName);
   return z.object({
     confirmation: z.string().refine((val) => val === expectedConfirmation, {
       message: `Please type exactly: "${expectedConfirmation}"`,
@@ -41,7 +45,7 @@ export function DeleteAppForm({ appName, onSubmit, isSubmitting = false }: Delet
     formState: { errors, isValid },
   } = form;
 
-  const expectedConfirmation = `I want to delete app ${appName}`;
+  const expectedConfirmation = buildConfirmationString(appName);
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
