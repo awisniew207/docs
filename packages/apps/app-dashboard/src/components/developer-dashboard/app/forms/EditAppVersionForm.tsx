@@ -3,21 +3,26 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { AppVersion } from '@/contexts/DeveloperDataContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LongTextField } from '../../form-fields';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 
+const { appVersionDoc } = docSchemas;
+
+const { changes } = appVersionDoc.shape;
+
 export const EditAppVersionSchema = z
   .object({
-    changes: docSchemas.appVersionDoc.shape.changes,
+    changes,
   })
-  .partial()
+  .required()
   .strict();
 
 export type EditAppVersionFormData = z.infer<typeof EditAppVersionSchema>;
 
 interface EditAppVersionFormProps {
-  versionData: any;
+  versionData: AppVersion;
   onSubmit: (data: EditAppVersionFormData) => Promise<void>;
   isSubmitting?: boolean;
 }
@@ -30,7 +35,7 @@ export function EditAppVersionForm({
   const form = useForm<EditAppVersionFormData>({
     resolver: zodResolver(EditAppVersionSchema),
     defaultValues: {
-      changes: versionData?.changes || '',
+      changes: versionData.changes || '',
     },
   });
 
