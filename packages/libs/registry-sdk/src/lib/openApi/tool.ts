@@ -9,7 +9,7 @@ import {
   toolVersionEdit,
   toolVersionDoc,
 } from '../schemas/tool';
-import { ErrorResponse, ChangeOwner, DeleteResponse } from './baseRegistry';
+import { ErrorResponse, ChangeOwner, DeleteResponse, siweAuth } from './baseRegistry';
 
 const packageNameParam = z
   .string()
@@ -62,6 +62,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: 'Creates a new tool',
     operationId: 'createTool',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
       body: {
@@ -140,6 +141,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: 'Edits a tool',
     operationId: 'editTool',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
       body: {
@@ -218,6 +220,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: "Changes a tool's owner",
     operationId: 'changeToolOwner',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
       body: {
@@ -263,6 +266,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool/version'],
     summary: 'Creates a tool version',
     operationId: 'createToolVersion',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
       body: {
@@ -341,6 +345,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool/version'],
     summary: 'Edits a tool version',
     operationId: 'editToolVersion',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
       body: {
@@ -386,6 +391,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['tool'],
     summary: 'Deletes a tool and all its versions',
     operationId: 'deleteTool',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
     },

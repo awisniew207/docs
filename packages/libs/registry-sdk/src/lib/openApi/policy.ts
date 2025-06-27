@@ -9,7 +9,7 @@ import {
   policyVersionEdit,
   policyVersionDoc,
 } from '../schemas/policy';
-import { ErrorResponse, ChangeOwner, DeleteResponse } from './baseRegistry';
+import { ErrorResponse, ChangeOwner, DeleteResponse, siweAuth } from './baseRegistry';
 
 const packageNameParam = z
   .string()
@@ -61,6 +61,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: 'Creates a new policy',
     operationId: 'createPolicy',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
       body: {
@@ -139,6 +140,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: 'Edits a policy',
     operationId: 'editPolicy',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
       body: {
@@ -184,6 +186,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy/version'],
     summary: 'Creates a new policy version',
     operationId: 'createPolicyVersion',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
       body: {
@@ -295,6 +298,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: "Changes a policy's owner",
     operationId: 'changePolicyOwner',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
       body: {
@@ -340,6 +344,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy/version'],
     summary: 'Edits a policy version',
     operationId: 'editPolicyVersion',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
       body: {
@@ -385,6 +390,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     tags: ['policy'],
     summary: 'Deletes a policy and all its versions',
     operationId: 'deletePolicy',
+    security: [{ [siweAuth.name]: [] }],
     request: {
       params: z.object({ packageName: packageNameParam }),
     },
