@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsWrapper } from './CreateAppVersionToolsWrapper';
 
@@ -19,21 +18,6 @@ export function AppVersionToolsWrapper({
   onToolAdd,
   availableTools,
 }: AppVersionToolsWrapperProps) {
-  const [editingTool, setEditingTool] = useState<string | null>(null);
-
-  const handleEditTool = (toolPackageName: string) => {
-    setEditingTool(toolPackageName);
-  };
-
-  const handleCancelEdit = () => {
-    setEditingTool(null);
-  };
-
-  const handleEditSuccess = async () => {
-    setEditingTool(null);
-    await refetchVersionTools();
-  };
-
   const existingToolNames = tools?.map((tool) => tool.toolPackageName) || [];
 
   return (
@@ -59,10 +43,7 @@ export function AppVersionToolsWrapper({
           tools={tools || []}
           appId={appId}
           versionId={versionId}
-          editingTool={editingTool}
-          onEditTool={handleEditTool}
-          onCancelEdit={handleCancelEdit}
-          onEditSuccess={handleEditSuccess}
+          onEditSuccess={refetchVersionTools}
         />
       </div>
     </div>
