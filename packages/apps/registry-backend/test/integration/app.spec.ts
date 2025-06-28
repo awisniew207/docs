@@ -25,7 +25,6 @@ describe('App API Integration Tests', () => {
     logo: 'https://example.com/logo.png',
     redirectUris: ['https://example.com/callback'],
     // deploymentStatus: 'dev' as const,
-    managerAddress: '0x1234567890abcdef1234567890abcdef12345678',
   };
 
   describe('GET /apps', () => {

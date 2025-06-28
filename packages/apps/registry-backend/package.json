@@ -50,6 +50,7 @@
     "@types/node": "^20.11.0",
     "@types/semver": "^7.7.0",
     "bun": "^1.2.5",
+    "ethers": "5.8.0",
     "jest": "^29.5.0",
     "jest-process-manager": "^0.2.9",
     "mongodb-memory-server": "^10.1.4",

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SiweMessage } from 'siwe';
 import { env } from '../../env';
-import { createDebugger } from './debug';
+import { createDebugger } from '../../../debug';
 
 // Create a specific interface for requests with authenticated user
 export interface RequestWithVincentUser extends Request {

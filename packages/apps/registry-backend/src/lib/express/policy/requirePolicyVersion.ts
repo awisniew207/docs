@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PolicyVersion } from '../../mongo/policy';
-import { createDebugger } from '../debug';
+import { createDebugger } from '../../../../debug';
 
 import { RequestWithPolicy } from './requirePolicy';
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Tool } from '../../mongo/tool';
 import { RequestWithVincentUser } from '../requireVincentAuth';
-import { createDebugger } from '../debug';
+import { createDebugger } from '../../../../debug';
 
 // Create a debug instance for this middleware
 const debug = createDebugger('requireTool');

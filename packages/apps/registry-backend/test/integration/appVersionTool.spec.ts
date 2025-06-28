@@ -34,7 +34,6 @@ describe('AppVersionTool API Integration Tests', () => {
     logo: 'https://example.com/logo.png',
     redirectUris: ['https://example.com/callback'],
     deploymentStatus: 'dev' as const,
-    managerAddress: '0x1234567890abcdef1234567890abcdef12345678',
   };
 
   // Test data for creating tools
@@ -42,14 +41,12 @@ describe('AppVersionTool API Integration Tests', () => {
     title: 'Test Tool 1',
     description: 'Test tool 1 for AppVersionTool integration tests',
     activeVersion: '1.0.0',
-    authorWalletAddress: '0x1093891467868461234876123873',
   };
 
   const toolData2 = {
     title: 'Test Tool 2',
     description: 'Test tool 2 for AppVersionTool integration tests',
     activeVersion: '1.0.0',
-    authorWalletAddress: '0x1093891467868461234876123873',
   };
 
   // Test data for creating app versions

@@ -22,7 +22,6 @@ describe('Supported Policies Integration Tests', () => {
     title: 'Spending Limit Policy',
     description: 'A policy that enforces spending limits',
     activeVersion: '1.0.0',
-    authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
   };
 
   // Test data for creating a tool
@@ -30,7 +29,6 @@ describe('Supported Policies Integration Tests', () => {
     title: 'Uniswap Swap Tool',
     description: 'A tool for swapping tokens on Uniswap',
     activeVersion: '1.0.0',
-    authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
   };
 
   // Test data for creating a tool version

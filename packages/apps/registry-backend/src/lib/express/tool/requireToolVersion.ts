@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ToolVersion } from '../../mongo/tool';
-import { createDebugger } from '../debug';
+import { createDebugger } from '../../../../debug';
 
 import { RequestWithTool } from './requireTool';
 

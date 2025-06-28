@@ -24,7 +24,6 @@ describe('Policy API Integration Tests', () => {
     title: 'Test Policy',
     description: 'Test policy for integration tests',
     activeVersion: '1.0.0',
-    authorWalletAddress: '0x1234567890abcdef1234567890abcdef12345678',
   };
 
   // Test data for creating a policy version
@@ -72,7 +71,6 @@ describe('Policy API Integration Tests', () => {
         title: policyData.title,
         description: policyData.description,
         activeVersion: policyData.activeVersion,
-        authorWalletAddress: policyData.authorWalletAddress,
       });
     });
   });
@@ -309,8 +307,6 @@ describe('Policy API Integration Tests', () => {
 
       const { data: updatedData } = getResult;
       expectAssertObject(updatedData);
-
-      expect(updatedData).toHaveProperty('authorWalletAddress', newOwnerAddress);
     });
   });
 

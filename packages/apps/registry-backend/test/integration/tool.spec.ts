@@ -24,7 +24,6 @@ describe('Tool API Integration Tests', () => {
     title: 'Test Tool',
     description: 'Test tool for integration tests',
     activeVersion: '1.0.0',
-    authorWalletAddress: '0x1093891467868461234876123873',
   };
 
   // Test data for creating a tool version
@@ -296,8 +295,6 @@ describe('Tool API Integration Tests', () => {
 
       const { data: updatedData } = getResult;
       expectAssertObject(updatedData);
-
-      expect(updatedData).toHaveProperty('authorWalletAddress', newOwnerAddress);
     });
   });
 

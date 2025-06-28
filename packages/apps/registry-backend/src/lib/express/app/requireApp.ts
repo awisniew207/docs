@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { App } from '../../mongo/app';
-import { createDebugger } from '../debug';
+import { createDebugger } from '../../../../debug';
 
 // Create a specific interface for requests with app
 export interface RequestWithApp extends Request {
