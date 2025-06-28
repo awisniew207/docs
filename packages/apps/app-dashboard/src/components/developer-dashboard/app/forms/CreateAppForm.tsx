@@ -106,8 +106,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
               name="redirectUris"
               register={register}
               errors={errors}
-              watch={watch}
-              setValue={setValue}
+              control={control}
               label="Redirect URIs"
               placeholder="https://yourapp.com/callback"
               required

@@ -144,8 +144,7 @@ export function EditAppForm({
               name="redirectUris"
               register={register}
               errors={errors}
-              watch={watch}
-              setValue={setValue}
+              control={control}
               label="Redirect URIs"
               placeholder="https://yourapp.com/callback"
             />

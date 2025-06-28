@@ -1,14 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
+import { UseFormRegister, FieldErrors, Control, useFieldArray } from 'react-hook-form';
+import { useEffect } from 'react';
 
 interface ArrayFieldProps {
   name: string;
   register: UseFormRegister<any>;
   errors: FieldErrors;
-  watch: UseFormWatch<any>;
-  setValue: UseFormSetValue<any>;
+  control: Control<any>;
   label: string;
   placeholder?: string;
   required?: boolean;
@@ -18,28 +18,31 @@ export function ArrayField({
   name,
   register,
   errors,
-  watch,
-  setValue,
+  control,
   label,
   placeholder,
   required = false,
 }: ArrayFieldProps) {
-  const currentValues = watch(name) || [''];
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name,
+  });
+
+  // Ensure at least one field exists
+  useEffect(() => {
+    if (fields.length === 0) {
+      append('');
+    }
+  }, [fields.length, append]);
+
   const arrayError = errors[name];
-  const arrayErrors = errors[name] as any; // For individual item errors
+  const hasArrayError = arrayError && !Array.isArray(arrayError);
 
-  const addField = () => {
-    setValue(name, [...currentValues, '']);
-  };
-
-  const removeField = (index: number) => {
-    const newValues = currentValues.filter((_: any, i: number) => i !== index);
-    setValue(name, newValues);
-  };
-
-  // Helper function to get error for a specific index
   const getFieldError = (index: number) => {
-    return arrayErrors?.[index]?.message;
+    if (Array.isArray(arrayError)) {
+      return arrayError[index]?.message;
+    }
+    return undefined;
   };
 
   return (
@@ -48,24 +51,27 @@ export function ArrayField({
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
+
       <div className="space-y-2">
-        {currentValues.map((_: string, index: number) => {
+        {fields.map((field, index) => {
           const fieldError = getFieldError(index);
+          const hasError = fieldError || hasArrayError;
+
           return (
-            <div key={index} className="space-y-1">
+            <div key={field.id} className="space-y-1">
               <div className="flex gap-2">
                 <Input
                   type="text"
                   placeholder={placeholder}
                   {...register(`${name}.${index}`)}
-                  className={fieldError || arrayError ? 'border-red-500 flex-1' : 'flex-1'}
+                  className={hasError ? 'border-red-500 flex-1' : 'flex-1'}
                 />
-                {currentValues.length > 1 && (
+                {fields.length > 1 && (
                   <Button
                     type="button"
                     variant="destructive"
                     size="sm"
-                    onClick={() => removeField(index)}
+                    onClick={() => remove(index)}
                   >
                     Remove
                   </Button>
@@ -75,11 +81,14 @@ export function ArrayField({
             </div>
           );
         })}
-        <Button type="button" variant="outline" size="sm" onClick={addField}>
+
+        <Button type="button" variant="outline" size="sm" onClick={() => append('')}>
           + Add
         </Button>
       </div>
-      {arrayError?.message && <p className="text-sm text-red-500">{String(arrayError.message)}</p>}
+
+      {/* Show array-level error only if it's not an array of field errors */}
+      {hasArrayError && <p className="text-sm text-red-500">{String(arrayError.message)}</p>}
     </div>
   );
 }
