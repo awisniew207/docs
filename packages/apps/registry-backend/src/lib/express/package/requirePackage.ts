@@ -34,14 +34,14 @@ export const requirePackage = (packageNameParam = 'packageName', versionParam = 
 };
 
 // Type-safe handler wrapper
-export type PackageHandler = (
-  req: RequestWithPackage,
+export type PackageHandler<T extends Request = RequestWithPackage> = (
+  req: T & RequestWithPackage,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withValidPackage = (handler: PackageHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithPackage, res, next);
+export const withValidPackage = <T extends Request = Request>(handler: PackageHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithPackage, res, next);
   };
 };

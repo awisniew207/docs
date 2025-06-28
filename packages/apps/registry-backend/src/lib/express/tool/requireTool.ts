@@ -1,10 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { Tool } from '../../mongo/tool';
+import { RequestWithVincentUser } from '../requireVincentAuth';
 
 // Create a specific interface for requests with tool
 export interface RequestWithTool extends Request {
   vincentTool: InstanceType<typeof Tool>;
 }
+
+// Combined interface for requests with both tool and vincent user
+export interface RequestWithToolAndVincentUser extends RequestWithTool, RequestWithVincentUser {}
 
 // Type guard function
 export const requireTool = (paramName = 'packageName') => {
@@ -31,14 +35,14 @@ export const requireTool = (paramName = 'packageName') => {
 };
 
 // Type-safe handler wrapper
-export type ToolHandler = (
-  req: RequestWithTool,
+export type ToolHandler<T extends Request = RequestWithTool> = (
+  req: T & RequestWithTool,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withTool = (handler: ToolHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithTool, res, next);
+export const withTool = <T extends Request = Request>(handler: ToolHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithTool, res, next);
   };
 };

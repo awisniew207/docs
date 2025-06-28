@@ -30,15 +30,15 @@ export const requireApp = (paramName = 'appId') => {
 };
 
 // Type-safe handler wrapper
-export type AppHandler = (
-  req: RequestWithApp,
+export type AppHandler<T extends Request = RequestWithApp> = (
+  req: T & RequestWithApp,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withApp = (handler: AppHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+export const withApp = <T extends Request = Request>(handler: AppHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
     // TypeScript knows req.app exists here because of the middleware chain
-    return handler(req as RequestWithApp, res, next);
+    return handler(req as T & RequestWithApp, res, next);
   };
 };

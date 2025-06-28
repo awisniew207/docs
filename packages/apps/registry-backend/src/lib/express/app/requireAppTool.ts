@@ -3,7 +3,7 @@ import { AppTool } from '../../mongo/app';
 
 import { RequestWithAppAndVersion } from './requireAppVersion';
 
-interface RequestWithAppVersionAndTool extends RequestWithAppAndVersion {
+export interface RequestWithAppVersionAndTool extends RequestWithAppAndVersion {
   vincentAppTool: InstanceType<typeof AppTool>;
 }
 
@@ -55,14 +55,14 @@ export const requireAppTool = (toolPackageNameParam = 'toolPackageName') => {
 };
 
 // Type-safe handler wrapper
-export type AppToolHandler = (
-  req: RequestWithAppVersionAndTool,
+export type AppToolHandler<T extends Request = RequestWithAppVersionAndTool> = (
+  req: T & RequestWithAppVersionAndTool,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withAppTool = (handler: AppToolHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithAppVersionAndTool, res, next);
+export const withAppTool = <T extends Request = Request>(handler: AppToolHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithAppVersionAndTool, res, next);
   };
 };

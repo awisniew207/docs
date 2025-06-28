@@ -47,14 +47,14 @@ export const requireAppVersion = (versionParam = 'version') => {
 };
 
 // Type-safe handler wrapper
-export type AppVersionHandler = (
-  req: RequestWithAppAndVersion,
+export type AppVersionHandler<T extends Request = RequestWithAppAndVersion> = (
+  req: T & RequestWithAppAndVersion,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withAppVersion = (handler: AppVersionHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithAppAndVersion, res, next);
+export const withAppVersion = <T extends Request = Request>(handler: AppVersionHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithAppAndVersion, res, next);
   };
 };

@@ -2,6 +2,7 @@ import { Tool, ToolVersion } from '../../mongo/tool';
 import { requireTool, withTool } from './requireTool';
 import { requireToolVersion, withToolVersion } from './requireToolVersion';
 import { requirePackage, withValidPackage } from '../package/requirePackage';
+import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 
 import type { Express } from 'express';
 import { withSession } from '../../mongo/withSession';
@@ -29,108 +30,11 @@ export function registerRoutes(app: Express) {
   // Create new Tool
   app.post(
     '/tool/:packageName',
+    requireVincentAuth(),
     requirePackage(),
-    withValidPackage(async (req, res) => {
-      const { authorWalletAddress, description, title } = req.body;
-      const packageInfo = req.vincentPackage;
-
-      // Import the package to get the metadata
-      const { ipfsCid } = await importPackage({
-        packageName: packageInfo.name,
-        version: packageInfo.version,
-        type: 'tool',
-      });
-
-      // Identify supported policies from dependencies
-      const { supportedPolicies, policiesNotInRegistry } = await identifySupportedPolicies(
-        packageInfo.dependencies || {},
-      );
-
-      await withSession(async (mongoSession) => {
-        const toolVersion = new ToolVersion({
-          packageName: packageInfo.name,
-          version: packageInfo.version,
-          changes: 'Initial version',
-          repository: packageInfo.repository,
-          description: packageInfo.description,
-          keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || {},
-          author: packageInfo.author,
-          contributors: packageInfo.contributors || [],
-          homepage: packageInfo.homepage,
-          status: 'validating',
-          supportedPolicies,
-          policiesNotInRegistry,
-          ipfsCid,
-        });
-
-        const tool = new Tool({
-          title,
-          packageName: packageInfo.name,
-          authorWalletAddress, // FIXME: Derive from authentication SIWE
-          description,
-          activeVersion: packageInfo.version,
-        });
-
-        let savedTool;
-
-        try {
-          await mongoSession.withTransaction(async (session) => {
-            await toolVersion.save({ session });
-            savedTool = await tool.save({ session });
-          });
-
-          res.status(201).json(savedTool);
-          return;
-        } catch (error: any) {
-          if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
-            res.status(409).json({
-              message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
-            });
-            return;
-          }
-
-          throw error;
-        }
-      });
-    }),
-  );
-
-  // Edit Tool
-  app.put(
-    '/tool/:packageName',
-    requireTool(),
-    withTool(async (req, res) => {
-      Object.assign(req.vincentTool, req.body);
-      const updatedTool = await req.vincentTool.save();
-
-      res.json(updatedTool);
-      return;
-    }),
-  );
-
-  // Change Tool Owner
-  app.put(
-    '/tool/:packageName/owner',
-    requireTool(),
-    withTool(async (req, res) => {
-      const { authorWalletAddress } = req.body;
-
-      req.vincentTool.authorWalletAddress = authorWalletAddress;
-      const updatedTool = await req.vincentTool.save();
-
-      res.json(updatedTool);
-      return;
-    }),
-  );
-
-  // Create a new Tool Version
-  app.post(
-    '/tool/:packageName/version/:version',
-    requireTool(),
-    requirePackage(),
-    withTool(
+    withVincentAuth(
       withValidPackage(async (req, res) => {
+        const { description, title } = req.body;
         const packageInfo = req.vincentPackage;
 
         // Import the package to get the metadata
@@ -145,36 +49,143 @@ export function registerRoutes(app: Express) {
           packageInfo.dependencies || {},
         );
 
-        const toolVersion = new ToolVersion({
-          packageName: packageInfo.name,
-          version: packageInfo.version,
-          changes: req.body.changes,
-          description: packageInfo.description,
-          repository: packageInfo.repository,
-          keywords: packageInfo.keywords || [],
-          dependencies: packageInfo.dependencies || {},
-          author: packageInfo.author,
-          contributors: packageInfo.contributors || [],
-          homepage: packageInfo.homepage,
-          supportedPolicies,
-          policiesNotInRegistry,
-          ipfsCid,
-        });
+        await withSession(async (mongoSession) => {
+          const toolVersion = new ToolVersion({
+            packageName: packageInfo.name,
+            version: packageInfo.version,
+            changes: 'Initial version',
+            repository: packageInfo.repository,
+            description: packageInfo.description,
+            keywords: packageInfo.keywords || [],
+            dependencies: packageInfo.dependencies || {},
+            author: packageInfo.author,
+            contributors: packageInfo.contributors || [],
+            homepage: packageInfo.homepage,
+            status: 'validating',
+            supportedPolicies,
+            policiesNotInRegistry,
+            ipfsCid,
+          });
 
-        try {
-          const savedVersion = await toolVersion.save();
-          res.status(201).json(savedVersion);
-          return;
-        } catch (error: any) {
-          if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
-            res.status(409).json({
-              message: `The tool ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
+          const tool = new Tool({
+            title,
+            packageName: packageInfo.name,
+            authorWalletAddress: req.vincentUser.address, // Now derived from authentication SIWE
+            description,
+            activeVersion: packageInfo.version,
+          });
+
+          let savedTool;
+
+          try {
+            await mongoSession.withTransaction(async (session) => {
+              await toolVersion.save({ session });
+              savedTool = await tool.save({ session });
             });
+
+            res.status(201).json(savedTool);
             return;
+          } catch (error: any) {
+            if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
+              res.status(409).json({
+                message: `The tool ${packageInfo.name} is already in the Vincent Registry.`,
+              });
+              return;
+            }
+
+            throw error;
           }
-          throw error;
-        }
+        });
       }),
+    ),
+  );
+
+  // Edit Tool
+  app.put(
+    '/tool/:packageName',
+    requireVincentAuth(),
+    requireTool(),
+    withVincentAuth(
+      withTool(async (req, res) => {
+        Object.assign(req.vincentTool, req.body);
+        const updatedTool = await req.vincentTool.save();
+
+        res.json(updatedTool);
+        return;
+      }),
+    ),
+  );
+
+  // Change Tool Owner
+  app.put(
+    '/tool/:packageName/owner',
+    requireVincentAuth(),
+    requireTool(),
+    withVincentAuth(
+      withTool(async (req, res) => {
+        req.vincentTool.authorWalletAddress = req.vincentUser.address;
+        const updatedTool = await req.vincentTool.save();
+
+        res.json(updatedTool);
+        return;
+      }),
+    ),
+  );
+
+  // Create a new Tool Version
+  app.post(
+    '/tool/:packageName/version/:version',
+    requireVincentAuth(),
+    requireTool(),
+    requirePackage(),
+    withVincentAuth(
+      withTool(
+        withValidPackage(async (req, res) => {
+          const packageInfo = req.vincentPackage;
+
+          // Import the package to get the metadata
+          const { ipfsCid } = await importPackage({
+            packageName: packageInfo.name,
+            version: packageInfo.version,
+            type: 'tool',
+          });
+
+          // Identify supported policies from dependencies
+          const { supportedPolicies, policiesNotInRegistry } = await identifySupportedPolicies(
+            packageInfo.dependencies || {},
+          );
+
+          const toolVersion = new ToolVersion({
+            packageName: packageInfo.name,
+            version: packageInfo.version,
+            changes: req.body.changes,
+            description: packageInfo.description,
+            repository: packageInfo.repository,
+            keywords: packageInfo.keywords || [],
+            dependencies: packageInfo.dependencies || {},
+            author: packageInfo.author,
+            contributors: packageInfo.contributors || [],
+            homepage: packageInfo.homepage,
+            supportedPolicies,
+            policiesNotInRegistry,
+            ipfsCid,
+          });
+
+          try {
+            const savedVersion = await toolVersion.save();
+            res.status(201).json(savedVersion);
+            return;
+          } catch (error: any) {
+            if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
+              res.status(409).json({
+                message: `The tool ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
+              });
+              return;
+            }
+            throw error;
+          }
+        }),
+      ),
     ),
   );
 
@@ -206,36 +217,43 @@ export function registerRoutes(app: Express) {
   // Edit Tool Version
   app.put(
     '/tool/:packageName/version/:version',
+    requireVincentAuth(),
     requireTool(),
     requireToolVersion(),
-    withToolVersion(async (req, res) => {
-      const { vincentToolVersion } = req;
+    withVincentAuth(
+      withToolVersion(async (req, res) => {
+        const { vincentToolVersion } = req;
 
-      Object.assign(vincentToolVersion, req.body);
-      const updatedVersion = await vincentToolVersion.save();
+        Object.assign(vincentToolVersion, req.body);
+        const updatedVersion = await vincentToolVersion.save();
 
-      res.json(updatedVersion);
-      return;
-    }),
+        res.json(updatedVersion);
+        return;
+      }),
+    ),
   );
 
   // Delete a tool, along with all of its tool versions
-  app.delete('/tool/:packageName', async (req, res) => {
-    await withSession(async (mongoSession) => {
-      const { packageName } = req.params;
+  app.delete(
+    '/tool/:packageName',
+    requireVincentAuth(),
+    withVincentAuth(async (req, res) => {
+      await withSession(async (mongoSession) => {
+        const { packageName } = req.params;
 
-      await mongoSession.withTransaction(async (session) => {
-        if (Features.HARD_DELETE_DOCS) {
-          await Tool.findOneAndDelete({ packageName }).session(session);
-          await ToolVersion.deleteMany({ packageName }).session(session);
-        } else {
-          await Tool.updateMany({ packageName }, { isDeleted: true }).session(session);
-          await ToolVersion.updateMany({ packageName }, { isDeleted: true }).session(session);
-        }
+        await mongoSession.withTransaction(async (session) => {
+          if (Features.HARD_DELETE_DOCS) {
+            await Tool.findOneAndDelete({ packageName }).session(session);
+            await ToolVersion.deleteMany({ packageName }).session(session);
+          } else {
+            await Tool.updateMany({ packageName }, { isDeleted: true }).session(session);
+            await ToolVersion.updateMany({ packageName }, { isDeleted: true }).session(session);
+          }
+        });
+
+        res.json({ message: 'Tool and associated versions deleted successfully' });
+        return;
       });
-
-      res.json({ message: 'Tool and associated versions deleted successfully' });
-      return;
-    });
-  });
+    }),
+  );
 }

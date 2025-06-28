@@ -3,7 +3,7 @@ import { PolicyVersion } from '../../mongo/policy';
 
 import { RequestWithPolicy } from './requirePolicy';
 
-interface RequestWithPolicyAndVersion extends RequestWithPolicy {
+export interface RequestWithPolicyAndVersion extends RequestWithPolicy {
   vincentPolicyVersion: InstanceType<typeof PolicyVersion>;
 }
 
@@ -46,14 +46,16 @@ export const requirePolicyVersion = (versionParam = 'version') => {
 };
 
 // Type-safe handler wrapper
-export type PolicyVersionHandler = (
-  req: RequestWithPolicyAndVersion,
+export type PolicyVersionHandler<T extends Request = RequestWithPolicyAndVersion> = (
+  req: T & RequestWithPolicyAndVersion,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withPolicyVersion = (handler: PolicyVersionHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithPolicyAndVersion, res, next);
+export const withPolicyVersion = <T extends Request = Request>(
+  handler: PolicyVersionHandler<T>,
+) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithPolicyAndVersion, res, next);
   };
 };

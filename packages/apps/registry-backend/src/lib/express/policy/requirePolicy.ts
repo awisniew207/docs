@@ -1,10 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { Policy } from '../../mongo/policy';
+import { RequestWithVincentUser } from '../requireVincentAuth';
 
 // Create a specific interface for requests with policy
 export interface RequestWithPolicy extends Request {
   vincentPolicy: InstanceType<typeof Policy>;
 }
+
+// Combined interface for requests with both policy and vincent user
+export interface RequestWithPolicyAndVincentUser
+  extends RequestWithPolicy,
+    RequestWithVincentUser {}
 
 // Type guard function
 export const requirePolicy = (paramName = 'packageName') => {
@@ -29,14 +35,14 @@ export const requirePolicy = (paramName = 'packageName') => {
 };
 
 // Type-safe handler wrapper
-export type PolicyHandler = (
-  req: RequestWithPolicy,
+export type PolicyHandler<T extends Request = RequestWithPolicy> = (
+  req: T & RequestWithPolicy,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withPolicy = (handler: PolicyHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithPolicy, res, next);
+export const withPolicy = <T extends Request = Request>(handler: PolicyHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithPolicy, res, next);
   };
 };

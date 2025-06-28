@@ -3,7 +3,7 @@ import { ToolVersion } from '../../mongo/tool';
 
 import { RequestWithTool } from './requireTool';
 
-interface RequestWithToolAndVersion extends RequestWithTool {
+export interface RequestWithToolAndVersion extends RequestWithTool {
   vincentToolVersion: InstanceType<typeof ToolVersion>;
 }
 
@@ -46,14 +46,14 @@ export const requireToolVersion = (versionParam = 'version') => {
 };
 
 // Type-safe handler wrapper
-export type ToolVersionHandler = (
-  req: RequestWithToolAndVersion,
+export type ToolVersionHandler<T extends Request = RequestWithToolAndVersion> = (
+  req: T & RequestWithToolAndVersion,
   res: Response,
   next: NextFunction,
 ) => void | Promise<void>;
 
-export const withToolVersion = (handler: ToolVersionHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return handler(req as RequestWithToolAndVersion, res, next);
+export const withToolVersion = <T extends Request = Request>(handler: ToolVersionHandler<T>) => {
+  return (req: T, res: Response, next: NextFunction) => {
+    return handler(req as T & RequestWithToolAndVersion, res, next);
   };
 };
