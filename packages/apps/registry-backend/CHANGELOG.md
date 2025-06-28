@@ -1,3 +1,27 @@
+## 1.1.0 (2025-06-28)
+
+### 🚀 Features
+
+- ### Implement new delete endpoints ([e471c780](https://github.com/LIT-Protocol/Vincent/commit/e471c780))
+
+  - Implemented delete endpoints for AppVersion, and AppToolVersion, PolicyVersion, and ToolVersion
+  - Updated integration tests to verify the new routes functionality and security / authorization constraints
+
+### 🩹 Fixes
+
+- ### Bug Fix ([8d646d44](https://github.com/LIT-Protocol/Vincent/commit/8d646d44))
+
+  - Fix non-functional change owner endpoint logic for policies and tools; bug introduced in v1.0.0
+  - Added explicit integration tests to verify changeOwner is working as expected, in the authorization suite
+
+### 🧱 Updated Dependencies
+
+- Updated registry-sdk to 3.1.0
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 # 1.0.0 (2025-06-28)
 
 ### ⚠️ Breaking Changes

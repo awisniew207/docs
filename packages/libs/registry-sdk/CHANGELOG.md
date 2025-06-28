@@ -1,3 +1,15 @@
+## 3.1.0 (2025-06-28)
+
+### 🚀 Features
+
+- ### Define new delete endpoints ([ad7c85e9](https://github.com/LIT-Protocol/Vincent/commit/ad7c85e9))
+
+  - Defined delete endpoints for AppVersion, and AppToolVersion, PolicyVersion, and ToolVersion
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 # 3.0.0 (2025-06-28)
 
 ### ⚠️ Breaking Changes
