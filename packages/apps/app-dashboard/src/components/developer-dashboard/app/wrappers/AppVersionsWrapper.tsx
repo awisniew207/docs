@@ -1,20 +1,18 @@
 import { useNavigate, useParams } from 'react-router';
-import { useMemo } from 'react';
 import { AppVersionsListView } from '../views/AppVersionsListView';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionsWrapper() {
   const { appId } = useParams<{ appId: string }>();
   const navigate = useNavigate();
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
-  const app = useMemo(() => {
-    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
-  }, [apps, appId]);
+  const app = sortAppFromApps(apps, appId);
 
   // Fetch app versions
   const {

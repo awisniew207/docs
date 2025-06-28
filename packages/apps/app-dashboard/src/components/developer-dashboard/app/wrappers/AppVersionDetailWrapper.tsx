@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Edit, Plus, Power, PowerOff } from 'lucide-react';
 import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVersionDetails';
@@ -8,6 +8,7 @@ import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApi
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
+import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionDetailWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
@@ -15,9 +16,7 @@ export function AppVersionDetailWrapper() {
 
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
-  const app = useMemo(() => {
-    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
-  }, [apps, appId]);
+  const app = sortAppFromApps(apps, appId);
 
   // Fetch app versions
   const {

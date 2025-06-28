@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
@@ -10,6 +10,7 @@ import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
+import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionToolsWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
@@ -19,9 +20,7 @@ export function AppVersionToolsWrapper() {
   // Fetching
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
-  const app = useMemo(() => {
-    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
-  }, [apps, appId]);
+  const app = sortAppFromApps(apps, appId);
 
   const {
     data: versionData,

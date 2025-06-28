@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
@@ -8,6 +8,7 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditAppVersionForm, type EditAppVersionFormData } from '../forms/EditAppVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
+import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function EditAppVersionWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
@@ -16,9 +17,7 @@ export function EditAppVersionWrapper() {
   // Fetching
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
-  const app = useMemo(() => {
-    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
-  }, [apps, appId]);
+  const app = sortAppFromApps(apps, appId);
 
   const {
     refetch: refetchVersions,

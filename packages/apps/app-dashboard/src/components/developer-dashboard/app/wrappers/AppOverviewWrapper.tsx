@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMemo } from 'react';
 import { AppDetailsView } from '../views/AppDetailsView';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppOverviewWrapper() {
   const { appId } = useParams<{ appId: string }>();
@@ -11,9 +11,7 @@ export function AppOverviewWrapper() {
   // Fetching
   const { data: apps, isLoading, isError } = useUserApps();
 
-  const app = useMemo(() => {
-    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
-  }, [apps, appId]);
+  const app = sortAppFromApps(apps, appId);
 
   // Navigation
   const navigate = useNavigate();

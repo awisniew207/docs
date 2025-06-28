@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteAppForm } from '../forms/DeleteAppForm';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
@@ -7,6 +7,7 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
+import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function DeleteAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
@@ -20,9 +21,7 @@ export function DeleteAppWrapper() {
     refetch: refetchApps,
   } = useUserApps();
 
-  const app = useMemo(() => {
-    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
-  }, [apps, appId]);
+  const app = sortAppFromApps(apps, appId);
 
   // Mutation
   const [deleteApp, { isLoading, isSuccess, isError, data, error }] =
