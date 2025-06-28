@@ -3,7 +3,18 @@ import AppLayout from './components/layout/AppLayout';
 import UserLayout from './components/layout/UserLayout';
 import { AppProviders, UserProviders } from './providers';
 import { wrap } from './utils/components';
-import { AppRoute } from './components/developer-dashboard/data/AppDataProvider';
+import {
+  AppEdit,
+  AppOverview,
+  AppDelete,
+  CreateAppPage,
+  AppVersions,
+  AppVersionDetail,
+  AppVersionTools,
+  AppCreateVersion,
+  AppEditVersion,
+  AppsPage,
+} from './pages/developer-dashboard/app';
 
 import Home from './pages/index';
 import Withdraw from './pages/withdraw';
@@ -39,45 +50,43 @@ const routes: RouteObject[] = [
           },
           {
             path: 'apps',
-            element: <AppRoute />,
+            element: <AppsPage />,
           },
           {
             path: 'create-app/*',
-            element: <AppRoute />,
+            element: <CreateAppPage />,
           },
-          // App-level routes
           {
             path: 'appId/:appId',
-            element: <AppRoute />,
+            element: <AppOverview />,
           },
           {
             path: 'appId/:appId/edit-app',
-            element: <AppRoute />,
+            element: <AppEdit />,
           },
           {
             path: 'appId/:appId/delete-app',
-            element: <AppRoute />,
+            element: <AppDelete />,
           },
           {
             path: 'appId/:appId/versions',
-            element: <AppRoute />,
+            element: <AppVersions />,
           },
           {
             path: 'appId/:appId/create-app-version',
-            element: <AppRoute />,
+            element: <AppCreateVersion />,
           },
-          // Version-level routes
           {
             path: 'appId/:appId/version/:versionId',
-            element: <AppRoute />,
+            element: <AppVersionDetail />,
           },
           {
             path: 'appId/:appId/version/:versionId/edit',
-            element: <AppRoute />,
+            element: <AppEditVersion />,
           },
           {
             path: 'appId/:appId/version/:versionId/tools',
-            element: <AppRoute />,
+            element: <AppVersionTools />,
           },
         ],
       },

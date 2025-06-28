@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AppVersion, AppVersionTool } from '@/contexts/DeveloperDataContext';
+import { AppVersion, AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { AppVersionToolsDisplay } from '@/components/developer-dashboard/app/views/AppVersionToolsDisplay';
 
 interface VersionDetailsProps {

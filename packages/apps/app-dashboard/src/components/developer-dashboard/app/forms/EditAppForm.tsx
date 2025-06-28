@@ -12,7 +12,7 @@ import {
   ImageUploadField,
 } from '../../form-fields';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
-import { App, AppVersion } from '@/contexts/DeveloperDataContext';
+import { App, AppVersion } from '@/types/developer-dashboard/appTypes';
 import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
 
 const { appDoc } = docSchemas;

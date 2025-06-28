@@ -1,4 +1,4 @@
-import { AppVersionTool } from '@/contexts/DeveloperDataContext';
+import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 
 interface AppVersionToolsDisplayProps {
   tools: AppVersionTool[];

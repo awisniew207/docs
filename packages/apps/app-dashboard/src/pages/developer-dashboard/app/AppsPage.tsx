@@ -1,19 +1,14 @@
 import { useNavigate } from 'react-router';
 import { AppsList } from '@/components/developer-dashboard/ui/ResourceLists';
-import { App } from '@/contexts/DeveloperDataContext';
+import { App } from '@/types/developer-dashboard/appTypes';
 
-interface AppsPageProps {
-  apps: App[];
-}
-
-export default function AppsPage({ apps }: AppsPageProps) {
+export default function AppsPage() {
   const navigate = useNavigate();
 
   return (
     <AppsList
-      apps={apps}
       onCreateClick={() => navigate('/developer/create-app')}
-      onAppClick={(app: any) => navigate(`/developer/appId/${app.appId}`)}
+      onAppClick={(app: App) => navigate(`/developer/appId/${app.appId}`)}
     />
   );
 }

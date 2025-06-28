@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router';
 import { DashboardContent } from '@/components/developer-dashboard/DashboardContent';
 import { MenuId } from '@/types/developer-dashboard/menuId';
+import { App, Policy, Tool } from '@/types/developer-dashboard/appTypes';
 
 interface DashboardPageProps {
-  apps: any[];
-  tools: any[];
-  policies: any[];
-  error: string | null;
+  apps: App[];
+  tools: Tool[];
+  policies: Policy[];
 }
 
-export default function DashboardPage({ apps, tools, policies, error }: DashboardPageProps) {
+export default function DashboardPage({ apps, tools, policies }: DashboardPageProps) {
   const navigate = useNavigate();
 
   const handleMenuSelection = (id: MenuId) => {
@@ -36,7 +36,6 @@ export default function DashboardPage({ apps, tools, policies, error }: Dashboar
       filteredAppsCount={apps.length}
       filteredToolsCount={tools.length}
       filteredPoliciesCount={policies.length}
-      error={error}
       onMenuSelection={handleMenuSelection}
     />
   );

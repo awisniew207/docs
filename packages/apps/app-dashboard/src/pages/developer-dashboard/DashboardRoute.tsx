@@ -1,9 +1,51 @@
-import { useDeveloperData } from '@/contexts/DeveloperDataContext';
 import DashboardPage from './DashboardPage';
+import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import Loading from '@/components/layout/Loading';
+import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 
 export default function DashboardRoute() {
-  const { userApps: apps, userTools: tools, userPolicies: policies } = useDeveloperData();
+  const {
+    data: apps,
+    isLoading: appsLoading,
+    isError: appsError,
+    error: appsErrorMsg,
+  } = useUserApps();
+  const {
+    data: tools,
+    isLoading: toolsLoading,
+    isError: toolsError,
+    error: toolsErrorMsg,
+  } = useUserTools();
+  const {
+    data: policies,
+    isLoading: policiesLoading,
+    isError: policiesError,
+    error: policiesErrorMsg,
+  } = useUserPolicies();
 
-  // Pass only clean data as props - loading/error states handled by DeveloperDataProvider
-  return <DashboardPage apps={apps} tools={tools} policies={policies} error={null} />;
+  if (appsLoading || toolsLoading || policiesLoading) return <Loading />;
+
+  if (appsError)
+    return (
+      <StatusMessage message={getErrorMessage(appsErrorMsg, 'Failed to load apps')} type="error" />
+    );
+  if (toolsError)
+    return (
+      <StatusMessage
+        message={getErrorMessage(toolsErrorMsg, 'Failed to load tools')}
+        type="error"
+      />
+    );
+  if (policiesError)
+    return (
+      <StatusMessage
+        message={getErrorMessage(policiesErrorMsg, 'Failed to load policies')}
+        type="error"
+      />
+    );
+
+  return <DashboardPage apps={apps || []} tools={tools || []} policies={policies || []} />;
 }

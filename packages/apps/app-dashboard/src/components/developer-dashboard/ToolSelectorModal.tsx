@@ -14,7 +14,7 @@ import {
   AllCommunityModule,
   RowClickedEvent,
 } from 'ag-grid-community';
-import { Tool } from '@/contexts/DeveloperDataContext';
+import { Tool } from '@/types/developer-dashboard/appTypes';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);

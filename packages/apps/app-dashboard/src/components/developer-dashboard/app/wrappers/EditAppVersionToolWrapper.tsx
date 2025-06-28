@@ -5,7 +5,7 @@ import {
   EditAppVersionToolForm,
   type EditAppVersionToolFormData,
 } from '../forms/EditAppVersionToolForm';
-import { AppVersionTool } from '@/contexts/DeveloperDataContext';
+import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 
 interface EditAppVersionToolWrapperProps {
@@ -24,18 +24,22 @@ export function EditAppVersionToolWrapper({
   onCancel,
 }: EditAppVersionToolWrapperProps) {
   const vincentApi = useVincentApiWithSIWE();
+
+  // Mutation
   const [editAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
     vincentApi.useEditAppVersionToolMutation();
 
+  // Effect
   useEffect(() => {
-    if (isSuccess && data) {
-      setTimeout(() => {
-        onSuccess();
-      }, 1500);
-    }
+    if (!isSuccess || !data) return;
+    const timer = setTimeout(() => {
+      onSuccess();
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, [isSuccess, data, onSuccess]);
 
-  // Show spinner while updating tool
+  // Loading states
   if (isLoading) {
     return <StatusMessage message="Updating tool..." type="info" />;
   }
@@ -44,7 +48,6 @@ export function EditAppVersionToolWrapper({
     return <StatusMessage message="Tool updated successfully!" type="success" />;
   }
 
-  // Error state
   if (isError && error) {
     const errorMessage = getErrorMessage(error, 'Failed to update tool');
     return <StatusMessage message={errorMessage} type="error" />;

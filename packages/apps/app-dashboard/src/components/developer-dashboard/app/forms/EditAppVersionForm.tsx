@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { AppVersion } from '@/contexts/DeveloperDataContext';
+import { AppVersion } from '@/types/developer-dashboard/appTypes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LongTextField } from '../../form-fields';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';

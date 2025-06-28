@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tool } from '@/contexts/DeveloperDataContext';
+import { Tool } from '@/types/developer-dashboard/appTypes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToolSelectorModal } from '../../ToolSelectorModal';
 import { Plus } from 'lucide-react';

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Power, PowerOff } from 'lucide-react';
-import { AppVersion } from '@/contexts/DeveloperDataContext';
+import { AppVersion } from '@/types/developer-dashboard/appTypes';
 
 interface AppVersionsListViewProps {
   versions: AppVersion[];

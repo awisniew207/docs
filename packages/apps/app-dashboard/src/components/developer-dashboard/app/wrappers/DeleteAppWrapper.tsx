@@ -1,22 +1,39 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteAppForm } from '../forms/DeleteAppForm';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
+import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import { App } from '@/contexts/DeveloperDataContext';
+import Loading from '@/components/layout/Loading';
 
-interface DeleteAppWrapperProps {
-  app: App;
-  refetchApps: () => void;
-}
-
-export function DeleteAppWrapper({ app, refetchApps }: DeleteAppWrapperProps) {
+export function DeleteAppWrapper() {
+  const { appId } = useParams<{ appId: string }>();
   const vincentApi = useVincentApiWithSIWE();
+
+  // Fetching
+  const {
+    data: apps,
+    isLoading: appsLoading,
+    isError: appsError,
+    refetch: refetchApps,
+  } = useUserApps();
+
+  const app = useMemo(() => {
+    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
+  }, [apps, appId]);
+
+  // Mutation
   const [deleteApp, { isLoading, isSuccess, isError, data, error }] =
     vincentApi.useDeleteAppMutation();
+
+  // Navigation
   const navigate = useNavigate();
 
+  useAddressCheck(app);
+
+  // Effect
   useEffect(() => {
     if (isSuccess && data) {
       refetchApps();
@@ -24,7 +41,14 @@ export function DeleteAppWrapper({ app, refetchApps }: DeleteAppWrapperProps) {
     }
   }, [isSuccess, data, refetchApps, navigate]);
 
-  // Show spinner while deleting or after success while refetching/navigating
+  // Loading states
+  if (appsLoading) return <Loading />;
+
+  // Error states
+  if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
+
+  // Mutation states
   if (isLoading) {
     return <StatusMessage message="Deleting app..." type="info" />;
   }
@@ -33,7 +57,6 @@ export function DeleteAppWrapper({ app, refetchApps }: DeleteAppWrapperProps) {
     return <StatusMessage message="App deleted successfully!" type="success" />;
   }
 
-  // Error state
   if (isError && error) {
     const errorMessage = getErrorMessage(error, 'Failed to delete app');
     return <StatusMessage message={errorMessage} type="error" />;

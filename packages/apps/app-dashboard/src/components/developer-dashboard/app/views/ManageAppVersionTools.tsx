@@ -1,14 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Edit, X } from 'lucide-react';
 import { EditAppVersionToolWrapper } from '../wrappers/EditAppVersionToolWrapper';
-import { AppVersionTool } from '@/contexts/DeveloperDataContext';
+import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { useState } from 'react';
+import { QueryActionCreatorResult } from '@reduxjs/toolkit/query';
 
 interface ManageAppVersionToolsProps {
   tools: AppVersionTool[];
   appId: number;
   versionId: number;
-  onEditSuccess: () => Promise<void>;
+  onEditSuccess: () => QueryActionCreatorResult<any>;
 }
 
 export function ManageAppVersionTools({
@@ -27,9 +28,9 @@ export function ManageAppVersionTools({
     setEditingTool(null);
   };
 
-  const handleEditSuccess = async () => {
+  const handleEditSuccess = () => {
     setEditingTool(null);
-    await onEditSuccess();
+    onEditSuccess();
   };
 
   if (tools.length === 0) {

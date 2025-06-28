@@ -1,34 +1,120 @@
-import { AppVersionTool } from '@/contexts/DeveloperDataContext';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { AppVersionTool, Tool } from '@/types/developer-dashboard/appTypes';
 import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
-import { CreateAppVersionToolsWrapper } from './CreateAppVersionToolsWrapper';
+import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
+import Loading from '@/components/layout/Loading';
+import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 
-interface AppVersionToolsWrapperProps {
-  appId: number;
-  versionId: number;
-  tools: AppVersionTool[];
-  refetchVersionTools: () => Promise<any>;
-  onToolAdd: (tool: any) => Promise<void>;
-  availableTools: any[];
-}
+export function AppVersionToolsWrapper() {
+  const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
+  const vincentApi = useVincentApiWithSIWE();
+  const [showSuccess, setShowSuccess] = useState(false);
 
-export function AppVersionToolsWrapper({
-  appId,
-  versionId,
-  tools,
-  refetchVersionTools,
-  onToolAdd,
-  availableTools,
-}: AppVersionToolsWrapperProps) {
-  const existingToolNames = tools?.map((tool) => tool.toolPackageName) || [];
+  // Fetching
+  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
+
+  const app = useMemo(() => {
+    return appId ? apps?.find((app) => app.appId === Number(appId)) || null : null;
+  }, [apps, appId]);
+
+  const {
+    data: versionData,
+    isLoading: versionLoading,
+    isError: versionError,
+  } = vincentApiClient.useGetAppVersionQuery({ appId: Number(appId), version: Number(versionId) });
+
+  const {
+    data: versionTools,
+    isLoading: versionToolsLoading,
+    isError: versionToolsError,
+    refetch: refetchVersionTools,
+  } = vincentApiClient.useListAppVersionToolsQuery({
+    appId: Number(appId),
+    version: Number(versionId),
+  });
+
+  const {
+    data: allTools = [],
+    isLoading: toolsLoading,
+    isError: toolsError,
+  } = vincentApiClient.useListAllToolsQuery();
+
+  // Mutation
+  const [createAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
+    vincentApi.useCreateAppVersionToolMutation();
+
+  useAddressCheck(app);
+
+  // Effect
+  useEffect(() => {
+    if (!isSuccess || !data) return;
+
+    refetchVersionTools();
+    setShowSuccess(true);
+
+    const timer = setTimeout(() => {
+      setShowSuccess(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [isSuccess, data, refetchVersionTools]);
+
+  // Loading states
+  if (appsLoading || versionLoading || versionToolsLoading || toolsLoading) return <Loading />;
+
+  // Error states
+  if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
+  if (versionToolsError)
+    return <StatusMessage message="Failed to load version tools" type="error" />;
+  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
+  if (!versionData)
+    return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
+
+  const existingToolNames = versionTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
+
+  const handleToolAdd = async (tool: Tool) => {
+    await createAppVersionTool({
+      appId: Number(appId),
+      appVersion: Number(versionId),
+      toolPackageName: tool.packageName,
+      appVersionToolCreate: {
+        toolVersion: tool.activeVersion,
+        hiddenSupportedPolicies: [],
+      },
+    });
+  };
 
   return (
     <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {app.name} - Version {versionData.version} Tools
+          </h1>
+          <p className="text-gray-600 mt-2">Manage and configure tools for this app version</p>
+        </div>
+      </div>
+
+      {isLoading && <StatusMessage message="Adding tool..." type="info" />}
+      {showSuccess && <StatusMessage message="Tool added successfully!" type="success" />}
+      {isError && error && (
+        <StatusMessage message={getErrorMessage(error, 'Failed to add tool')} type="error" />
+      )}
+
       {/* Add Tools Form */}
-      <CreateAppVersionToolsWrapper
-        versionId={versionId}
+      <CreateAppVersionToolsForm
+        versionId={Number(versionId)}
         existingTools={existingToolNames}
-        onToolAdd={onToolAdd}
-        availableTools={availableTools}
+        onToolAdd={handleToolAdd}
+        availableTools={allTools}
       />
 
       {/* Current Tools List */}
@@ -41,9 +127,9 @@ export function AppVersionToolsWrapper({
           </p>
         </div>
         <ManageAppVersionTools
-          tools={tools}
-          appId={appId}
-          versionId={versionId}
+          tools={versionTools || []}
+          appId={Number(appId)}
+          versionId={Number(versionId)}
           onEditSuccess={refetchVersionTools}
         />
       </div>

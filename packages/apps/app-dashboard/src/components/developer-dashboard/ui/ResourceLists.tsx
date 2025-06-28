@@ -3,25 +3,25 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import Loading from '@/components/layout/Loading';
+import { App, Policy, Tool } from '@/types/developer-dashboard/appTypes';
+import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 
 interface AppsListProps {
-  apps: any[];
   onCreateClick: () => void;
-  onAppClick?: (app: any) => void;
+  onAppClick?: (app: App) => void;
 }
 
 interface ToolsListProps {
-  tools: any[];
-  isLoading: boolean;
-  error: any;
   onCreateClick: () => void;
+  onToolClick?: (tool: Tool) => void;
 }
 
 interface PoliciesListProps {
-  policies: any[];
-  isLoading: boolean;
-  error: any;
   onCreateClick: () => void;
+  onPolicyClick?: (policy: Policy) => void;
 }
 
 // Helper function to format date
@@ -35,15 +35,15 @@ const formatDate = (dateString: string) => {
   });
 };
 
-export function AppsList({ apps, onCreateClick, onAppClick }: AppsListProps) {
+export function AppsList({ onCreateClick, onAppClick }: AppsListProps) {
   const navigate = useNavigate();
+  const { data: apps, isLoading, isError } = useUserApps();
+
+  if (isLoading) return <Loading />;
+  if (isError) return <StatusMessage message="Failed to load apps" type="error" />;
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Your Apps</h1>
-      </div>
-
       {apps.length === 0 ? (
         <div className="border rounded-lg p-8 text-center">
           <h2 className="text-xl font-semibold mb-4 text-gray-900">No Apps Yet</h2>
@@ -55,9 +55,9 @@ export function AppsList({ apps, onCreateClick, onAppClick }: AppsListProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {apps.map((app, index) => (
+          {apps.map((app) => (
             <Card
-              key={index}
+              key={app.appId}
               className="cursor-pointer hover:shadow-md transition-shadow"
               onClick={() =>
                 onAppClick ? onAppClick(app) : navigate(`/developer/appId/${app.appId}`)
@@ -114,21 +114,12 @@ export function AppsList({ apps, onCreateClick, onAppClick }: AppsListProps) {
   );
 }
 
-export function ToolsList({ tools, isLoading, error, onCreateClick }: ToolsListProps) {
+export function ToolsList({ onCreateClick, onToolClick }: ToolsListProps) {
   const navigate = useNavigate();
+  const { data: tools, isLoading, isError } = useUserTools();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <p className="ml-4">Loading tools...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <StatusMessage message={`Failed to load your tools: ${error}`} type="error" />;
-  }
+  if (isLoading) return <Loading />;
+  if (isError) return <StatusMessage message="Failed to load tools" type="error" />;
 
   return (
     <div className="space-y-6">
@@ -147,11 +138,15 @@ export function ToolsList({ tools, isLoading, error, onCreateClick }: ToolsListP
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {tools.map((tool: any, index: number) => (
+          {tools.map((tool) => (
             <Card
-              key={index}
+              key={tool.packageName}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigate(`/toolId/${encodeURIComponent(tool.packageName)}`)}
+              onClick={() =>
+                onToolClick
+                  ? onToolClick(tool)
+                  : navigate(`/toolId/${encodeURIComponent(tool.packageName)}`)
+              }
             >
               <CardHeader>
                 <CardTitle className="text-gray-900">{tool.packageName}</CardTitle>
@@ -180,19 +175,12 @@ export function ToolsList({ tools, isLoading, error, onCreateClick }: ToolsListP
   );
 }
 
-export function PoliciesList({ policies, isLoading, error, onCreateClick }: PoliciesListProps) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <p className="ml-4">Loading policies...</p>
-      </div>
-    );
-  }
+export function PoliciesList({ onCreateClick, onPolicyClick }: PoliciesListProps) {
+  const navigate = useNavigate();
+  const { data: policies, isLoading, isError } = useUserPolicies();
 
-  if (error) {
-    return <StatusMessage message={`Failed to load your policies: ${error}`} type="error" />;
-  }
+  if (isLoading) return <Loading />;
+  if (isError) return <StatusMessage message="Failed to load policies" type="error" />;
 
   return (
     <div className="space-y-6">
@@ -213,8 +201,16 @@ export function PoliciesList({ policies, isLoading, error, onCreateClick }: Poli
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {policies.map((policy: any, index: number) => (
-            <Card key={index} className="hover:shadow-md transition-shadow">
+          {policies.map((policy) => (
+            <Card
+              key={policy.packageName}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() =>
+                onPolicyClick
+                  ? onPolicyClick(policy)
+                  : navigate(`/policyId/${encodeURIComponent(policy.packageName)}`)
+              }
+            >
               <CardHeader>
                 <CardTitle className="text-gray-900">{policy.packageName}</CardTitle>
                 <CardDescription className="text-gray-700">
@@ -225,7 +221,7 @@ export function PoliciesList({ policies, isLoading, error, onCreateClick }: Poli
                 <div className="text-sm text-gray-700">
                   <div className="space-y-1">
                     <div>
-                      <span className="font-medium">Version:</span> {policy.currentVersion || 'N/A'}
+                      <span className="font-medium">Version:</span> {policy.activeVersion || 'N/A'}
                     </div>
                     <div>
                       <span className="font-medium">Created:</span>{' '}

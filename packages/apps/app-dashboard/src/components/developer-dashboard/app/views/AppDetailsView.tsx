@@ -1,4 +1,4 @@
-import { App } from '@/contexts/DeveloperDataContext';
+import { App } from '@/types/developer-dashboard/appTypes';
 import { AppDetail } from '@/components/developer-dashboard/ui/AppDetail';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 

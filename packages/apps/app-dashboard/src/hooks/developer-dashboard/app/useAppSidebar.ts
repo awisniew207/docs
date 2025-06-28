@@ -1,7 +1,10 @@
 import { useEffect, useCallback, useReducer } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useDeveloperData, App, Tool, Policy } from '@/contexts/DeveloperDataContext';
+import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { App, Tool, Policy } from '@/types/developer-dashboard/appTypes';
 
 interface SidebarState {
   expandedMenus: Set<string>;
@@ -134,14 +137,17 @@ export function useAppSidebar() {
 
   const [state, dispatch] = useReducer(sidebarReducer, initialState);
 
-  // Use unified data context instead of individual API calls
+  // Use filtered hooks instead of unified data context
+  const { data: filteredApps, isLoading: appsLoading, isError: appsError } = useUserApps();
+  const { data: filteredTools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
   const {
-    userApps: filteredApps,
-    userTools: filteredTools,
-    userPolicies: filteredPolicies,
-    isLoading,
-    hasErrors,
-  } = useDeveloperData();
+    data: filteredPolicies,
+    isLoading: policiesLoading,
+    isError: policiesError,
+  } = useUserPolicies();
+
+  const isLoading = appsLoading || toolsLoading || policiesLoading;
+  const hasErrors = appsError || toolsError || policiesError;
 
   const findAppById = useCallback(
     (appId: number): App | null => {
@@ -526,7 +532,7 @@ export function useAppSidebar() {
     selectedPolicy: state.selectedPolicy,
     selectedPolicyView: state.selectedPolicyView,
 
-    // Data from unified context
+    // Data from filtered hooks
     apps: filteredApps,
     tools: filteredTools,
     policies: filteredPolicies,
