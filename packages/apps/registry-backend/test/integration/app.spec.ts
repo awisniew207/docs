@@ -1,5 +1,5 @@
 import { api, store } from './setup';
-import { expectAssertArray, expectAssertObject } from '../assertions';
+import { expectAssertArray, expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
 
 // Create a debug instance for this file
@@ -79,8 +79,8 @@ describe('App API Integration Tests', () => {
 
       expect(result).toHaveProperty('error');
 
-      expect(result.isError).toBe(true);
-      if (result.isError) {
+      expect(hasError(result)).toBe(true);
+      if (hasError(result)) {
         const { error } = result;
         expectAssertObject(error);
         // @ts-expect-error it's a test
@@ -192,8 +192,8 @@ describe('App API Integration Tests', () => {
       verboseLog(result);
       expect(result).toHaveProperty('error');
 
-      expect(result.isError).toBe(true);
-      if (result.isError) {
+      expect(hasError(result)).toBe(true);
+      if (hasError(result)) {
         const { error } = result;
         expectAssertObject(error);
         // @ts-expect-error it's a test
@@ -344,8 +344,8 @@ describe('App API Integration Tests', () => {
           api.endpoints.getApp.initiate({ appId: testAppId! }),
         );
 
-        expect(getResult.isError).toBe(true);
-        if (getResult.isError) {
+        expect(hasError(getResult)).toBe(true);
+        if (hasError(getResult)) {
           const { error } = getResult;
           expectAssertObject(error);
           // @ts-expect-error it's a test

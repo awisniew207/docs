@@ -1,5 +1,5 @@
 import { api, store } from './setup';
-import { expectAssertArray, expectAssertObject } from '../assertions';
+import { expectAssertArray, expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
 
 // Create a debug instance for this file
@@ -105,8 +105,8 @@ describe('Policy API Integration Tests', () => {
 
       expect(result).toHaveProperty('error');
 
-      expect(result.isError).toBe(true);
-      if (result.isError) {
+      expect(hasError(result)).toBe(true);
+      if (hasError(result)) {
         const { error } = result;
         expectAssertObject(error);
         // @ts-expect-error it's a test
@@ -224,8 +224,8 @@ describe('Policy API Integration Tests', () => {
       verboseLog(result);
       expect(result).toHaveProperty('error');
 
-      expect(result.isError).toBe(true);
-      if (result.isError) {
+      expect(hasError(result)).toBe(true);
+      if (hasError(result)) {
         const { error } = result;
         expectAssertObject(error);
         // @ts-expect-error it's a test
@@ -339,9 +339,9 @@ describe('Policy API Integration Tests', () => {
 
       verboseLog(getResult);
       expect(getResult).toHaveProperty('error');
-      expect(getResult.isError).toBe(true);
+      expect(hasError(getResult)).toBe(true);
 
-      if (getResult.isError) {
+      if (hasError(getResult)) {
         const { error } = getResult;
         expectAssertObject(error);
         // @ts-expect-error it's a test
