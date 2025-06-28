@@ -49,8 +49,6 @@ export function AppVersionToolsWrapper() {
   const [createAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
     vincentApi.useCreateAppVersionToolMutation();
 
-  useAddressCheck(app);
-
   // Effect
   useEffect(() => {
     if (!isSuccess || !data) return;
@@ -77,6 +75,8 @@ export function AppVersionToolsWrapper() {
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
+
+  useAddressCheck(app);
 
   const existingToolNames = versionTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
 

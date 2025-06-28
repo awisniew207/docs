@@ -66,8 +66,6 @@ export function AppVersionDetailWrapper() {
 
   const [showSuccess, setShowSuccess] = useState(false);
 
-  useAddressCheck(app);
-
   useEffect(() => {
     if (!(isEnablingSuccess || isDisablingSuccess)) return;
 
@@ -97,6 +95,8 @@ export function AppVersionDetailWrapper() {
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
+
+  useAddressCheck(app);
 
   const onEnableVersion = () => {
     enableAppVersion({

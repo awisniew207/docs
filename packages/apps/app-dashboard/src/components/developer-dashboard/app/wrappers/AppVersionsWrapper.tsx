@@ -23,8 +23,6 @@ export function AppVersionsWrapper() {
     isError: versionsError,
   } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
-  useAddressCheck(app);
-
   // Loading states first
   if (appsLoading || versionsLoading) return <Loading />;
 
@@ -32,6 +30,8 @@ export function AppVersionsWrapper() {
   if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
+
+  useAddressCheck(app);
 
   const handleVersionClick = (version: number) => {
     navigate(`/developer/appId/${appId}/version/${version}`);

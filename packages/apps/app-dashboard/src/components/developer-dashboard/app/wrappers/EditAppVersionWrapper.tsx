@@ -40,8 +40,6 @@ export function EditAppVersionWrapper() {
   // Navigation
   const navigate = useNavigate();
 
-  useAddressCheck(app);
-
   // Effect
   useEffect(() => {
     if (isSuccess && data && app && versionData) {
@@ -61,6 +59,8 @@ export function EditAppVersionWrapper() {
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
+
+  useAddressCheck(app);
 
   // Mutation states
   if (isLoading) {

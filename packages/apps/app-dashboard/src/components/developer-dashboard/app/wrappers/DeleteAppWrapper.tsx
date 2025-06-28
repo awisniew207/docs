@@ -31,8 +31,6 @@ export function DeleteAppWrapper() {
   // Navigation
   const navigate = useNavigate();
 
-  useAddressCheck(app);
-
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
@@ -47,6 +45,8 @@ export function DeleteAppWrapper() {
   // Error states
   if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
+
+  useAddressCheck(app);
 
   // Mutation states
   if (isLoading) {
