@@ -3,20 +3,26 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { AppVersionTool, Policy } from '@/types/developer-dashboard/appTypes';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
-import { ArrayField } from '../../form-fields';
+import { PolicyCheckboxField } from '../../form-fields';
+
+const { appVersionToolDoc } = docSchemas;
+
+const { hiddenSupportedPolicies } = appVersionToolDoc.shape;
 
 export const EditAppVersionToolSchema = z
   .object({
-    hiddenSupportedPolicies: docSchemas.appVersionToolDoc.shape.hiddenSupportedPolicies.optional(),
+    hiddenSupportedPolicies,
   })
-  .partial()
+  .required()
   .strict();
 
 export type EditAppVersionToolFormData = z.infer<typeof EditAppVersionToolSchema>;
 
 interface EditAppVersionToolFormProps {
-  tool: any;
+  tool: AppVersionTool;
+  policies: Policy[];
   onSubmit: (data: EditAppVersionToolFormData) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -24,6 +30,7 @@ interface EditAppVersionToolFormProps {
 
 export function EditAppVersionToolForm({
   tool,
+  policies,
   onSubmit,
   onCancel,
   isSubmitting = false,
@@ -36,7 +43,6 @@ export function EditAppVersionToolForm({
   });
 
   const {
-    register,
     handleSubmit,
     watch,
     setValue,
@@ -46,14 +52,13 @@ export function EditAppVersionToolForm({
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <ArrayField
+        <PolicyCheckboxField
           name="hiddenSupportedPolicies"
-          register={register}
           errors={errors}
           watch={watch}
           setValue={setValue}
           label="Hidden Supported Policies"
-          placeholder="Enter policy name"
+          policies={policies}
         />
 
         <div className="flex justify-end gap-2">

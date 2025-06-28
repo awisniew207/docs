@@ -7,6 +7,8 @@ import {
 } from '../forms/EditAppVersionToolForm';
 import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { sortedSupportedPolicies } from '@/utils/developer-dashboard/sortSupportedPolicies';
 
 interface EditAppVersionToolWrapperProps {
   appId: number;
@@ -25,6 +27,22 @@ export function EditAppVersionToolWrapper({
 }: EditAppVersionToolWrapperProps) {
   const vincentApi = useVincentApiWithSIWE();
 
+  // Fetching
+  const {
+    data: allPolicies,
+    isLoading: isLoadingPolicies,
+    isError: isErrorPolicies,
+  } = vincentApiClient.useListAllPoliciesQuery();
+
+  const {
+    data: toolVersionData,
+    isLoading: isLoadingToolVersion,
+    isError: isErrorToolVersion,
+  } = vincentApiClient.useGetToolVersionQuery({
+    packageName: tool.toolPackageName,
+    version: tool.toolVersion,
+  });
+
   // Mutation
   const [editAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
     vincentApi.useEditAppVersionToolMutation();
@@ -40,6 +58,20 @@ export function EditAppVersionToolWrapper({
   }, [isSuccess, data, onSuccess]);
 
   // Loading states
+  if (isLoadingPolicies || isLoadingToolVersion)
+    return <StatusMessage message="Loading..." type="info" />;
+  if (isErrorPolicies) return <StatusMessage message="Failed to load policies" type="error" />;
+  if (isErrorToolVersion)
+    return <StatusMessage message="Failed to load tool version data" type="error" />;
+
+  // Early return if data is not available
+  if (!toolVersionData) {
+    return <StatusMessage message="Tool version data not available" type="error" />;
+  }
+
+  const supportedPolicies = sortedSupportedPolicies(allPolicies || [], toolVersionData);
+
+  // Mutation
   if (isLoading) {
     return <StatusMessage message="Updating tool..." type="info" />;
   }
@@ -65,6 +97,7 @@ export function EditAppVersionToolWrapper({
   return (
     <EditAppVersionToolForm
       tool={tool}
+      policies={supportedPolicies}
       onSubmit={handleSubmit}
       onCancel={onCancel}
       isSubmitting={isLoading}
