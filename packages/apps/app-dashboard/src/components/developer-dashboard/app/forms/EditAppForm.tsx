@@ -100,7 +100,7 @@ export function EditAppForm({
             <TextField
               name="name"
               register={register}
-              errors={errors}
+              error={errors.name?.message}
               label="App Name"
               placeholder="Enter app name"
             />
@@ -108,7 +108,7 @@ export function EditAppForm({
             <TextField
               name="contactEmail"
               register={register}
-              errors={errors}
+              error={errors.contactEmail?.message}
               label="Contact Email"
               placeholder="contact@example.com"
             />
@@ -116,7 +116,7 @@ export function EditAppForm({
             <LongTextField
               name="description"
               register={register}
-              errors={errors}
+              error={errors.description?.message}
               label="Description"
               placeholder="Describe your application"
               rows={4}
@@ -125,7 +125,7 @@ export function EditAppForm({
             <TextField
               name="appUserUrl"
               register={register}
-              errors={errors}
+              error={errors.appUserUrl?.message}
               label="App User URL"
               placeholder="https://yourapp.com"
             />
@@ -143,17 +143,22 @@ export function EditAppForm({
             <ArrayField
               name="redirectUris"
               register={register}
+              error={errors.redirectUris?.message}
               errors={errors}
               control={control}
               label="Redirect URIs"
               placeholder="https://yourapp.com/callback"
             />
 
-            <DeploymentStatusSelectField errors={errors} watch={watch} setValue={setValue} />
+            <DeploymentStatusSelectField
+              error={errors.deploymentStatus?.message}
+              watch={watch}
+              setValue={setValue}
+            />
 
             <NumberSelectField
               name="activeVersion"
-              errors={errors}
+              error={errors.activeVersion?.message}
               watch={watch}
               setValue={setValue}
               label="Active Version"

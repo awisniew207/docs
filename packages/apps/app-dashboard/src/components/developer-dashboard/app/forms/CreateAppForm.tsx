@@ -48,9 +48,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>Create New App</CardTitle>
-        <CardDescription>
-          Create a new blockchain application and select initial tools
-        </CardDescription>
+        <CardDescription>Create a new Vincent application and select initial tools</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -58,7 +56,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
             <TextField
               name="name"
               register={register}
-              errors={errors}
+              error={errors.name?.message}
               label="App Name"
               placeholder="Enter app name"
               required
@@ -67,7 +65,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
             <TextField
               name="contactEmail"
               register={register}
-              errors={errors}
+              error={errors.contactEmail?.message}
               label="Contact Email"
               placeholder="contact@example.com"
               required
@@ -76,7 +74,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
             <LongTextField
               name="description"
               register={register}
-              errors={errors}
+              error={errors.description?.message}
               label="Description"
               placeholder="Describe your application"
               rows={4}
@@ -86,7 +84,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
             <TextField
               name="appUserUrl"
               register={register}
-              errors={errors}
+              error={errors.appUserUrl?.message}
               label="App User URL"
               placeholder="https://yourapp.com"
               required
@@ -105,13 +103,18 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
             <ArrayField
               name="redirectUris"
               register={register}
+              error={errors.redirectUris?.message}
               errors={errors}
               control={control}
               label="Redirect URIs"
               placeholder="https://yourapp.com/callback"
               required
             />
-            <DeploymentStatusSelectField errors={errors} watch={watch} setValue={setValue} />
+            <DeploymentStatusSelectField
+              error={errors.deploymentStatus?.message}
+              watch={watch}
+              setValue={setValue}
+            />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Creating App...' : 'Create App'}

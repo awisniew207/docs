@@ -70,7 +70,7 @@ export function DeleteAppForm({ appName, onSubmit, isSubmitting = false }: Delet
             <TextField
               name="confirmation"
               register={register}
-              errors={errors}
+              error={errors.confirmation?.message}
               label="Confirmation"
               placeholder=""
               required

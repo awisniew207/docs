@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
+import { UseFormWatch, UseFormSetValue } from 'react-hook-form';
 
 interface SelectOption {
   value: string;
@@ -15,7 +15,7 @@ interface SelectOption {
 
 interface SelectFieldProps {
   name: string;
-  errors: FieldErrors;
+  error?: string;
   watch: UseFormWatch<any>;
   setValue: UseFormSetValue<any>;
   label: string;
@@ -26,7 +26,7 @@ interface SelectFieldProps {
 
 export function SelectField({
   name,
-  errors,
+  error,
   watch,
   setValue,
   label,
@@ -34,7 +34,6 @@ export function SelectField({
   placeholder = 'Select an option',
   required = false,
 }: SelectFieldProps) {
-  const error = errors[name];
   const currentValue = watch(name);
 
   return (
@@ -55,7 +54,7 @@ export function SelectField({
           ))}
         </SelectContent>
       </Select>
-      {error?.message && <p className="text-sm text-red-500">{String(error.message)}</p>}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

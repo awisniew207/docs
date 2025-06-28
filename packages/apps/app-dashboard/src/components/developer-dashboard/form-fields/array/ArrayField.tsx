@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UseFormRegister, FieldErrors, Control, useFieldArray } from 'react-hook-form';
+import { UseFormRegister, Control, useFieldArray, FieldErrors } from 'react-hook-form';
 import { useEffect } from 'react';
 
 interface ArrayFieldProps {
   name: string;
   register: UseFormRegister<any>;
+  error?: string;
   errors: FieldErrors;
   control: Control<any>;
   label: string;
@@ -17,6 +18,7 @@ interface ArrayFieldProps {
 export function ArrayField({
   name,
   register,
+  error,
   errors,
   control,
   label,
@@ -35,12 +37,10 @@ export function ArrayField({
     }
   }, [fields.length, append]);
 
-  const arrayError = errors[name];
-  const hasArrayError = arrayError && !Array.isArray(arrayError);
-
-  const getFieldError = (index: number) => {
-    if (Array.isArray(arrayError)) {
-      return arrayError[index]?.message;
+  const getFieldError = (index: number): string | undefined => {
+    const arrayErrors = errors[name];
+    if (Array.isArray(arrayErrors) && arrayErrors[index]) {
+      return arrayErrors[index]?.message;
     }
     return undefined;
   };
@@ -55,7 +55,6 @@ export function ArrayField({
       <div className="space-y-2">
         {fields.map((field, index) => {
           const fieldError = getFieldError(index);
-          const hasError = fieldError || hasArrayError;
 
           return (
             <div key={field.id} className="space-y-1">
@@ -64,7 +63,7 @@ export function ArrayField({
                   type="text"
                   placeholder={placeholder}
                   {...register(`${name}.${index}`)}
-                  className={hasError ? 'border-red-500 flex-1' : 'flex-1'}
+                  className={fieldError ? 'border-red-500 flex-1' : 'flex-1'}
                 />
                 {fields.length > 1 && (
                   <Button
@@ -87,8 +86,8 @@ export function ArrayField({
         </Button>
       </div>
 
-      {/* Show array-level error only if it's not an array of field errors */}
-      {hasArrayError && <p className="text-sm text-red-500">{String(arrayError.message)}</p>}
+      {/* Show array-level error only */}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

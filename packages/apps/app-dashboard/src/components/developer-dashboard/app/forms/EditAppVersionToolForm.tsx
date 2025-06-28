@@ -54,7 +54,7 @@ export function EditAppVersionToolForm({
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <PolicyCheckboxField
           name="hiddenSupportedPolicies"
-          errors={errors}
+          error={errors.hiddenSupportedPolicies?.message}
           watch={watch}
           setValue={setValue}
           label="Hidden Supported Policies"

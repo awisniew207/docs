@@ -1,11 +1,11 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { UseFormWatch, UseFormSetValue, FieldErrors } from 'react-hook-form';
+import { UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { Policy } from '@/types/developer-dashboard/appTypes';
 
 interface PolicyCheckboxFieldProps {
   name: string;
-  errors: FieldErrors;
+  error?: string;
   watch: UseFormWatch<any>;
   setValue: UseFormSetValue<any>;
   label: string;
@@ -15,7 +15,7 @@ interface PolicyCheckboxFieldProps {
 
 export function PolicyCheckboxField({
   name,
-  errors,
+  error,
   watch,
   setValue,
   label,
@@ -79,9 +79,7 @@ export function PolicyCheckboxField({
         </div>
       )}
 
-      {errors[name] && (
-        <p className="text-sm text-red-500">{String(errors[name].message) || 'Error'}</p>
-      )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

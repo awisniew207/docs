@@ -1,11 +1,11 @@
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 
 interface LongTextFieldProps {
   name: string;
   register: UseFormRegister<any>;
-  errors: FieldErrors;
+  error?: string;
   label: string;
   placeholder?: string;
   required?: boolean;
@@ -15,14 +15,12 @@ interface LongTextFieldProps {
 export function LongTextField({
   name,
   register,
-  errors,
+  error,
   label,
   placeholder,
   required = false,
   rows = 3,
 }: LongTextFieldProps) {
-  const error = errors[name];
-
   return (
     <div className="space-y-2">
       <Label htmlFor={name}>
@@ -36,7 +34,7 @@ export function LongTextField({
         {...register(name)}
         className={error ? 'border-red-500' : ''}
       />
-      {error?.message && <p className="text-sm text-red-500">{String(error.message)}</p>}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

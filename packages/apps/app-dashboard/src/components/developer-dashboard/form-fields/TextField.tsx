@@ -1,11 +1,11 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 
 interface TextFieldProps {
   name: string;
   register: UseFormRegister<any>;
-  errors: FieldErrors;
+  error?: string;
   label: string;
   placeholder?: string;
   required?: boolean;
@@ -14,13 +14,11 @@ interface TextFieldProps {
 export function TextField({
   name,
   register,
-  errors,
+  error,
   label,
   placeholder,
   required = false,
 }: TextFieldProps) {
-  const error = errors[name];
-
   return (
     <div className="space-y-2">
       <Label htmlFor={name}>
@@ -34,7 +32,7 @@ export function TextField({
         {...register(name)}
         className={error ? 'border-red-500' : ''}
       />
-      {error?.message && <p className="text-sm text-red-500">{String(error.message)}</p>}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

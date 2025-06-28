@@ -52,7 +52,7 @@ export function CreateAppVersionForm({
             <LongTextField
               name="changes"
               register={register}
-              errors={errors}
+              error={errors.changes?.message}
               label="Changes"
               placeholder="Describe what changed in this version..."
               rows={4}

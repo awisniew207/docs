@@ -1,4 +1,4 @@
-import { FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
+import { UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { SelectField } from '..';
 
 const deploymentStatusOptions = [
@@ -8,18 +8,18 @@ const deploymentStatusOptions = [
 ];
 
 export function DeploymentStatusSelectField({
-  errors,
+  error,
   watch,
   setValue,
 }: {
-  errors: FieldErrors;
+  error?: string;
   watch: UseFormWatch<any>;
   setValue: UseFormSetValue<any>;
 }) {
   return (
     <SelectField
       name="deploymentStatus"
-      errors={errors}
+      error={error}
       watch={watch}
       setValue={setValue}
       label="Deployment Status"
