@@ -615,4 +615,91 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       },
     },
   });
+
+  // DELETE /app/{appId}/version/{version} - Delete an application version and its AppVersionTools
+  registry.registerPath({
+    method: 'delete',
+    path: '/app/{appId}/version/{version}',
+    tags: ['AppVersion'],
+    summary: 'Deletes an application version',
+    operationId: 'deleteAppVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        version: appVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Application or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // DELETE /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Delete a tool for an application version
+  registry.registerPath({
+    method: 'delete',
+    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
+    tags: ['AppVersionTool'],
+    summary: 'Deletes a tool for an application version',
+    operationId: 'deleteAppVersionTool',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        appId: appIdParam,
+        appVersion: appVersionParam,
+        toolPackageName: packageNameParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Application, version, or tool not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
 }

@@ -416,4 +416,47 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       },
     },
   });
+
+  // DELETE /policy/{packageName}/version/{version} - Delete a policy version
+  registry.registerPath({
+    method: 'delete',
+    path: '/policy/{packageName}/version/{version}',
+    tags: ['PolicyVersion'],
+    summary: 'Deletes a policy version',
+    operationId: 'deletePolicyVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: policyVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Policy or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
 }

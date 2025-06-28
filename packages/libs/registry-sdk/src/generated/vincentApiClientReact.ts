@@ -69,6 +69,13 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['AppVersion'],
       }),
+      deleteAppVersion: build.mutation<DeleteAppVersionApiResponse, DeleteAppVersionApiArg>({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}`,
+          method: 'DELETE',
+        }),
+        invalidatesTags: ['AppVersion'],
+      }),
       enableAppVersion: build.mutation<EnableAppVersionApiResponse, EnableAppVersionApiArg>({
         query: (queryArg) => ({
           url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}/enable`,
@@ -105,6 +112,16 @@ const injectedRtkApi = api
           url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.appVersion))}/tool/${encodeURIComponent(String(queryArg.toolPackageName))}`,
           method: 'PUT',
           body: queryArg.appVersionToolEdit,
+        }),
+        invalidatesTags: ['AppVersionTool'],
+      }),
+      deleteAppVersionTool: build.mutation<
+        DeleteAppVersionToolApiResponse,
+        DeleteAppVersionToolApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.appVersion))}/tool/${encodeURIComponent(String(queryArg.toolPackageName))}`,
+          method: 'DELETE',
         }),
         invalidatesTags: ['AppVersionTool'],
       }),
@@ -175,6 +192,13 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['ToolVersion'],
       }),
+      deleteToolVersion: build.mutation<DeleteToolVersionApiResponse, DeleteToolVersionApiArg>({
+        query: (queryArg) => ({
+          url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
+          method: 'DELETE',
+        }),
+        invalidatesTags: ['ToolVersion'],
+      }),
       listAllPolicies: build.query<ListAllPoliciesApiResponse, ListAllPoliciesApiArg>({
         query: () => ({ url: `/policies` }),
         providesTags: ['Policy'],
@@ -230,6 +254,16 @@ const injectedRtkApi = api
           url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
           method: 'PUT',
           body: queryArg.policyVersionEdit,
+        }),
+        invalidatesTags: ['PolicyVersion'],
+      }),
+      deletePolicyVersion: build.mutation<
+        DeletePolicyVersionApiResponse,
+        DeletePolicyVersionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
+          method: 'DELETE',
         }),
         invalidatesTags: ['PolicyVersion'],
       }),
@@ -304,6 +338,14 @@ export type EditAppVersionApiArg = {
   /** Update version changes field */
   appVersionEdit: AppVersionEdit;
 };
+export type DeleteAppVersionApiResponse =
+  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+export type DeleteAppVersionApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** Version # of the target application version */
+  version: number;
+};
 export type EnableAppVersionApiResponse = /** status 200 Successful operation */ AppVersionRead;
 export type EnableAppVersionApiArg = {
   /** ID of the target application */
@@ -349,6 +391,16 @@ export type EditAppVersionToolApiArg = {
   toolPackageName: string;
   /** Updated tool configuration for the application version */
   appVersionToolEdit: AppVersionToolEdit;
+};
+export type DeleteAppVersionToolApiResponse =
+  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+export type DeleteAppVersionToolApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** Version # of the target application version */
+  appVersion: number;
+  /** The NPM package name */
+  toolPackageName: string;
 };
 export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolListRead;
 export type ListAllToolsApiArg = void;
@@ -413,6 +465,14 @@ export type EditToolVersionApiArg = {
   /** Update version changes field */
   toolVersionEdit: ToolVersionEdit;
 };
+export type DeleteToolVersionApiResponse =
+  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+export type DeleteToolVersionApiArg = {
+  /** The NPM package name */
+  packageName: string;
+  /** NPM semver of the target tool version */
+  version: string;
+};
 export type ListAllPoliciesApiResponse = /** status 200 Successful operation */ PolicyListRead;
 export type ListAllPoliciesApiArg = void;
 export type CreatePolicyApiResponse = /** status 200 Successful operation */ PolicyRead;
@@ -464,6 +524,14 @@ export type EditPolicyVersionApiArg = {
   version: string;
   /** Update version changes field */
   policyVersionEdit: PolicyVersionEdit;
+};
+export type DeletePolicyVersionApiResponse =
+  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+export type DeletePolicyVersionApiArg = {
+  /** The NPM package name */
+  packageName: string;
+  /** NPM semver of the target policy version */
+  version: string;
 };
 export type GetPolicyVersionsApiResponse =
   /** status 200 Successful operation */ PolicyVersionListRead;
@@ -971,12 +1039,14 @@ export const {
   useGetAppVersionQuery,
   useLazyGetAppVersionQuery,
   useEditAppVersionMutation,
+  useDeleteAppVersionMutation,
   useEnableAppVersionMutation,
   useDisableAppVersionMutation,
   useListAppVersionToolsQuery,
   useLazyListAppVersionToolsQuery,
   useCreateAppVersionToolMutation,
   useEditAppVersionToolMutation,
+  useDeleteAppVersionToolMutation,
   useListAllToolsQuery,
   useLazyListAllToolsQuery,
   useCreateToolMutation,
@@ -991,6 +1061,7 @@ export const {
   useGetToolVersionQuery,
   useLazyGetToolVersionQuery,
   useEditToolVersionMutation,
+  useDeleteToolVersionMutation,
   useListAllPoliciesQuery,
   useLazyListAllPoliciesQuery,
   useCreatePolicyMutation,
@@ -1002,6 +1073,7 @@ export const {
   useGetPolicyVersionQuery,
   useLazyGetPolicyVersionQuery,
   useEditPolicyVersionMutation,
+  useDeletePolicyVersionMutation,
   useGetPolicyVersionsQuery,
   useLazyGetPolicyVersionsQuery,
   useChangePolicyOwnerMutation,

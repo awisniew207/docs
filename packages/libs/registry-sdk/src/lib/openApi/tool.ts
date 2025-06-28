@@ -417,4 +417,47 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       },
     },
   });
+
+  // DELETE /tool/{packageName}/version/{version} - Delete a tool version
+  registry.registerPath({
+    method: 'delete',
+    path: '/tool/{packageName}/version/{version}',
+    tags: ['ToolVersion'],
+    summary: 'Deletes a tool version',
+    operationId: 'deleteToolVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: toolVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Tool or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
 }
