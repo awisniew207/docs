@@ -278,40 +278,6 @@ describe('Policy API Integration Tests', () => {
     });
   });
 
-  describe('PUT /policy/{packageName}/owner', () => {
-    it('should change a policy owner', async () => {
-      const newOwnerAddress = '0x9876543210abcdef9876543210abcdef98765432';
-
-      const result = await store.dispatch(
-        api.endpoints.changePolicyOwner.initiate({
-          packageName: testPackageName,
-          changeOwner: {
-            authorWalletAddress: newOwnerAddress,
-          },
-        }),
-      );
-
-      verboseLog(result);
-      expect(result).not.toHaveProperty('error');
-
-      const { data } = result;
-      expectAssertObject(data);
-
-      // Reset the API cache so we can verify the change
-      store.dispatch(api.util.resetApiState());
-
-      const getResult = await store.dispatch(
-        api.endpoints.getPolicy.initiate({ packageName: testPackageName }),
-      );
-
-      verboseLog(getResult);
-      expect(getResult).not.toHaveProperty('error');
-
-      const { data: updatedData } = getResult;
-      expectAssertObject(updatedData);
-    });
-  });
-
   describe('DELETE /policy/{packageName}/version/{version}', () => {
     it('should delete a policy version', async () => {
       const versionToDelete = '1.0.1';

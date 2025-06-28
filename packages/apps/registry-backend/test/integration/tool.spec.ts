@@ -266,40 +266,6 @@ describe('Tool API Integration Tests', () => {
     });
   });
 
-  describe('PUT /tool/{packageName}/owner', () => {
-    it('should change a tool owner', async () => {
-      const newOwnerAddress = '0x9876543210abcdef9876543210abcdef98765432';
-
-      const result = await store.dispatch(
-        api.endpoints.changeToolOwner.initiate({
-          packageName: testPackageName,
-          changeOwner: {
-            authorWalletAddress: newOwnerAddress,
-          },
-        }),
-      );
-
-      verboseLog(result);
-      expect(result).not.toHaveProperty('error');
-
-      const { data } = result;
-      expectAssertObject(data);
-
-      // Reset the API cache so we can verify the change
-      store.dispatch(api.util.resetApiState());
-
-      const getResult = await store.dispatch(
-        api.endpoints.getTool.initiate({ packageName: testPackageName }),
-      );
-
-      verboseLog(getResult);
-      expect(getResult).not.toHaveProperty('error');
-
-      const { data: updatedData } = getResult;
-      expectAssertObject(updatedData);
-    });
-  });
-
   describe('DELETE /tool/{packageName}/version/{version}', () => {
     it('should delete a tool version', async () => {
       // Create a new version to delete

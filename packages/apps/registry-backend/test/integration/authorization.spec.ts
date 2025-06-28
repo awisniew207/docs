@@ -596,4 +596,294 @@ describe('Authorization Integration Tests', () => {
       }
     });
   });
+  // Test ownership change and authorization flow
+  describe('Ownership Change Tests', () => {
+    // Test data for new entities to be created for ownership tests
+    let ownershipTestToolPackageName: string;
+    let ownershipTestPolicyPackageName: string;
+
+    // Create new tool and policy for ownership tests
+    beforeAll(async () => {
+      verboseLog('Ownership Change Tests - Setup');
+
+      // Reset the API client to use the authorized wallet
+      const { setBaseQueryFn } = nodeClient;
+      setBaseQueryFn(
+        withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+      );
+
+      // Explicitly delete both tools and the policy before creating new ones
+      try {
+        await store.dispatch(
+          api.endpoints.deleteTool.initiate({
+            packageName: '@lit-protocol/vincent-tool-uniswap-swap',
+          }),
+        );
+        verboseLog('Deleted @lit-protocol/vincent-tool-uniswap-swap');
+      } catch (error: any) {
+        verboseLog(
+          `Error deleting @lit-protocol/vincent-tool-uniswap-swap (may not exist): ${error.message}`,
+        );
+      }
+
+      try {
+        await store.dispatch(
+          api.endpoints.deleteTool.initiate({
+            packageName: '@lit-protocol/vincent-tool-erc20-approval',
+          }),
+        );
+        verboseLog('Deleted @lit-protocol/vincent-tool-erc20-approval');
+      } catch (error: any) {
+        verboseLog(
+          `Error deleting @lit-protocol/vincent-tool-erc20-approval (may not exist): ${error.message}`,
+        );
+      }
+
+      try {
+        await store.dispatch(
+          api.endpoints.deletePolicy.initiate({
+            packageName: '@lit-protocol/vincent-policy-spending-limit',
+          }),
+        );
+        verboseLog('Deleted @lit-protocol/vincent-policy-spending-limit');
+      } catch (error: any) {
+        verboseLog(
+          `Error deleting @lit-protocol/vincent-policy-spending-limit (may not exist): ${error.message}`,
+        );
+      }
+
+      // Create a new tool for ownership tests
+      ownershipTestToolPackageName = `@lit-protocol/vincent-tool-uniswap-swap`;
+      const toolResult = await store.dispatch(
+        api.endpoints.createTool.initiate({
+          packageName: ownershipTestToolPackageName,
+          toolCreate: {
+            title: 'Ownership Test Tool',
+            description: 'Tool for testing ownership changes',
+            activeVersion: '1.0.0',
+          },
+        }),
+      );
+      expect(toolResult).not.toHaveProperty('error');
+
+      // Create a new policy for ownership tests
+      ownershipTestPolicyPackageName = `@lit-protocol/vincent-policy-spending-limit`;
+      const policyResult = await store.dispatch(
+        api.endpoints.createPolicy.initiate({
+          packageName: ownershipTestPolicyPackageName,
+          policyCreate: {
+            title: 'Ownership Test Policy',
+            description: 'Policy for testing ownership changes',
+            activeVersion: '1.0.0',
+          },
+        }),
+      );
+      expect(policyResult).not.toHaveProperty('error');
+    });
+
+    // Clean up the test entities
+    afterAll(async () => {
+      verboseLog('Ownership Change Tests - Cleanup');
+
+      // Reset the API client to use the authorized wallet
+      const { setBaseQueryFn } = nodeClient;
+      setBaseQueryFn(
+        withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+      );
+
+      // Delete the test tool and policy
+      await store.dispatch(
+        api.endpoints.deleteTool.initiate({
+          packageName: ownershipTestToolPackageName,
+        }),
+      );
+      await store.dispatch(
+        api.endpoints.deletePolicy.initiate({
+          packageName: ownershipTestPolicyPackageName,
+        }),
+      );
+    });
+
+    describe('Tool Ownership Change', () => {
+      it('should change tool owner to unauthorized wallet address', async () => {
+        // Reset the API client to use the authorized wallet
+        const { setBaseQueryFn } = nodeClient;
+        setBaseQueryFn(
+          withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+        );
+
+        const result = await store.dispatch(
+          api.endpoints.changeToolOwner.initiate({
+            packageName: ownershipTestToolPackageName,
+            changeOwner: {
+              authorWalletAddress: unauthorizedWallet.address,
+            },
+          }),
+        );
+
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
+
+        const { data } = result;
+        expectAssertObject(data);
+
+        // Verify the owner was changed
+        expect(data.authorWalletAddress).toBe(unauthorizedWallet.address);
+      });
+
+      it('should allow the new owner (previously unauthorized) to edit the tool', async () => {
+        // Set the API client to use the previously unauthorized wallet
+        const { setBaseQueryFn } = nodeClient;
+        setBaseQueryFn(
+          withUnauthorizedSiweAuth(
+            fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` }),
+          ),
+        );
+
+        const updateData = {
+          description: 'Updated by the new owner (previously unauthorized)',
+        };
+
+        const result = await store.dispatch(
+          api.endpoints.editTool.initiate({
+            packageName: ownershipTestToolPackageName,
+            toolEdit: updateData,
+          }),
+        );
+
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
+
+        const { data } = result;
+        expectAssertObject(data);
+
+        // Verify the update was successful
+        expect(data.description).toBe(updateData.description);
+      });
+
+      it('should allow the new owner (previously unauthorized) to delete the tool', async () => {
+        // Create a new tool version to delete
+        const versionResult = await store.dispatch(
+          api.endpoints.createToolVersion.initiate({
+            packageName: ownershipTestToolPackageName,
+            version: '1.0.1',
+            toolVersionCreate: {
+              changes: 'Version to be deleted by new owner',
+            },
+          }),
+        );
+
+        expect(versionResult).not.toHaveProperty('error');
+
+        // Delete the tool version
+        const deleteResult = await store.dispatch(
+          api.endpoints.deleteToolVersion.initiate({
+            packageName: ownershipTestToolPackageName,
+            version: '1.0.1',
+          }),
+        );
+
+        verboseLog(deleteResult);
+        expect(deleteResult).not.toHaveProperty('error');
+
+        const { data } = deleteResult;
+        expectAssertObject(data);
+
+        // Verify the message in the response
+        expect(data).toHaveProperty('message');
+        expect(data.message).toContain('deleted successfully');
+      });
+    });
+
+    describe('Policy Ownership Change', () => {
+      it('should change policy owner to unauthorized wallet address', async () => {
+        // Reset the API client to use the authorized wallet
+        const { setBaseQueryFn } = nodeClient;
+        setBaseQueryFn(
+          withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+        );
+
+        const result = await store.dispatch(
+          api.endpoints.changePolicyOwner.initiate({
+            packageName: ownershipTestPolicyPackageName,
+            changeOwner: {
+              authorWalletAddress: unauthorizedWallet.address,
+            },
+          }),
+        );
+
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
+
+        const { data } = result;
+        expectAssertObject(data);
+
+        // Verify the owner was changed
+        expect(data.authorWalletAddress).toBe(unauthorizedWallet.address);
+      });
+
+      it('should allow the new owner (previously unauthorized) to edit the policy', async () => {
+        // Set the API client to use the previously unauthorized wallet
+        const { setBaseQueryFn } = nodeClient;
+        setBaseQueryFn(
+          withUnauthorizedSiweAuth(
+            fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` }),
+          ),
+        );
+
+        const updateData = {
+          description: 'Updated by the new owner (previously unauthorized)',
+        };
+
+        const result = await store.dispatch(
+          api.endpoints.editPolicy.initiate({
+            packageName: ownershipTestPolicyPackageName,
+            policyEdit: updateData,
+          }),
+        );
+
+        verboseLog(result);
+        expect(result).not.toHaveProperty('error');
+
+        const { data } = result;
+        expectAssertObject(data);
+
+        // Verify the update was successful
+        expect(data.description).toBe(updateData.description);
+      });
+
+      it('should allow the new owner (previously unauthorized) to delete the policy', async () => {
+        // Create a new policy version to delete
+        const versionResult = await store.dispatch(
+          api.endpoints.createPolicyVersion.initiate({
+            packageName: ownershipTestPolicyPackageName,
+            version: '1.0.1',
+            policyVersionCreate: {
+              changes: 'Version to be deleted by new owner',
+            },
+          }),
+        );
+
+        expect(versionResult).not.toHaveProperty('error');
+
+        // Delete the policy version
+        const deleteResult = await store.dispatch(
+          api.endpoints.deletePolicyVersion.initiate({
+            packageName: ownershipTestPolicyPackageName,
+            version: '1.0.1',
+          }),
+        );
+
+        verboseLog(deleteResult);
+        expect(deleteResult).not.toHaveProperty('error');
+
+        const { data } = deleteResult;
+        expectAssertObject(data);
+
+        // Verify the message in the response
+        expect(data).toHaveProperty('message');
+        expect(data.message).toContain('deleted successfully');
+      });
+    });
+  });
 });

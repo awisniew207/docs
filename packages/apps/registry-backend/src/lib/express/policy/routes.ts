@@ -126,7 +126,7 @@ export function registerRoutes(app: Express) {
     requireUserIsAuthor('policy'),
     withVincentAuth(
       withPolicy(async (req, res) => {
-        req.vincentPolicy.authorWalletAddress = req.vincentUser.address;
+        req.vincentPolicy.authorWalletAddress = req.body.authorWalletAddress;
         const updatedPolicy = await req.vincentPolicy.save();
 
         res.json(updatedPolicy);

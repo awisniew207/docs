@@ -126,7 +126,7 @@ export function registerRoutes(app: Express) {
     requireUserIsAuthor('tool'),
     withVincentAuth(
       withTool(async (req, res) => {
-        req.vincentTool.authorWalletAddress = req.vincentUser.address;
+        req.vincentTool.authorWalletAddress = req.body.authorWalletAddress;
         const updatedTool = await req.vincentTool.save();
 
         res.json(updatedTool);
