@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppTool } from '../../mongo/app';
+import { createDebugger } from '../debug';
 
 import { RequestWithAppAndVersion } from './requireAppVersion';
 
@@ -7,13 +8,18 @@ export interface RequestWithAppVersionAndTool extends RequestWithAppAndVersion {
   vincentAppTool: InstanceType<typeof AppTool>;
 }
 
+// Create a debug instance for this middleware
+const debug = createDebugger('requireAppTool');
+
 // Type guard function that expects vincentApp and vincentAppVersion to already exist
 export const requireAppTool = (toolPackageNameParam = 'toolPackageName') => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    debug('Processing app tool request');
     const reqWithAppVersion = req as RequestWithAppAndVersion;
 
     // Ensure app and appVersion middleware ran first
     if (!reqWithAppVersion.vincentApp) {
+      debug('App middleware did not run before AppTool middleware');
       res.status(500).json({
         error: 'App middleware must run before AppTool middleware',
       });
@@ -21,6 +27,7 @@ export const requireAppTool = (toolPackageNameParam = 'toolPackageName') => {
     }
 
     if (!reqWithAppVersion.vincentAppVersion) {
+      debug('AppVersion middleware did not run before AppTool middleware');
       res.status(500).json({
         error: 'AppVersion middleware must run before AppTool middleware',
       });
@@ -28,6 +35,12 @@ export const requireAppTool = (toolPackageNameParam = 'toolPackageName') => {
     }
 
     const toolPackageName = req.params[toolPackageNameParam];
+    debug('Extracted tool package name from params', {
+      toolPackageNameParam,
+      toolPackageName,
+      appId: reqWithAppVersion.vincentApp.appId,
+      appVersion: reqWithAppVersion.vincentAppVersion.version,
+    });
 
     try {
       const appTool = await AppTool.findOne({
@@ -38,13 +51,31 @@ export const requireAppTool = (toolPackageNameParam = 'toolPackageName') => {
       });
 
       if (!appTool) {
+        debug('App tool not found', {
+          appId: reqWithAppVersion.vincentApp.appId,
+          appVersion: reqWithAppVersion.vincentAppVersion.version,
+          toolPackageName,
+        });
         res.status(404).end();
         return;
       }
 
+      debug('App tool found, adding to request object', {
+        appId: reqWithAppVersion.vincentApp.appId,
+        appVersion: reqWithAppVersion.vincentAppVersion.version,
+        toolPackageName,
+        toolVersion: appTool.toolVersion,
+      });
       (req as RequestWithAppVersionAndTool).vincentAppTool = appTool;
+      debug('Proceeding to next middleware');
       next();
     } catch (error) {
+      debug('Error fetching app tool', {
+        appId: reqWithAppVersion.vincentApp.appId,
+        appVersion: reqWithAppVersion.vincentAppVersion.version,
+        toolPackageName,
+        error: (error as Error).message,
+      });
       res.status(500).json({
         message: `Error fetching tool ${toolPackageName} for app ${reqWithAppVersion.vincentApp.appId} version ${reqWithAppVersion.vincentAppVersion.version}`,
         error,
