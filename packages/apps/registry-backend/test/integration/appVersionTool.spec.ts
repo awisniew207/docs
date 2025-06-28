@@ -380,6 +380,53 @@ describe('AppVersionTool API Integration Tests', () => {
     });
   });
 
+  describe('DELETE /app/:appId/version/:version/tool/:toolPackageName', () => {
+    it('should delete an app version tool', async () => {
+      // Delete the second tool from the second app version
+      const result = await store.dispatch(
+        api.endpoints.deleteAppVersionTool.initiate({
+          appId: testAppId!,
+          appVersion: secondAppVersion,
+          toolPackageName: testToolPackageName2,
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      // Verify the message in the response
+      expect(data).toHaveProperty('message');
+      expect(data.message).toContain('deleted successfully');
+
+      // Reset the API cache
+      store.dispatch(api.util.resetApiState());
+
+      // Verify the tool is deleted by checking the list of tools
+      const getToolsResult = await store.dispatch(
+        api.endpoints.listAppVersionTools.initiate({
+          appId: testAppId!,
+          version: secondAppVersion,
+        }),
+      );
+
+      expect(getToolsResult).not.toHaveProperty('error');
+      const { data: toolsData } = getToolsResult;
+      expectAssertArray(toolsData);
+
+      // Should now only have one tool for the second app version
+      expect(toolsData).toHaveLength(1);
+
+      // And it should be the first tool, not the deleted second tool
+      // @ts-expect-error It's a test
+      expect(toolsData[0].toolPackageName).toBe(testToolPackageName1);
+      // @ts-expect-error It's a test
+      expect(toolsData[0].toolPackageName).not.toBe(testToolPackageName2);
+    });
+  });
+
   describe('DELETE /app/:appId', () => {
     it('should delete an app and all its versions and tools', async () => {
       // First, delete the app

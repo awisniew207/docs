@@ -238,6 +238,30 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Delete a tool version
+  app.delete(
+    '/tool/:packageName/version/:version',
+    requireVincentAuth(),
+    requireTool(),
+    requireUserIsAuthor('tool'),
+    requireToolVersion(),
+    withVincentAuth(
+      withToolVersion(async (req, res) => {
+        const { vincentToolVersion } = req;
+
+        if (Features.HARD_DELETE_DOCS) {
+          await vincentToolVersion.deleteOne();
+        } else {
+          Object.assign(vincentToolVersion, { isDeleted: true });
+          await vincentToolVersion.save();
+        }
+
+        res.json({ message: 'Tool version deleted successfully' });
+        return;
+      }),
+    ),
+  );
+
   // Delete a tool, along with all of its tool versions
   app.delete(
     '/tool/:packageName',

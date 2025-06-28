@@ -394,6 +394,47 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Delete an app version, along with all of its tools
+  app.delete(
+    '/app/:appId/version/:version',
+    requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
+    requireAppVersion(),
+    withVincentAuth(
+      withAppVersion(async (req, res) => {
+        await withSession(async (mongoSession) => {
+          const { appId, version } = req.params;
+
+          await mongoSession.withTransaction(async (session) => {
+            if (Features.HARD_DELETE_DOCS) {
+              await AppVersion.findOneAndDelete({
+                appId: Number(appId),
+                version: Number(version),
+              }).session(session);
+              await AppTool.deleteMany({
+                appId: Number(appId),
+                appVersion: Number(version),
+              }).session(session);
+            } else {
+              await AppVersion.updateOne(
+                { appId: Number(appId), version: Number(version) },
+                { isDeleted: true },
+              ).session(session);
+              await AppTool.updateMany(
+                { appId: Number(appId), appVersion: Number(version) },
+                { isDeleted: true },
+              ).session(session);
+            }
+          });
+
+          res.json({ message: 'App version and associated tools deleted successfully' });
+          return;
+        });
+      }),
+    ),
+  );
+
   // Delete an app, along with all of its appVersions and their tools.
   app.delete(
     '/app/:appId',

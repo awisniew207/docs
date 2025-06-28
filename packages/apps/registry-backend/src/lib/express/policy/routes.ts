@@ -237,6 +237,32 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Delete a policy version
+  app.delete(
+    '/policy/:packageName/version/:version',
+    requireVincentAuth(),
+    requirePolicy(),
+    requireUserIsAuthor('policy'),
+    requirePolicyVersion(),
+    withVincentAuth(
+      withPolicyVersion(async (req, res) => {
+        const { packageName, version } = req.params;
+
+        if (Features.HARD_DELETE_DOCS) {
+          await PolicyVersion.findOneAndDelete({
+            packageName,
+            version,
+          });
+        } else {
+          await PolicyVersion.updateOne({ packageName, version }, { isDeleted: true });
+        }
+
+        res.json({ message: 'Policy version deleted successfully' });
+        return;
+      }),
+    ),
+  );
+
   // Delete a policy, along with all of its policy versions
   app.delete(
     '/policy/:packageName',

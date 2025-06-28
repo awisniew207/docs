@@ -261,6 +261,26 @@ describe('Authorization Integration Tests', () => {
         expect(error.status).toBe(403);
       }
     });
+
+    it('should fail to delete an app version with unauthorized wallet', async () => {
+      const result = await store.dispatch(
+        api.endpoints.deleteAppVersion.initiate({
+          appId: testAppId,
+          version: testAppVersion,
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
+
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(403);
+      }
+    });
   });
 
   // Test AppVersionTool mutation endpoints
@@ -298,6 +318,27 @@ describe('Authorization Integration Tests', () => {
           appVersionToolEdit: {
             hiddenSupportedPolicies: ['@vincent/policy1'],
           },
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
+
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(403);
+      }
+    });
+
+    it('should fail to delete an app version tool with unauthorized wallet', async () => {
+      const result = await store.dispatch(
+        api.endpoints.deleteAppVersionTool.initiate({
+          appId: testAppId,
+          appVersion: testAppVersion,
+          toolPackageName: testToolPackageName,
         }),
       );
 
@@ -389,6 +430,26 @@ describe('Authorization Integration Tests', () => {
           toolVersionEdit: {
             changes: 'Unauthorized changes',
           },
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
+
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(403);
+      }
+    });
+
+    it('should fail to delete a tool version with unauthorized wallet', async () => {
+      const result = await store.dispatch(
+        api.endpoints.deleteToolVersion.initiate({
+          packageName: testToolPackageName,
+          version: testToolVersion,
         }),
       );
 
@@ -500,6 +561,26 @@ describe('Authorization Integration Tests', () => {
           policyVersionEdit: {
             changes: 'Unauthorized changes',
           },
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
+
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(403);
+      }
+    });
+
+    it('should fail to delete a policy version with unauthorized wallet', async () => {
+      const result = await store.dispatch(
+        api.endpoints.deletePolicyVersion.initiate({
+          packageName: testPolicyPackageName,
+          version: testPolicyVersion,
         }),
       );
 

@@ -312,6 +312,51 @@ describe('Policy API Integration Tests', () => {
     });
   });
 
+  describe('DELETE /policy/{packageName}/version/{version}', () => {
+    it('should delete a policy version', async () => {
+      const versionToDelete = '1.0.1';
+
+      const result = await store.dispatch(
+        api.endpoints.deletePolicyVersion.initiate({
+          packageName: testPackageName,
+          version: versionToDelete,
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).not.toHaveProperty('error');
+
+      const { data } = result;
+      expectAssertObject(data);
+
+      // Verify the message in the response
+      expect(data).toHaveProperty('message');
+      expect(data.message).toContain('deleted successfully');
+
+      // Reset the API cache
+      store.dispatch(api.util.resetApiState());
+
+      // Verify the version is deleted by checking for a 404
+      const getResult = await store.dispatch(
+        api.endpoints.getPolicyVersion.initiate({
+          packageName: testPackageName,
+          version: versionToDelete,
+        }),
+      );
+
+      verboseLog(getResult);
+      expect(getResult).toHaveProperty('error');
+      expect(hasError(getResult)).toBe(true);
+
+      if (hasError(getResult)) {
+        const { error } = getResult;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(404);
+      }
+    });
+  });
+
   describe('DELETE /policy/{packageName}', () => {
     it('should delete a policy and all its versions', async () => {
       // First, delete the policy
