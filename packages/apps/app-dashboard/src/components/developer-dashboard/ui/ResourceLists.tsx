@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { Logo } from '@/components/shared/ui/Logo';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { App, Policy, Tool } from '@/types/developer-dashboard/appTypes';
@@ -66,26 +67,11 @@ export function AppsList({ onCreateClick, onAppClick }: AppsListProps) {
               <CardHeader>
                 <CardTitle className="flex justify-between items-center text-gray-900">
                   <div className="flex items-center gap-3">
-                    {(() => {
-                      const logoUrl = app.logo && app.logo.length >= 10 ? app.logo : null;
-                      return logoUrl ? (
-                        <img
-                          src={logoUrl}
-                          alt={`${app.name} logo`}
-                          className="w-8 h-8 rounded-md object-cover flex-shrink-0"
-                          onError={(e) => {
-                            // Show fallback logo.svg if logo fails to load
-                            e.currentTarget.src = '/logo.svg';
-                          }}
-                        />
-                      ) : (
-                        <img
-                          src="/logo.svg"
-                          alt="Vincent logo"
-                          className="w-8 h-8 rounded-md object-cover flex-shrink-0"
-                        />
-                      );
-                    })()}
+                    <Logo
+                      logo={app.logo}
+                      alt={`${app.name} logo`}
+                      className="w-8 h-8 rounded-md object-cover flex-shrink-0"
+                    />
                     <span>{app.name}</span>
                   </div>
                   <div className="flex gap-2">

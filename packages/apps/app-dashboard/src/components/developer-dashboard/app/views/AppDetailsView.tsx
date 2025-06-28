@@ -1,5 +1,6 @@
 import { App } from '@/types/developer-dashboard/appTypes';
 import { AppDetail } from '@/components/developer-dashboard/ui/AppDetail';
+import { Logo } from '@/components/shared/ui/Logo';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 
 interface AppDetailsViewProps {
@@ -17,13 +18,10 @@ export function AppDetailsView({ selectedApp, onOpenMutation }: AppDetailsViewPr
         </div>
         <div className="ml-6 flex-shrink-0">
           {selectedApp.logo && selectedApp.logo.length >= 10 ? (
-            <img
-              src={selectedApp.logo}
+            <Logo
+              logo={selectedApp.logo}
               alt="App logo"
               className="max-w-24 max-h-24 object-contain rounded-lg border shadow-sm bg-gray-50"
-              onError={(e) => {
-                e.currentTarget.src = '/logo.svg';
-              }}
             />
           ) : (
             <div className="w-16 h-16 bg-gray-100 rounded-lg border flex items-center justify-center">
