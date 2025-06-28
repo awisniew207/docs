@@ -41,7 +41,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/apps',
-    tags: ['app'],
+    tags: ['App'],
     summary: 'Lists all applications',
     operationId: 'listApps',
     responses: {
@@ -68,7 +68,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/app',
-    tags: ['app'],
+    tags: ['App', 'AppVersion'],
     summary: 'Creates a new application',
     operationId: 'createApp',
     security: [{ [siweAuth.name]: [] }],
@@ -113,7 +113,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/app/{appId}',
-    tags: ['app'],
+    tags: ['App'],
     summary: 'Fetches an application',
     operationId: 'getApp',
     request: {
@@ -146,7 +146,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/app/{appId}',
-    tags: ['app'],
+    tags: ['App'],
     summary: 'Edits an application',
     operationId: 'editApp',
     security: [{ [siweAuth.name]: [] }],
@@ -194,7 +194,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'delete',
     path: '/app/{appId}',
-    tags: ['app'],
+    tags: ['App', 'AppVersion', 'AppVersionTool'],
     summary: 'Deletes an application',
     operationId: 'deleteApp',
     security: [{ [siweAuth.name]: [] }],
@@ -233,7 +233,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/app/{appId}/versions',
-    tags: ['app'],
+    tags: ['AppVersion'],
     summary: 'Fetches all versions of an application',
     operationId: 'getAppVersions',
     request: {
@@ -268,7 +268,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/version',
-    tags: ['app/version'],
+    tags: ['AppVersion'],
     summary: 'Creates an application version',
     operationId: 'createAppVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -316,7 +316,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/app/{appId}/version/{version}',
-    tags: ['app/version'],
+    tags: ['AppVersion'],
     summary: 'Fetches an application version',
     operationId: 'getAppVersion',
     request: {
@@ -352,7 +352,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/app/{appId}/version/{version}',
-    tags: ['app/version'],
+    tags: ['AppVersion'],
     summary: 'Edits an application version',
     operationId: 'editAppVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -401,7 +401,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/version/{version}/enable',
-    tags: ['app/version'],
+    tags: ['AppVersion'],
     summary: 'Enables an application version',
     operationId: 'enableAppVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -441,7 +441,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/version/{version}/disable',
-    tags: ['app/version'],
+    tags: ['AppVersion'],
     summary: 'Disables an application version',
     operationId: 'disableAppVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -481,7 +481,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/app/{appId}/version/{version}/tools',
-    tags: ['app/version/tool'],
+    tags: ['AppVersionTool'],
     summary: 'Lists all tools for an application version',
     operationId: 'listAppVersionTools',
     request: {
@@ -517,7 +517,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
-    tags: ['app/version/tool'],
+    tags: ['AppVersionTool'],
     summary: 'Creates a tool for an application version',
     operationId: 'createAppVersionTool',
     security: [{ [siweAuth.name]: [] }],
@@ -567,7 +567,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
-    tags: ['app/version/tool'],
+    tags: ['AppVersionTool'],
     summary: 'Edits a tool for an application version',
     operationId: 'editAppVersionTool',
     security: [{ [siweAuth.name]: [] }],

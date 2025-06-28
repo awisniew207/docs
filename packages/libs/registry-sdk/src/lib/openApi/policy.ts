@@ -31,7 +31,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policies',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: 'Lists all policies',
     operationId: 'listAllPolicies',
     responses: {
@@ -58,7 +58,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/policy/{packageName}',
-    tags: ['policy'],
+    tags: ['Policy', 'PolicyVersion'],
     summary: 'Creates a new policy',
     operationId: 'createPolicy',
     security: [{ [siweAuth.name]: [] }],
@@ -104,7 +104,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policy/{packageName}',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: 'Fetches a policy',
     operationId: 'getPolicy',
     request: {
@@ -137,7 +137,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/policy/{packageName}',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: 'Edits a policy',
     operationId: 'editPolicy',
     security: [{ [siweAuth.name]: [] }],
@@ -183,7 +183,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/policy/{packageName}/version/{version}',
-    tags: ['policy/version'],
+    tags: ['PolicyVersion'],
     summary: 'Creates a new policy version',
     operationId: 'createPolicyVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -229,7 +229,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policy/{packageName}/version/{version}',
-    tags: ['policy/version'],
+    tags: ['PolicyVersion'],
     summary: 'Fetches a policy version',
     operationId: 'getPolicyVersion',
     request: {
@@ -262,7 +262,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policy/{packageName}/versions',
-    tags: ['policy'],
+    tags: ['PolicyVersion'],
     summary: 'Fetches all versions of a policy',
     operationId: 'getPolicyVersions',
     request: {
@@ -295,7 +295,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/policy/{packageName}/owner',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: "Changes a policy's owner",
     operationId: 'changePolicyOwner',
     security: [{ [siweAuth.name]: [] }],
@@ -341,7 +341,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/policy/{packageName}/version/{version}',
-    tags: ['policy/version'],
+    tags: ['PolicyVersion'],
     summary: 'Edits a policy version',
     operationId: 'editPolicyVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -387,7 +387,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'delete',
     path: '/policy/{packageName}',
-    tags: ['policy'],
+    tags: ['Policy', 'PolicyVersion'],
     summary: 'Deletes a policy and all its versions',
     operationId: 'deletePolicy',
     security: [{ [siweAuth.name]: [] }],

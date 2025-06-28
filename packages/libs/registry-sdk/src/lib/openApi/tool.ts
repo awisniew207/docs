@@ -32,7 +32,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tools',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: 'Lists all tools',
     operationId: 'listAllTools',
     responses: {
@@ -59,7 +59,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/tool/{packageName}',
-    tags: ['tool'],
+    tags: ['Tool', 'ToolVersion'],
     summary: 'Creates a new tool',
     operationId: 'createTool',
     security: [{ [siweAuth.name]: [] }],
@@ -105,7 +105,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tool/{packageName}',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: 'Fetches a tool',
     operationId: 'getTool',
     request: {
@@ -138,7 +138,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/tool/{packageName}',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: 'Edits a tool',
     operationId: 'editTool',
     security: [{ [siweAuth.name]: [] }],
@@ -184,7 +184,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tool/{packageName}/versions',
-    tags: ['tool'],
+    tags: ['ToolVersion'],
     summary: 'Fetches all versions of a tool',
     operationId: 'getToolVersions',
     request: {
@@ -217,7 +217,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/tool/{packageName}/owner',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: "Changes a tool's owner",
     operationId: 'changeToolOwner',
     security: [{ [siweAuth.name]: [] }],
@@ -263,7 +263,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/tool/{packageName}/version/{version}',
-    tags: ['tool/version'],
+    tags: ['ToolVersion'],
     summary: 'Creates a tool version',
     operationId: 'createToolVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -309,7 +309,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tool/{packageName}/version/{version}',
-    tags: ['tool/version'],
+    tags: ['ToolVersion'],
     summary: 'Fetches a tool version',
     operationId: 'getToolVersion',
     request: {
@@ -342,7 +342,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/tool/{packageName}/version/{version}',
-    tags: ['tool/version'],
+    tags: ['ToolVersion'],
     summary: 'Edits a tool version',
     operationId: 'editToolVersion',
     security: [{ [siweAuth.name]: [] }],
@@ -388,7 +388,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'delete',
     path: '/tool/{packageName}',
-    tags: ['tool'],
+    tags: ['Tool', 'ToolVersion'],
     summary: 'Deletes a tool and all its versions',
     operationId: 'deleteTool',
     security: [{ [siweAuth.name]: [] }],
