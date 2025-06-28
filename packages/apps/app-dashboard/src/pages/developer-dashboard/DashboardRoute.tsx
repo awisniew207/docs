@@ -5,6 +5,8 @@ import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 export default function DashboardRoute() {
   const {
@@ -30,19 +32,31 @@ export default function DashboardRoute() {
 
   if (appsError)
     return (
-      <StatusMessage message={getErrorMessage(appsErrorMsg, 'Failed to load apps')} type="error" />
+      <StatusMessage
+        message={getErrorMessage(
+          appsErrorMsg as FetchBaseQueryError | SerializedError,
+          'Failed to load apps',
+        )}
+        type="error"
+      />
     );
   if (toolsError)
     return (
       <StatusMessage
-        message={getErrorMessage(toolsErrorMsg, 'Failed to load tools')}
+        message={getErrorMessage(
+          toolsErrorMsg as FetchBaseQueryError | SerializedError,
+          'Failed to load tools',
+        )}
         type="error"
       />
     );
   if (policiesError)
     return (
       <StatusMessage
-        message={getErrorMessage(policiesErrorMsg, 'Failed to load policies')}
+        message={getErrorMessage(
+          policiesErrorMsg as FetchBaseQueryError | SerializedError,
+          'Failed to load policies',
+        )}
         type="error"
       />
     );
