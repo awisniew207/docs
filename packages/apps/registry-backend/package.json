@@ -4,14 +4,14 @@
   "private": true,
   "type:": "module",
   "scripts": {
+    "prebuild": "node scripts/copy-api-html.js",
     "build": "pnpm unbuild",
     "start": "pnpm build && node ./dist/bin/apiServer.mjs",
     "test": "jest",
     "test:integration": "jest test/integration/index.spec.ts"
   },
   "files": [
-    "dist",
-    "src/lib/express/static/openapi.html"
+    "dist"
   ],
   "bin": {
     "apiServer": "./dist/bin/apiServer.mjs"
