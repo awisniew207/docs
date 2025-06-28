@@ -25,7 +25,8 @@
   "files": [
     "dist/**",
     "openapi.json",
-    "*.md"
+    "*.md",
+    "docs/**"
   ],
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.2",
