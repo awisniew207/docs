@@ -5,7 +5,26 @@
     "version": "1.0.3",
     "description": "API for Vincent App, Tool, and Policy Registry"
   },
+  "servers": [
+    {
+      "url": "https://staging.registry.heyvincent.ai"
+    },
+    {
+      "url": "https://registry.heyvincent.ai"
+    },
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
   "components": {
+    "securitySchemes": {
+      "siweAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Sign In With Ethereum authentication (SIWE). Format is \"SIWE: [Base64EncodedSignedSiwe]\""
+      }
+    },
     "schemas": {
       "Error": {
         "type": "object",
@@ -1114,7 +1133,7 @@
     "/apps": {
       "get": {
         "tags": [
-          "app"
+          "App"
         ],
         "summary": "Lists all applications",
         "operationId": "listApps",
@@ -1145,10 +1164,16 @@
     "/app": {
       "post": {
         "tags": [
-          "app"
+          "App",
+          "AppVersion"
         ],
         "summary": "Creates a new application",
         "operationId": "createApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Developer-defined application information",
           "required": true,
@@ -1193,7 +1218,7 @@
     "/app/{appId}": {
       "get": {
         "tags": [
-          "app"
+          "App"
         ],
         "summary": "Fetches an application",
         "operationId": "getApp",
@@ -1237,10 +1262,15 @@
       },
       "put": {
         "tags": [
-          "app"
+          "App"
         ],
         "summary": "Edits an application",
         "operationId": "editApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1295,10 +1325,17 @@
       },
       "delete": {
         "tags": [
-          "app"
+          "App",
+          "AppVersion",
+          "AppVersionTool"
         ],
         "summary": "Deletes an application",
         "operationId": "deleteApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1344,7 +1381,7 @@
     "/app/{appId}/versions": {
       "get": {
         "tags": [
-          "app"
+          "AppVersion"
         ],
         "summary": "Fetches all versions of an application",
         "operationId": "getAppVersions",
@@ -1390,10 +1427,15 @@
     "/app/{appId}/version": {
       "post": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Creates an application version",
         "operationId": "createAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1450,7 +1492,7 @@
     "/app/{appId}/version/{version}": {
       "get": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Fetches an application version",
         "operationId": "getAppVersion",
@@ -1504,10 +1546,15 @@
       },
       "put": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Edits an application version",
         "operationId": "editAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1574,10 +1621,15 @@
     "/app/{appId}/version/{version}/enable": {
       "post": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Enables an application version",
         "operationId": "enableAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1633,10 +1685,15 @@
     "/app/{appId}/version/{version}/disable": {
       "post": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Disables an application version",
         "operationId": "disableAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1692,7 +1749,7 @@
     "/app/{appId}/version/{version}/tools": {
       "get": {
         "tags": [
-          "app/version/tool"
+          "AppVersionTool"
         ],
         "summary": "Lists all tools for an application version",
         "operationId": "listAppVersionTools",
@@ -1748,10 +1805,15 @@
     "/app/{appId}/version/{appVersion}/tool/{toolPackageName}": {
       "post": {
         "tags": [
-          "app/version/tool"
+          "AppVersionTool"
         ],
         "summary": "Creates a tool for an application version",
         "operationId": "createAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1826,10 +1888,15 @@
       },
       "put": {
         "tags": [
-          "app/version/tool"
+          "AppVersionTool"
         ],
         "summary": "Edits a tool for an application version",
         "operationId": "editAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1909,7 +1976,7 @@
     "/tools": {
       "get": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Lists all tools",
         "operationId": "listAllTools",
@@ -1940,10 +2007,16 @@
     "/tool/{packageName}": {
       "post": {
         "tags": [
-          "tool"
+          "Tool",
+          "ToolVersion"
         ],
         "summary": "Creates a new tool",
         "operationId": "createTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1998,7 +2071,7 @@
       },
       "get": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Fetches a tool",
         "operationId": "getTool",
@@ -2042,10 +2115,15 @@
       },
       "put": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Edits a tool",
         "operationId": "editTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2100,10 +2178,16 @@
       },
       "delete": {
         "tags": [
-          "tool"
+          "Tool",
+          "ToolVersion"
         ],
         "summary": "Deletes a tool and all its versions",
         "operationId": "deleteTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2146,7 +2230,7 @@
     "/tool/{packageName}/versions": {
       "get": {
         "tags": [
-          "tool"
+          "ToolVersion"
         ],
         "summary": "Fetches all versions of a tool",
         "operationId": "getToolVersions",
@@ -2192,10 +2276,15 @@
     "/tool/{packageName}/owner": {
       "put": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Changes a tool's owner",
         "operationId": "changeToolOwner",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2252,10 +2341,15 @@
     "/tool/{packageName}/version/{version}": {
       "post": {
         "tags": [
-          "tool/version"
+          "ToolVersion"
         ],
         "summary": "Creates a tool version",
         "operationId": "createToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2320,7 +2414,7 @@
       },
       "get": {
         "tags": [
-          "tool/version"
+          "ToolVersion"
         ],
         "summary": "Fetches a tool version",
         "operationId": "getToolVersion",
@@ -2374,10 +2468,15 @@
       },
       "put": {
         "tags": [
-          "tool/version"
+          "ToolVersion"
         ],
         "summary": "Edits a tool version",
         "operationId": "editToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2444,7 +2543,7 @@
     "/policies": {
       "get": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Lists all policies",
         "operationId": "listAllPolicies",
@@ -2475,10 +2574,16 @@
     "/policy/{packageName}": {
       "post": {
         "tags": [
-          "policy"
+          "Policy",
+          "PolicyVersion"
         ],
         "summary": "Creates a new policy",
         "operationId": "createPolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2533,7 +2638,7 @@
       },
       "get": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Fetches a policy",
         "operationId": "getPolicy",
@@ -2577,10 +2682,15 @@
       },
       "put": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Edits a policy",
         "operationId": "editPolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2635,10 +2745,16 @@
       },
       "delete": {
         "tags": [
-          "policy"
+          "Policy",
+          "PolicyVersion"
         ],
         "summary": "Deletes a policy and all its versions",
         "operationId": "deletePolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2681,10 +2797,15 @@
     "/policy/{packageName}/version/{version}": {
       "post": {
         "tags": [
-          "policy/version"
+          "PolicyVersion"
         ],
         "summary": "Creates a new policy version",
         "operationId": "createPolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2749,7 +2870,7 @@
       },
       "get": {
         "tags": [
-          "policy/version"
+          "PolicyVersion"
         ],
         "summary": "Fetches a policy version",
         "operationId": "getPolicyVersion",
@@ -2803,10 +2924,15 @@
       },
       "put": {
         "tags": [
-          "policy/version"
+          "PolicyVersion"
         ],
         "summary": "Edits a policy version",
         "operationId": "editPolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2873,7 +2999,7 @@
     "/policy/{packageName}/versions": {
       "get": {
         "tags": [
-          "policy"
+          "PolicyVersion"
         ],
         "summary": "Fetches all versions of a policy",
         "operationId": "getPolicyVersions",
@@ -2919,10 +3045,15 @@
     "/policy/{packageName}/owner": {
       "put": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Changes a policy's owner",
         "operationId": "changePolicyOwner",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
