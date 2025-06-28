@@ -1,6 +1,7 @@
 import { Policy, PolicyVersion } from '../../mongo/policy';
 import { requirePolicy, withPolicy } from './requirePolicy';
 import { requirePolicyVersion, withPolicyVersion } from './requirePolicyVersion';
+import { requireUserIsAuthor } from '../package/requireUserIsAuthor';
 import { requirePackage, withValidPackage } from '../package/requirePackage';
 import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 
@@ -105,6 +106,7 @@ export function registerRoutes(app: Express) {
     '/policy/:packageName',
     requireVincentAuth(),
     requirePolicy(),
+    requireUserIsAuthor('policy'),
     withVincentAuth(
       withPolicy(async (req, res) => {
         Object.assign(req.vincentPolicy, req.body);
@@ -121,6 +123,7 @@ export function registerRoutes(app: Express) {
     '/policy/:packageName/owner',
     requireVincentAuth(),
     requirePolicy(),
+    requireUserIsAuthor('policy'),
     withVincentAuth(
       withPolicy(async (req, res) => {
         req.vincentPolicy.authorWalletAddress = req.vincentUser.address;
@@ -137,6 +140,7 @@ export function registerRoutes(app: Express) {
     '/policy/:packageName/version/:version',
     requireVincentAuth(),
     requirePolicy(),
+    requireUserIsAuthor('policy'),
     requirePackage(),
     withVincentAuth(
       withPolicy(
@@ -218,6 +222,7 @@ export function registerRoutes(app: Express) {
     '/policy/:packageName/version/:version',
     requireVincentAuth(),
     requirePolicy(),
+    requireUserIsAuthor('policy'),
     requirePolicyVersion(),
     withVincentAuth(
       withPolicyVersion(async (req, res) => {
@@ -236,6 +241,8 @@ export function registerRoutes(app: Express) {
   app.delete(
     '/policy/:packageName',
     requireVincentAuth(),
+    requirePolicy(),
+    requireUserIsAuthor('policy'),
     withVincentAuth(async (req, res) => {
       await withSession(async (mongoSession) => {
         const { packageName } = req.params;

@@ -1,6 +1,7 @@
 import { Tool, ToolVersion } from '../../mongo/tool';
 import { requireTool, withTool } from './requireTool';
 import { requireToolVersion, withToolVersion } from './requireToolVersion';
+import { requireUserIsAuthor } from '../package/requireUserIsAuthor';
 import { requirePackage, withValidPackage } from '../package/requirePackage';
 import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 
@@ -105,6 +106,7 @@ export function registerRoutes(app: Express) {
     '/tool/:packageName',
     requireVincentAuth(),
     requireTool(),
+    requireUserIsAuthor('tool'),
     withVincentAuth(
       withTool(async (req, res) => {
         Object.assign(req.vincentTool, req.body);
@@ -121,6 +123,7 @@ export function registerRoutes(app: Express) {
     '/tool/:packageName/owner',
     requireVincentAuth(),
     requireTool(),
+    requireUserIsAuthor('tool'),
     withVincentAuth(
       withTool(async (req, res) => {
         req.vincentTool.authorWalletAddress = req.vincentUser.address;
@@ -137,6 +140,7 @@ export function registerRoutes(app: Express) {
     '/tool/:packageName/version/:version',
     requireVincentAuth(),
     requireTool(),
+    requireUserIsAuthor('tool'),
     requirePackage(),
     withVincentAuth(
       withTool(
@@ -219,6 +223,7 @@ export function registerRoutes(app: Express) {
     '/tool/:packageName/version/:version',
     requireVincentAuth(),
     requireTool(),
+    requireUserIsAuthor('tool'),
     requireToolVersion(),
     withVincentAuth(
       withToolVersion(async (req, res) => {
@@ -237,6 +242,8 @@ export function registerRoutes(app: Express) {
   app.delete(
     '/tool/:packageName',
     requireVincentAuth(),
+    requireTool(),
+    requireUserIsAuthor('tool'),
     withVincentAuth(async (req, res) => {
       await withSession(async (mongoSession) => {
         const { packageName } = req.params;

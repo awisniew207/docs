@@ -4,6 +4,7 @@ import type { Express } from 'express';
 import { requireApp, withApp } from './requireApp';
 import { requireAppVersion, withAppVersion } from './requireAppVersion';
 import { requireAppTool, withAppTool } from './requireAppTool';
+import { requireUserManagesApp } from './requireUserManagesApp';
 import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
@@ -123,6 +124,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     withVincentAuth(
       withApp(async (req, res) => {
         Object.assign(req.vincentApp, req.body);
@@ -139,6 +141,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/owner',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     withVincentAuth(
       withApp(async (req, res) => {
         const updatedApp = await req.vincentApp
@@ -156,6 +159,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     withVincentAuth(
       withApp(async (req, res) => {
         const { appId } = req.params;
@@ -219,6 +223,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version/:version',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     requireAppVersion(),
     withVincentAuth(
       withAppVersion(async (req, res) => {
@@ -238,6 +243,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version/:version/disable',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     requireAppVersion(),
     withVincentAuth(
       withAppVersion(async (req, res) => {
@@ -257,6 +263,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version/:version/enable',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     requireAppVersion(),
     withVincentAuth(
       withAppVersion(async (req, res) => {
@@ -295,6 +302,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version/:version/tool/:toolPackageName',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     requireAppVersion(),
     withVincentAuth(
       withAppVersion(async (req, res) => {
@@ -344,6 +352,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version/:version/tool/:toolPackageName',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     requireAppVersion(),
     requireAppTool(),
     withVincentAuth(
@@ -365,6 +374,7 @@ export function registerRoutes(app: Express) {
     '/app/:appId/version/:version/tool/:toolPackageName',
     requireVincentAuth(),
     requireApp(),
+    requireUserManagesApp(),
     requireAppVersion(),
     requireAppTool(),
     withVincentAuth(
@@ -388,6 +398,8 @@ export function registerRoutes(app: Express) {
   app.delete(
     '/app/:appId',
     requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
     withVincentAuth(async (req, res) => {
       await withSession(async (mongoSession) => {
         const { appId } = req.params;

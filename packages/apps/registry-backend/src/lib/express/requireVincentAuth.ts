@@ -53,7 +53,7 @@ export const requireVincentAuth = () => {
       }
 
       // Split the payload into message and signature
-      const [message, signature] = payload.split(':');
+      const { message, signature } = JSON.parse(payload);
 
       if (!message || !signature) {
         res.status(401).json({
