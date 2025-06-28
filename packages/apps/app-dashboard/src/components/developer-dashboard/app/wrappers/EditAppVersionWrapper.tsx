@@ -49,6 +49,8 @@ export function EditAppVersionWrapper() {
     }
   }, [isSuccess, data, refetchVersions, refetchVersionData, navigate, app, versionData]);
 
+  useAddressCheck(app);
+
   // Loading states
   if (appsLoading || versionsLoading || versionLoading) return <Loading />;
 
@@ -59,8 +61,6 @@ export function EditAppVersionWrapper() {
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
-
-  useAddressCheck(app);
 
   // Mutation states
   if (isLoading) {

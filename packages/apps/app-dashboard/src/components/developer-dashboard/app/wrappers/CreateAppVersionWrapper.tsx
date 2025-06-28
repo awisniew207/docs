@@ -41,6 +41,8 @@ export function CreateAppVersionWrapper() {
     }
   }, [isSuccess, data, refetchVersions, navigate, app]);
 
+  useAddressCheck(app);
+
   // Loading states
   if (appsLoading || versionsLoading) return <Loading />;
 
@@ -48,8 +50,6 @@ export function CreateAppVersionWrapper() {
   if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
-
-  useAddressCheck(app);
 
   // Mutation states
   if (isLoading) {

@@ -83,6 +83,8 @@ export function AppVersionDetailWrapper() {
   // Navigation
   const navigate = useNavigate();
 
+  useAddressCheck(app);
+
   // Loading states first
   if (appsLoading || versionsLoading || versionLoading || versionToolsLoading) return <Loading />;
 
@@ -95,8 +97,6 @@ export function AppVersionDetailWrapper() {
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
-
-  useAddressCheck(app);
 
   const onEnableVersion = () => {
     enableAppVersion({

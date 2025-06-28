@@ -9,7 +9,7 @@ import { App } from '@/types/developer-dashboard/appTypes';
  * Use this on any page that uses a mutation API call.
  * @param app - The app to check the address of.
  */
-export function useAddressCheck(app: App) {
+export function useAddressCheck(app: App | null) {
   const navigate = useNavigate();
   const { address } = useAccount();
 

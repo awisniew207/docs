@@ -39,14 +39,14 @@ export function DeleteAppWrapper() {
     }
   }, [isSuccess, data, refetchApps, navigate]);
 
+  useAddressCheck(app);
+
   // Loading states
   if (appsLoading) return <Loading />;
 
   // Error states
   if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
-
-  useAddressCheck(app);
 
   // Mutation states
   if (isLoading) {

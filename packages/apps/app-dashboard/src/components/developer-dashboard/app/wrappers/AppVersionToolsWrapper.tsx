@@ -63,6 +63,8 @@ export function AppVersionToolsWrapper() {
     return () => clearTimeout(timer);
   }, [isSuccess, data, refetchVersionTools]);
 
+  useAddressCheck(app);
+
   // Loading states
   if (appsLoading || versionLoading || versionToolsLoading || toolsLoading) return <Loading />;
 
@@ -75,8 +77,6 @@ export function AppVersionToolsWrapper() {
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
-
-  useAddressCheck(app);
 
   const existingToolNames = versionTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
 
