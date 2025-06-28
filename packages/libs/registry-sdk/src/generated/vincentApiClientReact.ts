@@ -1,6 +1,5 @@
 import { baseVincentRtkApiReact as api } from '../lib/internal/baseVincentRtkApiReact';
 export const addTagTypes = [
-  'AppList',
   'App',
   'AppVersion',
   'AppVersionTool',
@@ -17,11 +16,11 @@ const injectedRtkApi = api
     endpoints: (build) => ({
       listApps: build.query<ListAppsApiResponse, ListAppsApiArg>({
         query: () => ({ url: `/apps` }),
-        providesTags: ['AppList'],
+        providesTags: ['App'],
       }),
       createApp: build.mutation<CreateAppApiResponse, CreateAppApiArg>({
         query: (queryArg) => ({ url: `/app`, method: 'POST', body: queryArg.appCreate }),
-        invalidatesTags: ['App', 'AppList'],
+        invalidatesTags: ['App', 'AppVersion'],
       }),
       getApp: build.query<GetAppApiResponse, GetAppApiArg>({
         query: (queryArg) => ({ url: `/app/${encodeURIComponent(String(queryArg.appId))}` }),
@@ -40,13 +39,13 @@ const injectedRtkApi = api
           url: `/app/${encodeURIComponent(String(queryArg.appId))}`,
           method: 'DELETE',
         }),
-        invalidatesTags: ['App', 'AppList'],
+        invalidatesTags: ['App', 'AppVersion', 'AppVersionTool'],
       }),
       getAppVersions: build.query<GetAppVersionsApiResponse, GetAppVersionsApiArg>({
         query: (queryArg) => ({
           url: `/app/${encodeURIComponent(String(queryArg.appId))}/versions`,
         }),
-        providesTags: ['App'],
+        providesTags: ['AppVersion'],
       }),
       createAppVersion: build.mutation<CreateAppVersionApiResponse, CreateAppVersionApiArg>({
         query: (queryArg) => ({
@@ -119,7 +118,7 @@ const injectedRtkApi = api
           method: 'POST',
           body: queryArg.toolCreate,
         }),
-        invalidatesTags: ['Tool'],
+        invalidatesTags: ['Tool', 'ToolVersion'],
       }),
       getTool: build.query<GetToolApiResponse, GetToolApiArg>({
         query: (queryArg) => ({ url: `/tool/${encodeURIComponent(String(queryArg.packageName))}` }),
@@ -138,13 +137,13 @@ const injectedRtkApi = api
           url: `/tool/${encodeURIComponent(String(queryArg.packageName))}`,
           method: 'DELETE',
         }),
-        invalidatesTags: ['Tool'],
+        invalidatesTags: ['Tool', 'ToolVersion'],
       }),
       getToolVersions: build.query<GetToolVersionsApiResponse, GetToolVersionsApiArg>({
         query: (queryArg) => ({
           url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/versions`,
         }),
-        providesTags: ['Tool'],
+        providesTags: ['ToolVersion'],
       }),
       changeToolOwner: build.mutation<ChangeToolOwnerApiResponse, ChangeToolOwnerApiArg>({
         query: (queryArg) => ({
@@ -186,7 +185,7 @@ const injectedRtkApi = api
           method: 'POST',
           body: queryArg.policyCreate,
         }),
-        invalidatesTags: ['Policy'],
+        invalidatesTags: ['Policy', 'PolicyVersion'],
       }),
       getPolicy: build.query<GetPolicyApiResponse, GetPolicyApiArg>({
         query: (queryArg) => ({
@@ -207,7 +206,7 @@ const injectedRtkApi = api
           url: `/policy/${encodeURIComponent(String(queryArg.packageName))}`,
           method: 'DELETE',
         }),
-        invalidatesTags: ['Policy'],
+        invalidatesTags: ['Policy', 'PolicyVersion'],
       }),
       createPolicyVersion: build.mutation<
         CreatePolicyVersionApiResponse,
@@ -238,7 +237,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/versions`,
         }),
-        providesTags: ['Policy'],
+        providesTags: ['PolicyVersion'],
       }),
       changePolicyOwner: build.mutation<ChangePolicyOwnerApiResponse, ChangePolicyOwnerApiArg>({
         query: (queryArg) => ({
@@ -500,8 +499,6 @@ export type App = {
   redirectUris?: string[];
   /** Identifies if an application is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
-  /** App manager's wallet address. Derived from the authorization signature provided by the creator. */
-  managerAddress: string;
 };
 export type AppRead = {
   /** Document ID */
@@ -550,8 +547,6 @@ export type AppCreate = {
   logo?: string;
   /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
   redirectUris?: string[];
-  /** App manager's wallet address. Derived from the authorization signature provided by the creator. */
-  managerAddress?: string;
   /** The name of the application */
   name: string;
   /** Description of the application */
@@ -666,8 +661,6 @@ export type Tool = {
   packageName: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
   title?: string;
-  /** Author wallet address. Derived from the authorization signature provided by the creator. */
-  authorWalletAddress: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Active version of the tool */
@@ -700,8 +693,6 @@ export type ToolCreate = {
   title?: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
-  /** Author wallet address. Derived from the authorization signature provided by the creator. */
-  authorWalletAddress: string;
 };
 export type ToolEdit = {
   /** Active version of the tool */
@@ -822,8 +813,6 @@ export type Policy = {
   createdAt: string;
   /** Policy NPM package name */
   packageName: string;
-  /** Author wallet address. Derived from the authorization signature provided by the creator. */
-  authorWalletAddress: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Active version of the policy; must be an exact semver */
@@ -858,8 +847,6 @@ export type PolicyCreate = {
   title: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
-  /** Author wallet address. Derived from the authorization signature provided by the creator. */
-  authorWalletAddress: string;
 };
 export type PolicyEdit = {
   /** Active version of the policy; must be an exact semver */

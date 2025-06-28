@@ -22,7 +22,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "Sign In With Ethereum authentication (SIWE). Format is \"SIWE: [Base64EncodedSignedSiwe]\""
+        "description": "Sign In With Ethereum authentication (SIWE). Format is \"SIWE [JSON({ message, signature })]\""
       }
     },
     "schemas": {
@@ -112,11 +112,6 @@
               "https://myapp.example.com",
               "https://myapp.example.com/subpage"
             ]
-          },
-          "managerAddress": {
-            "type": "string",
-            "description": "App manager's wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd"
           },
           "name": {
             "type": "string",
@@ -275,7 +270,8 @@
           "managerAddress": {
             "type": "string",
             "description": "App manager's wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd"
+            "example": "0x123456789012345678901234567890123456abcd",
+            "readOnly": true
           }
         },
         "required": [
@@ -483,17 +479,11 @@
             "type": "string",
             "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
-          },
-          "authorWalletAddress": {
-            "type": "string",
-            "description": "Author wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd"
           }
         },
         "required": [
           "activeVersion",
-          "description",
-          "authorWalletAddress"
+          "description"
         ],
         "additionalProperties": false
       },
@@ -549,7 +539,8 @@
           "authorWalletAddress": {
             "type": "string",
             "description": "Author wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd"
+            "example": "0x123456789012345678901234567890123456abcd",
+            "readOnly": true
           },
           "description": {
             "type": "string",
@@ -793,18 +784,12 @@
             "type": "string",
             "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "This policy is a foo bar policy"
-          },
-          "authorWalletAddress": {
-            "type": "string",
-            "description": "Author wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd"
           }
         },
         "required": [
           "activeVersion",
           "title",
-          "description",
-          "authorWalletAddress"
+          "description"
         ],
         "additionalProperties": false
       },
@@ -855,7 +840,8 @@
           "authorWalletAddress": {
             "type": "string",
             "description": "Author wallet address. Derived from the authorization signature provided by the creator.",
-            "example": "0x123456789012345678901234567890123456abcd"
+            "example": "0x123456789012345678901234567890123456abcd",
+            "readOnly": true
           },
           "description": {
             "type": "string",

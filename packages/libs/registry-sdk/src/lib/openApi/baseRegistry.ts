@@ -14,7 +14,7 @@ export const siweAuth = registry.registerComponent('securitySchemes', 'siweAuth'
   type: 'apiKey',
   in: 'header',
   name: 'Authorization',
-  description: `Sign In With Ethereum authentication (SIWE). Format is "SIWE [Base64EncodedSignedSiwe]"`,
+  description: `Sign In With Ethereum authentication (SIWE). Format is "SIWE [JSON({ message, signature })]"`,
 });
 
 // Export the registry
