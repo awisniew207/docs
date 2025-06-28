@@ -122,7 +122,6 @@ describe('Supported Policies Integration Tests', () => {
       // Verify supportedPolicies contains the policy
       expect(toolVersionData).toHaveProperty('supportedPolicies');
       expect(toolVersionData.supportedPolicies).toHaveProperty(policyPackageName);
-      // @ts-expect-error It's a test.
       expect(toolVersionData.supportedPolicies[policyPackageName]).toBe('1.0.0');
 
       // Verify policiesNotInRegistry is empty
@@ -209,7 +208,6 @@ describe('Supported Policies Integration Tests', () => {
       // Verify supportedPolicies contains the policy
       expect(toolVersionResultData).toHaveProperty('supportedPolicies');
       expect(toolVersionResultData.supportedPolicies).toHaveProperty(policyPackageName);
-      // @ts-expect-error It's a test.
       expect(toolVersionResultData.supportedPolicies[policyPackageName]).toBe('1.0.1');
 
       // Verify policiesNotInRegistry is empty

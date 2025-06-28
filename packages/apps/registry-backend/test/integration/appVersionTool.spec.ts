@@ -18,10 +18,6 @@ describe('AppVersionTool API Integration Tests', () => {
   let testAppId: number | undefined;
   let testToolPackageName1: string;
   let testToolPackageName2: string;
-  // @ts-expect-error It's a test
-  let testToolVersion1: string;
-  // @ts-expect-error It's a test
-  let testToolVersion2: string;
   const firstAppVersion = 1; // Initial app version
   let secondAppVersion: number;
 
@@ -68,7 +64,6 @@ describe('AppVersionTool API Integration Tests', () => {
     it('should create the first tool', async () => {
       // Generate a unique package name for testing
       testToolPackageName1 = `@lit-protocol/vincent-tool-erc20-approval`;
-      testToolVersion1 = toolData1.activeVersion;
 
       const result = await store.dispatch(
         api.endpoints.createTool.initiate({
@@ -92,7 +87,6 @@ describe('AppVersionTool API Integration Tests', () => {
     it('should create the second tool', async () => {
       // Generate a unique package name for testing
       testToolPackageName2 = `@lit-protocol/vincent-tool-uniswap-swap`;
-      testToolVersion2 = toolData2.activeVersion;
 
       const result = await store.dispatch(
         api.endpoints.createTool.initiate({
