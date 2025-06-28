@@ -1,11 +1,13 @@
 import { api, store } from './setup';
 import { expectAssertArray, expectAssertObject } from '../assertions';
-import { logIfVerbose } from '../log';
+import { createTestDebugger } from '../debug';
 
-const VERBOSE_LOGGING = true;
+// Create a debug instance for this file
+const debug = createTestDebugger('app');
 
+// For backwards compatibility
 const verboseLog = (value: any) => {
-  logIfVerbose(value, VERBOSE_LOGGING);
+  debug(value);
 };
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
