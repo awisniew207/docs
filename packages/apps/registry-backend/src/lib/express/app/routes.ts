@@ -136,24 +136,6 @@ export function registerRoutes(app: Express) {
     ),
   );
 
-  // Change App Owner
-  app.post(
-    '/app/:appId/owner',
-    requireVincentAuth(),
-    requireApp(),
-    requireUserManagesApp(),
-    withVincentAuth(
-      withApp(async (req, res) => {
-        const updatedApp = await req.vincentApp
-          .updateOne({ managerAddress: req.vincentUser.address }, { new: true })
-          .lean();
-
-        res.json(updatedApp);
-        return;
-      }),
-    ),
-  );
-
   // Create new App Version
   app.post(
     '/app/:appId/version',
