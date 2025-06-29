@@ -1,3 +1,20 @@
+## 1.3.0 (2025-06-29)
+
+### 🚀 Features
+
+- #### Support `deploymentStatus` for Tools and Policies ([e50ded25](https://github.com/LIT-Protocol/Vincent/commit/e50ded25))
+
+  - Implemented support for the `deploymentStatus` property for Tool and Policy.
+  - It defaults to `dev` for new entities.
+
+### 🧱 Updated Dependencies
+
+- Updated registry-sdk to 3.3.0
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 1.2.0 (2025-06-29)
 
 ### 🚀 Features
