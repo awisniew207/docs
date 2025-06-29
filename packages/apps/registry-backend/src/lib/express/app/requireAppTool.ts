@@ -47,7 +47,6 @@ export const requireAppTool = (toolPackageNameParam = 'toolPackageName') => {
         appId: reqWithAppVersion.vincentApp.appId,
         appVersion: reqWithAppVersion.vincentAppVersion.version,
         toolPackageName,
-        isDeleted: { $ne: true },
       });
 
       if (!appTool) {

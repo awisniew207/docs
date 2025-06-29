@@ -271,7 +271,6 @@ export function registerRoutes(app: Express) {
       const tools = await AppTool.find({
         appId: Number(appId),
         appVersion: Number(version),
-        isDeleted: { $ne: true },
       }).lean();
 
       res.json(tools);
