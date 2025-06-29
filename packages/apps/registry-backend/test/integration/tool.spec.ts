@@ -108,6 +108,7 @@ describe('Tool API Integration Tests', () => {
     it('should update a tool', async () => {
       const updateData = {
         description: 'Updated test tool description!',
+        deploymentStatus: 'test' as const,
       };
 
       const result = await store.dispatch(
@@ -132,6 +133,7 @@ describe('Tool API Integration Tests', () => {
       expectAssertObject(data);
 
       expect(data).toHaveProperty('description', updateData.description);
+      expect(data).toHaveProperty('deploymentStatus', updateData.deploymentStatus);
     });
   });
 

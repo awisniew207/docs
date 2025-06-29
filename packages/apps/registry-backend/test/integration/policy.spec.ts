@@ -119,6 +119,7 @@ describe('Policy API Integration Tests', () => {
     it('should update a policy', async () => {
       const updateData = {
         description: 'Updated test policy description!',
+        deploymentStatus: 'test' as const,
       };
 
       const result = await store.dispatch(
@@ -143,6 +144,7 @@ describe('Policy API Integration Tests', () => {
       expectAssertObject(data);
 
       expect(data).toHaveProperty('description', updateData.description);
+      expect(data).toHaveProperty('deploymentStatus', updateData.deploymentStatus);
     });
   });
 

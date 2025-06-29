@@ -53,6 +53,7 @@ export function registerRoutes(app: Express) {
             authorWalletAddress: req.vincentUser.address,
             description,
             activeVersion,
+            deploymentStatus: req.body.deploymentStatus || 'dev',
           });
 
           // Create initial policy version

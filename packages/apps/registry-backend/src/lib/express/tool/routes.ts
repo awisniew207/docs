@@ -74,6 +74,7 @@ export function registerRoutes(app: Express) {
             authorWalletAddress: req.vincentUser.address, // Now derived from authentication SIWE
             description,
             activeVersion: packageInfo.version,
+            deploymentStatus: req.body.deploymentStatus || 'dev',
           });
 
           let savedTool;
