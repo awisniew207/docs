@@ -41,6 +41,13 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['App', 'AppVersion', 'AppVersionTool'],
       }),
+      undeleteApp: build.mutation<UndeleteAppApiResponse, UndeleteAppApiArg>({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/undelete`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['App', 'AppVersion', 'AppVersionTool'],
+      }),
       getAppVersions: build.query<GetAppVersionsApiResponse, GetAppVersionsApiArg>({
         query: (queryArg) => ({
           url: `/app/${encodeURIComponent(String(queryArg.appId))}/versions`,
@@ -125,6 +132,23 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['AppVersionTool'],
       }),
+      undeleteAppVersion: build.mutation<UndeleteAppVersionApiResponse, UndeleteAppVersionApiArg>({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.version))}/undelete`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['AppVersion'],
+      }),
+      undeleteAppVersionTool: build.mutation<
+        UndeleteAppVersionToolApiResponse,
+        UndeleteAppVersionToolApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/version/${encodeURIComponent(String(queryArg.appVersion))}/tool/${encodeURIComponent(String(queryArg.toolPackageName))}/undelete`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['AppVersionTool'],
+      }),
       listAllTools: build.query<ListAllToolsApiResponse, ListAllToolsApiArg>({
         query: () => ({ url: `/tools` }),
         providesTags: ['Tool'],
@@ -196,6 +220,23 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}`,
           method: 'DELETE',
+        }),
+        invalidatesTags: ['ToolVersion'],
+      }),
+      undeleteTool: build.mutation<UndeleteToolApiResponse, UndeleteToolApiArg>({
+        query: (queryArg) => ({
+          url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/undelete`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['Tool', 'ToolVersion'],
+      }),
+      undeleteToolVersion: build.mutation<
+        UndeleteToolVersionApiResponse,
+        UndeleteToolVersionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/tool/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}/undelete`,
+          method: 'POST',
         }),
         invalidatesTags: ['ToolVersion'],
       }),
@@ -281,6 +322,23 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['Policy'],
       }),
+      undeletePolicy: build.mutation<UndeletePolicyApiResponse, UndeletePolicyApiArg>({
+        query: (queryArg) => ({
+          url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/undelete`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['Policy', 'PolicyVersion'],
+      }),
+      undeletePolicyVersion: build.mutation<
+        UndeletePolicyVersionApiResponse,
+        UndeletePolicyVersionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/policy/${encodeURIComponent(String(queryArg.packageName))}/version/${encodeURIComponent(String(queryArg.version))}/undelete`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['PolicyVersion'],
+      }),
     }),
     overrideExisting: false,
   });
@@ -307,6 +365,12 @@ export type EditAppApiArg = {
 export type DeleteAppApiResponse =
   /** status 200 OK - Resource successfully deleted */ DeleteResponse;
 export type DeleteAppApiArg = {
+  /** ID of the target application */
+  appId: number;
+};
+export type UndeleteAppApiResponse =
+  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+export type UndeleteAppApiArg = {
   /** ID of the target application */
   appId: number;
 };
@@ -402,6 +466,24 @@ export type DeleteAppVersionToolApiArg = {
   /** The NPM package name */
   toolPackageName: string;
 };
+export type UndeleteAppVersionApiResponse =
+  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+export type UndeleteAppVersionApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** Version # of the target application version */
+  version: number;
+};
+export type UndeleteAppVersionToolApiResponse =
+  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+export type UndeleteAppVersionToolApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** Version # of the target application version */
+  appVersion: number;
+  /** The NPM package name */
+  toolPackageName: string;
+};
 export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolListRead;
 export type ListAllToolsApiArg = void;
 export type CreateToolApiResponse = /** status 200 Successful operation */ ToolRead;
@@ -468,6 +550,19 @@ export type EditToolVersionApiArg = {
 export type DeleteToolVersionApiResponse =
   /** status 200 OK - Resource successfully deleted */ DeleteResponse;
 export type DeleteToolVersionApiArg = {
+  /** The NPM package name */
+  packageName: string;
+  /** NPM semver of the target tool version */
+  version: string;
+};
+export type UndeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type UndeleteToolApiArg = {
+  /** The NPM package name */
+  packageName: string;
+};
+export type UndeleteToolVersionApiResponse =
+  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+export type UndeleteToolVersionApiArg = {
   /** The NPM package name */
   packageName: string;
   /** NPM semver of the target tool version */
@@ -545,6 +640,19 @@ export type ChangePolicyOwnerApiArg = {
   packageName: string;
   /** Developer-defined updated policy details */
   changeOwner: ChangeOwner;
+};
+export type UndeletePolicyApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type UndeletePolicyApiArg = {
+  /** The NPM package name */
+  packageName: string;
+};
+export type UndeletePolicyVersionApiResponse =
+  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+export type UndeletePolicyVersionApiArg = {
+  /** The NPM package name */
+  packageName: string;
+  /** NPM semver of the target policy version */
+  version: string;
 };
 export type App = {
   /** Timestamp when this was last modified */

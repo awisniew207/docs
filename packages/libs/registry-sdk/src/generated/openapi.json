@@ -1364,6 +1364,62 @@
         }
       }
     },
+    "/app/{appId}/undelete": {
+      "post": {
+        "tags": [
+          "App",
+          "AppVersion",
+          "AppVersionTool"
+        ],
+        "summary": "Undeletes an application",
+        "operationId": "undeleteApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/app/{appId}/versions": {
       "get": {
         "tags": [
@@ -2099,6 +2155,150 @@
         }
       }
     },
+    "/app/{appId}/version/{version}/undelete": {
+      "post": {
+        "tags": [
+          "AppVersion"
+        ],
+        "summary": "Undeletes an application version",
+        "operationId": "undeleteAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application or version not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/version/{appVersion}/tool/{toolPackageName}/undelete": {
+      "post": {
+        "tags": [
+          "AppVersionTool"
+        ],
+        "summary": "Undeletes a tool for an application version",
+        "operationId": "undeleteAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "appVersion",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application, version, or tool not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tools": {
       "get": {
         "tags": [
@@ -2701,6 +2901,125 @@
         "responses": {
           "200": {
             "description": "OK - Resource successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Tool or version not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/{packageName}/undelete": {
+      "post": {
+        "tags": [
+          "Tool",
+          "ToolVersion"
+        ],
+        "summary": "Undeletes a tool and all its versions",
+        "operationId": "undeleteTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/{packageName}/version/{version}/undelete": {
+      "post": {
+        "tags": [
+          "ToolVersion"
+        ],
+        "summary": "Undeletes a tool version",
+        "operationId": "undeleteToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
             "content": {
               "application/json": {
                 "schema": {
@@ -3346,6 +3665,125 @@
           },
           "400": {
             "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policy/{packageName}/undelete": {
+      "post": {
+        "tags": [
+          "Policy",
+          "PolicyVersion"
+        ],
+        "summary": "Undeletes a policy and all its versions",
+        "operationId": "undeletePolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Policy not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policy/{packageName}/version/{version}/undelete": {
+      "post": {
+        "tags": [
+          "PolicyVersion"
+        ],
+        "summary": "Undeletes a policy version",
+        "operationId": "undeletePolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Policy or version not found"
           },
           "422": {
             "description": "Validation exception"

@@ -418,6 +418,40 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
+  // POST /tool/{packageName}/undelete - Undelete a tool and all its versions
+  registry.registerPath({
+    method: 'post',
+    path: '/tool/{packageName}/undelete',
+    tags: ['Tool', 'ToolVersion'],
+    summary: 'Undeletes a tool and all its versions',
+    operationId: 'undeleteTool',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Tool not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
   // DELETE /tool/{packageName}/version/{version} - Delete a tool version
   registry.registerPath({
     method: 'delete',
@@ -435,6 +469,49 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     responses: {
       200: {
         description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Tool or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /tool/{packageName}/version/{version}/undelete - Undelete a tool version
+  registry.registerPath({
+    method: 'post',
+    path: '/tool/{packageName}/version/{version}/undelete',
+    tags: ['ToolVersion'],
+    summary: 'Undeletes a tool version',
+    operationId: 'undeleteToolVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: toolVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully undeleted',
         content: {
           'application/json': {
             schema: DeleteResponse,

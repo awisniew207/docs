@@ -417,6 +417,40 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
+  // POST /policy/{packageName}/undelete - Undelete a policy and all its versions
+  registry.registerPath({
+    method: 'post',
+    path: '/policy/{packageName}/undelete',
+    tags: ['Policy', 'PolicyVersion'],
+    summary: 'Undeletes a policy and all its versions',
+    operationId: 'undeletePolicy',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Policy not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
   // DELETE /policy/{packageName}/version/{version} - Delete a policy version
   registry.registerPath({
     method: 'delete',
@@ -434,6 +468,49 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     responses: {
       200: {
         description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Policy or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /policy/{packageName}/version/{version}/undelete - Undelete a policy version
+  registry.registerPath({
+    method: 'post',
+    path: '/policy/{packageName}/version/{version}/undelete',
+    tags: ['PolicyVersion'],
+    summary: 'Undeletes a policy version',
+    operationId: 'undeletePolicyVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: policyVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully undeleted',
         content: {
           'application/json': {
             schema: DeleteResponse,
