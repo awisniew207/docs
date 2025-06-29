@@ -1,3 +1,15 @@
+## 3.2.0 (2025-06-29)
+
+### 🚀 Features
+
+- ### Define undelete routes for deletable entities ([6812fa02](https://github.com/LIT-Protocol/Vincent/commit/6812fa02))
+
+  - Added endpoint definitions to support undeletion of `App`, `AppVersion`, `AppVersionTool`, `Tool`, `ToolVersion, `Policy`, and `PolicyVersion`
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 3.1.0 (2025-06-28)
 
 ### 🚀 Features

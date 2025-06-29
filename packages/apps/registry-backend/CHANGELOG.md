@@ -1,3 +1,23 @@
+## 1.2.0 (2025-06-29)
+
+### 🚀 Features
+
+- ### Implement undelete routes for deletable entities ([f5ef06de](https://github.com/LIT-Protocol/Vincent/commit/f5ef06de))
+
+  - Added route handlers to support undeletion of `App`, `AppVersion`, `AppVersionTool`, `Tool`, `ToolVersion, `Policy`, and `PolicyVersion`
+
+### 🩹 Fixes
+
+- Return deleted appTools to the frontend ([d6a90c8f](https://github.com/LIT-Protocol/Vincent/commit/d6a90c8f))
+
+### 🧱 Updated Dependencies
+
+- Updated registry-sdk to 3.2.0
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 1.1.0 (2025-06-28)
 
 ### 🚀 Features
