@@ -479,6 +479,17 @@
             "type": "string",
             "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "default": "dev",
+            "description": "Identifies if a tool is in development, test, or production.",
+            "example": "dev"
           }
         },
         "required": [
@@ -504,6 +515,16 @@
             "type": "string",
             "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a tool is in development, test, or production.",
+            "example": "dev"
           }
         },
         "additionalProperties": false
@@ -551,6 +572,16 @@
             "type": "string",
             "description": "Active version of the tool",
             "example": "1.0.0"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a tool is in development, test, or production.",
+            "example": "dev"
           }
         },
         "required": [
@@ -784,6 +815,17 @@
             "type": "string",
             "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "This policy is a foo bar policy"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "default": "dev",
+            "description": "Identifies if a policy is in development, test, or production.",
+            "example": "dev"
           }
         },
         "required": [
@@ -810,6 +852,16 @@
             "type": "string",
             "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "This policy is a foo bar policy"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a policy is in development, test, or production.",
+            "example": "dev"
           }
         },
         "additionalProperties": false
@@ -857,6 +909,16 @@
             "type": "string",
             "description": "Policy title for displaying to users in the dashboard/Vincent Explorer UI",
             "example": "Vincent Spending Limit Policy"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a policy is in development, test, or production.",
+            "example": "dev"
           }
         },
         "required": [

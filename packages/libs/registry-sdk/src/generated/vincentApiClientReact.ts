@@ -841,6 +841,8 @@ export type Tool = {
   description: string;
   /** Active version of the tool */
   activeVersion: string;
+  /** Identifies if a tool is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type ToolRead = {
   /** Document ID */
@@ -859,6 +861,8 @@ export type ToolRead = {
   description: string;
   /** Active version of the tool */
   activeVersion: string;
+  /** Identifies if a tool is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type ToolList = Tool[];
 export type ToolListRead = ToolRead[];
@@ -869,6 +873,8 @@ export type ToolCreate = {
   title?: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Identifies if a tool is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type ToolEdit = {
   /** Active version of the tool */
@@ -877,6 +883,8 @@ export type ToolEdit = {
   title?: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description?: string;
+  /** Identifies if a tool is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type ToolVersion = {
   /** Timestamp when this was last modified */
@@ -995,6 +1003,8 @@ export type Policy = {
   activeVersion: string;
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
   title: string;
+  /** Identifies if a policy is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type PolicyRead = {
   /** Document ID */
@@ -1013,6 +1023,8 @@ export type PolicyRead = {
   activeVersion: string;
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
   title: string;
+  /** Identifies if a policy is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type PolicyList = Policy[];
 export type PolicyListRead = PolicyRead[];
@@ -1023,6 +1035,8 @@ export type PolicyCreate = {
   title: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Identifies if a policy is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type PolicyEdit = {
   /** Active version of the policy; must be an exact semver */
@@ -1031,6 +1045,8 @@ export type PolicyEdit = {
   title?: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description?: string;
+  /** Identifies if a policy is in development, test, or production. */
+  deploymentStatus?: 'dev' | 'test' | 'prod';
 };
 export type PolicyVersion = {
   /** Timestamp when this was last modified */
