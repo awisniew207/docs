@@ -376,6 +376,27 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Undelete App Version Tool
+  app.post(
+    '/app/:appId/version/:version/tool/:toolPackageName/undelete',
+    requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
+    requireAppVersion(),
+    requireAppTool(),
+    withVincentAuth(
+      withAppTool(async (req, res) => {
+        const { vincentAppTool } = req;
+
+        Object.assign(vincentAppTool, { isDeleted: false });
+        await vincentAppTool.save();
+
+        res.json({ message: 'App version tool undeleted successfully' });
+        return;
+      }),
+    ),
+  );
+
   // Delete an app version, along with all of its tools
   app.delete(
     '/app/:appId/version/:version',
@@ -417,6 +438,36 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Undelete an app version, along with all of its tools
+  app.post(
+    '/app/:appId/version/:version/undelete',
+    requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
+    requireAppVersion(),
+    withVincentAuth(
+      withAppVersion(async (req, res) => {
+        await withSession(async (mongoSession) => {
+          const { appId, version } = req.params;
+
+          await mongoSession.withTransaction(async (session) => {
+            await AppVersion.updateOne(
+              { appId: Number(appId), version: Number(version) },
+              { isDeleted: false },
+            ).session(session);
+            await AppTool.updateMany(
+              { appId: Number(appId), appVersion: Number(version) },
+              { isDeleted: false },
+            ).session(session);
+          });
+
+          res.json({ message: 'App version and associated tools undeleted successfully' });
+          return;
+        });
+      }),
+    ),
+  );
+
   // Delete an app, along with all of its appVersions and their tools.
   app.delete(
     '/app/:appId',
@@ -440,6 +491,28 @@ export function registerRoutes(app: Express) {
         });
 
         res.json({ message: 'App and associated data deleted successfully' });
+        return;
+      });
+    }),
+  );
+
+  // Undelete an app, along with all of its appVersions and their tools.
+  app.post(
+    '/app/:appId/undelete',
+    requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
+    withVincentAuth(async (req, res) => {
+      await withSession(async (mongoSession) => {
+        const { appId } = req.params;
+
+        await mongoSession.withTransaction(async (session) => {
+          await App.updateMany({ appId }, { isDeleted: false }).session(session);
+          await AppVersion.updateMany({ appId }, { isDeleted: false }).session(session);
+          await AppTool.updateMany({ appId }, { isDeleted: false }).session(session);
+        });
+
+        res.json({ message: 'App and associated data undeleted successfully' });
         return;
       });
     }),

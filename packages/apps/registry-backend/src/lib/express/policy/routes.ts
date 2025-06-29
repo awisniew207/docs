@@ -263,6 +263,25 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Undelete a policy version
+  app.post(
+    '/policy/:packageName/version/:version/undelete',
+    requireVincentAuth(),
+    requirePolicy(),
+    requireUserIsAuthor('policy'),
+    requirePolicyVersion(),
+    withVincentAuth(
+      withPolicyVersion(async (req, res) => {
+        const { packageName, version } = req.params;
+
+        await PolicyVersion.updateOne({ packageName, version }, { isDeleted: false });
+
+        res.json({ message: 'Policy version undeleted successfully' });
+        return;
+      }),
+    ),
+  );
+
   // Delete a policy, along with all of its policy versions
   app.delete(
     '/policy/:packageName',
@@ -283,6 +302,26 @@ export function registerRoutes(app: Express) {
           }
         });
         res.json({ message: 'Policy and associated versions deleted successfully' });
+        return;
+      });
+    }),
+  );
+
+  // Undelete a policy, along with all of its policy versions
+  app.post(
+    '/policy/:packageName/undelete',
+    requireVincentAuth(),
+    requirePolicy(),
+    requireUserIsAuthor('policy'),
+    withVincentAuth(async (req, res) => {
+      await withSession(async (mongoSession) => {
+        const { packageName } = req.params;
+
+        await mongoSession.withTransaction(async (session) => {
+          await Policy.updateMany({ packageName }, { isDeleted: false }).session(session);
+          await PolicyVersion.updateMany({ packageName }, { isDeleted: false }).session(session);
+        });
+        res.json({ message: 'Policy and associated versions undeleted successfully' });
         return;
       });
     }),

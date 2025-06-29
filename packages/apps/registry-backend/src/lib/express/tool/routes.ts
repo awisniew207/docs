@@ -262,6 +262,26 @@ export function registerRoutes(app: Express) {
     ),
   );
 
+  // Undelete a tool version
+  app.post(
+    '/tool/:packageName/version/:version/undelete',
+    requireVincentAuth(),
+    requireTool(),
+    requireUserIsAuthor('tool'),
+    requireToolVersion(),
+    withVincentAuth(
+      withToolVersion(async (req, res) => {
+        const { vincentToolVersion } = req;
+
+        Object.assign(vincentToolVersion, { isDeleted: false });
+        await vincentToolVersion.save();
+
+        res.json({ message: 'Tool version undeleted successfully' });
+        return;
+      }),
+    ),
+  );
+
   // Delete a tool, along with all of its tool versions
   app.delete(
     '/tool/:packageName',
@@ -283,6 +303,27 @@ export function registerRoutes(app: Express) {
         });
 
         res.json({ message: 'Tool and associated versions deleted successfully' });
+        return;
+      });
+    }),
+  );
+
+  // Undelete a tool, along with all of its tool versions
+  app.post(
+    '/tool/:packageName/undelete',
+    requireVincentAuth(),
+    requireTool(),
+    requireUserIsAuthor('tool'),
+    withVincentAuth(async (req, res) => {
+      await withSession(async (mongoSession) => {
+        const { packageName } = req.params;
+
+        await mongoSession.withTransaction(async (session) => {
+          await Tool.updateMany({ packageName }, { isDeleted: false }).session(session);
+          await ToolVersion.updateMany({ packageName }, { isDeleted: false }).session(session);
+        });
+
+        res.json({ message: 'Tool and associated versions undeleted successfully' });
         return;
       });
     }),
