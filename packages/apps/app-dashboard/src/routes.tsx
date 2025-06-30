@@ -27,6 +27,18 @@ import {
   EditToolVersionWrapper,
   DeleteToolWrapper,
 } from './components/developer-dashboard/tool/wrappers';
+import { PoliciesPage } from './pages/developer-dashboard/policy';
+import {
+  PolicyOverviewWrapper,
+  CreatePolicyWrapper,
+  EditPolicyWrapper,
+  CreatePolicyVersionWrapper,
+  ChangePolicyOwnerWrapper,
+  PolicyVersionsWrapper,
+  PolicyVersionDetailsWrapper,
+  EditPolicyVersionWrapper,
+  DeletePolicyWrapper,
+} from './components/developer-dashboard/policy/wrappers';
 
 import Home from './pages/index';
 import Withdraw from './pages/withdraw';
@@ -139,6 +151,46 @@ const routes: RouteObject[] = [
           {
             path: 'toolId/:packageName/delete-tool',
             element: <DeleteToolWrapper />,
+          },
+          {
+            path: 'policies',
+            element: <PoliciesPage />,
+          },
+          {
+            path: 'create-policy',
+            element: <CreatePolicyWrapper />,
+          },
+          {
+            path: 'policyId/:packageName',
+            element: <PolicyOverviewWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/edit-policy',
+            element: <EditPolicyWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/create-policy-version',
+            element: <CreatePolicyVersionWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/change-policy-owner',
+            element: <ChangePolicyOwnerWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/versions',
+            element: <PolicyVersionsWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/version/:version',
+            element: <PolicyVersionDetailsWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/version/:version/edit-version',
+            element: <EditPolicyVersionWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/delete-policy',
+            element: <DeletePolicyWrapper />,
           },
         ],
       },

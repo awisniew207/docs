@@ -271,6 +271,10 @@ export function useVincentApiWithSIWE() {
       'POST',
     ),
     useEditPolicyMutation: createMutationWrapper(vincentApiClient.useEditPolicyMutation, 'PUT'),
+    useDeletePolicyMutation: createMutationWrapper(
+      vincentApiClient.useDeletePolicyMutation,
+      'DELETE',
+    ),
     useCreatePolicyVersionMutation: createMutationWrapper(
       vincentApiClient.useCreatePolicyVersionMutation,
       'POST',

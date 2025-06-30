@@ -1,28 +1,18 @@
-import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
+import { Policy, PolicyVersion } from '@/types/developer-dashboard/appTypes';
 import { Badge } from '@/components/ui/badge';
-import {
-  Calendar,
-  GitCommit,
-  User,
-  Globe,
-  Package,
-  ExternalLink,
-  Edit,
-  Layers,
-  Code,
-} from 'lucide-react';
+import { Calendar, GitCommit, User, Globe, Package, ExternalLink, Edit, Code } from 'lucide-react';
 
-interface ToolVersionDetailsViewProps {
-  tool: Tool;
-  version: ToolVersion;
+interface PolicyVersionDetailsViewProps {
+  policy: Policy;
+  version: PolicyVersion;
   onOpenMutation: (mutationType: string) => void;
 }
 
-export function ToolVersionDetailsView({
-  tool,
+export function PolicyVersionDetailsView({
+  policy,
   version,
   onOpenMutation,
-}: ToolVersionDetailsViewProps) {
+}: PolicyVersionDetailsViewProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -44,7 +34,7 @@ export function ToolVersionDetailsView({
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl font-bold text-gray-900">Version {version.version}</h1>
-            {version.version === tool.activeVersion && (
+            {version.version === policy.activeVersion && (
               <Badge className="bg-green-100 text-green-800 border-green-200">Active Version</Badge>
             )}
           </div>
@@ -211,25 +201,6 @@ export function ToolVersionDetailsView({
           </div>
         )}
       </div>
-
-      {version.supportedPolicies && Object.keys(version.supportedPolicies).length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Layers className="h-5 w-5" />
-            Supported Policies
-          </h2>
-          <div className="space-y-2">
-            {Object.entries(version.supportedPolicies).map(([key, value]) => (
-              <div
-                key={key}
-                className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded border"
-              >
-                {key}: {value}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {version.dependencies && version.dependencies.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">
