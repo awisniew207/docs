@@ -4,17 +4,14 @@ import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApi
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import {
-  CreateToolVersionForm,
-  type CreateToolVersionFormData,
-} from '../forms/CreateToolVersionForm';
+import { EditToolVersionForm, type EditToolVersionFormData } from '../forms/EditToolVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 
-export function CreateToolVersionWrapper() {
-  const { packageName } = useParams<{ packageName: string }>();
+export function EditToolVersionWrapper() {
+  const { packageName, version } = useParams<{ packageName: string; version: string }>();
   const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
@@ -26,57 +23,65 @@ export function CreateToolVersionWrapper() {
     refetch: refetchVersions,
     isLoading: versionsLoading,
     isError: versionsError,
-  } = vincentApiClient.useGetToolVersionsQuery({ packageName: packageName || '' });
+  } = vincentApiClient.useGetToolVersionsQuery({ packageName: packageName! });
+
+  const {
+    data: versionData,
+    isLoading: versionLoading,
+    isError: versionError,
+    refetch: refetchVersionData,
+  } = vincentApiClient.useGetToolVersionQuery({ packageName: packageName!, version: version! });
 
   // Mutation
-  const [createToolVersion, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreateToolVersionMutation();
+  const [editToolVersion, { isLoading, isSuccess, isError, data, error }] =
+    vincentApi.useEditToolVersionMutation();
 
   // Navigation
   const navigate = useNavigate();
 
   // Effect
   useEffect(() => {
-    if (isSuccess && data && tool) {
+    if (isSuccess && data && tool && versionData) {
       refetchVersions();
+      refetchVersionData();
       navigateWithDelay(
         navigate,
-        `/developer/toolId/${encodeURIComponent(tool.packageName)}/version/${data.version}`,
+        `/developer/toolId/${encodeURIComponent(tool.packageName)}/version/${versionData.version}`,
       );
     }
-  }, [isSuccess, data, refetchVersions, navigate, tool]);
+  }, [isSuccess, data, refetchVersions, refetchVersionData, navigate, tool, versionData]);
 
   useAddressCheck(tool);
 
   // Loading states
-  if (toolsLoading || versionsLoading) return <Loading />;
+  if (toolsLoading || versionsLoading || versionLoading) return <Loading />;
 
   // Error states
   if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load tool versions" type="error" />;
+  if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
+  if (!versionData) return <StatusMessage message={`Version ${version} not found`} type="error" />;
 
   // Mutation states
   if (isLoading) {
-    return <StatusMessage message="Creating tool version..." type="info" />;
+    return <StatusMessage message="Updating tool version..." type="info" />;
   }
 
   if (isSuccess && data) {
-    return <StatusMessage message="Tool version created successfully!" type="success" />;
+    return <StatusMessage message="Tool version updated successfully!" type="success" />;
   }
 
   if (isError && error) {
-    const errorMessage = getErrorMessage(error, 'Failed to create tool version');
+    const errorMessage = getErrorMessage(error, 'Failed to update tool version');
     return <StatusMessage message={errorMessage} type="error" />;
   }
 
-  const handleSubmit = async (data: CreateToolVersionFormData) => {
-    await createToolVersion({
+  const handleSubmit = async (data: EditToolVersionFormData) => {
+    await editToolVersion({
       packageName: tool.packageName,
-      version: data.version,
-      toolVersionCreate: {
-        changes: data.changes,
-      },
+      version: versionData.version,
+      toolVersionEdit: data,
     });
   };
 
@@ -85,14 +90,20 @@ export function CreateToolVersionWrapper() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Create New Version</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Edit {tool.packageName} - Version {versionData.version}
+          </h1>
           <p className="text-gray-600 mt-2">
-            Create a new version of your tool with updated features
+            Update the settings and configuration for this version
           </p>
         </div>
       </div>
 
-      <CreateToolVersionForm tool={tool} onSubmit={handleSubmit} isSubmitting={isLoading} />
+      <EditToolVersionForm
+        versionData={versionData}
+        onSubmit={handleSubmit}
+        isSubmitting={isLoading}
+      />
     </div>
   );
 }

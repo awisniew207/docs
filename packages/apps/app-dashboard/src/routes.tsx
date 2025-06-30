@@ -30,6 +30,9 @@ import { CreateToolWrapper } from './components/developer-dashboard/tool/wrapper
 import { EditToolWrapper } from './components/developer-dashboard/tool/wrappers/EditToolWrapper';
 import { CreateToolVersionWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolVersionWrapper';
 import { ChangeToolOwnerWrapper } from './components/developer-dashboard/tool/wrappers/ChangeToolOwnerWrapper';
+import { ToolVersionsWrapper } from './components/developer-dashboard/tool/wrappers/ToolVersionsWrapper';
+import { ToolVersionDetailsWrapper } from './components/developer-dashboard/tool/wrappers/ToolVersionDetailsWrapper';
+import { EditToolVersionWrapper } from './components/developer-dashboard/tool/wrappers/EditToolVersionWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -117,6 +120,18 @@ const routes: RouteObject[] = [
           {
             path: 'toolId/:packageName/change-tool-owner',
             element: <ChangeToolOwnerWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/versions',
+            element: <ToolVersionsWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/version/:version',
+            element: <ToolVersionDetailsWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/version/:version/edit-version',
+            element: <EditToolVersionWrapper />,
           },
         ],
       },

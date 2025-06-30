@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
+import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { ChangeToolOwnerForm, ChangeToolOwnerFormData } from '../forms/ChangeToolOwnerForm';
 import Loading from '@/components/layout/Loading';

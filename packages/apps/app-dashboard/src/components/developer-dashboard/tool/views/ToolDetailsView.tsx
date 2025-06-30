@@ -1,5 +1,6 @@
 import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
 import { Badge } from '@/components/ui/badge';
+import { Edit, Plus, ArrowLeftRight } from 'lucide-react';
 
 interface ToolOverviewProps {
   tool: Tool;
@@ -37,42 +38,21 @@ export default function ToolOverview({
               onClick={() => onOpenMutation('edit-tool')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <Edit className="h-4 w-4" />
               Edit Tool
             </button>
             <button
               onClick={() => onOpenMutation('create-tool-version')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+              <Plus className="h-4 w-4" />
               Create Tool Version
             </button>
             <button
               onClick={() => onOpenMutation('change-tool-owner')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-orange-200 rounded-lg text-sm font-medium text-orange-600 bg-white hover:bg-orange-50 transition-colors"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                />
-              </svg>
+              <ArrowLeftRight className="h-4 w-4" />
               Change Owner
             </button>
           </div>
