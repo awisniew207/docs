@@ -35,7 +35,7 @@ export function ToolOverviewWrapper() {
     return <StatusMessage message={`Tool version ${tool?.activeVersion} not found`} type="error" />;
 
   const handleOpenMutation = (mutationType: string) => {
-    navigate(`/developer/toolId/${packageName}/${mutationType}`);
+    navigate(`/developer/toolId/${encodeURIComponent(packageName!)}/${mutationType}`);
   };
 
   return (

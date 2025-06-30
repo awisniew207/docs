@@ -27,6 +27,8 @@ import ToolPolicies from './pages/appId/[appId]/tool-policies';
 import { AppDashboard } from '@/pages/developer-dashboard';
 import { ToolOverviewWrapper } from './components/developer-dashboard/tool/wrappers/ToolOverviewWrapper';
 import { CreateToolWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolWrapper';
+import { EditToolWrapper } from './components/developer-dashboard/tool/wrappers/EditToolWrapper';
+import { CreateToolVersionWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolVersionWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -102,6 +104,14 @@ const routes: RouteObject[] = [
           {
             path: 'toolId/:packageName',
             element: <ToolOverviewWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/edit-tool',
+            element: <EditToolWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/create-tool-version',
+            element: <CreateToolVersionWrapper />,
           },
         ],
       },

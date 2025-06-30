@@ -25,7 +25,7 @@ export function CreateToolWrapper() {
   useEffect(() => {
     if (isSuccess && data) {
       refetchTools();
-      navigateWithDelay(navigate, `/developer/toolId/${data.packageName}`);
+      navigateWithDelay(navigate, `/developer/toolId/${encodeURIComponent(data.packageName)}`); // Need to encodeURIComponent because packageName can contain special characters
     }
   }, [isSuccess, data, refetchTools, navigate]);
 
