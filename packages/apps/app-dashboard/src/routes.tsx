@@ -25,6 +25,7 @@ import Consent from './pages/appId/[appId]/consent';
 import Delegatee from './pages/appId/[appId]/delegatee';
 import ToolPolicies from './pages/appId/[appId]/tool-policies';
 import { AppDashboard } from '@/pages/developer-dashboard';
+import { ToolOverviewWrapper } from './components/developer-dashboard/tool/wrappers/ToolOverviewWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -92,6 +93,10 @@ const routes: RouteObject[] = [
           {
             path: 'tools',
             element: <ToolsPage />,
+          },
+          {
+            path: 'toolId/:packageName',
+            element: <ToolOverviewWrapper />,
           },
         ],
       },

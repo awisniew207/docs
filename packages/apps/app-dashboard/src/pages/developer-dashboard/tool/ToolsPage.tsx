@@ -8,7 +8,7 @@ export default function AppsPage() {
   return (
     <ToolsList
       onCreateClick={() => navigate('/developer/create-tool')}
-      onToolClick={(tool: Tool) => navigate(`/developer/toolId/${tool.title}`)}
+      onToolClick={(tool: Tool) => navigate(`/developer/toolId/${tool.packageName}`)}
     />
   );
 }
