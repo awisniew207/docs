@@ -1,0 +1,5 @@
+build:
+  docker:
+    web: Dockerfile
+run:
+  web: npx @lit-protocol/vincent-mcp-server http
