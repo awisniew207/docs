@@ -118,7 +118,7 @@ You can also check the [Vincent MCP package README](https://github.com/LIT-Proto
 
 When the LLM or Agent decides to execute a tool, it will send a request to the MCP server with the tool name and parameters. The MCP server will then execute the tool using the delegatee key material and return the result to the LLM.
 
-# MCP already implemented
+# MCP Server official implementation
 
 For an already working MCP Server that simply wraps your Vincent App you can check our [Vincent MCP package](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp/README.md)
 
@@ -143,6 +143,50 @@ To execute Vincent MCP Server:
 
 - You can fork Vincent repository and then customize the [Vincent MCP package](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp)
 - Check [Vincent MCP package README.md](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp/README.md) to see how to run each server just by using an `npx` command (no forking needed)
+
+# Platform Deployment
+
+Easiest way to deploy your Vincent App as an MCP Server is using [Heroku](https://www.heroku.com/) or [Render](https://render.com/). Both platforms allow you to easily deploy your application without having to worry about infrastructure management. They offer free tiers for small applications, so you can start experimenting with your Vincent MCP right away.
+
+## Initial Setup
+
+Before deploying, you'll need to create the following two files in the root of your new repository.
+
+1.  Create a `Dockerfile`. This file instructs the platform on how to build the environment. It sets up Node.js and copies the necessary configuration file, but skips `npm install` as we will be using `npx` to run the server directly.
+
+    ```dockerfile
+    # Dockerfile
+    FROM node:20-slim
+    WORKDIR /app
+    COPY vincent-app.example.json .
+    CMD ["npx", "@lit-protocol/vincent-mcp-server", "http"]
+    ```
+
+2.  Create the Vincent App JSON definition file. Fill it with the data of your Vincent: ID, version, name, description and tools data. Check the [Uniswap Swap example app json](https://github.com/LIT-Protocol/Vincent/blob/feature/main/packages/apps/mcp/vincent-app.example.json) for a complete Vincent App definition.
+
+3.  Add both files to git. Commit and push them to your repository to use as source for Heroku or Render.
+
+## Heroku
+
+1.  Create a new Heroku app and connect your repository.
+2.  Ensure your `heroku.yml` file is configured to use the `Dockerfile` for the web process:
+    ```yaml
+    build:
+      docker:
+        web: Dockerfile
+    run:
+      web: npx @lit-protocol/vincent-mcp-server http
+    ```
+3.  Add the required environment variables in the app's settings. Check the [Vincent MCP package README](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp/README.md) for details on what variables are required.
+4.  Deployment will trigger automatically on push to the connected branch.
+
+## Render
+
+1.  Create a new Web Service and connect your repository. If needed, adjust the root directory to match the location of your `Dockerfile`.
+2.  Set the environment to `Docker`. Render will automatically find and use the `Dockerfile`.
+3.  Set the start command to: `npx @lit-protocol/vincent-mcp-server http`
+4.  Add your required environment variables. Check the [Vincent MCP package README](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp/README.md) for details on what variables are required.
+5.  Confirm creation of the web service to deploy. Any update to the configured branch will propagate to the deployment.
 
 # Integration with messaging APIs or LLM clients remotely
 

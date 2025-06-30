@@ -95,7 +95,7 @@ Other optional environment variables include:
 - `SIWE_NONCE_CLEAN_INTERVAL`: Defines the interval (milliseconds) that the server will use to clean unused transports. Defaults to 1 hour
 - `SIWE_NONCE_TTL`: Defines the time (milliseconds) that a SIWE nonce will still be considered valid after it was created. Defaults to 5 minutes
 
-Consider that a SIWE message must have a valid nonce, so it will become unvalid after reaching the expiration time or the nonce has been discarded.
+Consider that a SIWE message must have a valid nonce, so it will become invalid after reaching the expiration time or the nonce has been discarded.
 
 You can set these environment variables in your shell before running the commands, or use a tool like `dotenvx`:
 
@@ -165,6 +165,32 @@ This configuration launches the Vincent MCP server in STDIO mode using the `tsx`
 - Run `pnpm dev:http` to start the server in HTTP mode.
 - The server will be available at `http://localhost:3000/mcp` (or the port you specified in the `.env` file)
 - Connect your LLM client to `http://localhost:3000/mcp` to connect to the server.
+
+# Platforms deployments
+
+The [Uniswap Swap Demo](./vincent-app.example.json) has a fully working deployment of this Vincent MCP server.
+
+## Heroku
+
+[Heroku deployment](https://dashboard.heroku.com/apps/uniswap-swap-mcp) is running under the https://mcp-demo.heyvincent.ai/ domain. So you can find the JWT collector website there and connect to the MCP using `POST /mcp`.
+
+### Updating
+
+Follow Heroku instructions to add project remote repository in your local git repository. Then, at its root, run:
+
+```bash
+git push heroku $(git subtree split --prefix packages/apps/mcp HEAD):main --force
+```
+
+To deploy the latest changes of current branch to Heroku. Those will be pulled from GitHub, so ensure your changes are pushed there first.
+
+## Render
+
+[Render](https://dashboard.render.com/web/srv-d1hadg2li9vc73bhu05g) is also hosting this MCP server, under domain https://uniswap-swap-mcp.onrender.com
+
+### Updating
+
+In this hosting the updates are triggered directly from GitHub. Any updates on the configured branch will automatically update the deployed server.
 
 # Integrations
 
