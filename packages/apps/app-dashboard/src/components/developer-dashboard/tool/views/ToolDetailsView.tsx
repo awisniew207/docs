@@ -1,6 +1,6 @@
 import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Plus, ArrowLeftRight } from 'lucide-react';
+import { Edit, Plus, ArrowLeftRight, Trash2 } from 'lucide-react';
 
 interface ToolOverviewProps {
   tool: Tool;
@@ -54,6 +54,13 @@ export default function ToolOverview({
             >
               <ArrowLeftRight className="h-4 w-4" />
               Change Owner
+            </button>
+            <button
+              onClick={() => onOpenMutation('delete-tool')}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Tool
             </button>
           </div>
         </div>
@@ -145,21 +152,22 @@ export default function ToolOverview({
         </div>
       )}
 
-      {activeVersionData?.supportedPolicies && activeVersionData.supportedPolicies.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Supported Policies</h2>
-          <div className="space-y-2">
-            {activeVersionData.supportedPolicies.map((policy: string) => (
-              <div
-                key={policy}
-                className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded"
-              >
-                {policy}
-              </div>
-            ))}
+      {activeVersionData?.supportedPolicies &&
+        Object.keys(activeVersionData.supportedPolicies).length > 0 && (
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Supported Policies</h2>
+            <div className="space-y-2">
+              {Object.entries(activeVersionData.supportedPolicies).map(([key, value]) => (
+                <div
+                  key={key}
+                  className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded"
+                >
+                  {key}: {value}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {activeVersionData?.dependencies && activeVersionData.dependencies.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">

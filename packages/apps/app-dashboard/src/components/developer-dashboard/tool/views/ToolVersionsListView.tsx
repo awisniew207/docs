@@ -135,21 +135,23 @@ export function ToolVersionsListView({
                   </div>
                 )}
 
-                {version.supportedPolicies && version.supportedPolicies.length > 0 && (
+                {version.supportedPolicies && Object.keys(version.supportedPolicies).length > 0 && (
                   <div>
                     <h4 className="text-xs font-medium text-gray-500 mb-2">Supported Policies</h4>
                     <div className="space-y-1">
-                      {version.supportedPolicies.slice(0, 3).map((policy) => (
-                        <div
-                          key={policy}
-                          className="text-xs text-gray-700 font-mono bg-gray-50 px-2 py-1 rounded"
-                        >
-                          {policy}
-                        </div>
-                      ))}
-                      {version.supportedPolicies.length > 3 && (
+                      {Object.entries(version.supportedPolicies)
+                        .slice(0, 3)
+                        .map(([key, value]) => (
+                          <div
+                            key={key}
+                            className="text-xs text-gray-700 font-mono bg-gray-50 px-2 py-1 rounded"
+                          >
+                            {key}: {value}
+                          </div>
+                        ))}
+                      {Object.keys(version.supportedPolicies).length > 3 && (
                         <div className="text-xs text-gray-500">
-                          +{version.supportedPolicies.length - 3} more policies
+                          +{Object.keys(version.supportedPolicies).length - 3} more policies
                         </div>
                       )}
                     </div>

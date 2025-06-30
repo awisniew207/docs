@@ -16,6 +16,17 @@ import {
   AppsPage,
 } from './pages/developer-dashboard/app';
 import { ToolsPage } from './pages/developer-dashboard/tool';
+import {
+  ToolOverviewWrapper,
+  CreateToolWrapper,
+  EditToolWrapper,
+  CreateToolVersionWrapper,
+  ChangeToolOwnerWrapper,
+  ToolVersionsWrapper,
+  ToolVersionDetailsWrapper,
+  EditToolVersionWrapper,
+  DeleteToolWrapper,
+} from './components/developer-dashboard/tool/wrappers';
 
 import Home from './pages/index';
 import Withdraw from './pages/withdraw';
@@ -25,14 +36,6 @@ import Consent from './pages/appId/[appId]/consent';
 import Delegatee from './pages/appId/[appId]/delegatee';
 import ToolPolicies from './pages/appId/[appId]/tool-policies';
 import { AppDashboard } from '@/pages/developer-dashboard';
-import { ToolOverviewWrapper } from './components/developer-dashboard/tool/wrappers/ToolOverviewWrapper';
-import { CreateToolWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolWrapper';
-import { EditToolWrapper } from './components/developer-dashboard/tool/wrappers/EditToolWrapper';
-import { CreateToolVersionWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolVersionWrapper';
-import { ChangeToolOwnerWrapper } from './components/developer-dashboard/tool/wrappers/ChangeToolOwnerWrapper';
-import { ToolVersionsWrapper } from './components/developer-dashboard/tool/wrappers/ToolVersionsWrapper';
-import { ToolVersionDetailsWrapper } from './components/developer-dashboard/tool/wrappers/ToolVersionDetailsWrapper';
-import { EditToolVersionWrapper } from './components/developer-dashboard/tool/wrappers/EditToolVersionWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -132,6 +135,10 @@ const routes: RouteObject[] = [
           {
             path: 'toolId/:packageName/version/:version/edit-version',
             element: <EditToolVersionWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/delete-tool',
+            element: <DeleteToolWrapper />,
           },
         ],
       },

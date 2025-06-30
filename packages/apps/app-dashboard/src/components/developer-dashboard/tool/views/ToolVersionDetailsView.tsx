@@ -213,19 +213,19 @@ export function ToolVersionDetailsView({
         )}
       </div>
 
-      {version.supportedPolicies && version.supportedPolicies.length > 0 && (
+      {version.supportedPolicies && Object.keys(version.supportedPolicies).length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
             <Layers className="h-5 w-5" />
             Supported Policies
           </h2>
           <div className="space-y-2">
-            {version.supportedPolicies.map((policy) => (
+            {Object.entries(version.supportedPolicies).map(([key, value]) => (
               <div
-                key={policy}
+                key={key}
                 className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded border"
               >
-                {policy}
+                {key}: {value}
               </div>
             ))}
           </div>

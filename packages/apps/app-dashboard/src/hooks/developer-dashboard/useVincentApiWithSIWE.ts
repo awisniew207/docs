@@ -251,6 +251,7 @@ export function useVincentApiWithSIWE() {
       vincentApiClient.useEditAppVersionToolMutation,
       'PUT',
     ),
+    useDeleteToolMutation: createMutationWrapper(vincentApiClient.useDeleteToolMutation, 'DELETE'),
     useCreateToolMutation: createMutationWrapper(vincentApiClient.useCreateToolMutation, 'POST'),
     useEditToolMutation: createMutationWrapper(vincentApiClient.useEditToolMutation, 'PUT'),
     useChangeToolOwnerMutation: createMutationWrapper(
