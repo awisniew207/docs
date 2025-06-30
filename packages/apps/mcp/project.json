@@ -13,7 +13,14 @@
         "outputPath": "packages/apps/mcp/dist",
         "main": "packages/apps/mcp/src/index.ts",
         "tsConfig": "packages/apps/mcp/tsconfig.app.json",
-        "assets": ["packages/apps/mcp/*.md"],
+        "assets": [
+          "packages/apps/mcp/*.md",
+          {
+            "glob": "**/*",
+            "input": "packages/apps/mcp/src/public",
+            "output": "./src/public"
+          }
+        ],
         "formats": ["cjs"]
       }
     },
