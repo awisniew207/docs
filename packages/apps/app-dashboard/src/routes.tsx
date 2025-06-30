@@ -29,6 +29,7 @@ import { ToolOverviewWrapper } from './components/developer-dashboard/tool/wrapp
 import { CreateToolWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolWrapper';
 import { EditToolWrapper } from './components/developer-dashboard/tool/wrappers/EditToolWrapper';
 import { CreateToolVersionWrapper } from './components/developer-dashboard/tool/wrappers/CreateToolVersionWrapper';
+import { ChangeToolOwnerWrapper } from './components/developer-dashboard/tool/wrappers/ChangeToolOwnerWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -112,6 +113,10 @@ const routes: RouteObject[] = [
           {
             path: 'toolId/:packageName/create-tool-version',
             element: <CreateToolVersionWrapper />,
+          },
+          {
+            path: 'toolId/:packageName/change-tool-owner',
+            element: <ChangeToolOwnerWrapper />,
           },
         ],
       },
