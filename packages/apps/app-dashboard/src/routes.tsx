@@ -15,6 +15,7 @@ import {
   AppEditVersion,
   AppsPage,
 } from './pages/developer-dashboard/app';
+import { ToolsPage } from './pages/developer-dashboard/tool';
 
 import Home from './pages/index';
 import Withdraw from './pages/withdraw';
@@ -87,6 +88,10 @@ const routes: RouteObject[] = [
           {
             path: 'appId/:appId/version/:versionId/tools',
             element: <AppVersionTools />,
+          },
+          {
+            path: 'tools',
+            element: <ToolsPage />,
           },
         ],
       },
