@@ -12,7 +12,7 @@ export function useWalletProtection() {
 
   useEffect(() => {
     if (!isConnected) {
-      navigate('/developer');
+      navigate('/');
     }
   }, [isConnected, navigate]);
 

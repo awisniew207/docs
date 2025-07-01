@@ -4,6 +4,8 @@ import UserLayout from './components/layout/UserLayout';
 import { AppProviders, UserProviders } from './providers';
 import { wrap } from './utils/components';
 
+import { ConnectWallet, Dashboard } from './pages/developer-dashboard';
+
 import { AppsPage } from './pages/developer-dashboard/app';
 import {
   AppOverviewWrapper,
@@ -53,7 +55,6 @@ import AdvancedFunctions from './pages/appId/[appId]/advanced-functions';
 import Consent from './pages/appId/[appId]/consent';
 import Delegatee from './pages/appId/[appId]/delegatee';
 import ToolPolicies from './pages/appId/[appId]/tool-policies';
-import { AppDashboard } from '@/pages/developer-dashboard';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -68,7 +69,7 @@ const routes: RouteObject[] = [
       },
       {
         path: '/developer',
-        element: <AppDashboard.ConnectWallet />,
+        element: <ConnectWallet />,
       },
       {
         path: '/developer/*',
@@ -76,7 +77,7 @@ const routes: RouteObject[] = [
         children: [
           {
             path: 'dashboard',
-            element: <AppDashboard.Dashboard />,
+            element: <Dashboard />,
           },
           {
             path: 'apps',
