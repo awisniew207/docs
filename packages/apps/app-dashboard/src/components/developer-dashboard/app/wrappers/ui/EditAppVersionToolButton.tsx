@@ -3,13 +3,13 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import {
   EditAppVersionToolForm,
   type EditAppVersionToolFormData,
-} from '../forms/EditAppVersionToolForm';
+} from '../../forms/EditAppVersionToolForm';
 import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { sortedSupportedPolicies } from '@/utils/developer-dashboard/sortSupportedPolicies';
 
-interface EditAppVersionToolWrapperProps {
+interface EditAppVersionToolButtonProps {
   appId: number;
   versionId: number;
   tool: AppVersionTool;
@@ -17,13 +17,13 @@ interface EditAppVersionToolWrapperProps {
   onCancel: () => void;
 }
 
-export function EditAppVersionToolWrapper({
+export function EditAppVersionToolButton({
   appId,
   versionId,
   tool,
   onSuccess,
   onCancel,
-}: EditAppVersionToolWrapperProps) {
+}: EditAppVersionToolButtonProps) {
   // Fetching
   const {
     data: allPolicies,

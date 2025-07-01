@@ -5,13 +5,14 @@ import { AppVersionToolsWrapper } from './AppVersionToolsWrapper';
 import { CreateAppVersionWrapper } from './CreateAppVersionWrapper';
 import { CreateAppWrapper } from './CreateAppWrapper';
 import { DeleteAppWrapper } from './DeleteAppWrapper';
-import { EditAppVersionToolWrapper } from './EditAppVersionToolWrapper';
+import { EditAppVersionToolButton } from './ui/EditAppVersionToolButton';
 import { EditAppVersionWrapper } from './EditAppVersionWrapper';
 import { EditAppWrapper } from './EditAppWrapper';
 import { DeleteAppVersionWrapper } from './DeleteAppVersionWrapper';
-import { DeleteAppVersionToolWrapper } from './DeleteAppToolVersionWrapper';
-import { UndeleteAppButton } from './ui/UndeleteAppWrapper';
-import { UndeleteAppVersionButton } from './ui/UndeleteAppVersionWrapper';
+import { UndeleteAppButton } from './ui/UndeleteAppButton';
+import { UndeleteAppVersionButton } from './ui/UndeleteAppVersionButton';
+import { DeleteAppVersionToolButton } from './ui/DeleteAppToolVersionButton';
+import { UndeleteAppVersionToolButton } from './ui/UndeleteAppVersionToolButton';
 
 export {
   AppOverviewWrapper,
@@ -22,10 +23,11 @@ export {
   CreateAppWrapper,
   DeleteAppWrapper,
   DeleteAppVersionWrapper,
-  DeleteAppVersionToolWrapper,
-  EditAppVersionToolWrapper,
+  DeleteAppVersionToolButton,
+  EditAppVersionToolButton,
   EditAppVersionWrapper,
   EditAppWrapper,
   UndeleteAppButton,
   UndeleteAppVersionButton,
+  UndeleteAppVersionToolButton,
 };

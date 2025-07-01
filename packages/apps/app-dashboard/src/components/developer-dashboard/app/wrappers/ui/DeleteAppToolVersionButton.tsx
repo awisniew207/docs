@@ -4,17 +4,17 @@ import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { Trash2 } from 'lucide-react';
 
-interface DeleteAppVersionToolWrapperProps {
+interface DeleteAppVersionToolButtonProps {
   appId: number;
   versionId: number;
   tool: AppVersionTool;
 }
 
-export function DeleteAppVersionToolWrapper({
+export function DeleteAppVersionToolButton({
   appId,
   versionId,
   tool,
-}: DeleteAppVersionToolWrapperProps) {
+}: DeleteAppVersionToolButtonProps) {
   // Mutation
   const [deleteAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
     vincentApiClient.useDeleteAppVersionToolMutation();

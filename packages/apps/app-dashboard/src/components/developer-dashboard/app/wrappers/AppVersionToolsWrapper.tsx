@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
@@ -33,6 +33,18 @@ export function AppVersionToolsWrapper() {
     appId: Number(appId),
     version: Number(versionId),
   });
+
+  // Separate active and deleted tools
+  const { activeTools, deletedTools } = useMemo(() => {
+    if (!versionTools?.length) return { activeTools: [], deletedTools: [] };
+
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const activeTools = versionTools.filter((tool: AppVersionTool) => !tool.isDeleted);
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const deletedTools = versionTools.filter((tool: AppVersionTool) => tool.isDeleted);
+
+    return { activeTools, deletedTools };
+  }, [versionTools]);
 
   const {
     data: allTools = [],
@@ -71,7 +83,7 @@ export function AppVersionToolsWrapper() {
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
 
-  const existingToolNames = versionTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
+  const existingToolNames = activeTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
 
   const handleToolAdd = async (tool: Tool) => {
     await createAppVersionTool({
@@ -118,7 +130,8 @@ export function AppVersionToolsWrapper() {
           </p>
         </div>
         <ManageAppVersionTools
-          tools={versionTools || []}
+          tools={activeTools}
+          deletedTools={deletedTools}
           appId={Number(appId)}
           versionId={Number(versionId)}
         />
