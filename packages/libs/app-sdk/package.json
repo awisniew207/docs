@@ -37,7 +37,6 @@
     "zod": "3.25.64"
   },
   "peerDependencies": {
-    "@types/react": "^19.0.10",
     "react": "^19.0.0"
   },
   "sideEffects": false,
