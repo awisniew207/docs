@@ -33,3 +33,6 @@ export type { BaseToolContext } from './toolClient';
 import * as expressAuthHelpers from './express-authentication-middleware';
 export { expressAuthHelpers };
 export type { ExpressAuthHelpers } from './express-authentication-middleware/types';
+
+import * as reactHelpers from './react';
+export { reactHelpers };

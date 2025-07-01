@@ -33,6 +33,7 @@
     "@noble/secp256k1": "^2.2.3",
     "did-jwt": "^8.0.8",
     "ethers": "5.8.0",
+    "react": "^19.0.0",
     "tslib": "^2.8.1",
     "zod": "3.25.64"
   },
@@ -45,6 +46,7 @@
     "@lit-protocol/pkp-ethers": "^7.2.0",
     "@lit-protocol/types": "^7.0.8",
     "@types/express": "^5.0.1",
+    "@types/react": "^19.0.10",
     "chokidar-cli": "^3.0.0",
     "live-server": "^1.2.2",
     "typedoc": "0.27.9",
