@@ -7,6 +7,7 @@ import { ToolVersionsWrapper } from './ToolVersionsWrapper';
 import { ToolVersionDetailsWrapper } from './ToolVersionDetailsWrapper';
 import { EditToolVersionWrapper } from './EditToolVersionWrapper';
 import { DeleteToolWrapper } from './DeleteToolWrapper';
+import { DeleteToolVersionWrapper } from './DeleteToolVersionWrapper';
 
 export {
   ToolOverviewWrapper,
@@ -18,4 +19,5 @@ export {
   ToolVersionDetailsWrapper,
   EditToolVersionWrapper,
   DeleteToolWrapper,
+  DeleteToolVersionWrapper,
 };

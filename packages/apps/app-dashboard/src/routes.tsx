@@ -26,6 +26,7 @@ import {
   ToolVersionDetailsWrapper,
   EditToolVersionWrapper,
   DeleteToolWrapper,
+  DeleteToolVersionWrapper,
 } from './components/developer-dashboard/tool/wrappers';
 import { PoliciesPage } from './pages/developer-dashboard/policy';
 import {
@@ -38,6 +39,7 @@ import {
   PolicyVersionDetailsWrapper,
   EditPolicyVersionWrapper,
   DeletePolicyWrapper,
+  DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
 import Home from './pages/index';
@@ -153,6 +155,10 @@ const routes: RouteObject[] = [
             element: <DeleteToolWrapper />,
           },
           {
+            path: 'toolId/:packageName/version/:version/delete-version',
+            element: <DeleteToolVersionWrapper />,
+          },
+          {
             path: 'policies',
             element: <PoliciesPage />,
           },
@@ -191,6 +197,10 @@ const routes: RouteObject[] = [
           {
             path: 'policyId/:packageName/delete-policy',
             element: <DeletePolicyWrapper />,
+          },
+          {
+            path: 'policyId/:packageName/version/:version/delete-version',
+            element: <DeletePolicyVersionWrapper />,
           },
         ],
       },

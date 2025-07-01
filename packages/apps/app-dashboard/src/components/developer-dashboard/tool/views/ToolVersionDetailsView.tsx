@@ -10,6 +10,7 @@ import {
   Edit,
   Layers,
   Code,
+  Trash2,
 } from 'lucide-react';
 
 interface ToolVersionDetailsViewProps {
@@ -69,6 +70,13 @@ export function ToolVersionDetailsView({
             >
               <Edit className="h-4 w-4" />
               Edit Version
+            </button>
+            <button
+              onClick={() => onOpenMutation('delete-version')}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Version
             </button>
           </div>
         </div>

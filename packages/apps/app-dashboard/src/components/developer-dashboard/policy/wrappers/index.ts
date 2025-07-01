@@ -7,6 +7,7 @@ import { PolicyVersionsWrapper } from './PolicyVersionsWrapper';
 import { PolicyVersionDetailsWrapper } from './PolicyVersionDetailsWrapper';
 import { EditPolicyVersionWrapper } from './EditPolicyVersionWrapper';
 import { DeletePolicyWrapper } from './DeletePolicyWrapper';
+import { DeletePolicyVersionWrapper } from './DeletePolicyVersionWrapper';
 
 export {
   PolicyOverviewWrapper,
@@ -18,4 +19,5 @@ export {
   PolicyVersionDetailsWrapper,
   EditPolicyVersionWrapper,
   DeletePolicyWrapper,
+  DeletePolicyVersionWrapper,
 };

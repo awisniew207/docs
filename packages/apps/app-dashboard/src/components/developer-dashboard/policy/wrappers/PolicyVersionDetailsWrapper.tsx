@@ -18,7 +18,10 @@ export function PolicyVersionDetailsWrapper() {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-  } = vincentApiClient.useGetPolicyVersionQuery({ packageName: packageName!, version: version! });
+  } = vincentApiClient.useGetPolicyVersionQuery({
+    packageName: packageName || '',
+    version: version || '',
+  });
 
   // Navigation
 
