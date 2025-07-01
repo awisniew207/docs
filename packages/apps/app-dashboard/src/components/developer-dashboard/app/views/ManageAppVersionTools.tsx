@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Edit, X } from 'lucide-react';
-import { EditAppVersionToolWrapper } from '../wrappers/EditAppVersionToolWrapper';
+import { EditAppVersionToolWrapper, DeleteAppVersionToolWrapper } from '../wrappers';
 import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { useState } from 'react';
 
@@ -76,14 +76,17 @@ export function ManageAppVersionTools({ tools, appId, versionId }: ManageAppVers
                   <div className="text-xs text-gray-400">
                     Added: {new Date(tool.createdAt).toLocaleDateString()}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEditTool(tool.toolPackageName)}
-                    className="h-8 px-2"
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditTool(tool.toolPackageName)}
+                      className="h-8 px-2"
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <DeleteAppVersionToolWrapper appId={appId} versionId={versionId} tool={tool} />
+                  </div>
                 </div>
               </div>
             )}

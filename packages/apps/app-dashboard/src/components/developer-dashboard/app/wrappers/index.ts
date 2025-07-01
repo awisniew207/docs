@@ -9,6 +9,7 @@ import { EditAppVersionToolWrapper } from './EditAppVersionToolWrapper';
 import { EditAppVersionWrapper } from './EditAppVersionWrapper';
 import { EditAppWrapper } from './EditAppWrapper';
 import { DeleteAppVersionWrapper } from './DeleteAppVersionWrapper';
+import { DeleteAppVersionToolWrapper } from './DeleteAppToolVersionWrapper';
 
 export {
   AppOverviewWrapper,
@@ -19,6 +20,7 @@ export {
   CreateAppWrapper,
   DeleteAppWrapper,
   DeleteAppVersionWrapper,
+  DeleteAppVersionToolWrapper,
   EditAppVersionToolWrapper,
   EditAppVersionWrapper,
   EditAppWrapper,
