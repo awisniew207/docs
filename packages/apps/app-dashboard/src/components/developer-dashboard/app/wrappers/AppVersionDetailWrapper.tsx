@@ -5,7 +5,7 @@ import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVe
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 

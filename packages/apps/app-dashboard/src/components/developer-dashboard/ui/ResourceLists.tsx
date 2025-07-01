@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { Logo } from '@/components/shared/ui/Logo';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { App, Policy, Tool } from '@/types/developer-dashboard/appTypes';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { UndeleteAppButton } from '../app/wrappers';
 
 interface AppsListProps {
   onCreateClick: () => void;
@@ -38,7 +39,7 @@ const formatDate = (dateString: string) => {
 
 export function AppsList({ onCreateClick, onAppClick }: AppsListProps) {
   const navigate = useNavigate();
-  const { data: apps, isLoading, isError } = useUserApps();
+  const { data: apps, deletedApps, isLoading, isError } = useUserApps();
 
   if (isLoading) return <Loading />;
   if (isError) return <StatusMessage message="Failed to load apps" type="error" />;
@@ -94,6 +95,55 @@ export function AppsList({ onCreateClick, onAppClick }: AppsListProps) {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+      {/* Deleted Apps Section */}
+      {deletedApps && deletedApps.length > 0 && (
+        <div className="space-y-4">
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted Apps</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {deletedApps.map((app) => (
+                <Card key={app.appId} className="border-dashed">
+                  <CardHeader>
+                    <CardTitle className="flex justify-between items-start text-gray-600">
+                      <div className="flex items-center gap-3">
+                        <Logo
+                          logo={app.logo}
+                          alt={`${app.name} logo`}
+                          className="w-8 h-8 rounded-md object-cover flex-shrink-0 grayscale"
+                        />
+                        <span className="line-through">{app.name}</span>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <div className="flex gap-2">
+                          <span className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-400">
+                            DELETED
+                          </span>
+                          <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">
+                            v{app.activeVersion}
+                          </span>
+                        </div>
+                        <div className="relative z-10 bg-white rounded-lg opacity-100">
+                          <UndeleteAppButton app={app} />
+                        </div>
+                      </div>
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 line-through">
+                      {app.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm text-gray-700">
+                      <div>
+                        <span className="font-medium">App ID:</span> {app.appId}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

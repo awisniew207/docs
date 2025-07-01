@@ -1,5 +1,5 @@
 import DashboardPage from './DashboardPage';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import Loading from '@/components/layout/Loading';

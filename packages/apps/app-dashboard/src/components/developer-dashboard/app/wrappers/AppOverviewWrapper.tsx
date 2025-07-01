@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppDetailsView } from '../views/AppDetailsView';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';

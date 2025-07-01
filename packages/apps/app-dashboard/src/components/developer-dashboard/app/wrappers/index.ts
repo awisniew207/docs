@@ -10,6 +10,8 @@ import { EditAppVersionWrapper } from './EditAppVersionWrapper';
 import { EditAppWrapper } from './EditAppWrapper';
 import { DeleteAppVersionWrapper } from './DeleteAppVersionWrapper';
 import { DeleteAppVersionToolWrapper } from './DeleteAppToolVersionWrapper';
+import { UndeleteAppButton } from './ui/UndeleteAppWrapper';
+import { UndeleteAppVersionButton } from './ui/UndeleteAppVersionWrapper';
 
 export {
   AppOverviewWrapper,
@@ -24,4 +26,6 @@ export {
   EditAppVersionToolWrapper,
   EditAppVersionWrapper,
   EditAppWrapper,
+  UndeleteAppButton,
+  UndeleteAppVersionButton,
 };

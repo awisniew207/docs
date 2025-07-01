@@ -32,7 +32,10 @@ export function AppList({
 
   const sortedVersions = useMemo(() => {
     if (!appVersions || appVersions.length === 0) return [];
-    return [...appVersions].sort((a: any, b: any) => b.version - a.version);
+    // Filter out deleted versions and sort by version number (descending)
+    return appVersions
+      .filter((version: any) => !version.isDeleted)
+      .sort((a: any, b: any) => b.version - a.version);
   }, [appVersions]);
 
   const appMenuItems = useMemo(() => {

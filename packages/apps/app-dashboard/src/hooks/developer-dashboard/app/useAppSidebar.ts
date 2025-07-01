@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useReducer } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import { App, Tool, Policy } from '@/types/developer-dashboard/appTypes';
