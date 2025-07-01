@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
   useEffect,
-  FC,
+  JSX,
   ReactNode,
 } from 'react';
 import { IRelayPKP } from '@lit-protocol/types';
@@ -95,9 +95,9 @@ export function useJwtContext(): JwtContextType {
  * instead of the default localStorage.
  */
 export interface AsyncStorage {
-  getItem: (key: string) => Promise<string | null>;
-  setItem: (key: string, value: string) => Promise<void>;
-  removeItem: (key: string) => Promise<void>;
+  getItem: (key: string) => Promise<string | null> | string | null;
+  setItem: (key: string, value: string) => Promise<void> | void;
+  removeItem: (key: string) => Promise<void> | void;
 }
 
 interface JwtProviderProps {
@@ -162,12 +162,12 @@ interface JwtProviderProps {
  * @param props.storage - Optional custom storage implementation (defaults to localStorage)
  * @param props.storageKeyBuilder - Optional function to customize the storage key for JWT tokens
  */
-export const JwtProvider: FC<JwtProviderProps> = ({
+export const JwtProvider = ({
   children,
   appId,
   storage = localStorage,
   storageKeyBuilder = (appId) => `vincent-${appId}-jwt`,
-}) => {
+}: JwtProviderProps): JSX.Element => {
   const appJwtKey = storageKeyBuilder(appId);
   const vincentWebAppClient = useVincentWebAppClient(appId);
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
