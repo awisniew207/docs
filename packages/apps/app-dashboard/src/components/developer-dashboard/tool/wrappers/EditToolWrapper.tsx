@@ -7,6 +7,7 @@ import { EditToolForm, type EditToolFormData } from '../forms/EditToolForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
+import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function EditToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -35,6 +36,8 @@ export function EditToolWrapper() {
       navigateWithDelay(navigate, `/developer/toolId/${encodeURIComponent(tool.packageName)}`);
     }
   }, [isSuccess, data, tool]);
+
+  useAddressCheck(tool);
 
   // Loading states
   if (toolsLoading || versionsLoading) return <Loading />;

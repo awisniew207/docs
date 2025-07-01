@@ -5,6 +5,7 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function PolicyOverviewWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -25,6 +26,8 @@ export function PolicyOverviewWrapper() {
 
   // Navigation
   const navigate = useNavigate();
+
+  useAddressCheck(policy);
 
   // Loading
   if (isLoading || activePolicyVersionLoading) return <Loading />;

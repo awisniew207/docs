@@ -7,6 +7,7 @@ import { EditPolicyForm, type EditPolicyFormData } from '../forms/EditPolicyForm
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
+import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function EditPolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -35,6 +36,8 @@ export function EditPolicyWrapper() {
       navigateWithDelay(navigate, `/developer/policyId/${encodeURIComponent(policy.packageName)}`);
     }
   }, [isSuccess, data, navigate, policy]);
+
+  useAddressCheck(policy);
 
   // Loading states
   if (policiesLoading || versionsLoading) return <Loading />;

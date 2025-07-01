@@ -7,6 +7,7 @@ import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { ChangeToolOwnerForm, ChangeToolOwnerFormData } from '../forms/ChangeToolOwnerForm';
 import Loading from '@/components/layout/Loading';
+import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function ChangeToolOwnerWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -30,6 +31,8 @@ export function ChangeToolOwnerWrapper() {
       navigate(`/developer/tools`); // Immediate navigation, otherwise query will say tool DNE
     }
   }, [isSuccess, data, navigate, tool]);
+
+  useAddressCheck(tool);
 
   // Loading states
   if (toolsLoading) return <Loading />;

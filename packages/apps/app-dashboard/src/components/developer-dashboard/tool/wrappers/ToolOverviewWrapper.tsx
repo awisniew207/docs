@@ -5,6 +5,7 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function ToolOverviewWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -25,6 +26,8 @@ export function ToolOverviewWrapper() {
 
   // Navigation
   const navigate = useNavigate();
+
+  useAddressCheck(tool);
 
   // Loading
   if (isLoading || activeToolVersionLoading) return <Loading />;
