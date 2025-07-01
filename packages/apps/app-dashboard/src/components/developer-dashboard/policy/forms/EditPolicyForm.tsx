@@ -7,13 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { TextField, LongTextField, SelectField } from '../../form-fields';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 import { Policy, PolicyVersion } from '@/types/developer-dashboard/appTypes';
+import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
 
 const { policyDoc } = docSchemas;
 
-const { packageName, description, title, activeVersion } = policyDoc.shape;
+const { packageName, description, title, activeVersion, deploymentStatus } = policyDoc.shape;
 
 export const EditPolicySchema = z
-  .object({ packageName, description, title, activeVersion })
+  .object({ packageName, description, title, activeVersion, deploymentStatus })
   .strict();
 
 export type EditPolicyFormData = z.infer<typeof EditPolicySchema>;
@@ -38,6 +39,7 @@ export function EditPolicyForm({
       description: policyData.description,
       title: policyData.title,
       activeVersion: policyData.activeVersion,
+      deploymentStatus: policyData.deploymentStatus,
     },
   });
 
@@ -90,6 +92,12 @@ export function EditPolicyForm({
               label="Active Version"
               options={versionOptions}
               required
+            />
+
+            <DeploymentStatusSelectField
+              error={errors.deploymentStatus?.message}
+              watch={watch}
+              setValue={setValue}
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

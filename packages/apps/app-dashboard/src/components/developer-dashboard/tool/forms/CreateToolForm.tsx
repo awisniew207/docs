@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 import { TextField, LongTextField } from '../../form-fields';
+import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
 
 const { toolDoc } = docSchemas;
 
-const { packageName, description, title, activeVersion } = toolDoc.shape;
+const { packageName, description, title, activeVersion, deploymentStatus } = toolDoc.shape;
 
 export const CreateToolSchema = z
-  .object({ packageName, description, title, activeVersion })
+  .object({ packageName, description, title, activeVersion, deploymentStatus })
   .strict();
 
 export type CreateToolFormData = z.infer<typeof CreateToolSchema>;
@@ -25,12 +26,17 @@ interface CreateToolFormProps {
 export function CreateToolForm({ onSubmit, isSubmitting = false }: CreateToolFormProps) {
   const form = useForm<CreateToolFormData>({
     resolver: zodResolver(CreateToolSchema),
+    defaultValues: {
+      deploymentStatus: 'dev',
+    },
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = form;
 
   return (
@@ -77,6 +83,13 @@ export function CreateToolForm({ onSubmit, isSubmitting = false }: CreateToolFor
               placeholder="Enter active version (e.g. 1.0.0)"
               required
             />
+
+            <DeploymentStatusSelectField
+              error={errors.deploymentStatus?.message}
+              watch={watch}
+              setValue={setValue}
+            />
+
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Creating Tool...' : 'Create Tool'}
             </Button>

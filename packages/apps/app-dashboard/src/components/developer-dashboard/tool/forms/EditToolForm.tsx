@@ -7,12 +7,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { TextField, LongTextField, SelectField } from '../../form-fields';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
+import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
 
 const { toolDoc } = docSchemas;
 
-const { packageName, description, title, activeVersion } = toolDoc.shape;
+const { packageName, description, title, activeVersion, deploymentStatus } = toolDoc.shape;
 
-export const EditToolSchema = z.object({ packageName, description, title, activeVersion }).strict();
+export const EditToolSchema = z
+  .object({ packageName, description, title, activeVersion, deploymentStatus })
+  .strict();
 
 export type EditToolFormData = z.infer<typeof EditToolSchema>;
 
@@ -36,6 +39,7 @@ export function EditToolForm({
       description: toolData.description,
       title: toolData.title,
       activeVersion: toolData.activeVersion,
+      deploymentStatus: toolData.deploymentStatus,
     },
   });
 
@@ -88,6 +92,12 @@ export function EditToolForm({
               label="Active Version"
               options={versionOptions}
               required
+            />
+
+            <DeploymentStatusSelectField
+              error={errors.deploymentStatus?.message}
+              watch={watch}
+              setValue={setValue}
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
