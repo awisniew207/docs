@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
@@ -12,7 +11,6 @@ import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function EditAppVersionWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
@@ -34,7 +32,7 @@ export function EditAppVersionWrapper() {
 
   // Mutation
   const [editAppVersion, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useEditAppVersionMutation();
+    vincentApiClient.useEditAppVersionMutation();
 
   // Navigation
   const navigate = useNavigate();

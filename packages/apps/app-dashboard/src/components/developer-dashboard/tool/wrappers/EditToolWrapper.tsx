@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -11,7 +10,6 @@ import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools
 
 export function EditToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const {
@@ -31,7 +29,7 @@ export function EditToolWrapper() {
 
   // Mutation
   const [editTool, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useEditToolMutation();
+    vincentApiClient.useEditToolMutation();
 
   // Navigation
   const navigate = useNavigate();

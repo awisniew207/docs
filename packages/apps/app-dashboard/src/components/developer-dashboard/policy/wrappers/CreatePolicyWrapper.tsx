@@ -1,25 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount } from 'wagmi';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreatePolicyForm, type CreatePolicyFormData } from '../forms/CreatePolicyForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function CreatePolicyWrapper() {
-  const vincentApi = useVincentApiWithSIWE();
-
   // Fetching
   const { refetch: refetchPolicies } = useUserPolicies();
 
   // Mutation
   const [createPolicy, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreatePolicyMutation();
+    vincentApiClient.useCreatePolicyMutation();
 
   // Navigation
   const navigate = useNavigate();
-  const { address } = useAccount(); // FIXME: Won't be needed once we have SIWE
 
   // Effect
   useEffect(() => {
@@ -49,7 +45,7 @@ export function CreatePolicyWrapper() {
 
     await createPolicy({
       packageName,
-      policyCreate: { ...policyCreateData, authorWalletAddress: address },
+      policyCreate: { ...policyCreateData },
     });
   };
 

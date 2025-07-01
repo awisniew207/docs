@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -11,7 +10,6 @@ import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFr
 
 export function EditPolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const {
@@ -31,7 +29,7 @@ export function EditPolicyWrapper() {
 
   // Mutation
   const [editPolicy, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useEditPolicyMutation();
+    vincentApiClient.useEditPolicyMutation();
 
   // Navigation
   const navigate = useNavigate();

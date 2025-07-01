@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -12,7 +11,6 @@ import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 
 export function EditToolVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
@@ -34,7 +32,7 @@ export function EditToolVersionWrapper() {
 
   // Mutation
   const [editToolVersion, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useEditToolVersionMutation();
+    vincentApiClient.useEditToolVersionMutation();
 
   // Navigation
   const navigate = useNavigate();

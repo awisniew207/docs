@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteToolForm } from '../forms/DeleteToolForm';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
@@ -11,7 +11,6 @@ import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 
 export function DeleteToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const {
@@ -25,7 +24,7 @@ export function DeleteToolWrapper() {
 
   // Mutation
   const [deleteTool, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useDeleteToolMutation();
+    vincentApiClient.useDeleteToolMutation();
 
   // Navigation
   const navigate = useNavigate();

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -15,7 +14,6 @@ import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 
 export function CreatePolicyVersionWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
@@ -30,7 +28,7 @@ export function CreatePolicyVersionWrapper() {
 
   // Mutation
   const [createPolicyVersion, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreatePolicyVersionMutation();
+    vincentApiClient.useCreatePolicyVersionMutation();
 
   // Navigation
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
@@ -10,7 +10,6 @@ import Loading from '@/components/layout/Loading';
 
 export function ChangeToolOwnerWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   // It's not needed here, but we'll fetch to make sure the tool exists
@@ -25,7 +24,7 @@ export function ChangeToolOwnerWrapper() {
 
   // Mutation
   const [changeToolOwner, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useChangeToolOwnerMutation();
+    vincentApiClient.useChangeToolOwnerMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -61,7 +60,7 @@ export function ChangeToolOwnerWrapper() {
 
   const handleSubmit = async (data: ChangeToolOwnerFormData) => {
     await changeToolOwner({
-      packageName: packageName,
+      packageName: tool.packageName,
       changeOwner: {
         // FIXME: Once the export is working, this needs to be revisited
         authorWalletAddress: data.authorWalletAddress,

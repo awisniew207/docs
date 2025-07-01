@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { AppVersionTool, Tool } from '@/types/developer-dashboard/appTypes';
@@ -9,12 +8,10 @@ import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionToolsWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetching
@@ -45,8 +42,8 @@ export function AppVersionToolsWrapper() {
   } = vincentApiClient.useListAllToolsQuery();
 
   // Mutation
-  const [createAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreateAppVersionToolMutation();
+  const [createAppVersionTool, { isLoading, isSuccess, isError, data }] =
+    vincentApiClient.useCreateAppVersionToolMutation();
 
   // Effect
   useEffect(() => {
@@ -104,9 +101,7 @@ export function AppVersionToolsWrapper() {
 
       {isLoading && <StatusMessage message="Adding tool..." type="info" />}
       {showSuccess && <StatusMessage message="Tool added successfully!" type="success" />}
-      {isError && error && (
-        <StatusMessage message={getErrorMessage(error, 'Failed to add tool')} type="error" />
-      )}
+      {isError && <StatusMessage message="Failed to add tool" type="error" />}
 
       {/* Add Tools Form */}
       <CreateAppVersionToolsForm

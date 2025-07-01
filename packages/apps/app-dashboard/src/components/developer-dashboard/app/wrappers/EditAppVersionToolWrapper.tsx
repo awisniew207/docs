@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import {
   EditAppVersionToolForm,
@@ -25,8 +24,6 @@ export function EditAppVersionToolWrapper({
   onSuccess,
   onCancel,
 }: EditAppVersionToolWrapperProps) {
-  const vincentApi = useVincentApiWithSIWE();
-
   // Fetching
   const {
     data: allPolicies,
@@ -45,7 +42,7 @@ export function EditAppVersionToolWrapper({
 
   // Mutation
   const [editAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useEditAppVersionToolMutation();
+    vincentApiClient.useEditAppVersionToolMutation();
 
   // Effect
   useEffect(() => {

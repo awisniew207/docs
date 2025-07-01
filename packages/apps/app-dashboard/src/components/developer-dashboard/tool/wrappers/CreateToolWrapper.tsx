@@ -1,25 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount } from 'wagmi';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreateToolForm, type CreateToolFormData } from '../forms/CreateToolForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 
 export function CreateToolWrapper() {
-  const vincentApi = useVincentApiWithSIWE();
-
   // Fetching
   const { refetch: refetchTools } = useUserTools();
 
   // Mutation
   const [createTool, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreateToolMutation();
+    vincentApiClient.useCreateToolMutation();
 
   // Navigation
   const navigate = useNavigate();
-  const { address } = useAccount(); // FIXME: Won't be needed once we have SIWE
 
   // Effect
   useEffect(() => {
@@ -49,7 +45,7 @@ export function CreateToolWrapper() {
 
     await createTool({
       packageName,
-      toolCreate: { ...toolCreateData, authorWalletAddress: address },
+      toolCreate: { ...toolCreateData },
     });
   };
 

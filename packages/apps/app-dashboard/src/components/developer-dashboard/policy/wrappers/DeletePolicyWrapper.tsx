@@ -1,17 +1,16 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeletePolicyForm } from '../forms/DeletePolicyForm';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 
 export function DeletePolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const {
@@ -25,7 +24,7 @@ export function DeletePolicyWrapper() {
 
   // Mutation
   const [deletePolicy, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useDeletePolicyMutation();
+    vincentApiClient.useDeletePolicyMutation();
 
   // Navigation
   const navigate = useNavigate();

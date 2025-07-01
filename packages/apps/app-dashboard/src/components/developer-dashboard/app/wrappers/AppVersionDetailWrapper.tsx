@@ -4,15 +4,13 @@ import { Edit, Plus, Power, PowerOff } from 'lucide-react';
 import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVersionDetails';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionDetailWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
@@ -46,22 +44,12 @@ export function AppVersionDetailWrapper() {
   // Mutation
   const [
     enableAppVersion,
-    {
-      isLoading: isEnabling,
-      isSuccess: isEnablingSuccess,
-      isError: isEnablingError,
-      error: enablingError,
-    },
-  ] = vincentApi.useEnableAppVersionMutation();
+    { isLoading: isEnabling, isSuccess: isEnablingSuccess, isError: isEnablingError },
+  ] = vincentApiClient.useEnableAppVersionMutation();
   const [
     disableAppVersion,
-    {
-      isLoading: isDisabling,
-      isSuccess: isDisablingSuccess,
-      isError: isDisablingError,
-      error: disablingError,
-    },
-  ] = vincentApi.useDisableAppVersionMutation();
+    { isLoading: isDisabling, isSuccess: isDisablingSuccess, isError: isDisablingError },
+  ] = vincentApiClient.useDisableAppVersionMutation();
 
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -128,12 +116,8 @@ export function AppVersionDetailWrapper() {
       {showSuccess && (
         <StatusMessage message="Version enabled/disabled successfully!" type="success" />
       )}
-      {isEnablingError && enablingError && (
-        <StatusMessage message={`Failed to enable version`} type="error" />
-      )}
-      {isDisablingError && disablingError && (
-        <StatusMessage message={`Failed to disable version`} type="error" />
-      )}
+      {isEnablingError && <StatusMessage message={`Failed to enable version`} type="error" />}
+      {isDisablingError && <StatusMessage message={`Failed to disable version`} type="error" />}
 
       {/* Version Management Card */}
       <div className="bg-white border rounded-lg">

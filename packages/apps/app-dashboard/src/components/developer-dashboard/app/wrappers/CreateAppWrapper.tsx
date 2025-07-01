@@ -1,25 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount } from 'wagmi';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreateAppForm, type CreateAppFormData } from '../forms/CreateAppForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 
 export function CreateAppWrapper() {
-  const vincentApi = useVincentApiWithSIWE();
-
   // Fetching
   const { refetch: refetchApps } = useUserApps();
 
   // Mutation
   const [createApp, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreateAppMutation();
+    vincentApiClient.useCreateAppMutation();
 
   // Navigation
   const navigate = useNavigate();
-  const { address } = useAccount(); // FIXME: Won't be needed once we have SIWE
 
   // Effect
   useEffect(() => {
@@ -46,7 +42,7 @@ export function CreateAppWrapper() {
 
   const handleSubmit = async (data: CreateAppFormData) => {
     await createApp({
-      appCreate: { ...data, managerAddress: address },
+      appCreate: { ...data },
     });
   };
 

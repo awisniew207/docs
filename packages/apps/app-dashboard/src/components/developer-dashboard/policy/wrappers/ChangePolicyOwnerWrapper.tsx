@@ -1,16 +1,15 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
 import { ChangePolicyOwnerForm, ChangePolicyOwnerFormData } from '../forms/ChangePolicyOwnerForm';
 import Loading from '@/components/layout/Loading';
 
 export function ChangePolicyOwnerWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   // It's not needed here, but we'll fetch to make sure the tool exists
@@ -25,7 +24,7 @@ export function ChangePolicyOwnerWrapper() {
 
   // Mutation
   const [changePolicyOwner, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useChangePolicyOwnerMutation();
+    vincentApiClient.useChangePolicyOwnerMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -61,7 +60,7 @@ export function ChangePolicyOwnerWrapper() {
 
   const handleSubmit = async (data: ChangePolicyOwnerFormData) => {
     await changePolicyOwner({
-      packageName: packageName,
+      packageName: policy.packageName,
       changeOwner: {
         // FIXME: Once the export is working, this needs to be revisited
         authorWalletAddress: data.authorWalletAddress,
