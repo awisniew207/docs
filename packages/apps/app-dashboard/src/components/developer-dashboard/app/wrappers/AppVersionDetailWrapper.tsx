@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Edit, Plus, Power, PowerOff } from 'lucide-react';
+import { Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react';
 import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVersionDetails';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
@@ -182,6 +182,15 @@ export function AppVersionDetailWrapper() {
                 {isEnabling ? 'Enabling...' : 'Enable Version'}
               </button>
             )}
+            <button
+              onClick={() =>
+                navigate(`/developer/appId/${appId}/version/${versionId}/delete-version`)
+              }
+              className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Version
+            </button>
           </div>
         </div>
       </div>

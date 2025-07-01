@@ -17,6 +17,7 @@ export function DeletePolicyVersionWrapper() {
 
   const policy = sortPolicyFromPolicies(policies, packageName);
 
+  // Note: The data here is barely used, but we need to confirm the version exists with a query
   const {
     data: versionData,
     isLoading: versionLoading,
@@ -76,9 +77,9 @@ export function DeletePolicyVersionWrapper() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Delete Policy</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Delete Policy Version</h1>
           <p className="text-gray-600 mt-2">
-            Permanently delete "{policy.title}" and all its data. This action cannot be undone.
+            Delete "{policy.title}" version {versionData.version}. This action can be undone.
           </p>
         </div>
       </div>

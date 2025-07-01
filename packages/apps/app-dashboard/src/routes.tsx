@@ -3,18 +3,21 @@ import AppLayout from './components/layout/AppLayout';
 import UserLayout from './components/layout/UserLayout';
 import { AppProviders, UserProviders } from './providers';
 import { wrap } from './utils/components';
+
+import { AppsPage } from './pages/developer-dashboard/app';
 import {
-  AppEdit,
-  AppOverview,
-  AppDelete,
-  CreateAppPage,
-  AppVersions,
-  AppVersionDetail,
-  AppVersionTools,
-  AppCreateVersion,
-  AppEditVersion,
-  AppsPage,
-} from './pages/developer-dashboard/app';
+  AppOverviewWrapper,
+  AppVersionDetailWrapper,
+  AppVersionsWrapper,
+  AppVersionToolsWrapper,
+  CreateAppVersionWrapper,
+  EditAppVersionWrapper,
+  EditAppWrapper,
+  DeleteAppWrapper,
+  CreateAppWrapper,
+  DeleteAppVersionWrapper,
+} from './components/developer-dashboard/app/wrappers';
+
 import { ToolsPage } from './pages/developer-dashboard/tool';
 import {
   ToolOverviewWrapper,
@@ -28,6 +31,7 @@ import {
   DeleteToolWrapper,
   DeleteToolVersionWrapper,
 } from './components/developer-dashboard/tool/wrappers';
+
 import { PoliciesPage } from './pages/developer-dashboard/policy';
 import {
   PolicyOverviewWrapper,
@@ -80,39 +84,43 @@ const routes: RouteObject[] = [
           },
           {
             path: 'create-app/*',
-            element: <CreateAppPage />,
+            element: <CreateAppWrapper />,
           },
           {
             path: 'appId/:appId',
-            element: <AppOverview />,
+            element: <AppOverviewWrapper />,
           },
           {
             path: 'appId/:appId/edit-app',
-            element: <AppEdit />,
+            element: <EditAppWrapper />,
           },
           {
             path: 'appId/:appId/delete-app',
-            element: <AppDelete />,
+            element: <DeleteAppWrapper />,
           },
           {
             path: 'appId/:appId/versions',
-            element: <AppVersions />,
+            element: <AppVersionsWrapper />,
           },
           {
             path: 'appId/:appId/create-app-version',
-            element: <AppCreateVersion />,
+            element: <CreateAppVersionWrapper />,
           },
           {
             path: 'appId/:appId/version/:versionId',
-            element: <AppVersionDetail />,
+            element: <AppVersionDetailWrapper />,
           },
           {
             path: 'appId/:appId/version/:versionId/edit',
-            element: <AppEditVersion />,
+            element: <EditAppVersionWrapper />,
           },
           {
             path: 'appId/:appId/version/:versionId/tools',
-            element: <AppVersionTools />,
+            element: <AppVersionToolsWrapper />,
+          },
+          {
+            path: 'appId/:appId/version/:versionId/delete-version',
+            element: <DeleteAppVersionWrapper />,
           },
           {
             path: 'tools',
