@@ -18,17 +18,13 @@ export function EditToolVersionWrapper() {
   const tool = sortToolFromTools(tools, packageName);
 
   const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetToolVersionsQuery({ packageName: packageName! });
-
-  const {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-    refetch: refetchVersionData,
-  } = vincentApiClient.useGetToolVersionQuery({ packageName: packageName!, version: version! });
+  } = vincentApiClient.useGetToolVersionQuery({
+    packageName: packageName || '',
+    version: version || '',
+  });
 
   // Mutation
   const [editToolVersion, { isLoading, isSuccess, isError, data, error }] =
@@ -40,23 +36,20 @@ export function EditToolVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && tool && versionData) {
-      refetchVersions();
-      refetchVersionData();
       navigateWithDelay(
         navigate,
         `/developer/toolId/${encodeURIComponent(tool.packageName)}/version/${versionData.version}`,
       );
     }
-  }, [isSuccess, data, refetchVersions, refetchVersionData, navigate, tool, versionData]);
+  }, [isSuccess, data, navigate, tool, versionData]);
 
   useAddressCheck(tool);
 
   // Loading states
-  if (toolsLoading || versionsLoading || versionLoading) return <Loading />;
+  if (toolsLoading || versionLoading) return <Loading />;
 
   // Error states
   if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
-  if (versionsError) return <StatusMessage message="Failed to load tool versions" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
   if (!versionData) return <StatusMessage message={`Version ${version} not found`} type="error" />;

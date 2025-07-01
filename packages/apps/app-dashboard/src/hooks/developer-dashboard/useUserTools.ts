@@ -11,7 +11,6 @@ export function useUserTools() {
     isLoading,
     isError,
     error,
-    refetch,
     ...rest
   } = vincentApiClient.useListAllToolsQuery();
 
@@ -28,7 +27,6 @@ export function useUserTools() {
     isLoading,
     isError,
     error,
-    refetch,
     ...rest,
   };
 }

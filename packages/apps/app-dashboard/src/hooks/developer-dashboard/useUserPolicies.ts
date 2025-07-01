@@ -11,7 +11,6 @@ export function useUserPolicies() {
     isLoading,
     isError,
     error,
-    refetch,
     ...rest
   } = vincentApiClient.useListAllPoliciesQuery();
 
@@ -28,7 +27,6 @@ export function useUserPolicies() {
     isLoading,
     isError,
     error,
-    refetch,
     ...rest,
   };
 }

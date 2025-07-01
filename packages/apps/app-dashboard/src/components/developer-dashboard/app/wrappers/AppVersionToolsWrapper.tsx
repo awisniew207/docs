@@ -29,7 +29,6 @@ export function AppVersionToolsWrapper() {
     data: versionTools,
     isLoading: versionToolsLoading,
     isError: versionToolsError,
-    refetch: refetchVersionTools,
   } = vincentApiClient.useListAppVersionToolsQuery({
     appId: Number(appId),
     version: Number(versionId),
@@ -48,8 +47,6 @@ export function AppVersionToolsWrapper() {
   // Effect
   useEffect(() => {
     if (!isSuccess || !data) return;
-
-    refetchVersionTools();
     setShowSuccess(true);
 
     const timer = setTimeout(() => {
@@ -57,7 +54,7 @@ export function AppVersionToolsWrapper() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isSuccess, data, refetchVersionTools]);
+  }, [isSuccess, data]);
 
   useAddressCheck(app);
 
@@ -124,7 +121,6 @@ export function AppVersionToolsWrapper() {
           tools={versionTools || []}
           appId={Number(appId)}
           versionId={Number(versionId)}
-          onEditSuccess={refetchVersionTools}
         />
       </div>
     </div>

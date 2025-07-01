@@ -13,12 +13,7 @@ export function DeleteToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const {
-    data: tools,
-    isLoading: toolsLoading,
-    isError: toolsError,
-    refetch: refetchTools,
-  } = useUserTools();
+  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
 
   const tool = sortToolFromTools(tools, packageName);
 
@@ -32,10 +27,9 @@ export function DeleteToolWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      refetchTools();
       navigate('/developer/tools'); // Navigate immediately, no delay needed
     }
-  }, [isSuccess, data, refetchTools, navigate]);
+  }, [isSuccess, data, navigate]);
 
   useAddressCheck(tool);
 

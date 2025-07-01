@@ -17,11 +17,8 @@ export function CreateAppVersionWrapper() {
 
   const app = sortAppFromApps(apps, appId);
 
-  const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
+  const { isLoading: versionsLoading, isError: versionsError } =
+    vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Mutation
   const [createAppVersion, { isLoading, isSuccess, isError, data, error }] =
@@ -33,10 +30,9 @@ export function CreateAppVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app) {
-      refetchVersions();
       navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${data.version}/tools`);
     }
-  }, [isSuccess, data, refetchVersions, navigate, app]);
+  }, [isSuccess, data, navigate, app]);
 
   useAddressCheck(app);
 

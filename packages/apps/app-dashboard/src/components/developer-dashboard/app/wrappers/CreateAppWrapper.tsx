@@ -1,15 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreateAppForm, type CreateAppFormData } from '../forms/CreateAppForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 
 export function CreateAppWrapper() {
-  // Fetching
-  const { refetch: refetchApps } = useUserApps();
-
   // Mutation
   const [createApp, { isLoading, isSuccess, isError, data, error }] =
     vincentApiClient.useCreateAppMutation();
@@ -20,10 +16,9 @@ export function CreateAppWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      refetchApps();
       navigateWithDelay(navigate, `/developer/appId/${data.appId}`);
     }
-  }, [isSuccess, data, refetchApps, navigate]);
+  }, [isSuccess, data, navigate]);
 
   // Loading states
   if (isLoading) {

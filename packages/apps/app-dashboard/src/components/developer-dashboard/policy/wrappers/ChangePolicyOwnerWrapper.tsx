@@ -13,12 +13,7 @@ export function ChangePolicyOwnerWrapper() {
 
   // Fetching
   // It's not needed here, but we'll fetch to make sure the tool exists
-  const {
-    data: policies,
-    isLoading: policiesLoading,
-    isError: policiesError,
-    refetch: refetchPolicies,
-  } = useUserPolicies();
+  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
 
   const policy = sortPolicyFromPolicies(policies, packageName);
 
@@ -32,7 +27,6 @@ export function ChangePolicyOwnerWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && policy) {
-      refetchPolicies();
       navigate(`/developer/policies`); // Immediate navigation, otherwise query will say policy DNE
     }
   }, [isSuccess, data, policy]);

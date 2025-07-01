@@ -18,16 +18,9 @@ export function EditAppVersionWrapper() {
   const app = sortAppFromApps(apps, appId);
 
   const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
-
-  const {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-    refetch: refetchVersionData,
   } = vincentApiClient.useGetAppVersionQuery({ appId: Number(appId), version: Number(versionId) });
 
   // Mutation
@@ -40,20 +33,17 @@ export function EditAppVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app && versionData) {
-      refetchVersions();
-      refetchVersionData();
       navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${versionData.version}`);
     }
-  }, [isSuccess, data, refetchVersions, refetchVersionData, navigate, app, versionData]);
+  }, [isSuccess, data, navigate, app, versionData]);
 
   useAddressCheck(app);
 
   // Loading states
-  if (appsLoading || versionsLoading || versionLoading) return <Loading />;
+  if (appsLoading || versionLoading) return <Loading />;
 
   // Error states
   if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
-  if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)

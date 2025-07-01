@@ -13,12 +13,7 @@ export function DeleteAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
 
   // Fetching
-  const {
-    data: apps,
-    isLoading: appsLoading,
-    isError: appsError,
-    refetch: refetchApps,
-  } = useUserApps();
+  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
   const app = sortAppFromApps(apps, appId);
 
@@ -32,10 +27,9 @@ export function DeleteAppWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      refetchApps();
       navigate('/developer/apps'); // Navigate immediately, no delay needed
     }
-  }, [isSuccess, data, refetchApps, navigate]);
+  }, [isSuccess, data, navigate]);
 
   useAddressCheck(app);
 

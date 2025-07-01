@@ -12,12 +12,7 @@ export function EditToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const {
-    data: tools,
-    isLoading: toolsLoading,
-    isError: toolsError,
-    refetch: refetchTools,
-  } = useUserTools();
+  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
 
   const tool = sortToolFromTools(tools, packageName);
 
@@ -37,7 +32,6 @@ export function EditToolWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && tool) {
-      refetchTools();
       navigateWithDelay(navigate, `/developer/toolId/${encodeURIComponent(tool.packageName)}`);
     }
   }, [isSuccess, data, tool]);

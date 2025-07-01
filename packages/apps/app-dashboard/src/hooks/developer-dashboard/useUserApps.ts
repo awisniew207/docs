@@ -6,14 +6,7 @@ import { App } from '@/types/developer-dashboard/appTypes';
 export function useUserApps() {
   const { address } = useAccount();
 
-  const {
-    data: allApps,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    ...rest
-  } = vincentApiClient.useListAppsQuery();
+  const { data: allApps, isLoading, isError, error, ...rest } = vincentApiClient.useListAppsQuery();
 
   // Filter apps by current user
   const userApps = useMemo(() => {
@@ -26,7 +19,6 @@ export function useUserApps() {
     isLoading,
     isError,
     error,
-    refetch,
     ...rest,
   };
 }

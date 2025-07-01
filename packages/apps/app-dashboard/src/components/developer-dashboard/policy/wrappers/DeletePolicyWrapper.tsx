@@ -13,12 +13,7 @@ export function DeletePolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const {
-    data: policies,
-    isLoading: policiesLoading,
-    isError: policiesError,
-    refetch: refetchPolicies,
-  } = useUserPolicies();
+  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
 
   const policy = sortPolicyFromPolicies(policies, packageName);
 
@@ -32,10 +27,9 @@ export function DeletePolicyWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      refetchPolicies();
       navigate('/developer/policies'); // Navigate immediately, no delay needed
     }
-  }, [isSuccess, data, refetchPolicies, navigate]);
+  }, [isSuccess, data, navigate]);
 
   useAddressCheck(policy);
 

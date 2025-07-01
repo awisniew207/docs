@@ -20,12 +20,6 @@ export function CreateToolVersionWrapper() {
 
   const tool = sortToolFromTools(tools, packageName);
 
-  const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetToolVersionsQuery({ packageName: packageName || '' });
-
   // Mutation
   const [createToolVersion, { isLoading, isSuccess, isError, data, error }] =
     vincentApiClient.useCreateToolVersionMutation();
@@ -36,22 +30,20 @@ export function CreateToolVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && tool) {
-      refetchVersions();
       navigateWithDelay(
         navigate,
         `/developer/toolId/${encodeURIComponent(tool.packageName)}/version/${data.version}`,
       );
     }
-  }, [isSuccess, data, refetchVersions, navigate, tool]);
+  }, [isSuccess, data, navigate, tool]);
 
   useAddressCheck(tool);
 
   // Loading states
-  if (toolsLoading || versionsLoading) return <Loading />;
+  if (toolsLoading) return <Loading />;
 
   // Error states
   if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
-  if (versionsError) return <StatusMessage message="Failed to load tool versions" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
 
   // Mutation states

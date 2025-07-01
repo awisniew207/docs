@@ -21,17 +21,13 @@ export function EditPolicyVersionWrapper() {
   const policy = sortPolicyFromPolicies(policies, packageName);
 
   const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetPolicyVersionsQuery({ packageName: packageName! });
-
-  const {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-    refetch: refetchVersionData,
-  } = vincentApiClient.useGetPolicyVersionQuery({ packageName: packageName!, version: version! });
+  } = vincentApiClient.useGetPolicyVersionQuery({
+    packageName: packageName || '',
+    version: version || '',
+  });
 
   // Mutation
   const [editPolicyVersion, { isLoading, isSuccess, isError, data, error }] =
@@ -43,23 +39,20 @@ export function EditPolicyVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && policy && versionData) {
-      refetchVersions();
-      refetchVersionData();
       navigateWithDelay(
         navigate,
         `/developer/policyId/${encodeURIComponent(policy.packageName)}/version/${versionData.version}`,
       );
     }
-  }, [isSuccess, data, refetchVersions, refetchVersionData, navigate, policy, versionData]);
+  }, [isSuccess, data, navigate, policy, versionData]);
 
   useAddressCheck(policy);
 
   // Loading states
-  if (policiesLoading || versionsLoading || versionLoading) return <Loading />;
+  if (policiesLoading || versionLoading) return <Loading />;
 
   // Error states
   if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
-  if (versionsError) return <StatusMessage message="Failed to load policy versions" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
   if (!versionData) return <StatusMessage message={`Version ${version} not found`} type="error" />;

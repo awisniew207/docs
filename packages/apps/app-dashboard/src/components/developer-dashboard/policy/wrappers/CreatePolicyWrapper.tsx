@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreatePolicyForm, type CreatePolicyFormData } from '../forms/CreatePolicyForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function CreatePolicyWrapper() {
   // Fetching
-  const { refetch: refetchPolicies } = useUserPolicies();
 
   // Mutation
   const [createPolicy, { isLoading, isSuccess, isError, data, error }] =
@@ -20,10 +18,9 @@ export function CreatePolicyWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      refetchPolicies();
       navigateWithDelay(navigate, `/developer/policyId/${encodeURIComponent(data.packageName)}`); // Need to encodeURIComponent because packageName can contain special characters
     }
-  }, [isSuccess, data, refetchPolicies, navigate]);
+  }, [isSuccess, data, navigate]);
 
   // Loading states
   if (isLoading) {

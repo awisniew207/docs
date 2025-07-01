@@ -12,12 +12,7 @@ export function EditPolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const {
-    data: policies,
-    isLoading: policiesLoading,
-    isError: policiesError,
-    refetch: refetchPolicies,
-  } = useUserPolicies();
+  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
 
   const policy = sortPolicyFromPolicies(policies, packageName);
 
@@ -37,10 +32,9 @@ export function EditPolicyWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && policy) {
-      refetchPolicies();
       navigateWithDelay(navigate, `/developer/policyId/${encodeURIComponent(policy.packageName)}`);
     }
-  }, [isSuccess, data, policy]);
+  }, [isSuccess, data, navigate, policy]);
 
   // Loading states
   if (policiesLoading || versionsLoading) return <Loading />;

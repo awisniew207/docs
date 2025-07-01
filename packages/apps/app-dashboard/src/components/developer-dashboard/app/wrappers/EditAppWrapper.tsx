@@ -12,12 +12,7 @@ export function EditAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
 
   // Fetching
-  const {
-    data: apps,
-    isLoading: appsLoading,
-    isError: appsError,
-    refetch: refetchApps,
-  } = useUserApps();
+  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
   const app = sortAppFromApps(apps, appId);
 
@@ -37,7 +32,6 @@ export function EditAppWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app) {
-      refetchApps();
       navigateWithDelay(navigate, `/developer/appId/${app.appId}`);
     }
   }, [isSuccess, data, app]);

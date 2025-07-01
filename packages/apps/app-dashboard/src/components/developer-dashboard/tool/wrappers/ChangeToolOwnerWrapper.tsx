@@ -13,12 +13,7 @@ export function ChangeToolOwnerWrapper() {
 
   // Fetching
   // It's not needed here, but we'll fetch to make sure the tool exists
-  const {
-    data: tools,
-    isLoading: toolsLoading,
-    isError: toolsError,
-    refetch: refetchTools,
-  } = useUserTools();
+  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
 
   const tool = sortToolFromTools(tools, packageName);
 
@@ -32,10 +27,9 @@ export function ChangeToolOwnerWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && tool) {
-      refetchTools();
       navigate(`/developer/tools`); // Immediate navigation, otherwise query will say tool DNE
     }
-  }, [isSuccess, data, tool]);
+  }, [isSuccess, data, navigate, tool]);
 
   // Loading states
   if (toolsLoading) return <Loading />;

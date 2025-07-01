@@ -20,11 +20,8 @@ export function CreatePolicyVersionWrapper() {
 
   const policy = sortPolicyFromPolicies(policies, packageName);
 
-  const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetPolicyVersionsQuery({ packageName: packageName || '' });
+  const { isLoading: versionsLoading, isError: versionsError } =
+    vincentApiClient.useGetPolicyVersionsQuery({ packageName: packageName || '' });
 
   // Mutation
   const [createPolicyVersion, { isLoading, isSuccess, isError, data, error }] =
@@ -36,13 +33,12 @@ export function CreatePolicyVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && policy) {
-      refetchVersions();
       navigateWithDelay(
         navigate,
         `/developer/policyId/${encodeURIComponent(policy.packageName)}/version/${data.version}`,
       );
     }
-  }, [isSuccess, data, refetchVersions, navigate, policy]);
+  }, [isSuccess, data, navigate, policy]);
 
   useAddressCheck(policy);
 

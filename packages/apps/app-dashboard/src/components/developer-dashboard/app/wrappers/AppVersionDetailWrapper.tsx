@@ -17,18 +17,14 @@ export function AppVersionDetailWrapper() {
   const app = sortAppFromApps(apps, appId);
 
   // Fetch app versions
-  const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
+  const { isLoading: versionsLoading, isError: versionsError } =
+    vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Fetch specific version data
   const {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-    refetch: refetchVersionData,
   } = vincentApiClient.useGetAppVersionQuery({ appId: Number(appId), version: Number(versionId) });
 
   // Fetch version tools
@@ -56,8 +52,6 @@ export function AppVersionDetailWrapper() {
   useEffect(() => {
     if (!(isEnablingSuccess || isDisablingSuccess)) return;
 
-    refetchVersionData();
-    refetchVersions();
     setShowSuccess(true);
 
     const timer = setTimeout(() => {
@@ -65,7 +59,7 @@ export function AppVersionDetailWrapper() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isEnablingSuccess, isDisablingSuccess, refetchVersionData, refetchVersions]);
+  }, [isEnablingSuccess, isDisablingSuccess]);
 
   // Navigation
   const navigate = useNavigate();

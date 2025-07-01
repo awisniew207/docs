@@ -3,21 +3,14 @@ import { Edit, X } from 'lucide-react';
 import { EditAppVersionToolWrapper } from '../wrappers/EditAppVersionToolWrapper';
 import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import { useState } from 'react';
-import { QueryActionCreatorResult } from '@reduxjs/toolkit/query';
 
 interface ManageAppVersionToolsProps {
   tools: AppVersionTool[];
   appId: number;
   versionId: number;
-  onEditSuccess: () => QueryActionCreatorResult<any>;
 }
 
-export function ManageAppVersionTools({
-  tools,
-  appId,
-  versionId,
-  onEditSuccess,
-}: ManageAppVersionToolsProps) {
+export function ManageAppVersionTools({ tools, appId, versionId }: ManageAppVersionToolsProps) {
   const [editingTool, setEditingTool] = useState<string | null>(null);
 
   const handleEditTool = (toolPackageName: string) => {
@@ -30,7 +23,6 @@ export function ManageAppVersionTools({
 
   const handleEditSuccess = () => {
     setEditingTool(null);
-    onEditSuccess();
   };
 
   if (tools.length === 0) {
