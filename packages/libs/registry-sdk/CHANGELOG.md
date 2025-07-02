@@ -5,6 +5,8 @@
 - #### Minor schema improvements ([4e092830](https://github.com/LIT-Protocol/Vincent/commit/4e092830))
 
   - Added minimum lengths for App/Tool/Policy name/title and description/changes. Requirement of unique App `redirectUris`, and Tool title is required
+  - Added `isDeleted` to all App/Tool/Policy objects
+  - Exports `changeOwner` from the `baseSchemas`
 
 ### ❤️ Thank You
 

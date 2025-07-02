@@ -279,6 +279,11 @@
             "description": "App manager's wallet address. Derived from the authorization signature provided by the creator.",
             "example": "0x123456789012345678901234567890123456abcd",
             "readOnly": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this App is deleted",
+            "example": false
           }
         },
         "required": [
@@ -353,6 +358,11 @@
             "type": "string",
             "description": "Describes what changed between this version and the previous version.",
             "example": "I am a changelog trapped in a computer!"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this AppVersion is deleted",
+            "example": false
           }
         },
         "required": [
@@ -457,6 +467,11 @@
               "@vincent/foo-bar-policy-1",
               "@vincent/foo-bar-policy-2"
             ]
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this AppVersionTool is deleted",
+            "example": false
           }
         },
         "required": [
@@ -597,6 +612,11 @@
             ],
             "description": "Identifies if a tool is in development, test, or production.",
             "example": "dev"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this Tool is deleted",
+            "example": false
           }
         },
         "required": [
@@ -796,6 +816,11 @@
               "@lit-protocol/vincent-spending-limit-policy@1.0.1"
             ],
             "readOnly": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this ToolVersion is deleted",
+            "example": false
           }
         },
         "required": [
@@ -944,6 +969,11 @@
             ],
             "description": "Identifies if a policy is in development, test, or production.",
             "example": "dev"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this Policy is deleted",
+            "example": false
           }
         },
         "required": [
@@ -1138,6 +1168,11 @@
             ],
             "description": "Schema parameters",
             "readOnly": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this PolicyVersion is deleted",
+            "example": false
           }
         },
         "required": [
