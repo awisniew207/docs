@@ -7,7 +7,7 @@ title: MCP - Model Context Protocol
 
 Any Vincent App can be converted into a Model Protocol Server (MCP) that can be consumed by any Large Language Model (LLM) with support for the MCP standard.
 
-We provide an [implementation of an MCP Server](https://github.com/LIT-Protocol/Vincent/tree/feature/main/packages/apps/mcp), connectable through STDIO and HTTP transports. You can use it (forking or [using `npx`](https://www.npmjs.com/package/@lit-protocol/vincent-mcp-server)) with your keys and Vincent Apps or you can customize the whole process to make your own Vincent MCP Server.
+We provide an [implementation of an MCP Server](https://github.com/LIT-Protocol/Vincent/tree/main/packages/apps/mcp), connectable through STDIO and HTTP transports. You can use it (forking or [using `npx`](https://www.npmjs.com/package/@lit-protocol/vincent-mcp-server)) with your keys and Vincent Apps or you can customize the whole process to make your own Vincent MCP Server.
 
 By following this process, your Vincent App tools will be exposed to LLMs as a set of MCP tools. The MCP server can also be extended with custom tools and prompts to suit your specific needs.
 
@@ -55,7 +55,7 @@ const appDef: VincentAppDef = {
 const server = await getVincentAppServer(wallet, appDef);
 ```
 
-You can check the [Uniswap Swap example app json](https://github.com/LIT-Protocol/Vincent/blob/feature/main/packages/apps/mcp/vincent-app.example.json) for a complete Vincent App definition.
+You can check the [Uniswap Swap example app json](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/mcp/vincent-app.example.json) for a complete Vincent App definition.
 
 ## Extending the MCP Server
 
@@ -162,7 +162,7 @@ Before deploying, you'll need to create the following two files in the root of y
     CMD ["npx", "@lit-protocol/vincent-mcp-server", "http"]
     ```
 
-2.  Create the Vincent App JSON definition file. Fill it with the data of your Vincent: ID, version, name, description and tools data. Check the [Uniswap Swap example app json](https://github.com/LIT-Protocol/Vincent/blob/feature/main/packages/apps/mcp/vincent-app.example.json) for a complete Vincent App definition.
+2.  Create the Vincent App JSON definition file. Fill it with the data of your Vincent: ID, version, name, description and tools data. Check the [Uniswap Swap example app json](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/mcp/vincent-app.example.json) for a complete Vincent App definition.
 
 3.  Add both files to git. Commit and push them to your repository to use as source for Heroku or Render.
 
