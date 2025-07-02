@@ -7,6 +7,7 @@ import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
+import { PolicyVersion } from '@lit-protocol/vincent-registry-sdk/dist/src/generated/vincentApiClientReact';
 
 export function PolicyVersionsWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -19,15 +20,13 @@ export function PolicyVersionsWrapper() {
     data: versions,
     isLoading: versionsLoading,
     isError: versionsError,
-  } = vincentApiClient.useGetPolicyVersionsQuery({ packageName: packageName! });
+  } = vincentApiClient.useGetPolicyVersionsQuery({ packageName: packageName || '' });
 
   // Separate active and deleted versions
   const { activeVersions, deletedVersions } = useMemo(() => {
     if (!versions?.length) return { activeVersions: [], deletedVersions: [] };
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
-    const activeVersions = versions.filter((version: AppVersion) => !version.isDeleted);
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
-    const deletedVersions = versions.filter((version: AppVersion) => version.isDeleted);
+    const activeVersions = versions.filter((version: PolicyVersion) => !version.isDeleted);
+    const deletedVersions = versions.filter((version: PolicyVersion) => version.isDeleted);
 
     return { activeVersions, deletedVersions };
   }, [versions]);

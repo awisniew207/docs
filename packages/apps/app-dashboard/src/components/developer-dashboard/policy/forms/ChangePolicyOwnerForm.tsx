@@ -11,7 +11,7 @@ import { AlertTriangle } from 'lucide-react';
 
 //const { authorWalletAddress } = changeOwner.shape;
 
-// FIXME: Fix the registry sdk export, the base schema doesn't seem to be exported
+// FIXME: Fix the registry sdk export. It's now exported, but we need .min(1) and .regex
 export const ChangePolicyOwnerSchema = z
   .object({
     authorWalletAddress: z

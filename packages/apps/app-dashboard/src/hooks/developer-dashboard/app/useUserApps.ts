@@ -16,10 +16,7 @@ export function useUserApps() {
       (app: App) => app.managerAddress.toLowerCase() === address.toLowerCase(),
     );
 
-    // FIXME: Remove this once the API is updated
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
     const userApps = filteredApps.filter((app: App) => !app.isDeleted!);
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
     const deletedApps = filteredApps.filter((app: App) => app.isDeleted);
 
     return { userApps, deletedApps };

@@ -1,13 +1,14 @@
 import { FileText, GitBranch } from 'lucide-react';
 import { useMemo } from 'react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { Policy, PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
 interface PolicyListProps {
-  policies: any[]; // FIXME: When we export the types for the policies, we can use them here
-  selectedPolicy: any | null;
+  policies: Policy[];
+  selectedPolicy: Policy | null;
   selectedPolicyView: string | null;
   expandedMenus: Set<string>;
-  onPolicySelection: (policy: any) => void;
+  onPolicySelection: (policy: Policy) => void;
   onPolicyViewSelection: (viewId: string) => void;
   onToggleMenu: (menuId: string) => void;
 }
@@ -25,16 +26,15 @@ export function PolicyList({
     data: policyVersions,
     isLoading: versionsLoading,
     error: versionsError,
-  } = vincentApiClient.useGetPolicyVersionsQuery(
-    { packageName: selectedPolicy?.packageName },
-    { skip: !selectedPolicy?.packageName || typeof selectedPolicy.packageName !== 'string' },
-  );
+  } = vincentApiClient.useGetPolicyVersionsQuery({
+    packageName: selectedPolicy?.packageName || '',
+  });
 
   const sortedVersions = useMemo(() => {
     if (!policyVersions || policyVersions.length === 0) return [];
     // Filter out deleted versions from sidebar dropdown
-    const activeVersions = policyVersions.filter((version: any) => !version.isDeleted);
-    return [...activeVersions].sort((a: any, b: any) =>
+    const activeVersions = policyVersions.filter((version: PolicyVersion) => !version.isDeleted);
+    return [...activeVersions].sort((a: PolicyVersion, b: PolicyVersion) =>
       b.version.localeCompare(a.version, undefined, { numeric: true }),
     );
   }, [policyVersions]);
@@ -50,7 +50,7 @@ export function PolicyList({
         icon: GitBranch,
         submenu:
           sortedVersions.length > 0
-            ? sortedVersions.map((version: any) => ({
+            ? sortedVersions.map((version: PolicyVersion) => ({
                 id: `version-${version.version}`,
                 label: `Version ${version.version}${version.version === selectedPolicy.activeVersion ? ' (Active)' : ''}`,
               }))
@@ -81,7 +81,7 @@ export function PolicyList({
 
   return (
     <div className="ml-4 mt-1 space-y-1">
-      {policies.map((policy: any) => (
+      {policies.map((policy: Policy) => (
         <div key={policy.packageName}>
           <button
             onClick={() => onPolicySelection(policy)}
@@ -91,11 +91,11 @@ export function PolicyList({
                 : 'text-gray-500 hover:bg-gray-50'
             }`}
             style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
-            aria-label={`Select policy ${policy.policyTitle}`}
+            aria-label={`Select policy ${policy.title}`}
             aria-pressed={selectedPolicy?.packageName === policy.packageName}
           >
             <div className="truncate">
-              <div className="font-medium">{policy.policyTitle}</div>
+              <div className="font-medium">{policy.title}</div>
               <div className="text-xs opacity-75">{policy.packageName}</div>
             </div>
           </button>

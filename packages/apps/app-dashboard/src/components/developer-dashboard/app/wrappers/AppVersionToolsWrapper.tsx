@@ -37,12 +37,8 @@ export function AppVersionToolsWrapper() {
   // Separate active and deleted tools
   const { activeTools, deletedTools } = useMemo(() => {
     if (!versionTools?.length) return { activeTools: [], deletedTools: [] };
-
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
     const activeTools = versionTools.filter((tool: AppVersionTool) => !tool.isDeleted);
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
     const deletedTools = versionTools.filter((tool: AppVersionTool) => tool.isDeleted);
-
     return { activeTools, deletedTools };
   }, [versionTools]);
 

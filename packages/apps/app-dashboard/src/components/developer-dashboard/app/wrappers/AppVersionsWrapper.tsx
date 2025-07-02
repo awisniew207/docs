@@ -26,11 +26,8 @@ export function AppVersionsWrapper() {
   // Separate active and deleted versions
   const { activeVersions, deletedVersions } = useMemo(() => {
     if (!versions?.length) return { activeVersions: [], deletedVersions: [] };
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
     const activeVersions = versions.filter((version: AppVersion) => !version.isDeleted);
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
     const deletedVersions = versions.filter((version: AppVersion) => version.isDeleted);
-
     return { activeVersions, deletedVersions };
   }, [versions]);
 

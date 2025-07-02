@@ -7,6 +7,7 @@ import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
+import { ToolVersion } from '@lit-protocol/vincent-registry-sdk/dist/src/generated/vincentApiClientReact';
 
 export function ToolVersionsWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -24,10 +25,8 @@ export function ToolVersionsWrapper() {
   // Separate active and deleted versions
   const { activeVersions, deletedVersions } = useMemo(() => {
     if (!versions?.length) return { activeVersions: [], deletedVersions: [] };
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
-    const activeVersions = versions.filter((version: AppVersion) => !version.isDeleted);
-    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
-    const deletedVersions = versions.filter((version: AppVersion) => version.isDeleted);
+    const activeVersions = versions.filter((version: ToolVersion) => !version.isDeleted);
+    const deletedVersions = versions.filter((version: ToolVersion) => version.isDeleted);
 
     return { activeVersions, deletedVersions };
   }, [versions]);

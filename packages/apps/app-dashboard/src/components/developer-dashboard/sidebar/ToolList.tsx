@@ -1,13 +1,14 @@
 import { FileText, GitBranch } from 'lucide-react';
 import { useMemo } from 'react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
 
 interface ToolListProps {
-  tools: any[]; // FIXME: When we export the types for the tools, we can use them here
-  selectedTool: any | null;
+  tools: Tool[];
+  selectedTool: Tool | null;
   selectedToolView: string | null;
   expandedMenus: Set<string>;
-  onToolSelection: (tool: any) => void;
+  onToolSelection: (tool: Tool) => void;
   onToolViewSelection: (viewId: string) => void;
   onToggleMenu: (menuId: string) => void;
 }
@@ -25,16 +26,13 @@ export function ToolList({
     data: toolVersions,
     isLoading: versionsLoading,
     error: versionsError,
-  } = vincentApiClient.useGetToolVersionsQuery(
-    { packageName: selectedTool?.packageName },
-    { skip: !selectedTool?.packageName || typeof selectedTool.packageName !== 'string' },
-  );
+  } = vincentApiClient.useGetToolVersionsQuery({ packageName: selectedTool?.packageName || '' });
 
   const sortedVersions = useMemo(() => {
     if (!toolVersions || toolVersions.length === 0) return [];
     // Filter out deleted versions from sidebar dropdown
-    const activeVersions = toolVersions.filter((version: any) => !version.isDeleted);
-    return [...activeVersions].sort((a: any, b: any) =>
+    const activeVersions = toolVersions.filter((version: ToolVersion) => !version.isDeleted);
+    return [...activeVersions].sort((a: ToolVersion, b: ToolVersion) =>
       b.version.localeCompare(a.version, undefined, { numeric: true }),
     );
   }, [toolVersions]);
@@ -50,7 +48,7 @@ export function ToolList({
         icon: GitBranch,
         submenu:
           sortedVersions.length > 0
-            ? sortedVersions.map((version: any) => ({
+            ? sortedVersions.map((version: ToolVersion) => ({
                 id: `version-${version.version}`,
                 label: `Version ${version.version}${version.version === selectedTool.activeVersion ? ' (Active)' : ''}`,
               }))
@@ -81,7 +79,7 @@ export function ToolList({
 
   return (
     <div className="ml-4 mt-1 space-y-1">
-      {tools.map((tool: any) => (
+      {tools.map((tool: Tool) => (
         <div key={tool.packageName}>
           <button
             onClick={() => onToolSelection(tool)}
@@ -91,11 +89,11 @@ export function ToolList({
                 : 'text-gray-500 hover:bg-gray-50'
             }`}
             style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
-            aria-label={`Select tool ${tool.toolTitle}`}
+            aria-label={`Select tool ${tool.title}`}
             aria-pressed={selectedTool?.packageName === tool.packageName}
           >
             <div className="truncate">
-              <div className="font-medium">{tool.toolTitle}</div>
+              <div className="font-medium">{tool.title}</div>
               <div className="text-xs opacity-75">{tool.packageName}</div>
             </div>
           </button>

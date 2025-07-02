@@ -1,14 +1,14 @@
 import { FileText, GitBranch } from 'lucide-react';
 import { useMemo } from 'react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { AppVersion } from '@/types/developer-dashboard/appTypes';
+import { App, AppVersion } from '@/types/developer-dashboard/appTypes';
 
 interface AppListProps {
-  apps: any[]; // FIXME: When we export the types for the apps, we can use them here
-  selectedApp: any | null;
+  apps: App[];
+  selectedApp: App | null;
   selectedAppView: string | null;
   expandedMenus: Set<string>;
-  onAppSelection: (app: any) => void;
+  onAppSelection: (app: App) => void;
   onAppViewSelection: (viewId: string) => void;
   onToggleMenu: (menuId: string) => void;
 }
@@ -26,20 +26,14 @@ export function AppList({
     data: appVersions,
     isLoading: versionsLoading,
     error: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery(
-    { appId: selectedApp?.appId },
-    { skip: !selectedApp?.appId || typeof selectedApp.appId !== 'number' },
-  );
+  } = vincentApiClient.useGetAppVersionsQuery({ appId: selectedApp?.appId || 0 });
 
   const sortedVersions = useMemo(() => {
     if (!appVersions || appVersions.length === 0) return [];
     // Filter out deleted versions and sort by version number (descending)
-    return (
-      appVersions
-        // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
-        .filter((version: AppVersion) => !version.isDeleted)
-        .sort((a: AppVersion, b: AppVersion) => b.version - a.version)
-    );
+    return appVersions
+      .filter((version: AppVersion) => !version.isDeleted)
+      .sort((a: AppVersion, b: AppVersion) => b.version - a.version);
   }, [appVersions]);
 
   const appMenuItems = useMemo(() => {
@@ -53,9 +47,9 @@ export function AppList({
         icon: GitBranch,
         submenu:
           sortedVersions.length > 0
-            ? sortedVersions.map((version: any) => ({
+            ? sortedVersions.map((version) => ({
                 id: `version-${version.version}`,
-                label: `Version ${version.version}${version.version === selectedApp.latestVersion ? ' (Latest)' : ''}`,
+                label: `Version ${version.version}${version.version === selectedApp.activeVersion ? ' (Latest)' : ''}`,
               }))
             : [{ id: 'no-versions', label: 'No versions available', disabled: true }],
       },
@@ -87,7 +81,7 @@ export function AppList({
 
   return (
     <div className="ml-4 mt-1 space-y-1">
-      {apps.map((app: any) => (
+      {apps.map((app) => (
         <div key={app.appId}>
           <button
             onClick={() => onAppSelection(app)}

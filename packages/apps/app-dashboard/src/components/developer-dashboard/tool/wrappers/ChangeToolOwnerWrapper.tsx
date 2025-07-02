@@ -59,7 +59,6 @@ export function ChangeToolOwnerWrapper() {
     await changeToolOwner({
       packageName: tool.packageName,
       changeOwner: {
-        // FIXME: Once the export is working, this needs to be revisited
         authorWalletAddress: data.authorWalletAddress,
       },
     });

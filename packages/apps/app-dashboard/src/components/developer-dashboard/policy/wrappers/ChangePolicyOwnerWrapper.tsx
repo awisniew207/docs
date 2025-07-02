@@ -59,7 +59,6 @@ export function ChangePolicyOwnerWrapper() {
     await changePolicyOwner({
       packageName: policy.packageName,
       changeOwner: {
-        // FIXME: Once the export is working, this needs to be revisited
         authorWalletAddress: data.authorWalletAddress,
       },
     });

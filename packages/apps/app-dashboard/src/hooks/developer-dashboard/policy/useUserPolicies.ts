@@ -22,10 +22,7 @@ export function useUserPolicies() {
     );
   }, [allPolicies, address]);
 
-  // FIXME: Remove this once the API is updated
-  // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
-  const userPolicies = filteredPolicies.filter((policy: Policy) => !policy.isDeleted!);
-  // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+  const userPolicies = filteredPolicies.filter((policy: Policy) => !policy.isDeleted);
   const deletedPolicies = filteredPolicies.filter((policy: Policy) => policy.isDeleted);
 
   return {
