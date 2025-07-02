@@ -88,7 +88,6 @@ export function DeletePolicyVersionWrapper() {
   }
 
   const handleSubmit = async (formData: DeletePolicyVersionFormData) => {
-    await deletePolicyVersion({ packageName: policy.packageName, version: version || '' });
     if (policy.activeVersion === version && formData.activeVersion) {
       await editPolicy({
         packageName: policy.packageName,
@@ -97,6 +96,7 @@ export function DeletePolicyVersionWrapper() {
         },
       });
     }
+    await deletePolicyVersion({ packageName: policy.packageName, version: version || '' });
   };
   return (
     <div className="space-y-6">

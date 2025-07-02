@@ -85,7 +85,6 @@ export function DeleteToolVersionWrapper() {
   }
 
   const handleSubmit = async (formData: DeleteToolVersionFormData) => {
-    await deleteToolVersion({ packageName: tool.packageName, version: version || '' });
     if (tool.activeVersion === version && formData.activeVersion) {
       await editTool({
         packageName: tool.packageName,
@@ -94,6 +93,7 @@ export function DeleteToolVersionWrapper() {
         },
       });
     }
+    await deleteToolVersion({ packageName: tool.packageName, version: version || '' });
   };
   return (
     <div className="space-y-6">

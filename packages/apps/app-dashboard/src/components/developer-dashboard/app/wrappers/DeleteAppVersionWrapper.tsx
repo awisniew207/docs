@@ -86,7 +86,6 @@ export function DeleteAppVersionWrapper() {
   }
 
   const handleSubmit = async (formData: DeleteAppVersionFormData) => {
-    await deleteAppVersion({ appId: app.appId, version: Number(versionId) });
     if (app.activeVersion === Number(versionId) && formData.activeVersion) {
       await editApp({
         appId: app.appId,
@@ -95,6 +94,7 @@ export function DeleteAppVersionWrapper() {
         },
       });
     }
+    await deleteAppVersion({ appId: app.appId, version: Number(versionId) });
   };
   return (
     <div className="space-y-6">
