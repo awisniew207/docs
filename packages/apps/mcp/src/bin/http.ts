@@ -142,10 +142,17 @@ app.post('/mcp', async (req: Request, res: Response) => {
     let transport: StreamableHTTPServerTransport;
 
     // Get the corresponding transport (from sessionId or create a new one if asked)
-    if (sessionId && transportManager.getTransport(sessionId)) {
+    if (sessionId) {
       // Reuse existing transport
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      transport = transportManager.getTransport(sessionId)!;
+      const existingTransport = transportManager.getTransport(sessionId);
+      if (!existingTransport) {
+        return returnWithError(
+          res,
+          400,
+          'Bad Request: No valid session ID provided. Transport not found.',
+        );
+      }
+      transport = existingTransport;
     } else if (!sessionId && isInitializeRequest(req.body)) {
       // New initialization request
       transport = new StreamableHTTPServerTransport({
@@ -260,7 +267,11 @@ const handleSessionRequest = async (req: express.Request, res: express.Response)
 
   const transport = transportManager.getTransport(sessionId);
   if (!transport) {
-    return returnWithError(res, 400, 'Bad Request: No valid session ID provided');
+    return returnWithError(
+      res,
+      400,
+      'Bad Request: No valid session ID provided. Transport not found.',
+    );
   }
 
   await transport.handleRequest(req, res);
