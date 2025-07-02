@@ -20,7 +20,7 @@ const policy = z
       example: EXAMPLE_WALLET_ADDRESS,
       readOnly: true,
     }),
-    description: z.string().openapi({
+    description: z.string().trim().min(10).openapi({
       description: 'Policy description - displayed to users in the dashboard/Vincent Explorer UI',
       example: 'This policy is a foo bar policy',
     }),
@@ -28,7 +28,7 @@ const policy = z
       description: 'Active version of the policy; must be an exact semver',
       example: '1.0.0',
     }),
-    title: z.string().openapi({
+    title: z.string().trim().min(2).openapi({
       description: 'Policy title for displaying to users in the dashboard/Vincent Explorer UI',
       example: 'Vincent Spending Limit Policy',
     }),

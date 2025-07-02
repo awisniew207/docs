@@ -24,11 +24,11 @@ const app = z
         example: 1,
       })
       .optional(),
-    name: z.string().openapi({
+    name: z.string().trim().min(2).openapi({
       description: 'The name of the application',
       example: 'Memecoin DCA App',
     }),
-    description: z.string().optional().openapi({
+    description: z.string().trim().min(10).openapi({
       description: 'Description of the application',
       example: 'This is a memecoin DCA App.',
     }),
@@ -59,6 +59,9 @@ const app = z
       .optional(),
     redirectUris: z
       .array(z.string().url())
+      .refine((urls) => new Set(urls).size === urls.length, {
+        message: 'Redirect URIs must be unique',
+      })
       .openapi({
         description:
           'Redirect URIs users can be sent to after signing up for your application (with their JWT token).',

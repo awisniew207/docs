@@ -664,7 +664,7 @@ export type App = {
   /** The name of the application */
   name: string;
   /** Description of the application */
-  description?: string;
+  description: string;
   /** Contact email for the application manager */
   contactEmail?: string;
   /** This should be a landing page for the app. */
@@ -690,7 +690,7 @@ export type AppRead = {
   /** The name of the application */
   name: string;
   /** Description of the application */
-  description?: string;
+  description: string;
   /** Contact email for the application manager */
   contactEmail?: string;
   /** This should be a landing page for the app. */
@@ -726,7 +726,7 @@ export type AppCreate = {
   /** The name of the application */
   name: string;
   /** Description of the application */
-  description?: string;
+  description: string;
 };
 export type AppEdit = {
   /** The name of the application */
@@ -836,7 +836,7 @@ export type Tool = {
   /** Tool NPM package name */
   packageName: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
-  title?: string;
+  title: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Active version of the tool */
@@ -854,7 +854,7 @@ export type ToolRead = {
   /** Tool NPM package name */
   packageName: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
-  title?: string;
+  title: string;
   /** Author wallet address. Derived from the authorization signature provided by the creator. */
   authorWalletAddress: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
@@ -870,7 +870,7 @@ export type ToolCreate = {
   /** Active version of the tool */
   activeVersion: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
-  title?: string;
+  title: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Identifies if a tool is in development, test, or production. */
