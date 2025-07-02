@@ -242,12 +242,11 @@ app.post('/mcp', async (req: Request, res: Response) => {
 });
 
 /**
- * Handles GET and DELETE requests for MCP sessions
+ * Handles GET requests for MCP sessions
  *
  * This function processes requests that require an existing session,
- * such as GET requests for streaming responses or DELETE requests to
- * terminate a session. It validates the session ID and delegates the
- * request handling to the appropriate transport.
+ * such as GET requests for streaming responses. It validates the session
+ * ID and delegates the request handling to the appropriate transport.
  *
  * @param req - The Express request object
  * @param res - The Express response object
@@ -259,8 +258,11 @@ const handleSessionRequest = async (req: express.Request, res: express.Response)
     return returnWithError(res, 400, 'Invalid or missing session ID');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const transport = transportManager.getTransport(sessionId)!;
+  const transport = transportManager.getTransport(sessionId);
+  if (!transport) {
+    return returnWithError(res, 400, 'Bad Request: No valid session ID provided');
+  }
+
   await transport.handleRequest(req, res);
 };
 app.get('/mcp', handleSessionRequest);
