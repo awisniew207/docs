@@ -32,7 +32,9 @@ export function ToolList({
 
   const sortedVersions = useMemo(() => {
     if (!toolVersions || toolVersions.length === 0) return [];
-    return [...toolVersions].sort((a: any, b: any) =>
+    // Filter out deleted versions from sidebar dropdown
+    const activeVersions = toolVersions.filter((version: any) => !version.isDeleted);
+    return [...activeVersions].sort((a: any, b: any) =>
       b.version.localeCompare(a.version, undefined, { numeric: true }),
     );
   }, [toolVersions]);

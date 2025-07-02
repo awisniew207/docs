@@ -8,6 +8,8 @@ import { PolicyVersionDetailsWrapper } from './PolicyVersionDetailsWrapper';
 import { EditPolicyVersionWrapper } from './EditPolicyVersionWrapper';
 import { DeletePolicyWrapper } from './DeletePolicyWrapper';
 import { DeletePolicyVersionWrapper } from './DeletePolicyVersionWrapper';
+import { UndeletePolicyButton } from './ui/UndeletePolicyButton';
+import { UndeletePolicyVersionButton } from './ui/UndeletePolicyVersionButton';
 
 export {
   PolicyOverviewWrapper,
@@ -20,4 +22,6 @@ export {
   EditPolicyVersionWrapper,
   DeletePolicyWrapper,
   DeletePolicyVersionWrapper,
+  UndeletePolicyButton,
+  UndeletePolicyVersionButton,
 };
