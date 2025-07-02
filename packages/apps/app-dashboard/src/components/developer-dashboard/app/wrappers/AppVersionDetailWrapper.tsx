@@ -1,36 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Edit, Plus, Power, PowerOff } from 'lucide-react';
+import { Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react';
 import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVersionDetails';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionDetailWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
   const app = sortAppFromApps(apps, appId);
 
   // Fetch app versions
-  const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
+  const { isLoading: versionsLoading, isError: versionsError } =
+    vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Fetch specific version data
   const {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-    refetch: refetchVersionData,
   } = vincentApiClient.useGetAppVersionQuery({ appId: Number(appId), version: Number(versionId) });
 
   // Fetch version tools
@@ -46,30 +40,18 @@ export function AppVersionDetailWrapper() {
   // Mutation
   const [
     enableAppVersion,
-    {
-      isLoading: isEnabling,
-      isSuccess: isEnablingSuccess,
-      isError: isEnablingError,
-      error: enablingError,
-    },
-  ] = vincentApi.useEnableAppVersionMutation();
+    { isLoading: isEnabling, isSuccess: isEnablingSuccess, isError: isEnablingError },
+  ] = vincentApiClient.useEnableAppVersionMutation();
   const [
     disableAppVersion,
-    {
-      isLoading: isDisabling,
-      isSuccess: isDisablingSuccess,
-      isError: isDisablingError,
-      error: disablingError,
-    },
-  ] = vincentApi.useDisableAppVersionMutation();
+    { isLoading: isDisabling, isSuccess: isDisablingSuccess, isError: isDisablingError },
+  ] = vincentApiClient.useDisableAppVersionMutation();
 
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (!(isEnablingSuccess || isDisablingSuccess)) return;
 
-    refetchVersionData();
-    refetchVersions();
     setShowSuccess(true);
 
     const timer = setTimeout(() => {
@@ -77,7 +59,7 @@ export function AppVersionDetailWrapper() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isEnablingSuccess, isDisablingSuccess, refetchVersionData, refetchVersions]);
+  }, [isEnablingSuccess, isDisablingSuccess]);
 
   // Navigation
   const navigate = useNavigate();
@@ -128,12 +110,8 @@ export function AppVersionDetailWrapper() {
       {showSuccess && (
         <StatusMessage message="Version enabled/disabled successfully!" type="success" />
       )}
-      {isEnablingError && enablingError && (
-        <StatusMessage message={`Failed to enable version`} type="error" />
-      )}
-      {isDisablingError && disablingError && (
-        <StatusMessage message={`Failed to disable version`} type="error" />
-      )}
+      {isEnablingError && <StatusMessage message={`Failed to enable version`} type="error" />}
+      {isDisablingError && <StatusMessage message={`Failed to disable version`} type="error" />}
 
       {/* Version Management Card */}
       <div className="bg-white border rounded-lg">
@@ -204,6 +182,15 @@ export function AppVersionDetailWrapper() {
                 {isEnabling ? 'Enabling...' : 'Enable Version'}
               </button>
             )}
+            <button
+              onClick={() =>
+                navigate(`/developer/appId/${appId}/version/${versionId}/delete-version`)
+              }
+              className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Version
+            </button>
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -12,22 +11,18 @@ import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function CreateAppVersionWrapper() {
   const { appId } = useParams<{ appId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
   const app = sortAppFromApps(apps, appId);
 
-  const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
+  const { isLoading: versionsLoading, isError: versionsError } =
+    vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Mutation
   const [createAppVersion, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreateAppVersionMutation();
+    vincentApiClient.useCreateAppVersionMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -35,10 +30,9 @@ export function CreateAppVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app) {
-      refetchVersions();
       navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${data.version}/tools`);
     }
-  }, [isSuccess, data, refetchVersions, navigate, app]);
+  }, [isSuccess, data, navigate, app]);
 
   useAddressCheck(app);
 

@@ -2,10 +2,15 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/jest",
-    "module": "commonjs",
-    "moduleResolution": "node10",
-    "types": ["jest", "node"],
-    "esModuleInterop": true
+    "types": ["jest", "node"]
   },
-  "include": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/**/*.d.ts", "**/*.spec.ts"]
+  "include": [
+    "test/**/*.ts",
+    "**/packageImporter.ts",
+    "debug.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts",
+    "**/*.spec.ts"
+  ]
 }

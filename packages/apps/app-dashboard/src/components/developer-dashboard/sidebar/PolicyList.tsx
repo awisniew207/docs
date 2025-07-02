@@ -32,7 +32,9 @@ export function PolicyList({
 
   const sortedVersions = useMemo(() => {
     if (!policyVersions || policyVersions.length === 0) return [];
-    return [...policyVersions].sort((a: any, b: any) =>
+    // Filter out deleted versions from sidebar dropdown
+    const activeVersions = policyVersions.filter((version: any) => !version.isDeleted);
+    return [...activeVersions].sort((a: any, b: any) =>
       b.version.localeCompare(a.version, undefined, { numeric: true }),
     );
   }, [policyVersions]);

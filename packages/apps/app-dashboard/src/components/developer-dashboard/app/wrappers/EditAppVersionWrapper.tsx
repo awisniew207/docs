@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -12,7 +11,6 @@ import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function EditAppVersionWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
   const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
@@ -20,21 +18,14 @@ export function EditAppVersionWrapper() {
   const app = sortAppFromApps(apps, appId);
 
   const {
-    refetch: refetchVersions,
-    isLoading: versionsLoading,
-    isError: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
-
-  const {
     data: versionData,
     isLoading: versionLoading,
     isError: versionError,
-    refetch: refetchVersionData,
   } = vincentApiClient.useGetAppVersionQuery({ appId: Number(appId), version: Number(versionId) });
 
   // Mutation
   const [editAppVersion, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useEditAppVersionMutation();
+    vincentApiClient.useEditAppVersionMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -42,20 +33,17 @@ export function EditAppVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app && versionData) {
-      refetchVersions();
-      refetchVersionData();
       navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${versionData.version}`);
     }
-  }, [isSuccess, data, refetchVersions, refetchVersionData, navigate, app, versionData]);
+  }, [isSuccess, data, navigate, app, versionData]);
 
   useAddressCheck(app);
 
   // Loading states
-  if (appsLoading || versionsLoading || versionLoading) return <Loading />;
+  if (appsLoading || versionLoading) return <Loading />;
 
   // Error states
   if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
-  if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
   if (!versionData)

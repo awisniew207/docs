@@ -1,31 +1,25 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteAppForm } from '../forms/DeleteAppForm';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeleteAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
-  const {
-    data: apps,
-    isLoading: appsLoading,
-    isError: appsError,
-    refetch: refetchApps,
-  } = useUserApps();
+  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
   const app = sortAppFromApps(apps, appId);
 
   // Mutation
   const [deleteApp, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useDeleteAppMutation();
+    vincentApiClient.useDeleteAppMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -33,10 +27,9 @@ export function DeleteAppWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      refetchApps();
       navigate('/developer/apps'); // Navigate immediately, no delay needed
     }
-  }, [isSuccess, data, refetchApps, navigate]);
+  }, [isSuccess, data, navigate]);
 
   useAddressCheck(app);
 

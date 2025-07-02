@@ -1,11 +1,13 @@
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { AppVersionsListView } from '../views/AppVersionsListView';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
+import { AppVersion } from '@/types/developer-dashboard/appTypes';
 
 export function AppVersionsWrapper() {
   const { appId } = useParams<{ appId: string }>();
@@ -20,6 +22,17 @@ export function AppVersionsWrapper() {
     isLoading: versionsLoading,
     isError: versionsError,
   } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
+
+  // Separate active and deleted versions
+  const { activeVersions, deletedVersions } = useMemo(() => {
+    if (!versions?.length) return { activeVersions: [], deletedVersions: [] };
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const activeVersions = versions.filter((version: AppVersion) => !version.isDeleted);
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const deletedVersions = versions.filter((version: AppVersion) => version.isDeleted);
+
+    return { activeVersions, deletedVersions };
+  }, [versions]);
 
   useAddressCheck(app);
 
@@ -37,7 +50,8 @@ export function AppVersionsWrapper() {
 
   return (
     <AppVersionsListView
-      versions={versions || []}
+      versions={activeVersions}
+      deletedVersions={deletedVersions}
       activeVersion={app.activeVersion}
       onVersionClick={handleVersionClick}
     />

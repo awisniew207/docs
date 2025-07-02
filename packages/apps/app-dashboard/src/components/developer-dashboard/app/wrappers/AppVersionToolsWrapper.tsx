@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { AppVersionTool, Tool } from '@/types/developer-dashboard/appTypes';
@@ -9,12 +8,10 @@ import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionToolsWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetching
@@ -32,11 +29,22 @@ export function AppVersionToolsWrapper() {
     data: versionTools,
     isLoading: versionToolsLoading,
     isError: versionToolsError,
-    refetch: refetchVersionTools,
   } = vincentApiClient.useListAppVersionToolsQuery({
     appId: Number(appId),
     version: Number(versionId),
   });
+
+  // Separate active and deleted tools
+  const { activeTools, deletedTools } = useMemo(() => {
+    if (!versionTools?.length) return { activeTools: [], deletedTools: [] };
+
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const activeTools = versionTools.filter((tool: AppVersionTool) => !tool.isDeleted);
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const deletedTools = versionTools.filter((tool: AppVersionTool) => tool.isDeleted);
+
+    return { activeTools, deletedTools };
+  }, [versionTools]);
 
   const {
     data: allTools = [],
@@ -45,14 +53,12 @@ export function AppVersionToolsWrapper() {
   } = vincentApiClient.useListAllToolsQuery();
 
   // Mutation
-  const [createAppVersionTool, { isLoading, isSuccess, isError, data, error }] =
-    vincentApi.useCreateAppVersionToolMutation();
+  const [createAppVersionTool, { isLoading, isSuccess, isError, data }] =
+    vincentApiClient.useCreateAppVersionToolMutation();
 
   // Effect
   useEffect(() => {
     if (!isSuccess || !data) return;
-
-    refetchVersionTools();
     setShowSuccess(true);
 
     const timer = setTimeout(() => {
@@ -60,7 +66,7 @@ export function AppVersionToolsWrapper() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isSuccess, data, refetchVersionTools]);
+  }, [isSuccess, data]);
 
   useAddressCheck(app);
 
@@ -77,7 +83,7 @@ export function AppVersionToolsWrapper() {
   if (!versionData)
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
 
-  const existingToolNames = versionTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
+  const existingToolNames = activeTools?.map((tool: AppVersionTool) => tool.toolPackageName) || [];
 
   const handleToolAdd = async (tool: Tool) => {
     await createAppVersionTool({
@@ -104,9 +110,7 @@ export function AppVersionToolsWrapper() {
 
       {isLoading && <StatusMessage message="Adding tool..." type="info" />}
       {showSuccess && <StatusMessage message="Tool added successfully!" type="success" />}
-      {isError && error && (
-        <StatusMessage message={getErrorMessage(error, 'Failed to add tool')} type="error" />
-      )}
+      {isError && <StatusMessage message="Failed to add tool" type="error" />}
 
       {/* Add Tools Form */}
       <CreateAppVersionToolsForm
@@ -126,10 +130,10 @@ export function AppVersionToolsWrapper() {
           </p>
         </div>
         <ManageAppVersionTools
-          tools={versionTools || []}
+          tools={activeTools}
+          deletedTools={deletedTools}
           appId={Number(appId)}
           versionId={Number(versionId)}
-          onEditSuccess={refetchVersionTools}
         />
       </div>
     </div>

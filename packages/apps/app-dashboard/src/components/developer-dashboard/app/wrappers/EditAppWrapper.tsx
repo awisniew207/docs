@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVincentApiWithSIWE } from '@/hooks/developer-dashboard/useVincentApiWithSIWE';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditAppForm, type EditAppFormData } from '../forms/EditAppForm';
@@ -11,15 +10,9 @@ import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function EditAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
-  const vincentApi = useVincentApiWithSIWE();
 
   // Fetching
-  const {
-    data: apps,
-    isLoading: appsLoading,
-    isError: appsError,
-    refetch: refetchApps,
-  } = useUserApps();
+  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
 
   const app = sortAppFromApps(apps, appId);
 
@@ -30,7 +23,8 @@ export function EditAppWrapper() {
   } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Mutation
-  const [editApp, { isLoading, isSuccess, isError, data, error }] = vincentApi.useEditAppMutation();
+  const [editApp, { isLoading, isSuccess, isError, data, error }] =
+    vincentApiClient.useEditAppMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -38,7 +32,6 @@ export function EditAppWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app) {
-      refetchApps();
       navigateWithDelay(navigate, `/developer/appId/${app.appId}`);
     }
   }, [isSuccess, data, app]);

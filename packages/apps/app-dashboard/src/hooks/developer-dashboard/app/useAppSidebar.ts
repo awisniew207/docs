@@ -1,9 +1,9 @@
 import { useEffect, useCallback, useReducer } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useUserApps } from '@/hooks/developer-dashboard/useUserApps';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { App, Tool, Policy } from '@/types/developer-dashboard/appTypes';
 
 interface SidebarState {
@@ -261,7 +261,7 @@ export function useAppSidebar() {
             expandedMenus: menusToExpand,
           },
         });
-      } else if (pathname.startsWith('/developer/toolId/') || params.packageName) {
+      } else if (pathname.startsWith('/developer/toolId/')) {
         // Handle tool-specific routes using params OR pathname parsing
         let packageName: string;
 
@@ -312,15 +312,15 @@ export function useAppSidebar() {
             expandedMenus: menusToExpand,
           },
         });
-      } else if (pathname.startsWith('/developer/policyId/') || params.policyId) {
+      } else if (pathname.startsWith('/developer/policyId/')) {
         // Handle policy-specific routes using params OR pathname parsing
         let packageName: string;
 
-        if (params.policyId) {
+        if (params.packageName) {
           try {
-            packageName = decodeURIComponent(params.policyId);
+            packageName = decodeURIComponent(params.packageName);
           } catch (error) {
-            console.error(`Invalid policyId parameter: ${params.policyId}`, error);
+            console.error(`Invalid packageName parameter: ${params.packageName}`, error);
             return;
           }
         } else {
@@ -373,15 +373,8 @@ export function useAppSidebar() {
     params.versionId,
     params.packageName,
     params.version,
-    params.policyId,
-    filteredApps,
-    filteredTools,
-    filteredPolicies,
     shouldShowSidebar,
     isLoading,
-    findAppById,
-    findToolByPackageName,
-    findPolicyByPackageName,
   ]);
 
   // Handle menu toggle
