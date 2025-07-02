@@ -1,6 +1,7 @@
 import { FileText, GitBranch } from 'lucide-react';
 import { useMemo } from 'react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { AppVersion } from '@/types/developer-dashboard/appTypes';
 
 interface AppListProps {
   apps: any[]; // FIXME: When we export the types for the apps, we can use them here
@@ -33,9 +34,12 @@ export function AppList({
   const sortedVersions = useMemo(() => {
     if (!appVersions || appVersions.length === 0) return [];
     // Filter out deleted versions and sort by version number (descending)
-    return appVersions
-      .filter((version: any) => !version.isDeleted)
-      .sort((a: any, b: any) => b.version - a.version);
+    return (
+      appVersions
+        // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+        .filter((version: AppVersion) => !version.isDeleted)
+        .sort((a: AppVersion, b: AppVersion) => b.version - a.version)
+    );
   }, [appVersions]);
 
   const appMenuItems = useMemo(() => {

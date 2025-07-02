@@ -172,8 +172,8 @@ export default function PolicyOverview({
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Contributors</h2>
           <div className="space-y-3">
-            {activeVersionData.contributors.map((contributor: any, index: number) => (
-              <div key={index} className="border-l-4 border-blue-200 pl-4">
+            {activeVersionData.contributors.map((contributor) => (
+              <div key={contributor.email} className="border-l-4 border-blue-200 pl-4">
                 <div className="font-medium text-gray-900">{contributor.name}</div>
                 {contributor.email && (
                   <div className="text-sm text-gray-600">{contributor.email}</div>
