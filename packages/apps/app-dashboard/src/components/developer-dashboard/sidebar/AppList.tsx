@@ -49,7 +49,7 @@ export function AppList({
           sortedVersions.length > 0
             ? sortedVersions.map((version) => ({
                 id: `version-${version.version}`,
-                label: `Version ${version.version}${version.version === selectedApp.activeVersion ? ' (Latest)' : ''}`,
+                label: `Version ${version.version}${version.version === selectedApp.activeVersion ? ' (Active)' : ''}`,
               }))
             : [{ id: 'no-versions', label: 'No versions available', disabled: true }],
       },
