@@ -3,7 +3,7 @@ import PolicyDetailsView from '../views/PolicyDetailsView';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 

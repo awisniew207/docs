@@ -3,7 +3,7 @@ import ToolDetailsView from '../views/ToolDetailsView';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 

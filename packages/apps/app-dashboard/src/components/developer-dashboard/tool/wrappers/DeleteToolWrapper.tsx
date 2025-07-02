@@ -7,7 +7,7 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 
 export function DeleteToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();

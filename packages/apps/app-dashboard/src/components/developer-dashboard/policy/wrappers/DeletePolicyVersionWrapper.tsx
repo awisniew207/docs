@@ -7,7 +7,7 @@ import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 
 export function DeletePolicyVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();

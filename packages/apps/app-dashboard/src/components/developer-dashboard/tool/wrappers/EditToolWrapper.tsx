@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditToolForm, type EditToolFormData } from '../forms/EditToolForm';

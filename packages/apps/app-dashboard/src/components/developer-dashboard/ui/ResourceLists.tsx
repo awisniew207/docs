@@ -7,8 +7,8 @@ import { Logo } from '@/components/shared/ui/Logo';
 import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { App, Policy, Tool } from '@/types/developer-dashboard/appTypes';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { UndeleteAppButton } from '../app/wrappers';
 import { UndeleteToolButton } from '../tool/wrappers';
 

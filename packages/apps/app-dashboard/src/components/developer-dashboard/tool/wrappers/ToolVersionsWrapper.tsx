@@ -5,7 +5,7 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressChec
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 
 export function ToolVersionsWrapper() {

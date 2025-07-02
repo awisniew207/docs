@@ -15,15 +15,22 @@ export function useUserPolicies() {
   } = vincentApiClient.useListAllPoliciesQuery();
 
   // Filter policies by current user
-  const userPolicies = useMemo(() => {
+  const filteredPolicies = useMemo(() => {
     if (!address || !allPolicies?.length) return [];
     return allPolicies.filter(
       (policy: Policy) => policy.authorWalletAddress.toLowerCase() === address.toLowerCase(),
     );
   }, [allPolicies, address]);
 
+  // FIXME: Remove this once the API is updated
+  // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+  const userPolicies = filteredPolicies.filter((policy: Policy) => !policy.isDeleted!);
+  // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+  const deletedPolicies = filteredPolicies.filter((policy: Policy) => policy.isDeleted);
+
   return {
     data: userPolicies,
+    deletedPolicies,
     isLoading,
     isError,
     error,

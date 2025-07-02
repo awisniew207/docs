@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditPolicyForm, type EditPolicyFormData } from '../forms/EditPolicyForm';

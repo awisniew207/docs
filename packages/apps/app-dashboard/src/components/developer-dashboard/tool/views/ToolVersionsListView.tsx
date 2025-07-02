@@ -35,10 +35,10 @@ export function ToolVersionsListView({
           <div className="flex items-center gap-2 mt-3">
             <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
               <Package className="h-3 w-3 mr-1" />
-              Active: {activeVersions.length}
+              Active: {tool.activeVersion}
             </Badge>
             <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
-              {deletedVersions.length} version{deletedVersions.length !== 1 ? 's' : ''}
+              {activeVersions.length} version{activeVersions.length !== 1 ? 's' : ''}
             </Badge>
           </div>
         </div>

@@ -10,7 +10,7 @@ import {
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 
 export function CreatePolicyVersionWrapper() {
   const { packageName } = useParams<{ packageName: string }>();

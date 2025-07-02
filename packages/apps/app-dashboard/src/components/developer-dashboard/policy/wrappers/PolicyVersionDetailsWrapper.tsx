@@ -5,7 +5,7 @@ import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { PolicyVersionDetailsView } from '../views/PolicyVersionDetailsView';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 
 export function PolicyVersionDetailsWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();

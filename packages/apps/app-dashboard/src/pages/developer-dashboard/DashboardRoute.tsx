@@ -1,7 +1,7 @@
 import DashboardPage from './DashboardPage';
 import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
-import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';

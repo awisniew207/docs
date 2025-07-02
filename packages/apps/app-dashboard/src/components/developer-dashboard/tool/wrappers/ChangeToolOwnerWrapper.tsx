@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
+import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
