@@ -63,6 +63,7 @@ const app = z
         message: 'Redirect URIs must be unique',
       })
       .openapi({
+        uniqueItems: true,
         description:
           'Redirect URIs users can be sent to after signing up for your application (with their JWT token).',
         example: ['https://myapp.example.com', 'https://myapp.example.com/subpage'],

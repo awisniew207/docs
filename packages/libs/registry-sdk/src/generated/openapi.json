@@ -108,6 +108,7 @@
               "format": "uri"
             },
             "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "uniqueItems": true,
             "example": [
               "https://myapp.example.com",
               "https://myapp.example.com/subpage"
@@ -171,6 +172,7 @@
               "format": "uri"
             },
             "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "uniqueItems": true,
             "example": [
               "https://myapp.example.com",
               "https://myapp.example.com/subpage"
@@ -259,6 +261,7 @@
               "format": "uri"
             },
             "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "uniqueItems": true,
             "example": [
               "https://myapp.example.com",
               "https://myapp.example.com/subpage"
