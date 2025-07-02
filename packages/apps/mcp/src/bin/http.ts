@@ -261,7 +261,7 @@ app.post('/mcp', async (req: Request, res: Response) => {
  */
 const handleSessionRequest = async (req: express.Request, res: express.Response) => {
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
-  if (!sessionId || !transportManager.getTransport(sessionId)) {
+  if (!sessionId) {
     return returnWithError(res, 400, 'Invalid or missing session ID');
   }
 
