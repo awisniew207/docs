@@ -112,8 +112,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
             />
             <DeploymentStatusSelectField
               error={errors.deploymentStatus?.message}
-              watch={watch}
-              setValue={setValue}
+              control={control}
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

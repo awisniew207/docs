@@ -35,8 +35,7 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-    setValue,
+    control,
   } = form;
 
   return (
@@ -86,8 +85,7 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
 
             <DeploymentStatusSelectField
               error={errors.deploymentStatus?.message}
-              watch={watch}
-              setValue={setValue}
+              control={control}
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

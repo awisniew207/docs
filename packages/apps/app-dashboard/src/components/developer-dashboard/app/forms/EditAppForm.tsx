@@ -152,8 +152,7 @@ export function EditAppForm({
 
             <DeploymentStatusSelectField
               error={errors.deploymentStatus?.message}
-              watch={watch}
-              setValue={setValue}
+              control={control}
             />
 
             <NumberSelectField

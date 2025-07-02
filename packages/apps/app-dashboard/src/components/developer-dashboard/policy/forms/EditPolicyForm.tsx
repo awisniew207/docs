@@ -46,8 +46,7 @@ export function EditPolicyForm({
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
+    control,
     formState: { errors },
   } = form;
 
@@ -87,8 +86,7 @@ export function EditPolicyForm({
             <SelectField
               name="activeVersion"
               error={errors.activeVersion?.message}
-              watch={watch}
-              setValue={setValue}
+              control={control}
               label="Active Version"
               options={versionOptions}
               required
@@ -96,8 +94,7 @@ export function EditPolicyForm({
 
             <DeploymentStatusSelectField
               error={errors.deploymentStatus?.message}
-              watch={watch}
-              setValue={setValue}
+              control={control}
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
