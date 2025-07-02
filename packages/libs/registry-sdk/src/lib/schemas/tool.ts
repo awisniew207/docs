@@ -37,6 +37,10 @@ const tool = z
       description: 'Identifies if a tool is in development, test, or production.',
       example: 'dev',
     }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this Tool is deleted',
+      example: false,
+    }),
   })
   .strict();
 
@@ -118,6 +122,10 @@ const toolVersion = z
       description: 'Policy versions that are not in the registry but are supported by this tool',
       example: ['@lit-protocol/vincent-spending-limit-policy@1.0.1'],
       readOnly: true,
+    }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this ToolVersion is deleted',
+      example: false,
     }),
   })
   .strict();

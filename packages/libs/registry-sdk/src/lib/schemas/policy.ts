@@ -36,6 +36,10 @@ const policy = z
       description: 'Identifies if a policy is in development, test, or production.',
       example: 'dev',
     }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this Policy is deleted',
+      example: false,
+    }),
   })
   .strict();
 
@@ -121,6 +125,10 @@ const policyVersion = z
         description: 'Schema parameters',
         readOnly: true,
       }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this PolicyVersion is deleted',
+      example: false,
+    }),
   })
   .strict();
 

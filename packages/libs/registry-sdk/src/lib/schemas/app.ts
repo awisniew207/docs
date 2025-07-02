@@ -77,6 +77,10 @@ const app = z
       example: EXAMPLE_WALLET_ADDRESS,
       readOnly: true,
     }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this App is deleted',
+      example: false,
+    }),
   })
   .strict();
 
