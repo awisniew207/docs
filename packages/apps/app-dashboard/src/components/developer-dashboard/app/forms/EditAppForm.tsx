@@ -159,8 +159,7 @@ export function EditAppForm({
             <NumberSelectField
               name="activeVersion"
               error={errors.activeVersion?.message}
-              watch={watch}
-              setValue={setValue}
+              control={control}
               label="Active Version"
               options={versionOptions}
               required
