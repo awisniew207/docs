@@ -77,69 +77,18 @@ export default function ToolOverview({
             <dt className="text-sm font-medium text-gray-500">Active Version</dt>
             <dd className="mt-1 text-sm text-gray-900">{tool.activeVersion || 'N/A'}</dd>
           </div>
-          {activeVersionData.author && (
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Author</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {activeVersionData.author.name}
-                {activeVersionData.author.email && (
-                  <div className="text-xs text-gray-500">{activeVersionData.author.email}</div>
-                )}
-                {activeVersionData.author.url && (
-                  <div className="text-xs">
-                    <a
-                      href={activeVersionData.author.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      {activeVersionData.author.url}
-                    </a>
-                  </div>
-                )}
-              </dd>
-            </div>
-          )}
-          {activeVersionData?.homepage && (
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Homepage</dt>
-              <dd className="mt-1 text-sm">
-                <a
-                  href={activeVersionData.homepage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  {activeVersionData.homepage}
-                </a>
-              </dd>
-            </div>
-          )}
-          {activeVersionData?.repository && activeVersionData.repository.length > 0 && (
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Repository</dt>
-              <dd className="mt-1 text-sm">
-                {activeVersionData.repository.map((repo: string, index: number) => (
-                  <div key={index}>
-                    <a
-                      href={repo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      {repo}
-                    </a>
-                  </div>
-                ))}
-              </dd>
-            </div>
-          )}
           {activeVersionData.ipfsCid && (
             <div>
               <dt className="text-sm font-medium text-gray-500">IPFS CID</dt>
               <dd className="mt-1 text-xs text-gray-900 font-mono break-all">
                 {activeVersionData.ipfsCid}
               </dd>
+            </div>
+          )}
+          {tool.deploymentStatus && (
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Deployment Status</dt>
+              <dd className="mt-1 text-sm text-gray-900">{tool.deploymentStatus}</dd>
             </div>
           )}
         </div>

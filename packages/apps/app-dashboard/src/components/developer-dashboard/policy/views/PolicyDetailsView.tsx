@@ -142,6 +142,12 @@ export default function PolicyOverview({
               </dd>
             </div>
           )}
+          {policy.deploymentStatus && (
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Deployment Status</dt>
+              <dd className="mt-1 text-sm text-gray-900">{policy.deploymentStatus}</dd>
+            </div>
+          )}
         </div>
       </div>
 
@@ -149,50 +155,6 @@ export default function PolicyOverview({
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Version Changes</h2>
           <p className="text-sm text-gray-700">{activeVersionData.changes}</p>
-        </div>
-      )}
-
-      {activeVersionData?.dependencies && activeVersionData.dependencies.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Dependencies</h2>
-          <div className="space-y-2">
-            {activeVersionData.dependencies.map((dep: string) => (
-              <div
-                key={dep}
-                className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded"
-              >
-                {dep}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeVersionData?.contributors && activeVersionData.contributors.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Contributors</h2>
-          <div className="space-y-3">
-            {activeVersionData.contributors.map((contributor) => (
-              <div key={contributor.email} className="border-l-4 border-blue-200 pl-4">
-                <div className="font-medium text-gray-900">{contributor.name}</div>
-                {contributor.email && (
-                  <div className="text-sm text-gray-600">{contributor.email}</div>
-                )}
-                {contributor.url && (
-                  <div className="text-sm">
-                    <a
-                      href={contributor.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      {contributor.url}
-                    </a>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>
