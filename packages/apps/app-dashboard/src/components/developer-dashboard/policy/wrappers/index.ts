@@ -10,6 +10,7 @@ import { DeletePolicyWrapper } from './DeletePolicyWrapper';
 import { DeletePolicyVersionWrapper } from './DeletePolicyVersionWrapper';
 import { UndeletePolicyButton } from './ui/UndeletePolicyButton';
 import { UndeletePolicyVersionButton } from './ui/UndeletePolicyVersionButton';
+import { PoliciesWrapper } from './PoliciesWrapper';
 
 export {
   PolicyOverviewWrapper,
@@ -24,4 +25,5 @@ export {
   DeletePolicyVersionWrapper,
   UndeletePolicyButton,
   UndeletePolicyVersionButton,
+  PoliciesWrapper,
 };

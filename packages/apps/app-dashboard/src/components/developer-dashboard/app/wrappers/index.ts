@@ -13,6 +13,7 @@ import { UndeleteAppButton } from './ui/UndeleteAppButton';
 import { UndeleteAppVersionButton } from './ui/UndeleteAppVersionButton';
 import { DeleteAppVersionToolButton } from './ui/DeleteAppToolVersionButton';
 import { UndeleteAppVersionToolButton } from './ui/UndeleteAppVersionToolButton';
+import { AppsWrapper } from './AppsWrapper';
 
 export {
   AppOverviewWrapper,
@@ -30,4 +31,5 @@ export {
   UndeleteAppButton,
   UndeleteAppVersionButton,
   UndeleteAppVersionToolButton,
+  AppsWrapper,
 };

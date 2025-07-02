@@ -2,6 +2,7 @@ import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, GitCommit, Package } from 'lucide-react';
 import { UndeleteToolVersionButton } from '../wrappers/ui/UndeleteToolVersionButton';
+import { formatDate } from '@/utils/developer-dashboard/formatDateAndTime';
 
 interface ToolVersionsListViewProps {
   activeVersions: ToolVersion[];
@@ -16,14 +17,6 @@ export function ToolVersionsListView({
   deletedVersions,
   onVersionClick,
 }: ToolVersionsListViewProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">

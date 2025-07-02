@@ -1,16 +1,6 @@
 import { Policy, PolicyVersion } from '@/types/developer-dashboard/appTypes';
 import { Badge } from '@/components/ui/badge';
-import {
-  Calendar,
-  GitCommit,
-  User,
-  Globe,
-  Package,
-  ExternalLink,
-  Edit,
-  Code,
-  Trash2,
-} from 'lucide-react';
+import { GitCommit, User, Globe, Package, ExternalLink, Edit, Code, Trash2 } from 'lucide-react';
 
 interface PolicyVersionDetailsViewProps {
   policy: Policy;
@@ -23,21 +13,6 @@ export function PolicyVersionDetailsView({
   version,
   onOpenMutation,
 }: PolicyVersionDetailsViewProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -101,24 +76,6 @@ export function PolicyVersionDetailsView({
           <div>
             <dt className="text-sm font-medium text-gray-500">Version</dt>
             <dd className="mt-1 text-sm text-gray-900 font-mono">{version.version}</dd>
-          </div>
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Created</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
-                {formatDate(version.createdAt)} at {formatTime(version.createdAt)}
-              </div>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
-                {formatDate(version.updatedAt)} at {formatTime(version.updatedAt)}
-              </div>
-            </dd>
           </div>
           {version.ipfsCid && (
             <div className="sm:col-span-2">

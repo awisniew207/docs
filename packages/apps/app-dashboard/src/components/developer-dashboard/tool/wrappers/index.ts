@@ -9,6 +9,7 @@ import { EditToolVersionWrapper } from './EditToolVersionWrapper';
 import { DeleteToolWrapper } from './DeleteToolWrapper';
 import { DeleteToolVersionWrapper } from './DeleteToolVersionWrapper';
 import { UndeleteToolButton } from './ui/UndeleteToolButton';
+import { ToolsWrapper } from './ToolsWrapper';
 
 export {
   ToolOverviewWrapper,
@@ -22,4 +23,5 @@ export {
   DeleteToolWrapper,
   DeleteToolVersionWrapper,
   UndeleteToolButton,
+  ToolsWrapper,
 };

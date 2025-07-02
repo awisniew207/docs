@@ -2,6 +2,7 @@ import { PolicyVersion, Policy } from '@/types/developer-dashboard/appTypes';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, GitCommit, Package } from 'lucide-react';
 import { UndeletePolicyVersionButton } from '../../policy/wrappers';
+import { formatDate } from '@/utils/developer-dashboard/formatDateAndTime';
 
 interface PolicyVersionsListViewProps {
   activeVersions: PolicyVersion[];
@@ -16,14 +17,6 @@ export function PolicyVersionsListView({
   deletedVersions,
   onVersionClick,
 }: PolicyVersionsListViewProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">

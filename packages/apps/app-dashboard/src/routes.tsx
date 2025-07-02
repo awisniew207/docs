@@ -6,8 +6,8 @@ import { wrap } from './utils/components';
 
 import { ConnectWallet, Dashboard } from './pages/developer-dashboard';
 
-import { AppsPage } from './pages/developer-dashboard/app';
 import {
+  AppsWrapper,
   AppOverviewWrapper,
   AppVersionDetailWrapper,
   AppVersionsWrapper,
@@ -20,8 +20,8 @@ import {
   DeleteAppVersionWrapper,
 } from './components/developer-dashboard/app/wrappers';
 
-import { ToolsPage } from './pages/developer-dashboard/tool';
 import {
+  ToolsWrapper,
   ToolOverviewWrapper,
   CreateToolWrapper,
   EditToolWrapper,
@@ -34,8 +34,8 @@ import {
   DeleteToolVersionWrapper,
 } from './components/developer-dashboard/tool/wrappers';
 
-import { PoliciesPage } from './pages/developer-dashboard/policy';
 import {
+  PoliciesWrapper,
   PolicyOverviewWrapper,
   CreatePolicyWrapper,
   EditPolicyWrapper,
@@ -81,7 +81,7 @@ const routes: RouteObject[] = [
           },
           {
             path: 'apps',
-            element: <AppsPage />,
+            element: <AppsWrapper />,
           },
           {
             path: 'create-app/*',
@@ -125,7 +125,7 @@ const routes: RouteObject[] = [
           },
           {
             path: 'tools',
-            element: <ToolsPage />,
+            element: <ToolsWrapper />,
           },
           {
             path: 'create-tool',
@@ -169,7 +169,7 @@ const routes: RouteObject[] = [
           },
           {
             path: 'policies',
-            element: <PoliciesPage />,
+            element: <PoliciesWrapper />,
           },
           {
             path: 'create-policy',
