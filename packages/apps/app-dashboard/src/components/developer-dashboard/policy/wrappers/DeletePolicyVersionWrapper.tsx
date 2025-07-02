@@ -1,13 +1,16 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { DeletePolicyVersionForm } from '../forms/DeletePolicyVersionForm';
+import {
+  DeletePolicyVersionForm,
+  DeletePolicyVersionFormData,
+} from '../forms/DeletePolicyVersionForm';
+import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeletePolicyVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();
@@ -19,17 +22,25 @@ export function DeletePolicyVersionWrapper() {
 
   // Note: The data here is barely used, but we need to confirm the version exists with a query
   const {
-    data: versionData,
+    data: versionsData,
     isLoading: versionLoading,
     isError: versionError,
-  } = vincentApiClient.useGetPolicyVersionQuery({
-    packageName: packageName || '',
-    version: version || '',
-  });
+  } = vincentApiClient.useGetPolicyVersionsQuery({ packageName: packageName || '' });
 
   // Mutation
   const [deletePolicyVersion, { isLoading, isSuccess, isError, data, error }] =
     vincentApiClient.useDeletePolicyVersionMutation();
+
+  const [
+    editPolicy,
+    {
+      isLoading: editPolicyLoading,
+      isSuccess: editPolicySuccess,
+      isError: isEditPolicyError,
+      data: editPolicyData,
+      error: editPolicyError,
+    },
+  ] = vincentApiClient.useEditPolicyMutation();
 
   // Navigation
   const navigate = useNavigate();
@@ -50,11 +61,11 @@ export function DeletePolicyVersionWrapper() {
   if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load policy version" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
-  if (!versionData)
+  if (!versionsData)
     return <StatusMessage message={`Policy version ${version} not found`} type="error" />;
 
   // Mutation states
-  if (isLoading) {
+  if (isLoading || editPolicyLoading) {
     return <StatusMessage message="Deleting policy..." type="info" />;
   }
 
@@ -62,16 +73,30 @@ export function DeletePolicyVersionWrapper() {
     return <StatusMessage message="Policy deleted successfully!" type="success" />;
   }
 
+  if (editPolicySuccess && editPolicyData) {
+    return <StatusMessage message="Active version updated successfully!" type="success" />;
+  }
+
   if (isError && error) {
     const errorMessage = getErrorMessage(error, 'Failed to delete policy');
     return <StatusMessage message={errorMessage} type="error" />;
   }
 
-  const handleSubmit = async () => {
-    await deletePolicyVersion({
-      packageName: policy.packageName,
-      version: versionData.version,
-    });
+  if (isEditPolicyError && editPolicyError) {
+    const errorMessage = getErrorMessage(editPolicyError, 'Failed to update active version');
+    return <StatusMessage message={errorMessage} type="error" />;
+  }
+
+  const handleSubmit = async (formData: DeletePolicyVersionFormData) => {
+    await deletePolicyVersion({ packageName: policy.packageName, version: version || '' });
+    if (policy.activeVersion === version && formData.activeVersion) {
+      await editPolicy({
+        packageName: policy.packageName,
+        policyEdit: {
+          activeVersion: formData.activeVersion,
+        },
+      });
+    }
   };
   return (
     <div className="space-y-6">
@@ -79,14 +104,15 @@ export function DeletePolicyVersionWrapper() {
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-gray-900">Delete Policy Version</h1>
           <p className="text-gray-600 mt-2">
-            Delete "{policy.title}" version {versionData.version}. This action can be undone.
+            Delete "{policy.title}" version {version}. This action can be undone.
           </p>
         </div>
       </div>
 
       <DeletePolicyVersionForm
-        title={policy.title}
-        version={versionData.version}
+        policy={policy}
+        version={version || ''}
+        versions={versionsData}
         onSubmit={handleSubmit}
         isSubmitting={isLoading}
       />
