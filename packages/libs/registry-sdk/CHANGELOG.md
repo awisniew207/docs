@@ -1,3 +1,15 @@
+## 3.3.1 (2025-07-01)
+
+### 🩹 Fixes
+
+- #### Minor schema improvements ([4e092830](https://github.com/LIT-Protocol/Vincent/commit/4e092830))
+
+  - Added minimum lengths for App/Tool/Policy name/title and description/changes. Requirement of unique App `redirectUris`, and Tool title is required
+
+### ❤️ Thank You
+
+- Andrew Wisniewski
+
 ## 3.3.0 (2025-06-29)
 
 ### 🚀 Features
