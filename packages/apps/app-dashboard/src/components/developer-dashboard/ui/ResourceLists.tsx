@@ -10,6 +10,7 @@ import { App, Policy, Tool } from '@/types/developer-dashboard/appTypes';
 import { useUserTools } from '@/hooks/developer-dashboard/useUserTools';
 import { useUserPolicies } from '@/hooks/developer-dashboard/useUserPolicies';
 import { UndeleteAppButton } from '../app/wrappers';
+import { UndeleteToolButton } from '../tool/wrappers';
 
 interface AppsListProps {
   onCreateClick: () => void;
@@ -152,7 +153,7 @@ export function AppsList({ onCreateClick, onAppClick }: AppsListProps) {
 
 export function ToolsList({ onCreateClick, onToolClick }: ToolsListProps) {
   const navigate = useNavigate();
-  const { data: tools, isLoading, isError } = useUserTools();
+  const { data: tools, deletedTools, isLoading, isError } = useUserTools();
 
   if (isLoading) return <Loading />;
   if (isError) return <StatusMessage message="Failed to load tools" type="error" />;
@@ -205,6 +206,53 @@ export function ToolsList({ onCreateClick, onToolClick }: ToolsListProps) {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+      {/* Deleted Tools Section */}
+      {deletedTools && deletedTools.length > 0 && (
+        <div className="space-y-4">
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted Tools</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {deletedTools.map((tool) => (
+                <Card key={tool.packageName} className="border-dashed">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex justify-between items-start text-gray-600">
+                      <div className="flex items-center gap-3">
+                        <span className="line-through">{tool.packageName}</span>
+                        <span className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-400">
+                          DELETED
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">
+                          v{tool.activeVersion}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <UndeleteToolButton tool={tool} />
+                      </div>
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 line-through">
+                      {tool.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-2">
+                    <div className="text-sm text-gray-500">
+                      <div className="space-y-1">
+                        <div>
+                          <span className="font-medium">Version:</span>{' '}
+                          {tool.activeVersion || 'N/A'}
+                        </div>
+                        <div>
+                          <span className="font-medium">Created:</span>{' '}
+                          {tool.createdAt ? formatDate(tool.createdAt) : 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

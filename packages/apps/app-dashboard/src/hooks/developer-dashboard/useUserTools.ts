@@ -15,15 +15,22 @@ export function useUserTools() {
   } = vincentApiClient.useListAllToolsQuery();
 
   // Filter tools by current user
-  const userTools = useMemo(() => {
+  const filteredTools = useMemo(() => {
     if (!address || !allTools?.length) return [];
     return allTools.filter(
       (tool: Tool) => tool.authorWalletAddress.toLowerCase() === address.toLowerCase(),
     );
   }, [allTools, address]);
 
+  // FIXME: Remove this once the API is updated
+  // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+  const userTools = filteredTools.filter((tool: Tool) => !tool.isDeleted!);
+  // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+  const deletedTools = filteredTools.filter((tool: Tool) => tool.isDeleted);
+
   return {
     data: userTools,
+    deletedTools,
     isLoading,
     isError,
     error,

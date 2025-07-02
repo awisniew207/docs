@@ -373,14 +373,8 @@ export function useAppSidebar() {
     params.versionId,
     params.packageName,
     params.version,
-    filteredApps,
-    filteredTools,
-    filteredPolicies,
     shouldShowSidebar,
     isLoading,
-    findAppById,
-    findToolByPackageName,
-    findPolicyByPackageName,
   ]);
 
   // Handle menu toggle

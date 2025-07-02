@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { ToolVersionsListView } from '../views/ToolVersionsListView';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
@@ -20,6 +21,17 @@ export function ToolVersionsWrapper() {
     isError: versionsError,
   } = vincentApiClient.useGetToolVersionsQuery({ packageName: packageName! });
 
+  // Separate active and deleted versions
+  const { activeVersions, deletedVersions } = useMemo(() => {
+    if (!versions?.length) return { activeVersions: [], deletedVersions: [] };
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const activeVersions = versions.filter((version: AppVersion) => !version.isDeleted);
+    // @ts-expect-error FIXME: Remove this once the API is updated -- isDeleted currently not in the type
+    const deletedVersions = versions.filter((version: AppVersion) => version.isDeleted);
+
+    return { activeVersions, deletedVersions };
+  }, [versions]);
+
   // Navigation
   const navigate = useNavigate();
 
@@ -40,7 +52,8 @@ export function ToolVersionsWrapper() {
 
   return (
     <ToolVersionsListView
-      versions={versions || []}
+      activeVersions={activeVersions}
+      deletedVersions={deletedVersions}
       tool={tool}
       onVersionClick={handleVersionClick}
     />
