@@ -26,7 +26,10 @@ export function AppList({
     data: appVersions,
     isLoading: versionsLoading,
     error: versionsError,
-  } = vincentApiClient.useGetAppVersionsQuery({ appId: selectedApp?.appId || 0 });
+  } = vincentApiClient.useGetAppVersionsQuery(
+    { appId: selectedApp?.appId || 0 },
+    { skip: !selectedApp?.appId },
+  ); // FIXME: Sidebar-related patch, we don't want to fetch versions if no app is selected
 
   const sortedVersions = useMemo(() => {
     if (!appVersions || appVersions.length === 0) return [];

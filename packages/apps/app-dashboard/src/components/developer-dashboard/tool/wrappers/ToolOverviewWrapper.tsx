@@ -19,10 +19,13 @@ export function ToolOverviewWrapper() {
     data: activeToolVersion,
     isLoading: activeToolVersionLoading,
     isError: activeToolVersionError,
-  } = vincentApiClient.useGetToolVersionQuery({
-    packageName: packageName || '',
-    version: tool?.activeVersion || '',
-  });
+  } = vincentApiClient.useGetToolVersionQuery(
+    {
+      packageName: packageName || '',
+      version: tool?.activeVersion || '',
+    },
+    { skip: !tool?.activeVersion },
+  );
 
   // Navigation
   const navigate = useNavigate();

@@ -26,7 +26,10 @@ export function ToolList({
     data: toolVersions,
     isLoading: versionsLoading,
     error: versionsError,
-  } = vincentApiClient.useGetToolVersionsQuery({ packageName: selectedTool?.packageName || '' });
+  } = vincentApiClient.useGetToolVersionsQuery(
+    { packageName: selectedTool?.packageName || '' },
+    { skip: !selectedTool?.packageName },
+  ); // FIXME: Sidebar-related patch, we don't want to fetch versions if no tool is selected
 
   const sortedVersions = useMemo(() => {
     if (!toolVersions || toolVersions.length === 0) return [];

@@ -26,9 +26,12 @@ export function PolicyList({
     data: policyVersions,
     isLoading: versionsLoading,
     error: versionsError,
-  } = vincentApiClient.useGetPolicyVersionsQuery({
-    packageName: selectedPolicy?.packageName || '',
-  });
+  } = vincentApiClient.useGetPolicyVersionsQuery(
+    {
+      packageName: selectedPolicy?.packageName || '',
+    },
+    { skip: !selectedPolicy?.packageName },
+  ); // FIXME: Sidebar-related patch, we don't want to fetch versions if no policy is selected
 
   const sortedVersions = useMemo(() => {
     if (!policyVersions || policyVersions.length === 0) return [];

@@ -19,10 +19,13 @@ export function PolicyOverviewWrapper() {
     data: activePolicyVersion,
     isLoading: activePolicyVersionLoading,
     isError: activePolicyVersionError,
-  } = vincentApiClient.useGetPolicyVersionQuery({
-    packageName: packageName || '',
-    version: policy?.activeVersion || '',
-  });
+  } = vincentApiClient.useGetPolicyVersionQuery(
+    {
+      packageName: packageName || '',
+      version: policy?.activeVersion || '',
+    },
+    { skip: !policy?.activeVersion },
+  );
 
   // Navigation
   const navigate = useNavigate();
