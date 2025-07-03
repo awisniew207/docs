@@ -6,16 +6,16 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
-import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 
 export function DeletePolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
-
-  const policy = sortPolicyFromPolicies(policies, packageName);
+  const {
+    data: policy,
+    isLoading: policyLoading,
+    isError: policyError,
+  } = vincentApiClient.useGetPolicyQuery({ packageName: packageName || '' });
 
   // Mutation
   const [deletePolicy, { isLoading, isSuccess, isError, data, error }] =
@@ -31,13 +31,13 @@ export function DeletePolicyWrapper() {
     }
   }, [isSuccess, data, navigate]);
 
-  useAddressCheck(policy);
+  useAddressCheck(policy || null);
 
   // Loading states
-  if (policiesLoading) return <Loading />;
+  if (policyLoading) return <Loading />;
 
   // Error states
-  if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
+  if (policyError) return <StatusMessage message="Failed to load policy" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
 
   // Mutation states

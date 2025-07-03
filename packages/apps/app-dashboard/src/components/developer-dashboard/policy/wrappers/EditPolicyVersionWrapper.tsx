@@ -9,16 +9,16 @@ import {
 } from '../forms/EditPolicyVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
-import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 
 export function EditPolicyVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();
 
   // Fetching
-  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
-
-  const policy = sortPolicyFromPolicies(policies, packageName);
+  const {
+    data: policy,
+    isLoading: policyLoading,
+    isError: policyError,
+  } = vincentApiClient.useGetPolicyQuery({ packageName: packageName || '' });
 
   const {
     data: versionData,
@@ -46,13 +46,13 @@ export function EditPolicyVersionWrapper() {
     }
   }, [isSuccess, data, navigate, policy, versionData]);
 
-  useAddressCheck(policy);
+  useAddressCheck(policy || null);
 
   // Loading states
-  if (policiesLoading || versionLoading) return <Loading />;
+  if (policyLoading || versionLoading) return <Loading />;
 
   // Error states
-  if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
+  if (policyError) return <StatusMessage message="Failed to load policy" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
   if (!versionData) return <StatusMessage message={`Version ${version} not found`} type="error" />;

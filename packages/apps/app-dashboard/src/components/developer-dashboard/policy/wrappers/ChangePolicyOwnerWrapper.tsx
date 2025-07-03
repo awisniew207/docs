@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
 import { ChangePolicyOwnerForm, ChangePolicyOwnerFormData } from '../forms/ChangePolicyOwnerForm';
 import Loading from '@/components/layout/Loading';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
@@ -14,9 +12,11 @@ export function ChangePolicyOwnerWrapper() {
 
   // Fetching
   // It's not needed here, but we'll fetch to make sure the tool exists
-  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
-
-  const policy = sortPolicyFromPolicies(policies, packageName);
+  const {
+    data: policy,
+    isLoading: policyLoading,
+    isError: policyError,
+  } = vincentApiClient.useGetPolicyQuery({ packageName: packageName || '' });
 
   // Mutation
   const [changePolicyOwner, { isLoading, isSuccess, isError, data, error }] =
@@ -32,13 +32,13 @@ export function ChangePolicyOwnerWrapper() {
     }
   }, [isSuccess, data, policy]);
 
-  useAddressCheck(policy);
+  useAddressCheck(policy || null);
 
   // Loading states
-  if (policiesLoading) return <Loading />;
+  if (policyLoading) return <Loading />;
 
   // Error states
-  if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
+  if (policyError) return <StatusMessage message="Failed to load policy" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
 
   // Mutation states

@@ -4,23 +4,22 @@ import {
   DeletePolicyVersionForm,
   DeletePolicyVersionFormData,
 } from '../forms/DeletePolicyVersionForm';
-import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeletePolicyVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();
 
   // Fetching
-  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
+  const {
+    data: policy,
+    isLoading: policyLoading,
+    isError: policyError,
+  } = vincentApiClient.useGetPolicyQuery({ packageName: packageName || '' });
 
-  const policy = sortPolicyFromPolicies(policies, packageName);
-
-  // Note: The data here is barely used, but we need to confirm the version exists with a query
   const {
     data: versionsData,
     isLoading: versionLoading,
@@ -52,13 +51,13 @@ export function DeletePolicyVersionWrapper() {
     }
   }, [isSuccess, data, navigate]);
 
-  useAddressCheck(policy);
+  useAddressCheck(policy || null);
 
   // Loading states
-  if (policiesLoading || versionLoading) return <Loading />;
+  if (policyLoading || versionLoading) return <Loading />;
 
   // Error states
-  if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
+  if (policyError) return <StatusMessage message="Failed to load policy" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load policy version" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
   if (!versionsData)

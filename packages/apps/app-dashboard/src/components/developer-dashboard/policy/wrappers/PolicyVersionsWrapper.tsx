@@ -5,15 +5,17 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressChec
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
-import { sortPolicyFromPolicies } from '@/utils/developer-dashboard/sortPolicyFromPolicies';
 import { PolicyVersion } from '@lit-protocol/vincent-registry-sdk/dist/src/generated/vincentApiClientReact';
 
 export function PolicyVersionsWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const { data: policies, isLoading: policiesLoading, isError: policiesError } = useUserPolicies();
 
-  const policy = sortPolicyFromPolicies(policies, packageName);
+  // Fetch policy
+  const {
+    data: policy,
+    isLoading: policyLoading,
+    isError: policyError,
+  } = vincentApiClient.useGetPolicyQuery({ packageName: packageName || '' });
 
   // Fetch
   const {
@@ -34,13 +36,13 @@ export function PolicyVersionsWrapper() {
   // Navigation
   const navigate = useNavigate();
 
-  useAddressCheck(policy);
+  useAddressCheck(policy || null);
 
   // Loading states first
-  if (policiesLoading || versionsLoading) return <Loading />;
+  if (policyLoading || versionsLoading) return <Loading />;
 
   // Combined error states
-  if (policiesError) return <StatusMessage message="Failed to load policies" type="error" />;
+  if (policyError) return <StatusMessage message="Failed to load policy" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load policy versions" type="error" />;
   if (!policy) return <StatusMessage message={`Policy ${packageName} not found`} type="error" />;
   if (!versions) return <StatusMessage message="No policy versions found" type="info" />;
