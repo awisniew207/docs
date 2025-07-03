@@ -18,7 +18,7 @@ import {VincentUserFacet} from "../contracts/facets/VincentUserFacet.sol";
 import {VincentUserViewFacet} from "../contracts/facets/VincentUserViewFacet.sol";
 
 import {DiamondInit} from "../contracts/diamond-base/upgradeInitializers/DiamondInit.sol";
-import {Strings} from "../lib/openzeppelin-contracts/contracts/utils/Strings.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Import the VincentDiamond to use its selector methods
 import {VincentDiamond} from "../contracts/VincentDiamond.sol";
