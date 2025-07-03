@@ -114,8 +114,8 @@ export function createVincentTool<
     try {
       const context = createExecutionToolContext({
         baseContext: baseToolContext,
-        successSchema: executeSuccessSchema,
-        failSchema: executeFailSchema,
+        successSchema: ToolConfig.executeSuccessSchema,
+        failSchema: ToolConfig.executeFailSchema,
         policiesByPackageName: policyByPackageName as PolicyMapByPackageName,
       });
 
@@ -168,8 +168,8 @@ export function createVincentTool<
         try {
           const context = createPrecheckToolContext({
             baseContext: baseToolContext,
-            successSchema: precheckSuccessSchema,
-            failSchema: precheckFailSchema,
+            successSchema: ToolConfig.precheckSuccessSchema,
+            failSchema: ToolConfig.precheckFailSchema,
           });
 
           const parsedToolParams = validateOrFail(
