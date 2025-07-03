@@ -1,23 +1,22 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteToolVersionForm, DeleteToolVersionFormData } from '../forms/DeleteToolVersionForm';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeleteToolVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();
 
   // Fetching
-  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
-  const tool = sortToolFromTools(tools, packageName);
-
-  // Note: The data here is barely used, but we need to confirm the version exists with a query
   const {
     data: versionsData,
     isLoading: versionLoading,
@@ -49,13 +48,13 @@ export function DeleteToolVersionWrapper() {
     }
   }, [isSuccess, data, navigate]);
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading states
-  if (toolsLoading || versionLoading) return <Loading />;
+  if (toolLoading || versionLoading) return <Loading />;
 
   // Error states
-  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolError) return <StatusMessage message="Failed to load tool" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load tool version" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
   if (!versionsData)

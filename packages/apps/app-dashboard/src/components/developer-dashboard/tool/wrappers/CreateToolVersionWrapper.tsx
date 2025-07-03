@@ -9,16 +9,16 @@ import {
 } from '../forms/CreateToolVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 
 export function CreateToolVersionWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
-
-  const tool = sortToolFromTools(tools, packageName);
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
   // Mutation
   const [createToolVersion, { isLoading, isSuccess, isError, data, error }] =
@@ -37,13 +37,13 @@ export function CreateToolVersionWrapper() {
     }
   }, [isSuccess, data, navigate, tool]);
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading states
-  if (toolsLoading) return <Loading />;
+  if (toolLoading) return <Loading />;
 
   // Error states
-  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolError) return <StatusMessage message="Failed to load tool" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
 
   // Mutation states

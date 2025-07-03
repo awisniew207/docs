@@ -10,6 +10,8 @@ import { AppVersion } from '@/types/developer-dashboard/appTypes';
 export function AppVersionsWrapper() {
   const { appId } = useParams<{ appId: string }>();
   const navigate = useNavigate();
+
+  // Fetch app
   const {
     data: app,
     isLoading: appLoading,

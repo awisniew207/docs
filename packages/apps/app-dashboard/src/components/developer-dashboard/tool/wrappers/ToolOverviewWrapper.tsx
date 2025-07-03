@@ -2,8 +2,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ToolDetailsView from '../views/ToolDetailsView';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
@@ -11,9 +9,11 @@ export function ToolOverviewWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const { data: tools, isLoading, isError } = useUserTools();
-
-  const tool = sortToolFromTools(tools, packageName);
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
   const {
     data: activeToolVersion,
@@ -27,12 +27,12 @@ export function ToolOverviewWrapper() {
   // Navigation
   const navigate = useNavigate();
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading
-  if (isLoading || activeToolVersionLoading) return <Loading />;
-  if (isError || activeToolVersionError)
-    return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolLoading || activeToolVersionLoading) return <Loading />;
+  if (toolError || activeToolVersionError)
+    return <StatusMessage message="Failed to load tool" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
   if (!activeToolVersion)
     return <StatusMessage message={`Tool version ${tool?.activeVersion} not found`} type="error" />;

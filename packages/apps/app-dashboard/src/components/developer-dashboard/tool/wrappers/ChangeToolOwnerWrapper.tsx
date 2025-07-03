@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { ChangeToolOwnerForm, ChangeToolOwnerFormData } from '../forms/ChangeToolOwnerForm';
 import Loading from '@/components/layout/Loading';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
@@ -12,11 +10,12 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressChec
 export function ChangeToolOwnerWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
-  // Fetching
-  // It's not needed here, but we'll fetch to make sure the tool exists
-  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
-
-  const tool = sortToolFromTools(tools, packageName);
+  // Fetch
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
   // Mutation
   const [changeToolOwner, { isLoading, isSuccess, isError, data, error }] =
@@ -32,13 +31,13 @@ export function ChangeToolOwnerWrapper() {
     }
   }, [isSuccess, data, navigate, tool]);
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading states
-  if (toolsLoading) return <Loading />;
+  if (toolLoading) return <Loading />;
 
   // Error states
-  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolError) return <StatusMessage message="Failed to load tool" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
 
   // Mutation states

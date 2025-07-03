@@ -1,21 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditToolForm, type EditToolFormData } from '../forms/EditToolForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function EditToolWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
-
-  const tool = sortToolFromTools(tools, packageName);
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
   const {
     data: toolVersions,
@@ -37,13 +37,13 @@ export function EditToolWrapper() {
     }
   }, [isSuccess, data, tool]);
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading states
-  if (toolsLoading || versionsLoading) return <Loading />;
+  if (toolLoading || versionsLoading) return <Loading />;
 
   // Error states
-  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolError) return <StatusMessage message="Failed to load tool" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load tool versions" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
 

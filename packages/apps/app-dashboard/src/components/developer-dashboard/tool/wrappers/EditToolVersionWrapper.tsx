@@ -6,16 +6,16 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditToolVersionForm, type EditToolVersionFormData } from '../forms/EditToolVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 
 export function EditToolVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();
 
   // Fetching
-  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
-
-  const tool = sortToolFromTools(tools, packageName);
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
   const {
     data: versionData,
@@ -43,13 +43,13 @@ export function EditToolVersionWrapper() {
     }
   }, [isSuccess, data, navigate, tool, versionData]);
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading states
-  if (toolsLoading || versionLoading) return <Loading />;
+  if (toolLoading || versionLoading) return <Loading />;
 
   // Error states
-  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolError) return <StatusMessage message="Failed to load tool" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
   if (!versionData) return <StatusMessage message={`Version ${version} not found`} type="error" />;

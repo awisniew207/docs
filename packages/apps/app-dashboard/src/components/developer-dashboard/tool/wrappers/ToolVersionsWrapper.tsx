@@ -5,15 +5,17 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressChec
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
-import { sortToolFromTools } from '@/utils/developer-dashboard/sortToolFromTools';
 import { ToolVersion } from '@lit-protocol/vincent-registry-sdk/dist/src/generated/vincentApiClientReact';
 
 export function ToolVersionsWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
-  const { data: tools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
 
-  const tool = sortToolFromTools(tools, packageName);
+  // Fetch tool
+  const {
+    data: tool,
+    isLoading: toolLoading,
+    isError: toolError,
+  } = vincentApiClient.useGetToolQuery({ packageName: packageName || '' });
 
   // Fetch
   const {
@@ -34,13 +36,13 @@ export function ToolVersionsWrapper() {
   // Navigation
   const navigate = useNavigate();
 
-  useAddressCheck(tool);
+  useAddressCheck(tool || null);
 
   // Loading states first
-  if (toolsLoading || versionsLoading) return <Loading />;
+  if (toolLoading || versionsLoading) return <Loading />;
 
   // Combined error states
-  if (toolsError) return <StatusMessage message="Failed to load tools" type="error" />;
+  if (toolError) return <StatusMessage message="Failed to load tool" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load tool versions" type="error" />;
   if (!tool) return <StatusMessage message={`Tool ${packageName} not found`} type="error" />;
   if (!versions) return <StatusMessage message="No tool versions found" type="info" />;
