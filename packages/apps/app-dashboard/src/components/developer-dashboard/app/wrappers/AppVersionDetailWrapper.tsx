@@ -5,16 +5,17 @@ import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVe
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
-import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionDetailWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
 
-  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
-
-  const app = sortAppFromApps(apps, appId);
+  // Fetch app
+  const {
+    data: app,
+    isLoading: appLoading,
+    isError: appError,
+  } = vincentApiClient.useGetAppQuery({ appId: Number(appId) });
 
   // Fetch app versions
   const { isLoading: versionsLoading, isError: versionsError } =
@@ -64,13 +65,13 @@ export function AppVersionDetailWrapper() {
   // Navigation
   const navigate = useNavigate();
 
-  useAddressCheck(app);
+  useAddressCheck(app || null);
 
   // Loading states first
-  if (appsLoading || versionsLoading || versionLoading || versionToolsLoading) return <Loading />;
+  if (appLoading || versionsLoading || versionLoading || versionToolsLoading) return <Loading />;
 
   // Combined error states
-  if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (appError) return <StatusMessage message="Failed to load app" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (versionToolsError)

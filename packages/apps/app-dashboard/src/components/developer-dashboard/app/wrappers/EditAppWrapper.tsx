@@ -1,20 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditAppForm, type EditAppFormData } from '../forms/EditAppForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
+import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 
 export function EditAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
 
   // Fetching
-  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
-
-  const app = sortAppFromApps(apps, appId);
+  const {
+    data: app,
+    isLoading: appLoading,
+    isError: appError,
+  } = vincentApiClient.useGetAppQuery({ appId: Number(appId) });
 
   const {
     data: appVersions,
@@ -36,11 +37,13 @@ export function EditAppWrapper() {
     }
   }, [isSuccess, data, app]);
 
+  useAddressCheck(app || null);
+
   // Loading states
-  if (appsLoading || versionsLoading) return <Loading />;
+  if (appLoading || versionsLoading) return <Loading />;
 
   // Error states
-  if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (appError) return <StatusMessage message="Failed to load app" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
 

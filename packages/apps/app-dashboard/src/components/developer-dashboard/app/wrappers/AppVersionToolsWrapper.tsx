@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { AppVersionTool, Tool } from '@/types/developer-dashboard/appTypes';
@@ -8,16 +7,17 @@ import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 
 export function AppVersionToolsWrapper() {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetching
-  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
-
-  const app = sortAppFromApps(apps, appId);
+  const {
+    data: app,
+    isLoading: appLoading,
+    isError: appError,
+  } = vincentApiClient.useGetAppQuery({ appId: Number(appId) });
 
   const {
     data: versionData,
@@ -64,13 +64,13 @@ export function AppVersionToolsWrapper() {
     return () => clearTimeout(timer);
   }, [isSuccess, data]);
 
-  useAddressCheck(app);
+  useAddressCheck(app || null);
 
   // Loading states
-  if (appsLoading || versionLoading || versionToolsLoading || toolsLoading) return <Loading />;
+  if (appLoading || versionLoading || versionToolsLoading || toolsLoading) return <Loading />;
 
   // Error states
-  if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (appError) return <StatusMessage message="Failed to load app" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
   if (versionToolsError)
     return <StatusMessage message="Failed to load version tools" type="error" />;

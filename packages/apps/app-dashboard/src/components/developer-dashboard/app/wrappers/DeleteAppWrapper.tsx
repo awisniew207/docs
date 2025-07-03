@@ -1,21 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteAppForm } from '../forms/DeleteAppForm';
-import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import Loading from '@/components/layout/Loading';
-import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeleteAppWrapper() {
   const { appId } = useParams<{ appId: string }>();
 
   // Fetching
-  const { data: apps, isLoading: appsLoading, isError: appsError } = useUserApps();
-
-  const app = sortAppFromApps(apps, appId);
+  const {
+    data: app,
+    isLoading: appLoading,
+    isError: appError,
+  } = vincentApiClient.useGetAppQuery({ appId: Number(appId) });
 
   // Mutation
   const [deleteApp, { isLoading, isSuccess, isError, data, error }] =
@@ -31,13 +31,13 @@ export function DeleteAppWrapper() {
     }
   }, [isSuccess, data, navigate]);
 
-  useAddressCheck(app);
+  useAddressCheck(app || null);
 
   // Loading states
-  if (appsLoading) return <Loading />;
+  if (appLoading) return <Loading />;
 
   // Error states
-  if (appsError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (appError) return <StatusMessage message="Failed to load app" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
 
   // Mutation states

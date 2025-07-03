@@ -1,24 +1,25 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppDetailsView } from '../views/AppDetailsView';
-import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import Loading from '@/components/layout/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import { sortAppFromApps } from '@/utils/developer-dashboard/sortAppFromApps';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function AppOverviewWrapper() {
   const { appId } = useParams<{ appId: string }>();
 
   // Fetching
-  const { data: apps, isLoading, isError } = useUserApps();
-
-  const app = sortAppFromApps(apps, appId);
+  const {
+    data: app,
+    isLoading: appLoading,
+    isError: appError,
+  } = vincentApiClient.useGetAppQuery({ appId: Number(appId) });
 
   // Navigation
   const navigate = useNavigate();
 
   // Loading
-  if (isLoading) return <Loading />;
-  if (isError) return <StatusMessage message="Failed to load apps" type="error" />;
+  if (appLoading) return <Loading />;
+  if (appError) return <StatusMessage message="Failed to load app" type="error" />;
   if (!app) return <StatusMessage message={`App ${appId} not found`} type="error" />;
 
   const handleOpenMutation = (mutationType: string) => {
