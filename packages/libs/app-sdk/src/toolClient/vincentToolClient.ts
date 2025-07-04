@@ -431,6 +431,11 @@ export function getVincentToolClient<
           delegatorPkpEthAddress,
           rpcUrl,
         });
+        if (!baseToolContext.policiesContext.allow) {
+          return createToolResponseFailureNoResult({
+            context: baseToolContext,
+          }) as ToolResponse<PrecheckSuccessSchema, PrecheckFailSchema, PoliciesByPackageName>;
+        }
 
         return createToolResponseSuccessNoResult({
           context: baseToolContext,
