@@ -4,23 +4,25 @@ import { getVincentToolClient, disconnectVincentToolClients } from '@lit-protoco
 import { ethers } from 'ethers';
 
 // Import all bundled Vincent tools from the generated directory
-// Failure tools
-import { bundledVincentTool as executeFailNoSchemaErrorResultTool } from '../src/generated/executeFailNoSchemaErrorResult/vincent-bundled-tool';
-import { bundledVincentTool as executeFailNoSchemaNoResultTool } from '../src/generated/executeFailNoSchemaNoResult/vincent-bundled-tool';
-import { bundledVincentTool as executeFailWithSchemaTool } from '../src/generated/executeFailWithSchema/vincent-bundled-tool';
-import { bundledVincentTool as precheckFailNoSchemaErrorResultTool } from '../src/generated/precheckFailNoSchemaErrorResult/vincent-bundled-tool';
-import { bundledVincentTool as precheckFailNoSchemaNoResultTool } from '../src/generated/precheckFailNoSchemaNoResult/vincent-bundled-tool';
-import { bundledVincentTool as precheckFailWithSchemaTool } from '../src/generated/precheckFailWithSchema/vincent-bundled-tool';
+// Failure tools with schema
+import { bundledVincentTool as executeFailWithSchemaTool } from '../src/generated/tools/fail/withSchema/executeFailWithSchema/vincent-bundled-tool';
+import { bundledVincentTool as precheckFailWithSchemaTool } from '../src/generated/tools/fail/withSchema/precheckFailWithSchema/vincent-bundled-tool';
+
+// Failure tools with no schema
+import { bundledVincentTool as executeFailNoSchemaErrorResultTool } from '../src/generated/tools/fail/noSchema/executeFailNoSchemaErrorResult/vincent-bundled-tool';
+import { bundledVincentTool as executeFailNoSchemaNoResultTool } from '../src/generated/tools/fail/noSchema/executeFailNoSchemaNoResult/vincent-bundled-tool';
+import { bundledVincentTool as precheckFailNoSchemaErrorResultTool } from '../src/generated/tools/fail/noSchema/precheckFailNoSchemaErrorResult/vincent-bundled-tool';
+import { bundledVincentTool as precheckFailNoSchemaNoResultTool } from '../src/generated/tools/fail/noSchema/precheckFailNoSchemaNoResult/vincent-bundled-tool';
 
 // Throw error tools
-import { bundledVincentTool as executeFailThrowErrorTool } from '../src/generated/executeFailThrowError/vincent-bundled-tool';
-import { bundledVincentTool as precheckFailThrowErrorTool } from '../src/generated/precheckFailThrowError/vincent-bundled-tool';
+import { bundledVincentTool as executeFailThrowErrorTool } from '../src/generated/tools/fail/noSchema/executeFailThrowError/vincent-bundled-tool';
+import { bundledVincentTool as precheckFailThrowErrorTool } from '../src/generated/tools/fail/noSchema/precheckFailThrowError/vincent-bundled-tool';
 
 // Success tools
-import { bundledVincentTool as executeSuccessNoSchemaTool } from '../src/generated/executeSuccessNoSchema/vincent-bundled-tool';
-import { bundledVincentTool as executeSuccessWithSchemaTool } from '../src/generated/executeSuccessWithSchema/vincent-bundled-tool';
-import { bundledVincentTool as precheckSuccessNoSchemaTool } from '../src/generated/precheckSuccessNoSchema/vincent-bundled-tool';
-import { bundledVincentTool as precheckSuccessWithSchemaTool } from '../src/generated/precheckSuccessWithSchema/vincent-bundled-tool';
+import { bundledVincentTool as executeSuccessNoSchemaTool } from '../src/generated/tools/success/noSchema/executeSuccessNoSchema/vincent-bundled-tool';
+import { bundledVincentTool as executeSuccessWithSchemaTool } from '../src/generated/tools/success/withSchema/executeSuccessWithSchema/vincent-bundled-tool';
+import { bundledVincentTool as precheckSuccessNoSchemaTool } from '../src/generated/tools/success/noSchema/precheckSuccessNoSchema/vincent-bundled-tool';
+import { bundledVincentTool as precheckSuccessWithSchemaTool } from '../src/generated/tools/success/withSchema/precheckSuccessWithSchema/vincent-bundled-tool';
 
 import {
   TestConfig,

@@ -5,4 +5,4 @@ export * from './success-tools';
 export * from './failure-tools';
 
 // Export common schemas
-export * from './schemas/common';
+export * from './schemas';
