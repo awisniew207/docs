@@ -526,8 +526,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'evaluateDenyThrowError',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/evaluateDenyThrowError',
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
@@ -549,8 +549,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'evaluateDenyWithSchema',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/evaluateDenyWithSchema',
         );
         expect(result.context?.policiesContext?.deniedPolicy?.result?.reason).toBeDefined();
       });
@@ -569,8 +569,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'evaluateDenyNoSchemaErrorResult',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/evaluateDenyNoSchemaErrorResult',
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
@@ -592,8 +592,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'evaluateDenyNoSchemaNoResult',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/evaluateDenyNoSchemaNoResult',
         );
         expect(result.context?.policiesContext?.deniedPolicy?.result).toBeUndefined();
       });
@@ -615,8 +615,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'precheckDenyThrowError',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/precheckDenyThrowError',
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
@@ -638,8 +638,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'precheckDenyWithSchema',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/precheckDenyWithSchema',
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
@@ -661,8 +661,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'precheckDenyNoSchemaErrorResult',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/precheckDenyNoSchemaErrorResult',
         );
 
         if (result.context?.policiesContext?.allow === false) {
@@ -685,8 +685,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'precheckDenyNoSchemaNoResult',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/precheckDenyNoSchemaNoResult',
         );
         expect(result.context?.policiesContext?.deniedPolicy?.result).toBeUndefined();
       });
@@ -708,8 +708,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'commitDenyThrowError',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/commitDenyThrowError',
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
@@ -731,8 +731,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'commitDenyWithSchema',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/commitDenyWithSchema',
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
@@ -754,8 +754,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'commitDenyNoSchemaErrorResult',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/commitDenyNoSchemaErrorResult',
         );
         expect(result.context?.policiesContext?.allow).toBe(false);
         if (result.context?.policiesContext?.allow === false) {
@@ -778,8 +778,8 @@ describe('VincentToolClient policy failure tests', () => {
 
         expect(result.success).toBe(false);
         expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toContain(
-          'commitDenyNoSchemaNoResult',
+        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
+          '@lit-protocol/commitDenyNoSchemaNoResult',
         );
         expect(result.context?.policiesContext?.deniedPolicy?.result).toBeUndefined();
       });

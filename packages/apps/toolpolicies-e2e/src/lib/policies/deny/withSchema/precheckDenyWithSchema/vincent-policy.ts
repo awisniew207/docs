@@ -6,7 +6,7 @@ import { policyParams, DenySchema, toolParams } from '../../../../schemas';
  * Tests deny() with schema in precheck
  */
 export const vincentPolicy = createVincentPolicy({
-  packageName: '@lit-protocol/test-policy@1.0.0',
+  packageName: '@lit-protocol/precheckDenyWithSchema',
   toolParamsSchema: toolParams,
   userParamsSchema: policyParams,
 

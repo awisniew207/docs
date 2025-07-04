@@ -53,34 +53,58 @@ async function buildAllActions() {
 
   const actions = getActionDirectories(ACTIONS_DIR);
 
-  console.log(`Building ${actions.length} actions`);
-  const results = await Promise.all(
-    actions.map(async (tool) => {
-      const { actionDir, fullPath } = tool;
-      const entryPoint = path.join(fullPath, 'lit-action.ts');
-      const outdir = path.join(GENERATED_DIR, actionDir);
+  const policies = [];
+  const tools = [];
 
+  console.log(`Building ${actions.length} actions`);
+
+  actions.forEach((action) => {
+    const { actionDir, fullPath } = action;
+    const entryPoint = path.join(fullPath, 'lit-action.ts');
+    const outdir = path.join(GENERATED_DIR, actionDir);
+
+    if (actionDir.includes('tool')) {
+      tools.push({ name: actionDir, entryPoint, outdir });
+    } else {
+      policies.push({ name: actionDir, entryPoint, outdir });
+    }
+  });
+
+  const policiesResults = await Promise.all(
+    policies.map(async (policy) => {
+      const { name: actionDir, entryPoint, outdir } = policy;
       try {
-        if (actionDir.includes('tool')) {
-          await buildVincentTool({
-            entryPoint,
-            outdir,
-            tsconfigPath: TSCONFIG_PATH,
-          });
-        } else {
-          await buildVincentPolicy({
-            entryPoint,
-            outdir,
-            tsconfigPath: TSCONFIG_PATH,
-          });
-        }
-        return { name: actionDir, success: true };
+        await buildVincentPolicy({
+          entryPoint,
+          outdir,
+          tsconfigPath: TSCONFIG_PATH,
+        });
+        return { name: actionDir, entryPoint, outdir, success: true };
       } catch (error) {
         return { name: actionDir, success: false, error: error.message };
       }
     }),
   );
 
+  // Ensure IPFS CIDs embedded into the tools are accurate by building all the policies first.
+  const toolsResults = await Promise.all(
+    tools.map(async (tool) => {
+      const { name: actionDir, entryPoint, outdir } = tool;
+
+      try {
+        await buildVincentTool({
+          entryPoint,
+          outdir,
+          tsconfigPath: TSCONFIG_PATH,
+        });
+        return { name: actionDir, entryPoint, outdir, success: true };
+      } catch (error) {
+        return { name: actionDir, success: false, error: error.message };
+      }
+    }),
+  );
+
+  const results = [...policiesResults, ...toolsResults];
   // Print summary
   const successCount = results.filter((r) => r.success).length;
   const failCount = results.length - successCount;

@@ -6,7 +6,7 @@ import { policyParams, toolParams } from '../../../../schemas';
  * Tests deny() with no schema defined and no result provided in commit
  */
 export const vincentPolicy = createVincentPolicy({
-  packageName: '@lit-protocol/test-policy@1.0.0',
+  packageName: '@lit-protocol/commitDenyNoSchemaNoResult',
   toolParamsSchema: toolParams,
   userParamsSchema: policyParams,
   commitParamsSchema: policyParams,

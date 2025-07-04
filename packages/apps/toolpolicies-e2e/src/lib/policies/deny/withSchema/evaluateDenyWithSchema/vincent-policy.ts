@@ -6,7 +6,7 @@ import { policyParams, DenySchema, toolParams } from '../../../../schemas';
  * Tests deny() with schema in evaluate
  */
 export const vincentPolicy = createVincentPolicy({
-  packageName: '@lit-protocol/test-policy@1.0.0',
+  packageName: '@lit-protocol/evaluateDenyWithSchema',
   toolParamsSchema: toolParams,
   userParamsSchema: policyParams,
 

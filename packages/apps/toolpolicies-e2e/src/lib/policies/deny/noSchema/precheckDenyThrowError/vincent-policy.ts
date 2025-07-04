@@ -6,7 +6,7 @@ import { policyParams, toolParams } from '../../../../schemas';
  * Tests throwing an error instead of calling deny() in precheck
  */
 export const vincentPolicy = createVincentPolicy({
-  packageName: '@lit-protocol/test-policy@1.0.0',
+  packageName: '@lit-protocol/precheckDenyThrowError',
   toolParamsSchema: toolParams,
   userParamsSchema: policyParams,
 
