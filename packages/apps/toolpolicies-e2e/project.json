@@ -21,7 +21,7 @@
         "jestConfig": "{projectRoot}/jest.config.js"
       }
     },
-    "actions:build": {
+    "action:build": {
       "dependsOn": ["tool-sdk:build"],
       "executor": "nx:run-commands",
       "options": {
@@ -29,7 +29,7 @@
         "cwd": "packages/apps/toolpolicies-e2e"
       }
     },
-    "actions:deploy": {
+    "action:deploy": {
       "executor": "nx:run-commands",
       "dependsOn": ["actions:build"],
       "options": {
