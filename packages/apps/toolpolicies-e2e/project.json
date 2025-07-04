@@ -31,7 +31,7 @@
     },
     "action:deploy": {
       "executor": "nx:run-commands",
-      "dependsOn": ["actions:build"],
+      "dependsOn": ["action:build"],
       "options": {
         "commands": ["node tools/deployAllActions.js"],
         "cwd": "packages/apps/toolpolicies-e2e"
