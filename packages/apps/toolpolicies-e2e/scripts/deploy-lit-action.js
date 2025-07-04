@@ -46,8 +46,12 @@ async function uploadToIPFS(filename, fileContent, pinataJwt) {
  * @param {string} options.pinataJwt - The Pinata JWT
  * @returns {Promise<string>} The IPFS CID
  */
-async function deployLitAction({ generatedDir, outputFile = 'lit-action.js', pinataJwt }) {
+async function deployLitAction({ generatedDir, outputFile = 'lit-action.js', pinataJwt, type }) {
   try {
+    if (type !== 'tool' && type !== 'policy') {
+      throw new Error(`Invalid type: ${type}. Must be 'tool' or 'policy'.`);
+    }
+
     const filePath = path.join(generatedDir, outputFile);
     if (!fs.existsSync(filePath)) {
       throw new Error(
@@ -59,13 +63,13 @@ async function deployLitAction({ generatedDir, outputFile = 'lit-action.js', pin
     console.log(`Deploying ${path.dirname(path.relative(__dirname, filePath))} to IPFS...`);
     const ipfsCid = await uploadToIPFS(outputFile, litActionCodeString.code, pinataJwt);
 
-    const cidJsonPath = path.join(generatedDir, 'vincent-tool-metadata.json');
+    const cidJsonPath = path.join(generatedDir, `vincent-${type}-metadata.json`);
 
     const metadata = fs.readFileSync(cidJsonPath);
     const { ipfsCid: metadataIpfsCid } = JSON.parse(metadata);
     if (ipfsCid !== metadataIpfsCid) {
       throw new Error(
-        `IPFS CID mismatch in vincent-policy-metadata.json. Expected: ${metadataIpfsCid}, got: ${ipfsCid}`,
+        `IPFS CID mismatch in vincent-${type}-metadata.json. Expected: ${metadataIpfsCid}, got: ${ipfsCid}`,
       );
     }
 

@@ -25,7 +25,7 @@
       "dependsOn": ["tool-sdk:build"],
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node tools/buildAllActions.js"],
+        "commands": ["node scripts/buildAllActions.js"],
         "cwd": "packages/apps/toolpolicies-e2e"
       }
     },
@@ -33,7 +33,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["action:build"],
       "options": {
-        "commands": ["node tools/deployAllActions.js"],
+        "commands": ["node scripts/deployAllActions.js"],
         "cwd": "packages/apps/toolpolicies-e2e"
       }
     }
