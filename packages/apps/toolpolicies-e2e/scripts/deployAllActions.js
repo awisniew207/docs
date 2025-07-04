@@ -81,13 +81,13 @@ async function deployAllActions(pinataJwt) {
   );
 
   // Deploy all actions in parallel
-  console.log(`Deploying ${actionDirs.length} actions in parallel...`);
+  console.log(`Deploying ${actionDirs.length} actions...`);
 
   const deployPromises = actionDirs.map(async (action) => {
     const { actionName, fullPath, type } = action;
 
     try {
-      console.log(`Starting deployment of ${type}: ${actionName}`);
+      console.log(`${type === 'tool' ? '🛠️' : '⚖️'} Deploying: ${actionName}`);
       const ipfsCid = await deployLitAction({
         generatedDir: fullPath,
         outputFile: 'lit-action.js',

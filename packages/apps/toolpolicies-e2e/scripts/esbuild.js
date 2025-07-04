@@ -200,18 +200,9 @@ const wrapIIFEInStringPlugin = {
  * @param {string} options.outdir - The output directory
  * @param {string} options.tsconfigPath - Path to tsconfig.json
  * @param {string} options.type - Type of the bundle ('tool' or 'policy')
- * @param {string} options.successMessage - Message to display on successful build
- * @param {string} options.errorMessage - Message to display on build error
  * @returns {Promise<void>}
  */
-async function buildVincentLitAction({
-  entryPoint,
-  outdir,
-  tsconfigPath,
-  type,
-  successMessage,
-  errorMessage,
-}) {
+async function buildVincentLitAction({ entryPoint, outdir, tsconfigPath, type }) {
   try {
     const sourceDir = path.dirname(entryPoint);
 
@@ -251,19 +242,16 @@ async function buildVincentLitAction({
       .then((result) => {
         result.outputFiles.forEach((file) => {
           const bytes = file.text.length;
-          const mbInBinary = (bytes / (1024 * 1024)).toFixed(4);
           const mbInDecimal = (bytes / 1_000_000).toFixed(4);
 
+          const filePathArr = file.path.split('/');
           console.log(
-            `✅ ${file.path.split('/').pop()}\n- ${mbInDecimal} MB (in decimal)\n- ${mbInBinary} MB (in binary)`,
+            `✅ ${type === 'tool' ? '🛠️' : '⚖️'}${filePathArr.slice(filePathArr.length - 2, filePathArr.length - 1)} - ${mbInDecimal} MB`,
           );
         });
       });
-
-    console.log(successMessage);
   } catch (e) {
-    console.error(errorMessage, e);
-    throw e;
+    console.error(`❌ Error building Vincent ${type}:`, e.message, e.stack);
   }
 }
 
@@ -281,8 +269,6 @@ async function buildVincentTool({ entryPoint, outdir, tsconfigPath }) {
     outdir,
     tsconfigPath,
     type: 'tool',
-    successMessage: '✅ Vincent tool built successfully',
-    errorMessage: '❌ Error building Vincent tool: ',
   });
 }
 
@@ -300,8 +286,6 @@ async function buildVincentPolicy({ entryPoint, outdir, tsconfigPath }) {
     outdir,
     tsconfigPath,
     type: 'policy',
-    successMessage: '✅ Vincent policy built successfully',
-    errorMessage: '❌ Error building Vincent policy: ',
   });
 }
 

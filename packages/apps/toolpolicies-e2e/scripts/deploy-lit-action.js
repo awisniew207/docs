@@ -60,7 +60,6 @@ async function deployLitAction({ generatedDir, outputFile = 'lit-action.js', pin
     }
     const litActionCodeString = require(filePath);
 
-    console.log(`Deploying ${path.dirname(path.relative(__dirname, filePath))} to IPFS...`);
     const ipfsCid = await uploadToIPFS(outputFile, litActionCodeString.code, pinataJwt);
 
     const cidJsonPath = path.join(generatedDir, `vincent-${type}-metadata.json`);
@@ -73,12 +72,17 @@ async function deployLitAction({ generatedDir, outputFile = 'lit-action.js', pin
       );
     }
 
-    console.log('✅ Successfully deployed Lit Action');
-    console.log(`ℹ️  Deployed ${outputFile} to IPFS: ${ipfsCid}`);
+    const filePathArr = generatedDir.split('/');
+    console.log(
+      `✅ ${type === 'tool' ? '🛠️' : '⚖️'}${filePathArr.slice(filePathArr.length - 2, filePathArr.length - 1)} Deployed to IPFS`,
+    );
 
     return ipfsCid;
   } catch (error) {
-    console.error('❌ Error in deploy process:', error);
+    console.error(
+      "❌ ${type === 'tool' ? '🛠️' : '⚖️'}${filePathArr.slice(filePathArr.length - 2, filePathArr.length - 1)} Error deploying to IPFS:",
+      error.message,
+    );
     throw error;
   }
 }

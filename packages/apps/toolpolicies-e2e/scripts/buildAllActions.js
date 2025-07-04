@@ -53,16 +53,13 @@ async function buildAllActions() {
 
   const actions = getActionDirectories(ACTIONS_DIR);
 
-  console.log(`Found ${actions.length} actions`);
-  console.log(`Building all actions in parallel...`);
-
+  console.log(`Building ${actions.length} actions`);
   const results = await Promise.all(
     actions.map(async (tool) => {
       const { actionDir, fullPath } = tool;
       const entryPoint = path.join(fullPath, 'lit-action.ts');
       const outdir = path.join(GENERATED_DIR, actionDir);
 
-      console.log(`Starting build: ${actionDir}`);
       try {
         if (actionDir.includes('tool')) {
           await buildVincentTool({
@@ -77,10 +74,8 @@ async function buildAllActions() {
             tsconfigPath: TSCONFIG_PATH,
           });
         }
-        console.log(`Successfully built: ${actionDir}`);
         return { name: actionDir, success: true };
       } catch (error) {
-        console.error(`Error building ${actionDir}:`, error);
         return { name: actionDir, success: false, error: error.message };
       }
     }),
