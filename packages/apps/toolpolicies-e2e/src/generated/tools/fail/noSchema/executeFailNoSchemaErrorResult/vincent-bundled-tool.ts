@@ -4,5 +4,7 @@
 
 import { asBundledVincentTool } from '@lit-protocol/vincent-tool-sdk';
 import { vincentTool } from '../../../../../lib/tools/fail/noSchema/executeFailNoSchemaErrorResult/vincent-tool';
+import metadata from './vincent-tool-metadata.json';
 
-export const bundledVincentTool = asBundledVincentTool(vincentTool, "QmXNyEAFxyCqt3ZNZF7fNbLCMiXrBVr7Gke6CK8uSheBUs");
+
+export const bundledVincentTool = asBundledVincentTool(vincentTool, metadata.ipfsCid);

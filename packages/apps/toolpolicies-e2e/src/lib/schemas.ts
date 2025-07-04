@@ -10,7 +10,7 @@ export const SuccessSchema = z.object({ ok: z.boolean() });
 export const FailSchema = z.object({ err: z.string() });
 
 // Basic policy parameters schema used by all policies
-export const policyParams = z.object({ x: z.string() });
+export const policyParams = z.object({ y: z.string() });
 
 // Allow schema used by allow policies
 export const AllowSchema = z.object({ ok: z.boolean() });

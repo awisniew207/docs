@@ -10,7 +10,7 @@ export const vincentPolicy = createVincentPolicy({
   toolParamsSchema: toolParams,
   userParamsSchema: policyParams,
 
-  evaluateDenyResultSchema: DenySchema,
+  evalDenyResultSchema: DenySchema,
 
   precheck: async (_, { allow }) => {
     return allow();
