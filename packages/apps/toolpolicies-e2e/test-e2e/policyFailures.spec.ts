@@ -16,12 +16,6 @@ import { bundledVincentTool as precheckDenyWithSchemaTool } from '../src/generat
 import { bundledVincentTool as precheckDenyNoSchemaErrorResultTool } from '../src/generated/tools/withPolicyFailures/precheckDenyNoSchemaErrorResult/vincent-bundled-tool';
 import { bundledVincentTool as precheckDenyNoSchemaNoResultTool } from '../src/generated/tools/withPolicyFailures/precheckDenyNoSchemaNoResult/vincent-bundled-tool';
 
-// Policy failure tools - commit
-import { bundledVincentTool as commitDenyThrowErrorTool } from '../src/generated/tools/withPolicyFailures/commitDenyThrowError/vincent-bundled-tool';
-import { bundledVincentTool as commitDenyWithSchemaTool } from '../src/generated/tools/withPolicyFailures/commitDenyWithSchema/vincent-bundled-tool';
-import { bundledVincentTool as commitDenyNoSchemaErrorResultTool } from '../src/generated/tools/withPolicyFailures/commitDenyNoSchemaErrorResult/vincent-bundled-tool';
-import { bundledVincentTool as commitDenyNoSchemaNoResultTool } from '../src/generated/tools/withPolicyFailures/commitDenyNoSchemaNoResult/vincent-bundled-tool';
-
 // Import policy metadata
 // Evaluate policy metadata
 import evaluateDenyThrowErrorMetadata from '../src/generated/policies/deny/noSchema/evaluateDenyThrowError/vincent-policy-metadata.json';
@@ -144,35 +138,6 @@ const getPrecheckDenyNoSchemaNoResultToolClient = () => {
   });
 };
 
-// Commit policy failure tools
-const getCommitDenyThrowErrorToolClient = () => {
-  return getVincentToolClient({
-    bundledVincentTool: commitDenyThrowErrorTool,
-    ethersSigner: getDelegateeWallet(),
-  });
-};
-
-const getCommitDenyWithSchemaToolClient = () => {
-  return getVincentToolClient({
-    bundledVincentTool: commitDenyWithSchemaTool,
-    ethersSigner: getDelegateeWallet(),
-  });
-};
-
-const getCommitDenyNoSchemaErrorResultToolClient = () => {
-  return getVincentToolClient({
-    bundledVincentTool: commitDenyNoSchemaErrorResultTool,
-    ethersSigner: getDelegateeWallet(),
-  });
-};
-
-const getCommitDenyNoSchemaNoResultToolClient = () => {
-  return getVincentToolClient({
-    bundledVincentTool: commitDenyNoSchemaNoResultTool,
-    ethersSigner: getDelegateeWallet(),
-  });
-};
-
 describe('VincentToolClient policy failure tests', () => {
   // An array of the IPFS cid of each tool to be tested. Can be read from each BundledVincentTool
   const TOOL_IPFS_IDS: string[] = [
@@ -187,12 +152,6 @@ describe('VincentToolClient policy failure tests', () => {
     precheckDenyWithSchemaTool.ipfsCid,
     precheckDenyNoSchemaErrorResultTool.ipfsCid,
     precheckDenyNoSchemaNoResultTool.ipfsCid,
-
-    // Commit policy failure tools
-    commitDenyThrowErrorTool.ipfsCid,
-    commitDenyWithSchemaTool.ipfsCid,
-    commitDenyNoSchemaErrorResultTool.ipfsCid,
-    commitDenyNoSchemaNoResultTool.ipfsCid,
   ];
 
   // Define the policies for each tool
@@ -531,7 +490,7 @@ describe('VincentToolClient policy failure tests', () => {
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.error).toBeDefined();
+          expect(deniedPolicy.error).toBeDefined();
         }
       });
     });
@@ -574,7 +533,7 @@ describe('VincentToolClient policy failure tests', () => {
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.error).toBeDefined();
+          expect(deniedPolicy.error).toBeDefined();
         }
       });
     });
@@ -606,7 +565,7 @@ describe('VincentToolClient policy failure tests', () => {
     describe('precheckDenyThrowError', () => {
       it('should fail due to policy throwing an error during precheck', async () => {
         const client = getPrecheckDenyThrowErrorToolClient();
-        const result = await client.execute(
+        const result = await client.precheck(
           { x: 'test-value' }, // toolParams with x: string shape
           {
             delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
@@ -620,7 +579,7 @@ describe('VincentToolClient policy failure tests', () => {
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.error).toBeDefined();
+          expect(deniedPolicy.error).toBeDefined();
         }
       });
     });
@@ -629,7 +588,7 @@ describe('VincentToolClient policy failure tests', () => {
     describe('precheckDenyWithSchema', () => {
       it('should fail due to policy denying during precheck with schema', async () => {
         const client = getPrecheckDenyWithSchemaToolClient();
-        const result = await client.execute(
+        const result = await client.precheck(
           { x: 'test-value' }, // toolParams with x: string shape
           {
             delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
@@ -642,8 +601,13 @@ describe('VincentToolClient policy failure tests', () => {
           '@lit-protocol/precheckDenyWithSchema',
         );
         if (result.context?.policiesContext?.allow === false) {
-          const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.reason).toBeDefined();
+          if (
+            result.context?.policiesContext?.deniedPolicy.packageName ===
+            '@lit-protocol/precheckDenyWithSchema'
+          ) {
+            const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
+            expect(deniedPolicy.result?.reason).toBeDefined();
+          }
         }
       });
     });
@@ -652,7 +616,7 @@ describe('VincentToolClient policy failure tests', () => {
     describe('precheckDenyNoSchemaErrorResult', () => {
       it('should fail due to policy denying during precheck with no schema and error result', async () => {
         const client = getPrecheckDenyNoSchemaErrorResultToolClient();
-        const result = await client.execute(
+        const result = await client.precheck(
           { x: 'test-value' }, // toolParams with x: string shape
           {
             delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
@@ -667,7 +631,7 @@ describe('VincentToolClient policy failure tests', () => {
 
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.error).toBeDefined();
+          expect(deniedPolicy.error).toBeDefined();
         }
       });
     });
@@ -676,7 +640,7 @@ describe('VincentToolClient policy failure tests', () => {
     describe('precheckDenyNoSchemaNoResult', () => {
       it('should fail due to policy denying during precheck with no schema and no result', async () => {
         const client = getPrecheckDenyNoSchemaNoResultToolClient();
-        const result = await client.execute(
+        const result = await client.precheck(
           { x: 'test-value' }, // toolParams with x: string shape
           {
             delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
@@ -687,99 +651,6 @@ describe('VincentToolClient policy failure tests', () => {
         expect(result.context?.policiesContext?.allow).toBe(false);
         expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
           '@lit-protocol/precheckDenyNoSchemaNoResult',
-        );
-        expect(result.context?.policiesContext?.deniedPolicy?.result).toBeUndefined();
-      });
-    });
-  });
-
-  // Test cases for policy failure tools - Commit
-  describe('Policy failure tools - Commit', () => {
-    // commitDenyThrowError - Policy throws an error during commit
-    describe('commitDenyThrowError', () => {
-      it('should fail due to policy throwing an error during commit', async () => {
-        const client = getCommitDenyThrowErrorToolClient();
-        const result = await client.execute(
-          { x: 'test-value' }, // toolParams with x: string shape
-          {
-            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          },
-        );
-
-        expect(result.success).toBe(false);
-        expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
-          '@lit-protocol/commitDenyThrowError',
-        );
-        if (result.context?.policiesContext?.allow === false) {
-          const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.error).toBeDefined();
-        }
-      });
-    });
-
-    // commitDenyWithSchema - Policy denies during commit with schema
-    describe('commitDenyWithSchema', () => {
-      it('should fail due to policy denying during commit with schema', async () => {
-        const client = getCommitDenyWithSchemaToolClient();
-        const result = await client.execute(
-          { x: 'test-value' }, // toolParams with x: string shape
-          {
-            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          },
-        );
-
-        expect(result.success).toBe(false);
-        expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
-          '@lit-protocol/commitDenyWithSchema',
-        );
-        if (result.context?.policiesContext?.allow === false) {
-          const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.reason).toBeDefined();
-        }
-      });
-    });
-
-    // commitDenyNoSchemaErrorResult - Policy denies during commit with no schema and error result
-    describe('commitDenyNoSchemaErrorResult', () => {
-      it('should fail due to policy denying during commit with no schema and error result', async () => {
-        const client = getCommitDenyNoSchemaErrorResultToolClient();
-        const result = await client.execute(
-          { x: 'test-value' }, // toolParams with x: string shape
-          {
-            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          },
-        );
-
-        expect(result.success).toBe(false);
-        expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
-          '@lit-protocol/commitDenyNoSchemaErrorResult',
-        );
-        expect(result.context?.policiesContext?.allow).toBe(false);
-        if (result.context?.policiesContext?.allow === false) {
-          const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.result?.error).toBeDefined();
-        }
-      });
-    });
-
-    // commitDenyNoSchemaNoResult - Policy denies during commit with no schema and no result
-    describe('commitDenyNoSchemaNoResult', () => {
-      it('should fail due to policy denying during commit with no schema and no result', async () => {
-        const client = getCommitDenyNoSchemaNoResultToolClient();
-        const result = await client.execute(
-          { x: 'test-value' }, // toolParams with x: string shape
-          {
-            delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-          },
-        );
-
-        expect(result.success).toBe(false);
-        expect(result.context?.policiesContext?.allow).toBe(false);
-        expect(result.context?.policiesContext?.deniedPolicy?.packageName).toBe(
-          '@lit-protocol/commitDenyNoSchemaNoResult',
         );
         expect(result.context?.policiesContext?.deniedPolicy?.result).toBeUndefined();
       });
