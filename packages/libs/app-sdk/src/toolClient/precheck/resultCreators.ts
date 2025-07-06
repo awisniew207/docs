@@ -1,25 +1,22 @@
-// src/lib/toolClient/resultCreators.ts
+// src/lib/toolClient/precheck/resultCreators.ts
 
 import type { z } from 'zod';
 
+import type { BaseToolContext } from '@lit-protocol/vincent-tool-sdk';
 import type {
-  ToolResponseFailure,
-  ToolResponseFailureNoResult,
-  ToolResponseSuccess,
-  ToolResponseSuccessNoResult,
+  ToolPrecheckResponseFailure,
+  ToolPrecheckResponseFailureNoResult,
+  ToolPrecheckResponseSuccess,
+  ToolPrecheckResponseSuccessNoResult,
+  PolicyPrecheckResultContext,
 } from './types';
 
-import type {
-  BaseToolContext,
-  PolicyEvaluationResultContext,
-} from '@lit-protocol/vincent-tool-sdk';
-
-export function createAllowEvaluationResult<PoliciesByPackageName extends Record<string, any>>(
+export function createAllowPrecheckResult<PoliciesByPackageName extends Record<string, any>>(
   evaluatedPolicies: Array<keyof PoliciesByPackageName>,
   allowedPolicies: {
     [K in keyof PoliciesByPackageName]?: {
       result: PoliciesByPackageName[K]['__schemaTypes'] extends {
-        evalAllowResultSchema: infer Schema;
+        precheckAllowResultSchema: infer Schema;
       }
         ? Schema extends z.ZodType
           ? z.infer<Schema>
@@ -33,7 +30,7 @@ export function createAllowEvaluationResult<PoliciesByPackageName extends Record
   allowedPolicies: {
     [K in keyof PoliciesByPackageName]?: {
       result: PoliciesByPackageName[K]['__schemaTypes'] extends {
-        evalAllowResultSchema: infer Schema;
+        precheckAllowResultSchema: infer Schema;
       }
         ? Schema extends z.ZodType
           ? z.infer<Schema>
@@ -49,12 +46,12 @@ export function createAllowEvaluationResult<PoliciesByPackageName extends Record
   };
 }
 
-export function createDenyEvaluationResult<PoliciesByPackageName extends Record<string, any>>(
+export function createDenyPrecheckResult<PoliciesByPackageName extends Record<string, any>>(
   evaluatedPolicies: Array<keyof PoliciesByPackageName>,
   allowedPolicies: {
     [K in keyof PoliciesByPackageName]?: {
       result: PoliciesByPackageName[K]['__schemaTypes'] extends {
-        evalAllowResultSchema: infer Schema;
+        precheckAllowResultSchema: infer Schema;
       }
         ? Schema extends z.ZodType
           ? z.infer<Schema>
@@ -67,7 +64,7 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
     result: {
       error?: string;
     } & (PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
-      evalDenyResultSchema: infer Schema;
+      precheckDenyResultSchema: infer Schema;
     }
       ? Schema extends z.ZodType
         ? z.infer<Schema>
@@ -80,7 +77,7 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
   allowedPolicies: {
     [K in keyof PoliciesByPackageName]?: {
       result: PoliciesByPackageName[K]['__schemaTypes'] extends {
-        evalAllowResultSchema: infer Schema;
+        precheckAllowResultSchema: infer Schema;
       }
         ? Schema extends z.ZodType
           ? z.infer<Schema>
@@ -93,7 +90,7 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
     result: {
       error?: string;
     } & (PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
-      evalDenyResultSchema: infer Schema;
+      precheckDenyResultSchema: infer Schema;
     }
       ? Schema extends z.ZodType
         ? z.infer<Schema>
@@ -109,10 +106,13 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
   };
 }
 
-export function createToolResponseSuccess<Success, Policies extends Record<any, any>>(params: {
+export function createToolPrecheckResponseSuccess<
+  Success,
+  Policies extends Record<any, any>,
+>(params: {
   result: Success;
-  context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseSuccess<Success, Policies> {
+  context?: BaseToolContext<PolicyPrecheckResultContext<Policies>>;
+}): ToolPrecheckResponseSuccess<Success, Policies> {
   return {
     success: true,
     result: params.result,
@@ -120,9 +120,11 @@ export function createToolResponseSuccess<Success, Policies extends Record<any, 
   };
 }
 
-export function createToolResponseSuccessNoResult<Policies extends Record<any, any>>(params?: {
-  context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseSuccessNoResult<Policies> {
+export function createToolPrecheckResponseSuccessNoResult<
+  Policies extends Record<any, any>,
+>(params?: {
+  context?: BaseToolContext<PolicyPrecheckResultContext<Policies>>;
+}): ToolPrecheckResponseSuccessNoResult<Policies> {
   return {
     success: true,
     result: undefined,
@@ -130,11 +132,11 @@ export function createToolResponseSuccessNoResult<Policies extends Record<any, a
   };
 }
 
-export function createToolResponseFailure<Fail, Policies extends Record<any, any>>(params: {
+export function createToolPrecheckResponseFailure<Fail, Policies extends Record<any, any>>(params: {
   result: Fail;
   message?: string;
-  context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseFailure<Fail, Policies> {
+  context?: BaseToolContext<PolicyPrecheckResultContext<Policies>>;
+}): ToolPrecheckResponseFailure<Fail, Policies> {
   return {
     success: false,
     result: params.result,
@@ -143,10 +145,12 @@ export function createToolResponseFailure<Fail, Policies extends Record<any, any
   };
 }
 
-export function createToolResponseFailureNoResult<Policies extends Record<any, any>>(params: {
+export function createToolPrecheckResponseFailureNoResult<
+  Policies extends Record<any, any>,
+>(params: {
   message?: string;
-  context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseFailureNoResult<Policies> {
+  context?: BaseToolContext<PolicyPrecheckResultContext<Policies>>;
+}): ToolPrecheckResponseFailureNoResult<Policies> {
   return {
     success: false,
     result: undefined,
