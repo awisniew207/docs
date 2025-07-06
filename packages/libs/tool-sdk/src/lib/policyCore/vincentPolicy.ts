@@ -409,6 +409,8 @@ export function createVincentToolPolicy<
     // Explicitly include schema types in the returned object for type inference
     /** @hidden */
     __schemaTypes: {
+      policyToolParamsSchema: vincentPolicy.toolParamsSchema,
+      userParamsSchema: vincentPolicy.userParamsSchema,
       evalAllowResultSchema: vincentPolicy.evalAllowResultSchema,
       evalDenyResultSchema: vincentPolicy.evalDenyResultSchema,
       commitParamsSchema: vincentPolicy.commitParamsSchema,
@@ -430,6 +432,8 @@ export function createVincentToolPolicy<
     toolParameterMappings: typeof config.toolParameterMappings;
     /** @hidden */
     __schemaTypes: {
+      policyToolParamsSchema: PolicyToolParams;
+      userParamsSchema: UserParams;
       evalAllowResultSchema: EvalAllowResult;
       evalDenyResultSchema: EvalDenyResult;
       precheckAllowResultSchema: PrecheckAllowResult;
