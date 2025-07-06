@@ -1,30 +1,21 @@
 {
   "name": "contracts-sdk",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "root": "packages/libs/contracts-sdk",
   "sourceRoot": "packages/libs/contracts-sdk/src",
   "projectType": "library",
   "tags": [],
   "targets": {
     "clean": {},
-    "pre-build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "echo '🪝 Running pre-build script' && bun run ./packages/libs/contracts-sdk/src/scripts/cast-any-to-create-contracts.ts"
-          }
-        ]
-      }
-    },
     "build:tsc": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["pre-build"],
+      "dependsOn": [],
       "options": {
-        "outputPath": "packages/libs/contracts-sdk/dist",
-        "main": "packages/libs/contracts-sdk/index.ts",
-        "tsConfig": "packages/libs/contracts-sdk/tsconfig.lib.json",
-        "assets": ["packages/libs/contracts-sdk/*.md"],
+        "outputPath": "{projectRoot}/dist",
+        "main": "{projectRoot}/src/index.ts",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "assets": ["{projectRoot}/*.md"],
         "target": "es2020",
         "formats": ["cjs"]
       }
@@ -35,7 +26,7 @@
       "options": {
         "commands": [
           {
-            "command": "echo '🪝 Running post-build script' && bun run ./packages/libs/contracts-sdk/src/scripts/revert-any-from-create-contracts.ts"
+            "command": "echo '🪝 Running post-build script'"
           }
         ]
       }
