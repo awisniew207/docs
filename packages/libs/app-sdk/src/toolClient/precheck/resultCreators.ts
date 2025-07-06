@@ -61,15 +61,14 @@ export function createDenyPrecheckResult<PoliciesByPackageName extends Record<st
   },
   deniedPolicy: {
     packageName: keyof PoliciesByPackageName;
-    result: {
-      error?: string;
-    } & (PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
+    error?: string;
+    result: PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
       precheckDenyResultSchema: infer Schema;
     }
       ? Schema extends z.ZodType
         ? z.infer<Schema>
         : undefined
-      : undefined);
+      : undefined;
   }
 ): {
   allow: false;
@@ -87,15 +86,14 @@ export function createDenyPrecheckResult<PoliciesByPackageName extends Record<st
   };
   deniedPolicy: {
     packageName: keyof PoliciesByPackageName;
-    result: {
-      error?: string;
-    } & (PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
+    error?: string;
+    result: PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
       precheckDenyResultSchema: infer Schema;
     }
       ? Schema extends z.ZodType
         ? z.infer<Schema>
         : undefined
-      : undefined);
+      : undefined;
   };
 } {
   return {

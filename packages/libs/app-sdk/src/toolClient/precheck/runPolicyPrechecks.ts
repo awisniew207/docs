@@ -99,15 +99,14 @@ export async function runToolPolicyPrechecks<
   let deniedPolicy:
     | {
         packageName: Key;
-        result: {
-          error?: string;
-        } & (PoliciesByPackageName[Key]['__schemaTypes'] extends {
+        error?: string;
+        result: PoliciesByPackageName[Key]['__schemaTypes'] extends {
           precheckDenyResultSchema: infer Schema;
         }
           ? Schema extends z.ZodType
             ? z.infer<Schema>
             : undefined
-          : undefined);
+          : undefined;
       }
     | undefined = undefined;
 
@@ -148,9 +147,8 @@ export async function runToolPolicyPrechecks<
 
       const validated = validateOrDeny(result.result, schemaToUse, 'precheck', 'output');
 
-      if (isPolicyDenyResponse(validated)) {
-        // @ts-expect-error We know the shape of this is valid.
-        deniedPolicy = { ...validated, packageName: key as Key };
+      if (isPolicyDenyResponse(result)) {
+        deniedPolicy = { error: result.error, result: validated, packageName: key as Key };
         break;
       } else if (isPolicyAllowResponse(validated)) {
         allowedPolicies[key as Key] = {
