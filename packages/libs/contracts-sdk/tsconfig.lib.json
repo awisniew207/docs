@@ -4,8 +4,17 @@
     "outDir": "./dist",
     "declaration": true,
     "types": [],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "composite": true
   },
   "include": ["src/**/*", "abis/**/*"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "files": [
+    "abis/VincentAppFacet.abi.json",
+    "abis/VincentAppViewFacet.abi.json",
+    "abis/VincentUserFacet.abi.json",
+    "abis/VincentUserViewFacet.abi.json"
+  ]
 }

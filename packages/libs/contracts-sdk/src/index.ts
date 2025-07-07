@@ -1,14 +1,16 @@
 import { Signer, Contract, utils } from 'ethers';
 
-const appFacetAbi = require('../abis/VincentAppFacet.abi.json');
-const appViewFacetAbi = require('../abis/VincentAppViewFacet.abi.json');
-const userFacetAbi = require('../abis/VincentUserFacet.abi.json');
-const userViewFacetAbi = require('../abis/VincentUserViewFacet.abi.json');
+import appFacetAbi from '../abis/VincentAppFacet.abi.json';
+import appViewFacetAbi from '../abis/VincentAppViewFacet.abi.json';
+import userFacetAbi from '../abis/VincentUserFacet.abi.json';
+import userViewFacetAbi from '../abis/VincentUserViewFacet.abi.json';
 
 export interface AppVersionTools {
   toolIpfsCids: string[];
   toolPolicies: string[][];
 }
+
+const VINCENT_DIAMOND_CONTRACT_ADDRESS = '0xa1979393bbe7D59dfFBEB38fE5eCf9BDdFE6f4aD'; // TODO!: Pull from the ABI after re-publishing
 
 export class VincentContracts {
   private contract: Contract;
@@ -19,11 +21,7 @@ export class VincentContracts {
 
     const combinedAbi = [...appFacetAbi, ...appViewFacetAbi, ...userFacetAbi, ...userViewFacetAbi];
 
-    this.contract = new Contract(
-      '0xa1979393bbe7D59dfFBEB38fE5eCf9BDdFE6f4aD', // TODO!: Pull from the ABI
-      combinedAbi,
-      _signer,
-    );
+    this.contract = new Contract(VINCENT_DIAMOND_CONTRACT_ADDRESS, combinedAbi, _signer);
   }
 
   // TODO!: Move this to a utils file
