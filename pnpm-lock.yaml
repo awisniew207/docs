@@ -747,9 +747,6 @@ importers:
       '@openzeppelin/contracts':
         specifier: 5.3.0
         version: 5.3.0
-      forge-std:
-        specifier: ^1.1.2
-        version: 1.1.2
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
@@ -6261,9 +6258,6 @@ packages:
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
-
-  forge-std@1.1.2:
-    resolution: {integrity: sha512-Wfb0iAS9PcfjMKtGpWQw9mXzJxrWD62kJCUqqLcyuI0+VRtJ3j20XembjF3kS20qELYdXft1vD/SPFVWVKMFOw==}
 
   form-data@4.0.3:
     resolution: {integrity: sha512-qsITQPfmvMOSAdeyZ+12I1c+CKSstAFAwu+97zrnWAbIr5u8wfsExUzCesVLC8NgHuRUqNN4Zy6UPWUTRGslcA==}
@@ -18677,8 +18671,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
-
-  forge-std@1.1.2: {}
 
   form-data@4.0.3:
     dependencies:
