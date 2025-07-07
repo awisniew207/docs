@@ -18,33 +18,33 @@ if (!process.env.TEST_APP_MANAGER_PRIVATE_KEY) {
 }
 
 describe('VincentContracts', () => {
-  // it('should register a new app successfully', async () => {
-  //   const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
-  //   const signer = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
+  it('should register a new app successfully', async () => {
+    const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
+    const signer = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
 
-  //   const client = new VincentContracts(signer);
+    const client = new VincentContracts(signer);
 
-  //   const appId = '135';
-  //   const delegatees = [
-  //     '0x1234567890123456789012345678901234567891',
-  //     // '0x0987654321098765432109876543210987654321',
-  //   ];
-  //   const versionTools: AppVersionTools = {
-  //     toolIpfsCids: ['QmTool1IpfsCidHere', 'QmTool2IpfsCidHere'],
-  //     toolPolicies: [
-  //       ['QmPolicy1ForTool1', 'QmPolicy2ForTool1'],
-  //       ['QmPolicy1ForTool2', 'QmPolicy2ForTool2'],
-  //     ],
-  //   };
+    const appId = '135';
+    const delegatees = [
+      '0x1234567890123456789012345678901234567894',
+      // '0x0987654321098765432109876543210987654321',
+    ];
+    const versionTools: AppVersionTools = {
+      toolIpfsCids: ['QmTool1IpfsCidHere', 'QmTool2IpfsCidHere'],
+      toolPolicies: [
+        ['QmPolicy1ForTool1', 'QmPolicy2ForTool1'],
+        ['QmPolicy1ForTool2', 'QmPolicy2ForTool2'],
+      ],
+    };
 
-  //   const result = await client.registerApp(appId, delegatees, versionTools);
+    const result = await client.registerApp(appId, delegatees, versionTools);
 
-  //   console.log('App registration result:', result);
-  //   expect(result).toHaveProperty('txHash');
-  //   expect(result).toHaveProperty('newAppVersion');
-  //   expect(typeof result.txHash).toBe('string');
-  //   expect(typeof result.newAppVersion).toBe('string');
-  // });
+    console.log('App registration result:', result);
+    expect(result).toHaveProperty('txHash');
+    expect(result).toHaveProperty('newAppVersion');
+    expect(typeof result.txHash).toBe('string');
+    expect(typeof result.newAppVersion).toBe('string');
+  });
 
   it('should register a new app successfully with the Pkp Ether wallet', async () => {
     const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
@@ -100,9 +100,9 @@ describe('VincentContracts', () => {
 
     const client = new VincentContracts(pkpEthersWallet);
 
-    const appId = '0';
+    const appId = '100';
     const delegatees = [
-      // '0x1234567890123456789012345678901234567896',
+      '0x1234567890123456789012345678901234567898',
       // '0x0987654321098765432109876543210987654325',
     ];
     const versionTools: AppVersionTools = {

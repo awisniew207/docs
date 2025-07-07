@@ -1,5 +1,4 @@
 import { Signer, Contract, utils } from 'ethers';
-import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 const appFacetAbi = require('../abis/VincentAppFacet.abi.json');
 const appViewFacetAbi = require('../abis/VincentAppViewFacet.abi.json');
@@ -11,25 +10,19 @@ export interface AppVersionTools {
   toolPolicies: string[][];
 }
 
-// Union type for compatible signers
-export type CompatibleSigner = Signer | PKPEthersWallet;
-
 export class VincentContracts {
   private contract: Contract;
-  signer: CompatibleSigner;
+  signer: Signer;
 
-  constructor(_signer: CompatibleSigner) {
+  constructor(_signer: Signer) {
     this.signer = _signer;
 
     const combinedAbi = [...appFacetAbi, ...appViewFacetAbi, ...userFacetAbi, ...userViewFacetAbi];
 
-    // Create contract with the signer
-    // PKPEthersWallet works with ethers contracts despite type differences
-    // as evidenced by its usage throughout the codebase
     this.contract = new Contract(
       '0xa1979393bbe7D59dfFBEB38fE5eCf9BDdFE6f4aD', // TODO!: Pull from the ABI
       combinedAbi,
-      _signer as any, // Type assertion to bypass type incompatibilities
+      _signer,
     );
   }
 
@@ -167,7 +160,6 @@ export class VincentContracts {
     try {
       const appIdBN = utils.parseUnits(appId.toString(), 0);
 
-      // Estimate gas and add 20% buffer
       const estimatedGas = await this.contract.estimateGas.registerApp(
         appIdBN,
         delegatees,
@@ -179,7 +171,6 @@ export class VincentContracts {
       const tx = await this.contract.registerApp(appIdBN, delegatees, versionTools, {
         gasLimit,
       });
-      // const tx = await this.contract['registerApp'](appIdBN, delegatees, versionTools);
       const receipt = await tx.wait();
 
       const event = receipt.logs.find((log: any) => {
@@ -200,7 +191,6 @@ export class VincentContracts {
         newAppVersion,
       };
     } catch (error: unknown) {
-      // Decode the contract error
       const decodedError = this.decodeContractError(error);
       throw new Error(`Failed to register app: ${decodedError}`);
     }
