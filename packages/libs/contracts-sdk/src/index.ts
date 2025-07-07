@@ -127,7 +127,19 @@ export class VincentContracts {
     try {
       const appIdBN = utils.parseUnits(appId.toString(), 0);
 
-      const tx = await this.contract.registerApp(appIdBN, delegatees, versionTools);
+      // Estimate gas and add 20% buffer
+      const estimatedGas = await this.contract.estimateGas.registerApp(
+        appIdBN,
+        delegatees,
+        versionTools,
+      );
+      const gasLimit = Math.ceil(Number(estimatedGas) * 1.2);
+      console.log(`Estimated gas: ${estimatedGas}, Using gas limit: ${gasLimit}`);
+
+      const tx = await this.contract.registerApp(appIdBN, delegatees, versionTools, {
+        gasLimit,
+      });
+      // const tx = await this.contract['registerApp'](appIdBN, delegatees, versionTools);
       const receipt = await tx.wait();
 
       const event = receipt.logs.find((log: any) => {
