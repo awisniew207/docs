@@ -40,10 +40,30 @@ export class VincentContracts {
     try {
       // Check if it's a contract revert error
       if (error.code === 'CALL_EXCEPTION' || error.code === 'UNPREDICTABLE_GAS_LIMIT') {
-        // Try to decode the error data
-        if (error.data) {
+        // Try to extract error data from nested error structure
+        let errorData = error.data;
+
+        // If no direct data, check nested error structures
+        if (!errorData && error.error && error.error.data) {
+          errorData = error.error.data;
+        }
+
+        // If still no data, check the body for JSON-RPC error
+        if (!errorData && error.error && error.error.body) {
           try {
-            const decodedError = this.contract.interface.parseError(error.data);
+            const body = JSON.parse(error.error.body);
+            if (body.error && body.error.data) {
+              errorData = body.error.data;
+            }
+          } catch (parseError) {
+            // Ignore JSON parse errors
+          }
+        }
+
+        // Try to decode the error data if we have it
+        if (errorData) {
+          try {
+            const decodedError = this.contract.interface.parseError(errorData);
             if (decodedError) {
               // Format the arguments nicely
               const formattedArgs = decodedError.args.map((arg: any) => {
@@ -88,9 +108,27 @@ export class VincentContracts {
 
       // Check if it's a gas estimation error
       if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
-        if (error.error && error.error.data) {
+        // Try to extract error data from the nested error structure
+        let errorData = error.data;
+
+        if (!errorData && error.error && error.error.data) {
+          errorData = error.error.data;
+        }
+
+        if (!errorData && error.error && error.error.body) {
           try {
-            const decodedError = this.contract.interface.parseError(error.error.data);
+            const body = JSON.parse(error.error.body);
+            if (body.error && body.error.data) {
+              errorData = body.error.data;
+            }
+          } catch (parseError) {
+            // Ignore JSON parse errors
+          }
+        }
+
+        if (errorData) {
+          try {
+            const decodedError = this.contract.interface.parseError(errorData);
             if (decodedError) {
               const formattedArgs = decodedError.args.map((arg: any) => {
                 if (typeof arg === 'bigint') {
@@ -101,9 +139,11 @@ export class VincentContracts {
               return `Gas Estimation Error: ${decodedError.name} - ${JSON.stringify(formattedArgs)}`;
             }
           } catch (decodeError) {
-            return `Gas Estimation Error: ${error.error.message || error.message}`;
+            return `Gas Estimation Error: ${error.error?.message || error.message}`;
           }
         }
+
+        return `Gas Estimation Error: ${error.error?.message || error.message}`;
       }
 
       // Try to extract errorArgs if available (like in the example you showed)

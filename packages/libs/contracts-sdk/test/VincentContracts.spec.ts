@@ -100,10 +100,10 @@ describe('VincentContracts', () => {
 
     const client = new VincentContracts(pkpEthersWallet);
 
-    const appId = '1247';
+    const appId = '0';
     const delegatees = [
       // '0x1234567890123456789012345678901234567896',
-      '0x0987654321098765432109876543210987654321',
+      // '0x0987654321098765432109876543210987654325',
     ];
     const versionTools: AppVersionTools = {
       toolIpfsCids: ['QmTool1IpfsCidHere', 'QmTool2IpfsCidHere'],
