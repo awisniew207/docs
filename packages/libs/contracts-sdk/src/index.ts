@@ -1,4 +1,5 @@
 import { Signer, Contract, ethers } from 'ethers';
+import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 const appFacetAbi = require('../abis/VincentAppFacet.abi.json');
 const appViewFacetAbi = require('../abis/VincentAppViewFacet.abi.json');
@@ -16,11 +17,13 @@ export interface VincentSDKConfig {
   signer?: Signer;
 }
 
+export type CompatibleSigner = Signer | PKPEthersWallet;
+
 export class VincentContracts {
   private contract: Contract;
-  private signer: Signer;
+  private signer: CompatibleSigner;
 
-  constructor(_signer: Signer) {
+  constructor(_signer: CompatibleSigner) {
     this.signer = _signer;
 
     const combinedAbi = [...appFacetAbi, ...appViewFacetAbi, ...userFacetAbi, ...userViewFacetAbi];
@@ -28,7 +31,7 @@ export class VincentContracts {
     this.contract = new Contract(
       '0xa1979393bbe7D59dfFBEB38fE5eCf9BDdFE6f4aD', // TODO!: Pull from the ABI
       combinedAbi,
-      this.signer,
+      this.signer as Signer,
     );
   }
 

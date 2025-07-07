@@ -753,6 +753,15 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^1.44.2
         version: 1.44.2
+      '@lit-protocol/auth-helpers':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/constants':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client':
+        specifier: ^7.2.0
+        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@openzeppelin/contracts':
         specifier: 5.3.0
         version: 5.3.0
