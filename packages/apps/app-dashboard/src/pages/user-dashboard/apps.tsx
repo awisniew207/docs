@@ -1,15 +1,15 @@
 import { Helmet } from 'react-helmet-async';
-import UserAppsView from '@/components/user-dashboard/dashboard/UserAppsView';
 import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
-import { useUserSidebar } from '@/hooks/user-dashboard/useUserSidebar';
 import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
+import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 
 export default function AppsPage() {
   const authGuardElement = useAuthGuard();
-  const { apps, isLoading, appsError, authInfo, sessionSigs } = useUserSidebar();
+  const { authInfo } = useReadAuthInfo();
+  console.log('authInfo', authInfo);
 
   // Show loading if authenticating or loading apps (but show errors immediately)
-  if (authGuardElement || (isLoading && !appsError)) {
+  if (authGuardElement) {
     return (
       <>
         <Helmet>
@@ -22,7 +22,7 @@ export default function AppsPage() {
   }
 
   // Show authentication required message
-  if (!authInfo?.userPKP || !authInfo?.agentPKP || !sessionSigs) {
+  if (!authInfo?.userPKP || !authInfo?.agentPKP) {
     return (
       <>
         <Helmet>
@@ -45,7 +45,7 @@ export default function AppsPage() {
       </Helmet>
 
       <main className="p-8">
-        <UserAppsView apps={apps} isLoading={isLoading} error={appsError || undefined} />
+        <h1>Apps</h1>
       </main>
     </>
   );

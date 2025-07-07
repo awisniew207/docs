@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import UserAuthenticatedConsentForm from '@/components/user-dashboard/consent/UserAuthenticatedConsentForm';
 import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
 import { useUrlRedirectUri } from '@/hooks/user-dashboard/useUrlRedirectUri';
 import ConnectWithVincent from '@/layout/shared/ConnectWithVincent';
@@ -9,7 +8,7 @@ import ProtectedByLit from '@/components/shared/ui/ProtectedByLit';
 import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { ExternalLink } from 'lucide-react';
-import { vincentApiClient } from '@/components/app-dashboard/mock-forms/vincentApiClient';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export default function AppDetailsPage() {
   const { authInfo, sessionSigs } = useReadAuthInfo();
@@ -141,11 +140,7 @@ export default function AppDetailsPage() {
             ) : null}
 
             <div className="p-6">
-              <UserAuthenticatedConsentForm
-                userPKP={authInfo.userPKP}
-                sessionSigs={sessionSigs}
-                agentPKP={authInfo.agentPKP}
-              />
+              <h1>App Details</h1>
             </div>
             <ProtectedByLit />
           </div>

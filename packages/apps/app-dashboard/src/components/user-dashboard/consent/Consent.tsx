@@ -14,7 +14,6 @@ import {
   useClearAuthInfo,
 } from '../../../hooks/user-dashboard/useAuthInfo';
 
-import UserAuthenticatedConsentForm from './UserAuthenticatedConsentForm';
 import SignUpView from '../auth/SignUpView';
 import StatusMessage from './StatusMessage';
 
@@ -93,6 +92,36 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
     loading: accountsLoading,
     error: accountsError,
   } = useAccounts();
+
+  // ------ NAVIGATION EFFECTS ------
+
+  // Navigate when user has completed authentication with new PKP
+  useEffect(() => {
+    if (isUserDashboardFlow && userPKP && agentPKP && sessionSigs) {
+      // Save the PKP info in localStorage for SessionValidator to use
+      try {
+        updateAuthInfo({
+          agentPKP,
+          userPKP,
+        });
+        // Navigate to apps page
+        navigate('/user/apps');
+      } catch (error) {
+        console.error('Error saving PKP info to localStorage:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setStatusMessage(`Authentication Error: ${errorMessage}`);
+        setStatusType('error');
+      }
+    }
+  }, [isUserDashboardFlow, userPKP, agentPKP, sessionSigs, updateAuthInfo, navigate]);
+
+  // Navigate when user has existing validated session
+  useEffect(() => {
+    if (isUserDashboardFlow && validatedSessionSigs && authInfo?.userPKP) {
+      // Redirect to /apps page
+      navigate('/user/apps');
+    }
+  }, [isUserDashboardFlow, validatedSessionSigs, authInfo?.userPKP, navigate]);
 
   // Combine errors
   const error = authError || accountsError || sessionError || readError;
@@ -228,42 +257,18 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
 
     // If authenticated with a new PKP and session sigs
     if (userPKP && agentPKP && sessionSigs) {
-      // Save the PKP info in localStorage for SessionValidator to use
-      try {
-        updateAuthInfo({
-          agentPKP,
-          userPKP,
-        });
-
-        // User flow: navigate to apps page
-        if (isUserDashboardFlow) {
-          navigate('/user/apps');
-          return <></>;
-        }
-
-        // Consent flow: show the consent form
-        return (
-          <UserAuthenticatedConsentForm
-            userPKP={userPKP}
-            sessionSigs={sessionSigs}
-            agentPKP={agentPKP!}
-          />
-        );
-      } catch (error) {
-        console.error('Error saving PKP info to localStorage:', error);
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        setStatusMessage(`Authentication Error: ${errorMessage}`);
-        setStatusType('error');
-        return (
-          <LoginMethods
-            authWithWebAuthn={authWithWebAuthn}
-            authWithStytch={authWithStytch}
-            authWithEthWallet={authWithEthWallet}
-            registerWithWebAuthn={handleRegisterWithWebAuthn}
-            clearError={clearError}
-          />
-        );
+      // User flow: The navigation is handled in useEffect
+      if (isUserDashboardFlow) {
+        // Return loading state or empty component while navigation happens
+        return <></>;
       }
+
+      // Consent flow: show the consent form
+      return (
+        <div>
+          <h1>Consent Form</h1>
+        </div>
+      );
     }
 
     // If we're not showing the existing account and have validated session sigs
@@ -275,18 +280,15 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
       authInfo?.agentPKP
     ) {
       return (
-        <UserAuthenticatedConsentForm
-          userPKP={authInfo.userPKP}
-          sessionSigs={validatedSessionSigs}
-          agentPKP={authInfo.agentPKP!}
-        />
+        <div>
+          <h1>Consent Form</h1>
+        </div>
       );
     }
 
     // If we have validated session sigs from an existing session in user flow
     if (isUserDashboardFlow && validatedSessionSigs && authInfo?.userPKP) {
-      // Redirect to /apps page
-      navigate('/user/apps');
+      // Return loading state or empty component while navigation happens
       return <></>;
     }
 

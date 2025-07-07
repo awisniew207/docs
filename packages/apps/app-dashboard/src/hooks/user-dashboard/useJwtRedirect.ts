@@ -14,14 +14,12 @@ interface UseJwtRedirectProps {
   agentPKP?: IRelayPKP;
   sessionSigs: SessionSigs;
   redirectUri: string | null;
-  onStatusChange?: (message: string, type: 'info' | 'warning' | 'success' | 'error') => void;
 }
 
 export const useJwtRedirect = ({
   agentPKP,
   sessionSigs,
   redirectUri,
-  onStatusChange,
 }: UseJwtRedirectProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const authInfo = useReadAuthInfo();
@@ -30,23 +28,19 @@ export const useJwtRedirect = ({
   const generateJWT = useCallback(
     async (appId: string, appVersion: number, appInfo: AppView): Promise<string> => {
       if (!agentPKP || !redirectUri) {
-        onStatusChange?.('Cannot generate JWT: missing agentPKP or redirectUri', 'error');
         throw new Error('Cannot generate JWT: missing agentPKP or redirectUri');
       }
 
       if (!authInfo || !authInfo.authInfo) {
-        onStatusChange?.('Cannot generate JWT: missing authInfo', 'error');
         throw new Error('Cannot generate JWT: missing authInfo');
       }
 
       if (!appInfo.authorizedRedirectUris.includes(redirectUri)) {
-        onStatusChange?.('Cannot generate JWT: redirectUri not in authorizedRedirectUris', 'error');
         throw new Error('Cannot generate JWT: redirectUri not in authorizedRedirectUris');
       }
 
       try {
         setIsGenerating(true);
-        onStatusChange?.('Initializing Agent EVM Wallet...', 'info');
 
         const agentPkpWallet = new PKPEthersWallet({
           controllerSessionSigs: sessionSigs,
@@ -71,17 +65,15 @@ export const useJwtRedirect = ({
           },
         });
 
-        onStatusChange?.('Successfully logged in', 'success');
         return jwt;
       } catch (error) {
         console.error('Error creating JWT:', error);
-        onStatusChange?.('Failed to create JWT', 'error');
         throw new Error('Failed to create JWT');
       } finally {
         setIsGenerating(false);
       }
     },
-    [agentPKP, authInfo, redirectUri, sessionSigs, onStatusChange],
+    [agentPKP, authInfo, redirectUri, sessionSigs],
   );
 
   const redirectWithJWT = useCallback(
@@ -91,7 +83,6 @@ export const useJwtRedirect = ({
         return;
       }
 
-      onStatusChange?.('Redirecting with authentication token...', 'info');
       try {
         const redirectUrl = new URL(redirectUri);
         redirectUrl.searchParams.set('jwt', jwt);
@@ -100,7 +91,7 @@ export const useJwtRedirect = ({
         console.error('Error creating redirect URL:', error);
       }
     },
-    [redirectUri, onStatusChange],
+    [redirectUri],
   );
 
   return {

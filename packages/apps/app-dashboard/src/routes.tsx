@@ -1,5 +1,5 @@
 import { Outlet, RouteObject } from 'react-router';
-import AppLayout from '@/layout/app-dashboard/AppLayout';
+import AppLayout from '@/layout/developer-dashboard/AppLayout';
 import UserLayout from '@/layout/user-dashboard/UserLayout';
 import { AppProviders, UserProviders } from './providers';
 import { wrap } from '@/utils/shared/components';
@@ -48,11 +48,10 @@ import {
   DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
-import Home from './pages/shared/home';
-import Withdraw from './pages/user-dashboard/wallet';
-import AppDetails from './pages/user-dashboard/app-details';
+import { UserDashboard, Home, Withdraw, AppDetails, Apps } from './pages/user-dashboard';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
+
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
 
 const routes: RouteObject[] = [
@@ -209,18 +208,36 @@ const routes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: '/appId/:appId',
-        element: <AppDetails />,
-      },
     ],
   },
   {
     element: <UserLayoutWithProviders />,
     children: [
       {
-        path: '/withdraw',
-        element: <Withdraw />,
+        path: '/user',
+        element: <UserDashboard />,
+      },
+      {
+        path: '/user/*',
+        element: <Outlet />,
+        children: [
+          {
+            path: 'home',
+            element: <Home />,
+          },
+          {
+            path: 'withdraw',
+            element: <Withdraw />,
+          },
+          {
+            path: 'app-details',
+            element: <AppDetails />,
+          },
+          {
+            path: 'apps',
+            element: <Apps />,
+          },
+        ],
       },
     ],
   },

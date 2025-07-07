@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
-import { useUserSidebar } from '@/hooks/user-dashboard/useUserSidebar';
 import { StatusMessage } from '@/utils/shared/statusMessage';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Smartphone, MessageCircle } from 'lucide-react';
@@ -9,20 +8,19 @@ import { Button } from '@/components/shared/ui/button';
 import ConsentView from '@/components/user-dashboard/consent/Consent';
 import ConnectWithVincent from '@/layout/shared/ConnectWithVincent';
 import ProtectedByLit from '@/components/shared/ui/ProtectedByLit';
+import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 
 export default function UserDashboard() {
   const authGuardElement = useAuthGuard();
   const navigate = useNavigate();
-
-  // Use shared sidebar data instead of loading independently
-  const { apps, isLoading, appsError, authInfo, sessionSigs } = useUserSidebar();
+  const { authInfo } = useReadAuthInfo();
 
   const currentTime = new Date().getHours();
   const greeting =
     currentTime < 12 ? 'Good morning' : currentTime < 17 ? 'Good afternoon' : 'Good evening';
 
   // Show loading if authenticating or loading data
-  if (authGuardElement || isLoading) {
+  if (authGuardElement) {
     return (
       <>
         <Helmet>
@@ -35,7 +33,7 @@ export default function UserDashboard() {
   }
 
   // Show consent view for authentication if not authenticated
-  if (!authInfo?.userPKP || !authInfo?.agentPKP || !sessionSigs) {
+  if (!authInfo?.userPKP || !authInfo?.agentPKP) {
     return (
       <>
         <Helmet>
@@ -76,11 +74,6 @@ export default function UserDashboard() {
           </div>
 
           {/* Error Message or Apps Card */}
-          {appsError ? (
-            <div className="text-center py-8">
-              <p className="text-red-600">{appsError}</p>
-            </div>
-          ) : (
             <div className="space-y-4 mb-20">
               <h2 className="text-lg font-medium text-gray-900">Your Apps</h2>
 
@@ -100,16 +93,15 @@ export default function UserDashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-semibold text-gray-900">{apps.length}</p>
+                      <p className="text-3xl font-semibold text-gray-900">0</p>
                       <p className="text-sm text-gray-500">
-                        {apps.length === 1 ? 'app connected' : 'apps connected'}
+                        0 apps connected
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          )}
+          </div>
 
           {/* Footer Button */}
           <div className="flex justify-center pb-8">
