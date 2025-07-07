@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/app-dashboard/ui/card';
+} from '@/components/shared/ui/card';
 import { StatusFilterDropdown, FilterOption } from './ui/status-filter-dropdown';
 import { StatusMessage } from '@/utils/shared/statusMessage';
 

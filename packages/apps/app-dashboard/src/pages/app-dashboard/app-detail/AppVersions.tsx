@@ -1,7 +1,7 @@
 import { useAccount } from 'wagmi';
 import { AppVersionsListView } from '@/components/app-dashboard/AppVersionsListView';
 import { StatusMessage } from '@/utils/shared/statusMessage';
-import Loading from '@/layout/app-dashboard/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { useAppDetail } from '@/components/app-dashboard/AppDetailContext';
 import { useNavigate } from 'react-router';
 

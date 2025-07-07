@@ -3,7 +3,7 @@
  * @module jwt
  * @namespace
  * @inline
- * @category Vincent SDK API
+ * @category API Methods
  */
 
 import { createPKPSignedJWT } from './core/create';

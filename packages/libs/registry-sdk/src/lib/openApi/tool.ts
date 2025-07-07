@@ -1,19 +1,38 @@
-import { CreateTool, EditTool, ToolDef, ToolVersionDef } from '../schemas/tool';
-import { ErrorSchema, VersionChangesSchema } from './baseRegistry';
 import { z } from '../schemas/openApiZod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
+import {
+  toolCreate,
+  toolEdit,
+  toolDoc,
+  toolVersionCreate,
+  toolVersionEdit,
+  toolVersionDoc,
+} from '../schemas/tool';
+import { ErrorResponse, ChangeOwner, DeleteResponse, siweAuth } from './baseRegistry';
+
+const packageNameParam = z
+  .string()
+  .openapi({ param: { description: 'The NPM package name', example: '@vincent/foo-bar' } });
+
+const toolVersionParam = z
+  .string()
+  .openapi({ param: { description: 'NPM semver of the target tool version', example: '2.1.0' } });
+
 export function addToRegistry(registry: OpenAPIRegistry) {
-  const CreateToolSchema = registry.register('CreateTool', CreateTool);
-  const EditToolSchema = registry.register('EditTool', EditTool);
-  const ToolDefSchema = registry.register('ToolDef', ToolDef);
-  const ToolVersionDefSchema = registry.register('ToolVersionDef', ToolVersionDef);
+  const ToolCreate = registry.register('ToolCreate', toolCreate);
+  const ToolEdit = registry.register('ToolEdit', toolEdit);
+  const ToolRead = registry.register('Tool', toolDoc);
+
+  const ToolVersionCreate = registry.register('ToolVersionCreate', toolVersionCreate);
+  const ToolVersionEdit = registry.register('ToolVersionEdit', toolVersionEdit);
+  const ToolVersionRead = registry.register('ToolVersion', toolVersionDoc);
 
   // GET /tools - List all tools
   registry.registerPath({
     method: 'get',
     path: '/tools',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: 'Lists all tools',
     operationId: 'listAllTools',
     responses: {
@@ -21,7 +40,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(ToolDefSchema),
+            schema: z.array(ToolRead).openapi('ToolList'),
           },
         },
       },
@@ -29,25 +48,27 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
     },
   });
 
-  // POST /tool - Create a new tool
+  // POST /tool/{packageName} - Create a new tool
   registry.registerPath({
     method: 'post',
-    path: '/tool',
-    tags: ['tool'],
+    path: '/tool/{packageName}',
+    tags: ['Tool', 'ToolVersion'],
     summary: 'Creates a new tool',
     operationId: 'createTool',
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
-            schema: CreateToolSchema,
+            schema: ToolCreate,
           },
         },
         description: 'Developer-defined tool details',
@@ -59,7 +80,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -73,7 +94,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -84,27 +105,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tool/{packageName}',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: 'Fetches a tool',
     operationId: 'getTool',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -115,7 +127,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -126,26 +138,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/tool/{packageName}',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: 'Edits a tool',
     operationId: 'editTool',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
-            schema: EditToolSchema,
+            schema: ToolEdit,
           },
         },
         description: 'Developer-defined updated tool details',
@@ -157,7 +159,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -171,7 +173,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -182,27 +184,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tool/{packageName}/versions',
-    tags: ['tool'],
+    tags: ['ToolVersion'],
     summary: 'Fetches all versions of a tool',
     operationId: 'getToolVersions',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to fetch versions for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(ToolVersionDefSchema),
+            schema: z.array(ToolVersionRead).openapi('ToolVersionList'),
           },
         },
       },
@@ -213,7 +206,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -224,31 +217,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/tool/{packageName}/owner',
-    tags: ['tool'],
+    tags: ['Tool'],
     summary: "Changes a tool's owner",
     operationId: 'changeToolOwner',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to change the owner of',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
-            schema: z.object({
-              authorWalletAddress: z.string().openapi({
-                description: 'New author wallet address',
-                example: '0x1234567890123456789012345678901234567890',
-              }),
-            }),
+            schema: ChangeOwner,
           },
         },
         description: 'Developer-defined updated tool details',
@@ -260,7 +238,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolDefSchema,
+            schema: ToolRead,
           },
         },
       },
@@ -274,37 +252,27 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
     },
   });
 
-  // POST /tool/{packageName}/version - Create a tool version
+  // POST /tool/{packageName}/version/{version} - Create a tool version
   registry.registerPath({
     method: 'post',
-    path: '/tool/{packageName}/version',
-    tags: ['tool/version'],
+    path: '/tool/{packageName}/version/{version}',
+    tags: ['ToolVersion'],
     summary: 'Creates a tool version',
     operationId: 'createToolVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to create a new version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: ToolVersionCreate,
           },
         },
         description: 'Developer-defined version details',
@@ -316,7 +284,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolVersionDefSchema,
+            schema: ToolVersionRead,
           },
         },
       },
@@ -330,7 +298,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -341,37 +309,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/tool/{packageName}/version/{version}',
-    tags: ['tool/version'],
+    tags: ['ToolVersion'],
     summary: 'Fetches a tool version',
     operationId: 'getToolVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to retrieve a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolVersionDefSchema,
+            schema: ToolVersionRead,
           },
         },
       },
@@ -382,7 +331,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -393,36 +342,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/tool/{packageName}/version/{version}',
-    tags: ['tool/version'],
+    tags: ['ToolVersion'],
     summary: 'Edits a tool version',
     operationId: 'editToolVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the tool to edit a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam, version: toolVersionParam }),
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: ToolVersionEdit,
           },
         },
         description: 'Update version changes field',
@@ -434,7 +363,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: ToolVersionDefSchema,
+            schema: ToolVersionRead,
           },
         },
       },
@@ -448,7 +377,161 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // DELETE /tool/{packageName} - Delete a tool and all its versions
+  registry.registerPath({
+    method: 'delete',
+    path: '/tool/{packageName}',
+    tags: ['Tool', 'ToolVersion'],
+    summary: 'Deletes a tool and all its versions',
+    operationId: 'deleteTool',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Tool not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /tool/{packageName}/undelete - Undelete a tool and all its versions
+  registry.registerPath({
+    method: 'post',
+    path: '/tool/{packageName}/undelete',
+    tags: ['Tool', 'ToolVersion'],
+    summary: 'Undeletes a tool and all its versions',
+    operationId: 'undeleteTool',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Tool not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // DELETE /tool/{packageName}/version/{version} - Delete a tool version
+  registry.registerPath({
+    method: 'delete',
+    path: '/tool/{packageName}/version/{version}',
+    tags: ['ToolVersion'],
+    summary: 'Deletes a tool version',
+    operationId: 'deleteToolVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: toolVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Tool or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /tool/{packageName}/version/{version}/undelete - Undelete a tool version
+  registry.registerPath({
+    method: 'post',
+    path: '/tool/{packageName}/version/{version}/undelete',
+    tags: ['ToolVersion'],
+    summary: 'Undeletes a tool version',
+    operationId: 'undeleteToolVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: toolVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully undeleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Tool or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
           },
         },
       },

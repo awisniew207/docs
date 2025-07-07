@@ -1,6 +1,6 @@
 import { SquareStack, Wrench, Shield, BookOpen, MessageCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/shared/ui/button';
-import { Card, CardContent } from '@/components/app-dashboard/ui/card';
+import { Card, CardContent } from '@/components/shared/ui/card';
 
 interface DashboardContentProps {
   filteredAppsCount: number;

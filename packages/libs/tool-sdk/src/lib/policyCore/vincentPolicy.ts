@@ -11,7 +11,7 @@ import {
   VincentPolicy,
   ZodValidationDenyResult,
 } from '../types';
-import { createPolicyContext } from './policyDef/context/policyDefContext';
+import { createPolicyContext } from './policyConfig/context/policyConfigContext';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
@@ -20,10 +20,10 @@ import {
   validateOrDeny,
 } from './helpers';
 import {
-  PolicyDefCommitFunction,
-  PolicyDefLifecycleFunction,
-  VincentPolicyDef,
-} from './policyDef/types';
+  PolicyConfigCommitFunction,
+  PolicyConfigLifecycleFunction,
+  VincentPolicyConfig,
+} from './policyConfig/types';
 import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resultCreators';
 import { BundledVincentPolicy } from './bundledPolicy/types';
 
@@ -31,6 +31,16 @@ import { BundledVincentPolicy } from './bundledPolicy/types';
  * The `createVincentPolicy()` method is used to define a policy's lifecycle methods and ensure that arguments provided to the tool's
  * lifecycle methods, as well as their return values, are validated and fully type-safe by defining ZOD schemas for them.
  *
+ * @typeParam PackageName {@removeTypeParameterCompletely}
+ * @typeParam PolicyToolParams {@removeTypeParameterCompletely}
+ * @typeParam UserParams {@removeTypeParameterCompletely}
+ * @typeParam PrecheckAllowResult {@removeTypeParameterCompletely}
+ * @typeParam PrecheckDenyResult {@removeTypeParameterCompletely}
+ * @typeParam EvalAllowResult {@removeTypeParameterCompletely}
+ * @typeParam EvalDenyResult {@removeTypeParameterCompletely}
+ * @typeParam CommitParams {@removeTypeParameterCompletely}
+ * @typeParam CommitAllowResult {@removeTypeParameterCompletely}
+ * @typeParam CommitDenyResult {@removeTypeParameterCompletely}
  * @category API Methods
  */
 export function createVincentPolicy<
@@ -45,7 +55,7 @@ export function createVincentPolicy<
   CommitAllowResult extends z.ZodType = z.ZodUndefined,
   CommitDenyResult extends z.ZodType = z.ZodUndefined,
 >(
-  policyDef: VincentPolicyDef<
+  PolicyConfig: VincentPolicyConfig<
     PackageName,
     PolicyToolParams,
     UserParams,
@@ -56,23 +66,23 @@ export function createVincentPolicy<
     CommitParams,
     CommitAllowResult,
     CommitDenyResult,
-    PolicyDefLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
-    PolicyDefLifecycleFunction<
+    PolicyConfigLifecycleFunction<PolicyToolParams, UserParams, EvalAllowResult, EvalDenyResult>,
+    PolicyConfigLifecycleFunction<
       PolicyToolParams,
       UserParams,
       PrecheckAllowResult,
       PrecheckDenyResult
     >,
-    PolicyDefCommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
+    PolicyConfigCommitFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   >,
 ) {
-  if (policyDef.commitParamsSchema && !policyDef.commit) {
+  if (PolicyConfig.commitParamsSchema && !PolicyConfig.commit) {
     throw new Error('Policy defines commitParamsSchema but is missing commit function');
   }
 
-  const userParamsSchema = (policyDef.userParamsSchema ?? z.undefined()) as UserParams;
-  const evalAllowSchema = (policyDef.evalAllowResultSchema ?? z.undefined()) as EvalAllowResult;
-  const evalDenySchema = (policyDef.evalDenyResultSchema ?? z.undefined()) as EvalDenyResult;
+  const userParamsSchema = (PolicyConfig.userParamsSchema ?? z.undefined()) as UserParams;
+  const evalAllowSchema = (PolicyConfig.evalAllowResultSchema ?? z.undefined()) as EvalAllowResult;
+  const evalDenySchema = (PolicyConfig.evalDenyResultSchema ?? z.undefined()) as EvalDenyResult;
 
   const evaluate: PolicyLifecycleFunction<
     PolicyToolParams,
@@ -90,7 +100,7 @@ export function createVincentPolicy<
       const paramsOrDeny = getValidatedParamsOrDeny({
         rawToolParams: args.toolParams,
         rawUserParams: args.userParams,
-        toolParamsSchema: policyDef.toolParamsSchema,
+        toolParamsSchema: PolicyConfig.toolParamsSchema,
         userParamsSchema: userParamsSchema,
         phase: 'evaluate',
       });
@@ -103,7 +113,7 @@ export function createVincentPolicy<
 
       const { toolParams, userParams } = paramsOrDeny;
 
-      const result = await policyDef.evaluate({ toolParams, userParams }, context);
+      const result = await PolicyConfig.evaluate({ toolParams, userParams }, context);
 
       if (isPolicyDenyResponse(result)) {
         return result as unknown as EvalDenyResult extends z.ZodType
@@ -142,11 +152,11 @@ export function createVincentPolicy<
     }
   };
 
-  const precheckAllowSchema = (policyDef.precheckAllowResultSchema ??
+  const precheckAllowSchema = (PolicyConfig.precheckAllowResultSchema ??
     z.undefined()) as PrecheckAllowResult;
-  const precheckDenySchema = (policyDef.precheckDenyResultSchema ??
+  const precheckDenySchema = (PolicyConfig.precheckDenyResultSchema ??
     z.undefined()) as PrecheckDenyResult;
-  const precheck = policyDef.precheck
+  const precheck = PolicyConfig.precheck
     ? ((async (args, baseContext) => {
         try {
           const context = createPolicyContext({
@@ -155,7 +165,7 @@ export function createVincentPolicy<
             denySchema: precheckDenySchema,
           });
 
-          const { precheck: precheckFn } = policyDef;
+          const { precheck: precheckFn } = PolicyConfig;
 
           if (!precheckFn) {
             throw new Error('precheck function unexpectedly missing');
@@ -164,7 +174,7 @@ export function createVincentPolicy<
           const paramsOrDeny = getValidatedParamsOrDeny({
             rawToolParams: args.toolParams,
             rawUserParams: args.userParams,
-            toolParamsSchema: policyDef.toolParamsSchema,
+            toolParamsSchema: PolicyConfig.toolParamsSchema,
             userParamsSchema,
             phase: 'precheck',
           });
@@ -212,11 +222,12 @@ export function createVincentPolicy<
       >)
     : undefined;
 
-  const commitAllowSchema = (policyDef.commitAllowResultSchema ??
+  const commitAllowSchema = (PolicyConfig.commitAllowResultSchema ??
     z.undefined()) as CommitAllowResult;
-  const commitDenySchema = (policyDef.commitDenyResultSchema ?? z.undefined()) as CommitDenyResult;
-  const commitParamsSchema = (policyDef.commitParamsSchema ?? z.undefined()) as CommitParams;
-  const commit = policyDef.commit
+  const commitDenySchema = (PolicyConfig.commitDenyResultSchema ??
+    z.undefined()) as CommitDenyResult;
+  const commitParamsSchema = (PolicyConfig.commitParamsSchema ?? z.undefined()) as CommitParams;
+  const commit = PolicyConfig.commit
     ? ((async (args, baseContext) => {
         try {
           const context = createPolicyContext({
@@ -225,7 +236,7 @@ export function createVincentPolicy<
             allowSchema: commitAllowSchema,
           });
 
-          const { commit: commitFn } = policyDef;
+          const { commit: commitFn } = PolicyConfig;
 
           if (!commitFn) {
             throw new Error('commit function unexpectedly missing');
@@ -286,7 +297,7 @@ export function createVincentPolicy<
     PolicyLifecycleFunction<PolicyToolParams, UserParams, PrecheckAllowResult, PrecheckDenyResult>,
     CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>
   > = {
-    ...policyDef,
+    ...PolicyConfig,
     evaluate,
     precheck,
     commit,
@@ -320,6 +331,21 @@ export function createVincentPolicy<
  * });
  * ```
  *
+ * @typeParam PackageName {@removeTypeParameterCompletely}
+ * @typeParam IpfsCid {@removeTypeParameterCompletely}
+ * @typeParam ToolParamsSchema {@removeTypeParameterCompletely}
+ * @typeParam PolicyToolParams {@removeTypeParameterCompletely}
+ * @typeParam UserParams {@removeTypeParameterCompletely}
+ * @typeParam PrecheckAllowResult {@removeTypeParameterCompletely}
+ * @typeParam PrecheckDenyResult {@removeTypeParameterCompletely}
+ * @typeParam EvalAllowResult {@removeTypeParameterCompletely}
+ * @typeParam EvalDenyResult {@removeTypeParameterCompletely}
+ * @typeParam CommitParams {@removeTypeParameterCompletely}
+ * @typeParam CommitAllowResult {@removeTypeParameterCompletely}
+ * @typeParam CommitDenyResult {@removeTypeParameterCompletely}
+ *
+ * @returns A Vincent Policy that is configured to work with the provided tool
+ * {@displayType A Vincent Policy that is configured to work with the provided tool }
  * @category API Methods
  */
 export function createVincentToolPolicy<
@@ -394,7 +420,7 @@ export function createVincentToolPolicy<
     vincentPolicy: typeof vincentPolicy;
     ipfsCid: typeof ipfsCid;
     toolParameterMappings: typeof config.toolParameterMappings;
-    /* @hidden */
+    /** @hidden */
     __schemaTypes: {
       evalAllowResultSchema: EvalAllowResult;
       evalDenyResultSchema: EvalDenyResult;

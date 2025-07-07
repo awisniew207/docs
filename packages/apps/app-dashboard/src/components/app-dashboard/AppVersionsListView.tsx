@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/app-dashboard/ui/card';
+} from '@/components/shared/ui/card';
 
 interface AppVersionsListViewProps {
   versions: any[];

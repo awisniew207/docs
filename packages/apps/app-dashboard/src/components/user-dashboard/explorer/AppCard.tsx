@@ -1,6 +1,6 @@
 import { AppDetails } from '@/types';
 import { Button } from '@/components/shared/ui/button';
-import { Badge } from '@/components/app-dashboard/ui/badge';
+import { Badge } from '@/components/shared/ui/badge';
 import { Users, ExternalLink, Calendar } from 'lucide-react';
 import { AppLogo } from './AppLogo';
 

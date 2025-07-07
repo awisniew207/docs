@@ -29,6 +29,15 @@
     },
     {
       "path": "./packages/libs/tool-sdk"
+    },
+    {
+      "path": "./packages/apps/registry-backend"
+    },
+    {
+      "path": "./packages/libs/mcp-sdk"
+    },
+    {
+      "path": "./packages/apps/mcp"
     }
   ]
 }

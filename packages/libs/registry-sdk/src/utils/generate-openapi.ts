@@ -15,11 +15,15 @@ const generator = new OpenApiGeneratorV3(registry.definitions);
 const openApiDocument = generator.generateDocument({
   openapi: '3.0.0',
   info: {
-    title: 'Vincent API',
-    version: '1.0.0',
-    description: 'API for Vincent SDK',
+    title: 'Vincent Registry API',
+    version: '1.0.3',
+    description: 'API for Vincent App, Tool, and Policy Registry',
   },
-  servers: [{ url: '/api/v1' }],
+  servers: [
+    { url: 'https://staging.registry.heyvincent.ai' },
+    { url: 'https://registry.heyvincent.ai' },
+    { url: 'http://localhost:3000/' },
+  ],
 });
 
 const outputDir = path.resolve(__dirname, '../generated');

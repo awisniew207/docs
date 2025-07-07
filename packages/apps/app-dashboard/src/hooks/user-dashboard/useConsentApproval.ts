@@ -1,13 +1,19 @@
 import { useCallback } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { AppView, VersionInfo, VersionParameter, PolicyParameter } from '@/types';
+import {
+  AppView,
+  VersionInfo,
+  VersionParameter,
+  PolicyParameter,
+  PolicyWithParameters,
+} from '@/types';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import {
   getUserViewRegistryContract,
   getUserRegistryContract,
-} from '../../utils/user-dashboard/contracts';
-import { useParameterManagement } from '@/hooks/user-dashboard/useParameterManagement';
+} from '@/utils/user-dashboard/contracts';
+import { useParameterManagement } from './useParameterManagement';
 import { isEmptyParameterValue } from '@/utils/shared/parameterDecoding';
 import {
   prepareParameterRemovalData,
@@ -60,11 +66,6 @@ interface UseConsentApprovalProps {
 interface ToolWithPolicies {
   toolIpfsCid: string;
   policies: PolicyWithParameters[];
-}
-
-interface PolicyWithParameters {
-  policyIpfsCid: string;
-  parameters: PolicyParameter[];
 }
 
 export const useConsentApproval = ({

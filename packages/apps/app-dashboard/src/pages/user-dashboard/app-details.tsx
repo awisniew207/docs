@@ -5,9 +5,9 @@ import UserAuthenticatedConsentForm from '@/components/user-dashboard/consent/Us
 import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
 import { useUrlRedirectUri } from '@/hooks/user-dashboard/useUrlRedirectUri';
 import ConnectWithVincent from '@/layout/shared/ConnectWithVincent';
-import ProtectedByLit from '@/layout/shared/ProtectedByLit';
+import ProtectedByLit from '@/components/shared/ui/ProtectedByLit';
 import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
-import { Card, CardContent } from '@/components/app-dashboard/ui/card';
+import { Card, CardContent } from '@/components/shared/ui/card';
 import { ExternalLink } from 'lucide-react';
 import { vincentApiClient } from '@/components/app-dashboard/mock-forms/vincentApiClient';
 

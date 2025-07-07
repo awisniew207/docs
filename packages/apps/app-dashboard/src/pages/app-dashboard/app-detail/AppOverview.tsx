@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import { useAccount } from 'wagmi';
 import { AppDetailsView } from '@/components/app-dashboard/AppDetailsView';
 import { StatusMessage } from '@/utils/shared/statusMessage';
-import Loading from '@/layout/app-dashboard/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { useAppDetail } from '@/components/app-dashboard/AppDetailContext';
 
 export default function AppOverview() {

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
-import { jwt } from '@lit-protocol/vincent-sdk';
+import { jwt } from '@lit-protocol/vincent-app-sdk';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { AppView } from '@/types';
 import { litNodeClient } from '@/utils/user-dashboard/lit';

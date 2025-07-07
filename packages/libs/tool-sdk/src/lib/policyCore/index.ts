@@ -2,7 +2,7 @@
 
 export { createVincentToolPolicy, createVincentPolicy } from './vincentPolicy';
 export type {
-  VincentPolicyDef,
-  PolicyDefLifecycleFunction,
-  PolicyDefCommitFunction,
-} from './policyDef/types';
+  VincentPolicyConfig,
+  PolicyConfigLifecycleFunction,
+  PolicyConfigCommitFunction,
+} from './policyConfig/types';

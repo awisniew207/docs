@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi';
 import { Edit } from 'lucide-react';
 import { VersionDetails } from '@/components/app-dashboard/VersionDetails';
 import { StatusMessage } from '@/utils/shared/statusMessage';
-import Loading from '@/layout/app-dashboard/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { useAppDetail } from '@/components/app-dashboard/AppDetailContext';
 
 export default function AppVersionDetail() {

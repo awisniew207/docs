@@ -5,11 +5,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/app-dashboard/ui/dialog';
+} from '@/components/shared/ui/dialog';
 import { Button } from '@/components/shared/ui/button';
-import { Badge } from '@/components/app-dashboard/ui/badge';
+import { Badge } from '@/components/shared/ui/badge';
 import { Users, Calendar, Package, Code, GitBranch } from 'lucide-react';
-import Loading from '@/layout/app-dashboard/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { AppLogo } from './AppLogo';
 import { vincentApiClient } from '@/components/app-dashboard/mock-forms/vincentApiClient';
 

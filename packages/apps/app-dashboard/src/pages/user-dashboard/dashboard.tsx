@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
 import { useUserSidebar } from '@/hooks/user-dashboard/useUserSidebar';
 import { StatusMessage } from '@/utils/shared/statusMessage';
-import { Card, CardContent } from '@/components/app-dashboard/ui/card';
+import { Card, CardContent } from '@/components/shared/ui/card';
 import { Smartphone, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/shared/ui/button';
 import ConsentView from '@/components/user-dashboard/consent/Consent';
 import ConnectWithVincent from '@/layout/shared/ConnectWithVincent';
-import ProtectedByLit from '@/layout/shared/ProtectedByLit';
+import ProtectedByLit from '@/components/shared/ui/ProtectedByLit';
 
 export default function UserDashboard() {
   const authGuardElement = useAuthGuard();

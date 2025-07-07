@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/app-dashboard/ui/card';
+} from '@/components/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/app-dashboard/ui/tabs';
 
 // Import generic app forms and all resource-based forms

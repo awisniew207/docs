@@ -1,121 +1,165 @@
-import { BaseDocAttributes } from './base';
 import { z } from './openApiZod';
-import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../openApi/constants';
 
-// Request body for creating a new application
-export const CreateApp = z.object({
-  name: z.string().openapi({
-    description: 'The name of the application',
-    example: 'Memecoin DCA App',
-  }),
-  description: z.string().openapi({
-    description: 'Description of the application',
-    example: 'This is a memecoin DCA App',
-  }),
-  contactEmail: z.string().email().openapi({
-    description: 'Contact email for the application manager',
-    example: EXAMPLE_EMAIL_ADDRESS,
-  }),
-  appUserUrl: z.string().url().openapi({
-    description: 'URL of the application for users',
-    example: 'https://myapplication.example.com/',
-  }),
-  logo: z.string().openapi({
-    description: 'Base64 encoded logo image',
-    example:
-      'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC',
-  }),
-  redirectUris: z.array(z.string().url()).openapi({
-    description:
-      'Redirect URIs users can be sent to after signing up for your application (with their JWT token)',
-    example: ['https://google.com', 'https://litprotocol.com'],
-  }),
-  deploymentStatus: z.enum(['dev', 'test', 'prod']).openapi({
-    description: 'Deployment status of the application; dev, test, or prod',
-    example: 'dev',
-  }),
-  managerAddress: z.string().openapi({
-    description: 'Manager wallet address',
-    example: EXAMPLE_WALLET_ADDRESS,
-  }),
-});
+import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../constants';
+import { baseDocAttributes } from './base';
 
-// Extends the request body of an application with server-provided properties
-export const AppDef = BaseDocAttributes.merge(CreateApp).extend({
-  appId: z.number().openapi({
-    description: 'Application ID',
-    example: 12345,
-    readOnly: true,
-  }),
-  activeVersion: z.number().openapi({
-    description: 'Active version of the application',
-    example: 1,
-  }),
-});
-
-// Request body for creating a new application version
-export const CreateAppVersion = z.object({
-  tools: z.array(z.string()).openapi({
-    description: 'List of tool identities to include in this version',
-    example: ['@vincent/foo-bar@1.0.0'],
-  }),
-  changes: z.string().openapi({
-    description: 'Changelog information for this version',
-    example: 'I am a changelog trapped in a computer!',
-  }),
-});
-
-// Application version response
-export const AppVersionDef = BaseDocAttributes.extend({
-  appId: z.number().openapi({
-    description: 'Application ID',
-    example: 12312345,
-    readOnly: true,
-  }),
-  version: z.number().openapi({
-    description: 'Version number',
-    example: 1,
-  }),
-  enabled: z.boolean().openapi({
-    description: 'Whether this version is enabled',
-    example: true,
-  }),
-  changes: z.string().openapi({
-    description: 'Changelog information for this version',
-    example: 'I am a changelog trapped in a computer!',
-  }),
-});
-
-export const AppToolDef = BaseDocAttributes.extend({
-  appId: z.number().openapi({
-    description: 'Application ID',
-    example: 5,
-    readOnly: true,
-  }),
-  appVersion: z.number().openapi({
-    description: 'Application version',
-    example: 2,
-  }),
-  toolPackageName: z.string().openapi({
-    description: 'Tool package name',
-    example: '@vincent/foo-bar',
-  }),
-  toolVersion: z.string().openapi({
-    description: 'Tool version',
-    example: '1.0.0',
-  }),
-  hiddenSupportedPolicies: z.array(z.string()).openapi({
-    description:
-      'Policies that are supported by this tool but are hidden from users of this app specifically',
-    example: ['@vincent/foo-bar-policy-1', '@vincent/foo-bar-policy-2'],
-  }),
-});
-
-export const AppVersionWithTools = z
+/** app describes all properties on an application that are NOT controlled by the DB backend
+ *
+ * Any schemas that use subsets of appVersion properties should be composed from this using builder functions
+ * instead of `appDef`, which also includes MongoDB-maintained props and is the complete API response
+ * */
+const app = z
   .object({
-    version: AppVersionDef,
-    tools: z.array(AppToolDef),
+    appId: z.number().openapi({
+      description: 'Application ID',
+      example: 12345,
+      readOnly: true,
+    }),
+    // Optional because a new app without any appVersion defined yet will have no activeVersion
+    activeVersion: z
+      .number()
+      .optional()
+      .openapi({
+        description: 'Active version of the application',
+        example: 1,
+      })
+      .optional(),
+    name: z.string().trim().min(2).openapi({
+      description: 'The name of the application',
+      example: 'Memecoin DCA App',
+    }),
+    description: z.string().trim().min(10).openapi({
+      description: 'Description of the application',
+      example: 'This is a memecoin DCA App.',
+    }),
+    contactEmail: z
+      .string()
+      .email()
+      .openapi({
+        description: 'Contact email for the application manager',
+        example: EXAMPLE_EMAIL_ADDRESS,
+      })
+      .optional(),
+    appUserUrl: z
+      .string()
+      .url()
+      .openapi({
+        description: 'This should be a landing page for the app.',
+        example: 'https://myapplication.example.com/',
+      })
+      .optional(),
+    logo: z
+      .string()
+      .optional()
+      .openapi({
+        description: 'Base64 encoded logo image',
+        example:
+          'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC',
+      })
+      .optional(),
+    redirectUris: z
+      .array(z.string().url())
+      .refine((urls) => new Set(urls).size === urls.length, {
+        message: 'Redirect URIs must be unique',
+      })
+      .openapi({
+        uniqueItems: true,
+        description:
+          'Redirect URIs users can be sent to after signing up for your application (with their JWT token).',
+        example: ['https://myapp.example.com', 'https://myapp.example.com/subpage'],
+      })
+      .optional(),
+    deploymentStatus: z.enum(['dev', 'test', 'prod']).optional().openapi({
+      description: 'Identifies if an application is in development, test, or production.',
+      example: 'dev',
+    }),
+    managerAddress: z.string().openapi({
+      description: `App manager's wallet address. Derived from the authorization signature provided by the creator.`,
+      example: EXAMPLE_WALLET_ADDRESS,
+      readOnly: true,
+    }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this App is deleted',
+      example: false,
+    }),
   })
-  .openapi({
-    description: 'Application version with its tools',
-  });
+  .strict();
+
+// Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
+function buildCreateAppSchema() {
+  const { name, deploymentStatus, description, contactEmail, appUserUrl, logo, redirectUris } =
+    app.shape;
+
+  return z
+    .object({
+      // Optional
+      ...z
+        .object({
+          deploymentStatus: deploymentStatus.default('dev'),
+          contactEmail,
+          appUserUrl,
+          logo,
+          redirectUris,
+        })
+        .partial()
+        .strict().shape,
+
+      name,
+      description,
+    })
+    .strict();
+}
+
+/**
+ * New apps must have a name and description; everything else can be defined later
+ */
+export const appCreate = buildCreateAppSchema();
+
+function buildEditAppSchema() {
+  // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
+  const {
+    contactEmail,
+    activeVersion,
+    redirectUris,
+    name,
+    description,
+    deploymentStatus,
+    logo,
+    appUserUrl,
+  } = app.shape;
+
+  return z
+    .object({
+      // Optional
+      ...z
+        .object({
+          name,
+          description,
+          contactEmail,
+          appUserUrl,
+          logo,
+          redirectUris,
+          deploymentStatus,
+          activeVersion,
+        })
+        .partial()
+        .strict().shape,
+    })
+    .strict();
+}
+
+/**
+ * Editing an existing app can contain any combination of the optional parameters, but must include
+ * the base props that are used during app creation.
+ */
+export const appEdit = buildEditAppSchema();
+
+/** appDoc describes a complete application document, with all properties including those that are database-backend
+ * specific like _id and updated/created at timestamps.
+ *
+ * Do not duplicate these definitions into other schemas like `edit` or `create`.
+ *
+ * All schemas that need to be composed as subsets of this schema
+ * should be derived from `app` instead
+ */
+export const appDoc = z.object({ ...baseDocAttributes.shape, ...app.shape }).strict();

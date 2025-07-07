@@ -6,7 +6,7 @@ import { useUrlAppId } from '@/hooks/user-dashboard/useUrlAppId';
 import { useAccount } from 'wagmi';
 import { VersionChanges } from '../schemas/base';
 import { useParams } from 'react-router-dom';
-import Loading from '@/layout/app-dashboard/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/utils/shared/statusMessage';
 import { useState } from 'react';
 

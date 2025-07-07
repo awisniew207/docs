@@ -10,7 +10,7 @@
 import { z, ZodUndefined } from 'zod';
 import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
-import { PolicyContext } from '../lib/policyCore/policyDef/context/types';
+import { PolicyContext } from '../lib/policyCore/policyConfig/context/types';
 
 // Base tool schema for all tests
 const baseToolSchema = z.object({

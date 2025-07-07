@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-app-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Vincent SDK for browser and backend",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -42,7 +42,7 @@
     "*.md"
   ],
   "devDependencies": {
-    "@lit-protocol/pkp-ethers": "^7.2.0",
+    "@lit-protocol/pkp-ethers": "^7.1.3-eip1559",
     "@lit-protocol/types": "^7.0.8",
     "@types/express": "^5.0.1",
     "chokidar-cli": "^3.0.0",

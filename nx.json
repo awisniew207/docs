@@ -52,23 +52,22 @@
     "projects": [
       "tool-sdk",
       "app-sdk",
+      "mcp-sdk",
       "registry-sdk",
+      "registry-backend",
       "policy-spending-limit",
       "tool-erc20-approval",
-      "tool-uniswap-swap"
+      "tool-uniswap-swap",
+      "mcp-server"
     ],
     "projectsRelationship": "independent",
     "releaseTagPattern": "vincent/{projectName}/{version}",
     "versionPlans": true,
-    "version": {
-      "preVersionCommand": "pnpm dlx nx run-many --target=build --all",
-      "generatorOptions": {
-        "preserveLocalDependencyProtocols": true
-      }
+    "changelog": {
+      "projectChangelogs": true
     },
-    "git": {
-      "tagArgs": "-f",
-      "pushArgs": "--force-with-lease"
+    "version": {
+      "preVersionCommand": "pnpm dlx nx run-many --target=build --all"
     }
   },
   "targetDefaults": {
@@ -77,6 +76,15 @@
       "options": {
         "commands": ["rm -rf ./node_modules", "rm -rf ./dist"],
         "cwd": "{projectRoot}"
+      }
+    },
+    "flag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm lit-flags --configPath ./src/features"],
+        "cwd": "{projectRoot}",
+        "tty": true,
+        "parallel": false
       }
     },
     "lint": {

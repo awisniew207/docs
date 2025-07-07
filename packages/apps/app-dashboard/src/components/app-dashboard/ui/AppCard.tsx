@@ -1,6 +1,6 @@
 import { ExternalLink } from 'lucide-react';
 import { AppDetails } from '@/types';
-import { Card, CardContent } from '@/components/app-dashboard/ui/card';
+import { Card, CardContent } from '@/components/shared/ui/card';
 
 export interface AppCardProps {
   app: AppDetails;

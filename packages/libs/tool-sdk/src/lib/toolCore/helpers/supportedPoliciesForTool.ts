@@ -46,7 +46,6 @@ export type ToolPolicyMap<T extends readonly any[], PkgNames extends string> = {
  * ```
  *
  * @category API Methods
- * @inlineType VincentPolicy
  */
 export function supportedPoliciesForTool<
   const Policies extends readonly {

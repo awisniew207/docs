@@ -22,7 +22,7 @@ const redirectToConsentPage = ({
  *
  * - `appId` is the numeric app ID displayed for your app on the Vincent Dashboard
  *
- * @category Vincent SDK API
+ * @category API Methods
  * */
 export const getVincentWebAppClient = (
   appClientConfig: VincentAppClientConfig

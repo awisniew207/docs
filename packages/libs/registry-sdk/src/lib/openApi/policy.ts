@@ -1,18 +1,37 @@
-import { CreatePolicy, EditPolicy, PolicyDef, PolicyVersionDef } from '../schemas/policy';
-import { ErrorSchema, VersionChangesSchema } from './baseRegistry';
 import { z } from '../schemas/openApiZod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
+import {
+  policyCreate,
+  policyEdit,
+  policyDoc,
+  policyVersionCreate,
+  policyVersionEdit,
+  policyVersionDoc,
+} from '../schemas/policy';
+import { ErrorResponse, ChangeOwner, DeleteResponse, siweAuth } from './baseRegistry';
+
+const packageNameParam = z
+  .string()
+  .openapi({ param: { description: 'The NPM package name', example: '@vincent/foo-bar' } });
+
+const policyVersionParam = z
+  .string()
+  .openapi({ param: { description: 'NPM semver of the target policy version', example: '2.1.0' } });
+
 export function addToRegistry(registry: OpenAPIRegistry) {
-  const CreatePolicySchema = registry.register('CreatePolicyDef', CreatePolicy);
-  const EditPolicySchema = registry.register('EditPolicyDef', EditPolicy);
-  const PolicyDefSchema = registry.register('PolicyDef', PolicyDef);
-  const PolicyVersionDefSchema = registry.register('PolicyVersionDef', PolicyVersionDef);
+  const PolicyCreate = registry.register('PolicyCreate', policyCreate);
+  const PolicyEdit = registry.register('PolicyEdit', policyEdit);
+  const PolicyRead = registry.register('Policy', policyDoc);
+
+  const PolicyVersionCreate = registry.register('PolicyVersionCreate', policyVersionCreate);
+  const PolicyVersionEdit = registry.register('PolicyVersionEdit', policyVersionEdit);
+  const PolicyVersionRead = registry.register('PolicyVersion', policyVersionDoc);
 
   registry.registerPath({
     method: 'get',
     path: '/policies',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: 'Lists all policies',
     operationId: 'listAllPolicies',
     responses: {
@@ -20,7 +39,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(PolicyDefSchema),
+            schema: z.array(PolicyRead).openapi('PolicyList'),
           },
         },
       },
@@ -28,25 +47,27 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
     },
   });
 
-  // POST /policy - Create a new policy
+  // POST /policy/{packageName} - Create a new policy
   registry.registerPath({
     method: 'post',
-    path: '/policy',
-    tags: ['policy'],
+    path: '/policy/{packageName}',
+    tags: ['Policy', 'PolicyVersion'],
     summary: 'Creates a new policy',
     operationId: 'createPolicy',
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
-            schema: CreatePolicySchema,
+            schema: PolicyCreate,
           },
         },
         description: 'Developer-defined policy details',
@@ -58,7 +79,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -72,7 +93,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -83,27 +104,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policy/{packageName}',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: 'Fetches a policy',
     operationId: 'getPolicy',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -114,7 +126,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -125,26 +137,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/policy/{packageName}',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: 'Edits a policy',
     operationId: 'editPolicy',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
-            schema: EditPolicySchema,
+            schema: PolicyEdit,
           },
         },
         description: 'Developer-defined updated policy details',
@@ -156,7 +158,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -170,37 +172,27 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
     },
   });
 
-  // POST /policy/{packageName}/version - Create a new policy version
+  // POST /policy/{packageName}/version/{version} - Create a new policy version
   registry.registerPath({
     method: 'post',
-    path: '/policy/{packageName}/version',
-    tags: ['policy/version'],
+    path: '/policy/{packageName}/version/{version}',
+    tags: ['PolicyVersion'],
     summary: 'Creates a new policy version',
     operationId: 'createPolicyVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to create a new version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: PolicyVersionCreate,
           },
         },
         description: 'Developer-defined version details',
@@ -212,7 +204,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyVersionDefSchema,
+            schema: PolicyVersionRead,
           },
         },
       },
@@ -226,7 +218,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -237,37 +229,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policy/{packageName}/version/{version}',
-    tags: ['policy/version'],
+    tags: ['PolicyVersion'],
     summary: 'Fetches a policy version',
     operationId: 'getPolicyVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to retrieve a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to retrieve',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyVersionDefSchema,
+            schema: PolicyVersionRead,
           },
         },
       },
@@ -278,7 +251,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -289,27 +262,18 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'get',
     path: '/policy/{packageName}/versions',
-    tags: ['policy'],
+    tags: ['PolicyVersion'],
     summary: 'Fetches all versions of a policy',
     operationId: 'getPolicyVersions',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to fetch versions for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
     responses: {
       200: {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(PolicyVersionDefSchema).openapi('PolicyVersionsArray'),
+            schema: z.array(PolicyVersionRead).openapi('PolicyVersionList'),
           },
         },
       },
@@ -320,7 +284,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -331,31 +295,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/policy/{packageName}/owner',
-    tags: ['policy'],
+    tags: ['Policy'],
     summary: "Changes a policy's owner",
     operationId: 'changePolicyOwner',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to change the owner of',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam }),
       body: {
         content: {
           'application/json': {
-            schema: z.object({
-              authorWalletAddress: z.string().openapi({
-                description: 'New author wallet address',
-                example: '0x1234567890123456789012345678901234567890',
-              }),
-            }),
+            schema: ChangeOwner,
           },
         },
         description: 'Developer-defined updated policy details',
@@ -367,7 +316,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyDefSchema,
+            schema: PolicyRead,
           },
         },
       },
@@ -381,7 +330,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
           },
         },
       },
@@ -392,36 +341,16 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'put',
     path: '/policy/{packageName}/version/{version}',
-    tags: ['policy/version'],
+    tags: ['PolicyVersion'],
     summary: 'Edits a policy version',
     operationId: 'editPolicyVersion',
-    parameters: [
-      {
-        name: 'packageName',
-        in: 'path',
-        description: 'Package name of the policy to edit a version for',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '@vincent/foo-bar-policy',
-        },
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'Version number to edit',
-        required: true,
-        schema: {
-          type: 'string',
-          example: '1.0.0',
-        },
-      },
-    ],
+    security: [{ [siweAuth.name]: [] }],
     request: {
+      params: z.object({ packageName: packageNameParam, version: policyVersionParam }),
       body: {
         content: {
           'application/json': {
-            schema: VersionChangesSchema,
+            schema: PolicyVersionEdit,
           },
         },
         description: 'Update version changes field',
@@ -433,7 +362,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: PolicyVersionDefSchema,
+            schema: PolicyVersionRead,
           },
         },
       },
@@ -447,7 +376,161 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Unexpected error',
         content: {
           'application/json': {
-            schema: ErrorSchema,
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // DELETE /policy/{packageName} - Delete a policy and all its versions
+  registry.registerPath({
+    method: 'delete',
+    path: '/policy/{packageName}',
+    tags: ['Policy', 'PolicyVersion'],
+    summary: 'Deletes a policy and all its versions',
+    operationId: 'deletePolicy',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Policy not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /policy/{packageName}/undelete - Undelete a policy and all its versions
+  registry.registerPath({
+    method: 'post',
+    path: '/policy/{packageName}/undelete',
+    tags: ['Policy', 'PolicyVersion'],
+    summary: 'Undeletes a policy and all its versions',
+    operationId: 'undeletePolicy',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ packageName: packageNameParam }),
+    },
+    responses: {
+      200: {
+        description: 'Successful operation',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      404: {
+        description: 'Policy not found',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // DELETE /policy/{packageName}/version/{version} - Delete a policy version
+  registry.registerPath({
+    method: 'delete',
+    path: '/policy/{packageName}/version/{version}',
+    tags: ['PolicyVersion'],
+    summary: 'Deletes a policy version',
+    operationId: 'deletePolicyVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: policyVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully deleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Policy or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /policy/{packageName}/version/{version}/undelete - Undelete a policy version
+  registry.registerPath({
+    method: 'post',
+    path: '/policy/{packageName}/version/{version}/undelete',
+    tags: ['PolicyVersion'],
+    summary: 'Undeletes a policy version',
+    operationId: 'undeletePolicyVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({
+        packageName: packageNameParam,
+        version: policyVersionParam,
+      }),
+    },
+    responses: {
+      200: {
+        description: 'OK - Resource successfully undeleted',
+        content: {
+          'application/json': {
+            schema: DeleteResponse,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Policy or version not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
           },
         },
       },

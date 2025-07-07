@@ -1,16 +1,30 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Vincent API",
-    "version": "1.0.0",
-    "description": "API for Vincent SDK"
+    "title": "Vincent Registry API",
+    "version": "1.0.3",
+    "description": "API for Vincent App, Tool, and Policy Registry"
   },
   "servers": [
     {
-      "url": "/api/v1"
+      "url": "https://staging.registry.heyvincent.ai"
+    },
+    {
+      "url": "https://registry.heyvincent.ai"
+    },
+    {
+      "url": "http://localhost:3000/"
     }
   ],
   "components": {
+    "securitySchemes": {
+      "siweAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Sign In With Ethereum authentication (SIWE). Format is \"SIWE [JSON({ message, signature })]\""
+      }
+    },
     "schemas": {
       "Error": {
         "type": "object",
@@ -27,7 +41,6 @@
           }
         },
         "required": [
-          "code",
           "message"
         ]
       },
@@ -37,38 +50,39 @@
           "message": {
             "type": "string",
             "description": "Success message",
-            "example": "Application successfully deleted"
+            "example": "Successfully deleted"
           }
         },
         "required": [
           "message"
         ]
       },
-      "VersionChanges": {
+      "ChangeOwner": {
         "type": "object",
         "properties": {
-          "changes": {
+          "authorWalletAddress": {
             "type": "string",
-            "description": "Updated changelog information",
-            "example": "Updated changelog information"
+            "description": "New owner address",
+            "example": "0x123456789012345678901234567890123456abcd"
           }
         },
         "required": [
-          "changes"
+          "authorWalletAddress"
         ]
       },
-      "CreateApp": {
+      "AppCreate": {
         "type": "object",
         "properties": {
-          "name": {
+          "deploymentStatus": {
             "type": "string",
-            "description": "The name of the application",
-            "example": "Memecoin DCA App"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of the application",
-            "example": "This is a memecoin DCA App"
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "default": "dev",
+            "description": "Identifies if an application is in development, test, or production.",
+            "example": "dev"
           },
           "contactEmail": {
             "type": "string",
@@ -79,7 +93,7 @@
           "appUserUrl": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the application for users",
+            "description": "This should be a landing page for the app.",
             "example": "https://myapplication.example.com/"
           },
           "logo": {
@@ -93,10 +107,75 @@
               "type": "string",
               "format": "uri"
             },
-            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token)",
+            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "uniqueItems": true,
             "example": [
-              "https://google.com",
-              "https://litprotocol.com"
+              "https://myapp.example.com",
+              "https://myapp.example.com/subpage"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "description": "The name of the application",
+            "example": "Memecoin DCA App"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Description of the application",
+            "example": "This is a memecoin DCA App."
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "AppEdit": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "description": "The name of the application",
+            "example": "Memecoin DCA App"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Description of the application",
+            "example": "This is a memecoin DCA App."
+          },
+          "contactEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Contact email for the application manager",
+            "example": "contact@example.com"
+          },
+          "appUserUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "This should be a landing page for the app.",
+            "example": "https://myapplication.example.com/"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "uniqueItems": true,
+            "example": [
+              "https://myapp.example.com",
+              "https://myapp.example.com/subpage"
             ]
           },
           "deploymentStatus": {
@@ -106,27 +185,18 @@
               "test",
               "prod"
             ],
-            "description": "Deployment status of the application; dev, test, or prod",
+            "description": "Identifies if an application is in development, test, or production.",
             "example": "dev"
           },
-          "managerAddress": {
-            "type": "string",
-            "description": "Manager wallet address",
-            "example": "0x123456789012345678901234567890123456abcd"
+          "activeVersion": {
+            "type": "number",
+            "description": "Active version of the application",
+            "example": 1
           }
         },
-        "required": [
-          "name",
-          "description",
-          "contactEmail",
-          "appUserUrl",
-          "logo",
-          "redirectUris",
-          "deploymentStatus",
-          "managerAddress"
-        ]
+        "additionalProperties": false
       },
-      "AppDef": {
+      "App": {
         "type": "object",
         "properties": {
           "_id": {
@@ -144,15 +214,28 @@
             "format": "date-time",
             "description": "Timestamp when this was created"
           },
+          "appId": {
+            "type": "number",
+            "description": "Application ID",
+            "example": 12345,
+            "readOnly": true
+          },
+          "activeVersion": {
+            "type": "number",
+            "description": "Active version of the application",
+            "example": 1
+          },
           "name": {
             "type": "string",
+            "minLength": 2,
             "description": "The name of the application",
             "example": "Memecoin DCA App"
           },
           "description": {
             "type": "string",
+            "minLength": 10,
             "description": "Description of the application",
-            "example": "This is a memecoin DCA App"
+            "example": "This is a memecoin DCA App."
           },
           "contactEmail": {
             "type": "string",
@@ -163,7 +246,7 @@
           "appUserUrl": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the application for users",
+            "description": "This should be a landing page for the app.",
             "example": "https://myapplication.example.com/"
           },
           "logo": {
@@ -177,10 +260,11 @@
               "type": "string",
               "format": "uri"
             },
-            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token)",
+            "description": "Redirect URIs users can be sent to after signing up for your application (with their JWT token).",
+            "uniqueItems": true,
             "example": [
-              "https://google.com",
-              "https://litprotocol.com"
+              "https://myapp.example.com",
+              "https://myapp.example.com/subpage"
             ]
           },
           "deploymentStatus": {
@@ -190,67 +274,55 @@
               "test",
               "prod"
             ],
-            "description": "Deployment status of the application; dev, test, or prod",
+            "description": "Identifies if an application is in development, test, or production.",
             "example": "dev"
           },
           "managerAddress": {
             "type": "string",
-            "description": "Manager wallet address",
-            "example": "0x123456789012345678901234567890123456abcd"
-          },
-          "appId": {
-            "type": "number",
-            "description": "Application ID",
-            "example": 12345,
+            "description": "App manager's wallet address. Derived from the authorization signature provided by the creator.",
+            "example": "0x123456789012345678901234567890123456abcd",
             "readOnly": true
           },
-          "activeVersion": {
-            "type": "number",
-            "description": "Active version of the application",
-            "example": 1
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this App is deleted",
+            "example": false
           }
         },
         "required": [
           "_id",
           "updatedAt",
           "createdAt",
+          "appId",
           "name",
           "description",
-          "contactEmail",
-          "appUserUrl",
-          "logo",
-          "redirectUris",
-          "deploymentStatus",
-          "managerAddress",
-          "appId",
-          "activeVersion"
-        ]
+          "managerAddress"
+        ],
+        "additionalProperties": false
       },
-      "CreateAppVersion": {
+      "AppVersionCreate": {
         "type": "object",
         "properties": {
-          "tools": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of tool identities to include in this version",
-            "example": [
-              "@vincent/foo-bar@1.0.0"
-            ]
-          },
           "changes": {
             "type": "string",
-            "description": "Changelog information for this version",
+            "description": "Describes what changed between this version and the previous version.",
             "example": "I am a changelog trapped in a computer!"
           }
         },
-        "required": [
-          "tools",
-          "changes"
-        ]
+        "additionalProperties": false
       },
-      "AppVersionDef": {
+      "AppVersionEdit": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "string",
+            "description": "Describes what changed between this version and the previous version.",
+            "example": "I am a changelog trapped in a computer!"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AppVersion": {
         "type": "object",
         "properties": {
           "_id": {
@@ -276,18 +348,24 @@
           },
           "version": {
             "type": "number",
-            "description": "Version number",
-            "example": 1
+            "description": "App Version number",
+            "example": 1,
+            "readOnly": true
           },
           "enabled": {
             "type": "boolean",
-            "description": "Whether this version is enabled",
+            "description": "Whether this version is enabled or not",
             "example": true
           },
           "changes": {
             "type": "string",
-            "description": "Changelog information for this version",
+            "description": "Describes what changed between this version and the previous version.",
             "example": "I am a changelog trapped in a computer!"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this AppVersion is deleted",
+            "example": false
           }
         },
         "required": [
@@ -296,186 +374,53 @@
           "createdAt",
           "appId",
           "version",
-          "enabled",
-          "changes"
-        ]
+          "enabled"
+        ],
+        "additionalProperties": false
       },
-      "AppVersionWithTools": {
+      "AppVersionToolCreate": {
         "type": "object",
         "properties": {
-          "version": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string",
-                "description": "Document ID",
-                "readOnly": true
-              },
-              "updatedAt": {
-                "type": "string",
-                "format": "date-time",
-                "description": "Timestamp when this was last modified"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time",
-                "description": "Timestamp when this was created"
-              },
-              "appId": {
-                "type": "number",
-                "description": "Application ID",
-                "example": 12312345,
-                "readOnly": true
-              },
-              "version": {
-                "type": "number",
-                "description": "Version number",
-                "example": 1
-              },
-              "enabled": {
-                "type": "boolean",
-                "description": "Whether this version is enabled",
-                "example": true
-              },
-              "changes": {
-                "type": "string",
-                "description": "Changelog information for this version",
-                "example": "I am a changelog trapped in a computer!"
-              }
-            },
-            "required": [
-              "_id",
-              "updatedAt",
-              "createdAt",
-              "appId",
-              "version",
-              "enabled",
-              "changes"
-            ]
-          },
-          "tools": {
+          "hiddenSupportedPolicies": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "_id": {
-                  "type": "string",
-                  "description": "Document ID",
-                  "readOnly": true
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "Timestamp when this was last modified"
-                },
-                "createdAt": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "Timestamp when this was created"
-                },
-                "appId": {
-                  "type": "number",
-                  "description": "Application ID",
-                  "example": 5,
-                  "readOnly": true
-                },
-                "appVersion": {
-                  "type": "number",
-                  "description": "Application version",
-                  "example": 2
-                },
-                "toolPackageName": {
-                  "type": "string",
-                  "description": "Tool package name",
-                  "example": "@vincent/foo-bar"
-                },
-                "toolVersion": {
-                  "type": "string",
-                  "description": "Tool version",
-                  "example": "1.0.0"
-                },
-                "hiddenSupportedPolicies": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Policies that are supported by this tool but are hidden from users of this app specifically",
-                  "example": [
-                    "@vincent/foo-bar-policy-1",
-                    "@vincent/foo-bar-policy-2"
-                  ]
-                }
-              },
-              "required": [
-                "_id",
-                "updatedAt",
-                "createdAt",
-                "appId",
-                "appVersion",
-                "toolPackageName",
-                "toolVersion",
-                "hiddenSupportedPolicies"
-              ]
-            }
-          }
-        },
-        "required": [
-          "version",
-          "tools"
-        ],
-        "description": "Application version with its tools"
-      },
-      "CreateTool": {
-        "type": "object",
-        "properties": {
-          "packageName": {
-            "type": "string",
-            "description": "Tool package name",
-            "example": "@vincent/foo-bar"
+              "type": "string"
+            },
+            "description": "Policies that are supported by this tool, but are hidden from users of this app specifically",
+            "example": [
+              "@vincent/foo-bar-policy-1",
+              "@vincent/foo-bar-policy-2"
+            ]
           },
-          "title": {
+          "toolVersion": {
             "type": "string",
-            "description": "Tool title",
-            "example": "The Greatest Foo Bar Tool"
-          },
-          "description": {
-            "type": "string",
-            "description": "Tool description",
-            "example": "When we foo, our complex tool will also bar."
-          }
-        },
-        "required": [
-          "packageName",
-          "title",
-          "description"
-        ]
-      },
-      "EditTool": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "Tool title",
-            "example": "The Greatest Foo Bar Tool"
-          },
-          "description": {
-            "type": "string",
-            "description": "Tool description",
-            "example": "When we foo, our complex tool will also bar."
-          },
-          "activeVersion": {
-            "type": "string",
-            "description": "Active version of the tool",
+            "description": "Tool version",
             "example": "1.0.0"
           }
         },
         "required": [
-          "title",
-          "description",
-          "activeVersion"
-        ]
+          "toolVersion"
+        ],
+        "additionalProperties": false
       },
-      "ToolDef": {
+      "AppVersionToolEdit": {
+        "type": "object",
+        "properties": {
+          "hiddenSupportedPolicies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Policies that are supported by this tool, but are hidden from users of this app specifically",
+            "example": [
+              "@vincent/foo-bar-policy-1",
+              "@vincent/foo-bar-policy-2"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "AppVersionTool": {
         "type": "object",
         "properties": {
           "_id": {
@@ -493,247 +438,129 @@
             "format": "date-time",
             "description": "Timestamp when this was created"
           },
-          "packageName": {
+          "appId": {
+            "type": "number",
+            "description": "Application ID",
+            "example": 5,
+            "readOnly": true
+          },
+          "appVersion": {
+            "type": "number",
+            "description": "Application version",
+            "example": 2,
+            "readOnly": true
+          },
+          "toolPackageName": {
             "type": "string",
             "description": "Tool package name",
             "example": "@vincent/foo-bar"
           },
-          "title": {
-            "type": "string",
-            "description": "Tool title",
-            "example": "The Greatest Foo Bar Tool"
-          },
-          "authorWalletAddress": {
-            "type": "string",
-            "description": "Author wallet address",
-            "example": "0x123456789012345678901234567890123456abcd"
-          },
-          "description": {
-            "type": "string",
-            "description": "Tool description",
-            "example": "When we foo, our complex tool will also bar."
-          },
-          "activeVersion": {
-            "type": "string",
-            "description": "Active version of the tool",
-            "example": "1.0.0"
-          }
-        },
-        "required": [
-          "_id",
-          "updatedAt",
-          "createdAt",
-          "packageName",
-          "authorWalletAddress",
-          "description",
-          "activeVersion"
-        ]
-      },
-      "ToolVersionDef": {
-        "type": "object",
-        "properties": {
-          "packageName": {
-            "type": "string",
-            "description": "Tool package name",
-            "example": "@vincent/foo-bar"
-          },
-          "version": {
+          "toolVersion": {
             "type": "string",
             "description": "Tool version",
             "example": "1.0.0"
           },
-          "changes": {
-            "type": "string",
-            "description": "Changelog information for this version",
-            "example": "Initial release"
-          },
-          "repository": {
+          "hiddenSupportedPolicies": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Repository URLs",
+            "description": "Policies that are supported by this tool, but are hidden from users of this app specifically",
             "example": [
-              "https://github.com/org/repo"
+              "@vincent/foo-bar-policy-1",
+              "@vincent/foo-bar-policy-2"
             ]
           },
-          "keywords": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Keywords for the tool",
-            "example": [
-              "defi",
-              "memecoin"
-            ]
-          },
-          "dependencies": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Dependencies of the tool",
-            "example": [
-              "@vincent/sdk"
-            ]
-          },
-          "author": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Name of the author",
-                "example": "Developer Name"
-              },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "Email of the author",
-                "example": "contact@example.com"
-              },
-              "url": {
-                "type": "string",
-                "format": "uri",
-                "description": "URL of the author's website",
-                "example": "https://example.com"
-              }
-            },
-            "required": [
-              "name",
-              "email"
-            ],
-            "description": "Author information"
-          },
-          "contributors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the contributor",
-                  "example": "Contributor Name"
-                },
-                "email": {
-                  "type": "string",
-                  "format": "email",
-                  "description": "Email of the contributor",
-                  "example": "contributor@example.com"
-                },
-                "url": {
-                  "type": "string",
-                  "format": "uri",
-                  "description": "URL of the contributor's website",
-                  "example": "https://contributor-site.example.com"
-                }
-              },
-              "required": [
-                "name",
-                "email"
-              ]
-            },
-            "description": "Contributors information"
-          },
-          "homepage": {
-            "type": "string",
-            "format": "uri",
-            "description": "Tool homepage",
-            "example": "https://example-vincent-homepage.com"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "invalid",
-              "validating",
-              "valid",
-              "error"
-            ],
-            "description": "Tool status",
-            "example": "valid"
-          },
-          "supportedPolicies": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Supported policies",
-            "example": [
-              "@vincent/foo-bar-policy-1@1.0.0",
-              "@vincent/foo-bar-policy-2@1.1.0"
-            ]
-          },
-          "ipfsCid": {
-            "type": "string",
-            "description": "IPFS CID",
-            "example": "QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo"
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this AppVersionTool is deleted",
+            "example": false
           }
         },
         "required": [
-          "packageName",
-          "version",
-          "changes",
-          "repository",
-          "keywords",
-          "dependencies",
-          "author",
-          "contributors",
-          "status",
-          "supportedPolicies",
-          "ipfsCid"
-        ]
+          "_id",
+          "updatedAt",
+          "createdAt",
+          "appId",
+          "appVersion",
+          "toolPackageName",
+          "toolVersion"
+        ],
+        "additionalProperties": false
       },
-      "CreatePolicyDef": {
+      "ToolCreate": {
         "type": "object",
         "properties": {
-          "packageName": {
-            "type": "string",
-            "description": "Policy package name",
-            "example": "@vincent/foo-bar-policy"
-          },
-          "policyTitle": {
-            "type": "string",
-            "description": "Policy title",
-            "example": "The Greatest Foo Bar Policy"
-          },
-          "description": {
-            "type": "string",
-            "description": "Policy description",
-            "example": "This policy is a foo bar policy"
-          }
-        },
-        "required": [
-          "packageName",
-          "policyTitle",
-          "description"
-        ]
-      },
-      "EditPolicyDef": {
-        "type": "object",
-        "properties": {
-          "policyTitle": {
-            "type": "string",
-            "description": "Policy title",
-            "example": "The Greatest Foo Bar Policy"
-          },
-          "description": {
-            "type": "string",
-            "description": "Policy description",
-            "example": "This policy is a foo bar policy"
-          },
           "activeVersion": {
             "type": "string",
-            "description": "Active version of the policy",
+            "description": "Active version of the tool",
             "example": "1.0.0"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Tool title - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "ERC20 Approval Tool"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "default": "dev",
+            "description": "Identifies if a tool is in development, test, or production.",
+            "example": "dev"
           }
         },
         "required": [
-          "policyTitle",
-          "description",
-          "activeVersion"
-        ]
+          "activeVersion",
+          "title",
+          "description"
+        ],
+        "additionalProperties": false
       },
-      "PolicyDef": {
+      "ToolEdit": {
+        "type": "object",
+        "properties": {
+          "activeVersion": {
+            "type": "string",
+            "description": "Active version of the tool",
+            "example": "1.0.0"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Tool title - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "ERC20 Approval Tool"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a tool is in development, test, or production.",
+            "example": "dev"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Tool": {
         "type": "object",
         "properties": {
           "_id": {
@@ -753,23 +580,46 @@
           },
           "packageName": {
             "type": "string",
-            "description": "Policy package name",
-            "example": "@vincent/foo-bar-policy"
+            "description": "Tool NPM package name",
+            "example": "@lit-protocol/vincent-erc20-approval-tool"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Tool title - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "ERC20 Approval Tool"
           },
           "authorWalletAddress": {
             "type": "string",
-            "description": "Author wallet address",
-            "example": "0xa723407AdB396a55aCd843D276daEa0d787F8db5"
+            "description": "Author wallet address. Derived from the authorization signature provided by the creator.",
+            "example": "0x123456789012345678901234567890123456abcd",
+            "readOnly": true
           },
           "description": {
             "type": "string",
-            "description": "Policy description",
-            "example": "This policy is a foo bar policy"
+            "minLength": 10,
+            "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
           },
           "activeVersion": {
             "type": "string",
-            "description": "Active version of the policy",
+            "description": "Active version of the tool",
             "example": "1.0.0"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a tool is in development, test, or production.",
+            "example": "dev"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this Tool is deleted",
+            "example": false
           }
         },
         "required": [
@@ -777,12 +627,44 @@
           "updatedAt",
           "createdAt",
           "packageName",
+          "title",
           "authorWalletAddress",
           "description",
           "activeVersion"
-        ]
+        ],
+        "additionalProperties": false
       },
-      "PolicyVersionDef": {
+      "ToolVersionCreate": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Changelog information for this version",
+            "example": "Ensure commit() is run on spending policy limit for users who have it enabled."
+          }
+        },
+        "required": [
+          "changes"
+        ],
+        "additionalProperties": false
+      },
+      "ToolVersionEdit": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Changelog information for this version",
+            "example": "Ensure commit() is run on spending policy limit for users who have it enabled."
+          }
+        },
+        "required": [
+          "changes"
+        ],
+        "additionalProperties": false
+      },
+      "ToolVersion": {
         "type": "object",
         "properties": {
           "_id": {
@@ -802,18 +684,19 @@
           },
           "packageName": {
             "type": "string",
-            "description": "Policy package name",
-            "example": "@vincent/foo-bar-policy"
+            "description": "Tool NPM package name",
+            "example": "@lit-protocol/vincent-erc20-approval-tool"
           },
           "version": {
             "type": "string",
-            "description": "Policy version",
+            "description": "Tool version - must be an exact semver.",
             "example": "1.0.0"
           },
           "changes": {
             "type": "string",
+            "minLength": 10,
             "description": "Changelog information for this version",
-            "example": "Initial release"
+            "example": "Ensure commit() is run on spending policy limit for users who have it enabled."
           },
           "repository": {
             "type": "array",
@@ -908,21 +791,365 @@
             "description": "Policy homepage",
             "example": "https://example-vincent-homepage.com"
           },
-          "status": {
-            "type": "string",
-            "enum": [
-              "invalid",
-              "validating",
-              "valid",
-              "error"
-            ],
-            "description": "Policy status",
-            "example": "valid"
+          "supportedPolicies": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Supported policies. These are detected from 'dependencies' in the tool's package.json.",
+            "example": {
+              "@lit-protocol/vincent-spending-limit-policy": "1.0.0",
+              "@lit-protocol/vincent-rate-limit-policy": "0.0.1"
+            },
+            "readOnly": true
           },
           "ipfsCid": {
             "type": "string",
-            "description": "IPFS CID",
-            "example": "QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo"
+            "description": "IPFS CID of the code that implements this tool.",
+            "example": "QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo",
+            "readOnly": true
+          },
+          "policiesNotInRegistry": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Policy versions that are not in the registry but are supported by this tool",
+            "example": [
+              "@lit-protocol/vincent-spending-limit-policy@1.0.1"
+            ],
+            "readOnly": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this ToolVersion is deleted",
+            "example": false
+          }
+        },
+        "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
+          "packageName",
+          "version",
+          "changes",
+          "repository",
+          "description",
+          "keywords",
+          "dependencies",
+          "author",
+          "contributors",
+          "supportedPolicies",
+          "ipfsCid",
+          "policiesNotInRegistry"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyCreate": {
+        "type": "object",
+        "properties": {
+          "activeVersion": {
+            "type": "string",
+            "description": "Active version of the policy; must be an exact semver",
+            "example": "1.0.0"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Policy title for displaying to users in the dashboard/Vincent Explorer UI",
+            "example": "Vincent Spending Limit Policy"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "This policy is a foo bar policy"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "default": "dev",
+            "description": "Identifies if a policy is in development, test, or production.",
+            "example": "dev"
+          }
+        },
+        "required": [
+          "activeVersion",
+          "title",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyEdit": {
+        "type": "object",
+        "properties": {
+          "activeVersion": {
+            "type": "string",
+            "description": "Active version of the policy; must be an exact semver",
+            "example": "1.0.0"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Policy title for displaying to users in the dashboard/Vincent Explorer UI",
+            "example": "Vincent Spending Limit Policy"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "This policy is a foo bar policy"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a policy is in development, test, or production.",
+            "example": "dev"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Policy": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
+          "packageName": {
+            "type": "string",
+            "description": "Policy NPM package name",
+            "example": "@lit-protocol/vincent-policy-spending-limit"
+          },
+          "authorWalletAddress": {
+            "type": "string",
+            "description": "Author wallet address. Derived from the authorization signature provided by the creator.",
+            "example": "0x123456789012345678901234567890123456abcd",
+            "readOnly": true
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
+            "example": "This policy is a foo bar policy"
+          },
+          "activeVersion": {
+            "type": "string",
+            "description": "Active version of the policy; must be an exact semver",
+            "example": "1.0.0"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Policy title for displaying to users in the dashboard/Vincent Explorer UI",
+            "example": "Vincent Spending Limit Policy"
+          },
+          "deploymentStatus": {
+            "type": "string",
+            "enum": [
+              "dev",
+              "test",
+              "prod"
+            ],
+            "description": "Identifies if a policy is in development, test, or production.",
+            "example": "dev"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this Policy is deleted",
+            "example": false
+          }
+        },
+        "required": [
+          "_id",
+          "updatedAt",
+          "createdAt",
+          "packageName",
+          "authorWalletAddress",
+          "description",
+          "activeVersion",
+          "title"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyVersionCreate": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "string",
+            "description": "Changelog information for this version",
+            "example": "Resolved issue with checking for spending limits on the wrong chain."
+          }
+        },
+        "required": [
+          "changes"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyVersionEdit": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "string",
+            "description": "Changelog information for this version",
+            "example": "Resolved issue with checking for spending limits on the wrong chain."
+          }
+        },
+        "required": [
+          "changes"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyVersion": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document ID",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was last modified"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this was created"
+          },
+          "packageName": {
+            "type": "string",
+            "description": "Policy NPM package name",
+            "example": "@lit-protocol/vincent-policy-spending-limit"
+          },
+          "version": {
+            "type": "string",
+            "description": "Policy version - must be an exact semver",
+            "example": "1.0.0"
+          },
+          "changes": {
+            "type": "string",
+            "description": "Changelog information for this version",
+            "example": "Resolved issue with checking for spending limits on the wrong chain."
+          },
+          "repository": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Repository URLs"
+          },
+          "description": {
+            "type": "string",
+            "description": "Policy description",
+            "example": "This policy is a foo bar policy"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Keywords for the policy",
+            "example": [
+              "defi",
+              "memecoin"
+            ]
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Dependencies of the policy"
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the author",
+                "example": "Developer Name"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email of the author",
+                "example": "contact@example.com"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL of the author's website",
+                "example": "https://example.com"
+              }
+            },
+            "required": [
+              "name",
+              "email"
+            ],
+            "description": "Author information"
+          },
+          "contributors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the contributor",
+                  "example": "Contributor Name"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Email of the contributor",
+                  "example": "contributor@example.com"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL of the contributor's website",
+                  "example": "https://contributor-site.example.com"
+                }
+              },
+              "required": [
+                "name",
+                "email"
+              ]
+            },
+            "description": "Contributors information"
+          },
+          "homepage": {
+            "type": "string",
+            "format": "uri",
+            "description": "Policy homepage",
+            "example": "https://example-vincent-homepage.com"
+          },
+          "ipfsCid": {
+            "type": "string",
+            "description": "IPFS CID of the code that implements this policy.",
+            "example": "QmdoY1VUxVvxShBQK5B6PP2jZFVw7PMTJ3qy2aiCARjMqo",
+            "readOnly": true
           },
           "parameters": {
             "type": "object",
@@ -942,7 +1169,13 @@
               "uiSchema",
               "jsonSchema"
             ],
-            "description": "Schema parameters"
+            "description": "Schema parameters",
+            "readOnly": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Whether or not this PolicyVersion is deleted",
+            "example": false
           }
         },
         "required": [
@@ -958,88 +1191,107 @@
           "dependencies",
           "author",
           "contributors",
-          "status",
-          "ipfsCid",
-          "parameters"
-        ]
+          "ipfsCid"
+        ],
+        "additionalProperties": false
       },
-      "AppVersionsArray": {
+      "AppList": {
         "type": "array",
         "items": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Document ID",
-              "readOnly": true
-            },
-            "updatedAt": {
-              "type": "string",
-              "format": "date-time",
-              "description": "Timestamp when this was last modified"
-            },
-            "createdAt": {
-              "type": "string",
-              "format": "date-time",
-              "description": "Timestamp when this was created"
-            },
-            "appId": {
-              "type": "number",
-              "description": "Application ID",
-              "example": 12312345,
-              "readOnly": true
-            },
-            "version": {
-              "type": "number",
-              "description": "Version number",
-              "example": 1
-            },
-            "enabled": {
-              "type": "boolean",
-              "description": "Whether this version is enabled",
-              "example": true
-            },
-            "changes": {
-              "type": "string",
-              "description": "Changelog information for this version",
-              "example": "I am a changelog trapped in a computer!"
-            }
-          },
-          "required": [
-            "_id",
-            "updatedAt",
-            "createdAt",
-            "appId",
-            "version",
-            "enabled",
-            "changes"
-          ]
+          "$ref": "#/components/schemas/App"
         }
       },
-      "PolicyVersionsArray": {
+      "AppVersionList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/PolicyVersionDef"
+          "$ref": "#/components/schemas/AppVersion"
+        }
+      },
+      "AppVersionToolList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/AppVersionTool"
+        }
+      },
+      "ToolList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Tool"
+        }
+      },
+      "ToolVersionList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ToolVersion"
+        }
+      },
+      "PolicyList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Policy"
+        }
+      },
+      "PolicyVersionList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PolicyVersion"
         }
       }
     },
     "parameters": {}
   },
   "paths": {
+    "/apps": {
+      "get": {
+        "tags": [
+          "App"
+        ],
+        "summary": "Lists all applications",
+        "operationId": "listApps",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/app": {
       "post": {
         "tags": [
-          "app"
+          "App",
+          "AppVersion"
         ],
         "summary": "Creates a new application",
         "operationId": "createApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Developer-defined application information",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateApp"
+                "$ref": "#/components/schemas/AppCreate"
               }
             }
           }
@@ -1050,7 +1302,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppDef"
+                  "$ref": "#/components/schemas/App"
                 }
               }
             }
@@ -1077,20 +1329,20 @@
     "/app/{appId}": {
       "get": {
         "tags": [
-          "app"
+          "App"
         ],
         "summary": "Fetches an application",
         "operationId": "getApp",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to retrieve",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1099,7 +1351,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppDef"
+                  "$ref": "#/components/schemas/App"
                 }
               }
             }
@@ -1121,20 +1373,25 @@
       },
       "put": {
         "tags": [
-          "app"
+          "App"
         ],
         "summary": "Edits an application",
         "operationId": "editApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to edit",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1143,7 +1400,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateApp"
+                "$ref": "#/components/schemas/AppEdit"
               }
             }
           }
@@ -1154,7 +1411,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppDef"
+                  "$ref": "#/components/schemas/App"
                 }
               }
             }
@@ -1179,20 +1436,27 @@
       },
       "delete": {
         "tags": [
-          "app"
+          "App",
+          "AppVersion",
+          "AppVersionTool"
         ],
         "summary": "Deletes an application",
         "operationId": "deleteApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to delete",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1225,23 +1489,79 @@
         }
       }
     },
+    "/app/{appId}/undelete": {
+      "post": {
+        "tags": [
+          "App",
+          "AppVersion",
+          "AppVersionTool"
+        ],
+        "summary": "Undeletes an application",
+        "operationId": "undeleteApp",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/app/{appId}/versions": {
       "get": {
         "tags": [
-          "app"
+          "AppVersion"
         ],
         "summary": "Fetches all versions of an application",
         "operationId": "getAppVersions",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application whose versions will be fetched",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1250,7 +1570,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppVersionsArray"
+                  "$ref": "#/components/schemas/AppVersionList"
                 }
               }
             }
@@ -1274,20 +1594,25 @@
     "/app/{appId}/version": {
       "post": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Creates an application version",
         "operationId": "createAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to create a new version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1296,7 +1621,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateAppVersion"
+                "$ref": "#/components/schemas/AppVersionCreate"
               }
             }
           }
@@ -1307,7 +1632,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppVersionDef"
+                  "$ref": "#/components/schemas/AppVersion"
                 }
               }
             }
@@ -1334,30 +1659,30 @@
     "/app/{appId}/version/{version}": {
       "get": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Fetches an application version",
         "operationId": "getAppVersion",
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to retrieve a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to retrieve",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1366,7 +1691,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppVersionWithTools"
+                  "$ref": "#/components/schemas/AppVersion"
                 }
               }
             }
@@ -1388,30 +1713,35 @@
       },
       "put": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
         "summary": "Edits an application version",
         "operationId": "editAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to edit a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to edit",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1420,7 +1750,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionChanges"
+                "$ref": "#/components/schemas/AppVersionEdit"
               }
             }
           }
@@ -1431,7 +1761,136 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppVersionDef"
+                  "$ref": "#/components/schemas/AppVersion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AppVersion"
+        ],
+        "summary": "Deletes an application version",
+        "operationId": "deleteAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application or version not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/version/{version}/enable": {
+      "post": {
+        "tags": [
+          "AppVersion"
+        ],
+        "summary": "Enables an application version",
+        "operationId": "enableAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppVersion"
                 }
               }
             }
@@ -1455,33 +1914,38 @@
         }
       }
     },
-    "/app/{appId}/version/{version}/toggle": {
+    "/app/{appId}/version/{version}/disable": {
       "post": {
         "tags": [
-          "app/version"
+          "AppVersion"
         ],
-        "summary": "Toggles enabled/disabled for an application version",
-        "operationId": "toggleAppVersion",
+        "summary": "Disables an application version",
+        "operationId": "disableAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "appId",
-            "in": "path",
-            "description": "ID of the application to toggle a version for",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 5
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to toggle",
-            "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
-            }
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1490,13 +1954,459 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppVersionDef"
+                  "$ref": "#/components/schemas/AppVersion"
                 }
               }
             }
           },
           "400": {
             "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/version/{version}/tools": {
+      "get": {
+        "tags": [
+          "AppVersionTool"
+        ],
+        "summary": "Lists all tools for an application version",
+        "operationId": "listAppVersionTools",
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppVersionToolList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Application or version not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/version/{appVersion}/tool/{toolPackageName}": {
+      "post": {
+        "tags": [
+          "AppVersionTool"
+        ],
+        "summary": "Creates a tool for an application version",
+        "operationId": "createAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "appVersion",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Tool configuration for the application version",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppVersionToolCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppVersionTool"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "AppVersionTool"
+        ],
+        "summary": "Edits a tool for an application version",
+        "operationId": "editAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "appVersion",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated tool configuration for the application version",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppVersionToolEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppVersionTool"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application, version, or tool not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AppVersionTool"
+        ],
+        "summary": "Deletes a tool for an application version",
+        "operationId": "deleteAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "appVersion",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application, version, or tool not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/version/{version}/undelete": {
+      "post": {
+        "tags": [
+          "AppVersion"
+        ],
+        "summary": "Undeletes an application version",
+        "operationId": "undeleteAppVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application or version not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/version/{appVersion}/tool/{toolPackageName}/undelete": {
+      "post": {
+        "tags": [
+          "AppVersionTool"
+        ],
+        "summary": "Undeletes a tool for an application version",
+        "operationId": "undeleteAppVersionTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "Version # of the target application version",
+            "example": 3,
+            "name": "appVersion",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "toolPackageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application, version, or tool not found"
           },
           "422": {
             "description": "Validation exception"
@@ -1517,7 +2427,7 @@
     "/tools": {
       "get": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Lists all tools",
         "operationId": "listAllTools",
@@ -1527,10 +2437,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ToolDef"
-                  }
+                  "$ref": "#/components/schemas/ToolList"
                 }
               }
             }
@@ -1548,20 +2455,38 @@
         }
       }
     },
-    "/tool": {
+    "/tool/{packageName}": {
       "post": {
         "tags": [
-          "tool"
+          "Tool",
+          "ToolVersion"
         ],
         "summary": "Creates a new tool",
         "operationId": "createTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
         "requestBody": {
           "description": "Developer-defined tool details",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTool"
+                "$ref": "#/components/schemas/ToolCreate"
               }
             }
           }
@@ -1572,7 +2497,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolDef"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -1594,25 +2519,23 @@
             }
           }
         }
-      }
-    },
-    "/tool/{packageName}": {
+      },
       "get": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Fetches a tool",
         "operationId": "getTool",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1621,7 +2544,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolDef"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -1643,20 +2566,25 @@
       },
       "put": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Edits a tool",
         "operationId": "editTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1665,7 +2593,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EditTool"
+                "$ref": "#/components/schemas/ToolEdit"
               }
             }
           }
@@ -1676,7 +2604,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolDef"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -1698,25 +2626,29 @@
             }
           }
         }
-      }
-    },
-    "/tool/{packageName}/versions": {
-      "get": {
+      },
+      "delete": {
         "tags": [
-          "tool"
+          "Tool",
+          "ToolVersion"
         ],
-        "summary": "Fetches all versions of a tool",
-        "operationId": "getToolVersions",
+        "summary": "Deletes a tool and all its versions",
+        "operationId": "deleteTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to fetch versions for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1725,10 +2657,53 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ToolVersionDef"
-                  }
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/{packageName}/versions": {
+      "get": {
+        "tags": [
+          "ToolVersion"
+        ],
+        "summary": "Fetches all versions of a tool",
+        "operationId": "getToolVersions",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolVersionList"
                 }
               }
             }
@@ -1752,20 +2727,25 @@
     "/tool/{packageName}/owner": {
       "put": {
         "tags": [
-          "tool"
+          "Tool"
         ],
         "summary": "Changes a tool's owner",
         "operationId": "changeToolOwner",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to change the owner of",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1774,17 +2754,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "authorWalletAddress": {
-                    "type": "string",
-                    "description": "New author wallet address",
-                    "example": "0x1234567890123456789012345678901234567890"
-                  }
-                },
-                "required": [
-                  "authorWalletAddress"
-                ]
+                "$ref": "#/components/schemas/ChangeOwner"
               }
             }
           }
@@ -1795,67 +2765,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolDef"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/tool/{packageName}/version": {
-      "post": {
-        "tags": [
-          "tool/version"
-        ],
-        "summary": "Creates a tool version",
-        "operationId": "createToolVersion",
-        "parameters": [
-          {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to create a new version for",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Developer-defined version details",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionChanges"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ToolVersionDef"
+                  "$ref": "#/components/schemas/Tool"
                 }
               }
             }
@@ -1880,32 +2790,105 @@
       }
     },
     "/tool/{packageName}/version/{version}": {
+      "post": {
+        "tags": [
+          "ToolVersion"
+        ],
+        "summary": "Creates a tool version",
+        "operationId": "createToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Developer-defined version details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolVersionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolVersion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "tags": [
-          "tool/version"
+          "ToolVersion"
         ],
         "summary": "Fetches a tool version",
         "operationId": "getToolVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to retrieve a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -1914,7 +2897,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolVersionDef"
+                  "$ref": "#/components/schemas/ToolVersion"
                 }
               }
             }
@@ -1936,30 +2919,35 @@
       },
       "put": {
         "tags": [
-          "tool/version"
+          "ToolVersion"
         ],
         "summary": "Edits a tool version",
         "operationId": "editToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the tool to edit a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -1968,7 +2956,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionChanges"
+                "$ref": "#/components/schemas/ToolVersionEdit"
               }
             }
           }
@@ -1979,13 +2967,197 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ToolVersionDef"
+                  "$ref": "#/components/schemas/ToolVersion"
                 }
               }
             }
           },
           "400": {
             "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ToolVersion"
+        ],
+        "summary": "Deletes a tool version",
+        "operationId": "deleteToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Tool or version not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/{packageName}/undelete": {
+      "post": {
+        "tags": [
+          "Tool",
+          "ToolVersion"
+        ],
+        "summary": "Undeletes a tool and all its versions",
+        "operationId": "undeleteTool",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/{packageName}/version/{version}/undelete": {
+      "post": {
+        "tags": [
+          "ToolVersion"
+        ],
+        "summary": "Undeletes a tool version",
+        "operationId": "undeleteToolVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target tool version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Tool or version not found"
           },
           "422": {
             "description": "Validation exception"
@@ -2006,7 +3178,7 @@
     "/policies": {
       "get": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Lists all policies",
         "operationId": "listAllPolicies",
@@ -2016,10 +3188,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PolicyDef"
-                  }
+                  "$ref": "#/components/schemas/PolicyList"
                 }
               }
             }
@@ -2037,20 +3206,38 @@
         }
       }
     },
-    "/policy": {
+    "/policy/{packageName}": {
       "post": {
         "tags": [
-          "policy"
+          "Policy",
+          "PolicyVersion"
         ],
         "summary": "Creates a new policy",
         "operationId": "createPolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
         "requestBody": {
           "description": "Developer-defined policy details",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreatePolicyDef"
+                "$ref": "#/components/schemas/PolicyCreate"
               }
             }
           }
@@ -2061,7 +3248,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyDef"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
@@ -2083,25 +3270,23 @@
             }
           }
         }
-      }
-    },
-    "/policy/{packageName}": {
+      },
       "get": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Fetches a policy",
         "operationId": "getPolicy",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2110,7 +3295,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyDef"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
@@ -2132,20 +3317,25 @@
       },
       "put": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Edits a policy",
         "operationId": "editPolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2154,7 +3344,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EditPolicyDef"
+                "$ref": "#/components/schemas/PolicyEdit"
               }
             }
           }
@@ -2165,7 +3355,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyDef"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
@@ -2187,54 +3377,44 @@
             }
           }
         }
-      }
-    },
-    "/policy/{packageName}/version": {
-      "post": {
+      },
+      "delete": {
         "tags": [
-          "policy/version"
+          "Policy",
+          "PolicyVersion"
         ],
-        "summary": "Creates a new policy version",
-        "operationId": "createPolicyVersion",
+        "summary": "Deletes a policy and all its versions",
+        "operationId": "deletePolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to create a new version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
-        "requestBody": {
-          "description": "Developer-defined version details",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VersionChanges"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionDef"
+                  "$ref": "#/components/schemas/DeleteResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
+          "404": {
+            "description": "Policy not found"
           },
           "default": {
             "description": "Unexpected error",
@@ -2250,32 +3430,105 @@
       }
     },
     "/policy/{packageName}/version/{version}": {
+      "post": {
+        "tags": [
+          "PolicyVersion"
+        ],
+        "summary": "Creates a new policy version",
+        "operationId": "createPolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Developer-defined version details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyVersionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyVersion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "tags": [
-          "policy/version"
+          "PolicyVersion"
         ],
         "summary": "Fetches a policy version",
         "operationId": "getPolicyVersion",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to retrieve a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to retrieve",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2284,7 +3537,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionDef"
+                  "$ref": "#/components/schemas/PolicyVersion"
                 }
               }
             }
@@ -2306,30 +3559,35 @@
       },
       "put": {
         "tags": [
-          "policy/version"
+          "PolicyVersion"
         ],
         "summary": "Edits a policy version",
         "operationId": "editPolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to edit a version for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           },
           {
-            "name": "version",
-            "in": "path",
-            "description": "Version number to edit",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "1.0.0"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2338,7 +3596,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionChanges"
+                "$ref": "#/components/schemas/PolicyVersionEdit"
               }
             }
           }
@@ -2349,7 +3607,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionDef"
+                  "$ref": "#/components/schemas/PolicyVersion"
                 }
               }
             }
@@ -2371,25 +3629,90 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "PolicyVersion"
+        ],
+        "summary": "Deletes a policy version",
+        "operationId": "deletePolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Policy or version not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/policy/{packageName}/versions": {
       "get": {
         "tags": [
-          "policy"
+          "PolicyVersion"
         ],
         "summary": "Fetches all versions of a policy",
         "operationId": "getPolicyVersions",
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to fetch versions for",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "responses": {
@@ -2398,7 +3721,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyVersionsArray"
+                  "$ref": "#/components/schemas/PolicyVersionList"
                 }
               }
             }
@@ -2422,20 +3745,25 @@
     "/policy/{packageName}/owner": {
       "put": {
         "tags": [
-          "policy"
+          "Policy"
         ],
         "summary": "Changes a policy's owner",
         "operationId": "changePolicyOwner",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "packageName",
-            "in": "path",
-            "description": "Package name of the policy to change the owner of",
-            "required": true,
             "schema": {
-              "type": "string",
-              "example": "@vincent/foo-bar-policy"
-            }
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
           }
         ],
         "requestBody": {
@@ -2444,17 +3772,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "authorWalletAddress": {
-                    "type": "string",
-                    "description": "New author wallet address",
-                    "example": "0x1234567890123456789012345678901234567890"
-                  }
-                },
-                "required": [
-                  "authorWalletAddress"
-                ]
+                "$ref": "#/components/schemas/ChangeOwner"
               }
             }
           }
@@ -2465,13 +3783,132 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PolicyDef"
+                  "$ref": "#/components/schemas/Policy"
                 }
               }
             }
           },
           "400": {
             "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policy/{packageName}/undelete": {
+      "post": {
+        "tags": [
+          "Policy",
+          "PolicyVersion"
+        ],
+        "summary": "Undeletes a policy and all its versions",
+        "operationId": "undeletePolicy",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Policy not found"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policy/{packageName}/version/{version}/undelete": {
+      "post": {
+        "tags": [
+          "PolicyVersion"
+        ],
+        "summary": "Undeletes a policy version",
+        "operationId": "undeletePolicyVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The NPM package name",
+            "example": "@vincent/foo-bar",
+            "name": "packageName",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "NPM semver of the target policy version",
+            "example": "2.1.0",
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Resource successfully undeleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Policy or version not found"
           },
           "422": {
             "description": "Validation exception"

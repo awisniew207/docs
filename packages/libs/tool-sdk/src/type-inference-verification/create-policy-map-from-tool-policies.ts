@@ -8,7 +8,7 @@ import { createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 
 import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
 
-const policyDef1 = createVincentPolicy({
+const PolicyConfig1 = createVincentPolicy({
   packageName: 'example-policy-1',
   toolParamsSchema: z.object({ x: z.string() }),
   evalAllowResultSchema: z.object({ pass: z.boolean() }),
@@ -18,7 +18,7 @@ const policyDef1 = createVincentPolicy({
   },
 });
 
-const policyDef2 = createVincentPolicy({
+const PolicyConfig2 = createVincentPolicy({
   packageName: 'example-policy-2',
   toolParamsSchema: z.object({ y: z.number() }),
   evalAllowResultSchema: z.object({ pass: z.literal(true) }),
@@ -28,8 +28,8 @@ const policyDef2 = createVincentPolicy({
   },
 });
 
-const bundled1 = asBundledVincentPolicy(policyDef1, 'QmCID1' as const);
-const bundled2 = asBundledVincentPolicy(policyDef2, 'QmCID2' as const);
+const bundled1 = asBundledVincentPolicy(PolicyConfig1, 'QmCID1' as const);
+const bundled2 = asBundledVincentPolicy(PolicyConfig2, 'QmCID2' as const);
 
 const policy1 = createVincentToolPolicy({
   toolParamsSchema: z.object({ x: z.string() }),

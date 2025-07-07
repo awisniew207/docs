@@ -1,7 +1,7 @@
 import { useAccount } from 'wagmi';
 import { CreateAppVersionForm } from '@/components/app-dashboard/mock-forms/generic/AppForms';
 import { StatusMessage } from '@/utils/shared/statusMessage';
-import Loading from '@/layout/app-dashboard/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { useAppDetail } from '@/components/app-dashboard/AppDetailContext';
 import { useNavigate } from 'react-router';
 
