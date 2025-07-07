@@ -1,4 +1,4 @@
-import { Signer, Contract, ethers } from 'ethers';
+import { Signer, Contract, utils } from 'ethers';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 const appFacetAbi = require('../abis/VincentAppFacet.abi.json');
@@ -11,33 +11,32 @@ export interface AppVersionTools {
   toolPolicies: string[][];
 }
 
-export interface VincentSDKConfig {
-  contractAddress: string;
-  provider: ethers.Provider;
-  signer?: Signer;
-}
-
+// Union type for compatible signers
 export type CompatibleSigner = Signer | PKPEthersWallet;
 
 export class VincentContracts {
   private contract: Contract;
-  private signer: CompatibleSigner;
+  signer: CompatibleSigner;
 
   constructor(_signer: CompatibleSigner) {
     this.signer = _signer;
 
     const combinedAbi = [...appFacetAbi, ...appViewFacetAbi, ...userFacetAbi, ...userViewFacetAbi];
 
+    // Create contract with the signer
+    // PKPEthersWallet works with ethers contracts despite type differences
+    // as evidenced by its usage throughout the codebase
     this.contract = new Contract(
       '0xa1979393bbe7D59dfFBEB38fE5eCf9BDdFE6f4aD', // TODO!: Pull from the ABI
       combinedAbi,
-      this.signer as Signer,
+      _signer as any, // Type assertion to bypass type incompatibilities
     );
   }
 
   // TODO!: Move this to a utils file
   // TODO!: Simplify and generalize error handling
   private decodeContractError(error: any): string {
+    console.error('Decoding contract error:', error);
     try {
       // Check if it's a contract revert error
       if (error.code === 'CALL_EXCEPTION' || error.code === 'UNPREDICTABLE_GAS_LIMIT') {
@@ -126,7 +125,7 @@ export class VincentContracts {
     versionTools: AppVersionTools,
   ): Promise<{ txHash: string; newAppVersion: string }> {
     try {
-      const appIdBN = ethers.parseUnits(appId.toString(), 0);
+      const appIdBN = utils.parseUnits(appId.toString(), 0);
 
       const tx = await this.contract.registerApp(appIdBN, delegatees, versionTools);
       const receipt = await tx.wait();
