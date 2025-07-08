@@ -8,6 +8,12 @@ export interface AppVersionTools {
   toolPolicies: string[][];
 }
 
+export interface AppPermissionData {
+  toolIpfsCids: string[];
+  policyIpfsCids: string[][];
+  policyParameterValues: string[][];
+}
+
 export class VincentContracts {
   private contract: Contract;
 
@@ -109,6 +115,58 @@ export class VincentContracts {
     } catch (error: unknown) {
       const decodedError = decodeContractError(error, this.contract);
       throw new Error(`Failed to Register Next Version: ${decodedError}`);
+    }
+  }
+
+  /**
+   * Permits an app version for an Agent Wallet PKP token and optionally sets tool policy parameters
+   * @param _pkpTokenId - The token ID of the Agent Wallet PKP to permit the app version for. Note: The client should be the User PKP that owns the Agent Wallet PKP: _pkpTokenId
+   * @param _appId - The appId to permit
+   * @param _appVersion - The version of the app to permit
+   * @param permissionData - Object containing tool IPFS CIDs, policy IPFS CIDs, and policy parameter values
+   * @returns The transaction hash. If for some reason the event is not found after a successful transaction, it will return null for the event data.
+   */
+  async permitApp(
+    _pkpTokenId: string,
+    _appId: string,
+    _appVersion: string,
+    permissionData: AppPermissionData,
+  ): Promise<{ txHash: string; success: boolean }> {
+    try {
+      const pkpTokenId = utils.parseUnits(_pkpTokenId, 0);
+      const appId = utils.parseUnits(_appId, 0);
+      const appVersion = utils.parseUnits(_appVersion, 0);
+
+      const estimatedGas = await this.contract.estimateGas.permitAppVersion(
+        pkpTokenId,
+        appId,
+        appVersion,
+        permissionData.toolIpfsCids,
+        permissionData.policyIpfsCids,
+        permissionData.policyParameterValues,
+      );
+      const gasLimit = Math.ceil(Number(estimatedGas) * 1.2);
+
+      const tx = await this.contract.permitAppVersion(
+        pkpTokenId,
+        appId,
+        appVersion,
+        permissionData.toolIpfsCids,
+        permissionData.policyIpfsCids,
+        permissionData.policyParameterValues,
+        {
+          gasLimit,
+        },
+      );
+      await tx.wait();
+
+      return {
+        txHash: tx.hash,
+        success: true,
+      };
+    } catch (error: unknown) {
+      const decodedError = decodeContractError(error, this.contract);
+      throw new Error(`Failed to Permit App: ${decodedError}`);
     }
   }
 }

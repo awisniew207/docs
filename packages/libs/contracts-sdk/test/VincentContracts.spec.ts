@@ -11,71 +11,85 @@ import {
   generateAuthSig,
 } from '@lit-protocol/auth-helpers';
 
+const generateRandomIpfsCid = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return (
+    'Qm' +
+    Array.from({ length: 42 }, (): string => chars[Math.floor(Math.random() * chars.length)]).join(
+      '',
+    )
+  );
+};
+
 config();
 if (!process.env.TEST_APP_MANAGER_PRIVATE_KEY) {
   console.error('TEST_APP_MANAGER_PRIVATE_KEY environment variable is required');
   process.exit(1);
 }
 
+if (!process.env.TEST_USER_AUTH_SIG_PRIVATE_KEY) {
+  console.error('TEST_USER_AUTH_SIG_PRIVATE_KEY environment variable is required');
+  process.exit(1);
+}
+
+if (!process.env.TEST_USER_PKP_PUBKEY) {
+  console.error('TEST_USER_PKP_PUBKEY environment variable is required');
+  process.exit(1);
+}
+
+if (!process.env.TEST_USER_AGENT_PKP_TOKEN_ID) {
+  console.error('TEST_USER_AGENT_PKP_TOKEN_ID environment variable is required');
+  process.exit(1);
+}
+
 describe('VincentContracts', () => {
-  it('should register a new app successfully', async () => {
+  it("should register a new app, update it, and permit it by the user's Agent", async () => {
     const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
-    const signer = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
 
-    const client = new VincentContracts(signer);
+    // App Contracts Client
+    const appManagerSigner = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
+    const appClient = new VincentContracts(appManagerSigner);
 
-    const appId = '136';
-    const delegatees = [
-      '0x1234567890123456789012345678901234567895',
-      // '0x0987654321098765432109876543210987654321',
-    ];
-    const versionTools: AppVersionTools = {
-      toolIpfsCids: ['QmTool1IpfsCidHere', 'QmTool2IpfsCidHere'],
-      toolPolicies: [
-        ['QmPolicy1ForTool1', 'QmPolicy2ForTool1'],
-        ['QmPolicy1ForTool2', 'QmPolicy2ForTool2'],
-      ],
+    const appId = ethers.BigNumber.from(ethers.utils.randomBytes(32));
+    const delegatees = [ethers.Wallet.createRandom().address];
+
+    // Register initial app version
+    const initialVersionTools: AppVersionTools = {
+      toolIpfsCids: [generateRandomIpfsCid()],
+      toolPolicies: [[]],
     };
+    const initialAppVersion = await appClient.registerApp(
+      appId.toString(),
+      delegatees,
+      initialVersionTools,
+    );
+    console.log('App registration result:', initialAppVersion);
+    expect(initialAppVersion).toHaveProperty('txHash');
+    expect(initialAppVersion).toHaveProperty('newAppVersion');
 
-    const initialResult = await client.registerApp(appId, delegatees, versionTools);
-
-    console.log('App registration result:', initialResult);
-    expect(initialResult).toHaveProperty('txHash');
-    expect(initialResult).toHaveProperty('newAppVersion');
-    expect(typeof initialResult.txHash).toBe('string');
-    expect(typeof initialResult.newAppVersion).toBe('string');
-    // Then, register a next version
+    // Register next app version
     const nextVersionTools: AppVersionTools = {
-      toolIpfsCids: ['QmTool3IpfsCidHere', 'QmTool4IpfsCidHere'],
+      toolIpfsCids: [initialVersionTools.toolIpfsCids[0], generateRandomIpfsCid()], // one existing & one new tool
       toolPolicies: [
-        ['QmPolicy1ForTool3', 'QmPolicy2ForTool3'],
-        ['QmPolicy1ForTool4', 'QmPolicy2ForTool4'],
+        [generateRandomIpfsCid()], // new policy for the existing tool
+        [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new tool
       ],
     };
+    const nextAppVersion = await appClient.registerNextVersion(appId.toString(), nextVersionTools);
+    console.log('Next version registration result:', nextAppVersion);
+    expect(nextAppVersion).toHaveProperty('txHash');
+    expect(nextAppVersion).toHaveProperty('newAppVersion');
 
-    const nextVersionResult = await client.registerNextVersion(appId, nextVersionTools);
-
-    console.log('Next version registration result:', nextVersionResult);
-    expect(nextVersionResult).toHaveProperty('txHash');
-    expect(nextVersionResult).toHaveProperty('newAppVersion');
-    expect(typeof nextVersionResult.txHash).toBe('string');
-    expect(typeof nextVersionResult.newAppVersion).toBe('string');
-
-    const initialVersion = parseInt(initialResult.newAppVersion);
-    const nextVersion = parseInt(nextVersionResult.newAppVersion);
+    const initialVersion = parseInt(initialAppVersion.newAppVersion);
+    const nextVersion = parseInt(nextAppVersion.newAppVersion);
     expect(nextVersion).toBeGreaterThan(initialVersion);
-  });
 
-  it('should register a new app successfully with the Pkp Ether wallet', async () => {
-    const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
-
-    const signer = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
-
+    // User Client
+    const userSigner = new ethers.Wallet(process.env.TEST_USER_AUTH_SIG_PRIVATE_KEY!, provider);
     const litNodeClient = new LitNodeClient({
       litNetwork: LIT_NETWORK.Datil,
       debug: false,
     });
-
     await litNodeClient.connect();
 
     const controllerSessionSigs = await litNodeClient.getSessionSigs({
@@ -97,13 +111,13 @@ describe('VincentContracts', () => {
           uri,
           expiration,
           resources: resourceAbilityRequests,
-          walletAddress: signer.address,
+          walletAddress: userSigner.address,
           nonce: await litNodeClient.getLatestBlockhash(),
           litNodeClient,
         });
 
         return await generateAuthSig({
-          signer,
+          signer: userSigner,
           toSign,
         });
       },
@@ -111,56 +125,34 @@ describe('VincentContracts', () => {
 
     const pkpEthersWallet = new PKPEthersWallet({
       litNodeClient,
-      pkpPubKey:
-        '0x04663ef0e5610c9ff50fa3b9988c3469265e87bec41a810a8dd979410fb33c3cd668a0796334e6f7bc6ebf34bd8ac1735e3bcc393257123a46204c00cd35798ec5',
+      pkpPubKey: process.env.TEST_USER_PKP_PUBKEY!,
       controllerSessionSigs,
     });
-
     await pkpEthersWallet.init();
 
-    const client = new VincentContracts(pkpEthersWallet);
+    const userClient = new VincentContracts(pkpEthersWallet);
+    const permitAppResult = await userClient.permitApp(
+      process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+      appId.toString(),
+      nextAppVersion.newAppVersion,
+      {
+        toolIpfsCids: nextVersionTools.toolIpfsCids,
+        policyIpfsCids: nextVersionTools.toolPolicies,
+        policyParameterValues: [
+          ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
+          [
+            '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
+            '0x', // empty policy var
+          ],
+        ],
+      },
+    );
 
-    const appId = '101';
-    const delegatees = [
-      '0x1234567890123456789012345678901234567899',
-      // '0x0987654321098765432109876543210987654325',
-    ];
-    const versionTools: AppVersionTools = {
-      toolIpfsCids: ['QmTool1IpfsCidHere', 'QmTool2IpfsCidHere'],
-      toolPolicies: [
-        ['QmPolicy1ForTool1', 'QmPolicy2ForTool1'],
-        ['QmPolicy1ForTool2', 'QmPolicy2ForTool2'],
-      ],
-    };
-
-    const initialResult = await client.registerApp(appId, delegatees, versionTools);
-
-    console.log('App registration result:', initialResult);
-    expect(initialResult).toHaveProperty('txHash');
-    expect(initialResult).toHaveProperty('newAppVersion');
-    expect(typeof initialResult.txHash).toBe('string');
-    expect(typeof initialResult.newAppVersion).toBe('string');
-
-    const nextVersionTools: AppVersionTools = {
-      toolIpfsCids: ['QmTool3IpfsCidHere', 'QmTool4IpfsCidHere'],
-      toolPolicies: [
-        ['QmPolicy1ForTool3', 'QmPolicy2ForTool3'],
-        ['QmPolicy1ForTool4', 'QmPolicy2ForTool4'],
-      ],
-    };
-
-    const nextVersionResult = await client.registerNextVersion(appId, nextVersionTools);
-
-    console.log('Next version registration result:', nextVersionResult);
-    expect(nextVersionResult).toHaveProperty('txHash');
-    expect(nextVersionResult).toHaveProperty('newAppVersion');
-    expect(typeof nextVersionResult.txHash).toBe('string');
-    expect(typeof nextVersionResult.newAppVersion).toBe('string');
-
-    const initialVersion = parseInt(initialResult.newAppVersion);
-    const nextVersion = parseInt(nextVersionResult.newAppVersion);
-    expect(nextVersion).toBeGreaterThan(initialVersion);
+    console.log('Permit app result:', permitAppResult);
+    expect(permitAppResult).toHaveProperty('txHash');
+    expect(permitAppResult).toHaveProperty('success');
+    expect(permitAppResult.success).toBe(true);
 
     await litNodeClient.disconnect();
-  });
+  }, 30000);
 });
