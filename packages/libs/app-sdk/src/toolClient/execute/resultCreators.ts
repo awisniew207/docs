@@ -1,18 +1,17 @@
-// src/lib/toolClient/resultCreators.ts
+// src/toolClient/execute/resultCreators.ts
 
 import type { z } from 'zod';
-
-import type {
-  ToolResponseFailure,
-  ToolResponseFailureNoResult,
-  ToolResponseSuccess,
-  ToolResponseSuccessNoResult,
-} from './types';
 
 import type {
   BaseToolContext,
   PolicyEvaluationResultContext,
 } from '@lit-protocol/vincent-tool-sdk';
+import type {
+  ToolExecuteResponseFailure,
+  ToolExecuteResponseFailureNoResult,
+  ToolExecuteResponseSuccess,
+  ToolExecuteResponseSuccessNoResult,
+} from './types';
 
 export function createAllowEvaluationResult<PoliciesByPackageName extends Record<string, any>>(
   evaluatedPolicies: Array<keyof PoliciesByPackageName>,
@@ -109,10 +108,13 @@ export function createDenyEvaluationResult<PoliciesByPackageName extends Record<
   };
 }
 
-export function createToolResponseSuccess<Success, Policies extends Record<any, any>>(params: {
+export function createToolExecuteResponseSuccess<
+  Success,
+  Policies extends Record<any, any>,
+>(params: {
   result: Success;
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseSuccess<Success, Policies> {
+}): ToolExecuteResponseSuccess<Success, Policies> {
   return {
     success: true,
     result: params.result,
@@ -120,9 +122,11 @@ export function createToolResponseSuccess<Success, Policies extends Record<any, 
   };
 }
 
-export function createToolResponseSuccessNoResult<Policies extends Record<any, any>>(params?: {
+export function createToolExecuteResponseSuccessNoResult<
+  Policies extends Record<any, any>,
+>(params?: {
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseSuccessNoResult<Policies> {
+}): ToolExecuteResponseSuccessNoResult<Policies> {
   return {
     success: true,
     result: undefined,
@@ -130,11 +134,11 @@ export function createToolResponseSuccessNoResult<Policies extends Record<any, a
   };
 }
 
-export function createToolResponseFailure<Fail, Policies extends Record<any, any>>(params: {
+export function createToolExecuteResponseFailure<Fail, Policies extends Record<any, any>>(params: {
   result: Fail;
   message?: string;
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseFailure<Fail, Policies> {
+}): ToolExecuteResponseFailure<Fail, Policies> {
   return {
     success: false,
     result: params.result,
@@ -143,10 +147,12 @@ export function createToolResponseFailure<Fail, Policies extends Record<any, any
   };
 }
 
-export function createToolResponseFailureNoResult<Policies extends Record<any, any>>(params: {
+export function createToolExecuteResponseFailureNoResult<
+  Policies extends Record<any, any>,
+>(params: {
   message?: string;
   context?: BaseToolContext<PolicyEvaluationResultContext<Policies>>;
-}): ToolResponseFailureNoResult<Policies> {
+}): ToolExecuteResponseFailureNoResult<Policies> {
   return {
     success: false,
     result: undefined,
