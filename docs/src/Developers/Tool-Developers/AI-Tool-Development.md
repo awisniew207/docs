@@ -21,6 +21,7 @@ We recommend using Claude Code for the best results. Claude Code was able to one
 - Use the [Vincent Tool Policy Starter Template](https://github.com/LIT-Protocol/Vincent-Tool-Policy-Starter-Template) as a reference for the structure of a Vincent Tool
 - Tell your agent to look at the existing tools in that repo for reference. Do not delete the existing tools until your agent has finished creating the new tool and you've tested that it works.
 - Tell your agent to add e2e tests in the `vincent-e2e` folder. It may be easiest to tell it to add your new tests to the existing test file, so that the test setup is correct.
+- Stage things on-chain yourself, manually, to make less work for the LLM. For example, if you're creating a policy to interact with a Gnosis SAFE, you should deploy it yourself and provide the address in an ENV variable.
 - LLMs struggle with blockchains in various ways. Some issues we've run into:
   - Various formatting and unit issues with ERC20 token decimals, specifically the fact that USDC has 6 decimals, but ethereum has 18 decimals. We've found that using the `formatUnits` and `parseUnits` functions from ethers.js can help with this.
   - Issues finding the correct token and contract addresses. Ask the LLM if there's an NPM package that exports these for you - there often is, and it's better than hardcoding addresses for a few chains. This will also make your tool support more chains.
