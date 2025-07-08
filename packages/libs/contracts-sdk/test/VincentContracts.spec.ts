@@ -24,9 +24,9 @@ describe('VincentContracts', () => {
 
     const client = new VincentContracts(signer);
 
-    const appId = '135';
+    const appId = '136';
     const delegatees = [
-      '0x1234567890123456789012345678901234567894',
+      '0x1234567890123456789012345678901234567895',
       // '0x0987654321098765432109876543210987654321',
     ];
     const versionTools: AppVersionTools = {
@@ -37,13 +37,33 @@ describe('VincentContracts', () => {
       ],
     };
 
-    const result = await client.registerApp(appId, delegatees, versionTools);
+    const initialResult = await client.registerApp(appId, delegatees, versionTools);
 
-    console.log('App registration result:', result);
-    expect(result).toHaveProperty('txHash');
-    expect(result).toHaveProperty('newAppVersion');
-    expect(typeof result.txHash).toBe('string');
-    expect(typeof result.newAppVersion).toBe('string');
+    console.log('App registration result:', initialResult);
+    expect(initialResult).toHaveProperty('txHash');
+    expect(initialResult).toHaveProperty('newAppVersion');
+    expect(typeof initialResult.txHash).toBe('string');
+    expect(typeof initialResult.newAppVersion).toBe('string');
+    // Then, register a next version
+    const nextVersionTools: AppVersionTools = {
+      toolIpfsCids: ['QmTool3IpfsCidHere', 'QmTool4IpfsCidHere'],
+      toolPolicies: [
+        ['QmPolicy1ForTool3', 'QmPolicy2ForTool3'],
+        ['QmPolicy1ForTool4', 'QmPolicy2ForTool4'],
+      ],
+    };
+
+    const nextVersionResult = await client.registerNextVersion(appId, nextVersionTools);
+
+    console.log('Next version registration result:', nextVersionResult);
+    expect(nextVersionResult).toHaveProperty('txHash');
+    expect(nextVersionResult).toHaveProperty('newAppVersion');
+    expect(typeof nextVersionResult.txHash).toBe('string');
+    expect(typeof nextVersionResult.newAppVersion).toBe('string');
+
+    const initialVersion = parseInt(initialResult.newAppVersion);
+    const nextVersion = parseInt(nextVersionResult.newAppVersion);
+    expect(nextVersion).toBeGreaterThan(initialVersion);
   });
 
   it('should register a new app successfully with the Pkp Ether wallet', async () => {
@@ -100,9 +120,9 @@ describe('VincentContracts', () => {
 
     const client = new VincentContracts(pkpEthersWallet);
 
-    const appId = '100';
+    const appId = '101';
     const delegatees = [
-      '0x1234567890123456789012345678901234567898',
+      '0x1234567890123456789012345678901234567899',
       // '0x0987654321098765432109876543210987654325',
     ];
     const versionTools: AppVersionTools = {
@@ -113,12 +133,34 @@ describe('VincentContracts', () => {
       ],
     };
 
-    const result = await client.registerApp(appId, delegatees, versionTools);
+    const initialResult = await client.registerApp(appId, delegatees, versionTools);
 
-    console.log('App registration result:', result);
-    expect(result).toHaveProperty('txHash');
-    expect(result).toHaveProperty('newAppVersion');
-    expect(typeof result.txHash).toBe('string');
-    expect(typeof result.newAppVersion).toBe('string');
+    console.log('App registration result:', initialResult);
+    expect(initialResult).toHaveProperty('txHash');
+    expect(initialResult).toHaveProperty('newAppVersion');
+    expect(typeof initialResult.txHash).toBe('string');
+    expect(typeof initialResult.newAppVersion).toBe('string');
+
+    const nextVersionTools: AppVersionTools = {
+      toolIpfsCids: ['QmTool3IpfsCidHere', 'QmTool4IpfsCidHere'],
+      toolPolicies: [
+        ['QmPolicy1ForTool3', 'QmPolicy2ForTool3'],
+        ['QmPolicy1ForTool4', 'QmPolicy2ForTool4'],
+      ],
+    };
+
+    const nextVersionResult = await client.registerNextVersion(appId, nextVersionTools);
+
+    console.log('Next version registration result:', nextVersionResult);
+    expect(nextVersionResult).toHaveProperty('txHash');
+    expect(nextVersionResult).toHaveProperty('newAppVersion');
+    expect(typeof nextVersionResult.txHash).toBe('string');
+    expect(typeof nextVersionResult.newAppVersion).toBe('string');
+
+    const initialVersion = parseInt(initialResult.newAppVersion);
+    const nextVersion = parseInt(nextVersionResult.newAppVersion);
+    expect(nextVersion).toBeGreaterThan(initialVersion);
+
+    await litNodeClient.disconnect();
   });
 });

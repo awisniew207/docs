@@ -64,4 +64,51 @@ export class VincentContracts {
       throw new Error(`Failed to Register App: ${decodedError}`);
     }
   }
+
+  /**
+   * Register a new version of an existing application
+   * @param _appId - appId from the Registry backend for which to register a new version
+   * @param versionTools - Object containing Tools & its Policies
+   * @returns The transaction hash and the new app version incremented on-chain. If for some reason the event is not found after a successful transaction, it will return -1.
+   */
+  async registerNextVersion(
+    _appId: string,
+    versionTools: AppVersionTools,
+  ): Promise<{ txHash: string; newAppVersion: string }> {
+    try {
+      const appId = utils.parseUnits(_appId, 0);
+
+      const estimatedGas = await this.contract.estimateGas.registerNextAppVersion(
+        appId,
+        versionTools,
+      );
+      const gasLimit = Math.ceil(Number(estimatedGas) * 1.2);
+
+      const tx = await this.contract.registerNextAppVersion(appId, versionTools, {
+        gasLimit,
+      });
+      const receipt = await tx.wait();
+
+      const event = receipt.logs.find((log: any) => {
+        try {
+          const parsed = this.contract.interface.parseLog(log);
+          return parsed?.name === 'NewAppVersionRegistered';
+        } catch {
+          return false;
+        }
+      });
+
+      const newAppVersion = event
+        ? this.contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'
+        : '-1';
+
+      return {
+        txHash: tx.hash,
+        newAppVersion,
+      };
+    } catch (error: unknown) {
+      const decodedError = decodeContractError(error, this.contract);
+      throw new Error(`Failed to Register Next Version: ${decodedError}`);
+    }
+  }
 }
