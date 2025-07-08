@@ -2,6 +2,7 @@ import { ComponentProps } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useUrlRedirectUri } from '@/hooks/user-dashboard/useUrlRedirectUri';
 import { cn } from '@/lib/utils';
+import { SidebarWrapper } from '@/components/user-dashboard/sidebar/SidebarWrapper';
 
 function UserLayout({ children, className }: ComponentProps<'div'>) {
   const { redirectUri } = useUrlRedirectUri();
@@ -17,14 +18,11 @@ function UserLayout({ children, className }: ComponentProps<'div'>) {
   const shouldShowSidebar = !isHomePage && !redirectUri;
 
   return (
-    <div className={cn('min-h-screen bg-gray-50', className)}>
+    <div className={cn('min-h-screen min-w-screen bg-gray flex', className)}>
       {shouldShowSidebar ? (
         <div className="flex min-h-screen">
-
-          {/* Main Content with margin to account for fixed sidebar */}
-          <div className="main-content-area flex-1 min-h-screen ml-80 transition-all duration-300">
-            {children}
-          </div>
+          <SidebarWrapper />
+          <div className="flex-1 p-8">{children}</div>
         </div>
       ) : (
         children
