@@ -12,7 +12,7 @@ We recommend using Claude Code for the best results. Claude Code was able to one
 ## Recommended Tools
 
 - [Claude Code](https://www.anthropic.com/claude/code) - Claude Code seems to be the most reliable for generating Vincent Tools and Policies.
-- [Context7 MCP](https://www.context7.com) - The Context7 MCP is a great tool to give your LLM more context about SDKs you're using
+- [ref.tools MCP](https://www.ref.tools) - The ref.tools MCP is a great tool to give your LLM more context about SDKs you're using. It has API docs for many SDKs, and can help your LLM understand how to use them. You'll need to create free API key on their website to use it.
 - [Tenderly](https://tenderly.dev) - Great for debugging blockchain txns and issues.
 - [Vincent Tool Policy Starter Template](https://github.com/LIT-Protocol/Vincent-Tool-Policy-Starter-Template) - A great starting point for creating new Vincent Tools and Policies.
 
