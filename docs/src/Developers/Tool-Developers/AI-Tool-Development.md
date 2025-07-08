@@ -9,6 +9,13 @@ We've added extensive documentation and support for LLM coding agents to our [To
 
 We recommend using Claude Code for the best results. Claude Code was able to one-shot a Morpho tool, using our AAVE tool as a reference, which resulted in our [Vincent DeFi Tools Repo](https://github.com/LIT-Protocol/VincentDeFiTools).
 
+## Recommended Tools
+
+- [Claude Code](https://www.anthropic.com/claude/code) - Claude Code seems to be the most reliable for generating Vincent Tools and Policies.
+- [Context7 MCP](https://www.context7.com) - The Context7 MCP is a great tool to give your LLM more context about SDKs you're using
+- [Tenderly](https://tenderly.dev) - Great for debugging blockchain txns and issues.
+- [Vincent Tool Policy Starter Template](https://github.com/LIT-Protocol/Vincent-Tool-Policy-Starter-Template) - A great starting point for creating new Vincent Tools and Policies.
+
 ## Tips for using AI to create Vincent Tools
 
 - Use the [Vincent Tool Policy Starter Template](https://github.com/LIT-Protocol/Vincent-Tool-Policy-Starter-Template) as a reference for the structure of a Vincent Tool
