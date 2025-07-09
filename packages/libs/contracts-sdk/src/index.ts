@@ -1,5 +1,10 @@
 import { Signer, utils } from 'ethers';
-import { decodeContractError, createContract, findEventByName } from './utils';
+import {
+  decodeContractError,
+  createContract,
+  findEventByName,
+  gasAdjustedOverrides,
+} from './utils';
 
 export interface AppVersionTools {
   toolIpfsCids: string[];
@@ -34,31 +39,33 @@ export interface PermitAppParams {
  * Register a new app version
  * @param ethersSigner - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param params - Object containing appId, delegatees, and versionTools
+ * @param overrides - Optional override params for the transaction call like manual gas limit
  * @returns The transaction hash and the new app version incremented on-chain. If for some reason the event is not found after a successful transaction, it will return -1.
  */
 export async function registerApp(
   ethersSigner: Signer,
   params: RegisterAppParams,
+  overrides?: any,
 ): Promise<{ txHash: string; newAppVersion: string }> {
   const contract = createContract(ethersSigner);
 
   try {
     const appId = utils.parseUnits(params.appId, 0);
 
-    const estimatedGas = await contract.estimateGas.registerApp(
-      appId,
-      params.delegatees,
-      params.versionTools,
+    const adjustedOverrides = await gasAdjustedOverrides(
+      contract,
+      'registerApp',
+      [appId, params.delegatees, params.versionTools],
+      overrides,
     );
-    const gasLimit = Math.ceil(Number(estimatedGas) * 1.2);
+    console.log('adjustedOverrides: ', adjustedOverrides);
 
     const tx = await contract.registerApp(appId, params.delegatees, params.versionTools, {
-      gasLimit,
+      ...adjustedOverrides,
     });
     const receipt = await tx.wait();
 
     const event = findEventByName(contract, receipt.logs, 'NewAppVersionRegistered');
-
     const newAppVersion = event
       ? contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'
       : '-1';
@@ -100,7 +107,6 @@ export async function registerNextVersion(
     const receipt = await tx.wait();
 
     const event = findEventByName(contract, receipt.logs, 'NewAppVersionRegistered');
-
     const newAppVersion = event
       ? contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'
       : '-1';

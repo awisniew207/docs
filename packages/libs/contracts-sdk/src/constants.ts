@@ -12,3 +12,5 @@ export const COMBINED_ABI = [
   ...userFacetAbi,
   ...userViewFacetAbi,
 ];
+
+export const GAS_ADJUSTMENT_PERCENT = 120;

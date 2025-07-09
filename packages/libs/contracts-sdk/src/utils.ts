@@ -1,5 +1,9 @@
 import { Contract, Signer } from 'ethers';
-import { VINCENT_DIAMOND_CONTRACT_ADDRESS, COMBINED_ABI } from './constants';
+import {
+  VINCENT_DIAMOND_CONTRACT_ADDRESS,
+  COMBINED_ABI,
+  GAS_ADJUSTMENT_PERCENT,
+} from './constants';
 
 /**
  * Creates an Ethers Contract instance with the provided signer. For internal use only.
@@ -26,6 +30,25 @@ export function findEventByName(contract: Contract, logs: any[], eventName: stri
       return false;
     }
   });
+}
+
+export async function gasAdjustedOverrides(
+  contract: Contract,
+  methodName: string,
+  args: any[],
+  overrides: any = {},
+) {
+  if (!overrides?.gasLimit) {
+    const estimatedGas = await contract.estimateGas[methodName](...args, overrides);
+    console.log('Auto estimatedGas: ', estimatedGas);
+
+    return {
+      ...overrides,
+      gasLimit: estimatedGas.mul(GAS_ADJUSTMENT_PERCENT).div(100),
+    };
+  }
+
+  return overrides;
 }
 
 export function decodeContractError(error: any, contract: Contract): string {

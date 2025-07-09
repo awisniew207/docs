@@ -57,11 +57,17 @@ describe('VincentContracts', () => {
       toolIpfsCids: [generateRandomIpfsCid()],
       toolPolicies: [[]],
     };
-    const initialAppVersion = await registerApp(appManagerSigner, {
-      appId: appId.toString(),
-      delegatees,
-      versionTools: initialVersionTools,
-    });
+    const initialAppVersion = await registerApp(
+      appManagerSigner,
+      {
+        appId: appId.toString(),
+        delegatees,
+        versionTools: initialVersionTools,
+      },
+      {
+        gasLimit: 10000000,
+      },
+    );
     console.log('App registration result:', initialAppVersion);
     expect(initialAppVersion).toHaveProperty('txHash');
     expect(initialAppVersion).toHaveProperty('newAppVersion');
