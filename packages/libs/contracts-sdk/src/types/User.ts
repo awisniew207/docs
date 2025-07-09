@@ -23,6 +23,33 @@ export interface PermitAppOptions {
   overrides?: any;
 }
 
+export interface UnPermitAppParams {
+  pkpTokenId: string;
+  appId: string;
+  appVersion: string;
+}
+
+export interface UnPermitAppOptions {
+  signer: Signer;
+  args: UnPermitAppParams;
+  overrides?: any;
+}
+
+export interface SetToolPolicyParametersParams {
+  pkpTokenId: string;
+  appId: string;
+  appVersion: string;
+  toolIpfsCids: string[];
+  policyIpfsCids: string[][];
+  policyParameterValues: string[][];
+}
+
+export interface SetToolPolicyParametersOptions {
+  signer: Signer;
+  args: SetToolPolicyParametersParams;
+  overrides?: any;
+}
+
 // ==================================================================================
 // User View Types
 // ==================================================================================

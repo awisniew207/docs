@@ -16,6 +16,8 @@ import {
   getPermittedAppVersionForPkp,
   getAllPermittedAppIdsForPkp,
   getAllToolsAndPoliciesForApp,
+  setToolPolicyParameters,
+  unPermitApp,
 } from '../src/index';
 import { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
@@ -359,5 +361,38 @@ describe('VincentContracts', () => {
     console.log('Delegated agent pkp token ids result:', delegatedAgentPkpTokenIdsResult);
     expect(delegatedAgentPkpTokenIdsResult.length).toBeGreaterThan(0);
     expect(delegatedAgentPkpTokenIdsResult[0]).toBe(process.env.TEST_USER_AGENT_PKP_TOKEN_ID!);
+
+    // Set tool policy parameters
+    const setToolPolicyParametersResult = await setToolPolicyParameters({
+      signer: pkpEthersWallet,
+      args: {
+        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        appId: appId.toString(),
+        appVersion: nextAppVersion.newAppVersion,
+        toolIpfsCids: [nextVersionTools.toolIpfsCids[1]],
+        policyIpfsCids: [[nextVersionTools.toolPolicies[1][1]]], // second policy was never set by the Agent
+        policyParameterValues: [
+          [
+            '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036',
+          ], // {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
+        ],
+      },
+    });
+    console.log('Set tool policy parameters result:', setToolPolicyParametersResult);
+    expect(setToolPolicyParametersResult).toHaveProperty('txHash');
+    expect(setToolPolicyParametersResult.success).toBe(true);
+
+    // Unpermit app
+    const unpermitAppResult = await unPermitApp({
+      signer: pkpEthersWallet,
+      args: {
+        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        appId: appId.toString(),
+        appVersion: nextAppVersion.newAppVersion,
+      },
+    });
+    console.log('Unpermit app result:', unpermitAppResult);
+    expect(unpermitAppResult).toHaveProperty('txHash');
+    expect(unpermitAppResult.success).toBe(true);
   }, 60000);
 });
