@@ -1,5 +1,9 @@
 import { Signer } from 'ethers';
 
+// ==================================================================================
+// App Mutation Types
+// ==================================================================================
+
 export interface AppVersionTools {
   toolIpfsCids: string[];
   toolPolicies: string[][];
@@ -79,4 +83,25 @@ export interface UndeleteAppOptions {
   signer: Signer;
   args: UndeleteAppParams;
   overrides?: any;
+}
+
+// ==================================================================================
+// App View Types
+// ==================================================================================
+
+export interface GetAppByIdParams {
+  appId: string;
+}
+
+export interface GetAppByIdOptions {
+  signer: Signer;
+  args: GetAppByIdParams;
+}
+
+export interface App {
+  id: string;
+  isDeleted: boolean;
+  manager: string;
+  latestVersion: string;
+  delegatees: string[];
 }

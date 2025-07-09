@@ -7,6 +7,7 @@ import {
   removeDelegatee,
   deleteApp,
   undeleteApp,
+  getAppById,
 } from '../src/index';
 import { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
@@ -80,7 +81,21 @@ describe('VincentContracts', () => {
     });
     console.log('App registration result:', initialAppVersion);
     expect(initialAppVersion).toHaveProperty('txHash');
-    expect(initialAppVersion).toHaveProperty('newAppVersion');
+    expect(initialAppVersion.newAppVersion).toBe('1');
+
+    // Get the app by ID
+    const appByIdResult = await getAppById({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+      },
+    });
+    console.log('App by ID result:', appByIdResult);
+    expect(appByIdResult.id).toBe(appId.toString());
+    expect(appByIdResult.isDeleted).toBe(false);
+    expect(appByIdResult.manager).toBe(appManagerSigner.address);
+    expect(appByIdResult.latestVersion).toBe(initialAppVersion.newAppVersion);
+    expect(appByIdResult.delegatees).toEqual(delegatees);
 
     // Disable the initial app version
     const disableAppVersionResult = await enableAppVersion({
@@ -93,7 +108,6 @@ describe('VincentContracts', () => {
     });
     console.log('Disable app version result:', disableAppVersionResult);
     expect(disableAppVersionResult).toHaveProperty('txHash');
-    expect(disableAppVersionResult).toHaveProperty('success');
     expect(disableAppVersionResult.success).toBe(true);
 
     // Register next app version
@@ -113,7 +127,7 @@ describe('VincentContracts', () => {
     });
     console.log('Next version registration result:', nextAppVersion);
     expect(nextAppVersion).toHaveProperty('txHash');
-    expect(nextAppVersion).toHaveProperty('newAppVersion');
+    expect(nextAppVersion.newAppVersion).toBe('2');
 
     const initialVersion = parseInt(initialAppVersion.newAppVersion);
     const nextVersion = parseInt(nextAppVersion.newAppVersion);
@@ -129,7 +143,6 @@ describe('VincentContracts', () => {
     });
     console.log('Add delegatee result:', addDelegateeResult);
     expect(addDelegateeResult).toHaveProperty('txHash');
-    expect(addDelegateeResult).toHaveProperty('success');
     expect(addDelegateeResult.success).toBe(true);
 
     // Remove the delegatee
@@ -142,7 +155,6 @@ describe('VincentContracts', () => {
     });
     console.log('Remove delegatee result:', removeDelegateeResult);
     expect(removeDelegateeResult).toHaveProperty('txHash');
-    expect(removeDelegateeResult).toHaveProperty('success');
     expect(removeDelegateeResult.success).toBe(true);
 
     // Delete the app
@@ -154,7 +166,6 @@ describe('VincentContracts', () => {
     });
     console.log('Delete app result:', deleteAppResult);
     expect(deleteAppResult).toHaveProperty('txHash');
-    expect(deleteAppResult).toHaveProperty('success');
     expect(deleteAppResult.success).toBe(true);
 
     // Undelete the app
@@ -166,7 +177,6 @@ describe('VincentContracts', () => {
     });
     console.log('Undelete app result:', undeleteAppResult);
     expect(undeleteAppResult).toHaveProperty('txHash');
-    expect(undeleteAppResult).toHaveProperty('success');
     expect(undeleteAppResult.success).toBe(true);
 
     // User Client
@@ -237,7 +247,6 @@ describe('VincentContracts', () => {
 
     console.log('Permit app result:', permitAppResult);
     expect(permitAppResult).toHaveProperty('txHash');
-    expect(permitAppResult).toHaveProperty('success');
     expect(permitAppResult.success).toBe(true);
 
     await litNodeClient.disconnect();
