@@ -1,3 +1,13 @@
+## 0.1.1 (2025-07-09)
+
+### 🩹 Fixes
+
+- Remove unused commit test case imports ([e227396f](https://github.com/LIT-Protocol/Vincent/commit/e227396f))
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 0.1.0 (2025-07-08)
 
 ### 🚀 Features
