@@ -8,7 +8,7 @@ import {
   deleteApp,
   undeleteApp,
 } from '../src/index';
-import { AppVersionTools } from '../src/types';
+import { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
 import { config } from '@dotenvx/dotenvx';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';

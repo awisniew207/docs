@@ -5,12 +5,6 @@ export interface AppVersionTools {
   toolPolicies: string[][];
 }
 
-export interface AppPermissionData {
-  toolIpfsCids: string[];
-  policyIpfsCids: string[][];
-  policyParameterValues: string[][];
-}
-
 export interface RegisterAppParams {
   appId: string;
   delegatees: string[];
@@ -20,13 +14,6 @@ export interface RegisterAppParams {
 export interface RegisterNextVersionParams {
   appId: string;
   versionTools: AppVersionTools;
-}
-
-export interface PermitAppParams {
-  pkpTokenId: string;
-  appId: string;
-  appVersion: string;
-  permissionData: AppPermissionData;
 }
 
 export interface RegisterAppOptions {
@@ -40,13 +27,6 @@ export interface RegisterNextVersionOptions {
   args: RegisterNextVersionParams;
   overrides?: any;
 }
-
-export interface PermitAppOptions {
-  signer: Signer;
-  args: PermitAppParams;
-  overrides?: any;
-}
-
 export interface EnableAppVersionParams {
   appId: string;
   appVersion: string;
