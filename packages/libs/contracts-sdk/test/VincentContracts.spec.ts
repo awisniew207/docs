@@ -12,6 +12,10 @@ import {
   getAppsByManager,
   getAppByDelegatee,
   getDelegatedAgentPkpTokenIds,
+  getAllRegisteredAgentPkps,
+  getPermittedAppVersionForPkp,
+  getAllPermittedAppIdsForPkp,
+  getAllToolsAndPoliciesForApp,
 } from '../src/index';
 import { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
@@ -54,6 +58,11 @@ if (!process.env.TEST_USER_PKP_PUBKEY) {
 
 if (!process.env.TEST_USER_AGENT_PKP_TOKEN_ID) {
   console.error('TEST_USER_AGENT_PKP_TOKEN_ID environment variable is required');
+  process.exit(1);
+}
+
+if (!process.env.TEST_USER_PKP_ADDRESS) {
+  console.error('TEST_USER_PKP_ADDRESS environment variable is required');
   process.exit(1);
 }
 
@@ -292,11 +301,54 @@ describe('VincentContracts', () => {
     expect(permitAppResult).toHaveProperty('txHash');
     expect(permitAppResult.success).toBe(true);
 
+    // Get Agent Pkps
+    const agentPkpsResult = await getAllRegisteredAgentPkps({
+      signer: userSigner,
+      args: {
+        userAddress: process.env.TEST_USER_PKP_ADDRESS!,
+      },
+    });
+    console.log('Agent pkps result:', agentPkpsResult);
+    expect(agentPkpsResult.length).toBeGreaterThan(0);
+    expect(agentPkpsResult[0]).toBe(process.env.TEST_USER_AGENT_PKP_TOKEN_ID!);
+
+    // Get permitted app version for pkp
+    const permittedAppVersionForPkpResult = await getPermittedAppVersionForPkp({
+      signer: userSigner,
+      args: {
+        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        appId: appId.toString(),
+      },
+    });
+    console.log('Permitted app version for pkp result:', permittedAppVersionForPkpResult);
+    expect(permittedAppVersionForPkpResult).toBe(nextAppVersion.newAppVersion);
+
+    // Get all permitted app ids for pkp
+    const allPermittedAppIdsForPkpResult = await getAllPermittedAppIdsForPkp({
+      signer: userSigner,
+      args: {
+        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+      },
+    });
+    console.log('All permitted app ids for pkp result:', allPermittedAppIdsForPkpResult);
+    expect(allPermittedAppIdsForPkpResult.length).toBeGreaterThan(0);
+
+    // Get all tools and policies for app
+    const allToolsAndPoliciesForAppResult = await getAllToolsAndPoliciesForApp({
+      signer: userSigner,
+      args: {
+        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        appId: appId.toString(),
+      },
+    });
+    console.log('All tools and policies for app result:', allToolsAndPoliciesForAppResult);
+    expect(allToolsAndPoliciesForAppResult.length).toBeGreaterThan(0); // Weak test since the order of the tool is not guaranteed
+
     await litNodeClient.disconnect();
 
     // Get delegated agent pkp token ids
     const delegatedAgentPkpTokenIdsResult = await getDelegatedAgentPkpTokenIds({
-      signer: appManagerSigner,
+      signer: userSigner,
       args: {
         appId: appId.toString(),
         version: nextAppVersion.newAppVersion,
