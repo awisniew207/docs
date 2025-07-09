@@ -1,8 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
 import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
+import { useConsentInfo } from '@/hooks/user-dashboard/useConsentInfo';
 
 export default function AppsPage() {
+  const consentInfo = useConsentInfo('19743166');
+
+  console.log(consentInfo);
+
   const authGuardElement = useAuthGuard();
 
   // Show loading if authenticating or loading apps (but show errors immediately)
