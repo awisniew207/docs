@@ -1,7 +1,5 @@
-import { Signer, Contract, utils } from 'ethers';
-
-import { VINCENT_DIAMOND_CONTRACT_ADDRESS, COMBINED_ABI } from './constants';
-import { decodeContractError } from './utils';
+import { Signer, utils } from 'ethers';
+import { decodeContractError, createContract, findEventByName } from './utils';
 
 export interface AppVersionTools {
   toolIpfsCids: string[];
@@ -33,15 +31,6 @@ export interface PermitAppParams {
 }
 
 /**
- * Creates a contract instance with the provided signer
- * @param signer - The ethers signer to use for transactions
- * @returns Contract instance
- */
-function createContract(signer: Signer): Contract {
-  return new Contract(VINCENT_DIAMOND_CONTRACT_ADDRESS, COMBINED_ABI, signer);
-}
-
-/**
  * Register a new app version
  * @param ethersSigner - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param params - Object containing appId, delegatees, and versionTools
@@ -68,14 +57,7 @@ export async function registerApp(
     });
     const receipt = await tx.wait();
 
-    const event = receipt.logs.find((log: any) => {
-      try {
-        const parsed = contract.interface.parseLog(log);
-        return parsed?.name === 'NewAppVersionRegistered';
-      } catch {
-        return false;
-      }
-    });
+    const event = findEventByName(contract, receipt.logs, 'NewAppVersionRegistered');
 
     const newAppVersion = event
       ? contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'
@@ -117,14 +99,7 @@ export async function registerNextVersion(
     });
     const receipt = await tx.wait();
 
-    const event = receipt.logs.find((log: any) => {
-      try {
-        const parsed = contract.interface.parseLog(log);
-        return parsed?.name === 'NewAppVersionRegistered';
-      } catch {
-        return false;
-      }
-    });
+    const event = findEventByName(contract, receipt.logs, 'NewAppVersionRegistered');
 
     const newAppVersion = event
       ? contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'

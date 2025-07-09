@@ -1,4 +1,32 @@
-import { Contract } from 'ethers';
+import { Contract, Signer } from 'ethers';
+import { VINCENT_DIAMOND_CONTRACT_ADDRESS, COMBINED_ABI } from './constants';
+
+/**
+ * Creates an Ethers Contract instance with the provided signer. For internal use only.
+ * @param signer - The ethers signer to use for transactions. Could be a standard Ethers Signer or a PKPEthersWallet
+ * @returns Contract instance to be used internally for calling Vincent Contracts functions
+ */
+export function createContract(signer: Signer): Contract {
+  return new Contract(VINCENT_DIAMOND_CONTRACT_ADDRESS, COMBINED_ABI, signer);
+}
+
+/**
+ * Finds an event by name from transaction logs. Used for mutate contract functions to return the result of the transaction. For internal use only.
+ * @param contract - The internal-use only contract instance
+ * @param logs - Array of transaction logs from the tx.wait()
+ * @param eventName - Name of the event to find
+ * @returns The parsed event log or null if not found. To be used for error handling
+ */
+export function findEventByName(contract: Contract, logs: any[], eventName: string): any {
+  return logs.find((log: any) => {
+    try {
+      const parsed = contract.interface.parseLog(log);
+      return parsed?.name === eventName;
+    } catch {
+      return false;
+    }
+  });
+}
 
 export function decodeContractError(error: any, contract: Contract): string {
   console.error('Decoding contract error:', error);
