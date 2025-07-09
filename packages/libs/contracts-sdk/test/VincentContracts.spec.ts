@@ -1,4 +1,4 @@
-import { VincentContracts, AppVersionTools } from '../src/index';
+import { registerApp, registerNextVersion, permitApp, AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
 import { config } from '@dotenvx/dotenvx';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
@@ -48,7 +48,6 @@ describe('VincentContracts', () => {
 
     // App Contracts Client
     const appManagerSigner = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
-    const appClient = new VincentContracts(appManagerSigner);
 
     const appId = ethers.BigNumber.from(ethers.utils.randomBytes(32));
     const delegatees = [ethers.Wallet.createRandom().address];
@@ -58,11 +57,11 @@ describe('VincentContracts', () => {
       toolIpfsCids: [generateRandomIpfsCid()],
       toolPolicies: [[]],
     };
-    const initialAppVersion = await appClient.registerApp(
-      appId.toString(),
+    const initialAppVersion = await registerApp(appManagerSigner, {
+      appId: appId.toString(),
       delegatees,
-      initialVersionTools,
-    );
+      versionTools: initialVersionTools,
+    });
     console.log('App registration result:', initialAppVersion);
     expect(initialAppVersion).toHaveProperty('txHash');
     expect(initialAppVersion).toHaveProperty('newAppVersion');
@@ -75,7 +74,10 @@ describe('VincentContracts', () => {
         [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new tool
       ],
     };
-    const nextAppVersion = await appClient.registerNextVersion(appId.toString(), nextVersionTools);
+    const nextAppVersion = await registerNextVersion(appManagerSigner, {
+      appId: appId.toString(),
+      versionTools: nextVersionTools,
+    });
     console.log('Next version registration result:', nextAppVersion);
     expect(nextAppVersion).toHaveProperty('txHash');
     expect(nextAppVersion).toHaveProperty('newAppVersion');
@@ -130,12 +132,11 @@ describe('VincentContracts', () => {
     });
     await pkpEthersWallet.init();
 
-    const userClient = new VincentContracts(pkpEthersWallet);
-    const permitAppResult = await userClient.permitApp(
-      process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-      appId.toString(),
-      nextAppVersion.newAppVersion,
-      {
+    const permitAppResult = await permitApp(pkpEthersWallet, {
+      pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+      appId: appId.toString(),
+      appVersion: nextAppVersion.newAppVersion,
+      permissionData: {
         toolIpfsCids: nextVersionTools.toolIpfsCids,
         policyIpfsCids: nextVersionTools.toolPolicies,
         policyParameterValues: [
@@ -146,7 +147,7 @@ describe('VincentContracts', () => {
           ],
         ],
       },
-    );
+    });
 
     console.log('Permit app result:', permitAppResult);
     expect(permitAppResult).toHaveProperty('txHash');
