@@ -46,3 +46,57 @@ export interface PermitAppOptions {
   args: PermitAppParams;
   overrides?: any;
 }
+
+export interface EnableAppVersionParams {
+  appId: string;
+  appVersion: string;
+  enabled: boolean;
+}
+
+export interface AddDelegateeParams {
+  appId: string;
+  delegatee: string;
+}
+
+export interface RemoveDelegateeParams {
+  appId: string;
+  delegatee: string;
+}
+
+export interface DeleteAppParams {
+  appId: string;
+}
+
+export interface UndeleteAppParams {
+  appId: string;
+}
+
+export interface EnableAppVersionOptions {
+  signer: Signer;
+  args: EnableAppVersionParams;
+  overrides?: any;
+}
+
+export interface AddDelegateeOptions {
+  signer: Signer;
+  args: AddDelegateeParams;
+  overrides?: any;
+}
+
+export interface RemoveDelegateeOptions {
+  signer: Signer;
+  args: RemoveDelegateeParams;
+  overrides?: any;
+}
+
+export interface DeleteAppOptions {
+  signer: Signer;
+  args: DeleteAppParams;
+  overrides?: any;
+}
+
+export interface UndeleteAppOptions {
+  signer: Signer;
+  args: UndeleteAppParams;
+  overrides?: any;
+}

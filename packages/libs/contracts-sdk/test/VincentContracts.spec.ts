@@ -1,4 +1,13 @@
-import { registerApp, registerNextVersion, permitApp } from '../src/index';
+import {
+  registerApp,
+  registerNextVersion,
+  permitApp,
+  enableAppVersion,
+  addDelegatee,
+  removeDelegatee,
+  deleteApp,
+  undeleteApp,
+} from '../src/index';
 import { AppVersionTools } from '../src/types';
 import { ethers, providers } from 'ethers';
 import { config } from '@dotenvx/dotenvx';
@@ -44,7 +53,7 @@ if (!process.env.TEST_USER_AGENT_PKP_TOKEN_ID) {
 }
 
 describe('VincentContracts', () => {
-  it("should register a new app, update it, and permit it by the user's Agent", async () => {
+  it('should perform all actions on a new App and User Agent', async () => {
     const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
 
     // App Contracts Client
@@ -73,6 +82,20 @@ describe('VincentContracts', () => {
     expect(initialAppVersion).toHaveProperty('txHash');
     expect(initialAppVersion).toHaveProperty('newAppVersion');
 
+    // Disable the initial app version
+    const disableAppVersionResult = await enableAppVersion({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+        appVersion: initialAppVersion.newAppVersion,
+        enabled: false,
+      },
+    });
+    console.log('Disable app version result:', disableAppVersionResult);
+    expect(disableAppVersionResult).toHaveProperty('txHash');
+    expect(disableAppVersionResult).toHaveProperty('success');
+    expect(disableAppVersionResult.success).toBe(true);
+
     // Register next app version
     const nextVersionTools: AppVersionTools = {
       toolIpfsCids: [initialVersionTools.toolIpfsCids[0], generateRandomIpfsCid()], // one existing & one new tool
@@ -95,6 +118,56 @@ describe('VincentContracts', () => {
     const initialVersion = parseInt(initialAppVersion.newAppVersion);
     const nextVersion = parseInt(nextAppVersion.newAppVersion);
     expect(nextVersion).toBeGreaterThan(initialVersion);
+
+    // Add a delegatee
+    const addDelegateeResult = await addDelegatee({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+        delegatee: ethers.Wallet.createRandom().address,
+      },
+    });
+    console.log('Add delegatee result:', addDelegateeResult);
+    expect(addDelegateeResult).toHaveProperty('txHash');
+    expect(addDelegateeResult).toHaveProperty('success');
+    expect(addDelegateeResult.success).toBe(true);
+
+    // Remove the delegatee
+    const removeDelegateeResult = await removeDelegatee({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+        delegatee: delegatees[0],
+      },
+    });
+    console.log('Remove delegatee result:', removeDelegateeResult);
+    expect(removeDelegateeResult).toHaveProperty('txHash');
+    expect(removeDelegateeResult).toHaveProperty('success');
+    expect(removeDelegateeResult.success).toBe(true);
+
+    // Delete the app
+    const deleteAppResult = await deleteApp({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+      },
+    });
+    console.log('Delete app result:', deleteAppResult);
+    expect(deleteAppResult).toHaveProperty('txHash');
+    expect(deleteAppResult).toHaveProperty('success');
+    expect(deleteAppResult.success).toBe(true);
+
+    // Undelete the app
+    const undeleteAppResult = await undeleteApp({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+      },
+    });
+    console.log('Undelete app result:', undeleteAppResult);
+    expect(undeleteAppResult).toHaveProperty('txHash');
+    expect(undeleteAppResult).toHaveProperty('success');
+    expect(undeleteAppResult.success).toBe(true);
 
     // User Client
     const userSigner = new ethers.Wallet(process.env.TEST_USER_AUTH_SIG_PRIVATE_KEY!, provider);
