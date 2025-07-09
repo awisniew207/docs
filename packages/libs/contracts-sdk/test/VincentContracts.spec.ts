@@ -8,6 +8,10 @@ import {
   deleteApp,
   undeleteApp,
   getAppById,
+  getAppVersion,
+  getAppsByManager,
+  getAppByDelegatee,
+  getDelegatedAgentPkpTokenIds,
 } from '../src/index';
 import { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
@@ -109,6 +113,45 @@ describe('VincentContracts', () => {
     console.log('Disable app version result:', disableAppVersionResult);
     expect(disableAppVersionResult).toHaveProperty('txHash');
     expect(disableAppVersionResult.success).toBe(true);
+
+    // Get app version
+    const appVersionResult = await getAppVersion({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+        version: initialAppVersion.newAppVersion,
+      },
+    });
+    console.log('App version result:', appVersionResult);
+    expect(appVersionResult.app.id).toBe(appId.toString());
+    expect(appVersionResult.app.isDeleted).toBe(false);
+    expect(appVersionResult.app.manager).toBe(appManagerSigner.address);
+    expect(appVersionResult.app.latestVersion).toBe(initialAppVersion.newAppVersion);
+    expect(appVersionResult.app.delegatees).toEqual(delegatees);
+
+    // Get all apps by manager
+    const appsByManagerResult = await getAppsByManager({
+      signer: appManagerSigner,
+      args: {
+        manager: appManagerSigner.address,
+      },
+    });
+    console.log('Apps by manager result:', appsByManagerResult);
+    expect(appsByManagerResult.length).toBeGreaterThan(0);
+
+    // Get app by delegatee
+    const appByDelegateeResult = await getAppByDelegatee({
+      signer: appManagerSigner,
+      args: {
+        delegatee: delegatees[0],
+      },
+    });
+    console.log('App by delegatee result:', appByDelegateeResult);
+    expect(appByDelegateeResult.id).toBe(appId.toString());
+    expect(appByDelegateeResult.isDeleted).toBe(false);
+    expect(appByDelegateeResult.manager).toBe(appManagerSigner.address);
+    expect(appByDelegateeResult.latestVersion).toBe(initialAppVersion.newAppVersion);
+    expect(appByDelegateeResult.delegatees).toEqual(delegatees);
 
     // Register next app version
     const nextVersionTools: AppVersionTools = {
@@ -250,5 +293,19 @@ describe('VincentContracts', () => {
     expect(permitAppResult.success).toBe(true);
 
     await litNodeClient.disconnect();
-  }, 30000);
+
+    // Get delegated agent pkp token ids
+    const delegatedAgentPkpTokenIdsResult = await getDelegatedAgentPkpTokenIds({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+        version: nextAppVersion.newAppVersion,
+        offset: '0',
+        limit: '1',
+      },
+    });
+    console.log('Delegated agent pkp token ids result:', delegatedAgentPkpTokenIdsResult);
+    expect(delegatedAgentPkpTokenIdsResult.length).toBeGreaterThan(0);
+    expect(delegatedAgentPkpTokenIdsResult[0]).toBe(process.env.TEST_USER_AGENT_PKP_TOKEN_ID!);
+  }, 60000);
 });

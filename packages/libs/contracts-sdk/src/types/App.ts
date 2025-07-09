@@ -105,3 +105,60 @@ export interface App {
   latestVersion: string;
   delegatees: string[];
 }
+
+export interface GetAppVersionParams {
+  appId: string;
+  version: string;
+}
+
+export interface GetAppVersionOptions {
+  signer: Signer;
+  args: GetAppVersionParams;
+}
+
+export interface Tool {
+  toolIpfsCid: string;
+  policyIpfsCids: string[];
+}
+
+export interface AppVersion {
+  version: string;
+  enabled: boolean;
+  delegatedAgentPkpTokenIds: string[];
+  tools: Tool[];
+}
+
+export interface GetAppsByManagerParams {
+  manager: string;
+}
+
+export interface GetAppsByManagerOptions {
+  signer: Signer;
+  args: GetAppsByManagerParams;
+}
+
+export interface AppWithVersions {
+  app: App;
+  versions: AppVersion[];
+}
+
+export interface GetAppByDelegateeParams {
+  delegatee: string;
+}
+
+export interface GetAppByDelegateeOptions {
+  signer: Signer;
+  args: GetAppByDelegateeParams;
+}
+
+export interface GetDelegatedAgentPkpTokenIdsParams {
+  appId: string;
+  version: string;
+  offset: string;
+  limit: string;
+}
+
+export interface GetDelegatedAgentPkpTokenIdsOptions {
+  signer: Signer;
+  args: GetDelegatedAgentPkpTokenIdsParams;
+}
