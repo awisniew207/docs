@@ -57,17 +57,17 @@ describe('VincentContracts', () => {
       toolIpfsCids: [generateRandomIpfsCid()],
       toolPolicies: [[]],
     };
-    const initialAppVersion = await registerApp(
-      appManagerSigner,
-      {
+    const initialAppVersion = await registerApp({
+      signer: appManagerSigner,
+      args: {
         appId: appId.toString(),
         delegatees,
         versionTools: initialVersionTools,
       },
-      {
+      overrides: {
         gasLimit: 10000000,
       },
-    );
+    });
     console.log('App registration result:', initialAppVersion);
     expect(initialAppVersion).toHaveProperty('txHash');
     expect(initialAppVersion).toHaveProperty('newAppVersion');
@@ -80,9 +80,12 @@ describe('VincentContracts', () => {
         [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new tool
       ],
     };
-    const nextAppVersion = await registerNextVersion(appManagerSigner, {
-      appId: appId.toString(),
-      versionTools: nextVersionTools,
+    const nextAppVersion = await registerNextVersion({
+      signer: appManagerSigner,
+      args: {
+        appId: appId.toString(),
+        versionTools: nextVersionTools,
+      },
     });
     console.log('Next version registration result:', nextAppVersion);
     expect(nextAppVersion).toHaveProperty('txHash');
@@ -138,20 +141,23 @@ describe('VincentContracts', () => {
     });
     await pkpEthersWallet.init();
 
-    const permitAppResult = await permitApp(pkpEthersWallet, {
-      pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-      appId: appId.toString(),
-      appVersion: nextAppVersion.newAppVersion,
-      permissionData: {
-        toolIpfsCids: nextVersionTools.toolIpfsCids,
-        policyIpfsCids: nextVersionTools.toolPolicies,
-        policyParameterValues: [
-          ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
-          [
-            '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
-            '0x', // empty policy var
+    const permitAppResult = await permitApp({
+      signer: pkpEthersWallet,
+      args: {
+        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        appId: appId.toString(),
+        appVersion: nextAppVersion.newAppVersion,
+        permissionData: {
+          toolIpfsCids: nextVersionTools.toolIpfsCids,
+          policyIpfsCids: nextVersionTools.toolPolicies,
+          policyParameterValues: [
+            ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
+            [
+              '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
+              '0x', // empty policy var
+            ],
           ],
-        ],
+        },
       },
     });
 
