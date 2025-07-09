@@ -1,4 +1,5 @@
-import { registerApp, registerNextVersion, permitApp, AppVersionTools } from '../src/index';
+import { registerApp, registerNextVersion, permitApp } from '../src/index';
+import { AppVersionTools } from '../src/types';
 import { ethers, providers } from 'ethers';
 import { config } from '@dotenvx/dotenvx';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
