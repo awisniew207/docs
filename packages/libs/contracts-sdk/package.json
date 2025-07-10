@@ -1,17 +1,16 @@
 {
   "name": "@lit-protocol/vincent-contracts-sdk",
-  "version": "0.1.1-4",
+  "version": "0.1.1-6",
   "description": "Lit Protocol Vincent Contracts",
   "author": "Lit Protocol",
   "license": "ISC",
   "type": "commonjs",
-  "main": "./src/index.js",
-  "typings": "./src/index.d.ts",
+  "main": "./dist/src/index.js",
+  "typings": "./dist/src/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist",
-    "src",
-    "abis"
+    "dist/**",
+    "*.md"
   ],
   "publishConfig": {
     "access": "public"
