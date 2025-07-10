@@ -1,3 +1,13 @@
+## 1.4.0 (2025-07-10)
+
+### 🚀 Features
+
+- Add support for `delegateeAddresses` on `App` definitions ([901ae351](https://github.com/LIT-Protocol/Vincent/commit/901ae351))
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 1.3.1 (2025-07-10)
 
 ### 🧱 Updated Dependencies
