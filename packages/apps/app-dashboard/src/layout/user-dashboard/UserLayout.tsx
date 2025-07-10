@@ -22,10 +22,10 @@ function UserLayout({ children, className }: ComponentProps<'div'>) {
       {shouldShowSidebar ? (
         <div className="flex min-h-screen">
           <SidebarWrapper />
-          <div className="flex-1 p-8">{children}</div>
+          <div className="flex-1 p-8 flex justify-center">{children}</div>
         </div>
       ) : (
-        children
+        <div className="flex justify-center w-full">{children}</div>
       )}
     </div>
   );

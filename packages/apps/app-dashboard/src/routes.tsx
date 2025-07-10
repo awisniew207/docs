@@ -49,6 +49,7 @@ import {
 } from './components/developer-dashboard/policy/wrappers';
 
 import { UserDashboard, Home, Withdraw, Apps } from './pages/user-dashboard';
+import { ConsentPageWrapper } from './components/user-dashboard/consent/ConsentPageWraper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 
@@ -232,6 +233,10 @@ const routes: RouteObject[] = [
           {
             path: 'apps',
             element: <Apps />,
+          },
+          {
+            path: 'consent/appId/:appId',
+            element: <ConsentPageWrapper />,
           },
         ],
       },
