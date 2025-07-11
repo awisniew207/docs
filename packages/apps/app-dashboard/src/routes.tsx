@@ -15,9 +15,11 @@ import {
   CreateAppVersionWrapper,
   EditAppVersionWrapper,
   EditAppWrapper,
+  EditPublishedAppWrapper,
   DeleteAppWrapper,
   CreateAppWrapper,
   DeleteAppVersionWrapper,
+  //ManageDelegateesWrapper,
 } from './components/developer-dashboard/app/wrappers';
 
 import {
@@ -93,6 +95,10 @@ const routes: RouteObject[] = [
             element: <CreateAppWrapper />,
           },
           {
+            path: 'appId/:appId/edit-published-app',
+            element: <EditPublishedAppWrapper />,
+          },
+          {
             path: 'appId/:appId',
             element: <AppOverviewWrapper />,
           },
@@ -100,6 +106,12 @@ const routes: RouteObject[] = [
             path: 'appId/:appId/edit-app',
             element: <EditAppWrapper />,
           },
+          /*
+          {
+            path: 'appId/:appId/manage-delegatees',
+            element: <ManageDelegateesWrapper />,
+          },
+          */
           {
             path: 'appId/:appId/delete-app',
             element: <DeleteAppWrapper />,
