@@ -36,9 +36,9 @@ contract VincentAppViewFacet is VincentBase {
     error NoAppsFoundForManager(address manager);
 
     /**
-     * @notice Thrown when the offset and limit are invalid
+     * @notice Thrown when the offset is invalid
      */
-    error InvalidOffsetOrLimit();
+    error InvalidOffset();
 
     // ==================================================================================
     // Data Structures
@@ -133,13 +133,19 @@ contract VincentAppViewFacet is VincentBase {
         VincentAppStorage.AppVersion storage versionedApp =
             VincentAppStorage.appStorage().appIdToApp[appId].appVersions[getAppVersionIndex(version)];
 
-        if (limit == 0 || offset + limit > versionedApp.delegatedAgentPkps.length()) {
-            revert InvalidOffsetOrLimit();
+        uint256 length = versionedApp.delegatedAgentPkps.length();
+        if (offset >= length) {
+            revert InvalidOffset();
         }
 
-        delegatedAgentPkpTokenIds = new uint256[](limit);
-        for (uint256 i = 0; i < limit; i++) {
-            delegatedAgentPkpTokenIds[i] = versionedApp.delegatedAgentPkps.at(offset + i);
+        uint256 end = offset + limit;
+        if (end > length) {
+            end = length;
+        }
+
+        delegatedAgentPkpTokenIds = new uint256[](end - offset);
+        for (uint256 i = offset; i < end; i++) {
+            delegatedAgentPkpTokenIds[i - offset] = versionedApp.delegatedAgentPkps.at(i);
         }
     }
 
