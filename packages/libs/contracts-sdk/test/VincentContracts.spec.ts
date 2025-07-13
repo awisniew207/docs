@@ -18,6 +18,7 @@ import {
   getAllToolsAndPoliciesForApp,
   setToolPolicyParameters,
   unPermitApp,
+  getAppIdByDelegatee,
 } from '../src/index';
 import { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
@@ -163,6 +164,27 @@ describe('VincentContracts', () => {
     expect(appByDelegateeResult.manager).toBe(appManagerSigner.address);
     expect(appByDelegateeResult.latestVersion).toBe(initialAppVersion.newAppVersion);
     expect(appByDelegateeResult.delegatees).toEqual(delegatees);
+
+    // Get app ID by delegatee
+    const appIdByDelegateeResult = await getAppIdByDelegatee({
+      signer: appManagerSigner,
+      args: {
+        delegatee: delegatees[0],
+      },
+    });
+    console.log('App ID by delegatee result:', appIdByDelegateeResult);
+    expect(appIdByDelegateeResult).toBe(appId.toString());
+
+    // Test getAppIdByDelegatee with non-registered delegatee
+    const nonRegisteredDelegatee = ethers.Wallet.createRandom().address;
+    const nonRegisteredAppIdResult = await getAppIdByDelegatee({
+      signer: appManagerSigner,
+      args: {
+        delegatee: nonRegisteredDelegatee,
+      },
+    });
+    console.log('Non-registered delegatee app ID result:', nonRegisteredAppIdResult);
+    expect(nonRegisteredAppIdResult).toBe(null);
 
     // Register next app version
     const nextVersionTools: AppVersionTools = {

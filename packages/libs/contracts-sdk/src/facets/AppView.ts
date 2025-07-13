@@ -153,6 +153,30 @@ export async function getAppByDelegatee({ signer, args }: GetAppByDelegateeOptio
 }
 
 /**
+ * Get the app ID associated with a delegatee address
+ * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
+ * @param args - Object containing delegatee address
+ * @returns The app ID if the delegatee is registered, null otherwise
+ */
+export async function getAppIdByDelegatee({
+  signer,
+  args,
+}: GetAppByDelegateeOptions): Promise<string | null> {
+  try {
+    const app = await getAppByDelegatee({ signer, args });
+    return app.id;
+  } catch (error: unknown) {
+    const decodedError = error instanceof Error ? error.message : String(error);
+
+    if (decodedError.includes('DelegateeNotRegistered')) {
+      return null;
+    }
+
+    throw new Error(`Failed to Get App ID By Delegatee: ${decodedError}`);
+  }
+}
+
+/**
  * Get delegated agent PKP token IDs for a specific app version with pagination
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing appId, version, offset, and limit
