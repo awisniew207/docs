@@ -12,7 +12,7 @@ import {
  * Get all PKP tokens that are registered as agents for a specific user address
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing userAddress
- * @returns Array of PKP token IDs that are registered as agents for the user
+ * @returns Array of PKP token IDs that are registered as agents for the user. Returns empty array if no PKPs are found.
  */
 export async function getAllRegisteredAgentPkps({
   signer,
@@ -26,6 +26,11 @@ export async function getAllRegisteredAgentPkps({
     return pkps.map((pkp: any) => pkp.toString());
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
+
+    if (decodedError.includes('NoRegisteredPkpsFound')) {
+      return [];
+    }
+
     throw new Error(`Failed to Get All Registered Agent PKPs: ${decodedError}`);
   }
 }
@@ -34,12 +39,12 @@ export async function getAllRegisteredAgentPkps({
  * Get the permitted app version for a specific PKP token and app
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing pkpTokenId and appId
- * @returns The permitted app version for the PKP token and app
+ * @returns The permitted app version for the PKP token and app, or null if no permission exists
  */
 export async function getPermittedAppVersionForPkp({
   signer,
   args,
-}: GetPermittedAppVersionForPkpOptions): Promise<string> {
+}: GetPermittedAppVersionForPkpOptions): Promise<string | null> {
   const contract = createContract(signer);
 
   try {
@@ -47,6 +52,10 @@ export async function getPermittedAppVersionForPkp({
     const appId = utils.parseUnits(args.appId, 0);
 
     const appVersion = await contract.getPermittedAppVersionForPkp(pkpTokenId, appId);
+
+    if (appVersion.toString() === '0') {
+      return null;
+    }
 
     return appVersion.toString();
   } catch (error: unknown) {
@@ -59,7 +68,7 @@ export async function getPermittedAppVersionForPkp({
  * Get all app IDs that have permissions for a specific PKP token, excluding deleted apps
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing pkpTokenId
- * @returns Array of app IDs that have permissions for the PKP token and haven't been deleted
+ * @returns Array of app IDs that have permissions for the PKP token and haven't been deleted. Returns empty array if no permitted apps exist.
  */
 export async function getAllPermittedAppIdsForPkp({
   signer,
@@ -83,7 +92,7 @@ export async function getAllPermittedAppIdsForPkp({
  * Get all permitted tools, policies, and policy parameters for a specific app and PKP
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing pkpTokenId and appId
- * @returns Array of tools with their policies and parameters
+ * @returns Array of tools with their policies and parameters. Returns empty array object if no tools or policies exist.
  */
 export async function getAllToolsAndPoliciesForApp({
   signer,
