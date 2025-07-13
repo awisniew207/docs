@@ -192,6 +192,7 @@ contract VincentUserViewFacet is VincentBase {
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
+        // TODO: Remove this for audit purpose on the Dashboard
         if (as_.appIdToApp[appId].isDeleted) {
             revert AppHasBeenDeleted(appId);
         }
