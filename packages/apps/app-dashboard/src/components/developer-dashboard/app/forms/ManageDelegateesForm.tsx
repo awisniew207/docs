@@ -52,10 +52,6 @@ export function ManageDelegateesForm({
     formState: { errors, isSubmitting },
   } = form;
 
-  const showError = (message: string) => {
-    setError(message);
-  };
-
   // Clear error messages after 3 seconds
   useEffect(() => {
     if (!error) return;
@@ -72,7 +68,7 @@ export function ManageDelegateesForm({
 
     // Check if delegatee is already in the current app's delegatee list
     if (appData.includes(data.address)) {
-      showError(`Delegatee ${data.address} is already registered to app ${appId}`);
+      setError(`Delegatee ${data.address} is already registered to app ${appId}`);
       return;
     }
 
@@ -84,13 +80,13 @@ export function ManageDelegateesForm({
       });
 
       if (existingApp.id !== appId) {
-        showError(`Delegatee ${data.address} is already registered to app ${existingApp.id}`);
+        setError(`Delegatee ${data.address} is already registered to app ${existingApp.id}`);
         return;
       }
     } catch (error: any) {
       // If DelegateeNotRegistered, that's fine - continue
       if (!error?.message?.includes('DelegateeNotRegistered')) {
-        showError(
+        setError(
           `Failed to check delegatee registration: ${error instanceof Error ? error.message : 'Unknown error'}`,
         );
         return;
@@ -114,11 +110,11 @@ export function ManageDelegateesForm({
       refetchBlockchainData();
     } catch (error: any) {
       if (error?.message?.includes('user rejected')) {
-        showError('Transaction rejected.');
+        setError('Transaction rejected.');
       } else if (error?.message?.includes('DelegateeAlreadyRegistered')) {
-        showError(`Delegatee ${data.address} is already registered to app ${appId}`);
+        setError(`Delegatee ${data.address} is already registered to app ${appId}`);
       } else {
-        showError(
+        setError(
           `Failed to add delegatee: ${error instanceof Error ? error.message : 'Unknown error'}`,
         );
       }
@@ -146,9 +142,9 @@ export function ManageDelegateesForm({
       refetchBlockchainData();
     } catch (error: any) {
       if (error?.message?.includes('user rejected')) {
-        showError('Transaction rejected.');
+        setError('Transaction rejected.');
       } else {
-        showError(
+        setError(
           `Failed to remove delegatee: ${error instanceof Error ? error.message : 'Unknown error'}`,
         );
       }
