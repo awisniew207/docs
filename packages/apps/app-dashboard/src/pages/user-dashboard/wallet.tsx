@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import WithdrawForm from '@/components/user-dashboard/withdraw/WithdrawForm';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
-import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
+import { useAuthGuard } from '@/hooks/user-dashboard/consent/useAuthGuard';
 import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
 
 export function Withdraw() {

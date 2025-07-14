@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
+import { useAuthGuard } from '@/hooks/user-dashboard/consent/useAuthGuard';
 import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
 
 export default function AppsPage() {

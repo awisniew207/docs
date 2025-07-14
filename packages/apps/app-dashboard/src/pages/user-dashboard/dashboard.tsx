@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { useAuthGuard } from '@/components/user-dashboard/auth/AuthGuard';
+import { useAuthGuard } from '@/hooks/user-dashboard/consent/useAuthGuard';
 import { StatusMessage } from '@/utils/shared/statusMessage';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Smartphone, MessageCircle } from 'lucide-react';
@@ -74,33 +74,31 @@ export default function UserDashboard() {
           </div>
 
           {/* Error Message or Apps Card */}
-            <div className="space-y-4 mb-20">
-              <h2 className="text-lg font-medium text-gray-900">Your Apps</h2>
+          <div className="space-y-4 mb-20">
+            <h2 className="text-lg font-medium text-gray-900">Your Apps</h2>
 
-              <Card
-                className="cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => navigate('/user/apps')}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Smartphone className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-xl font-medium text-gray-900">My Applications</p>
-                        <p className="text-gray-600">View and manage your connected apps</p>
-                      </div>
+            <Card
+              className="cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => navigate('/user/apps')}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Smartphone className="h-6 w-6 text-blue-600" />
                     </div>
-                    <div className="text-right">
-                      <p className="text-3xl font-semibold text-gray-900">0</p>
-                      <p className="text-sm text-gray-500">
-                        0 apps connected
-                      </p>
+                    <div>
+                      <p className="text-xl font-medium text-gray-900">My Applications</p>
+                      <p className="text-gray-600">View and manage your connected apps</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="text-right">
+                    <p className="text-3xl font-semibold text-gray-900">0</p>
+                    <p className="text-sm text-gray-500">0 apps connected</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Footer Button */}

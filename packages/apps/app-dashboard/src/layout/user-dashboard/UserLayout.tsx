@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useUrlRedirectUri } from '@/hooks/user-dashboard/useUrlRedirectUri';
+import { useUrlRedirectUri } from '@/hooks/user-dashboard/consent/useUrlRedirectUri';
 import { cn } from '@/lib/utils';
 import { SidebarWrapper } from '@/components/user-dashboard/sidebar/SidebarWrapper';
 
