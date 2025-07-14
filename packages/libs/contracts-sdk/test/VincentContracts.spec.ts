@@ -146,6 +146,8 @@ describe('VincentContracts', () => {
       signer: appManagerSigner,
       args: {
         manager: appManagerSigner.address,
+        offset: '0',
+        limit: '10',
       },
     });
     console.log('Apps by manager result:', appsByManagerResult);
