@@ -15,9 +15,9 @@ import {
  * Get detailed information about an app by its ID
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing appId
- * @returns Detailed view of the app containing its metadata and relationships
+ * @returns Detailed view of the app containing its metadata and relationships, or null if the app is not registered
  */
-export async function getAppById({ signer, args }: GetAppByIdOptions): Promise<App> {
+export async function getAppById({ signer, args }: GetAppByIdOptions): Promise<App | null> {
   const contract = createContract(signer);
 
   try {
@@ -34,6 +34,12 @@ export async function getAppById({ signer, args }: GetAppByIdOptions): Promise<A
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
+
+    // Check if the error is due to AppNotRegistered
+    if (decodedError.includes('AppNotRegistered')) {
+      return null;
+    }
+
     throw new Error(`Failed to Get App By ID: ${decodedError}`);
   }
 }
@@ -42,12 +48,12 @@ export async function getAppById({ signer, args }: GetAppByIdOptions): Promise<A
  * Get detailed information about a specific version of an app
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing appId and version
- * @returns Object containing basic app information and version-specific information including tools and policies
+ * @returns Object containing basic app information and version-specific information including tools and policies, or null if the app version is not registered
  */
 export async function getAppVersion({
   signer,
   args,
-}: GetAppVersionOptions): Promise<{ app: App; appVersion: AppVersion }> {
+}: GetAppVersionOptions): Promise<{ app: App; appVersion: AppVersion } | null> {
   const contract = createContract(signer);
 
   try {
@@ -82,6 +88,12 @@ export async function getAppVersion({
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
+
+    // Check if the error is due to AppVersionNotRegistered
+    if (decodedError.includes('AppVersionNotRegistered')) {
+      return null;
+    }
+
     throw new Error(`Failed to Get App Version: ${decodedError}`);
   }
 }
