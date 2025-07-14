@@ -1,4 +1,4 @@
-import { Contract, Signer } from 'ethers';
+import { Contract, Signer, BigNumber } from 'ethers';
 import {
   VINCENT_DIAMOND_CONTRACT_ADDRESS,
   COMBINED_ABI,
@@ -51,6 +51,11 @@ export async function gasAdjustedOverrides(
   return overrides;
 }
 
+// Ethers v5 returns BN.js instances. Ethers v6 returns native `bigint`.
+function isBigNumberOrBigInt(arg: any) {
+  return typeof arg === 'bigint' || BigNumber.isBigNumber(arg);
+}
+
 export function decodeContractError(error: any, contract: Contract): string {
   console.error('Decoding contract error:', error);
   try {
@@ -83,7 +88,7 @@ export function decodeContractError(error: any, contract: Contract): string {
           if (decodedError) {
             // Format the arguments nicely
             const formattedArgs = decodedError.args.map((arg: any) => {
-              if (typeof arg === 'bigint') {
+              if (isBigNumberOrBigInt(arg)) {
                 return arg.toString();
               }
               return arg;
@@ -110,7 +115,7 @@ export function decodeContractError(error: any, contract: Contract): string {
         const decodedError = contract.interface.parseError(error.data);
         if (decodedError) {
           const formattedArgs = decodedError.args.map((arg: any) => {
-            if (typeof arg === 'bigint') {
+            if (isBigNumberOrBigInt(arg)) {
               return arg.toString();
             }
             return arg;
@@ -147,7 +152,7 @@ export function decodeContractError(error: any, contract: Contract): string {
           const decodedError = contract.interface.parseError(errorData);
           if (decodedError) {
             const formattedArgs = decodedError.args.map((arg: any) => {
-              if (typeof arg === 'bigint') {
+              if (isBigNumberOrBigInt(arg)) {
                 return arg.toString();
               }
               return arg;
