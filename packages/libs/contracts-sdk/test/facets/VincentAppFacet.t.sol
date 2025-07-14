@@ -660,10 +660,10 @@ contract VincentAppFacetTest is Test {
         assertEq(delegatedAgentPkpTokenIds.length, 1);
         assertEq(delegatedAgentPkpTokenIds[0], PKP_TOKEN_ID_1);
 
-        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.InvalidOffset.selector));
+        vm.expectRevert(abi.encodeWithSelector(VincentBase.InvalidOffset.selector, 1, 1));
         vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1, 1);
 
-        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.InvalidOffset.selector));
+        vm.expectRevert(abi.encodeWithSelector(VincentBase.InvalidOffset.selector, 1, 1));
         vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1, 0);
     }
 
