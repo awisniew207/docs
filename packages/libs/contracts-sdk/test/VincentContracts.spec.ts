@@ -332,6 +332,8 @@ describe('VincentContracts', () => {
       signer: userSigner,
       args: {
         userAddress: process.env.TEST_USER_PKP_ADDRESS!,
+        offset: '0',
+        limit: '10',
       },
     });
     console.log('Agent pkps result:', agentPkpsResult);
@@ -354,6 +356,8 @@ describe('VincentContracts', () => {
       signer: userSigner,
       args: {
         pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        offset: '0',
+        limit: '10',
       },
     });
     console.log('All permitted app ids for pkp result:', allPermittedAppIdsForPkpResult);

@@ -35,11 +35,6 @@ contract VincentAppViewFacet is VincentBase {
      */
     error NoAppsFoundForManager(address manager);
 
-    /**
-     * @notice Thrown when the offset is invalid
-     */
-    error InvalidOffset();
-
     // ==================================================================================
     // Data Structures
     // ==================================================================================
@@ -135,7 +130,7 @@ contract VincentAppViewFacet is VincentBase {
 
         uint256 length = versionedApp.delegatedAgentPkps.length();
         if (offset >= length) {
-            revert InvalidOffset();
+            revert InvalidOffset(offset, length);
         }
 
         uint256 end = offset + limit;
@@ -243,7 +238,7 @@ contract VincentAppViewFacet is VincentBase {
         }
 
         if (offset >= length) {
-            revert InvalidOffset();
+            revert InvalidOffset(offset, length);
         }
 
         uint256 end = offset + limit;
