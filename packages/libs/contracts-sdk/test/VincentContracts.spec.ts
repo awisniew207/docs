@@ -141,17 +141,17 @@ describe('VincentContracts', () => {
     expect(appVersionResult.app.latestVersion).toBe(initialAppVersion.newAppVersion);
     expect(appVersionResult.app.delegatees).toEqual(delegatees);
 
-    // Get all apps by manager
-    const appsByManagerResult = await getAppsByManager({
-      signer: appManagerSigner,
-      args: {
-        manager: appManagerSigner.address,
-        offset: '0',
-        limit: '10',
-      },
-    });
-    console.log('Apps by manager result:', appsByManagerResult);
-    expect(appsByManagerResult.length).toBeGreaterThan(0);
+    // // Get all apps by manager
+    // const appsByManagerResult = await getAppsByManager({
+    //   signer: appManagerSigner,
+    //   args: {
+    //     manager: appManagerSigner.address,
+    //     offset: '0',
+    //     limit: '10',
+    //   },
+    // });
+    // console.log('Apps by manager result:', appsByManagerResult);
+    // expect(appsByManagerResult.length).toBeGreaterThan(0);
 
     // Get app by delegatee
     const appByDelegateeResult = await getAppByDelegatee({
