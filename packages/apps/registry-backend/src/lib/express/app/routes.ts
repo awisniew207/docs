@@ -81,7 +81,6 @@ export function registerRoutes(app: Express) {
           });
 
           const appDoc = new App({
-            activeVersion: NEW_APP_APPVERSION,
             appId,
             name,
             description,
@@ -432,7 +431,15 @@ export function registerRoutes(app: Express) {
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
-        const { vincentAppTool } = req;
+        const { vincentApp, vincentAppVersion, vincentAppTool } = req;
+
+        if (vincentApp.isDeleted || vincentAppVersion.isDeleted) {
+          res.status(400).json({
+            message:
+              'Cannot undelete an app version tool if the app or version is deleted; you must undelete the app version / app first.',
+          });
+          return;
+        }
 
         Object.assign(vincentAppTool, { isDeleted: false });
         await vincentAppTool.save();
@@ -461,17 +468,9 @@ export function registerRoutes(app: Express) {
                 appId: Number(appId),
                 version: Number(version),
               }).session(session);
-              await AppTool.deleteMany({
-                appId: Number(appId),
-                appVersion: Number(version),
-              }).session(session);
             } else {
               await AppVersion.updateOne(
                 { appId: Number(appId), version: Number(version) },
-                { isDeleted: true },
-              ).session(session);
-              await AppTool.updateMany(
-                { appId: Number(appId), appVersion: Number(version) },
                 { isDeleted: true },
               ).session(session);
             }
@@ -501,10 +500,6 @@ export function registerRoutes(app: Express) {
               { appId: Number(appId), version: Number(version) },
               { isDeleted: false },
             ).session(session);
-            await AppTool.updateMany(
-              { appId: Number(appId), appVersion: Number(version) },
-              { isDeleted: false },
-            ).session(session);
           });
 
           res.json({ message: 'App version and associated tools undeleted successfully' });
@@ -527,12 +522,8 @@ export function registerRoutes(app: Express) {
         await mongoSession.withTransaction(async (session) => {
           if (Features.HARD_DELETE_DOCS) {
             await App.findOneAndDelete({ appId }).session(session);
-            await AppVersion.deleteMany({ appId }).session(session);
-            await AppTool.deleteMany({ appId }).session(session);
           } else {
-            await App.updateMany({ appId }, { isDeleted: true }).session(session);
-            await AppVersion.updateMany({ appId }, { isDeleted: true }).session(session);
-            await AppTool.updateMany({ appId }, { isDeleted: true }).session(session);
+            await App.updateOne({ appId: Number(appId) }, { isDeleted: true }).session(session);
           }
         });
 
@@ -553,9 +544,7 @@ export function registerRoutes(app: Express) {
         const { appId } = req.params;
 
         await mongoSession.withTransaction(async (session) => {
-          await App.updateMany({ appId }, { isDeleted: false }).session(session);
-          await AppVersion.updateMany({ appId }, { isDeleted: false }).session(session);
-          await AppTool.updateMany({ appId }, { isDeleted: false }).session(session);
+          await App.updateOne({ appId: Number(appId) }, { isDeleted: false }).session(session);
         });
 
         res.json({ message: 'App and associated data undeleted successfully' });
