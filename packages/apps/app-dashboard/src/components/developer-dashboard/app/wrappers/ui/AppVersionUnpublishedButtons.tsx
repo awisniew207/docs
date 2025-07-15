@@ -42,21 +42,24 @@ export function AppVersionUnpublishedButtons({
 
   return (
     <div className="flex flex-wrap gap-3">
-      <button
-        onClick={() => navigate(`/developer/appId/${appId}/version/${versionId}/edit`)}
-        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-      >
-        <Edit className="h-4 w-4" />
-        Edit Version
-      </button>
-      <button
-        onClick={() => navigate(`/developer/appId/${appId}/version/${versionId}/tools`)}
-        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-      >
-        <Plus className="h-4 w-4" />
-        Manage Tools
-      </button>
-
+      {isVersionEnabled && (
+        <button
+          onClick={() => navigate(`/developer/appId/${appId}/version/${versionId}/edit`)}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
+          <Edit className="h-4 w-4" />
+          Edit Version
+        </button>
+      )}
+      {isVersionEnabled && (
+        <button
+          onClick={() => navigate(`/developer/appId/${appId}/version/${versionId}/tools`)}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Manage Tools
+        </button>
+      )}
       {/* Enable/Disable buttons */}
       {isVersionEnabled ? (
         <button
@@ -93,7 +96,7 @@ export function AppVersionUnpublishedButtons({
         Delete Version
       </button>
 
-      <PublishAppVersionWrapper isAppRegistered={isAppRegistered} />
+      {isVersionEnabled && <PublishAppVersionWrapper isAppRegistered={isAppRegistered} />}
     </div>
   );
 }
