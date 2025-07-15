@@ -7,6 +7,7 @@ import {
   clearSessionRequest,
 } from '@/components/withdraw/WalletConnect/RequestHandler';
 import { getPKPWallet } from '@/components/withdraw/WalletConnect/WalletConnectUtil';
+import { ethers } from 'ethers';
 
 export function useWalletConnectRequests(client: any, currentWalletAddress: string | null) {
   const [pendingSessionRequests, setPendingSessionRequests] = useState<any[]>([]);
@@ -193,7 +194,7 @@ async function handleSendTransaction(pkpWallet: PKPEthersWallet, methodParams: a
 
   // Convert chainId from hex to number if needed
   if (tx.chainId && typeof tx.chainId === 'string' && tx.chainId.startsWith('0x')) {
-    tx.chainId = parseInt(tx.chainId, 16);
+    tx.chainId = ethers.BigNumber.from(tx.chainId).toNumber();
   }
 
   const chainId = tx.chainId || parseInt(params.chainId.split(':')[1], 10);
@@ -222,31 +223,25 @@ async function handleSendTransaction(pkpWallet: PKPEthersWallet, methodParams: a
       const feeData = await provider.getFeeData();
 
       if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
-        // Convert BigNumber fee data to numbers to prevent serialization issues
-        tx.maxFeePerGas = parseInt(feeData.maxFeePerGas.toString());
-        tx.maxPriorityFeePerGas = parseInt(feeData.maxPriorityFeePerGas.toString());
+        tx.maxFeePerGas = feeData.maxFeePerGas;
+        tx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
         tx.type = 2;
       } else {
         // Fallback to legacy gasPrice
         if (feeData.gasPrice) {
-          tx.gasPrice = parseInt(feeData.gasPrice.toString());
+          tx.gasPrice = feeData.gasPrice;
         }
       }
     } catch (feeError) {
+      console.error('Failed to fetch fee data:', feeError);
       throw new Error('Failed to fetch fee data');
     }
   }
 
   const isEIP1559 = tx.maxFeePerGas !== undefined || tx.maxPriorityFeePerGas !== undefined;
 
-  const convertHexToNumber = (value: any) => {
-    return typeof value === 'string' && value.startsWith('0x') ? parseInt(value, 16) : value;
-  };
-
   if (isEIP1559) {
     tx.type = 2;
-    tx.maxFeePerGas = convertHexToNumber(tx.maxFeePerGas);
-    tx.maxPriorityFeePerGas = convertHexToNumber(tx.maxPriorityFeePerGas);
     delete tx.gasPrice;
   }
 
@@ -270,9 +265,6 @@ async function handleSendTransaction(pkpWallet: PKPEthersWallet, methodParams: a
   } else if (tx.gas && !tx.gasLimit) {
     tx.gasLimit = tx.gas;
   }
-
-  tx.gasLimit = convertHexToNumber(tx.gasLimit);
-  tx.gas = convertHexToNumber(tx.gas);
 
   console.log('Final transaction object:', tx);
   return await pkpWallet.sendTransaction(tx);
