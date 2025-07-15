@@ -36,26 +36,25 @@ export const requireAppVersionNotOnChain = () => {
 
     debug('Checking if app version exists on-chain', { appId, version });
 
-    try {
-      // Try to get the app version from the blockchain
-      const result = await getAppVersion({
-        signer: ethersSigner,
-        args: {
-          appId: appId.toString(),
-          version: version.toString(),
-        },
-      });
+    // Try to get the app version from the blockchain
+    const result = await getAppVersion({
+      signer: ethersSigner,
+      args: {
+        appId: appId.toString(),
+        version: version.toString(),
+      },
+    });
 
+    if (result) {
       // If we get here, the app version exists on-chain
       debug('App version exists on-chain, operation not allowed', { appId, version });
       res.status(403).json({
         message: `Operation not allowed: App version ${version} for app ${appId} is already on-chain`,
       });
       return;
-    } catch (error) {
-      // If we get an error, the app version is not on-chain, which is what we want
-      debug('App version not found on-chain, proceeding', { appId, version });
-      next();
     }
+
+    debug('App version not found on-chain, proceeding', { appId, version });
+    next();
   };
 };

@@ -8,6 +8,10 @@ import { requireUserManagesApp } from './requireUserManagesApp';
 import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
+import { requireAppVersionNotOnChain } from './requireAppVersionNotOnChain';
+import { requireAppOnChain, withAppOnChain } from './requireAppOnChain';
+import { ethersSigner } from '../../ethersSigner';
+import { getAppById } from '@lit-protocol/vincent-contracts-sdk';
 
 const NEW_APP_APPVERSION = 1;
 const MAX_APPID_RETRY_ATTEMPTS = 20;
@@ -90,11 +94,22 @@ export function registerRoutes(app: Express) {
             managerAddress: req.vincentUser.address,
           });
 
+          // First, check if the appId exists in chain state; someone may have registered it off-registry
+          const appOnChain = await getAppById({
+            signer: ethersSigner,
+            args: { appId: appId.toString() },
+          });
+
+          if (appOnChain) {
+            continue;
+          }
+
           try {
             await mongoSession.withTransaction(async (session) => {
               await appVersion.save({ session });
               appDef = await appDoc.save({ session });
             });
+
             success = true;
           } catch (error: any) {
             // Check if the error is due to duplicate appId
@@ -145,35 +160,60 @@ export function registerRoutes(app: Express) {
     requireVincentAuth(),
     requireApp(),
     requireUserManagesApp(),
+    requireAppOnChain(),
     withVincentAuth(
-      withApp(async (req, res) => {
-        const { appId } = req.params;
-        await withSession(async (mongoSession) => {
-          let savedAppVersion;
+      withApp(
+        withAppOnChain(async (req, res) => {
+          const { appId } = req.params;
+          const { latestVersion: onChainHighestVersion } = req.vincentAppOnChain;
+          const newVersion = Number(onChainHighestVersion) + 1;
 
-          await mongoSession.withTransaction(async (session) => {
-            const highest = await AppVersion.find({ appId })
-              .session(session)
-              .sort({ version: -1 })
-              .limit(1)
-              .lean();
+          try {
+            await withSession(async (mongoSession) => {
+              let savedAppVersion;
 
-            console.log('highest', highest);
+              await mongoSession.withTransaction(async (session) => {
+                const [latestOnRegistry] = await AppVersion.find({ appId })
+                  .session(session)
+                  .sort({ version: -1 })
+                  .limit(1)
+                  .lean()
+                  .orFail(); // If no appVersions exist in registry something is very wrong, as the app must exist to get here
 
-            const appVersion = new AppVersion({
-              appId,
-              version: highest.length ? highest[0].version + 1 : 1,
-              changes: req.body.changes,
-              enabled: true,
+                const { version: onRegistryHighestVersion } = latestOnRegistry;
+
+                if (!(onRegistryHighestVersion <= Number(onChainHighestVersion))) {
+                  // There can only be 1 'pending' app version for an app on the registry.
+                  // This <= check will keep us from getting way ahead in case RPC is massively delayed
+                  throw new Error(
+                    `There can only be 1 pending app version for an app on the registry.`,
+                  );
+                }
+
+                const appVersion = new AppVersion({
+                  appId,
+                  version: newVersion,
+                  changes: req.body.changes,
+                  enabled: true,
+                });
+
+                // If by some chance there is a race (chain state is way out-of-date), this call will fail due to unique constraints
+                savedAppVersion = await appVersion.save({ session });
+              });
+
+              res.status(201).json(savedAppVersion);
+              return;
             });
-
-            savedAppVersion = await appVersion.save({ session });
-          });
-
-          res.status(201).json(savedAppVersion);
-          return;
-        });
-      }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (err: any) {
+            if (err.code === 11000) {
+              // Duplicate appId+version — someone else beat us to it
+              throw new Error(`App version ${newVersion} already exists in the registry.`);
+            }
+            throw err;
+          }
+        }),
+      ),
     ),
   );
 
@@ -288,6 +328,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     withVincentAuth(
       withAppVersion(async (req, res) => {
         const { appId, version, toolPackageName } = req.params;
@@ -338,6 +379,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
@@ -360,6 +402,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
@@ -385,6 +428,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
