@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/shared/ui/card';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/useConsentInfo';
+import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { ToolHeader } from './ToolHeader';
 import { RequiredPolicies } from './RequiredPolicies';
 import { PolicyFormRef } from './PolicyForm';
@@ -11,11 +11,11 @@ interface AppsAndVersionsProps {
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
-  onFormChange: (policyId: string, data: any) => void;
-  onRegisterFormRef: (policyId: string, ref: PolicyFormRef) => void;
+  onFormChange: (toolIpfsCid: string, policyIpfsCid: string, data: any) => void;
+  onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
 }
 
-export function AppsAndVersions({
+export function AppsInfo({
   consentInfoMap,
   theme,
   isDark,
@@ -29,10 +29,11 @@ export function AppsAndVersions({
     <>
       {appNames.map((appName, appIndex) => {
         const versions = consentInfoMap.versionsByApp[appName];
-        // Only show the active/enabled version for consent
-        const activeVersion = versions.find((version) => version.enabled);
+        const activeVersion = versions.find(
+          (version) => version.version === consentInfoMap.app.activeVersion,
+        );
 
-        // If no active version, don't show this app
+        // If no active version, don't show this app (should never happen)
         if (!activeVersion) return null;
 
         return (
@@ -56,10 +57,21 @@ export function AppsAndVersions({
                         const toolKey = `${tool.toolPackageName}-${tool.toolVersion}`;
                         const policies =
                           consentInfoMap.supportedPoliciesByToolVersion[toolKey] || [];
-                        
-                        // Get the tool version data which contains the IPFS CID
-                        const toolVersions = consentInfoMap.toolVersionsByAppVersionTool[toolKey] || [];
-                        const toolVersion = toolVersions[0]; // Should only be one version per tool key
+
+                        // Filter out policies that are in hiddenSupportedPolicies
+                        const visiblePolicies = policies.filter((policy) => {
+                          if (
+                            !tool.hiddenSupportedPolicies ||
+                            tool.hiddenSupportedPolicies.length === 0
+                          ) {
+                            return true; // Show all policies if no hidden policies specified
+                          }
+                          return !tool.hiddenSupportedPolicies.includes(policy.packageName);
+                        });
+
+                        const toolVersions =
+                          consentInfoMap.toolVersionsByAppVersionTool[toolKey] || [];
+                        const toolVersion = toolVersions[0];
 
                         return (
                           <div key={toolKey} className="space-y-4">
@@ -73,13 +85,14 @@ export function AppsAndVersions({
 
                             {/* Required Policies */}
                             <RequiredPolicies
-                              policies={policies}
+                              policies={visiblePolicies}
                               consentInfoMap={consentInfoMap}
                               theme={theme}
                               isDark={isDark}
                               formData={formData}
                               onFormChange={onFormChange}
                               onRegisterFormRef={onRegisterFormRef}
+                              toolIpfsCid={toolVersion.ipfsCid}
                             />
                           </div>
                         );
@@ -94,4 +107,4 @@ export function AppsAndVersions({
       })}
     </>
   );
-} 
+}

@@ -1,25 +1,19 @@
 import { FileText, FileCode, ExternalLink } from 'lucide-react';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/useConsentInfo';
+import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { PolicyForm, PolicyFormRef } from './PolicyForm';
 import { ThemeType } from './theme';
+import { PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
 interface RequiredPoliciesProps {
-  policies: Array<{
-    ipfsCid: string;
-    packageName: string;
-    version: string;
-    parameters?: {
-      jsonSchema: string;
-      uiSchema: string;
-    };
-  }>;
+  policies: Array<PolicyVersion>;
   consentInfoMap: ConsentInfoMap;
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
-  onFormChange: (policyId: string, data: any) => void;
-  onRegisterFormRef: (policyId: string, ref: PolicyFormRef) => void;
+  onFormChange: (toolIpfsCid: string, policyIpfsCid: string, data: any) => void;
+  onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
+  toolIpfsCid: string;
 }
 
 export function RequiredPolicies({
@@ -30,6 +24,7 @@ export function RequiredPolicies({
   formData,
   onFormChange,
   onRegisterFormRef,
+  toolIpfsCid,
 }: RequiredPoliciesProps) {
   if (policies.length === 0) {
     return null;
@@ -37,14 +32,9 @@ export function RequiredPolicies({
 
   return (
     <div className="ml-4 space-y-3">
-      <h5 className={`text-sm font-semibold ${theme.text} mb-3`}>
-        Required Policies:
-      </h5>
+      <h5 className={`text-sm font-semibold ${theme.text} mb-3`}>Required Policies:</h5>
       {policies.map((policy) => (
-        <Card
-          key={policy.ipfsCid}
-          className={`${theme.itemBg} border ${theme.cardBorder} ml-4`}
-        >
+        <Card key={policy.ipfsCid} className={`${theme.itemBg} border ${theme.cardBorder} ml-4`}>
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
               <div className={`p-2 rounded-lg ${theme.iconBg} border ${theme.iconBorder}`}>
@@ -73,9 +63,7 @@ export function RequiredPolicies({
                 )}
                 <div className="flex items-center gap-2 mt-3">
                   <FileCode className={`w-3 h-3 ${theme.textMuted}`} />
-                  <span className={`text-xs ${theme.textSubtle} font-mono`}>
-                    {policy.ipfsCid}
-                  </span>
+                  <span className={`text-xs ${theme.textSubtle} font-mono`}>{policy.ipfsCid}</span>
                 </div>
 
                 {/* Policy Form */}
@@ -87,8 +75,10 @@ export function RequiredPolicies({
                   }}
                   policy={policy}
                   isDark={isDark}
-                  formData={formData}
-                  onFormChange={onFormChange}
+                  formData={formData[toolIpfsCid] || {}}
+                  onFormChange={(policyIpfsCid, data) => {
+                    onFormChange(toolIpfsCid, policyIpfsCid, data);
+                  }}
                 />
               </div>
             </div>
@@ -97,4 +87,4 @@ export function RequiredPolicies({
       ))}
     </div>
   );
-} 
+}

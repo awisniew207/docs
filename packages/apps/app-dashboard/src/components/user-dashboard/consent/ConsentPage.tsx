@@ -1,55 +1,97 @@
 import { useState, useCallback, useRef } from 'react';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/useConsentInfo';
-import { ConsentHeader } from './ui/ConsentHeader';
-import { MainContent } from './ui/MainContent';
+import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
+import { useConsentFormData } from '@/hooks/user-dashboard/consent/useConsentFormData';
+import { ConsentPageHeader } from './ui/ConsentPageHeader';
 import { theme } from './ui/theme';
 import { PolicyFormRef } from './ui/PolicyForm';
+import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { useAddPermittedActions } from '@/hooks/user-dashboard/consent/useAddPermittedActions';
+import { ConsentAppHeader } from './ui/ConsentAppHeader';
+import { AppsInfo } from './ui/AppInfo';
+import { ActionButtons } from './ui/ActionButtons';
+import { InfoBanner } from './ui/InfoBanner';
+import { StatusCard } from './ui/StatusCard';
+import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+import { litNodeClient } from '@/utils/user-dashboard/lit';
+import { useJwtRedirect } from '@/hooks/user-dashboard/consent/useJwtRedirect';
 
 interface ConsentPageProps {
   consentInfoMap: ConsentInfoMap;
-  onConsent?: (formData: Record<string, any>) => void;
-  onDecline?: () => void;
+  readAuthInfo: UseReadAuthInfo;
 }
 
-export function ConsentPage({ consentInfoMap, onConsent, onDecline }: ConsentPageProps) {
+export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) {
   const [isDark, setIsDark] = useState(true);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [localError, setLocalError] = useState<string | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
+
+  const { formData, handleFormChange } = useConsentFormData(consentInfoMap);
+  const {
+    generateJWT,
+    isLoading: isJwtLoading,
+    loadingStatus: jwtLoadingStatus,
+    error: jwtError,
+  } = useJwtRedirect({ readAuthInfo });
+  const {
+    addPermittedActions,
+    isLoading: isActionsLoading,
+    loadingStatus: actionsLoadingStatus,
+    error: actionsError,
+  } = useAddPermittedActions();
 
   // Use the theme function
   const themeStyles = theme(isDark);
 
-  const handleFormChange = useCallback((policyId: string, data: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [policyId]: data.formData
-    }));
-  }, []);
+  const handleSubmit = useCallback(async () => {
+    // Clear any previous local errors
+    setLocalError(null);
 
-  const handleSubmit = useCallback(() => {
     // Check if all forms are valid using RJSF's built-in validateForm method
-    const allValid = Object.values(formRefs.current).every(formRef => {
+    const allValid = Object.values(formRefs.current).every((formRef) => {
       return formRef.validateForm();
     });
 
     if (allValid) {
-      console.log('All forms valid, submitting:', formData);
-      if (onConsent) {
-        onConsent(formData);
+      if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
+        setLocalError('Missing authentication information. Please try refreshing the page.');
+        return;
       }
-    } else {
-      console.log('Some forms have validation errors');
-      // Errors will be shown inline automatically by RJSF
+
+      console.log('formData', formData);
+
+      const agentPkpWallet = new PKPEthersWallet({
+        controllerSessionSigs: readAuthInfo.sessionSigs,
+        pkpPubKey: readAuthInfo.authInfo.userPKP.publicKey,
+        litNodeClient: litNodeClient,
+      });
+      await agentPkpWallet.init();
+
+      await addPermittedActions({
+        wallet: agentPkpWallet,
+        agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
+        toolIpfsCids: Object.keys(formData),
+        policyIpfsCids: Object.keys(formData),
+      });
+
+      await generateJWT(consentInfoMap.app, consentInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
     }
-  }, [formData, onConsent]);
+  }, [formData, readAuthInfo, addPermittedActions]);
+
+  const handleDecline = useCallback(() => {
+    console.log('Declined');
+  }, []);
 
   const handleToggleTheme = useCallback(() => {
     setIsDark(!isDark);
   }, [isDark]);
 
-  const registerFormRef = useCallback((policyId: string, ref: PolicyFormRef) => {
-    formRefs.current[policyId] = ref;
+  const registerFormRef = useCallback((policyIpfsCid: string, ref: PolicyFormRef) => {
+    formRefs.current[policyIpfsCid] = ref;
   }, []);
+
+  const isLoading = isJwtLoading || isActionsLoading;
+  const loadingStatus = jwtLoadingStatus || actionsLoadingStatus;
+  const error = jwtError || actionsError;
 
   return (
     <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} p-4`}>
@@ -58,23 +100,47 @@ export function ConsentPage({ consentInfoMap, onConsent, onDecline }: ConsentPag
         className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
       >
         {/* Header */}
-        <ConsentHeader
+        <ConsentPageHeader
           isDark={isDark}
           onToggleTheme={handleToggleTheme}
           theme={themeStyles}
+          authInfo={readAuthInfo.authInfo!}
         />
 
-        {/* Main Content */}
-        <MainContent
-          consentInfoMap={consentInfoMap}
-          theme={themeStyles}
-          isDark={isDark}
-          formData={formData}
-          onFormChange={handleFormChange}
-          onDecline={onDecline}
-          onSubmit={handleSubmit}
-          onRegisterFormRef={registerFormRef}
-        />
+        <div className="px-6 py-8 space-y-6">
+          {/* Warning Banner */}
+          <InfoBanner theme={themeStyles} />
+
+          {/* App Header */}
+          <ConsentAppHeader app={consentInfoMap.app} theme={themeStyles} />
+
+          {/* Apps and Versions */}
+          <AppsInfo
+            consentInfoMap={consentInfoMap}
+            theme={themeStyles}
+            isDark={isDark}
+            formData={formData}
+            onFormChange={handleFormChange}
+            onRegisterFormRef={registerFormRef}
+          />
+
+          {/* Status Card */}
+          <StatusCard
+            theme={themeStyles}
+            isLoading={isLoading}
+            loadingStatus={loadingStatus}
+            error={error || localError}
+          />
+
+          {/* Action Buttons */}
+          <ActionButtons
+            onDecline={handleDecline}
+            onSubmit={handleSubmit}
+            theme={themeStyles}
+            isLoading={isLoading}
+            error={error || localError}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Settings, ExternalLink, FileCode } from 'lucide-react';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/useConsentInfo';
+import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { ThemeType } from './theme';
 
 interface ToolHeaderProps {
@@ -23,8 +23,7 @@ export function ToolHeader({ tool, toolVersion, consentInfoMap, theme }: ToolHea
         </div>
         <div className="flex-1">
           <h4 className={`font-semibold ${theme.text}`}>
-            {consentInfoMap.toolsByPackageName[tool.toolPackageName]?.title ||
-              tool.toolPackageName}
+            {consentInfoMap.toolsByPackageName[tool.toolPackageName]?.title || tool.toolPackageName}
           </h4>
           <p className={`text-sm ${theme.textMuted} font-medium`}>
             <a
@@ -45,13 +44,11 @@ export function ToolHeader({ tool, toolVersion, consentInfoMap, theme }: ToolHea
           {toolVersion && (
             <div className="flex items-center gap-2 mt-2">
               <FileCode className={`w-3 h-3 ${theme.textMuted}`} />
-              <span className={`text-xs ${theme.textSubtle} font-mono`}>
-                {toolVersion.ipfsCid}
-              </span>
+              <span className={`text-xs ${theme.textSubtle} font-mono`}>{toolVersion.ipfsCid}</span>
             </div>
           )}
         </div>
       </div>
     </div>
   );
-} 
+}

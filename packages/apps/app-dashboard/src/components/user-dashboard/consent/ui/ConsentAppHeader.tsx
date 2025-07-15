@@ -1,15 +1,10 @@
 import { motion } from 'framer-motion';
-import { Globe } from 'lucide-react';
 import { ThemeType } from './theme';
+import { App } from '@/types/developer-dashboard/appTypes';
+import { Logo } from '@/components/shared/ui/Logo';
 
 interface ConsentAppHeaderProps {
-  app: {
-    name: string;
-    description?: string;
-    logo?: string;
-    appUrl?: string;
-    githubUrl?: string;
-  };
+  app: App;
   theme: ThemeType;
 }
 
@@ -23,41 +18,15 @@ export function ConsentAppHeader({ app, theme }: ConsentAppHeaderProps) {
     >
       <div className="flex items-center gap-4">
         <div className={`p-4 rounded-2xl ${theme.iconBg} border ${theme.iconBorder}`}>
-          {app.logo ? (
-            <img src={app.logo} alt={app.name} className="w-12 h-12" />
-          ) : (
-            <Globe className={`w-12 h-12 ${theme.textMuted}`} />
-          )}
+          <Logo logo={app.logo} alt={app.name} className="w-12 h-12" />
         </div>
         <div className="flex-1">
           <h2 className={`text-2xl font-bold ${theme.text}`}>{app.name}</h2>
           {app.description && (
             <p className={`text-lg ${theme.textMuted} mt-1`}>{app.description}</p>
           )}
-          <div className="flex items-center gap-4 mt-3">
-            {app.appUrl && (
-              <a
-                href={app.appUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-sm ${theme.linkColor} hover:underline`}
-              >
-                Visit App
-              </a>
-            )}
-            {app.githubUrl && (
-              <a
-                href={app.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-sm ${theme.linkColor} hover:underline`}
-              >
-                GitHub
-              </a>
-            )}
-          </div>
         </div>
       </div>
     </motion.div>
   );
-} 
+}

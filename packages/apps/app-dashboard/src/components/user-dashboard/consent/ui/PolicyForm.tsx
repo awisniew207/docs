@@ -4,18 +4,13 @@ import Form from '@rjsf/shadcn';
 import validator from '@rjsf/validator-ajv8';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import { PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
 interface PolicyFormProps {
-  policy: {
-    ipfsCid: string;
-    parameters?: {
-      jsonSchema: string;
-      uiSchema: string;
-    };
-  };
+  policy: PolicyVersion;
   isDark: boolean;
   formData: Record<string, any>;
-  onFormChange: (policyId: string, data: any) => void;
+  onFormChange: (policyIpfsCid: string, data: any) => void;
 }
 
 export interface PolicyFormRef {
@@ -34,20 +29,20 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
       try {
         const jsonSchema = JSON.parse(policy.parameters.jsonSchema) as RJSFSchema;
         const uiSchema = JSON.parse(policy.parameters.uiSchema) as UiSchema;
-        
+
         // Create AJV instance for validation
         const ajv = new Ajv({
           strictTypes: false,
         });
         addFormats(ajv);
-        
+
         // Compile and validate schema
         ajv.compile(jsonSchema);
-        
+
         // Use createSchemaUtils to properly resolve the schema
         const schemaUtils = createSchemaUtils(validator, jsonSchema);
         const resolvedJsonSchema = schemaUtils.retrieveSchema(jsonSchema);
-        
+
         return {
           jsonSchema: resolvedJsonSchema,
           uiSchema,
@@ -138,5 +133,5 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
         </div>
       </div>
     );
-  }
-); 
+  },
+);
