@@ -19,7 +19,7 @@ import {
   setToolPolicyParameters,
   unPermitApp,
 } from '../src/index';
-import { AppVersionTools } from '../src/index';
+import type { AppVersionTools } from '../src/index';
 import { ethers, providers } from 'ethers';
 import { config } from '@dotenvx/dotenvx';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
@@ -106,11 +106,16 @@ describe('VincentContracts', () => {
       },
     });
     console.log('App by ID result:', appByIdResult);
-    expect(appByIdResult.id).toBe(appId.toString());
-    expect(appByIdResult.isDeleted).toBe(false);
-    expect(appByIdResult.manager).toBe(appManagerSigner.address);
-    expect(appByIdResult.latestVersion).toBe(initialAppVersion.newAppVersion);
-    expect(appByIdResult.delegatees).toEqual(delegatees);
+
+    expect(appByIdResult).toBeTruthy();
+
+    if (appByIdResult) {
+      expect(appByIdResult.id).toBe(appId.toString());
+      expect(appByIdResult.isDeleted).toBe(false);
+      expect(appByIdResult.manager).toBe(appManagerSigner.address);
+      expect(appByIdResult.latestVersion).toBe(initialAppVersion.newAppVersion);
+      expect(appByIdResult.delegatees).toEqual(delegatees);
+    }
 
     // Disable the initial app version
     const disableAppVersionResult = await enableAppVersion({
@@ -134,11 +139,15 @@ describe('VincentContracts', () => {
       },
     });
     console.log('App version result:', appVersionResult);
-    expect(appVersionResult.app.id).toBe(appId.toString());
-    expect(appVersionResult.app.isDeleted).toBe(false);
-    expect(appVersionResult.app.manager).toBe(appManagerSigner.address);
-    expect(appVersionResult.app.latestVersion).toBe(initialAppVersion.newAppVersion);
-    expect(appVersionResult.app.delegatees).toEqual(delegatees);
+
+    expect(appVersionResult).toBeTruthy();
+    if (appVersionResult) {
+      expect(appVersionResult.app.id).toBe(appId.toString());
+      expect(appVersionResult.app.isDeleted).toBe(false);
+      expect(appVersionResult.app.manager).toBe(appManagerSigner.address);
+      expect(appVersionResult.app.latestVersion).toBe(initialAppVersion.newAppVersion);
+      expect(appVersionResult.app.delegatees).toEqual(delegatees);
+    }
 
     // Get all apps by manager
     const appsByManagerResult = await getAppsByManager({
@@ -285,16 +294,32 @@ describe('VincentContracts', () => {
         pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
         appId: appId.toString(),
         appVersion: nextAppVersion.newAppVersion,
+        // Pre-CBOR2 payload for this case was:
+        // permissionData: {
+        //   toolIpfsCids: nextVersionTools.toolIpfsCids,
+        //   policyIpfsCids: nextVersionTools.toolPolicies,
+        //   policyParameterValues: [
+        //     ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
+        //     [
+        //       '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
+        //       '0x', // empty policy var
+        //     ],
+        //   ],
+        // },
+        // PermissionData from user-space should always be POJO
         permissionData: {
-          toolIpfsCids: nextVersionTools.toolIpfsCids,
-          policyIpfsCids: nextVersionTools.toolPolicies,
-          policyParameterValues: [
-            ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
-            [
-              '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
-              '0x', // empty policy var
-            ],
-          ],
+          [nextVersionTools.toolIpfsCids[0]]: {
+            [nextVersionTools.toolPolicies[0][0]]: {
+              maxDailySpendingLimitInUsdCents: '10000',
+            },
+          },
+          [nextVersionTools.toolIpfsCids[1]]: {
+            [nextVersionTools.toolPolicies[1][0]]: {
+              maxDailySpendingLimitInUsdCents: '50000',
+              tokenAddress: '0x4200000000000000000000000000000000000006',
+            },
+            // [nextVersionTools.toolPolicies[1][1]]: Omitted entirely rather than `0x`, because it has no params in this case.
+          },
         },
       },
     });
@@ -369,13 +394,22 @@ describe('VincentContracts', () => {
         pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
         appId: appId.toString(),
         appVersion: nextAppVersion.newAppVersion,
-        toolIpfsCids: [nextVersionTools.toolIpfsCids[1]],
-        policyIpfsCids: [[nextVersionTools.toolPolicies[1][1]]], // second policy was never set by the Agent
-        policyParameterValues: [
-          [
-            '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036',
-          ], // {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
-        ],
+        // Pre-CBOR2 payload for this case was:
+        // toolIpfsCids: [],
+        // policyIpfsCids: [[nextVersionTools.toolPolicies[1][1]]], // second policy was never set by the Agent
+        // policyParameterValues: [
+        //   [
+        //     '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036',
+        //   ], //
+        // ],
+        policyParams: {
+          [nextVersionTools.toolIpfsCids[1]]: {
+            [nextVersionTools.toolPolicies[1][1]]: {
+              maxDailySpendingLimitInUsdCents: '50000',
+              tokenAddress: '0x4200000000000000000000000000000000000006',
+            },
+          },
+        },
       },
     });
     console.log('Set tool policy parameters result:', setToolPolicyParametersResult);

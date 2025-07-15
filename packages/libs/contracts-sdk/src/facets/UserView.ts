@@ -1,12 +1,15 @@
 import { utils } from 'ethers';
 import { decodeContractError, createContract } from '../utils';
-import {
+import { decodePermissionDataFromChain } from '../utils/policyParams';
+
+import type {
   GetAllRegisteredAgentPkpsOptions,
   GetPermittedAppVersionForPkpOptions,
   GetAllPermittedAppIdsForPkpOptions,
   GetAllToolsAndPoliciesForAppOptions,
-  ToolWithPolicies,
+  PermissionData,
 } from '../types/User';
+import type { ToolWithPolicies } from '../types/internal';
 
 /**
  * Get all PKP tokens that are registered as agents for a specific user address
@@ -80,30 +83,28 @@ export async function getAllPermittedAppIdsForPkp({
 }
 
 /**
- * Get all permitted tools, policies, and policy parameters for a specific app and PKP
+ * Get all permitted tools, policies, and policy parameters for a specific app and PKP in a nested object structure
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing pkpTokenId and appId
- * @returns Array of tools with their policies and parameters
+ * @returns Nested object structure where keys are tool IPFS CIDs and values are objects with policy IPFS CIDs as keys
  */
 export async function getAllToolsAndPoliciesForApp({
   signer,
   args,
-}: GetAllToolsAndPoliciesForAppOptions): Promise<ToolWithPolicies[]> {
+}: GetAllToolsAndPoliciesForAppOptions): Promise<PermissionData> {
   const contract = createContract(signer);
 
   try {
     const pkpTokenId = utils.parseUnits(args.pkpTokenId, 0);
     const appId = utils.parseUnits(args.appId, 0);
 
-    const tools = await contract.getAllToolsAndPoliciesForApp(pkpTokenId, appId);
+    const tools: ToolWithPolicies[] = await contract.getAllToolsAndPoliciesForApp(
+      pkpTokenId,
+      appId,
+    );
 
-    return tools.map((tool: any) => ({
-      toolIpfsCid: tool.toolIpfsCid,
-      policies: tool.policies.map((policy: any) => ({
-        policyIpfsCid: policy.policyIpfsCid,
-        policyParameterValues: policy.policyParameterValues,
-      })),
-    }));
+    // Convert directly to nested format without creating intermediary arrays
+    return decodePermissionDataFromChain(tools);
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Tools And Policies For App: ${decodedError}`);

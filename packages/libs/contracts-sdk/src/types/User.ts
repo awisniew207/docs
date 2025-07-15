@@ -4,17 +4,25 @@ import { Signer } from 'ethers';
 // User Mutation Types
 // ==================================================================================
 
-export interface AppPermissionData {
-  toolIpfsCids: string[];
-  policyIpfsCids: string[][];
-  policyParameterValues: string[][];
+/**
+ * Represents a nested structure of tool and policy parameters
+ * Keys are tool IPFS CIDs, values are objects where their keys are policy IPFS CIDs
+ * and values are policy parameters for the policy (typically objects | `undefined`)
+ */
+export interface PermissionData {
+  [toolIpfsCid: string]: {
+    [policyIpfsCid: string]: {
+      // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
+      [paramName: string]: any;
+    };
+  };
 }
 
 export interface PermitAppParams {
   pkpTokenId: string;
   appId: string;
   appVersion: string;
-  permissionData: AppPermissionData;
+  permissionData: PermissionData;
 }
 
 export interface PermitAppOptions {
@@ -39,9 +47,7 @@ export interface SetToolPolicyParametersParams {
   pkpTokenId: string;
   appId: string;
   appVersion: string;
-  toolIpfsCids: string[];
-  policyIpfsCids: string[][];
-  policyParameterValues: string[][];
+  policyParams: PermissionData;
 }
 
 export interface SetToolPolicyParametersOptions {
@@ -90,18 +96,4 @@ export interface GetAllToolsAndPoliciesForAppParams {
 export interface GetAllToolsAndPoliciesForAppOptions {
   signer: Signer;
   args: GetAllToolsAndPoliciesForAppParams;
-}
-
-// ==================================================================================
-// Response Types
-// ==================================================================================
-
-export interface PolicyWithParameters {
-  policyIpfsCid: string;
-  policyParameterValues: string;
-}
-
-export interface ToolWithPolicies {
-  toolIpfsCid: string;
-  policies: PolicyWithParameters[];
 }
