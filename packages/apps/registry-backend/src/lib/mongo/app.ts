@@ -3,7 +3,7 @@ import { model, Schema } from 'mongoose';
 const AppSchema = new Schema(
   {
     appId: { type: Number, required: true, unique: true },
-    activeVersion: { type: Number, required: true },
+    activeVersion: { type: Number },
     name: { type: String, required: true },
     description: { type: String, required: true },
     contactEmail: { type: String, required: true },

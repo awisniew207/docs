@@ -17,8 +17,8 @@ export const requireAppVersion = (versionParam = 'version') => {
     const reqWithApp = req as RequestWithApp;
     debug('Processing app version request');
 
-    const version = req.params[versionParam];
-    debug('Extracted version from params', {
+    const version = req.params[versionParam] || req.body.version || req.body.activeVersion;
+    debug('Extracted version from params/body', {
       versionParam,
       version,
       appId: reqWithApp.vincentApp.appId,

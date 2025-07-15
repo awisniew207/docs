@@ -11,7 +11,7 @@ import { Features } from '../../../features';
 import { requireAppVersionNotOnChain } from './requireAppVersionNotOnChain';
 import { requireAppOnChain, withAppOnChain } from './requireAppOnChain';
 import { ethersSigner } from '../../ethersSigner';
-import { getAppById } from '@lit-protocol/vincent-contracts-sdk';
+import { getAppById, getAppVersion } from '@lit-protocol/vincent-contracts-sdk';
 
 const NEW_APP_APPVERSION = 1;
 const MAX_APPID_RETRY_ATTEMPTS = 20;
@@ -551,5 +551,59 @@ export function registerRoutes(app: Express) {
         return;
       });
     }),
+  );
+
+  // Set the active version of an app
+  app.post(
+    '/app/:appId/setActiveVersion',
+    requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
+    requireAppVersion(),
+    withVincentAuth(
+      withAppVersion(async (req, res) => {
+        const { vincentApp, vincentAppVersion } = req;
+
+        if (vincentApp.isDeleted) {
+          res.status(400).json({
+            message: 'Cannot set an app version as active if its app is deleted',
+          });
+          return;
+        }
+
+        if (vincentAppVersion.isDeleted || !vincentAppVersion.enabled) {
+          res.status(400).json({
+            message:
+              'Cannot set deleted or disabled app version as active. Make sure the appVersion is not deleted and is enabled, then try again.',
+          });
+          return;
+        }
+
+        // Check if the app version exists on-chain
+        const appVersionOnChain = await getAppVersion({
+          signer: ethersSigner,
+          args: {
+            appId: vincentApp.appId.toString(),
+            version: vincentAppVersion.version.toString(),
+          },
+        });
+
+        if (!appVersionOnChain) {
+          res.status(400).json({
+            message: `App version ${vincentAppVersion.version} must be published on-chain to be made the active version`,
+          });
+          return;
+        }
+
+        // Update the active version using updateOne()
+        await App.updateOne(
+          { appId: vincentApp.appId },
+          { activeVersion: vincentAppVersion.version },
+        );
+
+        res.json({ message: 'App activeVersion updated successfully' });
+        return;
+      }),
+    ),
   );
 }
