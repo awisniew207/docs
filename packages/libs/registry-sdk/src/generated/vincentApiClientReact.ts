@@ -149,6 +149,17 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['AppVersionTool'],
       }),
+      setAppActiveVersion: build.mutation<
+        SetAppActiveVersionApiResponse,
+        SetAppActiveVersionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/setActiveVersion`,
+          method: 'POST',
+          body: queryArg.appSetActiveVersion,
+        }),
+        invalidatesTags: ['App'],
+      }),
       listAllTools: build.query<ListAllToolsApiResponse, ListAllToolsApiArg>({
         query: () => ({ url: `/tools` }),
         providesTags: ['Tool'],
@@ -363,13 +374,13 @@ export type EditAppApiArg = {
   appEdit: AppEdit;
 };
 export type DeleteAppApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteAppApiArg = {
   /** ID of the target application */
   appId: number;
 };
 export type UndeleteAppApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteAppApiArg = {
   /** ID of the target application */
   appId: number;
@@ -403,7 +414,7 @@ export type EditAppVersionApiArg = {
   appVersionEdit: AppVersionEdit;
 };
 export type DeleteAppVersionApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteAppVersionApiArg = {
   /** ID of the target application */
   appId: number;
@@ -457,7 +468,7 @@ export type EditAppVersionToolApiArg = {
   appVersionToolEdit: AppVersionToolEdit;
 };
 export type DeleteAppVersionToolApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteAppVersionToolApiArg = {
   /** ID of the target application */
   appId: number;
@@ -467,7 +478,7 @@ export type DeleteAppVersionToolApiArg = {
   toolPackageName: string;
 };
 export type UndeleteAppVersionApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteAppVersionApiArg = {
   /** ID of the target application */
   appId: number;
@@ -475,7 +486,7 @@ export type UndeleteAppVersionApiArg = {
   version: number;
 };
 export type UndeleteAppVersionToolApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteAppVersionToolApiArg = {
   /** ID of the target application */
   appId: number;
@@ -483,6 +494,14 @@ export type UndeleteAppVersionToolApiArg = {
   appVersion: number;
   /** The NPM package name */
   toolPackageName: string;
+};
+export type SetAppActiveVersionApiResponse =
+  /** status 200 OK - Active version successfully set */ GenericResultMessage;
+export type SetAppActiveVersionApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** The version to set as active */
+  appSetActiveVersion: AppSetActiveVersion;
 };
 export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolListRead;
 export type ListAllToolsApiArg = void;
@@ -505,7 +524,7 @@ export type EditToolApiArg = {
   /** Developer-defined updated tool details */
   toolEdit: ToolEdit;
 };
-export type DeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type DeleteToolApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type DeleteToolApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -548,20 +567,20 @@ export type EditToolVersionApiArg = {
   toolVersionEdit: ToolVersionEdit;
 };
 export type DeleteToolVersionApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteToolVersionApiArg = {
   /** The NPM package name */
   packageName: string;
   /** NPM semver of the target tool version */
   version: string;
 };
-export type UndeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type UndeleteToolApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type UndeleteToolApiArg = {
   /** The NPM package name */
   packageName: string;
 };
 export type UndeleteToolVersionApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteToolVersionApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -589,7 +608,7 @@ export type EditPolicyApiArg = {
   /** Developer-defined updated policy details */
   policyEdit: PolicyEdit;
 };
-export type DeletePolicyApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type DeletePolicyApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type DeletePolicyApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -621,7 +640,7 @@ export type EditPolicyVersionApiArg = {
   policyVersionEdit: PolicyVersionEdit;
 };
 export type DeletePolicyVersionApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeletePolicyVersionApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -641,13 +660,13 @@ export type ChangePolicyOwnerApiArg = {
   /** Developer-defined updated policy details */
   changeOwner: ChangeOwner;
 };
-export type UndeletePolicyApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type UndeletePolicyApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type UndeletePolicyApiArg = {
   /** The NPM package name */
   packageName: string;
 };
 export type UndeletePolicyVersionApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeletePolicyVersionApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -758,7 +777,7 @@ export type AppEdit = {
   /** Active version of the application */
   activeVersion?: number;
 };
-export type DeleteResponse = {
+export type GenericResultMessage = {
   /** Success message */
   message: string;
 };
@@ -847,6 +866,10 @@ export type AppVersionToolCreate = {
 export type AppVersionToolEdit = {
   /** Policies that are supported by this tool, but are hidden from users of this app specifically */
   hiddenSupportedPolicies?: string[];
+};
+export type AppSetActiveVersion = {
+  /** The version to set as active */
+  activeVersion: number;
 };
 export type Tool = {
   /** Timestamp when this was last modified */
@@ -1210,6 +1233,7 @@ export const {
   useDeleteAppVersionToolMutation,
   useUndeleteAppVersionMutation,
   useUndeleteAppVersionToolMutation,
+  useSetAppActiveVersionMutation,
   useListAllToolsQuery,
   useLazyListAllToolsQuery,
   useCreateToolMutation,

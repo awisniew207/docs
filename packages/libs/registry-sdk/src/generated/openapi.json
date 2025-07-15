@@ -44,7 +44,7 @@
           "message"
         ]
       },
-      "DeleteResponse": {
+      "GenericResultMessage": {
         "type": "object",
         "properties": {
           "message": {
@@ -336,6 +336,20 @@
           "name",
           "description",
           "managerAddress"
+        ],
+        "additionalProperties": false
+      },
+      "AppSetActiveVersion": {
+        "type": "object",
+        "properties": {
+          "activeVersion": {
+            "type": "number",
+            "description": "The version to set as active",
+            "example": 2
+          }
+        },
+        "required": [
+          "activeVersion"
         ],
         "additionalProperties": false
       },
@@ -1504,7 +1518,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -1560,7 +1574,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -1862,7 +1876,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -2292,7 +2306,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -2359,7 +2373,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -2436,7 +2450,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -2446,6 +2460,74 @@
           },
           "404": {
             "description": "Application, version, or tool not found"
+          },
+          "422": {
+            "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/setActiveVersion": {
+      "post": {
+        "tags": [
+          "App"
+        ],
+        "summary": "Sets the active version of an application",
+        "operationId": "setAppActiveVersion",
+        "security": [
+          {
+            "siweAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "The version to set as active",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppSetActiveVersion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK - Active version successfully set",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResultMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Application or version not found"
           },
           "422": {
             "description": "Validation exception"
@@ -2696,7 +2778,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3068,7 +3150,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3126,7 +3208,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3187,7 +3269,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3447,7 +3529,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3708,7 +3790,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3877,7 +3959,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
@@ -3938,7 +4020,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
+                  "$ref": "#/components/schemas/GenericResultMessage"
                 }
               }
             }
