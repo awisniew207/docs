@@ -3,6 +3,7 @@ import { VersionDetails } from '@/components/developer-dashboard/app/views/AppVe
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { AppVersionPublishedButtons } from '../wrappers/ui/AppVersionPublishedButtons';
 import { AppVersionUnpublishedButtons } from '../wrappers/ui/AppVersionUnpublishedButtons';
+import { AppVersionDeletedButtons } from '../wrappers/ui/AppVersionDeletedButtons';
 import { App, AppVersion, AppVersionTool } from '@/types/developer-dashboard/appTypes';
 import {
   App as ContractApp,
@@ -29,7 +30,8 @@ export function AppVersionDetailView({
   isAppRegistered,
 }: AppVersionDetailViewProps) {
   const isPublished = blockchainAppVersion !== null;
-  const isAppDeleted = blockchainAppData?.isDeleted;
+  const isAppDeletedOnChain = blockchainAppData?.isDeleted;
+  const isAppVersionDeletedRegistry = versionData.isDeleted;
   const isVersionEnabled = versionData?.enabled ?? false;
 
   return (
@@ -74,18 +76,22 @@ export function AppVersionDetailView({
           </div>
         </div>
         <div className="p-6 space-y-3">
-          {isPublished && !isAppDeleted ? (
+          {isPublished && !isAppDeletedOnChain && !isAppVersionDeletedRegistry ? (
             <AppVersionPublishedButtons
               appId={versionData.appId}
               versionId={versionData.version}
               appVersionData={blockchainAppVersion}
               refetchBlockchainAppVersionData={refetchBlockchainAppVersionData}
             />
-          ) : isPublished && isAppDeleted ? (
-            <StatusMessage
-              message="This app is deleted in the on-chain Vincent Registry. Please undelete the app to enable version modification."
-              type="info"
-            />
+          ) : isPublished && isAppDeletedOnChain ? (
+            <>
+              <StatusMessage
+                message="This app is deleted in the on-chain Vincent Registry. Please undelete the app to enable version modification."
+                type="info"
+              />
+            </>
+          ) : isAppVersionDeletedRegistry ? (
+            <AppVersionDeletedButtons appVersion={versionData} />
           ) : (
             <AppVersionUnpublishedButtons
               appId={versionData.appId}
