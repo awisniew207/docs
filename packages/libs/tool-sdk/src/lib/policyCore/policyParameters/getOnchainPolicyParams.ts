@@ -6,6 +6,7 @@ import {
   type ToolPolicyParameterData,
   type ValidateToolExecutionAndGetPoliciesResult,
 } from '@lit-protocol/vincent-contracts-sdk';
+import { bigintReplacer } from '../../utils';
 
 export const getDecodedPolicyParams = async ({
   decodedPolicies,
@@ -14,7 +15,7 @@ export const getDecodedPolicyParams = async ({
   decodedPolicies: ToolPolicyParameterData;
   policyIpfsCid: string;
 }): Promise<Record<string, any> | undefined> => {
-  console.log('All on-chain policy params:', JSON.stringify(decodedPolicies));
+  console.log('All on-chain policy params:', JSON.stringify(decodedPolicies, bigintReplacer));
 
   const policyParams = decodedPolicies[policyIpfsCid];
 

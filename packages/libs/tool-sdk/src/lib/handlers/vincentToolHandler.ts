@@ -1,22 +1,22 @@
 import { ethers } from 'ethers';
 
+import type { BaseContext } from '../types';
 import {
   PolicyEvaluationResultContext,
   ToolConsumerContext,
   ToolExecutionPolicyContext,
   VincentTool,
 } from '../types';
-import type { BaseContext } from '../types';
-import { getPkpInfo } from '../toolCore/helpers';
+import { getPkpInfo, ToolPolicyMap } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
 import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
 import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import { validatePolicies } from '../toolCore/helpers/validatePolicies';
-import { ToolPolicyMap } from '../toolCore/helpers';
 import { z } from 'zod';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
 import type { BaseToolContext } from '../toolCore/toolConfig/context/types';
+import { bigintReplacer } from '../utils';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -185,7 +185,7 @@ export const vincentToolHandler = <
         toolIpfsCid,
       });
 
-      console.log('validatedPolicies', JSON.stringify(validatedPolicies));
+      console.log('validatedPolicies', JSON.stringify(validatedPolicies, bigintReplacer));
 
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
@@ -193,7 +193,10 @@ export const vincentToolHandler = <
         context: baseContext,
       });
 
-      console.log('policyEvaluationResults', JSON.stringify(policyEvaluationResults));
+      console.log(
+        'policyEvaluationResults',
+        JSON.stringify(policyEvaluationResults, bigintReplacer),
+      );
 
       policyEvalResults = policyEvaluationResults;
 
@@ -228,7 +231,7 @@ export const vincentToolHandler = <
         },
       );
 
-      console.log('toolExecutionResult', toolExecutionResult);
+      console.log('toolExecutionResult', JSON.stringify(toolExecutionResult, bigintReplacer));
 
       Lit.Actions.setResponse({
         response: JSON.stringify({

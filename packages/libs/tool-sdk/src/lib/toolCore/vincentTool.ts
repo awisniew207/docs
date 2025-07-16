@@ -17,6 +17,7 @@ import { getSchemaForToolResult, validateOrFail } from './helpers/zod';
 import { isToolFailureResult } from './helpers/typeGuards';
 import { ToolPolicyMap } from './helpers';
 import { ToolConfigLifecycleFunction, VincentToolConfig } from './toolConfig/types';
+import { bigintReplacer } from '../utils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -139,7 +140,7 @@ export function createVincentTool<
         },
       );
 
-      console.log('ToolConfig execute result', result);
+      console.log('ToolConfig execute result', JSON.stringify(result, bigintReplacer));
 
       const { schemaToUse } = getSchemaForToolResult({
         value: result,
@@ -191,7 +192,7 @@ export function createVincentTool<
 
           const result = await precheckFn({ toolParams }, context);
 
-          console.log('ToolConfig precheck result', JSON.stringify(result));
+          console.log('ToolConfig precheck result', JSON.stringify(result, bigintReplacer));
           const { schemaToUse } = getSchemaForToolResult({
             value: result,
             successResultSchema: precheckSuccessSchema,
