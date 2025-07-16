@@ -30,9 +30,9 @@ export function AppVersionPublishedButtons({
   const [success, setSuccess] = useState<string | null>(null);
 
   // Mutations for enable/disable
-  const [enableAppVersion, { isLoading: isEnabling }] =
+  const [enableAppVersion, { isLoading: isEnabling, error: enableAppVersionError }] =
     vincentApiClient.useEnableAppVersionMutation();
-  const [disableAppVersion, { isLoading: isDisabling }] =
+  const [disableAppVersion, { isLoading: isDisabling, error: disableAppVersionError }] =
     vincentApiClient.useDisableAppVersionMutation();
 
   const registryEnabled = appVersionData.enabled;
@@ -103,8 +103,13 @@ export function AppVersionPublishedButtons({
 
   const isLoading = isProcessing || isEnabling || isDisabling;
 
-  if (error) {
-    return <MutationButtonStates type="error" errorMessage={error} />;
+  if (error || enableAppVersionError || disableAppVersionError) {
+    const errorMessage =
+      error ||
+      (enableAppVersionError as any)?.message ||
+      (disableAppVersionError as any)?.message ||
+      'Failed to update app version.';
+    return <MutationButtonStates type="error" errorMessage={errorMessage} />;
   }
 
   if (success) {

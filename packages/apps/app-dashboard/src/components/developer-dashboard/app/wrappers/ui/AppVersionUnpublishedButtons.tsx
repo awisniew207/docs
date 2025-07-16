@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { PublishAppVersionWrapper } from '../PublishAppVersionWrapper';
+import MutationButtonStates from '@/components/layout/MutationButtonStates';
 
 interface AppVersionUnpublishedButtonsProps {
   appId: number;
@@ -19,9 +20,9 @@ export function AppVersionUnpublishedButtons({
   const navigate = useNavigate();
 
   // Mutations for enable/disable
-  const [enableAppVersion, { isLoading: isEnabling }] =
+  const [enableAppVersion, { isLoading: isEnabling, error: enableAppVersionError }] =
     vincentApiClient.useEnableAppVersionMutation();
-  const [disableAppVersion, { isLoading: isDisabling }] =
+  const [disableAppVersion, { isLoading: isDisabling, error: disableAppVersionError }] =
     vincentApiClient.useDisableAppVersionMutation();
 
   const onEnableVersion = () => {
@@ -39,6 +40,14 @@ export function AppVersionUnpublishedButtons({
   };
 
   const isLoading = isEnabling || isDisabling;
+
+  if (enableAppVersionError || disableAppVersionError) {
+    const errorMessage =
+      (enableAppVersionError as any)?.message ||
+      (disableAppVersionError as any)?.message ||
+      'Failed to update app version.';
+    return <MutationButtonStates type="error" errorMessage={errorMessage} />;
+  }
 
   return (
     <div className="flex flex-wrap gap-3">
