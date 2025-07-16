@@ -27,6 +27,7 @@ export {
   getPermittedAppVersionForPkp,
   getAllPermittedAppIdsForPkp,
   getAllToolsAndPoliciesForApp,
+  validateToolExecutionAndGetPolicies,
 } from './facets/UserView';
 
 // Types/App exports
@@ -65,6 +66,7 @@ export type {
 // Types/User exports
 export type {
   PermissionData,
+  ToolPolicyParameterData,
   PermitAppParams,
   PermitAppOptions,
   UnPermitAppParams,
@@ -79,4 +81,7 @@ export type {
   GetAllPermittedAppIdsForPkpOptions,
   GetAllToolsAndPoliciesForAppParams,
   GetAllToolsAndPoliciesForAppOptions,
+  ValidateToolExecutionAndGetPoliciesParams,
+  ValidateToolExecutionAndGetPoliciesOptions,
+  ValidateToolExecutionAndGetPoliciesResult,
 } from './types/User';

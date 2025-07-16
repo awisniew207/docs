@@ -1,8 +1,12 @@
-import * as CBOR2 from 'cbor2';
+import { decode, encode } from 'cbor2';
 import { arrayify } from 'ethers/lib/utils';
 
 import type { PermissionData } from '../types/User';
-import type { PermissionDataOnChain, ToolWithPolicies } from '../types/internal';
+import type {
+  PermissionDataOnChain,
+  PolicyWithParameters,
+  ToolWithPolicies,
+} from '../types/internal';
 
 /**
  * Converts a policy parameters object to the flattened array format required by the contract
@@ -36,7 +40,7 @@ export function encodePermissionDataForChain(
 
       // Encode the policy parameters using CBOR2
       const policyParams = toolPolicies[policyIpfsCid];
-      const encodedParams = CBOR2.encode(policyParams);
+      const encodedParams = encode(policyParams, { collapseBigInts: false });
 
       // Convert the encoded bytes to a hex string for the contract
       toolPolicyParameterValues.push('0x' + Buffer.from(encodedParams).toString('hex'));
@@ -54,30 +58,43 @@ export function encodePermissionDataForChain(
 }
 
 /**
+ * Decodes policy parameters from a single policy's encoded parameters
+ *
+ * @param policy - PolicyWithParameters object containing policyIpfsCid and encoded policyParameterValues
+ * @returns The decoded policy parameters object, or undefined if no parameters are provided
+ */
+export function decodePolicyParametersFromChain(
+  policy: PolicyWithParameters,
+): { [paramName: string]: any } | undefined {
+  const encodedParams = policy.policyParameterValues;
+
+  if (encodedParams && encodedParams.length > 0) {
+    // arrayify() has no Buffer dep, validates well-formed, and handles leading `0x`
+    const byteArray = arrayify(encodedParams);
+    return decode(byteArray);
+  }
+
+  return undefined;
+}
+
+/**
  * Converts ToolWithPolicies[] from the contract to a PermissionData object
  *
  * @param toolsWithPolicies - Array of ToolWithPolicies objects
  * @returns The nested policy parameters object. PolicyParameters have been decoded using `CBOR2`.
  */
-
 export function decodePermissionDataFromChain(
   toolsWithPolicies: ToolWithPolicies[],
 ): PermissionData {
   const permissionData: PermissionData = {};
 
   for (const tool of toolsWithPolicies) {
-    const toolIpfsCid = tool.toolIpfsCid;
+    const { toolIpfsCid } = tool;
     permissionData[toolIpfsCid] = {};
 
     for (const policy of tool.policies) {
-      const policyIpfsCid = policy.policyIpfsCid;
-      const encodedParams = policy.policyParameterValues;
-
-      if (encodedParams && encodedParams.length > 0) {
-        // arrayify() has no Buffer dep, validates well-formed, and handles leading `0x`
-        const byteArray = arrayify(encodedParams);
-        permissionData[toolIpfsCid][policyIpfsCid] = CBOR2.decode(byteArray);
-      }
+      const { policyIpfsCid } = policy;
+      permissionData[toolIpfsCid][policyIpfsCid] = decodePolicyParametersFromChain(policy);
     }
   }
 

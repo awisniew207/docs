@@ -90,7 +90,10 @@ export async function getAppVersion({
     const decodedError = decodeContractError(error, contract);
 
     // Check if the error is due to AppVersionNotRegistered
-    if (decodedError.includes('AppVersionNotRegistered')) {
+    if (
+      decodedError.includes('AppVersionNotRegistered') ||
+      decodedError.includes('AppNotRegistered')
+    ) {
       return null;
     }
 

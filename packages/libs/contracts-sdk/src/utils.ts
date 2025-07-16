@@ -63,7 +63,7 @@ function isBigNumberOrBigInt(arg: unknown) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeContractError(error: any, contract: Contract): string {
-  console.error('Decoding contract error:', error);
+  // console.error('Decoding contract error:', error); // All contract revert errors appear to be logged by ethers :)
   try {
     // Check if it's a contract revert error
     if (error.code === 'CALL_EXCEPTION' || error.code === 'UNPREDICTABLE_GAS_LIMIT') {

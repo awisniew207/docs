@@ -1,15 +1,22 @@
 import { utils } from 'ethers';
 import { decodeContractError, createContract } from '../utils';
-import { decodePermissionDataFromChain } from '../utils/policyParams';
+import {
+  decodePermissionDataFromChain,
+  decodePolicyParametersFromChain,
+} from '../utils/policyParams';
 
 import type {
   GetAllRegisteredAgentPkpsOptions,
   GetPermittedAppVersionForPkpOptions,
   GetAllPermittedAppIdsForPkpOptions,
   GetAllToolsAndPoliciesForAppOptions,
+  ValidateToolExecutionAndGetPoliciesOptions,
   PermissionData,
+  ToolPolicyParameterData,
+  ValidateToolExecutionAndGetPoliciesResult,
 } from '../types/User';
-import type { ToolWithPolicies } from '../types/internal';
+
+import type { ToolWithPolicies, ToolExecutionValidation } from '../types/internal';
 
 /**
  * Get all PKP tokens that are registered as agents for a specific user address
@@ -108,5 +115,54 @@ export async function getAllToolsAndPoliciesForApp({
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Tools And Policies For App: ${decodedError}`);
+  }
+}
+
+/**
+ * Validates tool execution and gets policies for a specific tool
+ * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
+ * @param args - Object containing delegatee, pkpTokenId, and toolIpfsCid
+ * @returns Object containing validation result with isPermitted, appId, appVersion, and policies
+ */
+export async function validateToolExecutionAndGetPolicies({
+  signer,
+  args,
+}: ValidateToolExecutionAndGetPoliciesOptions): Promise<ValidateToolExecutionAndGetPoliciesResult> {
+  const contract = createContract(signer);
+
+  try {
+    const pkpTokenId = utils.parseUnits(args.pkpTokenId, 0);
+
+    const validation = await contract.validateToolExecutionAndGetPolicies(
+      args.delegatee,
+      pkpTokenId,
+      args.toolIpfsCid,
+    );
+
+    // Convert the validation result to our TypeScript interface
+    const validationResult: ToolExecutionValidation = {
+      isPermitted: validation.isPermitted,
+      appId: validation.appId.toString(),
+      appVersion: validation.appVersion.toString(),
+      policies: validation.policies,
+    };
+
+    // Decode the policy parameters for each policy for convenience
+    const decodedPolicies: ToolPolicyParameterData = {};
+
+    for (const policy of validation.policies) {
+      const policyIpfsCid = policy.policyIpfsCid;
+      decodedPolicies[policyIpfsCid] = decodePolicyParametersFromChain(policy);
+    }
+
+    return {
+      isPermitted: validationResult.isPermitted,
+      appId: validationResult.appId,
+      appVersion: validationResult.appVersion,
+      decodedPolicies,
+    };
+  } catch (error: unknown) {
+    const decodedError = decodeContractError(error, contract);
+    throw new Error(`Failed to Validate Tool Execution And Get Policies: ${decodedError}`);
   }
 }

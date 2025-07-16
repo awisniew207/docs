@@ -1,21 +1,24 @@
 import { Signer } from 'ethers';
 
-// ==================================================================================
-// User Mutation Types
-// ==================================================================================
+/**
+ * Represents the decoded parameters for policies associated with a single tool
+ * Keys are policy IPFS CIDs, values are policy parameters for the policy
+ */
+export interface ToolPolicyParameterData {
+  [policyIpfsCid: string]:
+    | {
+        // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
+        [paramName: string]: any;
+      }
+    | undefined;
+}
 
 /**
  * Represents a nested structure of tool and policy parameters
- * Keys are tool IPFS CIDs, values are objects where their keys are policy IPFS CIDs
- * and values are policy parameters for the policy (typically objects | `undefined`)
+ * Keys are tool IPFS CIDs, values are ToolPolicyParameterData objects
  */
 export interface PermissionData {
-  [toolIpfsCid: string]: {
-    [policyIpfsCid: string]: {
-      // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
-      [paramName: string]: any;
-    };
-  };
+  [toolIpfsCid: string]: ToolPolicyParameterData;
 }
 
 export interface PermitAppParams {
@@ -96,4 +99,22 @@ export interface GetAllToolsAndPoliciesForAppParams {
 export interface GetAllToolsAndPoliciesForAppOptions {
   signer: Signer;
   args: GetAllToolsAndPoliciesForAppParams;
+}
+
+export interface ValidateToolExecutionAndGetPoliciesParams {
+  delegatee: string;
+  pkpTokenId: string;
+  toolIpfsCid: string;
+}
+
+export interface ValidateToolExecutionAndGetPoliciesOptions {
+  signer: Signer;
+  args: ValidateToolExecutionAndGetPoliciesParams;
+}
+
+export interface ValidateToolExecutionAndGetPoliciesResult {
+  isPermitted: boolean;
+  appId: string;
+  appVersion: string;
+  decodedPolicies: ToolPolicyParameterData;
 }

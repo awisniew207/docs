@@ -13,3 +13,10 @@ export interface PermissionDataOnChain {
   policyIpfsCids: string[][];
   policyParameterValues: string[][];
 }
+
+export interface ToolExecutionValidation {
+  isPermitted: boolean;
+  appId: string;
+  appVersion: string;
+  policies: PolicyWithParameters[];
+}
