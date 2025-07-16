@@ -101,7 +101,7 @@ export function AppVersionDetailView({
               appId={versionData.appId}
               versionId={versionData.version}
               isVersionEnabled={isVersionEnabledRegistry}
-              isAppRegistered={isAppPublished}
+              isAppPublished={isAppPublished}
             />
           )}
         </div>
