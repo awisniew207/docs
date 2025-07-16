@@ -657,6 +657,9 @@ importers:
       '@lit-protocol/vincent-app-sdk':
         specifier: workspace:*
         version: link:../../libs/app-sdk
+      '@lit-protocol/vincent-contracts-sdk':
+        specifier: workspace:*
+        version: link:../../libs/contracts-sdk
       '@lit-protocol/vincent-policy-spending-limit':
         specifier: workspace:*
         version: link:../policy-spending-limit
@@ -718,6 +721,9 @@ importers:
       '@lit-protocol/lit-node-client':
         specifier: ^7.0.8
         version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/vincent-contracts-sdk':
+        specifier: workspace:*
+        version: link:../contracts-sdk
       '@lit-protocol/vincent-tool-sdk':
         specifier: workspace:*
         version: link:../tool-sdk
@@ -770,6 +776,9 @@ importers:
 
   packages/libs/contracts-sdk:
     dependencies:
+      '@ethersproject/abi':
+        specifier: 5.8.0
+        version: 5.8.0
       cbor2:
         specifier: ^2.0.1
         version: 2.0.1
@@ -874,6 +883,9 @@ importers:
 
   packages/libs/tool-sdk:
     dependencies:
+      '@lit-protocol/vincent-contracts-sdk':
+        specifier: workspace:*
+        version: link:../contracts-sdk
       ethers:
         specifier: 5.8.0
         version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
