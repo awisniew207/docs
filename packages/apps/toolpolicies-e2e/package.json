@@ -8,6 +8,7 @@
     "@lit-protocol/vincent-tool-erc20-approval": "workspace:*",
     "@lit-protocol/vincent-tool-sdk": "workspace:*",
     "@lit-protocol/vincent-tool-uniswap-swap": "workspace:*",
+    "@lit-protocol/vincent-contracts-sdk": "workspace:*",
     "esbuild": "^0.25.5",
     "esbuild-plugin-polyfill-node": "^0.3.0",
     "ethers": "5.8.0",

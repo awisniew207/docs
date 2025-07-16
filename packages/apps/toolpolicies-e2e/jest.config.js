@@ -11,14 +11,14 @@ module.exports = {
     '<rootDir>/test-e2e/**/*.test.ts',
   ],
   transformIgnorePatterns: [
-    // This pattern matches the PNPM format where @ in package names is replaced with +
-    '<rootDir>/node_modules/.pnpm/(?!(@noble\\+secp256k1)@)',
+    // PNPM style: scoped packages with `.` become `+`, and non-scoped stay the same
+    '<rootDir>/node_modules/.pnpm/(?!(@noble\\+secp256k1|cbor2|@cto\\.af\\+wtf8)@)',
 
-    // For the absolute path pattern
-    `${path.join(__dirname, '../..')}/node_modules/.pnpm/(?!(@noble\\+secp256k1)@)`,
+    // Absolute path variant (in case of different module resolution by Jest)
+    `${path.join(__dirname, '../..')}/node_modules/.pnpm/(?!(@noble\\+secp256k1|cbor2|@cto\\.af\\+wtf8)@)`,
 
-    // For the relative pattern matching node_modules structure
-    'node_modules/(?!.pnpm|@noble/secp256k1)',
+    // Fallback for non-PNPM node_modules structure
+    'node_modules/(?!.pnpm|@noble/secp256k1|cbor2|@cto\\.af/wtf8)',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coverageDirectory: 'coverage',
