@@ -3,6 +3,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
+import { ThemeType } from '../consent/ui/theme';
 
 interface WalletAuthProps {
   authWithEthWallet: (
@@ -10,9 +11,10 @@ interface WalletAuthProps {
     signMessage: (message: string) => Promise<string>,
   ) => Promise<void>;
   setView: (view: string) => void;
+  theme: ThemeType;
 }
 
-export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuthProps) {
+export default function EthWalletAuth({ authWithEthWallet, setView, theme }: WalletAuthProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const { address, isConnected } = useAccount();
@@ -71,17 +73,19 @@ export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuth
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-6">
-        <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-black animate-spin mb-4"></div>
-        <p className="text-sm text-gray-600">Authenticating...</p>
+        <div
+          className={`w-12 h-12 rounded-full border-4 border-t-black animate-spin mb-4 ${theme.cardBorder}`}
+        ></div>
+        <p className={`text-sm ${theme.textMuted}`}>Authenticating...</p>
       </div>
     );
   }
 
   return (
     <>
-      <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">Connect Wallet</h1>
+      <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>Connect Wallet</h1>
 
-      <p className="text-sm text-gray-600 text-center mb-6">
+      <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
         {isWalletReady
           ? 'Sign a SIWE message to authenticate'
           : 'Connect your wallet for web3 authentication'}
@@ -94,8 +98,10 @@ export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuth
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
               <span className="text-sm font-medium text-green-800">Connected wallet</span>
             </div>
-            <div className="bg-white rounded p-2 border border-green-200">
-              <div className="font-mono text-xs text-gray-900 break-all text-center">{address}</div>
+            <div className={`rounded p-2 border ${theme.cardBg} ${theme.cardBorder}`}>
+              <div className={`font-mono text-xs break-all text-center ${theme.text}`}>
+                {address}
+              </div>
             </div>
           </div>
         </div>
@@ -123,7 +129,10 @@ export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuth
                       className="w-full"
                     >
                       {!connected && (
-                        <Button onClick={openConnectModal} className="w-full">
+                        <Button
+                          onClick={openConnectModal}
+                          className={`w-full ${theme.accentBg} ${theme.accentHover}`}
+                        >
                           Connect Wallet
                         </Button>
                       )}
@@ -134,7 +143,11 @@ export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuth
             </div>
           ) : (
             <div className="space-y-2">
-              <Button onClick={authenticate} disabled={loading} className="w-full">
+              <Button
+                onClick={authenticate}
+                disabled={loading}
+                className={`w-full ${theme.accentBg} ${theme.accentHover}`}
+              >
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
@@ -144,7 +157,10 @@ export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuth
                   'Sign In with Wallet'
                 )}
               </Button>
-              <Button onClick={() => disconnect()} variant="outline" className="w-full">
+              <Button
+                onClick={() => disconnect()}
+                className={`w-full ${theme.cardBg} ${theme.text} border ${theme.cardBorder} ${theme.itemHoverBg}`}
+              >
                 Disconnect
               </Button>
             </div>
@@ -157,7 +173,10 @@ export default function EthWalletAuth({ authWithEthWallet, setView }: WalletAuth
           )}
 
           <div className="pt-2">
-            <Button onClick={() => setView('default')} variant="outline" className="w-full">
+            <Button
+              onClick={() => setView('default')}
+              className={`w-full ${theme.cardBg} ${theme.text} border ${theme.cardBorder} ${theme.itemHoverBg}`}
+            >
               Back
             </Button>
           </div>

@@ -5,11 +5,13 @@ import { z } from 'zod';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { Button } from '@/components/shared/ui/button';
+import { ThemeType } from '../consent/ui/theme';
 
 interface StytchOTPProps {
   method: OtpMethod;
   authWithStytch: any;
   setView: React.Dispatch<React.SetStateAction<string>>;
+  theme: ThemeType;
 }
 
 type OtpMethod = 'email' | 'phone';
@@ -23,7 +25,7 @@ const codeSchema = z
 /**
  * One-time passcodes can be sent via phone number through Stytch
  */
-const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
+const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) => {
   const [step, setStep] = useState<OtpStep>('submit');
   const [userId, setUserId] = useState<string>('');
   const [methodId, setMethodId] = useState<string>('');
@@ -169,10 +171,10 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
     <>
       {step === 'submit' && (
         <>
-          <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">
+          <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
             Enter your {method}
           </h1>
-          <p className="text-sm text-gray-600 text-center mb-6">
+          <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
             A verification code will be sent to your {method}
           </p>
 
@@ -180,7 +182,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
             <form className="space-y-4" onSubmit={sendPasscode}>
               {method === 'email' ? (
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
+                  <label htmlFor="email" className={`text-sm font-medium block ${theme.text}`}>
                     Email address
                   </label>
                   <input
@@ -189,14 +191,14 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                     onChange={(e) => setUserId(e.target.value)}
                     type="email"
                     name="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
                     placeholder="your@email.com"
                     autoComplete="email"
                   />
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <label htmlFor="phone" className="text-sm font-medium text-gray-700 block">
+                  <label htmlFor="phone" className={`text-sm font-medium block ${theme.text}`}>
                     Phone number
                   </label>
                   <div className="phone-input-container">
@@ -206,7 +208,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                       defaultCountry="US"
                       value={userId}
                       onChange={(value) => setUserId(value || '')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
                       placeholder="+1 (555) 000-0000"
                     />
                   </div>
@@ -222,7 +224,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
               <div className="pt-2">
                 <Button
                   type="submit"
-                  className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`${theme.accentBg} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send code'}
@@ -230,7 +232,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
 
                 <Button
                   onClick={() => setView('default')}
-                  className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors mt-3"
+                  className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-colors mt-3`}
                 >
                   Back
                 </Button>
@@ -242,17 +244,17 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
 
       {step === 'verify' && (
         <>
-          <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">
+          <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
             Check your {method}
           </h1>
-          <p className="text-sm text-gray-600 text-center mb-6">
+          <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
             Enter the 6-digit verification code sent to {userId}
           </p>
 
           <div className="w-full">
             <form className="space-y-4" onSubmit={authenticate}>
               <div className="space-y-2">
-                <label htmlFor="code" className="text-sm font-medium text-gray-700 block">
+                <label htmlFor="code" className={`text-sm font-medium block ${theme.text}`}>
                   Verification code
                 </label>
                 <input
@@ -264,7 +266,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
                   pattern="[0-9]{6}"
                   maxLength={6}
                   name="code"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center tracking-widest text-lg"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center tracking-widest text-lg ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
                   placeholder="000000"
                   autoComplete="one-time-code"
                 />
@@ -279,7 +281,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
               <div className="pt-2">
                 <Button
                   type="submit"
-                  className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`${theme.accentBg} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                   disabled={loading}
                 >
                   {loading ? 'Verifying...' : 'Verify code'}
@@ -287,7 +289,7 @@ const StytchOTP = ({ method, authWithStytch, setView }: StytchOTPProps) => {
 
                 <Button
                   onClick={() => setStep('submit')}
-                  className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors mt-3"
+                  className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-colors mt-3`}
                 >
                   Try again
                 </Button>

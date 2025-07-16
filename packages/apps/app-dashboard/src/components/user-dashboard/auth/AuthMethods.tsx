@@ -1,20 +1,22 @@
 import { Dispatch, SetStateAction } from 'react';
+import { ThemeType } from '../consent/ui/theme';
 
 interface AuthMethodsProps {
   setView: Dispatch<SetStateAction<string>>;
+  theme: ThemeType;
 }
 
-const AuthMethods = ({ setView }: AuthMethodsProps) => {
+const AuthMethods = ({ setView, theme }: AuthMethodsProps) => {
   return (
     <div className="space-y-3">
-      <h2 className="text-sm font-medium text-gray-700 mb-2">Select an authentication method:</h2>
+      <h2 className={`text-sm font-medium mb-2 ${theme.text}`}>Select an authentication method:</h2>
 
       <div
-        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        className={`w-full py-3 px-4 flex items-center justify-between ${theme.cardBg} border ${theme.cardBorder} rounded-lg ${theme.itemHoverBg} transition-colors cursor-pointer`}
         onClick={() => setView('email')}
       >
         <div className="flex items-center">
-          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+          <div className={`w-5 h-5 mr-3 flex items-center justify-center ${theme.textMuted}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
               <path
                 strokeLinecap="round"
@@ -24,10 +26,10 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
               />
             </svg>
           </div>
-          <span className="text-gray-700 text-sm font-medium">Continue with email</span>
+          <span className={`text-sm font-medium ${theme.text}`}>Continue with email</span>
         </div>
         <svg
-          className="w-4 h-4 text-gray-400"
+          className={`w-4 h-4 ${theme.textMuted}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -37,11 +39,11 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
       </div>
 
       <div
-        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        className={`w-full py-3 px-4 flex items-center justify-between ${theme.cardBg} border ${theme.cardBorder} rounded-lg ${theme.itemHoverBg} transition-colors cursor-pointer`}
         onClick={() => setView('phone')}
       >
         <div className="flex items-center">
-          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+          <div className={`w-5 h-5 mr-3 flex items-center justify-center ${theme.textMuted}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
               <path
                 strokeLinecap="round"
@@ -51,10 +53,10 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
               />
             </svg>
           </div>
-          <span className="text-gray-700 text-sm font-medium">Continue with phone</span>
+          <span className={`text-sm font-medium ${theme.text}`}>Continue with phone</span>
         </div>
         <svg
-          className="w-4 h-4 text-gray-400"
+          className={`w-4 h-4 ${theme.textMuted}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -64,11 +66,11 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
       </div>
 
       <div
-        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        className={`w-full py-3 px-4 flex items-center justify-between ${theme.cardBg} border ${theme.cardBorder} rounded-lg ${theme.itemHoverBg} transition-colors cursor-pointer`}
         onClick={() => setView('wallet')}
       >
         <div className="flex items-center">
-          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+          <div className={`w-5 h-5 mr-3 flex items-center justify-center ${theme.textMuted}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
               <path
                 strokeLinecap="round"
@@ -78,10 +80,10 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
               />
             </svg>
           </div>
-          <span className="text-gray-700 text-sm font-medium">Continue with wallet</span>
+          <span className={`text-sm font-medium ${theme.text}`}>Continue with wallet</span>
         </div>
         <svg
-          className="w-4 h-4 text-gray-400"
+          className={`w-4 h-4 ${theme.textMuted}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -91,11 +93,11 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
       </div>
 
       <div
-        className="w-full py-3 px-4 flex items-center justify-between bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        className={`w-full py-3 px-4 flex items-center justify-between ${theme.cardBg} border ${theme.cardBorder} rounded-lg ${theme.itemHoverBg} transition-colors cursor-pointer`}
         onClick={() => setView('webauthn')}
       >
         <div className="flex items-center">
-          <div className="w-5 h-5 text-gray-500 mr-3 flex items-center justify-center">
+          <div className={`w-5 h-5 mr-3 flex items-center justify-center ${theme.textMuted}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
               <path
                 strokeLinecap="round"
@@ -105,10 +107,10 @@ const AuthMethods = ({ setView }: AuthMethodsProps) => {
               />
             </svg>
           </div>
-          <span className="text-gray-700 text-sm font-medium">Use a passkey</span>
+          <span className={`text-sm font-medium ${theme.text}`}>Use a passkey</span>
         </div>
         <svg
-          className="w-4 h-4 text-gray-400"
+          className={`w-4 h-4 ${theme.textMuted}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

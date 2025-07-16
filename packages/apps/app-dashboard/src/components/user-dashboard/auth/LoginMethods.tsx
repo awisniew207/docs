@@ -1,4 +1,5 @@
 import { useState, Dispatch, SetStateAction } from 'react';
+import { ThemeType } from '../consent/ui/theme';
 
 import AuthMethods from './AuthMethods';
 import WebAuthn from './WebAuthn';
@@ -14,6 +15,7 @@ interface LoginProps {
   ) => Promise<void>;
   registerWithWebAuthn?: (credentialId: string) => Promise<void>;
   clearError?: () => void;
+  theme: ThemeType;
 }
 
 type AuthView = 'default' | 'email' | 'phone' | 'wallet' | 'webauthn';
@@ -24,6 +26,7 @@ export default function LoginMethods({
   authWithEthWallet,
   registerWithWebAuthn,
   clearError,
+  theme,
 }: LoginProps) {
   const [view, setView] = useState<AuthView>('default');
 
@@ -31,7 +34,7 @@ export default function LoginMethods({
     <>
       {view === 'default' && (
         <>
-          <AuthMethods setView={setView as Dispatch<SetStateAction<string>>} />
+          <AuthMethods setView={setView as Dispatch<SetStateAction<string>>} theme={theme} />
         </>
       )}
       {view === 'email' && (
@@ -39,6 +42,7 @@ export default function LoginMethods({
           method="email"
           authWithStytch={authWithStytch}
           setView={setView as Dispatch<SetStateAction<string>>}
+          theme={theme}
         />
       )}
       {view === 'phone' && (
@@ -46,12 +50,14 @@ export default function LoginMethods({
           method="phone"
           authWithStytch={authWithStytch}
           setView={setView as Dispatch<SetStateAction<string>>}
+          theme={theme}
         />
       )}
       {view === 'wallet' && (
         <EthWalletAuth
           authWithEthWallet={authWithEthWallet}
           setView={setView as Dispatch<SetStateAction<string>>}
+          theme={theme}
         />
       )}
       {view === 'webauthn' && (
@@ -60,6 +66,7 @@ export default function LoginMethods({
           registerWithWebAuthn={registerWithWebAuthn}
           setView={setView as Dispatch<SetStateAction<string>>}
           clearError={clearError}
+          theme={theme}
         />
       )}
     </>

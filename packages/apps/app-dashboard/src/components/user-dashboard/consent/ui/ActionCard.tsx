@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { ThemeType } from './theme';
 
@@ -13,6 +13,7 @@ interface ActionCardProps {
   loadingStatus?: string | null;
   error?: string | null;
   disabled?: boolean;
+  extraContent?: ReactNode;
 }
 
 export function ActionCard({
@@ -26,6 +27,7 @@ export function ActionCard({
   loadingStatus = null,
   error = null,
   disabled = false,
+  extraContent,
 }: ActionCardProps) {
   const isClickable = !isLoading && !disabled;
 
@@ -68,6 +70,7 @@ export function ActionCard({
             <h3 className={`text-sm font-medium ${theme.text}`}>{title}</h3>
             <p className={`text-xs ${theme.textMuted}`}>{description}</p>
           </div>
+          {extraContent && <div className="flex items-center justify-center">{extraContent}</div>}
         </div>
       )}
     </div>

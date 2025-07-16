@@ -9,6 +9,7 @@ import ConsentView from '@/components/user-dashboard/consent/Consent';
 import ConnectWithVincent from '@/layout/shared/ConnectWithVincent';
 import ProtectedByLit from '@/components/shared/ui/ProtectedByLit';
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { theme } from '@/components/user-dashboard/consent/ui/theme';
 
 export default function UserDashboard() {
   const authGuardElement = useAuthGuard();
@@ -44,7 +45,7 @@ export default function UserDashboard() {
           <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full border border-gray-100 overflow-hidden">
             <ConnectWithVincent signout={false} />
             <div className="p-6">
-              <ConsentView isUserDashboardFlow={true} />
+              <ConsentView isUserDashboardFlow={true} theme={theme(false)} />
             </div>
             <ProtectedByLit />
           </div>

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useAuthGuard } from '@/hooks/user-dashboard/consent/useAuthGuard';
-import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
+import Loading from '@/components/shared/ui/Loading';
 
 export default function AppsPage() {
   const authGuardElement = useAuthGuard();
@@ -13,7 +13,7 @@ export default function AppsPage() {
           <title>Vincent | My Applications</title>
           <meta name="description" content="View and manage your Vincent applications" />
         </Helmet>
-        <StatusMessage message="Loading applications..." type="info" />
+        <Loading />
       </>
     );
   }

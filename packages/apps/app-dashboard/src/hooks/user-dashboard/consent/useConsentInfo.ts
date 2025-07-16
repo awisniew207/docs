@@ -29,6 +29,8 @@ export type ConsentInfoState = {
 };
 
 export const useConsentInfo = (appId: string): ConsentInfoState => {
+  const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
+
   const {
     data: app,
     isFetching: appLoading,
@@ -64,9 +66,12 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
 
   // Fetch all data when appVersions changes
   useEffect(() => {
-    if (!app) return;
+    if (!app || !appVersions || appVersions.length === 0) {
+      return;
+    }
 
-    if (!appVersions || appVersions.length === 0) return;
+    // Reset completion state when starting fetch
+    setIsDataFetchingComplete(false);
 
     const fetchAllData = async () => {
       try {
@@ -155,13 +160,18 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
 
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
+
+        // Mark data fetching as complete
+        setIsDataFetchingComplete(true);
       } catch (error) {
         console.error('Error fetching consent info:', error);
+        // Still mark as complete even if there was an error
+        setIsDataFetchingComplete(true);
       }
     };
 
     fetchAllData();
-  }, [appVersions, appId]);
+  }, [appVersions, appId, app]);
 
   // Construct ConsentInfoMap from available data
   const consentInfoMap = useMemo((): ConsentInfoMap => {
@@ -233,15 +243,18 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
     policiesData,
   ]);
 
+  const isLoadingValue =
+    appLoading ||
+    appVersionsLoading ||
+    toolsLoading ||
+    toolVersionsLoading ||
+    policiesLoading ||
+    toolsInfoLoading ||
+    policiesInfoLoading ||
+    !isDataFetchingComplete;
+
   return {
-    isLoading:
-      appLoading ||
-      appVersionsLoading ||
-      toolsLoading ||
-      toolVersionsLoading ||
-      policiesLoading ||
-      toolsInfoLoading ||
-      policiesInfoLoading,
+    isLoading: isLoadingValue,
     isError:
       appError ||
       appVersionsError ||

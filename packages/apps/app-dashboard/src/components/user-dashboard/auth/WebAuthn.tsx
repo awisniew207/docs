@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
+import { ThemeType } from '../consent/ui/theme';
 
 interface WebAuthnProps {
   authWithWebAuthn: any;
   setView: React.Dispatch<React.SetStateAction<string>>;
   registerWithWebAuthn?: any;
   clearError?: () => void;
+  theme: ThemeType;
 }
 
 export default function WebAuthn({
@@ -14,6 +16,7 @@ export default function WebAuthn({
   setView,
   registerWithWebAuthn,
   clearError,
+  theme,
 }: WebAuthnProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -106,18 +109,20 @@ export default function WebAuthn({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-6">
-        <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-black animate-spin mb-4"></div>
-        <p className="text-sm text-gray-600">Creating your account...</p>
+        <div
+          className={`w-12 h-12 rounded-full border-4 border-t-black animate-spin mb-4 ${theme.cardBorder}`}
+        ></div>
+        <p className={`text-sm ${theme.textMuted}`}>Creating your account...</p>
       </div>
     );
   }
 
   return (
     <>
-      <h1 className="text-xl font-semibold text-center text-gray-800 mb-2">
+      <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
         Passkey Authentication
       </h1>
-      <p className="text-sm text-gray-600 text-center mb-6">
+      <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
         Use passkeys for secure, passwordless login
       </p>
 
@@ -129,13 +134,13 @@ export default function WebAuthn({
 
       <div className="space-y-6">
         {registerWithWebAuthn && (
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h2 className="text-base font-medium text-gray-800 mb-1">Register a new passkey</h2>
-            <p className="text-sm text-gray-600 mb-3">
+          <div className={`border rounded-lg p-4 ${theme.cardBg} ${theme.cardBorder}`}>
+            <h2 className={`text-base font-medium mb-1 ${theme.text}`}>Register a new passkey</h2>
+            <p className={`text-sm mb-3 ${theme.textMuted}`}>
               Create a new passkey for passwordless authentication
             </p>
             <Button
-              className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`py-3 px-4 w-full font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${theme.accentBg} ${theme.accentHover}`}
               onClick={handleRegister}
               disabled={loading}
             >
@@ -144,11 +149,11 @@ export default function WebAuthn({
           </div>
         )}
 
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <h2 className="text-base font-medium text-gray-800 mb-1">Sign in with passkey</h2>
-          <p className="text-sm text-gray-600 mb-3">Use your existing passkey to sign in</p>
+        <div className={`border rounded-lg p-4 ${theme.cardBg} ${theme.cardBorder}`}>
+          <h2 className={`text-base font-medium mb-1 ${theme.text}`}>Sign in with passkey</h2>
+          <p className={`text-sm mb-3 ${theme.textMuted}`}>Use your existing passkey to sign in</p>
           <Button
-            className="bg-black text-white rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`py-3 px-4 w-full font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${theme.accentBg} ${theme.accentHover}`}
             onClick={handleAuthenticate}
             disabled={loading}
           >
@@ -160,7 +165,7 @@ export default function WebAuthn({
       <div className="mt-6">
         <Button
           onClick={handleBackClick}
-          className="bg-white text-gray-700 border border-gray-200 rounded-lg py-3 px-4 w-full font-medium text-sm hover:bg-gray-50 transition-colors"
+          className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-colors`}
         >
           Back
         </Button>

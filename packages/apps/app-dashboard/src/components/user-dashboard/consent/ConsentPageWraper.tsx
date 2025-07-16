@@ -2,6 +2,7 @@ import { useParams } from 'react-router';
 import { ConsentPage } from './ConsentPage';
 import { ConsentPageSkeleton } from './ConsentPageSkeleton';
 import { GeneralErrorScreen } from './GeneralErrorScreen';
+import { AuthenticationErrorScreen } from './AuthenticationErrorScreen';
 import { useConsentInfo } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { useConsentMiddleware } from '@/hooks/user-dashboard/consent/useConsentMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
@@ -28,8 +29,17 @@ export function ConsentPageWrapper() {
   });
 
   // Early return if required params are missing
-  if (!appId || !authInfo?.agentPKP?.tokenId) {
-    return <ConsentPageSkeleton />;
+  if (!appId) {
+    return <GeneralErrorScreen errorDetails="App ID was not provided" />;
+  }
+
+  const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
+  if (!isProcessing && !isUserAuthed) {
+    return (
+      <AuthenticationErrorScreen
+        errorDetails={error || 'Authentication required to access this page'}
+      />
+    );
   }
 
   if (isLoading || isProcessing || isPermittedLoading) {

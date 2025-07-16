@@ -1,5 +1,4 @@
 import { Moon, Sun, LogOut, User, Copy } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/shared/ui/button';
 import { AuthInfo, useClearAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { ThemeType } from './theme';
@@ -18,11 +17,10 @@ export function ConsentPageHeader({
   authInfo,
 }: ConsentPageHeaderProps) {
   const { clearAuthInfo } = useClearAuthInfo();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await clearAuthInfo();
-    navigate('/user');
+    window.location.reload();
   };
 
   const handleCopyEthAddress = async () => {

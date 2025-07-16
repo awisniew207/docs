@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import { ThemeType } from './ui/theme';
 
 import useAuthenticate from '../../../hooks/user-dashboard/useAuthenticate';
 import useAccounts from '../../../hooks/user-dashboard/useAccounts';
@@ -19,9 +21,10 @@ import StatusMessage from './StatusMessage';
 
 type ConsentViewProps = {
   isUserDashboardFlow?: boolean;
+  theme: ThemeType;
 };
 
-export default function ConsentView({ isUserDashboardFlow = false }: ConsentViewProps) {
+export default function ConsentView({ isUserDashboardFlow = false, theme }: ConsentViewProps) {
   // ------ STATE AND HOOKS ------
   const { updateAuthInfo } = useSetAuthInfo();
   const { clearAuthInfo } = useClearAuthInfo();
@@ -249,8 +252,8 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
     if (isStableLoading) {
       return (
         <div className="flex flex-col items-center justify-center py-8 space-y-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p className="text-sm text-gray-600">Loading...</p>
+          <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
+          <p className={`text-sm ${theme.textMuted}`}>Loading...</p>
         </div>
       );
     }
@@ -260,13 +263,30 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
       // User flow: The navigation is handled in useEffect
       if (isUserDashboardFlow) {
         // Return loading state or empty component while navigation happens
-        return <></>;
+        return (
+          <div className="flex flex-col items-center justify-center py-8 space-y-4">
+            <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
+            <p className={`text-sm ${theme.textMuted}`}>Redirecting...</p>
+          </div>
+        );
       }
 
-      // Consent flow: show the consent form
+      // Consent flow: save PKP info and refresh the page so ConsentPageWrapper can re-evaluate
+      try {
+        updateAuthInfo({
+          agentPKP,
+          userPKP,
+        });
+      } catch (error) {
+        console.error('Error saving PKP info to localStorage:', error);
+        setStatusMessage(`Authentication Error: ${error}`);
+        setStatusType('error');
+      }
+      window.location.reload();
       return (
-        <div>
-          <h1>Consent Form</h1>
+        <div className="flex flex-col items-center justify-center py-8 space-y-4">
+          <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
+          <p className={`text-sm ${theme.textMuted}`}>Refreshing...</p>
         </div>
       );
     }
@@ -280,8 +300,11 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
       authInfo?.agentPKP
     ) {
       return (
-        <div>
-          <h1>Consent Form</h1>
+        <div className="text-center py-8">
+          <h1 className={`text-lg font-semibold ${theme.text}`}>Authentication Complete</h1>
+          <p className={`text-sm ${theme.textMuted} mt-2`}>
+            You have been successfully authenticated.
+          </p>
         </div>
       );
     }
@@ -289,7 +312,12 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
     // If we have validated session sigs from an existing session in user flow
     if (isUserDashboardFlow && validatedSessionSigs && authInfo?.userPKP) {
       // Return loading state or empty component while navigation happens
-      return <></>;
+      return (
+        <div className="flex flex-col items-center justify-center py-8 space-y-4">
+          <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
+          <p className={`text-sm ${theme.textMuted}`}>Redirecting...</p>
+        </div>
+      );
     }
 
     // If authenticated but no accounts found
@@ -301,6 +329,7 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
           }
           handleRegisterWithWebAuthn={handleRegisterWithWebAuthn}
           authWithWebAuthn={authWithWebAuthn}
+          theme={theme}
         />
       );
     }
@@ -313,18 +342,20 @@ export default function ConsentView({ isUserDashboardFlow = false }: ConsentView
         authWithEthWallet={authWithEthWallet}
         registerWithWebAuthn={handleRegisterWithWebAuthn}
         clearError={clearError}
+        theme={theme}
       />
     );
   };
 
   return (
-    <div className="grow flex flex-col">
+    <div className="space-y-4">
       {statusMessage && (
         <div className="mb-4">
           <StatusMessage message={statusMessage} type={statusType} />
         </div>
       )}
-      {renderContent()}
+
+      <div className="mt-6">{renderContent()}</div>
     </div>
   );
 }
