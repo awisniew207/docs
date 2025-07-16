@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useReducer } from 'react';
+import { useEffect, useCallback, useReducer, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
@@ -138,7 +138,12 @@ export function useAppSidebar() {
   const [state, dispatch] = useReducer(sidebarReducer, initialState);
 
   // Use filtered hooks instead of unified data context
-  const { data: filteredApps, isLoading: appsLoading, isError: appsError } = useUserApps();
+  const {
+    data: filteredApps,
+    deletedApps,
+    isLoading: appsLoading,
+    isError: appsError,
+  } = useUserApps();
   const { data: filteredTools, isLoading: toolsLoading, isError: toolsError } = useUserTools();
   const {
     data: filteredPolicies,
@@ -149,12 +154,19 @@ export function useAppSidebar() {
   const isLoading = appsLoading || toolsLoading || policiesLoading;
   const hasErrors = appsError || toolsError || policiesError;
 
+  // Combine active and deleted apps for sidebar display
+  const allApps = useMemo(() => {
+    const activeApps = filteredApps || [];
+    const deletedAppsWithFlag = (deletedApps || []).map((app) => ({ ...app, isDeleted: true }));
+    return [...activeApps, ...deletedAppsWithFlag];
+  }, [filteredApps, deletedApps]);
+
   const findAppById = useCallback(
     (appId: number): App | null => {
-      if (!filteredApps || filteredApps.length === 0) return null;
-      return filteredApps.find((app: App) => app.appId === appId) || null;
+      if (!allApps || allApps.length === 0) return null;
+      return allApps.find((app: App) => app.appId === appId) || null;
     },
-    [filteredApps],
+    [allApps],
   );
 
   const findToolByPackageName = useCallback(
@@ -526,7 +538,7 @@ export function useAppSidebar() {
     selectedPolicyView: state.selectedPolicyView,
 
     // Data from filtered hooks
-    apps: filteredApps,
+    apps: allApps,
     tools: filteredTools,
     policies: filteredPolicies,
     isLoading,

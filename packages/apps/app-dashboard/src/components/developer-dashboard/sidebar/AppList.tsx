@@ -84,135 +84,134 @@ export function AppList({
 
   return (
     <div className="ml-4 mt-1 space-y-1">
-      {apps.map((app) => (
-        <div key={app.appId}>
-          <button
-            onClick={() => onAppSelection(app)}
-            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
-              selectedApp?.appId === app.appId
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-500 hover:bg-gray-50'
-            }`}
-            style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
-            aria-label={`Select app ${app.name}`}
-            aria-pressed={selectedApp?.appId === app.appId}
-          >
-            <div className="truncate">
-              <div className="font-medium">{app.name}</div>
-              <div className="text-xs opacity-75">ID: {app.appId}</div>
-            </div>
-          </button>
+      {apps.map((app) => {
+        const isDeleted = app.isDeleted;
 
-          {selectedApp?.appId === app.appId && (
-            <div className="ml-4 mt-2 space-y-1" role="group" aria-label="App actions">
-              {/* Show menu items - always show basic items, handle versions separately */}
-              {appMenuItems.map((appItem) => {
-                const AppIcon = appItem.icon;
+        return (
+          <div key={app.appId}>
+            <button
+              onClick={() => onAppSelection(app)}
+              className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
+                selectedApp?.appId === app.appId
+                  ? 'bg-blue-50 text-blue-700 font-medium'
+                  : isDeleted
+                    ? 'text-gray-400 hover:bg-gray-50 opacity-75'
+                    : 'text-gray-500 hover:bg-gray-50'
+              }`}
+              style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
+              aria-label={`Select app ${app.name}`}
+              aria-pressed={selectedApp?.appId === app.appId}
+            >
+              <div className="truncate">
+                <div className={`font-medium ${isDeleted ? 'line-through' : ''}`}>{app.name}</div>
+                <div className={`text-xs opacity-75 ${isDeleted ? 'line-through' : ''}`}>
+                  ID: {app.appId}
+                </div>
+              </div>
+            </button>
 
-                if (appItem.submenu) {
-                  const isAppSubmenuExpanded = expandedMenus.has(appItem.id);
-                  const isVersionsMenu = appItem.id === 'app-versions';
-                  const hasVersionsError = isVersionsMenu && !!versionsError;
-                  const isVersionsLoading = isVersionsMenu && versionsLoading;
+            {selectedApp?.appId === app.appId && (
+              <div className="ml-4 mt-2 space-y-1" role="group" aria-label="App actions">
+                {/* Show menu items - always show basic items, handle versions separately */}
+                {appMenuItems.map((appItem) => {
+                  const AppIcon = appItem.icon;
+
+                  if (appItem.submenu) {
+                    const isAppSubmenuExpanded = expandedMenus.has(appItem.id);
+                    const isVersionsMenu = appItem.id === 'app-versions';
+                    const hasVersionsError = isVersionsMenu && !!versionsError;
+                    const isVersionsLoading = isVersionsMenu && versionsLoading;
+
+                    return (
+                      <div key={appItem.id}>
+                        <button
+                          onClick={() => handleAppViewNavigation(appItem.id)}
+                          disabled={hasVersionsError || isDeleted}
+                          className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors focus:outline-none ${
+                            hasVersionsError || isDeleted
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : selectedAppView === appItem.id
+                                ? 'bg-blue-50 text-blue-700 font-medium'
+                                : 'text-gray-700 hover:bg-gray-50'
+                          }`}
+                          style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
+                          aria-label={appItem.label}
+                          aria-expanded={isAppSubmenuExpanded}
+                          aria-controls={`submenu-${appItem.id}`}
+                        >
+                          <AppIcon className="h-3 w-3 flex-shrink-0" />
+                          <span className="ml-2">{appItem.label}</span>
+                        </button>
+
+                        {isAppSubmenuExpanded && (
+                          <div
+                            id={`submenu-${appItem.id}`}
+                            className="ml-6 mt-1 space-y-1"
+                            role="group"
+                            aria-label={`${appItem.label} options`}
+                          >
+                            {appItem.submenu.map((subMenuItem: any) => {
+                              // Don't show version items if loading/error for app-versions
+                              if (isVersionsMenu && (isVersionsLoading || hasVersionsError)) {
+                                return <></>;
+                              }
+
+                              return (
+                                <button
+                                  key={subMenuItem.id}
+                                  onClick={() => handleAppSubmenuNavigation(subMenuItem.id)}
+                                  disabled={subMenuItem.disabled || isDeleted}
+                                  className={`w-full text-left px-4 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
+                                    subMenuItem.disabled || isDeleted
+                                      ? 'text-gray-400 cursor-not-allowed'
+                                      : selectedAppView === subMenuItem.id
+                                        ? 'bg-blue-50 text-blue-700 font-medium'
+                                        : 'text-gray-600 hover:bg-gray-50'
+                                  }`}
+                                  style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
+                                  aria-label={subMenuItem.label}
+                                  aria-pressed={
+                                    !subMenuItem.disabled &&
+                                    !isDeleted &&
+                                    selectedAppView === subMenuItem.id
+                                  }
+                                >
+                                  {subMenuItem.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
 
                   return (
-                    <div key={appItem.id}>
-                      <button
-                        onClick={() => handleAppViewNavigation(appItem.id)}
-                        disabled={hasVersionsError}
-                        className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors focus:outline-none ${
-                          hasVersionsError
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : selectedAppView === appItem.id
-                              ? 'bg-blue-50 text-blue-700 font-medium'
-                              : 'text-gray-700 hover:bg-gray-50'
-                        }`}
-                        style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
-                        aria-label={appItem.label}
-                        aria-expanded={isAppSubmenuExpanded}
-                        aria-controls={`submenu-${appItem.id}`}
-                      >
-                        <AppIcon className="h-3 w-3 flex-shrink-0" />
-                        <span className="ml-2">{appItem.label}</span>
-                      </button>
-                      {isAppSubmenuExpanded && (
-                        <div
-                          className="ml-6 mt-1 space-y-1"
-                          id={`submenu-${appItem.id}`}
-                          role="group"
-                          aria-label="Version list"
-                        >
-                          {/* Show loading state for versions */}
-                          {isVersionsLoading && (
-                            <div className="px-4 py-2 text-xs text-gray-400">
-                              Loading versions...
-                            </div>
-                          )}
-
-                          {/* Show error state for versions */}
-                          {hasVersionsError && (
-                            <div className="px-4 py-2 text-xs text-red-500">
-                              Error loading versions
-                            </div>
-                          )}
-
-                          {/* Show version items when loaded or fallback */}
-                          {appItem.submenu.map((subMenuItem: any) => {
-                            // Don't show version items if loading/error for app-versions
-                            if (isVersionsMenu && (isVersionsLoading || hasVersionsError)) {
-                              return <></>;
-                            }
-
-                            return (
-                              <button
-                                key={subMenuItem.id}
-                                onClick={() => handleAppSubmenuNavigation(subMenuItem.id)}
-                                disabled={subMenuItem.disabled}
-                                className={`w-full text-left px-4 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
-                                  subMenuItem.disabled
-                                    ? 'text-gray-400 cursor-not-allowed'
-                                    : selectedAppView === subMenuItem.id
-                                      ? 'bg-blue-50 text-blue-700 font-medium'
-                                      : 'text-gray-600 hover:bg-gray-50'
-                                }`}
-                                style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
-                                aria-label={subMenuItem.label}
-                                aria-pressed={
-                                  !subMenuItem.disabled && selectedAppView === subMenuItem.id
-                                }
-                              >
-                                {subMenuItem.label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
+                    <button
+                      key={appItem.id}
+                      onClick={() => handleAppViewNavigation(appItem.id)}
+                      disabled={isDeleted}
+                      className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out text-sm focus:outline-none ${
+                        isDeleted
+                          ? 'text-gray-400 cursor-not-allowed'
+                          : selectedAppView === appItem.id
+                            ? 'bg-blue-50 text-blue-700 font-medium'
+                            : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
+                      aria-label={appItem.label}
+                      aria-pressed={!isDeleted && selectedAppView === appItem.id}
+                    >
+                      <AppIcon className="h-3 w-3 flex-shrink-0" />
+                      <span className="ml-2">{appItem.label}</span>
+                    </button>
                   );
-                }
-
-                return (
-                  <button
-                    key={appItem.id}
-                    onClick={() => handleAppViewNavigation(appItem.id)}
-                    className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out text-sm focus:outline-none ${
-                      selectedAppView === appItem.id
-                        ? 'bg-blue-50 text-blue-700 font-medium'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                    style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
-                    aria-label={appItem.label}
-                    aria-pressed={selectedAppView === appItem.id}
-                  >
-                    <AppIcon className="h-3 w-3 flex-shrink-0" />
-                    <span className="ml-2">{appItem.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ))}
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
