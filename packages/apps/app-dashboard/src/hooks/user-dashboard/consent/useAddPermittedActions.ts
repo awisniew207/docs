@@ -1,19 +1,14 @@
 import { useState, useCallback } from 'react';
-import { ethers } from 'ethers';
-import { JsonRpcProvider as V6JsonRpcProvider } from 'ethers-v6';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
 import { SELECTED_LIT_NETWORK } from '../../../utils/user-dashboard/lit';
-import { IPFS_POLICIES_THAT_NEED_SIGNING } from '@/config/policyConstants';
 import { hexToBase58 } from '../../../utils/user-dashboard/consentVerificationUtils';
-import { LIT_RPC } from '@lit-protocol/constants';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 type AddPermittedActionsProps = {
   wallet: PKPEthersWallet;
   agentPKPTokenId: string;
   toolIpfsCids: string[];
-  policyIpfsCids: string[];
 };
 
 export const useAddPermittedActions = () => {
@@ -22,7 +17,7 @@ export const useAddPermittedActions = () => {
   const [error, setError] = useState<string | null>(null);
 
   const addPermittedActions = useCallback(
-    async ({ wallet, agentPKPTokenId, toolIpfsCids, policyIpfsCids }: AddPermittedActionsProps) => {
+    async ({ wallet, agentPKPTokenId, toolIpfsCids }: AddPermittedActionsProps) => {
       if (!wallet || !agentPKPTokenId || !toolIpfsCids.length) {
         setError('Missing required data for adding permitted actions');
         return;
@@ -52,20 +47,6 @@ export const useAddPermittedActions = () => {
             })
             .filter(Boolean),
         );
-
-        setLoadingStatus('Processing Policy Permissions');
-        // Process policy IPFS CIDs
-        for (const ipfsCid of policyIpfsCids) {
-          if (IPFS_POLICIES_THAT_NEED_SIGNING[ipfsCid]) {
-            if (!permittedActionSet.has(ipfsCid)) {
-              await litContracts.addPermittedAction({
-                ipfsId: ipfsCid,
-                pkpTokenId: agentPKPTokenId,
-                authMethodScopes: [AUTH_METHOD_SCOPE.SignAnything],
-              });
-            }
-          }
-        }
 
         setLoadingStatus('Processing Tool Permissions');
         // Process tool IPFS CIDs

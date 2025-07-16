@@ -2,9 +2,9 @@ import { Helmet } from 'react-helmet-async';
 import WithdrawForm from '@/components/user-dashboard/withdraw/WithdrawForm';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { useAuthGuard } from '@/hooks/user-dashboard/consent/useAuthGuard';
-import StatusMessage from '@/components/user-dashboard/consent/StatusMessage';
+import Loading from '@/components/shared/ui/Loading';
 
-export function Withdraw() {
+export function Wallet() {
   const { authInfo, sessionSigs } = useReadAuthInfo();
   const authGuardElement = useAuthGuard();
 
@@ -15,7 +15,7 @@ export function Withdraw() {
           <title>Vincent | Wallet</title>
           <meta name="description" content="Your Vincent wallet dashboard" />
         </Helmet>
-        <StatusMessage message="Loading wallet..." type="info" />
+        <Loading />
       </>
     );
   }
@@ -33,4 +33,4 @@ export function Withdraw() {
   );
 }
 
-export default Withdraw;
+export default Wallet;

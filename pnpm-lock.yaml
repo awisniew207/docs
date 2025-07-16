@@ -196,8 +196,8 @@ importers:
         specifier: 1.0.1
         version: 1.0.1(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-contracts-sdk':
-        specifier: 0.1.1-7
-        version: 0.1.1-7(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: 1.0.0-1
+        version: 1.0.0-1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-registry-sdk':
         specifier: ^3.3.1
         version: 3.3.1(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
@@ -1577,6 +1577,10 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
 
+  '@cto.af/wtf8@0.0.2':
+    resolution: {integrity: sha512-ATm4UQiKrdm5GnU6BvIwUDN+LDEtt23zuzKFpnfDT59ULAd0aMYm/nSFzbSO02garLcXumRC13PzNfa7BsfvSg==}
+    engines: {node: '>=20'}
+
   '@dotenvx/dotenvx@1.44.2':
     resolution: {integrity: sha512-2C44+G2dch4cB6zw7+oGQ9VcFQuuVhc5xOzfVvY7iUEj2PRhiVMIB6SpNMK1V5TvpdqrAqCYFjclK18Mh9vwNQ==}
     hasBin: true
@@ -2511,8 +2515,8 @@ packages:
     resolution: {integrity: sha512-ibDdrZWdrd7RkrJhqLhio/mZPACn0Hc5W7GRNzfTdFr88xu9KRjr0YwfHyc4Q1qevq6nXltZQpuno7pBKUEcxg==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
 
-  '@lit-protocol/vincent-contracts-sdk@0.1.1-7':
-    resolution: {integrity: sha512-InQ0Oxyukn1CwF/L5dlr7Jy25dIEHAbhNDQ0aZY9lN73RwewJgUWvyTCBS2Q61T0sGeuVfM6LUiTPA0W3A4Jdw==}
+  '@lit-protocol/vincent-contracts-sdk@1.0.0-1':
+    resolution: {integrity: sha512-bmGbFnX/IH55wqVt/dLYUc0Cwf19MbanVjt3IY/IvY6mbaNQbxRf63tI8Um2Psm/88ac7KF3Xt0TjwTPDQxYXQ==}
 
   '@lit-protocol/vincent-registry-sdk@3.3.1':
     resolution: {integrity: sha512-qcjLzbHgVV685NvvZP4BF5YwAf6DbYpAVyB8lvGmBQhdWQpKxdj/ZCioNbS2vNRSzFkqZHnqTQGZ3yxNH3TkXA==}
@@ -5312,6 +5316,10 @@ packages:
   cbor2@1.12.0:
     resolution: {integrity: sha512-3Cco8XQhi27DogSp9Ri6LYNZLi/TBY/JVnDe+mj06NkBjW/ZYOtekaEU4wZ4xcRMNrFkDv8KNtOAqHyDfz3lYg==}
     engines: {node: '>=18.7'}
+
+  cbor2@2.0.1:
+    resolution: {integrity: sha512-9bE8+tueGxONyxpttNKkAKKcGVtAPeoSJ64AjVTTjEuBOuRaeeP76EN9BbmQqkz1ZeTP0QPvksNBKwvEutIUzQ==}
+    engines: {node: '>=20'}
 
   chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
@@ -12082,6 +12090,8 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
+  '@cto.af/wtf8@0.0.2': {}
+
   '@dotenvx/dotenvx@1.44.2':
     dependencies:
       commander: 11.1.0
@@ -14660,8 +14670,10 @@ snapshots:
       - uploadthing
       - utf-8-validate
 
-  '@lit-protocol/vincent-contracts-sdk@0.1.1-7(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-contracts-sdk@1.0.0-1(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
+      '@ethersproject/abi': 5.8.0
+      cbor2: 2.0.1
       ethers: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
@@ -19161,6 +19173,10 @@ snapshots:
   cbor-web@9.0.2: {}
 
   cbor2@1.12.0: {}
+
+  cbor2@2.0.1:
+    dependencies:
+      '@cto.af/wtf8': 0.0.2
 
   chalk@2.4.2:
     dependencies:

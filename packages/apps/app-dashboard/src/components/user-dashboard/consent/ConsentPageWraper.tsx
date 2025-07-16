@@ -1,7 +1,7 @@
 import { useParams } from 'react-router';
 import { ConsentPage } from './ConsentPage';
 import { ConsentPageSkeleton } from './ConsentPageSkeleton';
-import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import { GeneralErrorScreen } from './GeneralErrorScreen';
 import { useConsentInfo } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { useConsentMiddleware } from '@/hooks/user-dashboard/consent/useConsentMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
@@ -13,12 +13,12 @@ export function ConsentPageWrapper() {
   const { appId } = useParams();
 
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
-  const { isLoading, isError, data } = useConsentInfo(appId || '');
+  const { isLoading, isError, errors, data } = useConsentInfo(appId || '');
   const {
     isPermitted,
-    exists,
+    appExists,
     activeVersionExists,
-    version,
+    userPermittedVersion,
     isLoading: isPermittedLoading,
     error: isPermittedError,
   } = useConsentMiddleware({
@@ -37,14 +37,18 @@ export function ConsentPageWrapper() {
   }
 
   if (isError || error || isPermittedError) {
-    return <StatusMessage message="Error loading consent info" type="error" />;
+    const errorMessage =
+      errors.length > 0
+        ? errors.join(', ')
+        : (error ?? isPermittedError ?? 'An unknown error occurred');
+    return <GeneralErrorScreen errorDetails={errorMessage} />;
   }
 
   if (!data || !authInfo || !sessionSigs) {
     return <ConsentPageSkeleton />;
   }
 
-  if (exists === false) {
+  if (appExists === false) {
     return (
       <AppNotInRegistryConsent
         appData={data.app}
@@ -53,7 +57,7 @@ export function ConsentPageWrapper() {
     );
   }
 
-  if (exists === true && activeVersionExists === false) {
+  if (appExists === true && activeVersionExists === false) {
     return (
       <AppVersionNotInRegistryConsent
         appData={data.app}
@@ -62,11 +66,11 @@ export function ConsentPageWrapper() {
     );
   }
 
-  if (isPermitted === true && version) {
+  if (isPermitted === true && userPermittedVersion) {
     return (
       <ReturningUserConsent
         appData={data.app}
-        version={version}
+        version={userPermittedVersion}
         readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
       />
     );

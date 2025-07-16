@@ -48,7 +48,7 @@ import {
   DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
-import { UserDashboard, Home, Withdraw, Apps } from './pages/user-dashboard';
+import { Home, Wallet } from './pages/user-dashboard';
 import { ConsentPageWrapper } from './components/user-dashboard/consent/ConsentPageWraper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
@@ -222,17 +222,19 @@ const routes: RouteObject[] = [
         path: '/user/*',
         element: <Outlet />,
         children: [
+          /*
           {
             path: 'dashboard',
             element: <UserDashboard />,
           },
           {
-            path: 'withdraw',
-            element: <Withdraw />,
-          },
-          {
             path: 'apps',
             element: <Apps />,
+          },
+          */
+          {
+            path: 'wallet',
+            element: <Wallet />,
           },
           {
             path: 'consent/appId/:appId',

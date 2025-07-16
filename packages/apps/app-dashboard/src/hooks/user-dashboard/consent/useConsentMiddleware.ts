@@ -2,7 +2,6 @@ import { readOnlySigner } from '@/utils/developer-dashboard/readOnlySigner';
 import {
   getAllPermittedAppIdsForPkp,
   getPermittedAppVersionForPkp,
-  getAppById,
   getAppVersion,
 } from '@lit-protocol/vincent-contracts-sdk';
 import { useEffect, useState } from 'react';
@@ -16,9 +15,9 @@ export type UseConsentMiddlewareProps = {
 
 export type UseConsentMiddlewareReturn = {
   isPermitted: boolean | null;
-  exists: boolean | null;
+  appExists: boolean | null;
   activeVersionExists: boolean | null;
-  version: number | null;
+  userPermittedVersion: number | null;
   isLoading: boolean;
   error: string | null;
 };
@@ -30,9 +29,9 @@ export const useConsentMiddleware = ({
 }: UseConsentMiddlewareProps): UseConsentMiddlewareReturn => {
   const [state, setState] = useState<UseConsentMiddlewareReturn>({
     isPermitted: null,
-    exists: null,
+    appExists: null,
     activeVersionExists: null,
-    version: 1,
+    userPermittedVersion: null,
     isLoading: true,
     error: null,
   });
@@ -42,23 +41,17 @@ export const useConsentMiddleware = ({
     if (!appId || !pkpTokenId) {
       setState({
         isPermitted: null,
-        exists: null,
+        appExists: null,
         activeVersionExists: null,
-        version: 1,
+        userPermittedVersion: null,
         isLoading: false,
-        error: null,
-      }); // FIXME: Currently testing
+        error: 'Missing appId or pkpTokenId',
+      });
       return;
     }
 
     const checkPermitted = async () => {
       try {
-        // Check if app exists in on-chain registry
-        await getAppById({
-          signer: readOnlySigner,
-          args: { appId: appId.toString() },
-        });
-
         // Check if the app's active version is published in the registry (if we have app data)
         if (appData?.activeVersion) {
           try {
@@ -67,13 +60,24 @@ export const useConsentMiddleware = ({
               args: { appId: appId.toString(), version: appData.activeVersion.toString() },
             });
           } catch (versionError: any) {
-            if (versionError?.message?.includes('AppVersionNotRegistered')) {
-              // Active version not published - return early
+            if (versionError?.message?.includes('AppNotRegistered')) {
+              // App not published - set appExists to false
               setState({
-                isPermitted: false,
-                exists: true,
+                isPermitted: null,
+                appExists: false,
                 activeVersionExists: false,
-                version: appData.activeVersion,
+                userPermittedVersion: null,
+                isLoading: false,
+                error: null,
+              });
+              return;
+            } else if (versionError?.message?.includes('AppVersionNotRegistered')) {
+              // App exists but active version not published - return early
+              setState({
+                isPermitted: null,
+                appExists: true,
+                activeVersionExists: false,
+                userPermittedVersion: null,
                 isLoading: false,
                 error: null,
               });
@@ -97,50 +101,36 @@ export const useConsentMiddleware = ({
 
           setState({
             isPermitted: true,
-            exists: true,
+            appExists: true,
             activeVersionExists: true,
-            version: Number(version),
+            userPermittedVersion: Number(version),
             isLoading: false,
             error: null,
           });
         } else {
           setState({
             isPermitted: false,
-            exists: true,
+            appExists: true,
             activeVersionExists: true,
-            version: 1, // FIXME: Currently testing
+            userPermittedVersion: null,
             isLoading: false,
             error: null,
           });
         }
       } catch (error: any) {
-        if (error?.message?.includes('AppNotRegistered')) {
-          // App not published - this is fine, set exists to false
-          setState({
-            isPermitted: false,
-            exists: false,
-            activeVersionExists: null,
-            version: 1,
-            isLoading: false,
-            error: null,
-          });
-        } else {
-          // Other error
-          setState({
-            isPermitted: null,
-            exists: null,
-            activeVersionExists: null,
-            version: 1, // FIXME: Currently testing
-            isLoading: false,
-            error: error instanceof Error ? error.message : 'An error occurred',
-          });
-        }
+        setState({
+          isPermitted: null,
+          appExists: null,
+          activeVersionExists: null,
+          userPermittedVersion: null,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'An error occurred',
+        });
       }
     };
 
     checkPermitted();
   }, [appId, pkpTokenId, appData]);
 
-  console.log('state', state);
   return state;
 };

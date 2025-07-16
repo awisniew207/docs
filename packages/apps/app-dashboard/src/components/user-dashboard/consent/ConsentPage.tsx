@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { permitApp, getAllToolsAndPoliciesForApp } from '@lit-protocol/vincent-contracts-sdk';
 import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { useConsentFormData } from '@/hooks/user-dashboard/consent/useConsentFormData';
 import { ConsentPageHeader } from './ui/ConsentPageHeader';
@@ -70,9 +71,34 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
         wallet: agentPkpWallet,
         agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
         toolIpfsCids: Object.keys(formData),
-        policyIpfsCids: Object.keys(formData),
       });
 
+      try {
+        const permitAppResponse = await permitApp({
+          signer: agentPkpWallet,
+          args: {
+            pkpTokenId: readAuthInfo.authInfo.agentPKP!.tokenId,
+            appId: consentInfoMap.app.appId.toString(),
+            appVersion: consentInfoMap.app.activeVersion!.toString(),
+            permissionData: formData,
+          },
+        });
+
+        console.log('permitAppResponse', permitAppResponse);
+
+        const allToolsAndPoliciesForApp = await getAllToolsAndPoliciesForApp({
+          signer: agentPkpWallet,
+          args: {
+            pkpTokenId: readAuthInfo.authInfo.agentPKP!.tokenId,
+            appId: consentInfoMap.app.appId.toString(),
+          },
+        });
+
+        console.log('allToolsAndPoliciesForApp', allToolsAndPoliciesForApp);
+      } catch (error) {
+        setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
+        return;
+      }
       await generateJWT(consentInfoMap.app, consentInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
     }
   }, [formData, readAuthInfo, addPermittedActions]);
