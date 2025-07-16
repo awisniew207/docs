@@ -22,7 +22,7 @@ export function ManageDelegateesWrapper() {
 
   return (
     <ManageDelegateesForm
-      appData={blockchainAppData.delegatees}
+      existingDelegatees={blockchainAppData.delegatees}
       refetchBlockchainData={refetchBlockchainData}
     />
   );

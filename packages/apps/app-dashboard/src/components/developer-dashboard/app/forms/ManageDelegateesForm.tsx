@@ -10,12 +10,7 @@ import { Form } from '@/components/ui/form';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { Plus, Trash2 } from 'lucide-react';
 import { TextField } from '../../form-fields';
-import {
-  addDelegatee,
-  removeDelegatee,
-  getAppByDelegatee,
-} from '@lit-protocol/vincent-contracts-sdk';
-import { readOnlySigner } from '@/utils/developer-dashboard/readOnlySigner';
+import { addDelegatee, removeDelegatee } from '@lit-protocol/vincent-contracts-sdk';
 import { SkeletonButton } from '@/components/layout/MutationButtonStates';
 
 const AddDelegateeSchema = z.object({
@@ -27,12 +22,12 @@ const AddDelegateeSchema = z.object({
 type AddDelegateeFormData = z.infer<typeof AddDelegateeSchema>;
 
 interface ManageDelegateesFormProps {
-  appData: string[];
+  existingDelegatees: string[];
   refetchBlockchainData: () => void;
 }
 
 export function ManageDelegateesForm({
-  appData,
+  existingDelegatees,
   refetchBlockchainData,
 }: ManageDelegateesFormProps) {
   const { appId } = useParams<{ appId: string }>();
@@ -67,30 +62,9 @@ export function ManageDelegateesForm({
     if (!appId) return;
 
     // Check if delegatee is already in the current app's delegatee list
-    if (appData.includes(data.address)) {
+    if (existingDelegatees.includes(data.address)) {
       setError(`Delegatee ${data.address} is already registered to app ${appId}`);
       return;
-    }
-
-    // Check if delegatee is already registered to another app
-    try {
-      const existingApp = await getAppByDelegatee({
-        signer: readOnlySigner,
-        args: { delegatee: data.address },
-      });
-
-      if (existingApp.id !== appId) {
-        setError(`Delegatee ${data.address} is already registered to app ${existingApp.id}`);
-        return;
-      }
-    } catch (error: any) {
-      // If DelegateeNotRegistered, that's fine - continue
-      if (!error?.message?.includes('DelegateeNotRegistered')) {
-        setError(
-          `Failed to check delegatee registration: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-        return;
-      }
     }
 
     // Now add the delegatee
@@ -208,14 +182,14 @@ export function ManageDelegateesForm({
         <CardHeader>
           <CardTitle>Current Delegatees</CardTitle>
           <CardDescription>
-            {appData.length === 0
+            {existingDelegatees.length === 0
               ? 'No delegatees configured yet.'
-              : `${appData.length} delegatee${appData.length === 1 ? '' : 's'} configured`}
+              : `${existingDelegatees.length} delegatee${existingDelegatees.length === 1 ? '' : 's'} configured`}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {appData.map((delegatee, index) => (
+            {existingDelegatees.map((delegatee, index) => (
               <div
                 key={delegatee}
                 className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border rounded-lg"
@@ -242,7 +216,7 @@ export function ManageDelegateesForm({
                 </Button>
               </div>
             ))}
-            {appData.length === 0 && (
+            {existingDelegatees.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 <p>No delegatees configured yet.</p>
                 <p className="text-sm mt-2">Add delegatee addresses above to get started.</p>
