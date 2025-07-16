@@ -188,4 +188,14 @@ export const appEdit = buildEditAppSchema();
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `app` instead
  */
+// Schema for setting the active version of an app
+export const appSetActiveVersion = z
+  .object({
+    activeVersion: z.number().openapi({
+      description: 'The version to set as active',
+      example: 2,
+    }),
+  })
+  .strict();
+
 export const appDoc = z.object({ ...baseDocAttributes.shape, ...app.shape }).strict();

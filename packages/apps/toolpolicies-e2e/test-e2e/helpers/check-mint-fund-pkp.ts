@@ -1,29 +1,30 @@
 import { formatEther } from 'viem';
 
 import {
-  TestConfig,
-  saveTestConfig,
-  mintNewPkp,
-  TEST_FUNDER_VIEM_WALLET_CLIENT,
-  TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT,
   DATIL_PUBLIC_CLIENT,
-  TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY,
   ERC20_APPROVAL_TOOL_IPFS_ID,
-  UNISWAP_SWAP_TOOL_IPFS_ID,
+  mintNewPkp,
+  saveTestConfig,
   SPENDING_LIMIT_POLICY_IPFS_ID,
+  TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY,
   TEST_CONFIG_PATH,
+  TEST_FUNDER_VIEM_WALLET_CLIENT,
+  TestConfig,
+  UNISWAP_SWAP_TOOL_IPFS_ID,
 } from '.';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export const checkShouldMintAndFundPkp = async (testConfig: TestConfig) => {
   if (testConfig.userPkp!.ethAddress === null) {
     // The Agent Wallet PKP Owner needs to have Lit test tokens
     // in order to mint the Agent Wallet PKP
     const agentWalletOwnerBalance = await DATIL_PUBLIC_CLIENT.getBalance({
-      address: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
+      address: privateKeyToAccount(TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`)
+        .address,
     });
     if (agentWalletOwnerBalance === 0n) {
       const txHash = await TEST_FUNDER_VIEM_WALLET_CLIENT.sendTransaction({
-        to: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
+        to: privateKeyToAccount(TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`).address,
         value: BigInt(10000000000000000), // 0.01 ETH in wei
       });
       const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({

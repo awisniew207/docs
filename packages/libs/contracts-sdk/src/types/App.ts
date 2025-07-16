@@ -1,4 +1,4 @@
-import { Signer } from 'ethers';
+import { Signer, Overrides } from 'ethers';
 
 // ==================================================================================
 // App Mutation Types
@@ -23,13 +23,13 @@ export interface RegisterNextVersionParams {
 export interface RegisterAppOptions {
   signer: Signer;
   args: RegisterAppParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface RegisterNextVersionOptions {
   signer: Signer;
   args: RegisterNextVersionParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 export interface EnableAppVersionParams {
   appId: string;
@@ -58,31 +58,31 @@ export interface UndeleteAppParams {
 export interface EnableAppVersionOptions {
   signer: Signer;
   args: EnableAppVersionParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface AddDelegateeOptions {
   signer: Signer;
   args: AddDelegateeParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface RemoveDelegateeOptions {
   signer: Signer;
   args: RemoveDelegateeParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface DeleteAppOptions {
   signer: Signer;
   args: DeleteAppParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface UndeleteAppOptions {
   signer: Signer;
   args: UndeleteAppParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 // ==================================================================================

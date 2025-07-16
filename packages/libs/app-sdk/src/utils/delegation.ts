@@ -1,33 +1,37 @@
-import { ethers } from 'ethers';
+import { ethers, type Signer } from 'ethers';
 
-import { LIT_NETWORK } from '@lit-protocol/constants';
+import { getDelegatedAgentPkpTokenIds } from '@lit-protocol/vincent-contracts-sdk';
 
-import { getContract } from './contracts';
 import { getPkpEthAddress } from './pkp';
 
-/**
- * Fetches the delegated agent PKP token IDs for a specific app version
- *
- * This function queries the Vincent AppView contract to get the PKP token IDs
- * that have delegated to a specific app version. These token IDs can be used
- * to identify the PKPs that are authorized to act as agents for the app.
- *
- * @param appId - The ID of the Vincent application
- * @param version - The version number of the application
- * @returns An array of BigNumber representing the delegated agent PKP token IDs
- *
- * @example
- * ```typescript
- * const tokenIds = await fetchDelegatedAgentPKPTokenIds(123, 1);
- * console.log(`App has ${tokenIds.length} delegated agent PKPs`);
- * ```
- */
-async function fetchDelegatedAgentPKPTokenIds(appId: number, version: number) {
+async function fetchDelegatedAgentPKPTokenIds({
+  appId,
+  version,
+  signer,
+  pageOpts = { offset: '0', limit: '1000' },
+}: {
+  appId: number;
+  version: number;
+  signer: Signer;
+  pageOpts?: {
+    offset: string;
+    limit: string;
+  };
+}) {
   try {
-    const contract = getContract(LIT_NETWORK.Datil, 'AppView');
-    const appView = await contract.getAppVersion(appId, version);
+    const { offset, limit } = pageOpts;
+    const tokenIds = await getDelegatedAgentPkpTokenIds({
+      signer,
+      args: {
+        appId: appId.toString(),
+        version: version.toString(),
+        offset,
+        limit, // Assuming a reasonable limit for the number of delegated PKPs as a default
+      },
+    });
 
-    return appView.appVersion.delegatedAgentPkpTokenIds as ethers.BigNumber[];
+    // Convert string token IDs to BigNumber for backward compatibility
+    return tokenIds.map((id) => ethers.BigNumber.from(id));
   } catch (error) {
     throw new Error(`Error fetching delegated agent PKP token IDs: ${error}`);
   }
@@ -71,20 +75,40 @@ async function processWithConcurrency<T, R>(
  * can be used to identify and interact with the PKPs that are authorized as agents
  * for the application.
  *
+ * The default behaviour of this method is to return the first discovered 1000 PKPs unless `pageOpts` is provided.
+ *
  * @param appId - The ID of the Vincent application
  * @param appVersion - The version number of the application
+ * @param signer - The ethers signer to use for the transaction
+ * @param pageOpts - To fetch more than the first 1000 pkps, you must provide pageOpts w/ explicit offset + limit
+ *
  * @returns An array of PKP Eth addresses
  *
  * @example
  * ```typescript
- * const pkpEthAddresses = await getDelegatorsAgentPkpAddresses(123, 1);
+ * const pkpEthAddresses = await getDelegatorsAgentPkpAddresses({ appId: 123, appVersion: 1, signer });
  * console.log(`Found ${pkpEthAddresses.length} delegator PKPs`);
  * console.log(`First PKP eth address: ${pkpEthAddresses[0]}`);
  * ```
  */
-export async function getDelegatorsAgentPkpAddresses(appId: number, appVersion: number) {
+export async function getDelegatorsAgentPkpAddresses({
+  appId,
+  appVersion,
+  signer,
+  pageOpts,
+}: {
+  appId: number;
+  appVersion: number;
+  signer: Signer;
+  pageOpts?: { offset: string; limit: string };
+}) {
   try {
-    const delegators = await fetchDelegatedAgentPKPTokenIds(appId, appVersion);
+    const delegators = await fetchDelegatedAgentPKPTokenIds({
+      appId: appId,
+      version: appVersion,
+      signer: signer,
+      pageOpts: pageOpts,
+    });
     const delegatorsPkpEthAddresses = await processWithConcurrency(delegators, getPkpEthAddress, 5);
 
     return delegatorsPkpEthAddresses;

@@ -7,8 +7,7 @@
     "prebuild": "node scripts/copy-api-html.js",
     "build": "pnpm unbuild",
     "start": "pnpm build && node ./dist/bin/apiServer.mjs",
-    "test": "jest",
-    "test:integration": "jest test/integration/index.spec.ts"
+    "test": "echo This package only contains e2e/integration tests. Skipping 'test' target."
   },
   "files": [
     "dist"
@@ -23,10 +22,12 @@
   },
   "dependencies": {
     "@lit-protocol/flags": "^2.1.0",
-    "@lit-protocol/vincent-registry-sdk": "3.3.2",
+    "@lit-protocol/vincent-contracts-sdk": "workspace:*",
+    "@lit-protocol/vincent-registry-sdk": "workspace:*",
     "@t3-oss/env-core": "^0.13.6",
     "cors": "^2.8.5",
     "debug": "^4.4.1",
+    "ethers": "5.8.0",
     "express": "^5.1.0",
     "express-openapi-validator": "^5.5.3",
     "fs-extra": "^11.3.0",

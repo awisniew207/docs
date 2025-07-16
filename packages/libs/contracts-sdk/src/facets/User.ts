@@ -1,5 +1,6 @@
 import { utils } from 'ethers';
 import { decodeContractError, createContract, gasAdjustedOverrides } from '../utils';
+import { encodePermissionDataForChain } from '../utils/policyParams';
 import {
   PermitAppOptions,
   UnPermitAppOptions,
@@ -9,9 +10,9 @@ import {
 /**
  * Permits an app version for an Agent Wallet PKP token and optionally sets tool policy parameters
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
- * @param args - Object containing pkpTokenId, appId, appVersion, and permissionData
+ * @param args - Object containing pkpTokenId, appId, appVersion, and permissionData in nested object format
  * @param overrides - Optional override params for the transaction call like manual gas limit
- * @returns The transaction hash. If for some reason the event is not found after a successful transaction, it will return null for the event data.
+ * @returns The transaction hash and a success flag
  */
 export async function permitApp({
   signer,
@@ -25,6 +26,9 @@ export async function permitApp({
     const appId = utils.parseUnits(args.appId, 0);
     const appVersion = utils.parseUnits(args.appVersion, 0);
 
+    // Convert nested policy parameters to flattened format
+    const flattenedParams = encodePermissionDataForChain(args.permissionData);
+
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'permitAppVersion',
@@ -32,9 +36,9 @@ export async function permitApp({
         pkpTokenId,
         appId,
         appVersion,
-        args.permissionData.toolIpfsCids,
-        args.permissionData.policyIpfsCids,
-        args.permissionData.policyParameterValues,
+        flattenedParams.toolIpfsCids,
+        flattenedParams.policyIpfsCids,
+        flattenedParams.policyParameterValues,
       ],
       overrides,
     );
@@ -43,9 +47,9 @@ export async function permitApp({
       pkpTokenId,
       appId,
       appVersion,
-      args.permissionData.toolIpfsCids,
-      args.permissionData.policyIpfsCids,
-      args.permissionData.policyParameterValues,
+      flattenedParams.toolIpfsCids,
+      flattenedParams.policyIpfsCids,
+      flattenedParams.policyParameterValues,
       {
         ...adjustedOverrides,
       },
@@ -106,7 +110,7 @@ export async function unPermitApp({
 /**
  * Sets tool policy parameters for a specific app version
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
- * @param args - Object containing pkpTokenId, appId, appVersion, toolIpfsCids, policyIpfsCids, and policyParameterValues
+ * @param args - Object containing pkpTokenId, appId, appVersion, and policyParams in nested object format
  * @param overrides - Optional override params for the transaction call like manual gas limit
  * @returns The transaction hash and a success flag
  */
@@ -122,6 +126,9 @@ export async function setToolPolicyParameters({
     const appId = utils.parseUnits(args.appId, 0);
     const appVersion = utils.parseUnits(args.appVersion, 0);
 
+    // Convert nested policy parameters to flattened format
+    const flattenedParams = encodePermissionDataForChain({ nestedParams: args.policyParams });
+
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'setToolPolicyParameters',
@@ -129,9 +136,9 @@ export async function setToolPolicyParameters({
         pkpTokenId,
         appId,
         appVersion,
-        args.toolIpfsCids,
-        args.policyIpfsCids,
-        args.policyParameterValues,
+        flattenedParams.toolIpfsCids,
+        flattenedParams.policyIpfsCids,
+        flattenedParams.policyParameterValues,
       ],
       overrides,
     );
@@ -140,9 +147,9 @@ export async function setToolPolicyParameters({
       pkpTokenId,
       appId,
       appVersion,
-      args.toolIpfsCids,
-      args.policyIpfsCids,
-      args.policyParameterValues,
+      flattenedParams.toolIpfsCids,
+      flattenedParams.policyIpfsCids,
+      flattenedParams.policyParameterValues,
       {
         ...adjustedOverrides,
       },

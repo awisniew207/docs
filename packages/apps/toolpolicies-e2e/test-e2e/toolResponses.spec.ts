@@ -1,7 +1,8 @@
-import { formatEther, parseEventLogs } from 'viem';
+import { formatEther } from 'viem';
 
-import { getVincentToolClient, disconnectVincentToolClients } from '@lit-protocol/vincent-app-sdk';
+import { disconnectVincentToolClients, getVincentToolClient } from '@lit-protocol/vincent-app-sdk';
 import { ethers } from 'ethers';
+import type { PermissionData } from '@lit-protocol/vincent-contracts-sdk';
 
 // Import all bundled Vincent tools from the generated directory
 // Failure tools with schema
@@ -25,39 +26,30 @@ import { bundledVincentTool as precheckSuccessNoSchemaTool } from '../src/genera
 import { bundledVincentTool as precheckSuccessWithSchemaTool } from '../src/generated/tools/success/withSchema/precheckSuccessWithSchema/vincent-bundled-tool';
 
 import {
-  TestConfig,
-  getTestConfig,
-  TEST_CONFIG_PATH,
   checkShouldMintAndFundPkp,
-  BASE_PUBLIC_CLIENT,
-  TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY,
-  permitAuthMethods,
-  TEST_APP_MANAGER_VIEM_WALLET_CLIENT,
   DATIL_PUBLIC_CLIENT,
-  VINCENT_ADDRESS,
-  TEST_APP_DELEGATEE_ACCOUNT,
-  TEST_APP_MANAGER_VIEM_ACCOUNT,
-  DELEGATEES,
-  saveTestConfig,
-  TEST_AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT,
-  APP_NAME,
-  APP_DESCRIPTION,
-  AUTHORIZED_REDIRECT_URIS,
-  DEPLOYMENT_STATUS,
+  getTestConfig,
   TEST_APP_DELEGATEE_PRIVATE_KEY,
+  TEST_APP_MANAGER_PRIVATE_KEY,
+  TEST_CONFIG_PATH,
+  TestConfig,
   YELLOWSTONE_RPC_URL,
 } from './helpers';
 import {
-  VincentAppFacetAbi,
-  VincentAppViewFacetAbi,
-  VincentUserFacetAbi,
-} from './vincent-contract-abis';
+  fundAppDelegateeIfNeeded,
+  permitAppVersionForAgentWalletPkp,
+  permitToolsForAgentWalletPkp,
+  registerNewApp,
+  removeAppDelegateeIfNeeded,
+} from './helpers/setup-fixtures';
+
 import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
+import { privateKeyToAccount } from 'viem/accounts';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 function hasError(result: any): boolean {
-  return result && 'error' in result;
+  return result && !!result.error;
 }
 
 // Extend Jest timeout to 4 minutes
@@ -161,23 +153,32 @@ const getPrecheckSuccessWithSchemaToolClient = () => {
 };
 
 describe('VincentToolClient failure tests', () => {
-  // An array of the IPFS cid of each tool to be tested. Can be read from each BundledVincentTool
-  const TOOL_IPFS_IDS: string[] = [
+  // Define permission data for all tools and policies
+  const PERMISSION_DATA: PermissionData = {
     // Failure tools
-    executeFailNoSchemaErrorResultTool.ipfsCid,
-    executeFailNoSchemaNoResultTool.ipfsCid,
-    executeFailWithSchemaTool.ipfsCid,
-    precheckFailNoSchemaErrorResultTool.ipfsCid,
-    precheckFailNoSchemaNoResultTool.ipfsCid,
-    precheckFailWithSchemaTool.ipfsCid,
-    executeFailThrowErrorTool.ipfsCid,
-    precheckFailThrowErrorTool.ipfsCid,
+    [executeFailNoSchemaErrorResultTool.ipfsCid]: {},
+    [executeFailNoSchemaNoResultTool.ipfsCid]: {},
+    [executeFailWithSchemaTool.ipfsCid]: {},
+    [precheckFailNoSchemaErrorResultTool.ipfsCid]: {},
+    [precheckFailNoSchemaNoResultTool.ipfsCid]: {},
+    [precheckFailWithSchemaTool.ipfsCid]: {},
+    [executeFailThrowErrorTool.ipfsCid]: {},
+    [precheckFailThrowErrorTool.ipfsCid]: {},
     // Success tools
-    executeSuccessNoSchemaTool.ipfsCid,
-    executeSuccessWithSchemaTool.ipfsCid,
-    precheckSuccessNoSchemaTool.ipfsCid,
-    precheckSuccessWithSchemaTool.ipfsCid,
-  ];
+    [executeSuccessNoSchemaTool.ipfsCid]: {},
+    [executeSuccessWithSchemaTool.ipfsCid]: {},
+    [precheckSuccessNoSchemaTool.ipfsCid]: {},
+    [precheckSuccessWithSchemaTool.ipfsCid]: {},
+  };
+
+  // An array of the IPFS cid of each tool to be tested, computed from the keys of PERMISSION_DATA
+  const TOOL_IPFS_IDS: string[] = Object.keys(PERMISSION_DATA);
+
+  // Define the policies for each tool, computed from TOOL_IPFS_IDS and PERMISSION_DATA
+  const TOOL_POLICIES = TOOL_IPFS_IDS.map((toolIpfsCid) => {
+    // Get the policy IPFS CIDs for this tool from PERMISSION_DATA
+    return Object.keys(PERMISSION_DATA[toolIpfsCid]);
+  });
 
   let TEST_CONFIG: TestConfig;
 
@@ -191,40 +192,16 @@ describe('VincentToolClient failure tests', () => {
     TEST_CONFIG = await checkShouldMintAndFundPkp(TEST_CONFIG);
     TEST_CONFIG = await checkShouldMintCapacityCredit(TEST_CONFIG);
 
-    // The Agent Wallet PKP needs to have Base ETH and WETH
-    // in order to execute the ERC20 Approval and Uniswap Swap Tools
-    const agentWalletPkpBaseEthBalance = await BASE_PUBLIC_CLIENT.getBalance({
-      address: TEST_CONFIG.userPkp!.ethAddress! as `0x${string}`,
-    });
-    if (agentWalletPkpBaseEthBalance === 0n) {
-      throw new Error(
-        `❌ Agent Wallet PKP has no Base ETH. Please fund ${TEST_CONFIG.userPkp!.ethAddress!} with Base ETH`,
-      );
-    } else {
-      console.log(`ℹ️  Agent Wallet PKP has ${formatEther(agentWalletPkpBaseEthBalance)} Base ETH`);
-    }
-
-    const agentWalletPkpBaseWethBalance = await BASE_PUBLIC_CLIENT.getBalance({
-      address: TEST_CONFIG.userPkp!.ethAddress! as `0x${string}`,
-    });
-    if (agentWalletPkpBaseWethBalance === 0n) {
-      throw new Error(
-        `❌ Agent Wallet PKP has no Base WETH. Please fund ${TEST_CONFIG.userPkp!.ethAddress!} with Base WETH`,
-      );
-    } else {
-      console.log(
-        `ℹ️  Agent Wallet PKP has ${formatEther(agentWalletPkpBaseWethBalance)} Base WETH`,
-      );
-    }
-
     // The App Manager needs to have Lit test tokens
     // in order to interact with the Vincent contract
     const appManagerLitTestTokenBalance = await DATIL_PUBLIC_CLIENT.getBalance({
-      address: TEST_APP_MANAGER_VIEM_ACCOUNT.address,
+      address: privateKeyToAccount(TEST_APP_MANAGER_PRIVATE_KEY as `0x${string}`).address,
     });
     if (appManagerLitTestTokenBalance === 0n) {
       throw new Error(
-        `❌ App Manager has no Lit test tokens. Please fund ${TEST_APP_MANAGER_VIEM_ACCOUNT.address} with Lit test tokens`,
+        `❌ App Manager has no Lit test tokens. Please fund ${
+          privateKeyToAccount(TEST_APP_MANAGER_PRIVATE_KEY as `0x${string}`).address
+        } with Lit test tokens`,
       );
     } else {
       console.log(
@@ -234,185 +211,23 @@ describe('VincentToolClient failure tests', () => {
   });
 
   it('should permit all of the tools for the Agent Wallet PKP', async () => {
-    await permitAuthMethods.call(
-      permitAuthMethods,
-      ...[
-        TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
-        TEST_CONFIG.userPkp!.tokenId!,
-        TOOL_IPFS_IDS,
-      ],
-    );
+    await permitToolsForAgentWalletPkp(TOOL_IPFS_IDS, TEST_CONFIG);
   });
 
   it('should remove TEST_APP_DELEGATEE_ACCOUNT from an existing App if needed', async () => {
-    if (TEST_CONFIG.appId !== null) {
-      const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.writeContract({
-        address: VINCENT_ADDRESS as `0x${string}`,
-        abi: VincentAppFacetAbi,
-        functionName: 'removeDelegatee',
-        args: [TEST_CONFIG.appId, TEST_APP_DELEGATEE_ACCOUNT.address],
-      });
-
-      const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
-        hash: txHash,
-      });
-
-      expect(txReceipt.status).toBe('success');
-      console.log(`Removed Delegatee from App ID: ${TEST_CONFIG.appId}\nTx hash: ${txHash}`);
-    } else {
-      console.log('🔄 No existing App ID found, checking if Delegatee is registered to an App...');
-
-      let registeredApp: {
-        id: bigint;
-        name: string;
-        description: string;
-        isDeleted: boolean;
-        deploymentStatus: number;
-        manager: `0x${string}`;
-        latestVersion: bigint;
-        delegatees: `0x${string}`[];
-        authorizedRedirectUris: string[];
-      } | null = null;
-
-      try {
-        registeredApp = (await DATIL_PUBLIC_CLIENT.readContract({
-          address: VINCENT_ADDRESS as `0x${string}`,
-          abi: VincentAppViewFacetAbi,
-          functionName: 'getAppByDelegatee',
-          args: [TEST_APP_DELEGATEE_ACCOUNT.address],
-        })) as typeof registeredApp;
-
-        if (registeredApp!.manager !== TEST_APP_MANAGER_VIEM_ACCOUNT.address) {
-          throw new Error(
-            `❌ App Delegatee: ${TEST_APP_DELEGATEE_ACCOUNT.address} is already registered to App ID: ${registeredApp!.id.toString()}, and TEST_APP_MANAGER_PRIVATE_KEY is not the owner of the App`,
-          );
-        }
-
-        console.log(
-          `ℹ️  App Delegatee: ${TEST_APP_DELEGATEE_ACCOUNT.address} is already registered to App ID: ${registeredApp!.id.toString()}. Removing Delegatee...`,
-        );
-
-        const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.writeContract({
-          address: VINCENT_ADDRESS as `0x${string}`,
-          abi: VincentAppFacetAbi,
-          functionName: 'removeDelegatee',
-          args: [registeredApp!.id, TEST_APP_DELEGATEE_ACCOUNT.address],
-        });
-
-        const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
-          hash: txHash,
-        });
-
-        expect(txReceipt.status).toBe('success');
-        console.log(`ℹ️  Removed Delegatee from App ID: ${registeredApp!.id}\nTx hash: ${txHash}`);
-      } catch (error: unknown) {
-        // Check if the error is a DelegateeNotRegistered revert
-        if (error instanceof Error && error.message.includes('DelegateeNotRegistered')) {
-          console.log(
-            `ℹ️  App Delegatee: ${TEST_APP_DELEGATEE_ACCOUNT.address} is not registered to any App.`,
-          );
-        } else {
-          throw new Error(
-            `❌ Error checking if delegatee is registered: ${(error as Error).message}`,
-          );
-        }
-      }
-    }
+    await removeAppDelegateeIfNeeded();
   });
 
   it('should register a new App', async () => {
-    const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.writeContract({
-      address: VINCENT_ADDRESS as `0x${string}`,
-      abi: VincentAppFacetAbi,
-      functionName: 'registerApp',
-      args: [
-        // AppInfo
-        {
-          name: APP_NAME,
-          description: APP_DESCRIPTION,
-          deploymentStatus: DEPLOYMENT_STATUS.DEV,
-          authorizedRedirectUris: AUTHORIZED_REDIRECT_URIS,
-          delegatees: DELEGATEES,
-        },
-        // VersionTools
-        {
-          toolIpfsCids: TOOL_IPFS_IDS,
-
-          // No policies on these tools. Empty array for all policy related data.
-          toolPolicies: TOOL_IPFS_IDS.map(() => []),
-          toolPolicyParameterNames: TOOL_IPFS_IDS.map(() => []),
-          toolPolicyParameterTypes: TOOL_IPFS_IDS.map(() => []),
-        },
-      ],
-    });
-
-    const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
-      hash: txHash,
-    });
-    expect(txReceipt.status).toBe('success');
-
-    const parsedLogs = parseEventLogs({
-      abi: VincentAppFacetAbi,
-      logs: txReceipt.logs,
-    });
-    // @ts-expect-error eventName exists?
-    const appRegisteredLog = parsedLogs.filter((log) => log.eventName === 'NewAppRegistered');
-    // @ts-expect-error args exists?
-    const newAppId = appRegisteredLog[0].args.appId;
-
-    expect(newAppId).toBeDefined();
-    if (TEST_CONFIG.appId !== null) expect(newAppId).toBeGreaterThan(BigInt(TEST_CONFIG.appId));
-
-    TEST_CONFIG.appId = newAppId;
-    TEST_CONFIG.appVersion = '1';
-    saveTestConfig(TEST_CONFIG_PATH, TEST_CONFIG);
-    console.log(`Registered new App with ID: ${TEST_CONFIG.appId}\nTx hash: ${txHash}`);
+    TEST_CONFIG = await registerNewApp(TOOL_IPFS_IDS, TOOL_POLICIES, TEST_CONFIG, TEST_CONFIG_PATH);
   });
 
   it('should permit the App version for the Agent Wallet PKP', async () => {
-    const txHash = await TEST_AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT.writeContract({
-      address: VINCENT_ADDRESS as `0x${string}`,
-      abi: VincentUserFacetAbi,
-      functionName: 'permitAppVersion',
-      args: [
-        BigInt(TEST_CONFIG.userPkp!.tokenId!),
-        BigInt(TEST_CONFIG.appId!),
-        BigInt(TEST_CONFIG.appVersion!),
-        TOOL_IPFS_IDS,
-
-        // No policies on these tools. Empty array for all policy related data.
-        TOOL_IPFS_IDS.map(() => []),
-        TOOL_IPFS_IDS.map(() => []),
-        TOOL_IPFS_IDS.map(() => []),
-      ],
-    });
-
-    const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
-      hash: txHash,
-    });
-    expect(txReceipt.status).toBe('success');
-    console.log(
-      `Permitted App with ID ${TEST_CONFIG.appId} and version ${TEST_CONFIG.appVersion} for Agent Wallet PKP with token id ${TEST_CONFIG.userPkp!.tokenId}\nTx hash: ${txHash}`,
-    );
+    await permitAppVersionForAgentWalletPkp(PERMISSION_DATA, TEST_CONFIG);
   });
 
   it('should fund TEST_APP_DELEGATEE if they have no Lit test tokens', async () => {
-    const balance = await DATIL_PUBLIC_CLIENT.getBalance({
-      address: TEST_APP_DELEGATEE_ACCOUNT.address,
-    });
-    if (balance === 0n) {
-      const txHash = await TEST_APP_MANAGER_VIEM_WALLET_CLIENT.sendTransaction({
-        to: TEST_APP_DELEGATEE_ACCOUNT.address,
-        value: BigInt(10000000000000000), // 0.01 ETH in wei
-      });
-      const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
-        hash: txHash,
-      });
-      console.log(`Funded TEST_APP_DELEGATEE with 0.01 ETH\nTx hash: ${txHash}`);
-      expect(txReceipt.status).toBe('success');
-    } else {
-      expect(balance).toBeGreaterThan(0n);
-    }
+    await fundAppDelegateeIfNeeded();
   });
 
   // Test cases for failure tools

@@ -163,7 +163,11 @@ export async function getVincentAppServer(
         const appId = parseInt(_vincentAppDefinition.id, 10);
         const appVersion = parseInt(_vincentAppDefinition.version, 10);
 
-        const delegatorsPkpEthAddresses = await getDelegatorsAgentPkpAddresses(appId, appVersion);
+        const delegatorsPkpEthAddresses = await getDelegatorsAgentPkpAddresses({
+          appId,
+          appVersion,
+          signer: config.delegateeSigner,
+        });
 
         return {
           content: [

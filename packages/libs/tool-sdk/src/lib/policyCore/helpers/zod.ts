@@ -5,6 +5,7 @@ import { z, ZodType } from 'zod';
 import { PolicyResponseDeny, ZodValidationDenyResult } from '../../types';
 import { createDenyResult } from './resultCreators';
 import { isPolicyDenyResponse, isPolicyResponse } from './typeGuards';
+import { bigintReplacer } from '../../utils';
 
 /**
  * Matches the minimum structure of a PolicyResponse.
@@ -103,7 +104,10 @@ export function getSchemaForPolicyResponseResult({
   parsedType: 'allow' | 'deny' | 'unknown';
 } {
   if (!isPolicyResponse(value)) {
-    console.log('getSchemaForPolicyResponseResult !isPolicyResponse', value);
+    console.log(
+      'getSchemaForPolicyResponseResult !isPolicyResponse',
+      JSON.stringify(value, bigintReplacer),
+    );
 
     return {
       schemaToUse: PolicyResponseShape,
@@ -111,7 +115,7 @@ export function getSchemaForPolicyResponseResult({
     };
   }
 
-  console.log('getSchemaForPolicyResponseResult value is', value);
+  console.log('getSchemaForPolicyResponseResult value is', JSON.stringify(value, bigintReplacer));
   return {
     schemaToUse: value.allow ? allowResultSchema : denyResultSchema,
     parsedType: value.allow ? 'allow' : 'deny',

@@ -1,20 +1,31 @@
 import { Signer } from 'ethers';
 
-// ==================================================================================
-// User Mutation Types
-// ==================================================================================
+/**
+ * Represents the decoded parameters for policies associated with a single tool
+ * Keys are policy IPFS CIDs, values are policy parameters for the policy
+ */
+export interface ToolPolicyParameterData {
+  [policyIpfsCid: string]:
+    | {
+        // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
+        [paramName: string]: any;
+      }
+    | undefined;
+}
 
-export interface AppPermissionData {
-  toolIpfsCids: string[];
-  policyIpfsCids: string[][];
-  policyParameterValues: string[][];
+/**
+ * Represents a nested structure of tool and policy parameters
+ * Keys are tool IPFS CIDs, values are ToolPolicyParameterData objects
+ */
+export interface PermissionData {
+  [toolIpfsCid: string]: ToolPolicyParameterData;
 }
 
 export interface PermitAppParams {
   pkpTokenId: string;
   appId: string;
   appVersion: string;
-  permissionData: AppPermissionData;
+  permissionData: PermissionData;
 }
 
 export interface PermitAppOptions {
@@ -39,9 +50,7 @@ export interface SetToolPolicyParametersParams {
   pkpTokenId: string;
   appId: string;
   appVersion: string;
-  toolIpfsCids: string[];
-  policyIpfsCids: string[][];
-  policyParameterValues: string[][];
+  policyParams: PermissionData;
 }
 
 export interface SetToolPolicyParametersOptions {
@@ -92,16 +101,20 @@ export interface GetAllToolsAndPoliciesForAppOptions {
   args: GetAllToolsAndPoliciesForAppParams;
 }
 
-// ==================================================================================
-// Response Types
-// ==================================================================================
-
-export interface PolicyWithParameters {
-  policyIpfsCid: string;
-  policyParameterValues: string;
+export interface ValidateToolExecutionAndGetPoliciesParams {
+  delegatee: string;
+  pkpTokenId: string;
+  toolIpfsCid: string;
 }
 
-export interface ToolWithPolicies {
-  toolIpfsCid: string;
-  policies: PolicyWithParameters[];
+export interface ValidateToolExecutionAndGetPoliciesOptions {
+  signer: Signer;
+  args: ValidateToolExecutionAndGetPoliciesParams;
+}
+
+export interface ValidateToolExecutionAndGetPoliciesResult {
+  isPermitted: boolean;
+  appId: string;
+  appVersion: string;
+  decodedPolicies: ToolPolicyParameterData;
 }

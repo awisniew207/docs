@@ -29,6 +29,13 @@
         "cwd": "packages/apps/toolpolicies-e2e"
       }
     },
+    "action:only:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node scripts/deployAllActions.js"],
+        "cwd": "packages/apps/toolpolicies-e2e"
+      }
+    },
     "action:deploy": {
       "executor": "nx:run-commands",
       "dependsOn": ["action:build"],

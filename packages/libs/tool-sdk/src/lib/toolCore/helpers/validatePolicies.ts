@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { VincentTool, VincentToolPolicy } from '../../types';
 import { getMappedToolPolicyParams } from './getMappedToolPolicyParams';
-import { Policy, PolicyParameter } from '../../policyCore/policyParameters/types';
+import { ToolPolicyParameterData } from '@lit-protocol/vincent-contracts-sdk';
 import { ToolPolicyMap } from './supportedPoliciesForTool';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,11 +12,14 @@ import { ToolPolicyMap } from './supportedPoliciesForTool';
 export type ValidatedPolicyMap<
   ParsedToolParams extends Record<string, any>,
   PoliciesByPackageName extends Record<string, VincentToolPolicy<any, any, any>>,
-  Parameters extends PolicyParameter[] = Policy['parameters'],
 > = Array<
   {
     [PkgName in keyof PoliciesByPackageName]: {
-      parameters: Parameters;
+      parameters:
+        | {
+            [paramName: string]: any;
+          }
+        | undefined;
       policyPackageName: PkgName;
       toolPolicyParams: {
         [PolicyParamKey in PoliciesByPackageName[PkgName]['toolParameterMappings'][keyof PoliciesByPackageName[PkgName]['toolParameterMappings']] &
@@ -36,12 +39,12 @@ export async function validatePolicies<
   PolicyMap extends ToolPolicyMap<any, any>,
   PoliciesByPackageName extends PolicyMap['policyByPackageName'],
 >({
-  policies,
+  decodedPolicies,
   vincentTool,
   toolIpfsCid,
   parsedToolParams,
 }: {
-  policies: Policy[];
+  decodedPolicies: ToolPolicyParameterData;
   vincentTool: VincentTool<
     ToolParamsSchema,
     keyof PoliciesByPackageName & string,
@@ -60,12 +63,15 @@ export async function validatePolicies<
   const validatedPolicies: Array<{
     policyPackageName: keyof PoliciesByPackageName;
     toolPolicyParams: Record<string, unknown>;
-    parameters: PolicyParameter[];
+    parameters:
+      | {
+          [paramName: string]: any;
+        }
+      | undefined;
   }> = [];
 
-  for (const policy of policies) {
-    const { policyIpfsCid, parameters } = policy;
-    const toolPolicy = vincentTool.supportedPolicies.policyByIpfsCid[policyIpfsCid as string];
+  for (const policyIpfsCid of Object.keys(decodedPolicies)) {
+    const toolPolicy = vincentTool.supportedPolicies.policyByIpfsCid[policyIpfsCid];
 
     console.log(
       'vincentTool.supportedPolicies',
@@ -97,7 +103,11 @@ export async function validatePolicies<
       [key: string]: unknown;
     };
 
-    validatedPolicies.push({ parameters, policyPackageName, toolPolicyParams });
+    validatedPolicies.push({
+      parameters: decodedPolicies[policyIpfsCid] || {},
+      policyPackageName,
+      toolPolicyParams,
+    });
   }
 
   return validatedPolicies as ValidatedPolicyMap<z.infer<ToolParamsSchema>, PoliciesByPackageName>;

@@ -3,9 +3,11 @@ import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { SiweMessage } from 'siwe';
-import { Wallet } from 'ethers';
+import { providers, Wallet } from 'ethers';
 
 const { vincentApiClientNode, setBaseQueryFn } = nodeClient;
+
+const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
 
 // Generate a secure random nonce
 export const generateNonce = () => {
@@ -16,9 +18,29 @@ export const generateNonce = () => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
+// Generate random Ethereum addresses
+export const generateRandomEthAddresses = (count = 2): string[] => {
+  const addresses: string[] = [];
+  for (let i = 0; i < count; i++) {
+    // Create a random wallet and use its address
+    const wallet = Wallet.createRandom();
+    addresses.push(wallet.address);
+  }
+  return addresses;
+};
+
 // Default wallet for testing
+const TEST_APP_MANAGER_PRIVATE_KEY = process.env['TEST_APP_MANAGER_PRIVATE_KEY'];
+
+if (!TEST_APP_MANAGER_PRIVATE_KEY)
+  throw new Error(
+    'TEST_APP_MANAGER_PRIVATE_KEY environment variable is not set. Please set it to a private key for a wallet that can manage apps.',
+  );
+
 export const defaultWallet = new Wallet(
-  '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+  process.env['TEST_APP_MANAGER_PRIVATE_KEY'] ||
+    '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+  provider,
 );
 
 // Function to generate a SIWE message

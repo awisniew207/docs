@@ -37,7 +37,6 @@ export const requirePackage = (packageNameParam = 'packageName', versionParam = 
       debug('Successfully fetched package info', {
         packageName,
         version,
-        hasPackageJson: !!packageInfo.packageJson,
       });
 
       // Add the package info to the request object
