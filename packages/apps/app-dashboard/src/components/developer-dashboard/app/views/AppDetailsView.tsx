@@ -5,7 +5,7 @@ import { Logo } from '@/components/shared/ui/Logo';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { AppPublishedButtons } from '../wrappers/ui/AppPublishedButtons';
 import { AppUnpublishedButtons } from '../wrappers/ui/AppUnpublishedButtons';
-import { AppPublishedDeletedButtons } from '../wrappers/ui/AppPublishedDeletedButtons';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 interface AppDetailsViewProps {
   selectedApp: App;
@@ -21,7 +21,7 @@ export function AppDetailsView({
   refetchBlockchainData,
 }: AppDetailsViewProps) {
   const isPublished = blockchainAppData !== null;
-  const isDeleted = blockchainAppData?.isDeleted;
+  const isAppDeletedRegistry = selectedApp.isDeleted;
 
   const delegateeAddresses = isPublished
     ? blockchainAppData.delegatees
@@ -50,29 +50,43 @@ export function AppDetailsView({
       </div>
 
       {/* Publish Status Messages */}
-      {isPublished && (
-        <StatusMessage
-          message="This app is registered in the on-chain Vincent Registry."
-          type="info"
-        />
-      )}
+      {isPublished && <StatusMessage message="This app is registered on-chain." type="info" />}
 
       {/* App Management Actions */}
       <div className="bg-white border rounded-lg">
         <div className="p-6 border-b border-gray-100">
-          <h3 className="text-lg font-medium text-gray-900">App Management</h3>
-          <p className="text-gray-600 text-sm mt-1">Manage your application settings</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">App Management</h3>
+              <p className="text-gray-600 text-sm mt-1">Manage your application settings</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Registry Status:</span>
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                  !isAppDeletedRegistry ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {!isAppDeletedRegistry ? (
+                  <>
+                    <CheckCircle className="h-3 w-3" />
+                    Active
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-3 w-3" />
+                    Deleted
+                  </>
+                )}
+              </span>
+            </div>
+          </div>
         </div>
         <div className="p-6">
-          {isPublished && !isDeleted ? (
+          {isPublished ? (
             <AppPublishedButtons
-              appId={selectedApp.appId}
-              onOpenMutation={onOpenMutation}
-              refetchBlockchainData={refetchBlockchainData}
-            />
-          ) : isPublished && isDeleted ? (
-            <AppPublishedDeletedButtons
-              appId={selectedApp.appId}
+              appData={selectedApp}
+              appBlockchainData={blockchainAppData}
               onOpenMutation={onOpenMutation}
               refetchBlockchainData={refetchBlockchainData}
             />

@@ -45,10 +45,7 @@ export function AppVersionDetailView({
 
       {/* Publish Status Message */}
       {isPublished && (
-        <StatusMessage
-          message="This app version registered in the on-chain Vincent Registry."
-          type="info"
-        />
+        <StatusMessage message="This app version is registered on-chain." type="info" />
       )}
 
       {/* Version Management Card */}
@@ -94,7 +91,7 @@ export function AppVersionDetailView({
           ) : isPublished && isAppDeletedOnChain ? (
             <>
               <StatusMessage
-                message="This app is deleted in the on-chain Vincent Registry. Please undelete the app to enable version modification."
+                message="This app is deleted on-chain. Please undelete the app to enable version modification."
                 type="info"
               />
             </>
