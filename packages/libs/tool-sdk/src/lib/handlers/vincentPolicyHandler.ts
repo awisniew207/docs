@@ -7,7 +7,7 @@ import {
   getDecodedPolicyParams,
   getPoliciesAndAppVersion,
 } from '../policyCore/policyParameters/getOnchainPolicyParams';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import { createDenyResult } from '../policyCore/helpers';
 import { z } from 'zod';
 import { getPkpInfo } from '../toolCore/helpers';
@@ -69,15 +69,14 @@ export async function vincentPolicyHandler<
 
     const userPkpInfo = await getPkpInfo({
       litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-      yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+      yellowstoneRpcUrl: delegationRpcUrl,
       pkpEthAddress: delegatorPkpEthAddress,
     });
     const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
     console.log('appDelegateeAddress', appDelegateeAddress);
 
-    const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
+    const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
       delegationRpcUrl,
-      vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
       appDelegateeAddress,
       agentWalletPkpTokenId: userPkpInfo.tokenId,
       toolIpfsCid,
@@ -94,7 +93,7 @@ export async function vincentPolicyHandler<
     };
 
     const onChainPolicyParams = await getDecodedPolicyParams({
-      policies,
+      decodedPolicies,
       policyIpfsCid,
     });
 

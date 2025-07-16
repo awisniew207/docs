@@ -11,7 +11,7 @@ import { getPkpInfo } from '../toolCore/helpers';
 import { evaluatePolicies } from './evaluatePolicies';
 import { validateOrFail } from '../toolCore/helpers/zod';
 import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import { validatePolicies } from '../toolCore/helpers/validatePolicies';
 import { ToolPolicyMap } from '../toolCore/helpers';
 import { z } from 'zod';
@@ -164,14 +164,13 @@ export const vincentToolHandler = <
 
       const userPkpInfo = await getPkpInfo({
         litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-        yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+        yellowstoneRpcUrl: delegationRpcUrl,
         pkpEthAddress: context.delegatorPkpEthAddress,
       });
       baseContext.delegation.delegatorPkpInfo = userPkpInfo;
 
-      const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
+      const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl,
-        vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
         appDelegateeAddress,
         agentWalletPkpTokenId: userPkpInfo.tokenId,
         toolIpfsCid,
@@ -180,7 +179,7 @@ export const vincentToolHandler = <
       baseContext.appVersion = appVersion.toNumber();
 
       const validatedPolicies = await validatePolicies({
-        policies,
+        decodedPolicies,
         vincentTool,
         parsedToolParams: parsedOrFail,
         toolIpfsCid,

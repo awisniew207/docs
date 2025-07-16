@@ -13,8 +13,6 @@ export type { ToolResultFailure, VincentPolicy } from './lib/types';
 
 // Policy Core - Parameter Loading + Decoding
 export { getPoliciesAndAppVersion } from './lib/policyCore/policyParameters/getOnchainPolicyParams';
-export { decodePolicyParams } from './lib/policyCore/policyParameters/decodePolicyParams';
-export type { DecodedValues, Policy } from './lib/policyCore/policyParameters/types';
 
 // Policy Core - Evaluation Helpers
 export {
@@ -26,8 +24,4 @@ export {
 } from './lib/policyCore/helpers';
 
 // Constants
-export { YELLOWSTONE_PUBLIC_RPC } from './lib/constants';
-export {
-  LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-  LIT_DATIL_VINCENT_ADDRESS,
-} from './lib/handlers/constants';
+export { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './lib/handlers/constants';
