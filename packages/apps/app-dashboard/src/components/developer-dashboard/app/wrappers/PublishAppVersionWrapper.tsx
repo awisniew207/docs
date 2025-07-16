@@ -199,12 +199,20 @@ export function PublishAppVersionWrapper({ isAppRegistered }: { isAppRegistered:
         return;
       }
 
+      // Check if any delegatees are already registered to other apps
+      const delegatees = app.delegateeAddresses;
+
+      if (!delegatees) {
+        setPublishResult({
+          success: false,
+          message: 'Cannot publish app without delegatee addresses.',
+        });
+        return;
+      }
+
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
-
-      // Check if any delegatees are already registered to other apps
-      const delegatees = app?.delegateeAddresses || [];
 
       for (const delegatee of delegatees) {
         try {
@@ -234,14 +242,11 @@ export function PublishAppVersionWrapper({ isAppRegistered }: { isAppRegistered:
           signer: signer,
           args: {
             appId: appId.toString(),
-            delegatees: app?.delegateeAddresses || [],
+            delegatees: delegatees,
             versionTools: {
               toolIpfsCids: toolIpfsCids,
               toolPolicies: toolPolicies,
             },
-          },
-          overrides: {
-            gasLimit: 10000000,
           },
         });
       } else {
@@ -254,9 +259,6 @@ export function PublishAppVersionWrapper({ isAppRegistered }: { isAppRegistered:
               toolIpfsCids: toolIpfsCids,
               toolPolicies: toolPolicies,
             },
-          },
-          overrides: {
-            gasLimit: 10000000,
           },
         });
       }

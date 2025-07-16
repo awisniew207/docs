@@ -8,7 +8,11 @@ export function useBlockchainAppData(appId: string | undefined) {
   const [blockchainAppLoading, setBlockchainAppLoading] = useState(true);
 
   const fetchBlockchainData = useCallback(async () => {
-    if (!appId) return;
+    if (!appId) {
+      setBlockchainAppError('App ID is required');
+      setBlockchainAppLoading(false);
+      return;
+    }
 
     setBlockchainAppLoading(true);
     setBlockchainAppError(null);
@@ -27,7 +31,7 @@ export function useBlockchainAppData(appId: string | undefined) {
         setBlockchainAppError(null);
       } else {
         // Real error
-        setBlockchainAppError('Failed to fetch on-chain app data');
+        setBlockchainAppError(`Failed to fetch on-chain app data: ${error.message}`);
         setBlockchainAppData(null);
       }
     } finally {
@@ -36,13 +40,6 @@ export function useBlockchainAppData(appId: string | undefined) {
   }, [appId]);
 
   useEffect(() => {
-    if (!appId) {
-      setBlockchainAppData(null);
-      setBlockchainAppError(null);
-      setBlockchainAppLoading(false);
-      return;
-    }
-
     fetchBlockchainData();
   }, [appId, fetchBlockchainData]);
 
