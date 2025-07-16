@@ -4,6 +4,7 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import Loading from '@/components/layout/Loading';
 import { AppVersionDetailView } from '@/components/developer-dashboard/app/views/AppVersionDetailView';
+import { useBlockchainAppData } from '@/hooks/useBlockchainAppData';
 import { useBlockchainAppVersionData } from '@/hooks/useBlockchainAppVersionData';
 
 export function AppVersionDetailWrapper() {
@@ -37,13 +38,14 @@ export function AppVersionDetailWrapper() {
     version: Number(versionId),
   });
 
+  const { blockchainAppData, blockchainAppError, blockchainAppLoading } =
+    useBlockchainAppData(appId);
+
   // Fetch blockchain app and version data
   const {
     blockchainAppVersion,
     blockchainAppVersionError,
     blockchainAppVersionLoading,
-    blockchainAppData,
-    isAppRegistered,
     refetch: refetchBlockchainAppVersionData,
   } = useBlockchainAppVersionData(appId, versionId);
 
@@ -55,6 +57,7 @@ export function AppVersionDetailWrapper() {
     versionsLoading ||
     versionLoading ||
     versionToolsLoading ||
+    blockchainAppLoading ||
     blockchainAppVersionLoading
   )
     return <Loading />;
@@ -62,6 +65,8 @@ export function AppVersionDetailWrapper() {
   // Combined error states
   if (appError) return <StatusMessage message="Failed to load app" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
+  if (blockchainAppError)
+    return <StatusMessage message="Failed to load on-chain app data" type="error" />;
   if (blockchainAppVersionError)
     return <StatusMessage message="Failed to load on-chain app version data" type="error" />;
   if (versionError) return <StatusMessage message="Failed to load version data" type="error" />;
@@ -79,7 +84,6 @@ export function AppVersionDetailWrapper() {
       blockchainAppVersion={blockchainAppVersion}
       blockchainAppData={blockchainAppData}
       refetchBlockchainAppVersionData={refetchBlockchainAppVersionData}
-      isAppRegistered={isAppRegistered}
     />
   );
 }

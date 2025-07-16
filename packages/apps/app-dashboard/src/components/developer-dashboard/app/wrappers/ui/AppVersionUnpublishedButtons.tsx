@@ -8,14 +8,14 @@ interface AppVersionUnpublishedButtonsProps {
   appId: number;
   versionId: number;
   isVersionEnabled: boolean;
-  isAppRegistered: boolean;
+  isAppPublished: boolean;
 }
 
 export function AppVersionUnpublishedButtons({
   appId,
   versionId,
   isVersionEnabled,
-  isAppRegistered,
+  isAppPublished,
 }: AppVersionUnpublishedButtonsProps) {
   const navigate = useNavigate();
 
@@ -105,7 +105,7 @@ export function AppVersionUnpublishedButtons({
         Delete Version
       </button>
 
-      {isVersionEnabled && <PublishAppVersionWrapper isAppRegistered={isAppRegistered} />}
+      {isVersionEnabled && <PublishAppVersionWrapper isAppPublished={isAppPublished} />}
     </div>
   );
 }

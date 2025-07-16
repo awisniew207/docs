@@ -17,7 +17,6 @@ interface AppVersionDetailViewProps {
   blockchainAppVersion: ContractAppVersion | null;
   blockchainAppData: ContractApp | null;
   refetchBlockchainAppVersionData: () => void;
-  isAppRegistered: boolean;
 }
 
 export function AppVersionDetailView({
@@ -27,9 +26,9 @@ export function AppVersionDetailView({
   blockchainAppVersion,
   blockchainAppData,
   refetchBlockchainAppVersionData,
-  isAppRegistered,
 }: AppVersionDetailViewProps) {
-  const isPublished = blockchainAppVersion !== null;
+  const isAppPublished = blockchainAppData !== null;
+  const isVersionPublished = blockchainAppVersion !== null;
   const isAppDeletedOnChain = blockchainAppData?.isDeleted;
   const isAppVersionDeletedRegistry = versionData.isDeleted;
   const isVersionEnabledRegistry = versionData.enabled;
@@ -44,7 +43,7 @@ export function AppVersionDetailView({
       </div>
 
       {/* Publish Status Message */}
-      {isPublished && (
+      {isVersionPublished && (
         <StatusMessage message="This app version is registered on-chain." type="info" />
       )}
 
@@ -80,7 +79,7 @@ export function AppVersionDetailView({
           </div>
         </div>
         <div className="p-6 space-y-3">
-          {isPublished && !isAppDeletedOnChain && !isAppVersionDeletedRegistry ? (
+          {isVersionPublished && !isAppDeletedOnChain && !isAppVersionDeletedRegistry ? (
             <AppVersionPublishedButtons
               appId={versionData.appId}
               versionId={versionData.version}
@@ -88,7 +87,7 @@ export function AppVersionDetailView({
               appVersionBlockchainData={blockchainAppVersion}
               refetchBlockchainAppVersionData={refetchBlockchainAppVersionData}
             />
-          ) : isPublished && isAppDeletedOnChain ? (
+          ) : isVersionPublished && isAppDeletedOnChain ? (
             <>
               <StatusMessage
                 message="This app is deleted on-chain. Please undelete the app to enable version modification."
@@ -102,7 +101,7 @@ export function AppVersionDetailView({
               appId={versionData.appId}
               versionId={versionData.version}
               isVersionEnabled={isVersionEnabledRegistry}
-              isAppRegistered={isAppRegistered}
+              isAppRegistered={isAppPublished}
             />
           )}
         </div>

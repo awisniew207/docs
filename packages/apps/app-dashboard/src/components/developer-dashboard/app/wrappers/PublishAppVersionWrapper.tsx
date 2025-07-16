@@ -13,7 +13,7 @@ import { ethers } from 'ethers';
 import { PublishAppVersionButton } from './ui/PublishAppVersionButton';
 import MutationButtonStates, { SkeletonButton } from '@/components/layout/MutationButtonStates';
 
-export function PublishAppVersionWrapper({ isAppRegistered }: { isAppRegistered: boolean }) {
+export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: boolean }) {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();
 
   // Fetching
@@ -236,7 +236,7 @@ export function PublishAppVersionWrapper({ isAppRegistered }: { isAppRegistered:
         }
       }
 
-      if (!isAppRegistered) {
+      if (!isAppPublished) {
         // App not registered - use registerApp (first-time registration)
         await registerApp({
           signer: signer,

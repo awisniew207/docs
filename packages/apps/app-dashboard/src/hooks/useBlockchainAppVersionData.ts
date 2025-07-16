@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getAppVersion, AppVersion, App } from '@lit-protocol/vincent-contracts-sdk';
+import { getAppVersion, AppVersion } from '@lit-protocol/vincent-contracts-sdk';
 import { readOnlySigner } from '@/utils/developer-dashboard/readOnlySigner';
 
 export function useBlockchainAppVersionData(
@@ -9,8 +9,6 @@ export function useBlockchainAppVersionData(
   const [blockchainAppVersion, setBlockchainAppVersion] = useState<AppVersion | null>(null);
   const [blockchainAppVersionError, setBlockchainAppVersionError] = useState<string | null>(null);
   const [blockchainAppVersionLoading, setBlockchainAppVersionLoading] = useState(true);
-  const [blockchainAppData, setBlockchainAppData] = useState<App | null>(null);
-  const [isAppRegistered, setIsAppRegistered] = useState(false);
 
   const fetchBlockchainAppVersionData = useCallback(async () => {
     if (!appId || !versionId) {
@@ -30,27 +28,19 @@ export function useBlockchainAppVersionData(
           version: versionId.toString(),
         },
       });
-      setBlockchainAppVersion(appVersionResult.appVersion);
-      setBlockchainAppData(appVersionResult.app);
-      setIsAppRegistered(true);
-      setBlockchainAppVersionError(null);
-    } catch (error: any) {
-      if (error?.message?.includes('AppVersionNotRegistered')) {
+
+      if (appVersionResult === null) {
+        // App or version not registered - this is fine
         setBlockchainAppVersion(null);
-        setBlockchainAppData(null);
-        setIsAppRegistered(true); // App exists, but version doesn't
-        setBlockchainAppVersionError(null);
-      } else if (error?.message?.includes('AppNotRegistered')) {
-        setBlockchainAppVersion(null);
-        setBlockchainAppData(null);
-        setIsAppRegistered(false); // App doesn't exist
         setBlockchainAppVersionError(null);
       } else {
-        setBlockchainAppVersionError(`Failed to fetch app version data: ${error.message}`);
-        setBlockchainAppVersion(null);
-        setBlockchainAppData(null);
-        setIsAppRegistered(false);
+        setBlockchainAppVersion(appVersionResult.appVersion);
+        setBlockchainAppVersionError(null);
       }
+    } catch (error: any) {
+      // All errors are real errors in contracts-sdk >= 1.0.0
+      setBlockchainAppVersionError(`Failed to fetch app version data: ${error.message}`);
+      setBlockchainAppVersion(null);
     } finally {
       setBlockchainAppVersionLoading(false);
     }
@@ -68,8 +58,6 @@ export function useBlockchainAppVersionData(
     blockchainAppVersion,
     blockchainAppVersionError,
     blockchainAppVersionLoading,
-    blockchainAppData,
-    isAppRegistered,
     refetch,
   };
 }
