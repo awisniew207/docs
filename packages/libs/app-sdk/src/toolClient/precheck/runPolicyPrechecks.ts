@@ -5,16 +5,16 @@ import util from 'node:util';
 import { createAllowPrecheckResult, createDenyPrecheckResult } from './resultCreators';
 import {
   createDenyResult,
-  DecodedValues,
-  decodePolicyParams,
   getSchemaForPolicyResponseResult,
   isPolicyAllowResponse,
   isPolicyDenyResponse,
-  Policy,
   ToolPolicyMap,
   validateOrDeny,
   validatePolicies,
 } from '@lit-protocol/vincent-tool-sdk/internal';
+
+import type { ToolPolicyParameterData } from '@lit-protocol/vincent-contracts-sdk';
+
 import {
   BaseContext,
   BaseToolContext,
@@ -52,7 +52,7 @@ export async function runToolPolicyPrechecks<
   >;
   toolParams: z.infer<ToolParamsSchema>;
   context: BaseContext & { rpcUrl?: string };
-  policies: Policy[];
+  decodedPolicies: ToolPolicyParameterData;
 }): Promise<BaseToolContext<PolicyPrecheckResultContext<PoliciesByPackageName>>> {
   type Key = PkgNames & keyof PoliciesByPackageName;
 
@@ -60,7 +60,7 @@ export async function runToolPolicyPrechecks<
     bundledVincentTool: { vincentTool, ipfsCid },
     toolParams,
     context,
-    policies,
+    decodedPolicies,
   } = params;
 
   console.log(
@@ -69,18 +69,16 @@ export async function runToolPolicyPrechecks<
   );
 
   const validatedPolicies = await validatePolicies({
-    policies,
+    decodedPolicies,
     vincentTool,
     toolIpfsCid: ipfsCid,
     parsedToolParams: toolParams,
   });
 
-  const decodedPoliciesByPackageName: Record<string, Record<string, DecodedValues>> = {};
+  const decodedPoliciesByPackageName: Record<string, Record<string, any> | undefined> = {};
 
   for (const { policyPackageName, parameters } of validatedPolicies) {
-    decodedPoliciesByPackageName[policyPackageName as string] = decodePolicyParams({
-      params: parameters,
-    });
+    decodedPoliciesByPackageName[policyPackageName as string] = parameters;
   }
 
   const evaluatedPolicies = [] as Key[];

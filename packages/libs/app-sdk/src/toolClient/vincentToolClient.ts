@@ -13,10 +13,8 @@ import {
   getPoliciesAndAppVersion,
   getSchemaForToolResult,
   LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-  LIT_DATIL_VINCENT_ADDRESS,
   type ToolPolicyMap,
   validateOrFail,
-  YELLOWSTONE_PUBLIC_RPC,
 } from '@lit-protocol/vincent-tool-sdk/internal';
 
 import { getLitNodeClientInstance } from '../internal/LitNodeClient/getLitNodeClient';
@@ -38,6 +36,8 @@ import {
   createToolPrecheckResponseFailureNoResult,
   createToolPrecheckResponseSuccessNoResult,
 } from './precheck/resultCreators';
+
+const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 
 /** A VincentToolClient provides a type-safe interface for executing tools, for both `precheck()`
  * and `execute()` functionality.
@@ -148,16 +148,15 @@ export function getVincentToolClient<
 
       const userPkpInfo = await getPkpInfo({
         litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-        yellowstoneRpcUrl: rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
+        yellowstoneRpcUrl: rpcUrl ?? YELLOWSTONE_RPC_URL,
         pkpEthAddress: delegatorPkpEthAddress,
       });
       baseContext.delegation.delegatorPkpInfo = userPkpInfo;
 
       console.log('userPkpInfo', userPkpInfo);
 
-      const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
-        delegationRpcUrl: rpcUrl ?? YELLOWSTONE_PUBLIC_RPC,
-        vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
+      const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
+        delegationRpcUrl: rpcUrl ?? YELLOWSTONE_RPC_URL,
         appDelegateeAddress: delegateePkpEthAddress,
         agentWalletPkpTokenId: userPkpInfo.tokenId,
         toolIpfsCid: ipfsCid,
@@ -165,12 +164,12 @@ export function getVincentToolClient<
       baseContext.appId = appId.toNumber();
       baseContext.appVersion = appVersion.toNumber();
 
-      console.log('Fetched policies and app info', { policies, appId, appVersion });
+      console.log('Fetched policies and app info', { decodedPolicies, appId, appVersion });
 
       const baseToolContext = await runToolPolicyPrechecks({
         bundledVincentTool,
         toolParams: parsedParams as z.infer<ToolParamsSchema>,
-        policies,
+        decodedPolicies,
         context: {
           ...baseContext,
           rpcUrl,
@@ -178,7 +177,7 @@ export function getVincentToolClient<
       });
 
       if (!vincentTool.precheck) {
-        console.log('No tool precheck defined - returning baseContext and success result', {
+        console.log('No tool precheck defined - returning baseContext policy evaluation results', {
           rawToolParams,
           delegatorPkpEthAddress,
           rpcUrl,
