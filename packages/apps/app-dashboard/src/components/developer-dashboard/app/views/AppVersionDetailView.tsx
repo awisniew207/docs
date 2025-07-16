@@ -32,7 +32,7 @@ export function AppVersionDetailView({
   const isPublished = blockchainAppVersion !== null;
   const isAppDeletedOnChain = blockchainAppData?.isDeleted;
   const isAppVersionDeletedRegistry = versionData.isDeleted;
-  const isVersionEnabled = versionData?.enabled ?? false;
+  const isVersionEnabledRegistry = versionData.enabled;
 
   return (
     <div className="space-y-6">
@@ -59,18 +59,25 @@ export function AppVersionDetailView({
               <h3 className="text-lg font-medium text-gray-900">Version Management</h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Status:</span>
+              <span className="text-sm text-gray-500">Registry Status:</span>
               <span
                 className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                  isVersionEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  isVersionEnabledRegistry
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
                 }`}
               >
-                {isVersionEnabled ? (
-                  <Power className="h-3 w-3" />
+                {isVersionEnabledRegistry ? (
+                  <>
+                    <Power className="h-3 w-3" />
+                    Enabled
+                  </>
                 ) : (
-                  <PowerOff className="h-3 w-3" />
+                  <>
+                    <PowerOff className="h-3 w-3" />
+                    Disabled
+                  </>
                 )}
-                {isVersionEnabled ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </div>
@@ -80,7 +87,8 @@ export function AppVersionDetailView({
             <AppVersionPublishedButtons
               appId={versionData.appId}
               versionId={versionData.version}
-              appVersionData={blockchainAppVersion}
+              appVersionData={versionData}
+              appVersionBlockchainData={blockchainAppVersion}
               refetchBlockchainAppVersionData={refetchBlockchainAppVersionData}
             />
           ) : isPublished && isAppDeletedOnChain ? (
@@ -96,7 +104,7 @@ export function AppVersionDetailView({
             <AppVersionUnpublishedButtons
               appId={versionData.appId}
               versionId={versionData.version}
-              isVersionEnabled={isVersionEnabled}
+              isVersionEnabled={isVersionEnabledRegistry}
               isAppRegistered={isAppRegistered}
             />
           )}
