@@ -12,6 +12,7 @@ import { createDenyResult } from '../policyCore/helpers';
 import { z } from 'zod';
 import { getPkpInfo } from '../toolCore/helpers';
 import { bigintReplacer } from '../utils';
+import { assertSupportedToolVersion } from './assertSupportedToolVersion';
 
 declare const Lit: {
   Actions: {
@@ -25,6 +26,8 @@ declare const LitAuth: {
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+declare const VINCENT_TOOL_API_VERSION: string;
 
 /** @hidden */
 export async function vincentPolicyHandler<
@@ -53,6 +56,8 @@ export async function vincentPolicyHandler<
   toolParams: unknown;
   context: PolicyConsumerContext;
 }) {
+  assertSupportedToolVersion(VINCENT_TOOL_API_VERSION);
+
   const { delegatorPkpEthAddress, toolIpfsCid } = context; // FIXME: Set from ipfsCidsStack when it's shipped
 
   console.log('actionIpfsIds:', LitAuth.actionIpfsIds.join(','));

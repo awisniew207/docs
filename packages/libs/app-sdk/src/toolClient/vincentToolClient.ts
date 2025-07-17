@@ -36,6 +36,7 @@ import {
   createToolPrecheckResponseFailureNoResult,
   createToolPrecheckResponseSuccessNoResult,
 } from './precheck/resultCreators';
+import { VINCENT_TOOL_API_VERSION } from './constants';
 
 const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 
@@ -244,6 +245,7 @@ export function getVincentToolClient<
         jsParams: {
           toolParams: parsedParams,
           context,
+          VINCENT_TOOL_API_VERSION,
         },
       });
 

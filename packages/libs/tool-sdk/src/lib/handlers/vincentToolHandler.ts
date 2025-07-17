@@ -17,6 +17,7 @@ import { z } from 'zod';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
 import type { BaseToolContext } from '../toolCore/toolConfig/context/types';
 import { bigintReplacer } from '../utils';
+import { assertSupportedToolVersion } from './assertSupportedToolVersion';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -30,6 +31,8 @@ declare const Lit: {
     getRpcUrl: (args: { chain: string }) => Promise<string>;
   };
 };
+
+declare const VINCENT_TOOL_API_VERSION: string;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function createToolExecutionContext<
@@ -126,6 +129,8 @@ export const vincentToolHandler = <
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
+    assertSupportedToolVersion(VINCENT_TOOL_API_VERSION);
+
     let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
     const toolIpfsCid = LitAuth.actionIpfsIds[0];
@@ -191,6 +196,7 @@ export const vincentToolHandler = <
         validatedPolicies,
         vincentTool,
         context: baseContext,
+        toolApiVersion: VINCENT_TOOL_API_VERSION,
       });
 
       console.log(
