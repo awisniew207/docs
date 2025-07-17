@@ -178,8 +178,8 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
             A verification code will be sent to your {method}
           </p>
 
-          <div className="w-full">
-            <form className="space-y-4" onSubmit={sendPasscode}>
+          <div className="flex justify-center">
+            <form className="space-y-4 w-1/2" onSubmit={sendPasscode}>
               {method === 'email' ? (
                 <div className="space-y-2">
                   <label htmlFor="email" className={`text-sm font-medium block ${theme.text}`}>
@@ -251,8 +251,8 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
             Enter the 6-digit verification code sent to {userId}
           </p>
 
-          <div className="w-full">
-            <form className="space-y-4" onSubmit={authenticate}>
+          <div className="flex justify-center">
+            <form className="space-y-4 w-1/2" onSubmit={authenticate}>
               <div className="space-y-2">
                 <label htmlFor="code" className={`text-sm font-medium block ${theme.text}`}>
                   Verification code

@@ -35,11 +35,7 @@ export function ConsentPageWrapper() {
 
   const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
   if (!isProcessing && !isUserAuthed) {
-    return (
-      <AuthenticationErrorScreen
-        errorDetails={error || 'Authentication required to access this page'}
-      />
-    );
+    return <AuthenticationErrorScreen />;
   }
 
   if (isLoading || isProcessing || isPermittedLoading) {

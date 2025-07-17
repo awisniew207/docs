@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 import { ThemeType } from './ui/theme';
 
 import useAuthenticate from '../../../hooks/user-dashboard/useAuthenticate';
@@ -18,6 +17,7 @@ import {
 
 import SignUpView from '../auth/SignUpView';
 import StatusMessage from './StatusMessage';
+import Loading from '@/components/shared/ui/Loading';
 
 type ConsentViewProps = {
   isUserDashboardFlow?: boolean;
@@ -110,7 +110,6 @@ export default function ConsentView({ isUserDashboardFlow = false, theme }: Cons
         // Navigate to apps page
         navigate('/user/apps');
       } catch (error) {
-        console.error('Error saving PKP info to localStorage:', error);
         const errorMessage = error instanceof Error ? error.message : String(error);
         setStatusMessage(`Authentication Error: ${errorMessage}`);
         setStatusType('error');
@@ -250,12 +249,7 @@ export default function ConsentView({ isUserDashboardFlow = false, theme }: Cons
   const renderContent = () => {
     // Use the stable loading state
     if (isStableLoading) {
-      return (
-        <div className="flex flex-col items-center justify-center py-8 space-y-4">
-          <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
-          <p className={`text-sm ${theme.textMuted}`}>Loading...</p>
-        </div>
-      );
+      return <Loading />;
     }
 
     // If authenticated with a new PKP and session sigs
@@ -263,12 +257,7 @@ export default function ConsentView({ isUserDashboardFlow = false, theme }: Cons
       // User flow: The navigation is handled in useEffect
       if (isUserDashboardFlow) {
         // Return loading state or empty component while navigation happens
-        return (
-          <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
-            <p className={`text-sm ${theme.textMuted}`}>Redirecting...</p>
-          </div>
-        );
+        return <Loading />;
       }
 
       // Consent flow: save PKP info and refresh the page so ConsentPageWrapper can re-evaluate
@@ -283,12 +272,7 @@ export default function ConsentView({ isUserDashboardFlow = false, theme }: Cons
         setStatusType('error');
       }
       window.location.reload();
-      return (
-        <div className="flex flex-col items-center justify-center py-8 space-y-4">
-          <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
-          <p className={`text-sm ${theme.textMuted}`}>Refreshing...</p>
-        </div>
-      );
+      return <Loading />;
     }
 
     // If we're not showing the existing account and have validated session sigs
@@ -312,12 +296,7 @@ export default function ConsentView({ isUserDashboardFlow = false, theme }: Cons
     // If we have validated session sigs from an existing session in user flow
     if (isUserDashboardFlow && validatedSessionSigs && authInfo?.userPKP) {
       // Return loading state or empty component while navigation happens
-      return (
-        <div className="flex flex-col items-center justify-center py-8 space-y-4">
-          <Loader2 className={`w-8 h-8 animate-spin ${theme.text}`} />
-          <p className={`text-sm ${theme.textMuted}`}>Redirecting...</p>
-        </div>
-      );
+      return <Loading />;
     }
 
     // If authenticated but no accounts found
@@ -355,7 +334,7 @@ export default function ConsentView({ isUserDashboardFlow = false, theme }: Cons
         </div>
       )}
 
-      <div className="mt-6">{renderContent()}</div>
+      <div className="">{renderContent()}</div>
     </div>
   );
 }

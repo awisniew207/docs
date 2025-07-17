@@ -1,18 +1,18 @@
-import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/shared/ui/card';
-import { AlertTriangle, ArrowLeft, RefreshCw, Moon, Sun } from 'lucide-react';
-import { Button } from '@/components/shared/ui/button';
+import { AlertTriangle, ArrowLeft, RefreshCw, Sun, Moon } from 'lucide-react';
 import { theme } from './ui/theme';
 import { InfoBanner } from './ui/InfoBanner';
 import { ActionCard } from './ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/shared/ui/button';
+import { useSystemTheme } from '@/hooks/user-dashboard/consent/useSystemTheme';
 
 type GeneralErrorScreenProps = {
   errorDetails: string;
 };
 
 export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useSystemTheme();
   const themeStyles = theme(isDark);
   const navigate = useNavigate();
 
@@ -25,10 +25,6 @@ export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
     window.location.reload();
   };
 
-  const handleToggleTheme = useCallback(() => {
-    setIsDark(!isDark);
-  }, [isDark]);
-
   return (
     <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} p-4`}>
       {/* Main Card Container */}
@@ -40,7 +36,7 @@ export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img
-                src={isDark ? '/logo-white.svg' : '/logo.svg'}
+                src={isDark ? '/vincent-by-lit-white-logo.png' : '/vincent-by-lit-logo.png'}
                 alt="Vincent by Lit Protocol"
                 className="h-8"
               />
@@ -49,7 +45,7 @@ export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleToggleTheme}
+                onClick={toggleTheme}
                 className={`${themeStyles.text} hover:bg-white/10`}
               >
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -129,8 +125,8 @@ export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
                   {/* Go Back Option */}
                   <ActionCard
                     theme={themeStyles}
-                    icon={<ArrowLeft className="w-4 h-4 text-gray-500" />}
-                    iconBg="bg-gray-500/20"
+                    icon={<ArrowLeft className="w-4 h-4 text-blue-500" />}
+                    iconBg="bg-blue-500/20"
                     title="Go Back"
                     description="Return to the previous page"
                     onClick={handleGoBack}
@@ -139,10 +135,10 @@ export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
                   {/* Retry Option */}
                   <ActionCard
                     theme={themeStyles}
-                    icon={<RefreshCw className="w-4 h-4 text-blue-500" />}
-                    iconBg="bg-blue-500/20"
+                    icon={<RefreshCw className="w-4 h-4 text-green-500" />}
+                    iconBg="bg-green-500/20"
                     title="Try Again"
-                    description="Refresh the page to retry loading"
+                    description="Refresh the page and try again"
                     onClick={handleRetry}
                   />
                 </div>

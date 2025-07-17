@@ -83,32 +83,29 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
 
   return (
     <>
-      <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>Connect Wallet</h1>
-
-      <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
-        {isWalletReady
-          ? 'Sign a SIWE message to authenticate'
-          : 'Connect your wallet for web3 authentication'}
-      </p>
-
+      <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
+        Sign in with your Wallet
+      </h1>
       {isWalletReady && (
-        <div className="mb-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <div className="flex items-center justify-center mb-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <span className="text-sm font-medium text-green-800">Connected wallet</span>
-            </div>
-            <div className={`rounded p-2 border ${theme.cardBg} ${theme.cardBorder}`}>
-              <div className={`font-mono text-xs break-all text-center ${theme.text}`}>
-                {address}
+        <div className="mb-4 flex justify-center">
+          <div className="w-1/2">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <div className="flex items-center justify-center mb-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-sm font-medium text-green-800">Connected wallet</span>
+              </div>
+              <div className={`rounded p-2 border ${theme.cardBg} ${theme.cardBorder}`}>
+                <div className={`font-mono text-xs break-all text-center ${theme.text}`}>
+                  {address}
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="w-full">
-        <div className="space-y-4">
+      <div className="flex justify-center">
+        <div className="space-y-4 w-1/2">
           {!isWalletReady ? (
             <div className="flex justify-center">
               <ConnectButton.Custom>

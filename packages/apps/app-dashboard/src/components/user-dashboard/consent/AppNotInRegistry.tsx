@@ -1,4 +1,3 @@
-import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { AlertTriangle, ArrowLeft, RefreshCw } from 'lucide-react';
 import { theme } from './ui/theme';
@@ -7,8 +6,9 @@ import { ConsentPageHeader } from './ui/ConsentPageHeader';
 import { InfoBanner } from './ui/InfoBanner';
 import { ActionCard } from './ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
-import { App } from '@/types/developer-dashboard/appTypes';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { App } from '@/types/developer-dashboard/appTypes';
+import { useSystemTheme } from '@/hooks/user-dashboard/consent/useSystemTheme';
 
 type AppNotInRegistryConsentProps = {
   appData: App;
@@ -16,7 +16,7 @@ type AppNotInRegistryConsentProps = {
 };
 
 export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegistryConsentProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useSystemTheme();
   const themeStyles = theme(isDark);
   const navigate = useNavigate();
 
@@ -29,10 +29,6 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
     window.location.reload();
   };
 
-  const handleToggleTheme = useCallback(() => {
-    setIsDark(!isDark);
-  }, [isDark]);
-
   return (
     <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} p-4`}>
       {/* Main Card Container */}
@@ -42,7 +38,7 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
         {/* Header */}
         <ConsentPageHeader
           isDark={isDark}
-          onToggleTheme={handleToggleTheme}
+          onToggleTheme={toggleTheme}
           theme={themeStyles}
           authInfo={readAuthInfo.authInfo!}
         />
@@ -56,8 +52,8 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
           <InfoBanner
             theme={themeStyles}
             type="warning"
-            title="App Not Yet Registered"
-            message="This app is not yet registered in the on-chain registry. The app developer needs to complete the registration process before you can grant permissions."
+            title="App Not Published"
+            message="This app is not yet published in the on-chain registry. The app developer needs to publish it before you can grant permissions."
           />
 
           {/* Info Card */}
@@ -72,11 +68,10 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                   </div>
                   <div>
                     <h2 className={`text-lg font-semibold ${themeStyles.text}`}>
-                      Registration Required
+                      App Publication Required
                     </h2>
                     <p className={`text-sm ${themeStyles.textMuted} mt-1`}>
-                      The app developer must register this application on-chain before permissions
-                      can be granted.
+                      The app developer must publish this app before permissions can be granted.
                     </p>
                   </div>
                 </div>
@@ -85,12 +80,12 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                   className={`p-4 rounded-lg ${themeStyles.cardBg} border ${themeStyles.cardBorder}`}
                 >
                   <h3 className={`text-sm font-medium ${themeStyles.text} mb-2`}>
-                    What happens next?
+                    What needs to happen:
                   </h3>
                   <ul className={`text-sm ${themeStyles.textMuted} space-y-1`}>
-                    <li>• The app developer needs to register the app in the on-chain registry</li>
-                    <li>• Once registered, you'll be able to review and grant permissions</li>
-                    <li>• You can check back later or contact the app developer for updates</li>
+                    <li>• The app developer must publish this app in the registry</li>
+                    <li>• Once published, you'll be able to grant permissions</li>
+                    <li>• Contact the app developer if you need assistance</li>
                   </ul>
                 </div>
               </div>
@@ -111,8 +106,8 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                   {/* Go Back Option */}
                   <ActionCard
                     theme={themeStyles}
-                    icon={<ArrowLeft className="w-4 h-4 text-gray-500" />}
-                    iconBg="bg-gray-500/20"
+                    icon={<ArrowLeft className="w-4 h-4 text-blue-500" />}
+                    iconBg="bg-blue-500/20"
                     title="Go Back"
                     description="Return to the previous page"
                     onClick={handleGoBack}
@@ -121,10 +116,10 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                   {/* Retry Option */}
                   <ActionCard
                     theme={themeStyles}
-                    icon={<RefreshCw className="w-4 h-4 text-blue-500" />}
-                    iconBg="bg-blue-500/20"
+                    icon={<RefreshCw className="w-4 h-4 text-green-500" />}
+                    iconBg="bg-green-500/20"
                     title="Check Again"
-                    description="Refresh to check if the app has been registered"
+                    description="Refresh to check if the app has been published"
                     onClick={handleRetry}
                   />
                 </div>

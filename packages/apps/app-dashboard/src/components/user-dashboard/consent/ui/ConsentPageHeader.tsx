@@ -42,7 +42,7 @@ export function ConsentPageHeader({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
-            src={isDark ? '/logo-white.svg' : '/logo.svg'}
+            src={isDark ? '/vincent-by-lit-white-logo.png' : '/vincent-by-lit-logo.png'}
             alt="Vincent by Lit Protocol"
             className="h-8"
           />
@@ -51,6 +51,7 @@ export function ConsentPageHeader({
           <div className="relative group">
             <Button variant="ghost" size="sm" className={`${theme.text} hover:bg-white/10`}>
               <User className="w-4 h-4" />
+              <div className="text-white-300">My Account</div>
             </Button>
             <div className="absolute right-0 top-full mt-2 px-3 py-2 bg-black text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-pre-line z-10 min-w-max">
               <div className="mb-2">{formatAuthInfo()}</div>

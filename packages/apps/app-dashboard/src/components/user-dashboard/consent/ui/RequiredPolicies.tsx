@@ -32,7 +32,7 @@ export function RequiredPolicies({
 
   return (
     <div className="ml-4 space-y-3">
-      <h5 className={`text-sm font-semibold ${theme.text} mb-3`}>Required Policies:</h5>
+      <h5 className={`text-sm font-semibold ${theme.text} mb-3`}>Policies:</h5>
       {policies.map((policy) => (
         <Card key={policy.ipfsCid} className={`${theme.itemBg} border ${theme.cardBorder} ml-4`}>
           <CardContent className="p-4">

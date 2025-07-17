@@ -1,7 +1,12 @@
 import { Helmet } from 'react-helmet-async';
 import ConsentView from '@/components/user-dashboard/consent/Consent';
+import { useSystemTheme } from '@/hooks/user-dashboard/consent/useSystemTheme';
+import { theme } from '@/components/user-dashboard/consent/ui/theme';
 
 export default function UserHome() {
+  const { isDark } = useSystemTheme();
+  const themeStyles = theme(isDark);
+
   return (
     <>
       <Helmet>
@@ -19,7 +24,7 @@ export default function UserHome() {
 
           <div className="bg-white rounded-xl shadow-lg max-w-[550px] w-full mx-auto border border-gray-100 overflow-hidden">
             <div className="p-6">
-              <ConsentView isUserDashboardFlow={true} />
+              <ConsentView isUserDashboardFlow={true} theme={themeStyles} />
             </div>
           </div>
 

@@ -15,6 +15,7 @@ import { StatusCard } from './ui/StatusCard';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { useJwtRedirect } from '@/hooks/user-dashboard/consent/useJwtRedirect';
+import { useSystemTheme } from '@/hooks/user-dashboard/consent/useSystemTheme';
 
 interface ConsentPageProps {
   consentInfoMap: ConsentInfoMap;
@@ -22,7 +23,7 @@ interface ConsentPageProps {
 }
 
 export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useSystemTheme();
   const [localError, setLocalError] = useState<string | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
 
@@ -107,10 +108,6 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
     console.log('Declined');
   }, []);
 
-  const handleToggleTheme = useCallback(() => {
-    setIsDark(!isDark);
-  }, [isDark]);
-
   const registerFormRef = useCallback((policyIpfsCid: string, ref: PolicyFormRef) => {
     formRefs.current[policyIpfsCid] = ref;
   }, []);
@@ -128,7 +125,7 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
         {/* Header */}
         <ConsentPageHeader
           isDark={isDark}
-          onToggleTheme={handleToggleTheme}
+          onToggleTheme={toggleTheme}
           theme={themeStyles}
           authInfo={readAuthInfo.authInfo!}
         />

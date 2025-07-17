@@ -1,4 +1,3 @@
-import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { AlertTriangle, ArrowLeft, RefreshCw } from 'lucide-react';
 import { theme } from './ui/theme';
@@ -9,6 +8,7 @@ import { ActionCard } from './ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
+import { useSystemTheme } from '@/hooks/user-dashboard/consent/useSystemTheme';
 
 type AppVersionNotInRegistryConsentProps = {
   appData: App;
@@ -19,7 +19,7 @@ export function AppVersionNotInRegistryConsent({
   appData,
   readAuthInfo,
 }: AppVersionNotInRegistryConsentProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useSystemTheme();
   const themeStyles = theme(isDark);
   const navigate = useNavigate();
 
@@ -32,10 +32,6 @@ export function AppVersionNotInRegistryConsent({
     window.location.reload();
   };
 
-  const handleToggleTheme = useCallback(() => {
-    setIsDark(!isDark);
-  }, [isDark]);
-
   return (
     <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} p-4`}>
       {/* Main Card Container */}
@@ -45,7 +41,7 @@ export function AppVersionNotInRegistryConsent({
         {/* Header */}
         <ConsentPageHeader
           isDark={isDark}
-          onToggleTheme={handleToggleTheme}
+          onToggleTheme={toggleTheme}
           theme={themeStyles}
           authInfo={readAuthInfo.authInfo!}
         />
@@ -88,18 +84,15 @@ export function AppVersionNotInRegistryConsent({
                   className={`p-4 rounded-lg ${themeStyles.cardBg} border ${themeStyles.cardBorder}`}
                 >
                   <h3 className={`text-sm font-medium ${themeStyles.text} mb-2`}>
-                    What happens next?
+                    What needs to happen:
                   </h3>
                   <ul className={`text-sm ${themeStyles.textMuted} space-y-1`}>
                     <li>
-                      • The app developer needs to publish version {appData.activeVersion} to the
+                      • The app developer must publish version {appData.activeVersion} in the
                       on-chain registry
                     </li>
-                    <li>
-                      • Once published, you'll be able to review and grant permissions for this
-                      version
-                    </li>
-                    <li>• You can check back later or contact the app developer for updates</li>
+                    <li>• Once published, you'll be able to grant permissions for this version</li>
+                    <li>• Contact the app developer if you need assistance</li>
                   </ul>
                 </div>
               </div>
@@ -120,8 +113,8 @@ export function AppVersionNotInRegistryConsent({
                   {/* Go Back Option */}
                   <ActionCard
                     theme={themeStyles}
-                    icon={<ArrowLeft className="w-4 h-4 text-gray-500" />}
-                    iconBg="bg-gray-500/20"
+                    icon={<ArrowLeft className="w-4 h-4 text-blue-500" />}
+                    iconBg="bg-blue-500/20"
                     title="Go Back"
                     description="Return to the previous page"
                     onClick={handleGoBack}
@@ -130,8 +123,8 @@ export function AppVersionNotInRegistryConsent({
                   {/* Retry Option */}
                   <ActionCard
                     theme={themeStyles}
-                    icon={<RefreshCw className="w-4 h-4 text-blue-500" />}
-                    iconBg="bg-blue-500/20"
+                    icon={<RefreshCw className="w-4 h-4 text-green-500" />}
+                    iconBg="bg-green-500/20"
                     title="Check Again"
                     description="Refresh to check if the version has been published"
                     onClick={handleRetry}

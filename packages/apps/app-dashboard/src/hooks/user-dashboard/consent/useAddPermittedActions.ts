@@ -35,7 +35,7 @@ export const useAddPermittedActions = () => {
         });
         await litContracts.connect();
 
-        setLoadingStatus('Fetching Current Permissions');
+        setLoadingStatus('Fetching App Permissions');
         const permittedActions =
           await litContracts.pkpPermissionsContractUtils.read.getPermittedActions(agentPKPTokenId);
 
@@ -48,7 +48,7 @@ export const useAddPermittedActions = () => {
             .filter(Boolean),
         );
 
-        setLoadingStatus('Processing Tool Permissions');
+        setLoadingStatus('Granting App Permissions');
         // Process tool IPFS CIDs
         for (const ipfsCid of toolIpfsCids) {
           if (!permittedActionSet.has(ipfsCid)) {
