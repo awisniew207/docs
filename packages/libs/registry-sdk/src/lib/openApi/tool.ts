@@ -9,7 +9,7 @@ import {
   toolVersionEdit,
   toolVersionDoc,
 } from '../schemas/tool';
-import { ErrorResponse, ChangeOwner, DeleteResponse, siweAuth } from './baseRegistry';
+import { ErrorResponse, ChangeOwner, GenericResult, siweAuth } from './baseRegistry';
 
 const packageNameParam = z
   .string()
@@ -400,7 +400,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -434,7 +434,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -471,7 +471,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully deleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -514,7 +514,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully undeleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },

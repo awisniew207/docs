@@ -7,10 +7,11 @@ import {
   getDecodedPolicyParams,
   getPoliciesAndAppVersion,
 } from '../policyCore/policyParameters/getOnchainPolicyParams';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 import { createDenyResult } from '../policyCore/helpers';
 import { z } from 'zod';
 import { getPkpInfo } from '../toolCore/helpers';
+import { bigintReplacer } from '../utils';
 
 declare const Lit: {
   Actions: {
@@ -24,10 +25,6 @@ declare const LitAuth: {
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-const bigintReplacer = (key: any, value: any) => {
-  return typeof value === 'bigint' ? value.toString() : value;
-};
 
 /** @hidden */
 export async function vincentPolicyHandler<
@@ -61,7 +58,7 @@ export async function vincentPolicyHandler<
   console.log('actionIpfsIds:', LitAuth.actionIpfsIds.join(','));
   const policyIpfsCid = LitAuth.actionIpfsIds[0];
 
-  console.log('context:', JSON.stringify(context));
+  console.log('context:', JSON.stringify(context, bigintReplacer));
   try {
     const delegationRpcUrl = await Lit.Actions.getRpcUrl({
       chain: 'yellowstone',
@@ -69,15 +66,14 @@ export async function vincentPolicyHandler<
 
     const userPkpInfo = await getPkpInfo({
       litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-      yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+      yellowstoneRpcUrl: delegationRpcUrl,
       pkpEthAddress: delegatorPkpEthAddress,
     });
     const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
     console.log('appDelegateeAddress', appDelegateeAddress);
 
-    const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
+    const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
       delegationRpcUrl,
-      vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
       appDelegateeAddress,
       agentWalletPkpTokenId: userPkpInfo.tokenId,
       toolIpfsCid,
@@ -94,7 +90,7 @@ export async function vincentPolicyHandler<
     };
 
     const onChainPolicyParams = await getDecodedPolicyParams({
-      policies,
+      decodedPolicies,
       policyIpfsCid,
     });
 

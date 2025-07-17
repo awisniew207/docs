@@ -3,18 +3,41 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/shared/ui/form';
 import { Button } from '@/components/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/shared/ui/card';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 import { TextField, LongTextField, ArrayField, ImageUploadField } from '../../form-fields';
 import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
 
 const { appDoc } = docSchemas;
 
-const { name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus } =
-  appDoc.shape;
+const {
+  name,
+  description,
+  contactEmail,
+  appUserUrl,
+  logo,
+  redirectUris,
+  deploymentStatus,
+  delegateeAddresses,
+} = appDoc.shape;
 
 export const CreateAppSchema = z
-  .object({ name, description, contactEmail, appUserUrl, logo, redirectUris, deploymentStatus })
+  .object({
+    name,
+    description,
+    contactEmail,
+    appUserUrl,
+    logo,
+    redirectUris,
+    deploymentStatus,
+    delegateeAddresses,
+  })
   .strict();
 
 export type CreateAppFormData = z.infer<typeof CreateAppSchema>;
@@ -29,6 +52,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
     resolver: zodResolver(CreateAppSchema),
     defaultValues: {
       redirectUris: [''],
+      delegateeAddresses: [''],
       deploymentStatus: 'dev',
     },
   });
@@ -110,6 +134,18 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
               placeholder="https://yourapp.com/callback"
               required
             />
+
+            <ArrayField
+              name="delegateeAddresses"
+              register={register}
+              error={errors.delegateeAddresses?.message}
+              errors={errors}
+              control={control}
+              label="Delegatee Addresses"
+              placeholder="0x1234567890123456789012345678901234567890"
+              required
+            />
+
             <DeploymentStatusSelectField
               error={errors.deploymentStatus?.message}
               control={control}

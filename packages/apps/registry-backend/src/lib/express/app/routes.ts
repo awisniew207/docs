@@ -8,12 +8,17 @@ import { requireUserManagesApp } from './requireUserManagesApp';
 import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 import { withSession } from '../../mongo/withSession';
 import { Features } from '../../../features';
+import { requireAppVersionNotOnChain } from './requireAppVersionNotOnChain';
+import { requireAppOnChain, withAppOnChain } from './requireAppOnChain';
+import { ethersSigner } from '../../ethersSigner';
+import { getAppById, getAppVersion } from '@lit-protocol/vincent-contracts-sdk';
 
 const NEW_APP_APPVERSION = 1;
 const MAX_APPID_RETRY_ATTEMPTS = 20;
 
+// App IDs are randomly selected indexes between 1000 and 10 billion to avoid huge bigNum-sized strings for appId
 function generateRandomAppId(): number {
-  return Math.floor(Math.random() * (100_000_000 - 1000)) + 1000;
+  return Math.floor(Math.random() * (10_000_000_000 - 1000)) + 1000;
 }
 
 export function registerRoutes(app: Express) {
@@ -49,6 +54,7 @@ export function registerRoutes(app: Express) {
           appUserUrl,
           logo,
           redirectUris,
+          delegateeAddresses,
         } = req.body;
 
         const triedAppIds = new Set<number>();
@@ -75,7 +81,6 @@ export function registerRoutes(app: Express) {
           });
 
           const appDoc = new App({
-            activeVersion: NEW_APP_APPVERSION,
             appId,
             name,
             description,
@@ -84,14 +89,26 @@ export function registerRoutes(app: Express) {
             logo,
             redirectUris,
             deploymentStatus,
+            delegateeAddresses,
             managerAddress: req.vincentUser.address,
           });
+
+          // First, check if the appId exists in chain state; someone may have registered it off-registry
+          const appOnChain = await getAppById({
+            signer: ethersSigner,
+            args: { appId: appId.toString() },
+          });
+
+          if (appOnChain) {
+            continue;
+          }
 
           try {
             await mongoSession.withTransaction(async (session) => {
               await appVersion.save({ session });
               appDef = await appDoc.save({ session });
             });
+
             success = true;
           } catch (error: any) {
             // Check if the error is due to duplicate appId
@@ -142,35 +159,60 @@ export function registerRoutes(app: Express) {
     requireVincentAuth(),
     requireApp(),
     requireUserManagesApp(),
+    requireAppOnChain(),
     withVincentAuth(
-      withApp(async (req, res) => {
-        const { appId } = req.params;
-        await withSession(async (mongoSession) => {
-          let savedAppVersion;
+      withApp(
+        withAppOnChain(async (req, res) => {
+          const { appId } = req.params;
+          const { latestVersion: onChainHighestVersion } = req.vincentAppOnChain;
+          const newVersion = Number(onChainHighestVersion) + 1;
 
-          await mongoSession.withTransaction(async (session) => {
-            const highest = await AppVersion.find({ appId })
-              .session(session)
-              .sort({ version: -1 })
-              .limit(1)
-              .lean();
+          try {
+            await withSession(async (mongoSession) => {
+              let savedAppVersion;
 
-            console.log('highest', highest);
+              await mongoSession.withTransaction(async (session) => {
+                const [latestOnRegistry] = await AppVersion.find({ appId })
+                  .session(session)
+                  .sort({ version: -1 })
+                  .limit(1)
+                  .lean()
+                  .orFail(); // If no appVersions exist in registry something is very wrong, as the app must exist to get here
 
-            const appVersion = new AppVersion({
-              appId,
-              version: highest.length ? highest[0].version + 1 : 1,
-              changes: req.body.changes,
-              enabled: true,
+                const { version: onRegistryHighestVersion } = latestOnRegistry;
+
+                if (!(onRegistryHighestVersion <= Number(onChainHighestVersion))) {
+                  // There can only be 1 'pending' app version for an app on the registry.
+                  // This <= check will keep us from getting way ahead in case RPC is massively delayed
+                  throw new Error(
+                    `There can only be 1 pending app version for an app on the registry.`,
+                  );
+                }
+
+                const appVersion = new AppVersion({
+                  appId,
+                  version: newVersion,
+                  changes: req.body.changes,
+                  enabled: true,
+                });
+
+                // If by some chance there is a race (chain state is way out-of-date), this call will fail due to unique constraints
+                savedAppVersion = await appVersion.save({ session });
+              });
+
+              res.status(201).json(savedAppVersion);
+              return;
             });
-
-            savedAppVersion = await appVersion.save({ session });
-          });
-
-          res.status(201).json(savedAppVersion);
-          return;
-        });
-      }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (err: any) {
+            if (err.code === 11000) {
+              // Duplicate appId+version — someone else beat us to it
+              throw new Error(`App version ${newVersion} already exists in the registry.`);
+            }
+            throw err;
+          }
+        }),
+      ),
     ),
   );
 
@@ -285,6 +327,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     withVincentAuth(
       withAppVersion(async (req, res) => {
         const { appId, version, toolPackageName } = req.params;
@@ -335,6 +378,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
@@ -357,6 +401,7 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
@@ -382,10 +427,19 @@ export function registerRoutes(app: Express) {
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
+    requireAppVersionNotOnChain(),
     requireAppTool(),
     withVincentAuth(
       withAppTool(async (req, res) => {
-        const { vincentAppTool } = req;
+        const { vincentApp, vincentAppVersion, vincentAppTool } = req;
+
+        if (vincentApp.isDeleted || vincentAppVersion.isDeleted) {
+          res.status(400).json({
+            message:
+              'Cannot undelete an app version tool if the app or version is deleted; you must undelete the app version / app first.',
+          });
+          return;
+        }
 
         Object.assign(vincentAppTool, { isDeleted: false });
         await vincentAppTool.save();
@@ -414,17 +468,9 @@ export function registerRoutes(app: Express) {
                 appId: Number(appId),
                 version: Number(version),
               }).session(session);
-              await AppTool.deleteMany({
-                appId: Number(appId),
-                appVersion: Number(version),
-              }).session(session);
             } else {
               await AppVersion.updateOne(
                 { appId: Number(appId), version: Number(version) },
-                { isDeleted: true },
-              ).session(session);
-              await AppTool.updateMany(
-                { appId: Number(appId), appVersion: Number(version) },
                 { isDeleted: true },
               ).session(session);
             }
@@ -454,10 +500,6 @@ export function registerRoutes(app: Express) {
               { appId: Number(appId), version: Number(version) },
               { isDeleted: false },
             ).session(session);
-            await AppTool.updateMany(
-              { appId: Number(appId), appVersion: Number(version) },
-              { isDeleted: false },
-            ).session(session);
           });
 
           res.json({ message: 'App version and associated tools undeleted successfully' });
@@ -480,12 +522,8 @@ export function registerRoutes(app: Express) {
         await mongoSession.withTransaction(async (session) => {
           if (Features.HARD_DELETE_DOCS) {
             await App.findOneAndDelete({ appId }).session(session);
-            await AppVersion.deleteMany({ appId }).session(session);
-            await AppTool.deleteMany({ appId }).session(session);
           } else {
-            await App.updateMany({ appId }, { isDeleted: true }).session(session);
-            await AppVersion.updateMany({ appId }, { isDeleted: true }).session(session);
-            await AppTool.updateMany({ appId }, { isDeleted: true }).session(session);
+            await App.updateOne({ appId: Number(appId) }, { isDeleted: true }).session(session);
           }
         });
 
@@ -506,14 +544,66 @@ export function registerRoutes(app: Express) {
         const { appId } = req.params;
 
         await mongoSession.withTransaction(async (session) => {
-          await App.updateMany({ appId }, { isDeleted: false }).session(session);
-          await AppVersion.updateMany({ appId }, { isDeleted: false }).session(session);
-          await AppTool.updateMany({ appId }, { isDeleted: false }).session(session);
+          await App.updateOne({ appId: Number(appId) }, { isDeleted: false }).session(session);
         });
 
         res.json({ message: 'App and associated data undeleted successfully' });
         return;
       });
     }),
+  );
+
+  // Set the active version of an app
+  app.post(
+    '/app/:appId/setActiveVersion',
+    requireVincentAuth(),
+    requireApp(),
+    requireUserManagesApp(),
+    requireAppVersion(),
+    withVincentAuth(
+      withAppVersion(async (req, res) => {
+        const { vincentApp, vincentAppVersion } = req;
+
+        if (vincentApp.isDeleted) {
+          res.status(400).json({
+            message: 'Cannot set an app version as active if its app is deleted',
+          });
+          return;
+        }
+
+        if (vincentAppVersion.isDeleted || !vincentAppVersion.enabled) {
+          res.status(400).json({
+            message:
+              'Cannot set deleted or disabled app version as active. Make sure the appVersion is not deleted and is enabled, then try again.',
+          });
+          return;
+        }
+
+        // Check if the app version exists on-chain
+        const appVersionOnChain = await getAppVersion({
+          signer: ethersSigner,
+          args: {
+            appId: vincentApp.appId.toString(),
+            version: vincentAppVersion.version.toString(),
+          },
+        });
+
+        if (!appVersionOnChain) {
+          res.status(400).json({
+            message: `App version ${vincentAppVersion.version} must be published on-chain to be made the active version`,
+          });
+          return;
+        }
+
+        // Update the active version using updateOne()
+        await App.updateOne(
+          { appId: vincentApp.appId },
+          { activeVersion: vincentAppVersion.version },
+        );
+
+        res.json({ message: 'App activeVersion updated successfully' });
+        return;
+      }),
+    ),
   );
 }

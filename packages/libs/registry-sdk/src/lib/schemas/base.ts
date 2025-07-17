@@ -21,7 +21,7 @@ export const errorResult = z.object({
 });
 
 // Response body for deleting an application
-export const deleteResult = z.object({
+export const genericResultMessage = z.object({
   message: z.string().openapi({
     description: 'Success message',
     example: 'Successfully deleted',

@@ -1,9 +1,14 @@
 import { useNavigate } from 'react-router';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
-import { UndeleteAppButton } from '../wrappers';
 import { App } from '@/types/developer-dashboard/appTypes';
 
 interface AppsListViewProps {
@@ -76,7 +81,11 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
             <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted Apps</h3>
             <div className="grid grid-cols-1 gap-4">
               {deletedApps.map((app) => (
-                <Card key={app.appId} className="border-dashed">
+                <Card
+                  key={app.appId}
+                  className="border-dashed cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => navigate(`/developer/appId/${app.appId}`)}
+                >
                   <CardHeader>
                     <CardTitle className="flex justify-between items-start text-gray-600">
                       <div className="flex items-center gap-3">
@@ -95,9 +104,6 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
                           <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">
                             v{app.activeVersion}
                           </span>
-                        </div>
-                        <div className="relative z-10 bg-white rounded-lg opacity-100">
-                          <UndeleteAppButton app={app} />
                         </div>
                       </div>
                     </CardTitle>

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/shared/ui/Loading';
 import { ArchiveRestore } from 'lucide-react';
 import { AppVersion } from '@/types/developer-dashboard/appTypes';
 
@@ -27,7 +26,7 @@ export function UndeleteAppVersionButton({ appVersion }: UndeleteAppVersionWrapp
   }, [isSuccess, data, appVersion]);
 
   // Loading states
-  if (isLoading) return <Loading />;
+  if (isLoading) return <StatusMessage message="Undeleting app version..." type="info" />;
 
   // Error states
   if (!appVersion) return <StatusMessage message={`App version not found`} type="error" />;

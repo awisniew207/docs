@@ -15,9 +15,11 @@ import {
   CreateAppVersionWrapper,
   EditAppVersionWrapper,
   EditAppWrapper,
+  EditPublishedAppWrapper,
   DeleteAppWrapper,
   CreateAppWrapper,
   DeleteAppVersionWrapper,
+  ManageDelegateesWrapper,
 } from './components/developer-dashboard/app/wrappers';
 
 import {
@@ -52,7 +54,6 @@ import { Home, Wallet, Apps, UserDashboard } from './pages/user-dashboard';
 import { ConsentPageWrapper } from './components/user-dashboard/consent/ConsentPageWraper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
-
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
 
 const routes: RouteObject[] = [
@@ -61,7 +62,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Home />,
+        element: <Dashboard />,
       },
       {
         path: '/developer',
@@ -84,12 +85,20 @@ const routes: RouteObject[] = [
             element: <CreateAppWrapper />,
           },
           {
+            path: 'appId/:appId/edit-published-app',
+            element: <EditPublishedAppWrapper />,
+          },
+          {
             path: 'appId/:appId',
             element: <AppOverviewWrapper />,
           },
           {
             path: 'appId/:appId/edit-app',
             element: <EditAppWrapper />,
+          },
+          {
+            path: 'appId/:appId/manage-delegatees',
+            element: <ManageDelegateesWrapper />,
           },
           {
             path: 'appId/:appId/delete-app',

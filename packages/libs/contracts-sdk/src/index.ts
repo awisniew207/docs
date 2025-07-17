@@ -1,15 +1,87 @@
-import { vincentSignatures as datilSignatures } from './networks/vDatil/datil-mainnet/vincent-signatures';
-import { vincentContractData as datilContractData } from './networks/vDatil/datil-mainnet/vincent-contract-data';
-import { vincentDiamondAddress as datilDiamondAddress } from './networks/vDatil/datil-mainnet/vincent-contract-data';
+// Facets/App exports
+export {
+  registerApp,
+  registerNextVersion,
+  enableAppVersion,
+  addDelegatee,
+  removeDelegatee,
+  deleteApp,
+  undeleteApp,
+} from './facets/App';
 
-export const vincentContractData = {
-  datil: {
-    signatures: datilSignatures,
-    contractData: datilContractData,
-    diamondAddress: datilDiamondAddress,
-  },
-} as const;
+// Facets/User exports
+export { permitApp, unPermitApp, setToolPolicyParameters } from './facets/User';
 
-export { createDatilChainManager, getChain } from './LitChainManager/createChainManager';
+// Facets/AppView exports
+export {
+  getAppById,
+  getAppVersion,
+  getAppsByManager,
+  getAppByDelegatee,
+  getDelegatedAgentPkpTokenIds,
+} from './facets/AppView';
 
-export { createPolicyParameterValue } from './networks/vDatil/shared/VincentChainClient/apis/rawContractApis/VincentAppFacet/schemas/ParameterType';
+// Facets/UserView exports
+export {
+  getAllRegisteredAgentPkps,
+  getPermittedAppVersionForPkp,
+  getAllPermittedAppIdsForPkp,
+  getAllToolsAndPoliciesForApp,
+  validateToolExecutionAndGetPolicies,
+} from './facets/UserView';
+
+// Types/App exports
+export type {
+  AppVersionTools,
+  RegisterAppParams,
+  RegisterNextVersionParams,
+  RegisterAppOptions,
+  RegisterNextVersionOptions,
+  EnableAppVersionParams,
+  AddDelegateeParams,
+  RemoveDelegateeParams,
+  DeleteAppParams,
+  UndeleteAppParams,
+  EnableAppVersionOptions,
+  AddDelegateeOptions,
+  RemoveDelegateeOptions,
+  DeleteAppOptions,
+  UndeleteAppOptions,
+  GetAppByIdParams,
+  GetAppByIdOptions,
+  App,
+  GetAppVersionParams,
+  GetAppVersionOptions,
+  Tool,
+  AppVersion,
+  GetAppsByManagerParams,
+  GetAppsByManagerOptions,
+  AppWithVersions,
+  GetAppByDelegateeParams,
+  GetAppByDelegateeOptions,
+  GetDelegatedAgentPkpTokenIdsParams,
+  GetDelegatedAgentPkpTokenIdsOptions,
+} from './types/App';
+
+// Types/User exports
+export type {
+  PermissionData,
+  ToolPolicyParameterData,
+  PermitAppParams,
+  PermitAppOptions,
+  UnPermitAppParams,
+  UnPermitAppOptions,
+  SetToolPolicyParametersParams,
+  SetToolPolicyParametersOptions,
+  GetAllRegisteredAgentPkpsParams,
+  GetAllRegisteredAgentPkpsOptions,
+  GetPermittedAppVersionForPkpParams,
+  GetPermittedAppVersionForPkpOptions,
+  GetAllPermittedAppIdsForPkpParams,
+  GetAllPermittedAppIdsForPkpOptions,
+  GetAllToolsAndPoliciesForAppParams,
+  GetAllToolsAndPoliciesForAppOptions,
+  ValidateToolExecutionAndGetPoliciesParams,
+  ValidateToolExecutionAndGetPoliciesOptions,
+  ValidateToolExecutionAndGetPoliciesResult,
+} from './types/User';

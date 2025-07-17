@@ -1,10 +1,11 @@
-import { api, store, withSiweAuth } from './setup';
+import { api, store, withSiweAuth, defaultWallet, generateRandomEthAddresses } from './setup';
 import { expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 import { fetchBaseQuery } from '@reduxjs/toolkit/query';
 import { Wallet } from 'ethers';
 import { createWithSiweAuth } from './setup';
+import { registerApp } from '@lit-protocol/vincent-contracts-sdk';
 
 // Create a debug instance for this file
 const debug = createTestDebugger('authorization');
@@ -39,6 +40,7 @@ describe('Authorization Integration Tests', () => {
     appUserUrl: 'https://example.com/auth-app',
     logo: 'https://example.com/auth-logo.png',
     redirectUris: ['https://example.com/auth-callback'],
+    delegateeAddresses: generateRandomEthAddresses(2),
   };
 
   const toolData = {
@@ -69,6 +71,30 @@ describe('Authorization Integration Tests', () => {
     testAppId = data.appId;
     testAppVersion = 1; // Initial version
 
+    // Register the app on the contracts using contracts-sdk
+    const toolIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval tool
+    const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
+
+    try {
+      const { txHash, newAppVersion } = await registerApp({
+        signer: defaultWallet,
+        args: {
+          appId: testAppId.toString(),
+          delegatees: appData.delegateeAddresses,
+          versionTools: {
+            toolIpfsCids: [toolIpfsCid],
+            toolPolicies: [[policyIpfsCid]],
+          },
+        },
+      });
+
+      verboseLog({ txHash, newAppVersion });
+      expect(newAppVersion).toBe('1'); // First version should be 1
+    } catch (error) {
+      console.error('Failed to register app on contracts:', error);
+      throw error;
+    }
+
     // Create Tool
     testToolPackageName = `@lit-protocol/vincent-tool-uniswap-swap`;
     testToolVersion = toolData.activeVersion;
@@ -91,11 +117,23 @@ describe('Authorization Integration Tests', () => {
     );
     expect(policyResult).not.toHaveProperty('error');
 
-    // Create AppVersionTool
+    // Create a second app version that is not on-chain
+    const appVersionResult = await store.dispatch(
+      api.endpoints.createAppVersion.initiate({
+        appId: testAppId,
+        appVersionCreate: {
+          changes: 'Second version for authorization tests',
+        },
+      }),
+    );
+    expect(appVersionResult).not.toHaveProperty('error');
+    const secondAppVersion = appVersionResult.data.version;
+
+    // Create AppVersionTool for the second app version (not on-chain)
     const appVersionToolResult = await store.dispatch(
       api.endpoints.createAppVersionTool.initiate({
         appId: testAppId,
-        appVersion: testAppVersion,
+        appVersion: secondAppVersion,
         toolPackageName: testToolPackageName,
         appVersionToolCreate: {
           toolVersion: testToolVersion,
@@ -289,7 +327,7 @@ describe('Authorization Integration Tests', () => {
       const result = await store.dispatch(
         api.endpoints.createAppVersionTool.initiate({
           appId: testAppId,
-          appVersion: testAppVersion,
+          appVersion: secondAppVersion,
           toolPackageName: testToolPackageName,
           appVersionToolCreate: {
             toolVersion: testToolVersion,
@@ -313,7 +351,7 @@ describe('Authorization Integration Tests', () => {
       const result = await store.dispatch(
         api.endpoints.editAppVersionTool.initiate({
           appId: testAppId,
-          appVersion: testAppVersion,
+          appVersion: secondAppVersion,
           toolPackageName: testToolPackageName,
           appVersionToolEdit: {
             hiddenSupportedPolicies: ['@vincent/policy1'],
@@ -337,7 +375,7 @@ describe('Authorization Integration Tests', () => {
       const result = await store.dispatch(
         api.endpoints.deleteAppVersionTool.initiate({
           appId: testAppId,
-          appVersion: testAppVersion,
+          appVersion: secondAppVersion,
           toolPackageName: testToolPackageName,
         }),
       );

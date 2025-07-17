@@ -269,6 +269,7 @@ const toolPrecheckFailSchema = z.object({
 // Create your tool with fully typed policies
 export const myTool = createVincentTool({
   packageName: '@lit-protocol/awesome-tool@1.0.2',
+  toolDescription: 'Awesome Tool',
   toolParamsSchema: myToolSchema,
   supportedPolicies: supportedPoliciesForTool([policy1, policy2, policy3]),
 
@@ -326,7 +327,7 @@ export const myTool = createVincentTool({
       });
     } else {
       // Handle the denial case
-      const denyReason = deniedPolicy.result.error || 'Policy check failed';
+      const denyReason = deniedPolicy.error || 'Policy check failed';
 
       return fail({
         invalidField: 'policy',
@@ -459,14 +460,12 @@ export const gogo = async function () {
       },
       policiesContext: {
         allow: true,
-        evaluatedPolicies: [
-          // 'extra-rate-limit',
-          'rate-limit',
-        ],
+        evaluatedPolicies: ['extra-rate-limit', 'rate-limit'],
         allowedPolicies: {
-          // 'extra-rate-limit': {
-          //   result: { this_is_wrong: true },
-          // },
+          'extra-rate-limit': {
+            // @ts-expect-error result for this policy is a string
+            result: { this_is_wrong: true },
+          },
           'rate-limit': {
             result: {
               approvedCurrency: 'USD',
@@ -496,7 +495,7 @@ export const gogo = async function () {
   console.log(toolExecuteResult);
 
   if (myTool.precheck) {
-    return myTool.precheck(
+    myTool.precheck(
       { toolParams: { action: 'wat', target: 'meow', amount: 23098123 } },
       {
         toolIpfsCid: 'oijskljfdj',

@@ -15,7 +15,7 @@
         "cwd": "{projectRoot}"
       }
     },
-    "test": {
+    "test-e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {

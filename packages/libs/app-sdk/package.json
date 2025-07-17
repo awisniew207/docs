@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-app-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Vincent SDK for browser and backend",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -29,6 +29,7 @@
     "@lit-protocol/auth-helpers": "^7.0.9",
     "@lit-protocol/constants": "^7.0.8",
     "@lit-protocol/lit-node-client": "^7.0.8",
+    "@lit-protocol/vincent-contracts-sdk": "workspace:*",
     "@lit-protocol/vincent-tool-sdk": "workspace:*",
     "@noble/secp256k1": "^2.2.3",
     "did-jwt": "^8.0.8",
