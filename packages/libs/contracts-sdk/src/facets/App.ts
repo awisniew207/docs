@@ -1,11 +1,6 @@
 import { utils } from 'ethers';
-import {
-  decodeContractError,
-  createContract,
-  findEventByName,
-  gasAdjustedOverrides,
-} from '../utils';
-import {
+
+import type {
   RegisterAppOptions,
   RegisterNextVersionOptions,
   EnableAppVersionOptions,
@@ -14,6 +9,13 @@ import {
   DeleteAppOptions,
   UndeleteAppOptions,
 } from '../types/App';
+
+import {
+  decodeContractError,
+  createContract,
+  findEventByName,
+  gasAdjustedOverrides,
+} from '../utils';
 
 /**
  * Register a new app version

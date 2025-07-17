@@ -1,3 +1,18 @@
+import { config } from '@dotenvx/dotenvx';
+import { ethers, providers } from 'ethers';
+
+import {
+  LitActionResource,
+  LitPKPResource,
+  createSiweMessage,
+  generateAuthSig,
+} from '@lit-protocol/auth-helpers';
+import { LIT_NETWORK, LIT_ABILITY } from '@lit-protocol/constants';
+import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+
+import type { AppVersionTools } from '../src/index';
+
 import {
   registerApp,
   registerNextVersion,
@@ -19,18 +34,6 @@ import {
   setToolPolicyParameters,
   unPermitApp,
 } from '../src/index';
-import type { AppVersionTools } from '../src/index';
-import { ethers, providers } from 'ethers';
-import { config } from '@dotenvx/dotenvx';
-import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { LitNodeClient } from '@lit-protocol/lit-node-client';
-import { LIT_NETWORK, LIT_ABILITY } from '@lit-protocol/constants';
-import {
-  LitActionResource,
-  LitPKPResource,
-  createSiweMessage,
-  generateAuthSig,
-} from '@lit-protocol/auth-helpers';
 
 const generateRandomIpfsCid = (): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -1,4 +1,4 @@
-import { Signer, Overrides } from 'ethers';
+import type { Signer, Overrides } from 'ethers';
 
 // ==================================================================================
 // App Mutation Types

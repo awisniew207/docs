@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
-import { decodeContractError, createContract } from '../utils';
-import {
+
+import type {
   GetAppByIdOptions,
   App,
   GetAppVersionOptions,
@@ -10,6 +10,8 @@ import {
   GetAppByDelegateeOptions,
   GetDelegatedAgentPkpTokenIdsOptions,
 } from '../types/App';
+
+import { decodeContractError, createContract } from '../utils';
 
 /**
  * Get detailed information about an app by its ID

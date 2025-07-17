@@ -1,11 +1,13 @@
 import { utils } from 'ethers';
-import { decodeContractError, createContract, gasAdjustedOverrides } from '../utils';
-import { encodePermissionDataForChain } from '../utils/policyParams';
-import {
+
+import type {
   PermitAppOptions,
   UnPermitAppOptions,
   SetToolPolicyParametersOptions,
 } from '../types/User';
+
+import { decodeContractError, createContract, gasAdjustedOverrides } from '../utils';
+import { encodePermissionDataForChain } from '../utils/policyParams';
 
 /**
  * Permits an app version for an Agent Wallet PKP token and optionally sets tool policy parameters

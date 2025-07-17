@@ -1,10 +1,6 @@
 import { utils } from 'ethers';
-import { decodeContractError, createContract } from '../utils';
-import {
-  decodePermissionDataFromChain,
-  decodePolicyParametersFromChain,
-} from '../utils/policyParams';
 
+import type { ToolWithPolicies, ToolExecutionValidation } from '../types/internal';
 import type {
   GetAllRegisteredAgentPkpsOptions,
   GetPermittedAppVersionForPkpOptions,
@@ -16,7 +12,11 @@ import type {
   ValidateToolExecutionAndGetPoliciesResult,
 } from '../types/User';
 
-import type { ToolWithPolicies, ToolExecutionValidation } from '../types/internal';
+import { decodeContractError, createContract } from '../utils';
+import {
+  decodePermissionDataFromChain,
+  decodePolicyParametersFromChain,
+} from '../utils/policyParams';
 
 /**
  * Get all PKP tokens that are registered as agents for a specific user address

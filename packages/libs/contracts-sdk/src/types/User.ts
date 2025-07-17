@@ -1,4 +1,4 @@
-import { Signer } from 'ethers';
+import type { Signer } from 'ethers';
 
 /**
  * Represents the decoded parameters for policies associated with a single tool
