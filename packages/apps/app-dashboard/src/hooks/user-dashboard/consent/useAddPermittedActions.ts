@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { LitContracts } from '@lit-protocol/contracts-sdk';
 import { AUTH_METHOD_SCOPE } from '@lit-protocol/constants';
-import { SELECTED_LIT_NETWORK } from '../../../utils/user-dashboard/lit';
-import { hexToBase58 } from '../../../utils/user-dashboard/consentVerificationUtils';
+import { SELECTED_LIT_NETWORK } from '@/utils/user-dashboard/lit';
+import { hexToBase58 } from '@/utils/user-dashboard/hexToBase58';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 type AddPermittedActionsProps = {
