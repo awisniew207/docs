@@ -1,5 +1,3 @@
-import { utils } from 'ethers';
-
 import type {
   PermitAppOptions,
   UnPermitAppOptions,
@@ -7,29 +5,27 @@ import type {
 } from '../types/User';
 
 import { decodeContractError, createContract, gasAdjustedOverrides } from '../utils';
+import { getPkpTokenId } from '../utils/pkpInfo';
 import { encodePermissionDataForChain } from '../utils/policyParams';
 
 /**
  * Permits an app version for an Agent Wallet PKP token and optionally sets tool policy parameters
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
- * @param args - Object containing pkpTokenId, appId, appVersion, and permissionData in nested object format
+ * @param args - Object containing pkpEthAddress, appId, appVersion, and permissionData in nested object format
  * @param overrides - Optional override params for the transaction call like manual gas limit
  * @returns The transaction hash and a success flag
  */
 export async function permitApp({
   signer,
-  args,
+  args: { pkpEthAddress, appId, appVersion, permissionData },
   overrides,
-}: PermitAppOptions): Promise<{ txHash: string; success: boolean }> {
+}: PermitAppOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const pkpTokenId = utils.parseUnits(args.pkpTokenId, 0);
-    const appId = utils.parseUnits(args.appId, 0);
-    const appVersion = utils.parseUnits(args.appVersion, 0);
+    const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer });
 
-    // Convert nested policy parameters to flattened format
-    const flattenedParams = encodePermissionDataForChain(args.permissionData);
+    const flattenedParams = encodePermissionDataForChain(permissionData);
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
@@ -60,7 +56,6 @@ export async function permitApp({
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -71,21 +66,19 @@ export async function permitApp({
 /**
  * Revokes permission for a PKP to use a specific app version
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
- * @param args - Object containing pkpTokenId, appId, and appVersion
+ * @param args - Object containing pkpEthAddress, appId, and appVersion
  * @param overrides - Optional override params for the transaction call like manual gas limit
  * @returns The transaction hash and a success flag
  */
 export async function unPermitApp({
   signer,
-  args,
+  args: { pkpEthAddress, appId, appVersion },
   overrides,
-}: UnPermitAppOptions): Promise<{ txHash: string; success: boolean }> {
+}: UnPermitAppOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const pkpTokenId = utils.parseUnits(args.pkpTokenId, 0);
-    const appId = utils.parseUnits(args.appId, 0);
-    const appVersion = utils.parseUnits(args.appVersion, 0);
+    const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer });
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
@@ -101,7 +94,6 @@ export async function unPermitApp({
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -112,24 +104,21 @@ export async function unPermitApp({
 /**
  * Sets tool policy parameters for a specific app version
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
- * @param args - Object containing pkpTokenId, appId, appVersion, and policyParams in nested object format
+ * @param args - Object containing pkpEthAddress, appId, appVersion, and policyParams in nested object format
  * @param overrides - Optional override params for the transaction call like manual gas limit
  * @returns The transaction hash and a success flag
  */
 export async function setToolPolicyParameters({
   signer,
-  args,
+  args: { appId, appVersion, pkpEthAddress, policyParams },
   overrides,
-}: SetToolPolicyParametersOptions): Promise<{ txHash: string; success: boolean }> {
+}: SetToolPolicyParametersOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const pkpTokenId = utils.parseUnits(args.pkpTokenId, 0);
-    const appId = utils.parseUnits(args.appId, 0);
-    const appVersion = utils.parseUnits(args.appVersion, 0);
+    const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer });
 
-    // Convert nested policy parameters to flattened format
-    const flattenedParams = encodePermissionDataForChain(args.policyParams);
+    const flattenedParams = encodePermissionDataForChain(policyParams);
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
@@ -160,7 +149,6 @@ export async function setToolPolicyParameters({
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);

@@ -10,13 +10,13 @@ export interface AppVersionTools {
 }
 
 export interface RegisterAppParams {
-  appId: string;
-  delegatees: string[];
+  appId: number;
+  delegateeAddresses: string[];
   versionTools: AppVersionTools;
 }
 
 export interface RegisterNextVersionParams {
-  appId: string;
+  appId: number;
   versionTools: AppVersionTools;
 }
 
@@ -32,27 +32,27 @@ export interface RegisterNextVersionOptions {
   overrides?: Overrides;
 }
 export interface EnableAppVersionParams {
-  appId: string;
-  appVersion: string;
+  appId: number;
+  appVersion: number;
   enabled: boolean;
 }
 
 export interface AddDelegateeParams {
-  appId: string;
-  delegatee: string;
+  appId: number;
+  delegateeAddress: string;
 }
 
 export interface RemoveDelegateeParams {
-  appId: string;
-  delegatee: string;
+  appId: number;
+  delegateeAddress: string;
 }
 
 export interface DeleteAppParams {
-  appId: string;
+  appId: number;
 }
 
 export interface UndeleteAppParams {
-  appId: string;
+  appId: number;
 }
 
 export interface EnableAppVersionOptions {
@@ -90,7 +90,7 @@ export interface UndeleteAppOptions {
 // ==================================================================================
 
 export interface GetAppByIdParams {
-  appId: string;
+  appId: number;
 }
 
 export interface GetAppByIdOptions {
@@ -99,16 +99,16 @@ export interface GetAppByIdOptions {
 }
 
 export interface App {
-  id: string;
+  id: number;
   isDeleted: boolean;
   manager: string;
-  latestVersion: string;
-  delegatees: string[];
+  latestVersion: number;
+  delegateeAddresses: string[];
 }
 
 export interface GetAppVersionParams {
-  appId: string;
-  version: string;
+  appId: number;
+  version: number;
 }
 
 export interface GetAppVersionOptions {
@@ -122,14 +122,13 @@ export interface Tool {
 }
 
 export interface AppVersion {
-  version: string;
+  version: number;
   enabled: boolean;
-  delegatedAgentPkpTokenIds: string[];
   tools: Tool[];
 }
 
 export interface GetAppsByManagerParams {
-  manager: string;
+  managerAddress: string;
 }
 
 export interface GetAppsByManagerOptions {
@@ -143,7 +142,7 @@ export interface AppWithVersions {
 }
 
 export interface GetAppByDelegateeParams {
-  delegatee: string;
+  delegateeAddress: string;
 }
 
 export interface GetAppByDelegateeOptions {
@@ -151,14 +150,16 @@ export interface GetAppByDelegateeOptions {
   args: GetAppByDelegateeParams;
 }
 
-export interface GetDelegatedAgentPkpTokenIdsParams {
-  appId: string;
-  version: string;
-  offset: string;
-  limit: string;
+export interface GetDelegatedPkpEthAddressesParams {
+  appId: number;
+  version: number;
+  pageOpts?: {
+    offset?: number;
+    limit?: number;
+  };
 }
 
-export interface GetDelegatedAgentPkpTokenIdsOptions {
+export interface GetDelegatedPkpEthAddressesOptions {
   signer: Signer;
-  args: GetDelegatedAgentPkpTokenIdsParams;
+  args: GetDelegatedPkpEthAddressesParams;
 }

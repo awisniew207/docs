@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import type { BigNumber } from 'ethers';
 
 import type {
   RegisterAppOptions,
@@ -26,35 +26,27 @@ import {
  */
 export async function registerApp({
   signer,
-  args,
+  args: { appId, delegateeAddresses, versionTools },
   overrides,
-}: RegisterAppOptions): Promise<{ txHash: string; newAppVersion: string }> {
+}: RegisterAppOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'registerApp',
-      [appId, args.delegatees, args.versionTools],
+      [appId, delegateeAddresses, versionTools],
       overrides,
     );
-    console.log('adjustedOverrides: ', adjustedOverrides);
 
-    const tx = await contract.registerApp(appId, args.delegatees, args.versionTools, {
+    const tx = await contract.registerApp(appId, delegateeAddresses, versionTools, {
       ...adjustedOverrides,
     });
-    const receipt = await tx.wait();
 
-    const event = findEventByName(contract, receipt.logs, 'NewAppVersionRegistered');
-    const newAppVersion = event
-      ? contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'
-      : '-1';
+    await tx.wait();
 
     return {
       txHash: tx.hash,
-      newAppVersion,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -71,34 +63,40 @@ export async function registerApp({
  */
 export async function registerNextVersion({
   signer,
-  args,
+  args: { appId, versionTools },
   overrides,
-}: RegisterNextVersionOptions): Promise<{ txHash: string; newAppVersion: string }> {
+}: RegisterNextVersionOptions): Promise<{ txHash: string; newAppVersion: number }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'registerNextAppVersion',
-      [appId, args.versionTools],
+      [appId, versionTools],
       overrides,
     );
 
-    const tx = await contract.registerNextAppVersion(appId, args.versionTools, {
+    const tx = await contract.registerNextAppVersion(appId, versionTools, {
       ...adjustedOverrides,
     });
     const receipt = await tx.wait();
 
     const event = findEventByName(contract, receipt.logs, 'NewAppVersionRegistered');
-    const newAppVersion = event
-      ? contract.interface.parseLog(event)?.args.appVersion.toString() || '-1'
-      : '-1';
+
+    if (!event) {
+      throw new Error('NewAppVersionRegistered event not found');
+    }
+
+    const newAppVersion: BigNumber | undefined =
+      contract.interface.parseLog(event)?.args?.appVersion;
+
+    if (!newAppVersion) {
+      throw new Error('NewAppVersionRegistered event does not contain appVersion argument');
+    }
 
     return {
       txHash: tx.hash,
-      newAppVersion,
+      newAppVersion: newAppVersion.toNumber(),
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -111,34 +109,30 @@ export async function registerNextVersion({
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing appId, appVersion, and enabled flag
  * @param overrides - Optional override params for the transaction call like manual gas limit
- * @returns The transaction hash and a success flag
+ * @returns The transaction hash
  */
 export async function enableAppVersion({
   signer,
-  args,
+  args: { appId, appVersion, enabled },
   overrides,
-}: EnableAppVersionOptions): Promise<{ txHash: string; success: boolean }> {
+}: EnableAppVersionOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-    const appVersion = utils.parseUnits(args.appVersion, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'enableAppVersion',
-      [appId, appVersion, args.enabled],
+      [appId, appVersion, enabled],
       overrides,
     );
 
-    const tx = await contract.enableAppVersion(appId, appVersion, args.enabled, {
+    const tx = await contract.enableAppVersion(appId, appVersion, enabled, {
       ...adjustedOverrides,
     });
     await tx.wait();
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -155,29 +149,26 @@ export async function enableAppVersion({
  */
 export async function addDelegatee({
   signer,
-  args,
+  args: { appId, delegateeAddress },
   overrides,
-}: AddDelegateeOptions): Promise<{ txHash: string; success: boolean }> {
+}: AddDelegateeOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'addDelegatee',
-      [appId, args.delegatee],
+      [appId, delegateeAddress],
       overrides,
     );
 
-    const tx = await contract.addDelegatee(appId, args.delegatee, {
+    const tx = await contract.addDelegatee(appId, delegateeAddress, {
       ...adjustedOverrides,
     });
     await tx.wait();
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -194,29 +185,26 @@ export async function addDelegatee({
  */
 export async function removeDelegatee({
   signer,
-  args,
+  args: { appId, delegateeAddress },
   overrides,
-}: RemoveDelegateeOptions): Promise<{ txHash: string; success: boolean }> {
+}: RemoveDelegateeOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'removeDelegatee',
-      [appId, args.delegatee],
+      [appId, delegateeAddress],
       overrides,
     );
 
-    const tx = await contract.removeDelegatee(appId, args.delegatee, {
+    const tx = await contract.removeDelegatee(appId, delegateeAddress, {
       ...adjustedOverrides,
     });
     await tx.wait();
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -233,14 +221,12 @@ export async function removeDelegatee({
  */
 export async function deleteApp({
   signer,
-  args,
+  args: { appId },
   overrides,
-}: DeleteAppOptions): Promise<{ txHash: string; success: boolean }> {
+}: DeleteAppOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(contract, 'deleteApp', [appId], overrides);
 
     const tx = await contract.deleteApp(appId, {
@@ -250,7 +236,6 @@ export async function deleteApp({
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -267,14 +252,12 @@ export async function deleteApp({
  */
 export async function undeleteApp({
   signer,
-  args,
+  args: { appId },
   overrides,
-}: UndeleteAppOptions): Promise<{ txHash: string; success: boolean }> {
+}: UndeleteAppOptions): Promise<{ txHash: string }> {
   const contract = createContract(signer);
 
   try {
-    const appId = utils.parseUnits(args.appId, 0);
-
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'undeleteApp',
@@ -289,7 +272,6 @@ export async function undeleteApp({
 
     return {
       txHash: tx.hash,
-      success: true,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);

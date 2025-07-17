@@ -1,4 +1,4 @@
-import type { Signer } from 'ethers';
+import type { Overrides, Signer } from 'ethers';
 
 /**
  * Represents the decoded parameters for policies associated with a single tool
@@ -22,41 +22,41 @@ export interface PermissionData {
 }
 
 export interface PermitAppParams {
-  pkpTokenId: string;
-  appId: string;
-  appVersion: string;
+  pkpEthAddress: string;
+  appId: number;
+  appVersion: number;
   permissionData: PermissionData;
 }
 
 export interface PermitAppOptions {
   signer: Signer;
   args: PermitAppParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface UnPermitAppParams {
-  pkpTokenId: string;
-  appId: string;
-  appVersion: string;
+  pkpEthAddress: string;
+  appId: number;
+  appVersion: number;
 }
 
 export interface UnPermitAppOptions {
   signer: Signer;
   args: UnPermitAppParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 export interface SetToolPolicyParametersParams {
-  pkpTokenId: string;
-  appId: string;
-  appVersion: string;
+  pkpEthAddress: string;
+  appId: number;
+  appVersion: number;
   policyParams: PermissionData;
 }
 
 export interface SetToolPolicyParametersOptions {
   signer: Signer;
   args: SetToolPolicyParametersParams;
-  overrides?: any;
+  overrides?: Overrides;
 }
 
 // ==================================================================================
@@ -64,7 +64,7 @@ export interface SetToolPolicyParametersOptions {
 // ==================================================================================
 
 export interface GetAllRegisteredAgentPkpsParams {
-  userAddress: string;
+  userPkpAddress: string;
 }
 
 export interface GetAllRegisteredAgentPkpsOptions {
@@ -73,8 +73,8 @@ export interface GetAllRegisteredAgentPkpsOptions {
 }
 
 export interface GetPermittedAppVersionForPkpParams {
-  pkpTokenId: string;
-  appId: string;
+  pkpEthAddress: string;
+  appId: number;
 }
 
 export interface GetPermittedAppVersionForPkpOptions {
@@ -83,7 +83,7 @@ export interface GetPermittedAppVersionForPkpOptions {
 }
 
 export interface GetAllPermittedAppIdsForPkpParams {
-  pkpTokenId: string;
+  pkpEthAddress: string;
 }
 
 export interface GetAllPermittedAppIdsForPkpOptions {
@@ -92,8 +92,8 @@ export interface GetAllPermittedAppIdsForPkpOptions {
 }
 
 export interface GetAllToolsAndPoliciesForAppParams {
-  pkpTokenId: string;
-  appId: string;
+  pkpEthAddress: string;
+  appId: number;
 }
 
 export interface GetAllToolsAndPoliciesForAppOptions {
@@ -102,8 +102,8 @@ export interface GetAllToolsAndPoliciesForAppOptions {
 }
 
 export interface ValidateToolExecutionAndGetPoliciesParams {
-  delegatee: string;
-  pkpTokenId: string;
+  delegateeAddress: string;
+  pkpEthAddress: string;
   toolIpfsCid: string;
 }
 
@@ -114,7 +114,7 @@ export interface ValidateToolExecutionAndGetPoliciesOptions {
 
 export interface ValidateToolExecutionAndGetPoliciesResult {
   isPermitted: boolean;
-  appId: string;
-  appVersion: string;
+  appId: number;
+  appVersion: number;
   decodedPolicies: ToolPolicyParameterData;
 }
