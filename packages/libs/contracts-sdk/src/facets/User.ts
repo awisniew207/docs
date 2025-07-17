@@ -127,7 +127,7 @@ export async function setToolPolicyParameters({
     const appVersion = utils.parseUnits(args.appVersion, 0);
 
     // Convert nested policy parameters to flattened format
-    const flattenedParams = encodePermissionDataForChain({ nestedParams: args.policyParams });
+    const flattenedParams = encodePermissionDataForChain(args.policyParams);
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
