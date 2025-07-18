@@ -3,7 +3,7 @@ import { Upload, RotateCcw } from 'lucide-react';
 import { ethers } from 'ethers';
 import { enableAppVersion as enableAppVersionOnChain } from '@lit-protocol/vincent-contracts-sdk';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import MutationButtonStates, { SkeletonButton } from '@/components/layout/MutationButtonStates';
+import MutationButtonStates, { SkeletonButton } from '@/components/shared/ui/MutationButtonStates';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 
 type AppVersionMismatchResolutionProps = {

@@ -1,7 +1,7 @@
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { ArchiveRestore } from 'lucide-react';
 import { AppVersionTool } from '@/types/developer-dashboard/appTypes';
 

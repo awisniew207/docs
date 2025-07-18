@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { ManageDelegateesForm } from '../forms/ManageDelegateesForm';
 import { useBlockchainAppData } from '@/hooks/useBlockchainAppData';
 

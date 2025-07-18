@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { ToolVersionDetailsView } from '../views/ToolVersionDetailsView';
 

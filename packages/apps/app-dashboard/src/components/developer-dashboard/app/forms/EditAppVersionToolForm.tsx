@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
+import { Form } from '@/components/shared/ui/form';
+import { Button } from '@/components/shared/ui/button';
 import { AppVersionTool, Policy } from '@/types/developer-dashboard/appTypes';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
 import { PolicyCheckboxField } from '../../form-fields';

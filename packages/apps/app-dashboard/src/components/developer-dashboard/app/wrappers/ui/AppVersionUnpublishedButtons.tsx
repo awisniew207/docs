@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { PublishAppVersionWrapper } from '../PublishAppVersionWrapper';
-import MutationButtonStates from '@/components/layout/MutationButtonStates';
+import MutationButtonStates from '@/components/shared/ui/MutationButtonStates';
 
 interface AppVersionUnpublishedButtonsProps {
   appId: number;

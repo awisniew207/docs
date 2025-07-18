@@ -1,5 +1,5 @@
 import { Policy, PolicyVersion } from '@/types/developer-dashboard/appTypes';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/shared/ui/badge';
 import { GitCommit, User, Globe, Package, ExternalLink, Edit, Code, Trash2 } from 'lucide-react';
 
 interface PolicyVersionDetailsViewProps {

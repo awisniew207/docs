@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/shared/ui/button';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/shared/ui/form';
 import {
   UseFormWatch,
   UseFormSetValue,

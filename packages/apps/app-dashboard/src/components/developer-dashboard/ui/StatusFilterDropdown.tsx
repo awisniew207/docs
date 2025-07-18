@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/shared/ui/button';
 
 export type FilterOption = {
   id: string;

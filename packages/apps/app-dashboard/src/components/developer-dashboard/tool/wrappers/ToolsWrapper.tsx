@@ -1,5 +1,5 @@
 import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { ToolsListView } from '../views/ToolsListView';
 

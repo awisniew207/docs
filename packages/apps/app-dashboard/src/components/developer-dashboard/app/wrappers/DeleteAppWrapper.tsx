@@ -4,7 +4,7 @@ import { DeleteAppForm } from '../forms/DeleteAppForm';
 import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeleteAppWrapper() {

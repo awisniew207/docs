@@ -1,10 +1,10 @@
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import ProtectedByLit from '@/components/layout/ProtectedByLit';
-import Footer from '@/components/layout/Footer';
+import ProtectedByLit from '@/components/shared/ui/ProtectedByLit';
+import Footer from '@/components/shared/ui/Footer';
 
 export default function ConnectWalletScreen() {
   const navigate = useNavigate();

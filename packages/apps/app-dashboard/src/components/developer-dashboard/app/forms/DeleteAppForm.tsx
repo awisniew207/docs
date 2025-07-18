@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form } from '@/components/shared/ui/form';
+import { Button } from '@/components/shared/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/ui/card';
 import { TextField } from '../../form-fields';
 
 function buildConfirmationString(appName: string): string {

@@ -8,7 +8,7 @@ import {
   type EditPolicyVersionFormData,
 } from '../forms/EditPolicyVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 
 export function EditPolicyVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();

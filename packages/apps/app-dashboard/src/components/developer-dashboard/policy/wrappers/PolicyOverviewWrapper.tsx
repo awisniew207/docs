@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import PolicyDetailsView from '../views/PolicyDetailsView';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';

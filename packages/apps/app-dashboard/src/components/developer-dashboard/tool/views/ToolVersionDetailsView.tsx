@@ -1,5 +1,5 @@
 import { Tool, ToolVersion } from '@/types/developer-dashboard/appTypes';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/shared/ui/badge';
 import {
   GitCommit,
   User,

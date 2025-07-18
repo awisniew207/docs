@@ -4,8 +4,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from '@/components/shared/ui/dialog';
+import { Button } from '@/components/shared/ui/button';
 import { AgGridReact } from 'ag-grid-react';
 import {
   ColDef,

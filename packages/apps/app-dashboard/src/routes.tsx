@@ -1,8 +1,8 @@
 import { Outlet, RouteObject } from 'react-router';
-import AppLayout from './components/layout/AppLayout';
-import UserLayout from './components/layout/UserLayout';
+import AppLayout from '@/layout/developer-dashboard/AppLayout';
+import UserLayout from '@/layout/user-dashboard/UserLayout';
 import { AppProviders, UserProviders } from './providers';
-import { wrap } from './utils/components';
+import { wrap } from '@/utils/shared/components';
 
 import { ConnectWallet, Dashboard } from './pages/developer-dashboard';
 
@@ -50,14 +50,8 @@ import {
   DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
-import Home from './pages/index';
-import Withdraw from './pages/withdraw';
-import AppDetails from './pages/appId/[appId]/index';
-import AdvancedFunctions from './pages/appId/[appId]/advanced-functions';
-import Consent from './pages/appId/[appId]/consent';
-import Delegatee from './pages/appId/[appId]/delegatee';
-import ToolPolicies from './pages/appId/[appId]/tool-policies';
-import CreateApp from './pages/create-app';
+import { Home, Wallet, Apps, UserDashboard } from './pages/user-dashboard';
+import { ConsentPageWrapper } from './components/user-dashboard/consent/ConsentPageWraper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
 const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
@@ -68,11 +62,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Home />,
-      },
-      {
-        path: '/create-app',
-        element: <CreateApp />,
+        element: <Dashboard />,
       },
       {
         path: '/developer',
@@ -228,34 +218,36 @@ const routes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: '/appId/:appId',
-        element: <AppDetails />,
-      },
-      {
-        path: '/appId/:appId/advanced-functions',
-        element: <AdvancedFunctions />,
-      },
-      {
-        path: '/appId/:appId/delegatee',
-        element: <Delegatee />,
-      },
-      {
-        path: '/appId/:appId/tool-policies',
-        element: <ToolPolicies />,
-      },
     ],
   },
   {
     element: <UserLayoutWithProviders />,
     children: [
       {
-        path: '/withdraw',
-        element: <Withdraw />,
+        path: '/user',
+        element: <Home />,
       },
       {
-        path: '/appId/:appId/consent',
-        element: <Consent />,
+        path: '/user/*',
+        element: <Outlet />,
+        children: [
+          {
+            path: 'dashboard',
+            element: <UserDashboard />,
+          },
+          {
+            path: 'apps',
+            element: <Apps />,
+          },
+          {
+            path: 'wallet',
+            element: <Wallet />,
+          },
+          {
+            path: 'consent/appId/:appId',
+            element: <ConsentPageWrapper />,
+          },
+        ],
       },
     ],
   },

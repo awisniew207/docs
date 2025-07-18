@@ -1,6 +1,6 @@
 import { SquareStack, Wrench, Shield, BookOpen, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/shared/ui/button';
+import { Card, CardContent } from '@/components/shared/ui/card';
 import { MenuId } from '@/types/developer-dashboard/menuId';
 
 interface DashboardContentProps {

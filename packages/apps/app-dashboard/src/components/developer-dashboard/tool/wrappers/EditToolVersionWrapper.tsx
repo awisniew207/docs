@@ -5,7 +5,7 @@ import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { EditToolVersionForm, type EditToolVersionFormData } from '../forms/EditToolVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 
 export function EditToolVersionWrapper() {
   const { packageName, version } = useParams<{ packageName: string; version: string }>();

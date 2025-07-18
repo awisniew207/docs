@@ -5,7 +5,7 @@ import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-
 import { AppVersionTool, Tool } from '@/types/developer-dashboard/appTypes';
 import { ManageAppVersionTools } from '../views/ManageAppVersionTools';
 import { CreateAppVersionToolsForm } from '../forms/CreateAppVersionToolsForm';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 
 export function AppVersionToolsWrapper() {

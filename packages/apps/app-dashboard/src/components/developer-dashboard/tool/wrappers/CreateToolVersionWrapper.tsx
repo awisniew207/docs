@@ -8,7 +8,7 @@ import {
   type CreateToolVersionFormData,
 } from '../forms/CreateToolVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 
 export function CreateToolVersionWrapper() {
   const { packageName } = useParams<{ packageName: string }>();

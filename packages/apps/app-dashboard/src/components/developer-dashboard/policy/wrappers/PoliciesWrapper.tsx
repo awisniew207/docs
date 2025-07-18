@@ -1,5 +1,5 @@
 import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { PolicyListView } from '../views/PolicyListView';
 

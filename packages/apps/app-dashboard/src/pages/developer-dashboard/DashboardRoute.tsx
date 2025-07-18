@@ -2,7 +2,7 @@ import DashboardPage from './DashboardPage';
 import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
 import { useUserTools } from '@/hooks/developer-dashboard/tool/useUserTools';
 import { useUserPolicies } from '@/hooks/developer-dashboard/policy/useUserPolicies';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';

@@ -4,7 +4,7 @@ import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { ChangeToolOwnerForm, ChangeToolOwnerFormData } from '../forms/ChangeToolOwnerForm';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 
 export function ChangeToolOwnerWrapper() {

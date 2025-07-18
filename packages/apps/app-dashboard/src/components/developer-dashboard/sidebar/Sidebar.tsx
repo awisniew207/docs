@@ -10,7 +10,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/shared/ui/button';
 import { useState, useMemo, useEffect } from 'react';
 import { AppList } from './AppList';
 import { ToolList } from './ToolList';

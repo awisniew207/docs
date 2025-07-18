@@ -5,7 +5,7 @@ import { deleteApp, undeleteApp } from '@lit-protocol/vincent-contracts-sdk';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { App as ContractApp } from '@lit-protocol/vincent-contracts-sdk';
-import MutationButtonStates, { SkeletonButton } from '@/components/layout/MutationButtonStates';
+import MutationButtonStates, { SkeletonButton } from '@/components/shared/ui/MutationButtonStates';
 import { AppMismatchResolution } from './AppMismatchResolution';
 
 interface AppPublishedButtonsProps {

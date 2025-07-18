@@ -11,7 +11,7 @@ import {
 } from '@lit-protocol/vincent-contracts-sdk';
 import { ethers } from 'ethers';
 import { PublishAppVersionButton } from './ui/PublishAppVersionButton';
-import MutationButtonStates, { SkeletonButton } from '@/components/layout/MutationButtonStates';
+import MutationButtonStates, { SkeletonButton } from '@/components/shared/ui/MutationButtonStates';
 
 export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: boolean }) {
   const { appId, versionId } = useParams<{ appId: string; versionId: string }>();

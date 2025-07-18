@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/shared/ui/button';
+import { Input } from '@/components/shared/ui/input';
+import { Label } from '@/components/shared/ui/label';
 import { UseFormRegister, Control, useFieldArray, FieldErrors } from 'react-hook-form';
 import { useEffect } from 'react';
 

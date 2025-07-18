@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/shared/ui/checkbox';
+import { Label } from '@/components/shared/ui/label';
 import { UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { Policy } from '@/types/developer-dashboard/appTypes';
 

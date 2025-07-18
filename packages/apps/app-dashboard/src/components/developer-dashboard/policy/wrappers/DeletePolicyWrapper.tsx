@@ -5,7 +5,7 @@ import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressChec
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 
 export function DeletePolicyWrapper() {
   const { packageName } = useParams<{ packageName: string }>();

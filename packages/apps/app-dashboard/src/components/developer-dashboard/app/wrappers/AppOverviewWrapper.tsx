@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppDetailsView } from '../views/AppDetailsView';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useBlockchainAppData } from '@/hooks/useBlockchainAppData';

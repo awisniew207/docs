@@ -4,14 +4,20 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ethers } from 'ethers';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form } from '@/components/ui/form';
+import { Button } from '@/components/shared/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/shared/ui/card';
+import { Form } from '@/components/shared/ui/form';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { Plus, Trash2 } from 'lucide-react';
 import { TextField } from '../../form-fields';
 import { addDelegatee, removeDelegatee } from '@lit-protocol/vincent-contracts-sdk';
-import { SkeletonButton } from '@/components/layout/MutationButtonStates';
+import { SkeletonButton } from '@/components/shared/ui/MutationButtonStates';
 
 const AddDelegateeSchema = z.object({
   address: z.string().refine((val) => ethers.utils.isAddress(val), {
