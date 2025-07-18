@@ -30,12 +30,12 @@ export const getDecodedPolicyParams = async ({
 export const getPoliciesAndAppVersion = async ({
   delegationRpcUrl,
   appDelegateeAddress,
-  agentWalletPkpTokenId,
+  agentWalletPkpEthAddress,
   toolIpfsCid,
 }: {
   delegationRpcUrl: string;
   appDelegateeAddress: string;
-  agentWalletPkpTokenId: string;
+  agentWalletPkpEthAddress: string;
   toolIpfsCid: string;
 }): Promise<{
   appId: ethers.BigNumber;
@@ -45,7 +45,7 @@ export const getPoliciesAndAppVersion = async ({
   console.log('getPoliciesAndAppVersion', {
     delegationRpcUrl,
     appDelegateeAddress,
-    agentWalletPkpTokenId,
+    agentWalletPkpEthAddress,
     toolIpfsCid,
   });
 
@@ -58,8 +58,8 @@ export const getPoliciesAndAppVersion = async ({
       await validateToolExecutionAndGetPolicies({
         signer: ethers.Wallet.createRandom().connect(provider),
         args: {
-          delegatee: appDelegateeAddress,
-          pkpTokenId: agentWalletPkpTokenId,
+          delegateeAddress: appDelegateeAddress,
+          pkpEthAddress: agentWalletPkpEthAddress,
           toolIpfsCid: toolIpfsCid,
         },
       });
@@ -69,7 +69,7 @@ export const getPoliciesAndAppVersion = async ({
     // and no further processing is needed
     if (!validationResult.isPermitted) {
       throw new Error(
-        `App Delegatee: ${appDelegateeAddress} is not permitted to execute Vincent Tool: ${toolIpfsCid} for App ID: ${validationResult.appId} App Version: ${validationResult.appVersion} using Agent Wallet PKP Token ID: ${agentWalletPkpTokenId}`,
+        `App Delegatee: ${appDelegateeAddress} is not permitted to execute Vincent Tool: ${toolIpfsCid} for App ID: ${validationResult.appId} App Version: ${validationResult.appVersion} using Agent Wallet PKP Address: ${agentWalletPkpEthAddress}`,
       );
     }
 
@@ -80,7 +80,7 @@ export const getPoliciesAndAppVersion = async ({
     };
   } catch (error) {
     throw new Error(
-      `Error getting on-chain policy parameters from Vincent contract using App Delegatee: ${appDelegateeAddress} and Agent Wallet PKP Token ID: ${agentWalletPkpTokenId} and Vincent Tool: ${toolIpfsCid}: ${error instanceof Error ? error.message : String(error)}`,
+      `Error getting on-chain policy parameters from Vincent contract using App Delegatee: ${appDelegateeAddress} and Agent Wallet PKP Address: ${agentWalletPkpEthAddress} and Vincent Tool: ${toolIpfsCid}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 };

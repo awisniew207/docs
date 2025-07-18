@@ -172,7 +172,7 @@ export const vincentToolHandler = <
       const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl,
         appDelegateeAddress,
-        agentWalletPkpTokenId: userPkpInfo.tokenId,
+        agentWalletPkpEthAddress: context.delegatorPkpEthAddress,
         toolIpfsCid,
       });
       baseContext.appId = appId.toNumber();
