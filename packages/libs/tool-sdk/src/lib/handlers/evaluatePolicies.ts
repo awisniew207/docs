@@ -42,7 +42,7 @@ export async function evaluatePolicies<
   vincentTool,
   context,
   validatedPolicies,
-  toolApiVersion,
+  vincentToolApiVersion,
 }: {
   vincentTool: VincentTool<
     ToolParamsSchema,
@@ -56,7 +56,7 @@ export async function evaluatePolicies<
   >;
   context: BaseContext;
   validatedPolicies: ValidatedPolicyMap<z.infer<ToolParamsSchema>, PoliciesByPackageName>;
-  toolApiVersion: string;
+  vincentToolApiVersion: string;
 }): Promise<PolicyEvaluationResultContext<PoliciesByPackageName>> {
   const evaluatedPolicies: PolicyEvaluationResultContext<PoliciesByPackageName>['evaluatedPolicies'] =
     [];
@@ -79,7 +79,7 @@ export async function evaluatePolicies<
             toolIpfsCid: context.toolIpfsCid,
             delegatorPkpEthAddress: context.delegation.delegatorPkpInfo.ethAddress,
           },
-          VINCENT_TOOL_API_VERSION: toolApiVersion,
+          vincentToolApiVersion,
         },
       });
 

@@ -75,10 +75,13 @@ export type InferOrUndefined<T> = T extends z.ZodType ? z.infer<T> : undefined;
 export type VincentToolPolicy<
   ToolParamsSchema extends z.ZodType,
   VP extends VincentPolicy<any, any, any, any, any, any, any, any, any, any, any, any, any>,
+  VincentToolApiVersion extends string = string,
   PackageName extends string = string,
   IpfsCid extends string = string,
 > = {
   ipfsCid: IpfsCid;
+  /** @hidden */
+  vincentToolApiVersion: VincentToolApiVersion;
   vincentPolicy: VP & { packageName: PackageName };
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<VP['toolParamsSchema']>;

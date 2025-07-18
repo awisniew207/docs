@@ -9,6 +9,7 @@ import { LIT_NETWORK } from '@lit-protocol/constants';
 import type { BundledVincentTool, VincentTool } from '@lit-protocol/vincent-tool-sdk';
 
 import {
+  assertSupportedToolVersion,
   getPkpInfo,
   getPoliciesAndAppVersion,
   getSchemaForToolResult,
@@ -36,7 +37,6 @@ import {
   createToolPrecheckResponseFailureNoResult,
   createToolPrecheckResponseSuccessNoResult,
 } from './precheck/resultCreators';
-import { VINCENT_TOOL_API_VERSION } from './constants';
 
 const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 
@@ -94,7 +94,9 @@ export function getVincentToolClient<
   PrecheckFailSchema
 > {
   const { bundledVincentTool, ethersSigner } = params;
-  const { ipfsCid, vincentTool } = bundledVincentTool;
+  const { ipfsCid, vincentTool, vincentToolApiVersion } = bundledVincentTool;
+
+  assertSupportedToolVersion(vincentToolApiVersion);
 
   const network = LIT_NETWORK.Datil;
 
@@ -245,7 +247,7 @@ export function getVincentToolClient<
         jsParams: {
           toolParams: parsedParams,
           context,
-          VINCENT_TOOL_API_VERSION,
+          vincentToolApiVersion,
         },
       });
 

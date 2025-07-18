@@ -18,6 +18,8 @@ import { isToolFailureResult } from './helpers/typeGuards';
 import { ToolPolicyMap } from './helpers';
 import { ToolConfigLifecycleFunction, VincentToolConfig } from './toolConfig/types';
 import { bigintReplacer } from '../utils';
+import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
+import { VINCENT_TOOL_API_VERSION } from '../constants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -102,7 +104,13 @@ export function createVincentTool<
     >
   >,
 ) {
-  const { policyByPackageName } = ToolConfig.supportedPolicies;
+  const { policyByPackageName, policyByIpfsCid } = ToolConfig.supportedPolicies;
+
+  for (const policyId in policyByIpfsCid) {
+    const policy = policyByIpfsCid[policyId];
+    const { vincentToolApiVersion } = policy;
+    assertSupportedToolVersion(vincentToolApiVersion);
+  }
 
   const executeSuccessSchema = (ToolConfig.executeSuccessSchema ??
     z.undefined()) as ExecuteSuccessSchema;
@@ -224,6 +232,7 @@ export function createVincentTool<
 
   return {
     packageName: ToolConfig.packageName,
+    vincentToolApiVersion: VINCENT_TOOL_API_VERSION,
     toolDescription: ToolConfig.toolDescription,
     execute,
     precheck,

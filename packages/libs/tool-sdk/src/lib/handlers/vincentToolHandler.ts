@@ -17,7 +17,7 @@ import { z } from 'zod';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
 import type { BaseToolContext } from '../toolCore/toolConfig/context/types';
 import { bigintReplacer } from '../utils';
-import { assertSupportedToolVersion } from './assertSupportedToolVersion';
+import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -32,7 +32,7 @@ declare const Lit: {
   };
 };
 
-declare const VINCENT_TOOL_API_VERSION: string;
+declare const vincentToolApiVersion: string;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function createToolExecutionContext<
@@ -129,7 +129,7 @@ export const vincentToolHandler = <
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
-    assertSupportedToolVersion(VINCENT_TOOL_API_VERSION);
+    assertSupportedToolVersion(vincentToolApiVersion);
 
     let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
@@ -196,7 +196,7 @@ export const vincentToolHandler = <
         validatedPolicies,
         vincentTool,
         context: baseContext,
-        toolApiVersion: VINCENT_TOOL_API_VERSION,
+        vincentToolApiVersion,
       });
 
       console.log(
