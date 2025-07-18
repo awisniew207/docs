@@ -158,7 +158,7 @@ export function getVincentToolClient<
       const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl: rpcUrl ?? YELLOWSTONE_RPC_URL,
         appDelegateeAddress: delegateePkpEthAddress,
-        agentWalletPkpTokenId: userPkpInfo.tokenId,
+        agentWalletPkpEthAddress: delegatorPkpEthAddress,
         toolIpfsCid: ipfsCid,
       });
       baseContext.appId = appId.toNumber();

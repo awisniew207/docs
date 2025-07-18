@@ -75,7 +75,7 @@ export async function vincentPolicyHandler<
     const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
       delegationRpcUrl,
       appDelegateeAddress,
-      agentWalletPkpTokenId: userPkpInfo.tokenId,
+      agentWalletPkpEthAddress: delegatorPkpEthAddress,
       toolIpfsCid,
     });
 
