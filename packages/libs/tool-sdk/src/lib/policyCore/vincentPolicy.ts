@@ -1,6 +1,7 @@
 // src/lib/policyCore/vincentPolicy.ts
 import { z } from 'zod';
-import {
+
+import type {
   CommitLifecycleFunction,
   PolicyLifecycleFunction,
   PolicyResponse,
@@ -11,7 +12,14 @@ import {
   VincentPolicy,
   ZodValidationDenyResult,
 } from '../types';
-import { createPolicyContext } from './policyConfig/context/policyConfigContext';
+import type { BundledVincentPolicy } from './bundledPolicy/types';
+import type {
+  PolicyConfigCommitFunction,
+  PolicyConfigLifecycleFunction,
+  VincentPolicyConfig,
+} from './policyConfig/types';
+
+import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
@@ -19,14 +27,8 @@ import {
   isPolicyDenyResponse,
   validateOrDeny,
 } from './helpers';
-import {
-  PolicyConfigCommitFunction,
-  PolicyConfigLifecycleFunction,
-  VincentPolicyConfig,
-} from './policyConfig/types';
 import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resultCreators';
-import { BundledVincentPolicy } from './bundledPolicy/types';
-import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
+import { createPolicyContext } from './policyConfig/context/policyConfigContext';
 
 /**
  * The `createVincentPolicy()` method is used to define a policy's lifecycle methods and ensure that arguments provided to the tool's

@@ -1,6 +1,6 @@
 // src/lib/policyCore/bundledPolicy/types.ts
 
-import { VincentPolicy } from '../../types';
+import type { VincentPolicy } from '../../types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

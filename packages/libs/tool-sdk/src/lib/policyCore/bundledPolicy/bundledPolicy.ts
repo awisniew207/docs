@@ -1,7 +1,8 @@
 // src/lib/policyCore/bundledPolicy/bundledPolicy.ts
 
-import { BundledVincentPolicy } from './types';
-import { VincentPolicy } from '../../types';
+import type { VincentPolicy } from '../../types';
+import type { BundledVincentPolicy } from './types';
+
 import { VINCENT_TOOL_API_VERSION } from '../../constants';
 
 /** @hidden */

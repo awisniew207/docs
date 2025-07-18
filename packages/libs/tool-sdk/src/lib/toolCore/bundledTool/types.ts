@@ -1,6 +1,6 @@
 // src/lib/toolCore/bundledTool/types.ts
 
-import { VincentTool } from '../../types';
+import type { VincentTool } from '../../types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

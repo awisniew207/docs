@@ -1,6 +1,7 @@
 // src/lib/toolCore/helpers/supportedPoliciesForTool.ts
 
-import { VincentPolicy } from '../../types';
+import type { VincentPolicy } from '../../types';
+
 import { assertSupportedToolVersion } from '../../assertSupportedToolVersion';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

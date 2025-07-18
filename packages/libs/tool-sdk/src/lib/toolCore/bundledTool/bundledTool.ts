@@ -1,7 +1,8 @@
 // src/lib/toolCore/bundledTool/bundledTool.ts
 
-import { BundledVincentTool } from './types';
-import { VincentTool } from '../../types';
+import type { VincentTool } from '../../types';
+import type { BundledVincentTool } from './types';
+
 import { VINCENT_TOOL_API_VERSION } from '../../constants';
 
 /** @hidden */
