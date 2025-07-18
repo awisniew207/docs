@@ -138,7 +138,7 @@ export async function getAllToolsAndPoliciesForApp({
 export async function validateToolExecutionAndGetPolicies({
   signer,
   args: { delegateeAddress, pkpEthAddress, toolIpfsCid },
-}: ValidateToolExecutionAndGetPoliciesOptions): Promise<ValidateToolExecutionAndGetPoliciesResult | null> {
+}: ValidateToolExecutionAndGetPoliciesOptions): Promise<ValidateToolExecutionAndGetPoliciesResult> {
   const contract = createContract(signer);
 
   try {
