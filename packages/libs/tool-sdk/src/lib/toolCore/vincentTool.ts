@@ -166,7 +166,7 @@ export function createVincentTool<
 
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isToolFailureResult(result)) {
-        return wrapFailure(resultOrFailure, result.error);
+        return wrapFailure(resultOrFailure, result.runtimeError);
       }
 
       return wrapSuccess(resultOrFailure);
@@ -217,7 +217,7 @@ export function createVincentTool<
 
           // We parsed the result successfully -- it may be a success or a failure, return appropriately
           if (isToolFailureResult(result)) {
-            return wrapFailure(resultOrFailure, result.error);
+            return wrapFailure(resultOrFailure, result.runtimeError);
           }
 
           return wrapSuccess(resultOrFailure);

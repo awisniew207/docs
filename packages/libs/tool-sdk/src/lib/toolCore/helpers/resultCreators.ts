@@ -44,14 +44,14 @@ export function createToolFailureResult<T>({
   if (result === undefined) {
     return {
       success: false,
-      error: message,
+      runtimeError: message,
       result: undefined as never,
     };
   }
 
   return {
     success: false,
-    error: message,
+    runtimeError: message,
     result,
   };
 }

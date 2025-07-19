@@ -28,14 +28,14 @@ export function createDenyResult<T>(params: {
   if (params.result === undefined) {
     return {
       allow: false,
-      error: params.message,
+      runtimeError: params.message,
       result: undefined as never,
     };
   }
 
   return {
     allow: false,
-    error: params.message,
+    runtimeError: params.message,
     result: params.result,
   };
 }

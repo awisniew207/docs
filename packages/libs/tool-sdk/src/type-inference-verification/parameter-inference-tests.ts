@@ -77,6 +77,7 @@ function testNoSchemaValidation() {
       if (Math.random() > 0.5) {
         return context.allow();
       } else {
+        // @ts-expect-error Can't return a string when no schema defined
         return context.deny('Error message');
       }
     },

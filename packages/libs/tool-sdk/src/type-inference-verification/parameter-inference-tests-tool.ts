@@ -572,7 +572,7 @@ function testMissingTypes() {
       // Should be able to succeed with schema
       succeed({ result: 'test' });
 
-      // Should be able to fail with just an error string since no fail schema
+      // @ts-expect-error Can't return a string when no schema defined
       fail('Error message');
 
       // @ts-expect-error - Can't fail with an object when no fail schema defined

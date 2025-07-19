@@ -67,7 +67,7 @@ export function testNoSchemas() {
       // Should allow succeed() with no arguments
       succeed();
 
-      // Should allow fail() with string error
+      // @ts-expect-error Should not allow fail() with string error
       fail('Error message');
 
       // @ts-expect-error - Should not allow succeed() with arguments when no schema
@@ -691,6 +691,7 @@ export const testExecuteTryCatchReturn = () => {
         return succeed();
       } catch (error) {
         // Missing return here
+        // @ts-expect-error Can't call fail w/ string when no schema
         fail('Error occurred');
       }
     },

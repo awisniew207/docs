@@ -33,11 +33,10 @@ export function createSuccessNoResult(): ContextSuccessNoResult {
 /**
  * Wraps a failure result with payload
  */
-export function createFailure<T>(result: T, error?: string): ContextFailure<T> {
+export function createFailure<T>(result: T): ContextFailure<T> {
   return {
     success: false,
     result,
-    ...(error ? { error } : {}),
     [YouMustCallContextSucceedOrFail]: 'ToolResult',
   } as ContextFailure<T>;
 }
@@ -45,11 +44,10 @@ export function createFailure<T>(result: T, error?: string): ContextFailure<T> {
 /**
  * Wraps a failure result without payload
  */
-export function createFailureNoResult(error?: string): ContextFailureNoResult {
+export function createFailureNoResult(): ContextFailureNoResult {
   return {
     success: false,
     result: undefined as never,
-    ...(error ? { error } : {}),
     [YouMustCallContextSucceedOrFail]: 'ToolResult',
   } as ContextFailureNoResult;
 }

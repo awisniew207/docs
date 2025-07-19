@@ -11,8 +11,6 @@ import type {
   PolicyContext,
 } from './types';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 /**
  * Creates a policy execution context to be passed into lifecycle methods
  * like `evaluate`, `precheck`, and `commit`. This context includes strongly
@@ -44,17 +42,16 @@ export function createPolicyContext<
     } as ContextAllowResponseNoResult;
   }
 
-  function denyWithSchema<T>(result: T, error?: string): ContextDenyResponse<T> {
+  function denyWithSchema<T>(result: T): ContextDenyResponse<T> {
     return {
       allow: false,
       result,
     } as ContextDenyResponse<T>;
   }
 
-  function denyWithoutSchema(error?: string): ContextDenyResponseNoResult {
+  function denyWithoutSchema(): ContextDenyResponseNoResult {
     return {
       allow: false,
-      ...(error ? { error } : {}),
       result: undefined as never,
     } as ContextDenyResponseNoResult;
   }
@@ -69,7 +66,7 @@ export function createPolicyContext<
       ? () => ContextAllowResponseNoResult
       : (result: z.infer<AllowSchema>) => ContextAllowResponse<z.infer<AllowSchema>>,
     deny: deny as DenySchema extends z.ZodUndefined
-      ? (error?: string) => ContextDenyResponseNoResult
-      : (result: z.infer<DenySchema>, error?: string) => ContextDenyResponse<z.infer<DenySchema>>,
+      ? () => ContextDenyResponseNoResult
+      : (result: z.infer<DenySchema>) => ContextDenyResponse<z.infer<DenySchema>>,
   };
 }

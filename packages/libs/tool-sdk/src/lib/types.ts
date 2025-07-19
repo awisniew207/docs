@@ -23,13 +23,13 @@ export interface ZodValidationDenyResult {
 
 export interface PolicyResponseDeny<DenyResult> {
   allow: false;
-  error?: string;
+  runtimeError?: string;
   result: DenyResult | ZodValidationDenyResult;
 }
 
 export interface PolicyResponseDenyNoResult {
   allow: false;
-  error?: string;
+  runtimeError?: string;
   result: never;
 }
 
@@ -203,7 +203,7 @@ export type PolicyEvaluationResultContext<
   | {
       allow: false;
       deniedPolicy: {
-        error?: string;
+        runtimeError?: string;
         packageName: keyof Policies;
         result: Policies[Extract<keyof Policies, string>]['__schemaTypes'] extends {
           evalDenyResultSchema: infer Schema;
@@ -338,12 +338,12 @@ export interface ToolResultSuccessNoResult {
 export interface ToolResultFailure<FailResult = never> {
   success: false;
   result: FailResult | ZodValidationDenyResult;
-  error?: string;
+  runtimeError?: string;
 }
 
 export interface ToolResultFailureNoResult {
   success: false;
-  error?: string;
+  runtimeError?: string;
   result?: never;
 }
 export type ToolResult<SucceedResult, FailResults> =

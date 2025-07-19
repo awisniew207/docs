@@ -140,7 +140,7 @@ export function createVincentPolicy<
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isPolicyDenyResponse(result)) {
         return createDenyResult({
-          message: result.error,
+          message: result.runtimeError,
           result: resultOrDeny,
         }) as EvalDenyResult extends z.ZodType
           ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
@@ -212,7 +212,7 @@ export function createVincentPolicy<
           // We parsed the result -- it may be a success or a failure; return appropriately.
           if (isPolicyDenyResponse(result)) {
             return createDenyResult({
-              message: result.error,
+              message: result.runtimeError,
               result: resultOrDeny,
             });
           }
@@ -279,7 +279,7 @@ export function createVincentPolicy<
           // We parsed the result -- it may be a success or a failure; return appropriately.
           if (isPolicyDenyResponse(result)) {
             return createDenyResult({
-              message: result.error,
+              message: result.runtimeError,
               result: resultOrDeny,
             });
           }

@@ -328,7 +328,7 @@ export const myTool = createVincentTool({
       });
     } else {
       // Handle the denial case
-      const denyReason = deniedPolicy.error || 'Policy check failed';
+      const denyReason = deniedPolicy.runtimeError || 'Policy check failed';
 
       return fail({
         invalidField: 'policy',
