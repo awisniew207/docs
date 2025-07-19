@@ -63,13 +63,16 @@ export function createDenyPrecheckResult<PoliciesByPackageName extends Record<st
   deniedPolicy: {
     packageName: keyof PoliciesByPackageName;
     runtimeError?: string;
-    result: PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
-      precheckDenyResultSchema: infer Schema;
-    }
-      ? Schema extends z.ZodType
-        ? z.infer<Schema>
-        : undefined
-      : undefined;
+    schemaValidationError?: SchemaValidationError;
+    result:
+      | (PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
+          precheckDenyResultSchema: infer Schema;
+        }
+          ? Schema extends z.ZodType
+            ? z.infer<Schema>
+            : undefined
+          : undefined)
+      | undefined;
   }
 ): {
   allow: false;
@@ -88,13 +91,17 @@ export function createDenyPrecheckResult<PoliciesByPackageName extends Record<st
   deniedPolicy: {
     packageName: keyof PoliciesByPackageName;
     runtimeError?: string;
-    result: PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
-      precheckDenyResultSchema: infer Schema;
-    }
-      ? Schema extends z.ZodType
-        ? z.infer<Schema>
-        : undefined
-      : undefined;
+    schemaValidationError?: SchemaValidationError;
+
+    result:
+      | (PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
+          precheckDenyResultSchema: infer Schema;
+        }
+          ? Schema extends z.ZodType
+            ? z.infer<Schema>
+            : undefined
+          : undefined)
+      | undefined;
   };
 } {
   return {

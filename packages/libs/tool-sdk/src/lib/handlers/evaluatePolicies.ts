@@ -162,8 +162,13 @@ function parseAndValidateEvaluateResult<
   try {
     console.log('parseAndValidateEvaluateResult', JSON.stringify(parsedLitActionResponse));
 
-    if (isPolicyDenyResponse(parsedLitActionResponse)) {
-      console.log('parsedLitActionResponse is a deny response; returning it as-is.');
+    if (
+      isPolicyDenyResponse(parsedLitActionResponse) &&
+      (parsedLitActionResponse.schemaValidationError || parsedLitActionResponse.runtimeError)
+    ) {
+      console.log(
+        'parsedLitActionResponse is a deny response with a runtime error or schema validation error; skipping schema validation',
+      );
       return parsedLitActionResponse as PolicyResponse<EvalAllowResult, EvalDenyResult>;
     }
 

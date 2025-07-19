@@ -104,13 +104,15 @@ export type PolicyPrecheckResultContext<
       deniedPolicy: {
         runtimeError?: string;
         packageName: keyof Policies;
-        result: Policies[Extract<keyof Policies, string>]['__schemaTypes'] extends {
-          precheckDenyResultSchema: infer Schema;
-        }
-          ? Schema extends z.ZodType
-            ? z.infer<Schema>
-            : undefined
-          : undefined;
+        result:
+          | (Policies[Extract<keyof Policies, string>]['__schemaTypes'] extends {
+              precheckDenyResultSchema: infer Schema;
+            }
+              ? Schema extends z.ZodType
+                ? z.infer<Schema>
+                : undefined
+              : undefined)
+          | undefined;
       };
       allowedPolicies?: {
         [PolicyKey in keyof Policies]?: {

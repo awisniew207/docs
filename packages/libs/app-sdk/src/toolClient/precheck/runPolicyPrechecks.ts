@@ -15,7 +15,6 @@ import type { ToolPolicyMap } from '@lit-protocol/vincent-tool-sdk/internal';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
-  isPolicyAllowResponse,
   isPolicyDenyResponse,
   validateOrDeny,
   validatePolicies,
@@ -104,13 +103,15 @@ export async function runToolPolicyPrechecks<
         packageName: Key;
         runtimeError?: string;
         schemaValidationError?: SchemaValidationError;
-        result: PoliciesByPackageName[Key]['__schemaTypes'] extends {
-          precheckDenyResultSchema: infer Schema;
-        }
-          ? Schema extends z.ZodType
-            ? z.infer<Schema>
-            : undefined
-          : undefined;
+        result:
+          | (PoliciesByPackageName[Key]['__schemaTypes'] extends {
+              precheckDenyResultSchema: infer Schema;
+            }
+              ? Schema extends z.ZodType
+                ? z.infer<Schema>
+                : undefined
+              : undefined)
+          | undefined;
       }
     | undefined = undefined;
 
@@ -141,8 +142,19 @@ export async function runToolPolicyPrechecks<
         context
       );
 
-      // FIXME: No assumption that node:util exists
       console.log('vincentPolicy.precheck() result', JSON.stringify(result, bigintReplacer));
+
+      // precheck() might have thrown a runtimeError or failed to parse the input
+      if ((isPolicyDenyResponse(result) && result.runtimeError) || result.schemaValidationError) {
+        deniedPolicy = {
+          result: undefined,
+          runtimeError: result.runtimeError,
+          schemaValidationError: result.schemaValidationError,
+          packageName: key as Key,
+        };
+        break;
+      }
+
       const { schemaToUse } = getSchemaForPolicyResponseResult({
         value: result,
         allowResultSchema: vincentPolicy.precheckAllowResultSchema ?? z.undefined(),
@@ -152,23 +164,25 @@ export async function runToolPolicyPrechecks<
       const validated = validateOrDeny(result.result, schemaToUse, 'precheck', 'output');
 
       if (isPolicyDenyResponse(result)) {
+        // Return value from precheck was invalid in this case
         deniedPolicy = {
           runtimeError: result.runtimeError,
+          schemaValidationError: result.schemaValidationError,
           result: validated,
           packageName: key as Key,
         };
         break;
-      } else if (isPolicyAllowResponse(validated)) {
-        allowedPolicies[key as Key] = {
-          result: validated.result as PoliciesByPackageName[Key]['__schemaTypes'] extends {
-            precheckAllowResultSchema: infer Schema;
-          }
-            ? Schema extends z.ZodType
-              ? z.infer<Schema>
-              : never
-            : never,
-        };
       }
+
+      allowedPolicies[key as Key] = {
+        result: validated.result as PoliciesByPackageName[Key]['__schemaTypes'] extends {
+          precheckAllowResultSchema: infer Schema;
+        }
+          ? Schema extends z.ZodType
+            ? z.infer<Schema>
+            : never
+          : never,
+      };
     } catch (err) {
       deniedPolicy = {
         packageName: key as Key,

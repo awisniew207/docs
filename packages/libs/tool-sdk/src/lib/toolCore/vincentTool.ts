@@ -139,6 +139,7 @@ export function createVincentTool<
       );
 
       if (isToolFailureResult(parsedToolParams)) {
+        // In this case, we have an invalid input to the tool -- return { success: fail, runtimeError, schemaValidationError }
         return parsedToolParams;
       }
 
@@ -166,7 +167,7 @@ export function createVincentTool<
 
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isToolFailureResult(result)) {
-        return wrapFailure(resultOrFailure, result.runtimeError);
+        return wrapFailure(resultOrFailure);
       }
 
       return wrapSuccess(resultOrFailure);

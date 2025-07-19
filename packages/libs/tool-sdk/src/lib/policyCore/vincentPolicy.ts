@@ -27,7 +27,12 @@ import {
   isPolicyDenyResponse,
   validateOrDeny,
 } from './helpers';
-import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resultCreators';
+import {
+  createAllowResult,
+  createDenyNoResult,
+  returnNoResultDeny,
+  wrapAllow,
+} from './helpers/resultCreators';
 import { createPolicyContext } from './policyConfig/context/policyConfigContext';
 
 /**
@@ -140,7 +145,6 @@ export function createVincentPolicy<
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isPolicyDenyResponse(result)) {
         return createDenyResult({
-          runtimeError: result.runtimeError,
           result: resultOrDeny,
         }) as EvalDenyResult extends z.ZodType
           ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
@@ -212,16 +216,13 @@ export function createVincentPolicy<
           // We parsed the result -- it may be a success or a failure; return appropriately.
           if (isPolicyDenyResponse(result)) {
             return createDenyResult({
-              runtimeError: result.runtimeError,
               result: resultOrDeny,
             });
           }
 
           return createAllowResult({ result: resultOrDeny });
         } catch (err) {
-          return createDenyResult({
-            runtimeError: err instanceof Error ? err.message : 'Unknown error',
-          });
+          return createDenyNoResult(err instanceof Error ? err.message : 'Unknown error');
         }
       }) as PolicyLifecycleFunction<
         PolicyToolParams,
@@ -279,16 +280,13 @@ export function createVincentPolicy<
           // We parsed the result -- it may be a success or a failure; return appropriately.
           if (isPolicyDenyResponse(result)) {
             return createDenyResult({
-              runtimeError: result.runtimeError,
               result: resultOrDeny,
             });
           }
 
           return createAllowResult({ result: resultOrDeny });
         } catch (err) {
-          return createDenyResult({
-            runtimeError: err instanceof Error ? err.message : 'Unknown error',
-          });
+          return createDenyNoResult(err instanceof Error ? err.message : 'Unknown error');
         }
       }) as CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>)
     : undefined;
