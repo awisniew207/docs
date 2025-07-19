@@ -255,7 +255,7 @@ export function getVincentToolClient<
 
       if (success !== true) {
         return createToolExecuteResponseFailureNoResult({
-          message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+          runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
@@ -268,7 +268,7 @@ export function getVincentToolClient<
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
           return createToolExecuteResponseFailureNoResult({
-            message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+            runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
           }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
         }
       }
@@ -280,7 +280,7 @@ export function getVincentToolClient<
         );
 
         return createToolExecuteResponseFailureNoResult({
-          message: `Remote tool failed with unknown error: ${JSON.stringify(parsedResult)}`,
+          runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(parsedResult)}`,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
@@ -326,7 +326,7 @@ export function getVincentToolClient<
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isToolResponseFailure(executionResult)) {
         return createToolExecuteResponseFailure({
-          ...(executionResult.error ? { message: executionResult.error } : {}),
+          ...(executionResult.runtimeError ? { runtimeError: executionResult.runtimeError } : {}),
           result: executeResult,
           context: resp.toolContext,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;

@@ -8,28 +8,40 @@ import type {
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
   PolicyEvaluationResultContext,
+  SchemaValidationError,
 } from '../../types';
 
 /**
  * Overload: return a fully-typed deny response with a result
  */
-export function createDenyResult<T>(params: { message?: string; result: T }): PolicyResponseDeny<T>;
+export function createDenyResult<T>(params: {
+  runtimeError?: string;
+  result: T;
+  schemaValidationError?: SchemaValidationError;
+}): PolicyResponseDeny<T>;
 /**
  * Overload: return a deny response with no result
  */
-export function createDenyResult(params: { message: string }): PolicyResponseDenyNoResult;
+export function createDenyResult(params: {
+  runtimeError: string;
+  schemaValidationError?: SchemaValidationError;
+}): PolicyResponseDenyNoResult;
 /**
  * Implementation
  */
 export function createDenyResult<T>(params: {
-  message?: string;
+  message?: string; // For backward compatibility
   result?: T;
+  schemaValidationError?: SchemaValidationError;
 }): PolicyResponseDeny<T> | PolicyResponseDenyNoResult {
   if (params.result === undefined) {
     return {
       allow: false,
       runtimeError: params.message,
       result: undefined as never,
+      ...(params.schemaValidationError
+        ? { schemaValidationError: params.schemaValidationError }
+        : {}),
     };
   }
 
@@ -37,11 +49,17 @@ export function createDenyResult<T>(params: {
     allow: false,
     runtimeError: params.message,
     result: params.result,
+    ...(params.schemaValidationError
+      ? { schemaValidationError: params.schemaValidationError }
+      : {}),
   };
 }
 
-export function createDenyNoResult(message: string): PolicyResponseDenyNoResult {
-  return createDenyResult({ message });
+export function createDenyNoResult(
+  message: string,
+  schemaValidationError?: SchemaValidationError,
+): PolicyResponseDenyNoResult {
+  return createDenyResult({ runtimeError: message, schemaValidationError });
 }
 
 /**
@@ -112,15 +130,17 @@ export function wrapAllow<T extends ZodType<any, any, any>>(
 export function wrapDeny<T extends ZodType<any, any, any>>(
   message: string,
   result: z.infer<T>,
+  schemaValidationError?: SchemaValidationError,
 ): PolicyResponseDeny<z.infer<T>> {
-  return createDenyResult({ message, result });
+  return createDenyResult({ runtimeError: message, result, schemaValidationError });
 }
 
 // Wraps a schema-less denial into a conditionally valid deny return
 export function returnNoResultDeny<T extends ZodType<any, any, any> | undefined>(
   message: string,
+  schemaValidationError?: SchemaValidationError,
 ): T extends ZodType<any, any, any> ? PolicyResponseDeny<z.infer<T>> : PolicyResponseDenyNoResult {
-  return createDenyNoResult(message) as any;
+  return createDenyNoResult(message, schemaValidationError) as any;
 }
 
 // Optionally: type guard if needed

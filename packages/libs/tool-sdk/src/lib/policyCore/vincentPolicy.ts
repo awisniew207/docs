@@ -10,7 +10,7 @@ import type {
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
   VincentPolicy,
-  ZodValidationDenyResult,
+  SchemaValidationError,
 } from '../types';
 import type { BundledVincentPolicy } from './bundledPolicy/types';
 import type {
@@ -110,7 +110,7 @@ export function createVincentPolicy<
 
       if (isPolicyDenyResponse(paramsOrDeny)) {
         return paramsOrDeny as EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
           : PolicyResponseDenyNoResult;
       }
 
@@ -133,17 +133,17 @@ export function createVincentPolicy<
 
       if (isPolicyDenyResponse(resultOrDeny)) {
         return resultOrDeny as EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
           : PolicyResponseDenyNoResult;
       }
 
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isPolicyDenyResponse(result)) {
         return createDenyResult({
-          message: result.runtimeError,
+          runtimeError: result.runtimeError,
           result: resultOrDeny,
         }) as EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
           : PolicyResponseDenyNoResult;
       }
 
@@ -154,7 +154,7 @@ export function createVincentPolicy<
       return returnNoResultDeny<EvalDenyResult>(
         err instanceof Error ? err.message : 'Unknown error',
       ) as unknown as EvalDenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+        ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
         : PolicyResponseDenyNoResult;
     }
   };
@@ -212,7 +212,7 @@ export function createVincentPolicy<
           // We parsed the result -- it may be a success or a failure; return appropriately.
           if (isPolicyDenyResponse(result)) {
             return createDenyResult({
-              message: result.runtimeError,
+              runtimeError: result.runtimeError,
               result: resultOrDeny,
             });
           }
@@ -220,7 +220,7 @@ export function createVincentPolicy<
           return createAllowResult({ result: resultOrDeny });
         } catch (err) {
           return createDenyResult({
-            message: err instanceof Error ? err.message : 'Unknown error',
+            runtimeError: err instanceof Error ? err.message : 'Unknown error',
           });
         }
       }) as PolicyLifecycleFunction<
@@ -279,7 +279,7 @@ export function createVincentPolicy<
           // We parsed the result -- it may be a success or a failure; return appropriately.
           if (isPolicyDenyResponse(result)) {
             return createDenyResult({
-              message: result.runtimeError,
+              runtimeError: result.runtimeError,
               result: resultOrDeny,
             });
           }
@@ -287,7 +287,7 @@ export function createVincentPolicy<
           return createAllowResult({ result: resultOrDeny });
         } catch (err) {
           return createDenyResult({
-            message: err instanceof Error ? err.message : 'Unknown error',
+            runtimeError: err instanceof Error ? err.message : 'Unknown error',
           });
         }
       }) as CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>)

@@ -39,7 +39,7 @@ export const vincentTool = createVincentTool({
 
   executeSuccessSchema,
 
-  precheck: async ({ toolParams }, { fail, succeed, delegation: { delegatorPkpInfo } }) => {
+  precheck: async ({ toolParams }, { succeed, delegation: { delegatorPkpInfo } }) => {
     // TODO: The return types for this precheck could be more strongly typed; right now they will just be `error` with a string.
     const {
       rpcUrlForUniswap,
@@ -65,7 +65,7 @@ export const vincentTool = createVincentTool({
       chainIdForUniswap as keyof typeof CHAIN_TO_ADDRESSES_MAP
     ].swapRouter02Address as `0x${string}`;
     if (uniswapRouterAddress === undefined) {
-      return fail(
+      throw new Error(
         `Uniswap router address not found for chainId ${chainIdForUniswap} (UniswapSwapToolPrecheck)`,
       );
     }
@@ -103,7 +103,7 @@ export const vincentTool = createVincentTool({
   },
   execute: async (
     { toolParams },
-    { succeed, fail, policiesContext, delegation: { delegatorPkpInfo } },
+    { succeed, policiesContext, delegation: { delegatorPkpInfo } },
   ) => {
     console.log('Executing UniswapSwapTool', JSON.stringify(toolParams, null, 2));
 
@@ -146,9 +146,9 @@ export const vincentTool = createVincentTool({
       if (commitResult.allow) {
         spendTxHash = commitResult.result.spendTxHash;
       } else {
-        return fail(
-          commitResult.error ?? 'Unknown error occurred while committing spending limit policy',
-        );
+        if (commitResult.runtimeError) {
+          throw new Error('Failed to commit spending limit policy: ' + commitResult.runtimeError);
+        }
       }
       console.log(
         `Committed spending limit policy for transaction: ${spendTxHash} (UniswapSwapToolExecute)`,

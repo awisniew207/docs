@@ -1,7 +1,5 @@
 // src/lib/toolClient/precheck/runPolicyPrechecks.ts
 
-import util from 'node:util';
-
 import { z } from 'zod';
 
 import type { ToolPolicyParameterData } from '@lit-protocol/vincent-contracts-sdk';
@@ -10,6 +8,7 @@ import type {
   BaseToolContext,
   BundledVincentTool,
   VincentTool,
+  SchemaValidationError,
 } from '@lit-protocol/vincent-tool-sdk';
 import type { ToolPolicyMap } from '@lit-protocol/vincent-tool-sdk/internal';
 
@@ -25,6 +24,10 @@ import {
 import type { PolicyPrecheckResultContext } from './types';
 
 import { createAllowPrecheckResult, createDenyPrecheckResult } from './resultCreators';
+
+const bigintReplacer = (key: any, value: any) => {
+  return typeof value === 'bigint' ? value.toString() : value;
+};
 
 export async function runToolPolicyPrechecks<
   const IpfsCid extends string,
@@ -99,7 +102,8 @@ export async function runToolPolicyPrechecks<
   let deniedPolicy:
     | {
         packageName: Key;
-        error?: string;
+        runtimeError?: string;
+        schemaValidationError?: SchemaValidationError;
         result: PoliciesByPackageName[Key]['__schemaTypes'] extends {
           precheckDenyResultSchema: infer Schema;
         }
@@ -138,7 +142,7 @@ export async function runToolPolicyPrechecks<
       );
 
       // FIXME: No assumption that node:util exists
-      console.log('vincentPolicy.precheck() result', util.inspect(result, { depth: 10 }));
+      console.log('vincentPolicy.precheck() result', JSON.stringify(result, bigintReplacer));
       const { schemaToUse } = getSchemaForPolicyResponseResult({
         value: result,
         allowResultSchema: vincentPolicy.precheckAllowResultSchema ?? z.undefined(),
@@ -148,7 +152,11 @@ export async function runToolPolicyPrechecks<
       const validated = validateOrDeny(result.result, schemaToUse, 'precheck', 'output');
 
       if (isPolicyDenyResponse(result)) {
-        deniedPolicy = { error: result.error, result: validated, packageName: key as Key };
+        deniedPolicy = {
+          runtimeError: result.runtimeError,
+          result: validated,
+          packageName: key as Key,
+        };
         break;
       } else if (isPolicyAllowResponse(validated)) {
         allowedPolicies[key as Key] = {
@@ -165,7 +173,7 @@ export async function runToolPolicyPrechecks<
       deniedPolicy = {
         packageName: key as Key,
         ...createDenyResult({
-          message: err instanceof Error ? err.message : 'Unknown error in precheck()',
+          runtimeError: err instanceof Error ? err.message : 'Unknown error in precheck()',
         }),
       };
       break;

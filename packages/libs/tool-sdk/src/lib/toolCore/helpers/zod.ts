@@ -38,7 +38,7 @@ export function validateOrFail<T extends ZodType<any, any, any>>(
   schema: T,
   phase: 'precheck' | 'execute',
   stage: 'input' | 'output',
-): z.infer<T> | ToolResultFailure | ToolResultFailureNoResult {
+): z.infer<T> | ToolResultFailure<never> | ToolResultFailureNoResult {
   const effectiveSchema = schema ?? mustBeUndefinedSchema;
   const parsed = effectiveSchema.safeParse(value);
 
@@ -46,8 +46,12 @@ export function validateOrFail<T extends ZodType<any, any, any>>(
     const descriptor = stage === 'input' ? 'parameters' : 'result';
     const message = `Invalid ${phase} ${descriptor}.`;
     return createToolFailureResult({
-      message,
-      result: { zodError: parsed.error },
+      runtimeError: message,
+      schemaValidationError: {
+        zodError: parsed.error,
+        phase,
+        stage,
+      },
     });
   }
 

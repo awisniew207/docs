@@ -12,7 +12,7 @@ import type {
   PolicyResponseDenyNoResult,
   VincentPolicy,
   VincentTool,
-  ZodValidationDenyResult,
+  SchemaValidationError,
 } from '../types';
 
 import {
@@ -106,7 +106,7 @@ export async function evaluatePolicies<
       }
     } catch (err) {
       const denyResult = createDenyResult({
-        message: err instanceof Error ? err.message : 'Unknown error',
+        runtimeError: err instanceof Error ? err.message : 'Unknown error',
       });
       policyDeniedResult = { ...denyResult, packageName: policyPackageName };
     }
@@ -189,7 +189,7 @@ function parseAndValidateEvaluateResult<
     return returnNoResultDeny<EvalDenyResult>(
       err instanceof Error ? err.message : 'Unknown error',
     ) as unknown as EvalDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+      ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
       : PolicyResponseDenyNoResult;
   }
 }

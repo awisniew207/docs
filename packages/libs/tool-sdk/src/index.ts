@@ -24,6 +24,7 @@ export type {
   VincentTool,
   ToolConsumerContext,
   PolicyConsumerContext,
+  SchemaValidationError,
 } from './lib/types';
 
 export type { BaseToolContext } from './lib/toolCore/toolConfig/context/types';

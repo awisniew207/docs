@@ -2,7 +2,7 @@
 
 import type { z } from 'zod';
 
-import type { BaseToolContext } from '@lit-protocol/vincent-tool-sdk';
+import type { BaseToolContext, SchemaValidationError } from '@lit-protocol/vincent-tool-sdk';
 
 import type {
   ToolPrecheckResponseFailure,
@@ -62,7 +62,7 @@ export function createDenyPrecheckResult<PoliciesByPackageName extends Record<st
   },
   deniedPolicy: {
     packageName: keyof PoliciesByPackageName;
-    error?: string;
+    runtimeError?: string;
     result: PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
       precheckDenyResultSchema: infer Schema;
     }
@@ -87,7 +87,7 @@ export function createDenyPrecheckResult<PoliciesByPackageName extends Record<st
   };
   deniedPolicy: {
     packageName: keyof PoliciesByPackageName;
-    error?: string;
+    runtimeError?: string;
     result: PoliciesByPackageName[keyof PoliciesByPackageName]['__schemaTypes'] extends {
       precheckDenyResultSchema: infer Schema;
     }
@@ -132,14 +132,16 @@ export function createToolPrecheckResponseSuccessNoResult<
 }
 
 export function createToolPrecheckResponseFailure<Fail, Policies extends Record<any, any>>(params: {
+  runtimeError?: string;
+  schemaValidationError?: SchemaValidationError;
   result: Fail;
-  message?: string;
   context?: BaseToolContext<PolicyPrecheckResultContext<Policies>>;
 }): ToolPrecheckResponseFailure<Fail, Policies> {
   return {
     success: false,
+    schemaValidationError: params.schemaValidationError,
+    runtimeError: params.runtimeError,
     result: params.result,
-    error: params.message,
     context: params.context,
   };
 }
@@ -147,13 +149,15 @@ export function createToolPrecheckResponseFailure<Fail, Policies extends Record<
 export function createToolPrecheckResponseFailureNoResult<
   Policies extends Record<any, any>,
 >(params: {
-  message?: string;
+  runtimeError?: string;
+  schemaValidationError?: SchemaValidationError;
   context?: BaseToolContext<PolicyPrecheckResultContext<Policies>>;
 }): ToolPrecheckResponseFailureNoResult<Policies> {
   return {
     success: false,
+    runtimeError: params.runtimeError,
+    schemaValidationError: params.schemaValidationError,
     result: undefined,
-    error: params.message,
     context: params.context,
   };
 }

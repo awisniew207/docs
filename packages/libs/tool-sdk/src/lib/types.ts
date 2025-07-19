@@ -17,20 +17,24 @@ export interface PolicyResponseAllowNoResult {
   result?: never;
 }
 
-export interface ZodValidationDenyResult {
+export interface SchemaValidationError {
   zodError: ZodError<unknown>;
+  phase: string;
+  stage: string;
 }
 
 export interface PolicyResponseDeny<DenyResult> {
   allow: false;
   runtimeError?: string;
-  result: DenyResult | ZodValidationDenyResult;
+  result: DenyResult;
+  schemaValidationError?: SchemaValidationError;
 }
 
 export interface PolicyResponseDenyNoResult {
   allow: false;
   runtimeError?: string;
   result: never;
+  schemaValidationError?: SchemaValidationError;
 }
 
 export type PolicyResponse<
@@ -41,7 +45,7 @@ export type PolicyResponse<
       ? PolicyResponseAllow<z.infer<AllowResult>>
       : PolicyResponseAllowNoResult)
   | (DenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<DenyResult> | ZodValidationDenyResult>
+      ? PolicyResponseDeny<z.infer<DenyResult>>
       : PolicyResponseDenyNoResult);
 
 // Type for the wrapped commit function that handles both with and without args
@@ -65,7 +69,7 @@ export type PolicyLifecycleFunction<
       ? PolicyResponseAllow<z.infer<AllowResult>>
       : PolicyResponseAllowNoResult)
   | (DenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<DenyResult> | ZodValidationDenyResult>
+      ? PolicyResponseDeny<z.infer<DenyResult>>
       : PolicyResponseDenyNoResult)
 >;
 
@@ -116,7 +120,7 @@ export type CommitLifecycleFunction<
       ? PolicyResponseAllow<z.infer<CommitAllowResult>>
       : PolicyResponseAllowNoResult)
   | (CommitDenyResult extends z.ZodType
-      ? PolicyResponseDeny<z.infer<CommitDenyResult> | ZodValidationDenyResult>
+      ? PolicyResponseDeny<z.infer<CommitDenyResult>>
       : PolicyResponseDenyNoResult)
 >;
 
@@ -337,14 +341,16 @@ export interface ToolResultSuccessNoResult {
 
 export interface ToolResultFailure<FailResult = never> {
   success: false;
-  result: FailResult | ZodValidationDenyResult;
+  result: FailResult;
   runtimeError?: string;
+  schemaValidationError?: SchemaValidationError;
 }
 
 export interface ToolResultFailureNoResult {
   success: false;
   runtimeError?: string;
   result?: never;
+  schemaValidationError?: SchemaValidationError;
 }
 export type ToolResult<SucceedResult, FailResults> =
   | (ToolResultSuccess<SucceedResult> | ToolResultSuccessNoResult)
