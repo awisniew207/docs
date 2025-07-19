@@ -1,22 +1,21 @@
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { AlertTriangle, ArrowLeft, RefreshCw } from 'lucide-react';
-import { theme } from './ui/theme';
-import { ConsentAppHeader } from './ui/ConsentAppHeader';
-import { ConsentPageHeader } from './ui/ConsentPageHeader';
-import { InfoBanner } from './ui/InfoBanner';
-import { ActionCard } from './ui/ActionCard';
+import { theme } from '@/components/user-dashboard/consent/ui/theme';
+import { ConsentAppHeader } from '@/components/user-dashboard/consent/ui/ConsentAppHeader';
+import { InfoBanner } from '@/components/user-dashboard/consent/ui/InfoBanner';
+import { ActionCard } from '@/components/user-dashboard/consent/ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
-import { useSystemTheme } from '@/hooks/user-dashboard/consent/useSystemTheme';
+import { useTheme } from '@/providers/ThemeProvider';
 
-type AppNotInRegistryConsentProps = {
+type AppVersionNotInRegistryUpdateProps = {
   appData: App;
   readAuthInfo: UseReadAuthInfo;
 };
 
-export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegistryConsentProps) {
-  const { isDark, toggleTheme } = useSystemTheme();
+export function AppVersionNotInRegistryUpdate({ appData }: AppVersionNotInRegistryUpdateProps) {
+  const { isDark } = useTheme();
   const themeStyles = theme(isDark);
   const navigate = useNavigate();
 
@@ -35,14 +34,6 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
       <div
         className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
       >
-        {/* Header */}
-        <ConsentPageHeader
-          isDark={isDark}
-          onToggleTheme={toggleTheme}
-          theme={themeStyles}
-          authInfo={readAuthInfo.authInfo!}
-        />
-
         {/* Main Content */}
         <div className="px-6 py-8 space-y-6">
           {/* App Header */}
@@ -52,8 +43,8 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
           <InfoBanner
             theme={themeStyles}
             type="warning"
-            title="App Not Published"
-            message="This app is not yet published in the on-chain registry. The app developer needs to publish it before you can grant permissions."
+            title="App Version Not Published"
+            message={`The app's active version (${appData.activeVersion}) is not yet published in the on-chain registry. The app developer needs to publish this version before you can grant permissions.`}
           />
 
           {/* Info Card */}
@@ -68,10 +59,11 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                   </div>
                   <div>
                     <h2 className={`text-lg font-semibold ${themeStyles.text}`}>
-                      App Publication Required
+                      Version Publication Required
                     </h2>
                     <p className={`text-sm ${themeStyles.textMuted} mt-1`}>
-                      The app developer must publish this app before permissions can be granted.
+                      The app developer must publish version {appData.activeVersion} on-chain before
+                      permissions can be granted for this version.
                     </p>
                   </div>
                 </div>
@@ -83,8 +75,11 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                     What needs to happen:
                   </h3>
                   <ul className={`text-sm ${themeStyles.textMuted} space-y-1`}>
-                    <li>• The app developer must publish this app in the registry</li>
-                    <li>• Once published, you'll be able to grant permissions</li>
+                    <li>
+                      • The app developer must publish version {appData.activeVersion} in the
+                      on-chain registry
+                    </li>
+                    <li>• Once published, you'll be able to grant permissions for this version</li>
                     <li>• Contact the app developer if you need assistance</li>
                   </ul>
                 </div>
@@ -119,7 +114,7 @@ export function AppNotInRegistryConsent({ appData, readAuthInfo }: AppNotInRegis
                     icon={<RefreshCw className="w-4 h-4 text-green-500" />}
                     iconBg="bg-green-500/20"
                     title="Check Again"
-                    description="Refresh to check if the app has been published"
+                    description="Refresh to check if the version has been published"
                     onClick={handleRetry}
                   />
                 </div>

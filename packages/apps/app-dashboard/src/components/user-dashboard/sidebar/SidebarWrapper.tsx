@@ -1,11 +1,54 @@
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { Sidebar } from './Sidebar';
+import { AppSidebar } from './AppSidebar';
+import { SidebarSkeleton } from './SidebarSkeleton';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
+import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
+import { useSidebarData } from '@/hooks/user-dashboard/sidebar/useSidebarData';
+import { SidebarError } from './SidebarError';
 
 export function SidebarWrapper() {
-  const { data: apps, isLoading, isError, error } = vincentApiClient.useListAppsQuery();
+  const { authInfo, isProcessing, error } = useReadAuthInfo();
+  const pkpTokenId = authInfo?.agentPKP?.tokenId || '';
 
-  if (isError) return <StatusMessage message={String(error)} type="error" />;
+  // Early return if required params are missing
+  if (!pkpTokenId && !isProcessing) {
+    return <SidebarSkeleton />;
+  }
 
-  return <Sidebar apps={apps || []} isLoadingApps={isLoading} />;
+  // Show skeleton while auth is processing
+  if (isProcessing) {
+    return <SidebarSkeleton />;
+  }
+
+  // Handle auth errors
+  if (error) {
+    return <StatusMessage message="Authentication failed" type="error" />;
+  }
+
+  // Now we have stable pkpTokenId, so we can call the consolidated hook
+  return <SidebarWithData pkpTokenId={pkpTokenId} />;
+}
+
+function SidebarWithData({ pkpTokenId }: { pkpTokenId: string }) {
+  const { apps, permittedAppVersions, appVersionsMap, isLoading, error } = useSidebarData({
+    pkpTokenId,
+  });
+
+  // Show skeleton while data is loading
+  if (isLoading) {
+    return <SidebarSkeleton />;
+  }
+
+  // Handle errors
+  if (error) {
+    return <SidebarError error={error || 'An error has occurred'} />;
+  }
+
+  return (
+    <AppSidebar
+      apps={apps}
+      permittedAppVersions={permittedAppVersions}
+      appVersionsMap={appVersionsMap}
+      isLoadingApps={isLoading}
+    />
+  );
 }

@@ -1,10 +1,12 @@
 import { Outlet, RouteObject } from 'react-router';
 import AppLayout from '@/layout/developer-dashboard/AppLayout';
-import UserLayout from '@/layout/user-dashboard/UserLayout';
+import UserDashboardLayout from '@/layout/user-dashboard/UserDashboardLayout';
+import UserLayoutWithSidebar from '@/layout/user-dashboard/UserLayoutWithSidebar';
 import { AppProviders, UserProviders } from './providers';
 import { wrap } from '@/utils/shared/components';
 
 import { ConnectWallet, Dashboard } from './pages/developer-dashboard';
+import RootPage from './pages/shared/RootPage';
 
 import {
   AppsWrapper,
@@ -50,20 +52,31 @@ import {
   DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
-import { Home, Wallet, Apps, UserDashboard } from './pages/user-dashboard';
+import { Wallet } from './pages/user-dashboard/wallet';
+import { UserPermissionWrapper } from './components/user-dashboard/dashboard/UserPermissionWrapper';
 import { ConsentPageWrapper } from './components/user-dashboard/consent/ConsentPageWraper';
+import { PermittedAppsWrapper } from './components/user-dashboard/dashboard/PermittedAppsWrapper';
+import { UpdateVersionPageWrapper } from './components/user-dashboard/dashboard/UpdateVersionPageWrapper';
+import { HomeWrapper } from './components/user-dashboard/dashboard/HomeWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
-const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
+const UserDashboardLayoutWithProviders = wrap(
+  () => <Outlet />,
+  [...UserProviders, UserDashboardLayout],
+);
+const UserLayoutWithSidebarAndProviders = wrap(
+  () => <Outlet />,
+  [...UserProviders, UserLayoutWithSidebar],
+);
 
 const routes: RouteObject[] = [
   {
+    path: '/',
+    element: <RootPage />,
+  },
+  {
     element: <AppLayoutWithProviders />,
     children: [
-      {
-        path: '/',
-        element: <Dashboard />,
-      },
       {
         path: '/developer',
         element: <ConnectWallet />,
@@ -221,31 +234,40 @@ const routes: RouteObject[] = [
     ],
   },
   {
-    element: <UserLayoutWithProviders />,
+    element: <UserDashboardLayoutWithProviders />,
     children: [
       {
         path: '/user',
-        element: <Home />,
+        element: <HomeWrapper />,
       },
+      {
+        path: '/user/consent/appId/:appId',
+        element: <ConsentPageWrapper />,
+      },
+    ],
+  },
+  {
+    element: <UserLayoutWithSidebarAndProviders />,
+    children: [
       {
         path: '/user/*',
         element: <Outlet />,
         children: [
           {
-            path: 'dashboard',
-            element: <UserDashboard />,
+            path: 'appId/:appId',
+            element: <UserPermissionWrapper />,
+          },
+          {
+            path: 'appId/:appId/update-version',
+            element: <UpdateVersionPageWrapper />,
           },
           {
             path: 'apps',
-            element: <Apps />,
+            element: <PermittedAppsWrapper />,
           },
           {
             path: 'wallet',
             element: <Wallet />,
-          },
-          {
-            path: 'consent/appId/:appId',
-            element: <ConsentPageWrapper />,
           },
         ],
       },
