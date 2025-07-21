@@ -1,11 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 
-import { getAppVersion } from '@lit-protocol/vincent-contracts-sdk';
-
 import type { RequestWithAppAndVersion } from './requireAppVersion';
 
 import { createDebugger } from '../../../../debug';
-import { ethersSigner } from '../../ethersSigner';
+import { getContractClient } from '../../contractClient';
 
 // Create a debug instance for this middleware
 const debug = createDebugger('requireAppVersionNotOnChain');
@@ -39,12 +37,9 @@ export const requireAppVersionNotOnChain = () => {
     debug('Checking if app version exists on-chain', { appId, version });
 
     // Try to get the app version from the blockchain
-    const result = await getAppVersion({
-      signer: ethersSigner,
-      args: {
-        appId: appId,
-        version: version,
-      },
+    const result = await getContractClient().getAppVersion({
+      appId: appId,
+      version: version,
     });
 
     if (result) {
