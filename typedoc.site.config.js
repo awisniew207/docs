@@ -12,6 +12,7 @@ module.exports = {
   $schema: 'https://typedoc.org/schema.json',
   readme: './docs/src/Why-Vincent.md',
   projectDocuments: [
+    'docs/src/Users/Introduction.md',
     'docs/src/Concepts.md',
     'docs/src/Developers/Getting-Started.md',
     'docs/src/Developers/App-Agent-Developers/Getting-Started.md',
@@ -27,7 +28,6 @@ module.exports = {
     'docs/src/Developers/Policy-Developers/Creating-Policies.md',
     'docs/src/Users/Onboarding.md',
     'docs/src/Contact-Us.md',
-    'docs/src/Users/Introduction.md',
   ],
   categoryOrder: ['Developers', 'Users', 'Contact', 'Packages'],
   entryPointStrategy: 'merge',

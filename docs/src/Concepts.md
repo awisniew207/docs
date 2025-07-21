@@ -6,23 +6,23 @@ title: Key Concepts
 # Key Concepts
 Understanding the key concepts will help you make the most of the Vincent platform. 
 
-## Tools
+## 🔨 Tools
 Tools give Vincent apps and agents the ability to perform specific actions on your behalf, like swapping tokens, depositing into DeFi protocols, or bridging. Think of them as the individual capabilities that you can grant to applications and agents.
 
 Each tool is designed with built-in safeguards and can only perform the exact operation it was created for. For example, a Uniswap swap tool can only execute token swaps on Uniswap, it can't access other protocols or perform different types of transactions. Tools can work across multiple blockchains and incorporate real-world data to make smart decisions about when and how to execute any given operation.
 
-## Policies
+## 🛡️ Policies
 Policies are your personal guardrails that control when and how a given tool can be executed. They act as programmable rules that must be satisfied before any action can be taken on your behalf.
 Examples of policies include daily spending limits, specific token allowlists, time-based restrictions, or even more complex conditions that factor in market data.
 
 For example, you might use a policy to only allow trading when market volatility is below a certain threshold, or one that pauses all operations during specific market conditions. Policies give you complete control over how Vincent apps and agents operate on your behalf to ensure your assets stay protected according to your preferences.
 
-## Apps
+## 📱 Apps
 Apps are collections of tools and policies that work together to provide complete functionality for a given use case. When you authorize an app, you're giving it permission to use specific tools according to the boundaries you've set through your policies.
 
 Apps can only execute the exact tools you've approved, nothing more, nothing less. Each app clearly shows which tools and policies it needs and why, so you always know what you're authorizing before you grant access.
 
-## Vincent Account
+## 🔐 Vincent Account
 Your account is your secure, multi-chain wallet that facilitates all Vincent-based interactions. Each Agent Wallet is represented by a [Programmable Key Pair (PKP)](https://developer.litprotocol.com/user-wallets/pkps/overview), a decentralized key pair managed by the Lit network.
 
 When you interact with a given Vincent app or agent, it will prompt you to delegate signing capabilities from your Agent Wallet to specific Vincent tools. By delegating these signing capabilities, you enable the Vincent App to execute specific operations on your behalf within the guardrails you define using Vincent policies. 
