@@ -30,6 +30,10 @@ const SpendingLimitPolicy = createVincentToolPolicy({
   },
 });
 
+export const bigintReplacer = (key: any, value: any) => {
+  return typeof value === 'bigint' ? value.toString() : value;
+};
+
 export const vincentTool = createVincentTool({
   packageName: '@lit-protocol/vincent-tool-uniswap-swap' as const,
   toolDescription: 'Performs a swap between two ERC20 tokens using Uniswap' as const,
@@ -51,7 +55,7 @@ export const vincentTool = createVincentTool({
       tokenOutDecimals,
     } = toolParams;
 
-    console.log('Prechecking UniswapSwapTool', toolParams);
+    console.log('Prechecking UniswapSwapTool', JSON.stringify(toolParams, bigintReplacer));
     const delegatorPkpAddress = delegatorPkpInfo.ethAddress;
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrlForUniswap);
@@ -105,7 +109,7 @@ export const vincentTool = createVincentTool({
     { toolParams },
     { succeed, policiesContext, delegation: { delegatorPkpInfo } },
   ) => {
-    console.log('Executing UniswapSwapTool', JSON.stringify(toolParams, null, 2));
+    console.log('Executing UniswapSwapTool', JSON.stringify(toolParams, bigintReplacer, 2));
 
     const { ethAddress: delegatorPkpAddress, publicKey: delegatorPublicKey } = delegatorPkpInfo;
     const {
@@ -137,12 +141,20 @@ export const vincentTool = createVincentTool({
       });
 
       const { maxSpendingLimitInUsd } = spendingLimitPolicyContext.result;
+
+      console.log(
+        'Spending limit policy commit',
+        JSON.stringify(spendingLimitPolicyContext, bigintReplacer, 2),
+      );
       const commitResult = await spendingLimitPolicyContext.commit({
         amountSpentUsd: tokenInAmountInUsd.toNumber(),
         maxSpendingLimitInUsd,
       });
 
-      console.log('Spending limit policy commit result', JSON.stringify(commitResult));
+      console.log(
+        'Spending limit policy commit result',
+        JSON.stringify(commitResult, bigintReplacer, 2),
+      );
       if (commitResult.allow) {
         spendTxHash = commitResult.result.spendTxHash;
       } else {

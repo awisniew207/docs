@@ -10,6 +10,7 @@ import type {
   VincentTool,
 } from '../types';
 import type { ToolPolicyMap } from './helpers';
+import type { ToolContext } from './toolConfig/context/types';
 import type { ToolConfigLifecycleFunction, VincentToolConfig } from './toolConfig/types';
 
 import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
@@ -124,10 +125,12 @@ export function createVincentTool<
     ExecuteFailSchema
   > = async ({ toolParams }, baseToolContext) => {
     try {
-      const context = createExecutionToolContext({
+      const context: ToolContext<
+        ExecuteSuccessSchema,
+        ExecuteFailSchema,
+        ToolExecutionPolicyContext<PolicyMapByPackageName>
+      > = createExecutionToolContext({
         baseContext: baseToolContext,
-        successSchema: ToolConfig.executeSuccessSchema,
-        failSchema: ToolConfig.executeFailSchema,
         policiesByPackageName: policyByPackageName as PolicyMapByPackageName,
       });
 
@@ -184,10 +187,12 @@ export function createVincentTool<
   const precheck = precheckFn
     ? ((async ({ toolParams }, baseToolContext) => {
         try {
-          const context = createPrecheckToolContext({
+          const context: ToolContext<
+            PrecheckSuccessSchema,
+            PrecheckFailSchema,
+            PolicyEvaluationResultContext<PolicyMapByPackageName>
+          > = createPrecheckToolContext({
             baseContext: baseToolContext,
-            successSchema: ToolConfig.precheckSuccessSchema,
-            failSchema: ToolConfig.precheckFailSchema,
           });
 
           const parsedToolParams = validateOrFail(

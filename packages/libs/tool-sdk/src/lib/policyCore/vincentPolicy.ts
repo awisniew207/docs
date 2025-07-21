@@ -13,6 +13,7 @@ import type {
   SchemaValidationError,
 } from '../types';
 import type { BundledVincentPolicy } from './bundledPolicy/types';
+import type { PolicyContext } from './policyConfig/context/types';
 import type {
   PolicyConfigCommitFunction,
   PolicyConfigLifecycleFunction,
@@ -20,6 +21,7 @@ import type {
 } from './policyConfig/types';
 
 import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
+import { bigintReplacer } from '../utils';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
@@ -99,10 +101,8 @@ export function createVincentPolicy<
     EvalDenyResult
   > = async (args, baseContext) => {
     try {
-      const context = createPolicyContext({
+      const context: PolicyContext<EvalAllowResult, EvalDenyResult> = createPolicyContext({
         baseContext,
-        allowSchema: PolicyConfig.evalAllowResultSchema,
-        denySchema: PolicyConfig.evalDenyResultSchema,
       });
 
       const paramsOrDeny = getValidatedParamsOrDeny({
@@ -170,11 +170,10 @@ export function createVincentPolicy<
   const precheck = PolicyConfig.precheck
     ? ((async (args, baseContext) => {
         try {
-          const context = createPolicyContext({
-            baseContext,
-            allowSchema: PolicyConfig.precheckAllowResultSchema,
-            denySchema: PolicyConfig.precheckDenyResultSchema,
-          });
+          const context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult> =
+            createPolicyContext({
+              baseContext,
+            });
 
           const { precheck: precheckFn } = PolicyConfig;
 
@@ -240,10 +239,8 @@ export function createVincentPolicy<
   const commit = PolicyConfig.commit
     ? ((async (args, baseContext) => {
         try {
-          const context = createPolicyContext({
+          const context: PolicyContext<CommitAllowResult, CommitDenyResult> = createPolicyContext({
             baseContext,
-            denySchema: PolicyConfig.commitDenyResultSchema,
-            allowSchema: PolicyConfig.commitAllowResultSchema,
           });
 
           const { commit: commitFn } = PolicyConfig;
@@ -252,6 +249,7 @@ export function createVincentPolicy<
             throw new Error('commit function unexpectedly missing');
           }
 
+          console.log('commit', JSON.stringify({ args, context }, bigintReplacer, 2));
           const paramsOrDeny = validateOrDeny(args, commitParamsSchema, 'commit', 'input');
 
           if (isPolicyDenyResponse(paramsOrDeny)) {

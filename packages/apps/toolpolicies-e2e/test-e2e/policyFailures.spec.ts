@@ -250,7 +250,7 @@ describe('VincentToolClient policy failure tests', () => {
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.error).toBeDefined();
+          expect(deniedPolicy.runtimeError).toBeDefined();
         }
       });
     });
@@ -293,7 +293,7 @@ describe('VincentToolClient policy failure tests', () => {
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.error).toBeDefined();
+          expect(deniedPolicy.runtimeError).toBeDefined();
         }
       });
     });
@@ -339,7 +339,7 @@ describe('VincentToolClient policy failure tests', () => {
         );
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.error).toBeDefined();
+          expect(deniedPolicy.runtimeError).toBeDefined();
         }
       });
     });
@@ -391,7 +391,7 @@ describe('VincentToolClient policy failure tests', () => {
 
         if (result.context?.policiesContext?.allow === false) {
           const deniedPolicy = result.context?.policiesContext?.deniedPolicy;
-          expect(deniedPolicy.error).toBeDefined();
+          expect(deniedPolicy.runtimeError).toBeDefined();
         }
       });
     });

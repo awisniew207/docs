@@ -208,6 +208,7 @@ export type PolicyEvaluationResultContext<
       allow: false;
       deniedPolicy: {
         runtimeError?: string;
+        schemaValidationError?: SchemaValidationError;
         packageName: keyof Policies;
         result: Policies[Extract<keyof Policies, string>]['__schemaTypes'] extends {
           evalDenyResultSchema: infer Schema;

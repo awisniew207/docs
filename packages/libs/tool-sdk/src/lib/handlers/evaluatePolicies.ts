@@ -19,10 +19,12 @@ import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
   isPolicyDenyResponse,
+  isPolicyResponse,
   validateOrDeny,
 } from '../policyCore/helpers';
 import {
   createAllowEvaluationResult,
+  createAllowResult,
   createDenyEvaluationResult,
   returnNoResultDeny,
 } from '../policyCore/helpers/resultCreators';
@@ -101,7 +103,7 @@ export async function evaluatePolicies<
         };
       } else {
         rawAllowedPolicies[policyPackageName] = {
-          result,
+          result: result.result as typeof policy.vincentPolicy.evalAllowResultSchema,
         };
       }
     } catch (err) {
@@ -172,6 +174,10 @@ function parseAndValidateEvaluateResult<
       return parsedLitActionResponse as PolicyResponse<EvalAllowResult, EvalDenyResult>;
     }
 
+    if (!isPolicyResponse(parsedLitActionResponse)) {
+      throw new Error(`Invalid response from policy: ${JSON.stringify(parsedLitActionResponse)}`);
+    }
+
     const { schemaToUse, parsedType } = getSchemaForPolicyResponseResult({
       value: parsedLitActionResponse,
       denyResultSchema: vincentPolicy.evalDenyResultSchema || z.undefined(),
@@ -179,12 +185,30 @@ function parseAndValidateEvaluateResult<
     });
 
     console.log('parsedType', parsedType);
-    return validateOrDeny(
+
+    const parsedResult = validateOrDeny(
       (parsedLitActionResponse as PolicyResponse<any, any>).result,
       schemaToUse,
       'evaluate',
       'output',
     ) as PolicyResponse<EvalAllowResult, EvalDenyResult>;
+
+    if (isPolicyDenyResponse(parsedResult)) {
+      // Failed schema parsing!
+      return parsedResult;
+    }
+
+    if (isPolicyDenyResponse(parsedLitActionResponse)) {
+      return createDenyResult({
+        runtimeError: parsedLitActionResponse.runtimeError,
+        schemaValidationError: parsedLitActionResponse.schemaValidationError,
+        result: parsedResult,
+      }) as PolicyResponse<EvalAllowResult, EvalDenyResult>;
+    }
+
+    return createAllowResult({
+      result: parsedResult,
+    }) as PolicyResponse<EvalAllowResult, EvalDenyResult>;
   } catch (err) {
     console.log(
       'parseAndValidateEvaluateResult error; returning noResultDeny',

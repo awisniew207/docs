@@ -53,6 +53,7 @@ export type ToolExecuteResponse<
       ? ToolExecuteResponseFailure<z.infer<FailSchema>, Policies>
       : ToolExecuteResponseFailureNoResult<Policies>);
 
+/** @hidden */
 export interface RemoteVincentToolExecutionResult<
   SuccessSchema extends z.ZodType | undefined,
   FailSchema extends z.ZodType | undefined,
