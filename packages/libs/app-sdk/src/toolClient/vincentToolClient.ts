@@ -437,6 +437,9 @@ export function getVincentToolClient<
       if (isToolResponseFailure(executionResult)) {
         return createToolExecuteResponseFailure({
           ...(executionResult.runtimeError ? { runtimeError: executionResult.runtimeError } : {}),
+          ...(executionResult.schemaValidationError
+            ? { schemaValidationError: executionResult.schemaValidationError }
+            : {}),
           result: executeResult,
           context: resp.toolContext,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
