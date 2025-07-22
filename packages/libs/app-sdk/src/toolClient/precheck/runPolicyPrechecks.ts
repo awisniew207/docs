@@ -142,7 +142,7 @@ export async function runToolPolicyPrechecks<
         context
       );
 
-      console.log('vincentPolicy.precheck() result', JSON.stringify(result, bigintReplacer));
+      console.log('vincentPolicy.precheck() result', JSON.stringify(result, bigintReplacer, 2));
 
       // precheck() might have thrown a runtimeError or failed to parse the input
       if ((isPolicyDenyResponse(result) && result.runtimeError) || result.schemaValidationError) {
