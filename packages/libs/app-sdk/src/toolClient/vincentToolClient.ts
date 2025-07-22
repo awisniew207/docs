@@ -32,12 +32,70 @@ import {
   createToolPrecheckResponseSuccessNoResult,
 } from './precheck/resultCreators';
 import { runToolPolicyPrechecks } from './precheck/runPolicyPrechecks';
-import { isRemoteVincentToolExecutionResult, isToolResponseFailure } from './typeGuards';
+import {
+  isRemoteVincentToolExecutionResult,
+  isToolResponseFailure,
+  isToolResponseRuntimeFailure,
+  isToolResponseSchemaValidationFailure,
+} from './typeGuards';
 
 const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
 
+const bigintReplacer = (key: any, value: any) => {
+  return typeof value === 'bigint' ? value.toString() : value;
+};
+
 /** A VincentToolClient provides a type-safe interface for executing tools, for both `precheck()`
  * and `execute()` functionality.
+ *
+ * ```typescript
+ * import { vincentToolClient } from '@lit-protocol/vincent-app-sdk';
+ * import { bundledVincentTool as uniswapBundledTool } from '@lit-protocol/vincent-tool-uniswap-swap';
+ * import { delegateeEthersSigner } = from './ethersSigner';
+ * import { ETH_RPC_URL, BASE_RPC_URL } from './rpcConfigs';
+ *
+ * const { disconnectVincentToolClients, getVincentToolClient, isToolResponseFailure } = vincentToolClient;
+ *
+ * const uniswapToolClient = getVincentToolClient({
+ *     bundledVincentTool: uniswapBundledTool,
+ *     ethersSigner: delegateeEthersSigner,
+ *   });
+ *
+ * // First, call `precheck()` to get a best-estimate result indicating that the tool execution in the LIT action runtime will not fail
+ * const precheckResult = await uniswapSwapToolClient.precheck({
+ *     ethRpcUrl: ETH_RPC_URL,
+ *     rpcUrlForUniswap: BASE_RPC_URL,
+ *     chainIdForUniswap: 8453, // Base
+ *     tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
+ *     tokenInDecimals: 18,
+ *     tokenInAmount: 0.0000077,
+ *     tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+ *     tokenOutDecimals: 8,
+ *   },
+ *   {
+ *     delegatorPkpEthAddress: '0x123456789123456789123456789...',
+ *   });
+ *
+ * const uniswapSwapExecutionResult = await uniswapSwapToolClient.execute({
+ *   ethRpcUrl: ETH_RPC_URL,
+ *   rpcUrlForUniswap: BASE_RPC_URL,
+ *   chainIdForUniswap: 8453,
+ *   tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH
+ *   tokenInDecimals: 18,
+ *   tokenInAmount: 0.0000077,
+ *   tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+ *   tokenOutDecimals: 8,
+ * },
+ * {
+ *   delegatorPkpEthAddress: '0x123456789123456789123456789...',
+ * });
+ *
+ * if(isToolResponseFailure(uniswapSwapExecutionResult)) {
+ *   ...handle failure
+ * } else {
+ *  ...handle result
+ * }
+ * ```
  *
  * @typeParam IpfsCid {@removeTypeParameterCompletely}
  * @typeParam ToolParamsSchema {@removeTypeParameterCompletely}
@@ -52,7 +110,7 @@ const YELLOWSTONE_RPC_URL = 'https://yellowstone-rpc.litprotocol.com/';
  * @param params
  * @param {ethers.Signer} params.ethersSigner  - An ethers signer that has been configured with your delegatee key
  *
- * @category API Methods
+ * @category API
  * */
 export function getVincentToolClient<
   const IpfsCid extends string,
@@ -130,7 +188,7 @@ export function getVincentToolClient<
       const parsedParams = validateOrFail(
         rawToolParams,
         vincentTool.toolParamsSchema,
-        'execute',
+        'precheck',
         'input'
       );
 
@@ -207,7 +265,31 @@ export function getVincentToolClient<
         baseToolContext
       );
 
-      console.log('precheckResult()', JSON.stringify(precheckResult));
+      if (
+        isToolResponseSchemaValidationFailure(precheckResult) ||
+        isToolResponseRuntimeFailure(precheckResult)
+      ) {
+        console.log(
+          'Detected runtime or schema validation error in toolPrecheckResult - returning as-is:',
+          JSON.stringify(
+            {
+              isToolResponseRuntimeFailure: isToolResponseRuntimeFailure(precheckResult),
+              isToolResponseSchemaValidationFailure:
+                isToolResponseSchemaValidationFailure(precheckResult),
+              precheckResult,
+            },
+            bigintReplacer
+          )
+        );
+        // Runtime errors and schema validation errors will not have results; return them as-is.
+        return precheckResult as ToolPrecheckResponse<
+          PrecheckSuccessSchema,
+          PrecheckFailSchema,
+          PoliciesByPackageName
+        >;
+      }
+
+      console.log('precheckResult()', JSON.stringify(precheckResult, bigintReplacer));
       return {
         ...precheckResult,
         context: baseToolContext,
@@ -255,7 +337,7 @@ export function getVincentToolClient<
 
       if (success !== true) {
         return createToolExecuteResponseFailureNoResult({
-          message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+          runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(response, bigintReplacer, 2)}`,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
@@ -268,7 +350,7 @@ export function getVincentToolClient<
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
           return createToolExecuteResponseFailureNoResult({
-            message: `Remote tool failed with unknown error: ${JSON.stringify(response)}`,
+            runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(response, bigintReplacer)}`,
           }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
         }
       }
@@ -280,7 +362,7 @@ export function getVincentToolClient<
         );
 
         return createToolExecuteResponseFailureNoResult({
-          message: `Remote tool failed with unknown error: ${JSON.stringify(parsedResult)}`,
+          runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(parsedResult, bigintReplacer)}`,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
@@ -290,8 +372,36 @@ export function getVincentToolClient<
         PoliciesByPackageName
       > = parsedResult;
 
-      console.log('Parsed executeJs vincentToolExecutionResult:', { parsedResult });
+      console.log(
+        'Parsed executeJs vincentToolExecutionResult:',
+        JSON.stringify(parsedResult, bigintReplacer)
+      );
       const executionResult = resp.toolExecutionResult;
+
+      if (
+        isToolResponseSchemaValidationFailure(executionResult) ||
+        isToolResponseRuntimeFailure(executionResult)
+      ) {
+        console.log(
+          'Detected runtime or schema validation error in toolExecutionResult - returning as-is:',
+          JSON.stringify(
+            {
+              isToolResponseRuntimeFailure: isToolResponseRuntimeFailure(executionResult),
+              isToolResponseSchemaValidationFailure:
+                isToolResponseSchemaValidationFailure(executionResult),
+              executionResult,
+            },
+            bigintReplacer
+          )
+        );
+        // Runtime errors and schema validation errors will not have results; return them as-is.
+        return executionResult as ToolExecuteResponse<
+          ExecuteSuccessSchema,
+          ExecuteFailSchema,
+          PoliciesByPackageName
+        >;
+      }
+
       const resultSchemaDetails = getSchemaForToolResult({
         value: executionResult,
         successResultSchema: executeSuccessSchema,
@@ -326,7 +436,10 @@ export function getVincentToolClient<
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isToolResponseFailure(executionResult)) {
         return createToolExecuteResponseFailure({
-          ...(executionResult.error ? { message: executionResult.error } : {}),
+          ...(executionResult.runtimeError ? { runtimeError: executionResult.runtimeError } : {}),
+          ...(executionResult.schemaValidationError
+            ? { schemaValidationError: executionResult.schemaValidationError }
+            : {}),
           result: executeResult,
           context: resp.toolContext,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;

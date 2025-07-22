@@ -121,7 +121,7 @@ export async function vincentPolicyHandler<
     Lit.Actions.setResponse({
       response: JSON.stringify(
         createDenyResult({
-          message: error instanceof Error ? error.message : String(error),
+          runtimeError: error instanceof Error ? error.message : String(error),
         }),
       ),
     });

@@ -260,7 +260,7 @@ export const vincentToolHandler = <
           } as BaseToolContext<typeof policyEvalResults>,
           toolExecutionResult: {
             success: false,
-            error: err instanceof Error ? err.message : String(err),
+            runtimeError: err instanceof Error ? err.message : String(err),
           },
         }),
       });

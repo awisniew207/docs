@@ -7,10 +7,10 @@ import type {
   PolicyResponse,
   PolicyResponseAllow,
   PolicyResponseDeny,
-  ZodValidationDenyResult,
+  SchemaValidationError,
 } from '../../types';
 
-export function isZodValidationDenyResult(result: unknown): result is ZodValidationDenyResult {
+export function isZodValidationDenyResult(result: unknown): result is SchemaValidationError {
   return typeof result === 'object' && result !== null && 'zodError' in result;
 }
 

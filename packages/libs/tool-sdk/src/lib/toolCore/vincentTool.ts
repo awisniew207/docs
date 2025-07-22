@@ -10,6 +10,7 @@ import type {
   VincentTool,
 } from '../types';
 import type { ToolPolicyMap } from './helpers';
+import type { ToolContext } from './toolConfig/context/types';
 import type { ToolConfigLifecycleFunction, VincentToolConfig } from './toolConfig/types';
 
 import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
@@ -124,10 +125,12 @@ export function createVincentTool<
     ExecuteFailSchema
   > = async ({ toolParams }, baseToolContext) => {
     try {
-      const context = createExecutionToolContext({
+      const context: ToolContext<
+        ExecuteSuccessSchema,
+        ExecuteFailSchema,
+        ToolExecutionPolicyContext<PolicyMapByPackageName>
+      > = createExecutionToolContext({
         baseContext: baseToolContext,
-        successSchema: ToolConfig.executeSuccessSchema,
-        failSchema: ToolConfig.executeFailSchema,
         policiesByPackageName: policyByPackageName as PolicyMapByPackageName,
       });
 
@@ -139,6 +142,7 @@ export function createVincentTool<
       );
 
       if (isToolFailureResult(parsedToolParams)) {
+        // In this case, we have an invalid input to the tool -- return { success: fail, runtimeError, schemaValidationError }
         return parsedToolParams;
       }
 
@@ -166,7 +170,7 @@ export function createVincentTool<
 
       // We parsed the result -- it may be a success or a failure; return appropriately.
       if (isToolFailureResult(result)) {
-        return wrapFailure(resultOrFailure, result.error);
+        return wrapFailure(resultOrFailure);
       }
 
       return wrapSuccess(resultOrFailure);
@@ -183,10 +187,12 @@ export function createVincentTool<
   const precheck = precheckFn
     ? ((async ({ toolParams }, baseToolContext) => {
         try {
-          const context = createPrecheckToolContext({
+          const context: ToolContext<
+            PrecheckSuccessSchema,
+            PrecheckFailSchema,
+            PolicyEvaluationResultContext<PolicyMapByPackageName>
+          > = createPrecheckToolContext({
             baseContext: baseToolContext,
-            successSchema: ToolConfig.precheckSuccessSchema,
-            failSchema: ToolConfig.precheckFailSchema,
           });
 
           const parsedToolParams = validateOrFail(
@@ -217,7 +223,7 @@ export function createVincentTool<
 
           // We parsed the result successfully -- it may be a success or a failure, return appropriately
           if (isToolFailureResult(result)) {
-            return wrapFailure(resultOrFailure, result.error);
+            return wrapFailure(resultOrFailure, result.runtimeError);
           }
 
           return wrapSuccess(resultOrFailure);

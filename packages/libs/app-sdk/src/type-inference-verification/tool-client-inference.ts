@@ -119,7 +119,7 @@ export async function run() {
     console.log(fail.reason);
 
     // Can still access error message
-    precheckResult.error?.toUpperCase();
+    precheckResult.runtimeError?.toUpperCase();
 
     // Should still be optional policiesContext
     const deniedPolicy = precheckResult.context?.policiesContext?.deniedPolicy;

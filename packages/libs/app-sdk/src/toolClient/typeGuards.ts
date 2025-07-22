@@ -9,9 +9,7 @@ import type {
   ToolExecuteResponseSuccessNoResult,
 } from './execute/types';
 
-/**
- * Runtime type guard for ToolResponse success result.
- */
+/** @category API */
 export function isToolResponseSuccess(
   value: unknown
 ): value is
@@ -25,9 +23,7 @@ export function isToolResponseSuccess(
   );
 }
 
-/**
- * Runtime type guard for ToolResponse failure result.
- */
+/** @category API */
 export function isToolResponseFailure(
   value: unknown
 ): value is
@@ -41,9 +37,26 @@ export function isToolResponseFailure(
   );
 }
 
-/**
- * General ToolResponse shape check (success or failure).
- */
+/** @category API */
+export function isToolResponseRuntimeFailure(
+  value: unknown
+): value is ToolExecuteResponseFailureNoResult<Record<string, any>> {
+  if (!isToolResponseFailure(value)) return false;
+
+  return 'runtimeError' in value && typeof (value as any).runtimeError === 'string';
+}
+
+/** @category API */
+export function isToolResponseSchemaValidationFailure(
+  value: unknown
+): value is ToolExecuteResponseFailureNoResult<Record<string, any>> {
+  if (!isToolResponseFailure(value)) return false;
+  return (
+    'schemaValidationError' in value && typeof (value as any).schemaValidationError === 'object'
+  );
+}
+
+/** @hidden */
 export function isToolResponse(
   value: unknown
 ): value is ToolExecuteResponse<any, any, Record<string, any>> {
@@ -55,10 +68,7 @@ export function isToolResponse(
   );
 }
 
-/**
- * Runtime type guard for RemoteVincentToolExecutionResult.
- * Checks if a value has the shape of a RemoteVincentToolExecutionResult.
- */
+/** @hidden */
 export function isRemoteVincentToolExecutionResult(
   value: unknown
 ): value is RemoteVincentToolExecutionResult<any, any, Record<any, any>> {
