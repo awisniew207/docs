@@ -337,7 +337,7 @@ export function getVincentToolClient<
 
       if (success !== true) {
         return createToolExecuteResponseFailureNoResult({
-          runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(response, bigintReplacer)}`,
+          runtimeError: `Remote tool failed with unknown error: ${JSON.stringify(response, bigintReplacer, 2)}`,
         }) as ToolExecuteResponse<ExecuteSuccessSchema, ExecuteFailSchema, PoliciesByPackageName>;
       }
 
