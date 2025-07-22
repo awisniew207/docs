@@ -63,7 +63,7 @@ export const vincentTool = createVincentTool({
       tokenOutDecimals,
     } = toolParams;
 
-    console.log('Prechecking UniswapSwapTool', JSON.stringify(toolParams, bigintReplacer));
+    console.log('Prechecking UniswapSwapTool', JSON.stringify(toolParams, bigintReplacer, 2));
     const delegatorPkpAddress = delegatorPkpInfo.ethAddress;
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrlForUniswap);
