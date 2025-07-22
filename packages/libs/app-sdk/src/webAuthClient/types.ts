@@ -15,7 +15,7 @@ export interface RedirectToVincentDelegationPageParams {
 /**
  * The Vincent Web Application Client is used in web apps to handle interactions with the Vincent app portal.
  *
- * - Delegation authorizxation page redirection
+ * - Delegation authorization page redirection
  * - Authentication helpers that are browser specific
  *
  */
