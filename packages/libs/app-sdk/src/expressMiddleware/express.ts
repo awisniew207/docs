@@ -63,7 +63,7 @@ function assertAuthenticatedRequest<const UserKey extends string>(
  *     const appInfo = req.vincentUser.decodedJWT.payload.app;
  *
  *     if(appInfo) {
- *       res.json({ message: `Hello, user with PKP address ${pkpAddress}. You are authenticated for app ${appId} @ v${appVersion}` });
+ *       res.json({ message: `Hello, user with PKP address ${pkpAddress}. You are authenticated for app ${appInfo.id} @ v${appInfo.version}` });
  *       return;
  *     }
  *
