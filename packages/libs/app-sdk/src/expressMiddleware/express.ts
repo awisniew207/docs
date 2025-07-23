@@ -79,7 +79,7 @@ function assertAuthenticatedRequest<const UserKey extends string>(
 export function createVincentUserMiddleware<const UserKey extends string>(config: {
   allowedAudience: string;
   userKey: UserKey;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
 }) {
   return {
     middleware: getAuthenticateUserExpressHandler(config),
@@ -107,7 +107,7 @@ function getAuthenticateUserExpressHandler<const UserKey extends string>({
   userKey,
 }: {
   allowedAudience: string;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
   userKey: UserKey;
 }) {
   return async (req: Request, res: Response, next: NextFunction) => {

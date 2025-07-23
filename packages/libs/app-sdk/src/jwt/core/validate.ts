@@ -13,19 +13,11 @@ import { processJWTSignature, splitJWT, validateJWTTime } from './utils';
 export function verify({
   jwt,
   expectedAudience,
-}: {
-  jwt: string;
-  expectedAudience: string;
-}): VincentJWT;
-
-export function verify({
-  jwt,
-  expectedAudience,
   requiredAppId,
 }: {
   jwt: string;
   expectedAudience: string;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
 }): VincentJWTAppSpecific;
 
 export function verify({
@@ -35,7 +27,7 @@ export function verify({
 }: {
   jwt: string;
   expectedAudience: string;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
 }): VincentJWT | VincentJWTAppSpecific;
 
 /**
@@ -77,7 +69,7 @@ export function verify({
 }: {
   jwt: string;
   expectedAudience: string;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
 }): VincentJWT | VincentJWTAppSpecific {
   if (!expectedAudience) {
     throw new Error(`You must provide an expectedAudience`);
@@ -144,8 +136,6 @@ export function verify({
   }
 }
 
-export function decode({ jwt }: { jwt: string }): VincentJWT;
-
 export function decode({
   jwt,
   requiredAppId,
@@ -159,7 +149,7 @@ export function decode({
   requiredAppId,
 }: {
   jwt: string;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
 }): VincentJWT | VincentJWTAppSpecific;
 
 /** Decodes a Vincent JWT in string form and returns an {@link VincentJWT} decoded object for your use
@@ -204,7 +194,7 @@ export function decode({
   requiredAppId,
 }: {
   jwt: string;
-  requiredAppId?: number;
+  requiredAppId: number | undefined;
 }): VincentJWT | VincentJWTAppSpecific {
   const decodedJwt = didJWT.decodeJWT(jwt);
 

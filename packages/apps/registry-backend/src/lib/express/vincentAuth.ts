@@ -12,6 +12,7 @@ export const { middleware: requireVincentAuth, handler: withVincentAuth } =
   createVincentUserMiddleware({
     allowedAudience: env.EXPECTED_AUDIENCE,
     userKey: VINCENT_USER_KEY,
+    requiredAppId: undefined,
   });
 
 export { getPKPInfo };
