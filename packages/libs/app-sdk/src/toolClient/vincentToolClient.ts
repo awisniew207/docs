@@ -106,7 +106,8 @@ const bigintReplacer = (key: any, value: any) => {
  * @typeParam PrecheckFailSchema {@removeTypeParameterCompletely}
  *
  * @param params
- * @param {ethers.Signer} params.ethersSigner  - An ethers signer that has been configured with your delegatee key
+ * @param params.ethersSigner  - An ethers signer that has been configured with your delegatee key
+ * @param params.bundledVincentTool  - The bundled vincent tool that you want to interact with
  *
  * @category API
  * */

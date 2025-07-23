@@ -40,6 +40,7 @@ function assertAuthenticatedRequest<const UserKey extends string>(
  *   - If you forget, the `handler()` function will throw an error if the expected `req[userKey]` does not exist.
  *
  * See [express.js documentation](https://expressjs.com/en/guide/writing-middleware.html) for details on writing your route handler
+ * @category API
  *
  * @example
  * ```typescript
@@ -73,7 +74,7 @@ function assertAuthenticatedRequest<const UserKey extends string>(
  *
  * See the code below for the implementation used by the `middleware` returned by this function. You can adapt this logic
  * to the HTTP framework of your choice.
- * {@includeCode ./express.ts#expressHandlerTSDocExample}
+ *
  */
 export function createVincentUserMiddleware<const UserKey extends string>(config: {
   allowedAudience: string;
@@ -129,20 +130,12 @@ function getAuthenticateUserExpressHandler<const UserKey extends string>({
     }
 
     try {
-      const decodedJWT = verify(rawJWT, allowedAudience);
+      const decodedJWT = verify({ jwt: rawJWT, expectedAudience: allowedAudience, requiredAppId });
       if (!decodedJWT) {
         res.status(401).json({ error: 'Invalid token' });
         return;
       }
 
-      if (
-        (requiredAppId && !decodedJWT.payload.app) ||
-        decodedJWT.payload.app.id !== requiredAppId
-      ) {
-        res.status(401).json({
-          error: `Invalid app ID in token; expected ${requiredAppId}, got ${decodedJWT.payload.app?.id}`,
-        });
-      }
       (req as unknown as Record<string, VincentJWTData>)[userKey] = {
         decodedJWT,
         rawJWT,
