@@ -1,9 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
 
-import type { RequestWithVincentUser } from '../requireVincentAuth';
+import type { RequestWithVincentUser } from '../vincentAuth';
 import type { RequestWithApp } from './requireApp';
 
 import { createDebugger } from '../../../../debug';
+import { getPKPInfo } from '../vincentAuth';
 
 // Combined interface for requests with both app and vincent user
 export interface RequestWithAppAndVincentUser extends RequestWithApp, RequestWithVincentUser {}
@@ -38,16 +39,18 @@ export const requireUserManagesApp = () => {
         return;
       }
 
+      const userAddress = getPKPInfo(reqWithAppAndUser.vincentUser.decodedJWT).ethAddress;
+
       debug('Checking authorization', {
-        userAddress: reqWithAppAndUser.vincentUser.address,
+        userAddress,
         appManagerAddress: reqWithAppAndUser.vincentApp.managerAddress,
         appId: reqWithAppAndUser.vincentApp.appId,
       });
 
       // Check if the authenticated user is the manager of the app
-      if (reqWithAppAndUser.vincentUser.address !== reqWithAppAndUser.vincentApp.managerAddress) {
+      if (userAddress !== reqWithAppAndUser.vincentApp.managerAddress) {
         debug('Authorization failed: User is not the app manager', {
-          userAddress: reqWithAppAndUser.vincentUser.address,
+          userAddress,
           appManagerAddress: reqWithAppAndUser.vincentApp.managerAddress,
           appId: reqWithAppAndUser.vincentApp.appId,
         });

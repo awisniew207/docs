@@ -16,4 +16,5 @@ export type {
   AuthenticatedRequest,
   AuthenticatedRequestHandler,
   ExtractRequestHandlerParams,
+  VincentJWTData,
 } from './types';
