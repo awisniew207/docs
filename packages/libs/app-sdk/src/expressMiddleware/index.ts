@@ -35,7 +35,7 @@
  * {@includeCode ./express.ts#expressHandlerTSDocExample}
  * */
 
-export { authenticatedRequestHandler, getAuthenticateUserExpressHandler } from './express';
+export { createVincentUserMiddleware } from './express';
 
 export type {
   AuthenticatedRequest,
