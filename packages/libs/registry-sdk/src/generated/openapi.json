@@ -571,6 +571,11 @@
             "default": "dev",
             "description": "Identifies if a tool is in development, test, or production.",
             "example": "dev"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           }
         },
         "required": [
@@ -609,6 +614,11 @@
             ],
             "description": "Identifies if a tool is in development, test, or production.",
             "example": "dev"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           }
         },
         "additionalProperties": false
@@ -653,6 +663,11 @@
             "minLength": 10,
             "description": "Tool description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage."
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           },
           "activeVersion": {
             "type": "string",
@@ -928,6 +943,11 @@
             "default": "dev",
             "description": "Identifies if a policy is in development, test, or production.",
             "example": "dev"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           }
         },
         "required": [
@@ -966,6 +986,11 @@
             ],
             "description": "Identifies if a policy is in development, test, or production.",
             "example": "dev"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           }
         },
         "additionalProperties": false
@@ -1004,6 +1029,11 @@
             "minLength": 10,
             "description": "Policy description - displayed to users in the dashboard/Vincent Explorer UI",
             "example": "This policy is a foo bar policy"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Base64 encoded logo image",
+            "example": "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC"
           },
           "activeVersion": {
             "type": "string",

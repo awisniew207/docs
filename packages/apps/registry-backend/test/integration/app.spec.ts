@@ -66,11 +66,11 @@ describe('App API Integration Tests', () => {
       const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
       try {
-        const { txHash, newAppVersion } = await registerApp({
+        const { txHash } = await registerApp({
           signer: defaultWallet,
           args: {
-            appId: testAppId.toString(),
-            delegatees: appData.delegateeAddresses,
+            appId: testAppId,
+            delegateeAddresses: appData.delegateeAddresses,
             versionTools: {
               toolIpfsCids: [toolIpfsCid],
               toolPolicies: [[policyIpfsCid]],
@@ -78,8 +78,7 @@ describe('App API Integration Tests', () => {
           },
         });
 
-        verboseLog({ txHash, newAppVersion });
-        expect(newAppVersion).toBe('1'); // First version should be 1
+        verboseLog({ txHash });
       } catch (error) {
         console.error('Failed to register app on contracts:', error);
         throw error;
