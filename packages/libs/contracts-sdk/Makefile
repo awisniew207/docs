@@ -61,7 +61,7 @@ update-facet: ## Update a specific facet in the Vincent Diamond contract. Usage:
 	fi
 	@echo "Updating facet $(FACET_NAME) in the Vincent Diamond contract on Datil network..."
 	@echo "Using diamond address: $(VINCENT_DIAMOND_ADDRESS)"
-	@FACET_TO_UPDATE=$(FACET_NAME) forge script script/UpdateFacet.sol:UpdateFacet -vvv \
+	@FACET_TO_UPDATE=$(FACET_NAME) forge script script/UpdateFacet.sol:SmartUpdateFacet -vvv \
 		--broadcast \
 		--private-key $(VINCENT_DEPLOYER_PRIVATE_KEY) \
 		--rpc-url $(VINCENT_DEPLOYMENT_RPC_URL)
