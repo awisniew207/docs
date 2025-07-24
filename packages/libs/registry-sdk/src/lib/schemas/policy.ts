@@ -1,7 +1,7 @@
+import { EXAMPLE_WALLET_ADDRESS } from '../constants';
+import { baseDocAttributes } from './base';
 import { z } from './openApiZod';
 import { fromPackageJson } from './packages';
-import { baseDocAttributes } from './base';
-import { EXAMPLE_WALLET_ADDRESS } from '../constants';
 
 /** policy describes all properties on a policy that are NOT controlled by the DB backend
  *
@@ -20,15 +20,24 @@ const policy = z
       example: EXAMPLE_WALLET_ADDRESS,
       readOnly: true,
     }),
-    description: z.string().openapi({
+    description: z.string().trim().min(10).openapi({
       description: 'Policy description - displayed to users in the dashboard/Vincent Explorer UI',
       example: 'This policy is a foo bar policy',
     }),
+    logo: z
+      .string()
+      .optional()
+      .openapi({
+        description: 'Base64 encoded logo image',
+        example:
+          'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC',
+      })
+      .optional(),
     activeVersion: z.string().openapi({
       description: 'Active version of the policy; must be an exact semver',
       example: '1.0.0',
     }),
-    title: z.string().openapi({
+    title: z.string().trim().min(2).openapi({
       description: 'Policy title for displaying to users in the dashboard/Vincent Explorer UI',
       example: 'Vincent Spending Limit Policy',
     }),
@@ -36,12 +45,16 @@ const policy = z
       description: 'Identifies if a policy is in development, test, or production.',
       example: 'dev',
     }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this Policy is deleted',
+      example: false,
+    }),
   })
   .strict();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreatePolicySchema() {
-  const { activeVersion, title, description, deploymentStatus } = policy.shape;
+  const { activeVersion, title, description, deploymentStatus, logo } = policy.shape;
 
   return z
     .object({
@@ -53,6 +66,7 @@ function buildCreatePolicySchema() {
       ...z
         .object({
           deploymentStatus: deploymentStatus.default('dev'),
+          logo,
         })
         .partial()
         .strict().shape,
@@ -64,12 +78,13 @@ export const policyCreate = buildCreatePolicySchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditPolicySchema() {
-  const { activeVersion, title, description, deploymentStatus } = policy.shape;
+  const { activeVersion, title, description, deploymentStatus, logo } = policy.shape;
 
   return z
     .object({
       // Optional
-      ...z.object({ activeVersion, title, description, deploymentStatus }).partial().strict().shape,
+      ...z.object({ activeVersion, title, description, deploymentStatus, logo }).partial().strict()
+        .shape,
     })
     .strict();
 }
@@ -121,6 +136,10 @@ const policyVersion = z
         description: 'Schema parameters',
         readOnly: true,
       }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this PolicyVersion is deleted',
+      example: false,
+    }),
   })
   .strict();
 

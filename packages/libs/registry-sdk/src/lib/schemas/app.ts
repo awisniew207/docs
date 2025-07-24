@@ -1,7 +1,6 @@
-import { z } from './openApiZod';
-
 import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../constants';
 import { baseDocAttributes } from './base';
+import { z } from './openApiZod';
 
 /** app describes all properties on an application that are NOT controlled by the DB backend
  *
@@ -24,11 +23,11 @@ const app = z
         example: 1,
       })
       .optional(),
-    name: z.string().openapi({
+    name: z.string().trim().min(2).openapi({
       description: 'The name of the application',
       example: 'Memecoin DCA App',
     }),
-    description: z.string().optional().openapi({
+    description: z.string().trim().min(10).openapi({
       description: 'Description of the application',
       example: 'This is a memecoin DCA App.',
     }),
@@ -59,10 +58,29 @@ const app = z
       .optional(),
     redirectUris: z
       .array(z.string().url())
+      .refine((urls) => new Set(urls).size === urls.length, {
+        message: 'Redirect URIs must be unique',
+      })
       .openapi({
+        uniqueItems: true,
         description:
           'Redirect URIs users can be sent to after signing up for your application (with their JWT token).',
         example: ['https://myapp.example.com', 'https://myapp.example.com/subpage'],
+      })
+      .optional(),
+    delegateeAddresses: z
+      .array(z.string().regex(/^0x[a-fA-F0-9]{40}$/))
+      .refine((addresses) => new Set(addresses).size === addresses.length, {
+        message: 'Delegatee addresses must be unique',
+      })
+      .openapi({
+        uniqueItems: true,
+        description:
+          "Addresses responsible for executing the app's operations on behalf of Vincent App Users",
+        example: [
+          '0x123456789012345678901234567890123456abcd',
+          '0x1234567890123456789012345678901234561234',
+        ],
       })
       .optional(),
     deploymentStatus: z.enum(['dev', 'test', 'prod']).optional().openapi({
@@ -74,13 +92,25 @@ const app = z
       example: EXAMPLE_WALLET_ADDRESS,
       readOnly: true,
     }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this App is deleted',
+      example: false,
+    }),
   })
   .strict();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateAppSchema() {
-  const { name, deploymentStatus, description, contactEmail, appUserUrl, logo, redirectUris } =
-    app.shape;
+  const {
+    name,
+    deploymentStatus,
+    description,
+    contactEmail,
+    appUserUrl,
+    logo,
+    redirectUris,
+    delegateeAddresses,
+  } = app.shape;
 
   return z
     .object({
@@ -92,6 +122,7 @@ function buildCreateAppSchema() {
           appUserUrl,
           logo,
           redirectUris,
+          delegateeAddresses,
         })
         .partial()
         .strict().shape,
@@ -113,6 +144,7 @@ function buildEditAppSchema() {
     contactEmail,
     activeVersion,
     redirectUris,
+    delegateeAddresses,
     name,
     description,
     deploymentStatus,
@@ -131,6 +163,7 @@ function buildEditAppSchema() {
           appUserUrl,
           logo,
           redirectUris,
+          delegateeAddresses,
           deploymentStatus,
           activeVersion,
         })
@@ -154,4 +187,14 @@ export const appEdit = buildEditAppSchema();
  * All schemas that need to be composed as subsets of this schema
  * should be derived from `app` instead
  */
+// Schema for setting the active version of an app
+export const appSetActiveVersion = z
+  .object({
+    activeVersion: z.number().openapi({
+      description: 'The version to set as active',
+      example: 2,
+    }),
+  })
+  .strict();
+
 export const appDoc = z.object({ ...baseDocAttributes.shape, ...app.shape }).strict();

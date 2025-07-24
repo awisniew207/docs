@@ -1,5 +1,5 @@
-import { baseDocAttributes } from './base';
 import { EXAMPLE_WALLET_ADDRESS } from '../constants';
+import { baseDocAttributes } from './base';
 import { z } from './openApiZod';
 import { fromPackageJson } from './packages';
 
@@ -14,7 +14,7 @@ const tool = z
       description: 'Tool NPM package name',
       example: '@lit-protocol/vincent-erc20-approval-tool',
     }),
-    title: z.string().optional().openapi({
+    title: z.string().trim().min(2).openapi({
       description: 'Tool title - displayed to users in the dashboard/Vincent Explorer UI',
       example: 'ERC20 Approval Tool',
     }),
@@ -24,11 +24,20 @@ const tool = z
       example: EXAMPLE_WALLET_ADDRESS,
       readOnly: true,
     }),
-    description: z.string().openapi({
+    description: z.string().trim().min(10).openapi({
       description: 'Tool description - displayed to users in the dashboard/Vincent Explorer UI',
       example:
         'A tool that manages ERC20 approvals for PKPs. Facilitates vincent-uniswap-swap-tool usage.',
     }),
+    logo: z
+      .string()
+      .optional()
+      .openapi({
+        description: 'Base64 encoded logo image',
+        example:
+          'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC',
+      })
+      .optional(),
     activeVersion: z.string().openapi({
       description: 'Active version of the tool',
       example: '1.0.0',
@@ -37,12 +46,16 @@ const tool = z
       description: 'Identifies if a tool is in development, test, or production.',
       example: 'dev',
     }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this Tool is deleted',
+      example: false,
+    }),
   })
   .strict();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildCreateToolSchema() {
-  const { activeVersion, title, description, deploymentStatus } = tool.shape;
+  const { activeVersion, title, description, deploymentStatus, logo } = tool.shape;
 
   return z
     .object({
@@ -54,6 +67,7 @@ function buildCreateToolSchema() {
       ...z
         .object({
           deploymentStatus: deploymentStatus.default('dev'),
+          logo,
         })
         .partial()
         .strict().shape,
@@ -65,12 +79,13 @@ export const toolCreate = buildCreateToolSchema();
 
 // Avoiding using z.omit() or z.pick() due to excessive TS type inference costs
 function buildEditToolSchema() {
-  const { activeVersion, title, description, deploymentStatus } = tool.shape;
+  const { activeVersion, title, description, deploymentStatus, logo } = tool.shape;
 
   return z
     .object({
       // Optional
-      ...z.object({ activeVersion, title, description, deploymentStatus }).partial().strict().shape,
+      ...z.object({ activeVersion, title, description, deploymentStatus, logo }).partial().strict()
+        .shape,
     })
     .strict();
 }
@@ -93,7 +108,7 @@ const toolVersion = z
       description: 'Tool version - must be an exact semver.',
       example: '1.0.0',
     }),
-    changes: z.string().openapi({
+    changes: z.string().trim().min(10).openapi({
       description: 'Changelog information for this version',
       example: 'Ensure commit() is run on spending policy limit for users who have it enabled.',
     }),
@@ -118,6 +133,10 @@ const toolVersion = z
       description: 'Policy versions that are not in the registry but are supported by this tool',
       example: ['@lit-protocol/vincent-spending-limit-policy@1.0.1'],
       readOnly: true,
+    }),
+    isDeleted: z.boolean().optional().openapi({
+      description: 'Whether or not this ToolVersion is deleted',
+      example: false,
     }),
   })
   .strict();

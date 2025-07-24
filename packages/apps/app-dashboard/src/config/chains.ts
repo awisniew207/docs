@@ -13,7 +13,4 @@ export const yellowstone = defineChain({
       url: 'https://yellowstone-explorer.litprotocol.com/',
     },
   },
-  fees: {
-    baseFeeMultiplier: 1,
-  },
 });

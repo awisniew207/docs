@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+
 import { undeletedByPackageIdentity, uniquePackageVersion } from './indexes';
 
 const toolSchema = new Schema(
@@ -7,6 +8,7 @@ const toolSchema = new Schema(
     packageName: { type: String, required: true, unique: true },
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
+    logo: { type: String, required: false },
     activeVersion: { type: String, required: true },
     deploymentStatus: {
       type: String,

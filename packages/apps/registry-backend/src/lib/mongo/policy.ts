@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+
 import {
   undeletedByPackageIdentity,
   undeletedByPackageName,
@@ -12,6 +13,7 @@ const policySchema = new Schema(
     authorWalletAddress: { type: String, required: true },
     description: { type: String, required: true },
     activeVersion: { type: String, required: true },
+    logo: { type: String, required: false },
     deploymentStatus: {
       type: String,
       enum: ['dev', 'test', 'prod'],

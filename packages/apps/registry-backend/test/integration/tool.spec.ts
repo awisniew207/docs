@@ -1,6 +1,6 @@
-import { api, store } from './setup';
 import { expectAssertArray, expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
+import { api, store } from './setup';
 
 // Create a debug instance for this file
 const debug = createTestDebugger('tool');
@@ -26,6 +26,7 @@ describe('Tool API Integration Tests', () => {
     title: 'Test Tool',
     description: 'Test tool for integration tests',
     activeVersion: '1.0.0',
+    logo: 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAA5JREFUGFdj/M+ACAAAAAD//wE7AnsAAAAAAElFTkSuQmCC',
   };
 
   // Test data for creating a tool version

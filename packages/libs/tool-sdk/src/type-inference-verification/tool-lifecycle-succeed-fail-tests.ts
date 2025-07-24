@@ -1,9 +1,10 @@
 // src/type-inference-verification/tool-lifecycle-succeed-fail-tests.ts
 import { z } from 'zod';
-import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 
 const toolParams = z.object({ x: z.string() });
 const dummyPolicy = createVincentToolPolicy({
@@ -25,6 +26,7 @@ const F = z.object({ err: z.string() });
 
 export const tool_s_p = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeSuccessSchema: S,
@@ -51,6 +53,7 @@ export const tool_s_p = createVincentTool({
 
 export const tool_s_none = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeSuccessSchema: S,
@@ -76,6 +79,7 @@ export const tool_s_none = createVincentTool({
 
 export const tool_f_pf = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeFailSchema: F,
@@ -100,6 +104,7 @@ export const tool_f_pf = createVincentTool({
 
 export const tool_f_p = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeFailSchema: F,
@@ -125,6 +130,7 @@ export const tool_f_p = createVincentTool({
 
 export const tool_f_none = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   executeFailSchema: F,
@@ -149,6 +155,7 @@ export const tool_f_none = createVincentTool({
 
 export const tool_none_pf = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   precheckFailSchema: F,
@@ -173,6 +180,7 @@ export const tool_none_pf = createVincentTool({
 
 export const tool_none_p = createVincentTool({
   packageName: '@lit-protocol/yestool3@1.0.0',
+  toolDescription: 'Yes Tool',
   toolParamsSchema: toolParams,
   supportedPolicies: supportedPoliciesForTool([dummyPolicy]),
   precheckSuccessSchema: S,

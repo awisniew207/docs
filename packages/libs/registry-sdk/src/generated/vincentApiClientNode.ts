@@ -149,6 +149,17 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['AppVersionTool'],
       }),
+      setAppActiveVersion: build.mutation<
+        SetAppActiveVersionApiResponse,
+        SetAppActiveVersionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/setActiveVersion`,
+          method: 'POST',
+          body: queryArg.appSetActiveVersion,
+        }),
+        invalidatesTags: ['App'],
+      }),
       listAllTools: build.query<ListAllToolsApiResponse, ListAllToolsApiArg>({
         query: () => ({ url: `/tools` }),
         providesTags: ['Tool'],
@@ -363,13 +374,13 @@ export type EditAppApiArg = {
   appEdit: AppEdit;
 };
 export type DeleteAppApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteAppApiArg = {
   /** ID of the target application */
   appId: number;
 };
 export type UndeleteAppApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteAppApiArg = {
   /** ID of the target application */
   appId: number;
@@ -403,7 +414,7 @@ export type EditAppVersionApiArg = {
   appVersionEdit: AppVersionEdit;
 };
 export type DeleteAppVersionApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteAppVersionApiArg = {
   /** ID of the target application */
   appId: number;
@@ -457,7 +468,7 @@ export type EditAppVersionToolApiArg = {
   appVersionToolEdit: AppVersionToolEdit;
 };
 export type DeleteAppVersionToolApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteAppVersionToolApiArg = {
   /** ID of the target application */
   appId: number;
@@ -467,7 +478,7 @@ export type DeleteAppVersionToolApiArg = {
   toolPackageName: string;
 };
 export type UndeleteAppVersionApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteAppVersionApiArg = {
   /** ID of the target application */
   appId: number;
@@ -475,7 +486,7 @@ export type UndeleteAppVersionApiArg = {
   version: number;
 };
 export type UndeleteAppVersionToolApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteAppVersionToolApiArg = {
   /** ID of the target application */
   appId: number;
@@ -483,6 +494,14 @@ export type UndeleteAppVersionToolApiArg = {
   appVersion: number;
   /** The NPM package name */
   toolPackageName: string;
+};
+export type SetAppActiveVersionApiResponse =
+  /** status 200 OK - Active version successfully set */ GenericResultMessage;
+export type SetAppActiveVersionApiArg = {
+  /** ID of the target application */
+  appId: number;
+  /** The version to set as active */
+  appSetActiveVersion: AppSetActiveVersion;
 };
 export type ListAllToolsApiResponse = /** status 200 Successful operation */ ToolListRead;
 export type ListAllToolsApiArg = void;
@@ -505,7 +524,7 @@ export type EditToolApiArg = {
   /** Developer-defined updated tool details */
   toolEdit: ToolEdit;
 };
-export type DeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type DeleteToolApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type DeleteToolApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -548,20 +567,20 @@ export type EditToolVersionApiArg = {
   toolVersionEdit: ToolVersionEdit;
 };
 export type DeleteToolVersionApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeleteToolVersionApiArg = {
   /** The NPM package name */
   packageName: string;
   /** NPM semver of the target tool version */
   version: string;
 };
-export type UndeleteToolApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type UndeleteToolApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type UndeleteToolApiArg = {
   /** The NPM package name */
   packageName: string;
 };
 export type UndeleteToolVersionApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeleteToolVersionApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -589,7 +608,7 @@ export type EditPolicyApiArg = {
   /** Developer-defined updated policy details */
   policyEdit: PolicyEdit;
 };
-export type DeletePolicyApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type DeletePolicyApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type DeletePolicyApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -621,7 +640,7 @@ export type EditPolicyVersionApiArg = {
   policyVersionEdit: PolicyVersionEdit;
 };
 export type DeletePolicyVersionApiResponse =
-  /** status 200 OK - Resource successfully deleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully deleted */ GenericResultMessage;
 export type DeletePolicyVersionApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -641,13 +660,13 @@ export type ChangePolicyOwnerApiArg = {
   /** Developer-defined updated policy details */
   changeOwner: ChangeOwner;
 };
-export type UndeletePolicyApiResponse = /** status 200 Successful operation */ DeleteResponse;
+export type UndeletePolicyApiResponse = /** status 200 Successful operation */ GenericResultMessage;
 export type UndeletePolicyApiArg = {
   /** The NPM package name */
   packageName: string;
 };
 export type UndeletePolicyVersionApiResponse =
-  /** status 200 OK - Resource successfully undeleted */ DeleteResponse;
+  /** status 200 OK - Resource successfully undeleted */ GenericResultMessage;
 export type UndeletePolicyVersionApiArg = {
   /** The NPM package name */
   packageName: string;
@@ -664,7 +683,7 @@ export type App = {
   /** The name of the application */
   name: string;
   /** Description of the application */
-  description?: string;
+  description: string;
   /** Contact email for the application manager */
   contactEmail?: string;
   /** This should be a landing page for the app. */
@@ -673,8 +692,12 @@ export type App = {
   logo?: string;
   /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
   redirectUris?: string[];
+  /** Addresses responsible for executing the app's operations on behalf of Vincent App Users */
+  delegateeAddresses?: string[];
   /** Identifies if an application is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Whether or not this App is deleted */
+  isDeleted?: boolean;
 };
 export type AppRead = {
   /** Document ID */
@@ -690,7 +713,7 @@ export type AppRead = {
   /** The name of the application */
   name: string;
   /** Description of the application */
-  description?: string;
+  description: string;
   /** Contact email for the application manager */
   contactEmail?: string;
   /** This should be a landing page for the app. */
@@ -699,10 +722,14 @@ export type AppRead = {
   logo?: string;
   /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
   redirectUris?: string[];
+  /** Addresses responsible for executing the app's operations on behalf of Vincent App Users */
+  delegateeAddresses?: string[];
   /** Identifies if an application is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
   /** App manager's wallet address. Derived from the authorization signature provided by the creator. */
   managerAddress: string;
+  /** Whether or not this App is deleted */
+  isDeleted?: boolean;
 };
 export type AppList = App[];
 export type AppListRead = AppRead[];
@@ -723,10 +750,12 @@ export type AppCreate = {
   logo?: string;
   /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
   redirectUris?: string[];
+  /** Addresses responsible for executing the app's operations on behalf of Vincent App Users */
+  delegateeAddresses?: string[];
   /** The name of the application */
   name: string;
   /** Description of the application */
-  description?: string;
+  description: string;
 };
 export type AppEdit = {
   /** The name of the application */
@@ -741,12 +770,14 @@ export type AppEdit = {
   logo?: string;
   /** Redirect URIs users can be sent to after signing up for your application (with their JWT token). */
   redirectUris?: string[];
+  /** Addresses responsible for executing the app's operations on behalf of Vincent App Users */
+  delegateeAddresses?: string[];
   /** Identifies if an application is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
   /** Active version of the application */
   activeVersion?: number;
 };
-export type DeleteResponse = {
+export type GenericResultMessage = {
   /** Success message */
   message: string;
 };
@@ -759,6 +790,8 @@ export type AppVersion = {
   enabled: boolean;
   /** Describes what changed between this version and the previous version. */
   changes?: string;
+  /** Whether or not this AppVersion is deleted */
+  isDeleted?: boolean;
 };
 export type AppVersionRead = {
   /** Document ID */
@@ -775,6 +808,8 @@ export type AppVersionRead = {
   enabled: boolean;
   /** Describes what changed between this version and the previous version. */
   changes?: string;
+  /** Whether or not this AppVersion is deleted */
+  isDeleted?: boolean;
 };
 export type AppVersionList = AppVersion[];
 export type AppVersionListRead = AppVersionRead[];
@@ -797,6 +832,8 @@ export type AppVersionTool = {
   toolVersion: string;
   /** Policies that are supported by this tool, but are hidden from users of this app specifically */
   hiddenSupportedPolicies?: string[];
+  /** Whether or not this AppVersionTool is deleted */
+  isDeleted?: boolean;
 };
 export type AppVersionToolRead = {
   /** Document ID */
@@ -815,6 +852,8 @@ export type AppVersionToolRead = {
   toolVersion: string;
   /** Policies that are supported by this tool, but are hidden from users of this app specifically */
   hiddenSupportedPolicies?: string[];
+  /** Whether or not this AppVersionTool is deleted */
+  isDeleted?: boolean;
 };
 export type AppVersionToolList = AppVersionTool[];
 export type AppVersionToolListRead = AppVersionToolRead[];
@@ -828,6 +867,10 @@ export type AppVersionToolEdit = {
   /** Policies that are supported by this tool, but are hidden from users of this app specifically */
   hiddenSupportedPolicies?: string[];
 };
+export type AppSetActiveVersion = {
+  /** The version to set as active */
+  activeVersion: number;
+};
 export type Tool = {
   /** Timestamp when this was last modified */
   updatedAt: string;
@@ -836,13 +879,17 @@ export type Tool = {
   /** Tool NPM package name */
   packageName: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
-  title?: string;
+  title: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Base64 encoded logo image */
+  logo?: string;
   /** Active version of the tool */
   activeVersion: string;
   /** Identifies if a tool is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Whether or not this Tool is deleted */
+  isDeleted?: boolean;
 };
 export type ToolRead = {
   /** Document ID */
@@ -854,15 +901,19 @@ export type ToolRead = {
   /** Tool NPM package name */
   packageName: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
-  title?: string;
+  title: string;
   /** Author wallet address. Derived from the authorization signature provided by the creator. */
   authorWalletAddress: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Base64 encoded logo image */
+  logo?: string;
   /** Active version of the tool */
   activeVersion: string;
   /** Identifies if a tool is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Whether or not this Tool is deleted */
+  isDeleted?: boolean;
 };
 export type ToolList = Tool[];
 export type ToolListRead = ToolRead[];
@@ -870,11 +921,13 @@ export type ToolCreate = {
   /** Active version of the tool */
   activeVersion: string;
   /** Tool title - displayed to users in the dashboard/Vincent Explorer UI */
-  title?: string;
+  title: string;
   /** Tool description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
   /** Identifies if a tool is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Base64 encoded logo image */
+  logo?: string;
 };
 export type ToolEdit = {
   /** Active version of the tool */
@@ -885,6 +938,8 @@ export type ToolEdit = {
   description?: string;
   /** Identifies if a tool is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Base64 encoded logo image */
+  logo?: string;
 };
 export type ToolVersion = {
   /** Timestamp when this was last modified */
@@ -925,6 +980,8 @@ export type ToolVersion = {
   }[];
   /** Policy homepage */
   homepage?: string;
+  /** Whether or not this ToolVersion is deleted */
+  isDeleted?: boolean;
 };
 export type ToolVersionRead = {
   /** Document ID */
@@ -975,6 +1032,8 @@ export type ToolVersionRead = {
   ipfsCid: string;
   /** Policy versions that are not in the registry but are supported by this tool */
   policiesNotInRegistry: string[];
+  /** Whether or not this ToolVersion is deleted */
+  isDeleted?: boolean;
 };
 export type ToolVersionList = ToolVersion[];
 export type ToolVersionListRead = ToolVersionRead[];
@@ -999,12 +1058,16 @@ export type Policy = {
   packageName: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Base64 encoded logo image */
+  logo?: string;
   /** Active version of the policy; must be an exact semver */
   activeVersion: string;
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
   title: string;
   /** Identifies if a policy is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Whether or not this Policy is deleted */
+  isDeleted?: boolean;
 };
 export type PolicyRead = {
   /** Document ID */
@@ -1019,12 +1082,16 @@ export type PolicyRead = {
   authorWalletAddress: string;
   /** Policy description - displayed to users in the dashboard/Vincent Explorer UI */
   description: string;
+  /** Base64 encoded logo image */
+  logo?: string;
   /** Active version of the policy; must be an exact semver */
   activeVersion: string;
   /** Policy title for displaying to users in the dashboard/Vincent Explorer UI */
   title: string;
   /** Identifies if a policy is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Whether or not this Policy is deleted */
+  isDeleted?: boolean;
 };
 export type PolicyList = Policy[];
 export type PolicyListRead = PolicyRead[];
@@ -1037,6 +1104,8 @@ export type PolicyCreate = {
   description: string;
   /** Identifies if a policy is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Base64 encoded logo image */
+  logo?: string;
 };
 export type PolicyEdit = {
   /** Active version of the policy; must be an exact semver */
@@ -1047,6 +1116,8 @@ export type PolicyEdit = {
   description?: string;
   /** Identifies if a policy is in development, test, or production. */
   deploymentStatus?: 'dev' | 'test' | 'prod';
+  /** Base64 encoded logo image */
+  logo?: string;
 };
 export type PolicyVersion = {
   /** Timestamp when this was last modified */
@@ -1087,6 +1158,8 @@ export type PolicyVersion = {
   }[];
   /** Policy homepage */
   homepage?: string;
+  /** Whether or not this PolicyVersion is deleted */
+  isDeleted?: boolean;
 };
 export type PolicyVersionRead = {
   /** Document ID */
@@ -1138,6 +1211,8 @@ export type PolicyVersionRead = {
     /** JSON Schema for parameter validation */
     jsonSchema: string;
   };
+  /** Whether or not this PolicyVersion is deleted */
+  isDeleted?: boolean;
 };
 export type PolicyVersionCreate = {
   /** Changelog information for this version */

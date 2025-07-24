@@ -1,6 +1,6 @@
-import { z } from '../schemas/openApiZod';
+import type { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 
-import { appDoc, appCreate, appEdit } from '../schemas/app';
+import { appDoc, appCreate, appEdit, appSetActiveVersion } from '../schemas/app';
 import {
   appVersionDoc,
   appVersionCreate,
@@ -9,8 +9,8 @@ import {
   appVersionToolEdit,
   appVersionToolDoc,
 } from '../schemas/appVersion';
-import { DeleteResponse, ErrorResponse, siweAuth } from './baseRegistry';
-import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+import { z } from '../schemas/openApiZod';
+import { GenericResult, ErrorResponse, siweAuth } from './baseRegistry';
 
 const appIdParam = z
   .number()
@@ -28,6 +28,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   const AppCreate = registry.register('AppCreate', appCreate);
   const AppEdit = registry.register('AppEdit', appEdit);
   const AppRead = registry.register('App', appDoc);
+  const AppSetActiveVersion = registry.register('AppSetActiveVersion', appSetActiveVersion);
 
   const AppVersionCreate = registry.register('AppVersionCreate', appVersionCreate);
   const AppVersionEdit = registry.register('AppVersionEdit', appVersionEdit);
@@ -208,7 +209,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully deleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -247,7 +248,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully undeleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -674,7 +675,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully deleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -717,7 +718,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully undeleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -761,7 +762,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully deleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -805,7 +806,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'OK - Resource successfully undeleted',
         content: {
           'application/json': {
-            schema: DeleteResponse,
+            schema: GenericResult,
           },
         },
       },
@@ -814,6 +815,55 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       },
       404: {
         description: 'Application, version, or tool not found',
+      },
+      422: {
+        description: 'Validation exception',
+      },
+      default: {
+        description: 'Unexpected error',
+        content: {
+          'application/json': {
+            schema: ErrorResponse,
+          },
+        },
+      },
+    },
+  });
+
+  // POST /app/{appId}/setActiveVersion - Set the active version of an application
+  registry.registerPath({
+    method: 'post',
+    path: '/app/{appId}/setActiveVersion',
+    tags: ['App'],
+    summary: 'Sets the active version of an application',
+    operationId: 'setAppActiveVersion',
+    security: [{ [siweAuth.name]: [] }],
+    request: {
+      params: z.object({ appId: appIdParam }),
+      body: {
+        content: {
+          'application/json': {
+            schema: AppSetActiveVersion,
+          },
+        },
+        description: 'The version to set as active',
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: 'OK - Active version successfully set',
+        content: {
+          'application/json': {
+            schema: GenericResult,
+          },
+        },
+      },
+      400: {
+        description: 'Invalid input',
+      },
+      404: {
+        description: 'Application or version not found',
       },
       422: {
         description: 'Validation exception',

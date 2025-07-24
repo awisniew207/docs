@@ -1,29 +1,27 @@
 import { formatEther } from 'viem';
 
 import {
-  TestConfig,
-  saveTestConfig,
-  mintNewPkp,
-  TEST_FUNDER_VIEM_WALLET_CLIENT,
-  TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT,
   DATIL_PUBLIC_CLIENT,
+  mintNewPkp,
+  saveTestConfig,
   TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY,
-  ERC20_APPROVAL_TOOL_IPFS_ID,
-  UNISWAP_SWAP_TOOL_IPFS_ID,
-  SPENDING_LIMIT_POLICY_IPFS_ID,
   TEST_CONFIG_PATH,
+  TEST_FUNDER_VIEM_WALLET_CLIENT,
+  TestConfig,
 } from '.';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export const checkShouldMintAndFundPkp = async (testConfig: TestConfig) => {
   if (testConfig.userPkp!.ethAddress === null) {
     // The Agent Wallet PKP Owner needs to have Lit test tokens
     // in order to mint the Agent Wallet PKP
     const agentWalletOwnerBalance = await DATIL_PUBLIC_CLIENT.getBalance({
-      address: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
+      address: privateKeyToAccount(TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`)
+        .address,
     });
     if (agentWalletOwnerBalance === 0n) {
       const txHash = await TEST_FUNDER_VIEM_WALLET_CLIENT.sendTransaction({
-        to: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT.address,
+        to: privateKeyToAccount(TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`).address,
         value: BigInt(10000000000000000), // 0.01 ETH in wei
       });
       const txReceipt = await DATIL_PUBLIC_CLIENT.waitForTransactionReceipt({
@@ -40,12 +38,7 @@ export const checkShouldMintAndFundPkp = async (testConfig: TestConfig) => {
     }
 
     // Mint the Agent Wallet PKP
-    const pkpInfo = await mintNewPkp(
-      TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
-      ERC20_APPROVAL_TOOL_IPFS_ID,
-      UNISWAP_SWAP_TOOL_IPFS_ID,
-      SPENDING_LIMIT_POLICY_IPFS_ID,
-    );
+    const pkpInfo = await mintNewPkp(TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`);
 
     console.log(`ℹ️  Minted PKP with token id: ${pkpInfo.tokenId}`);
     console.log(`ℹ️  Minted PKP with address: ${pkpInfo.ethAddress}`);

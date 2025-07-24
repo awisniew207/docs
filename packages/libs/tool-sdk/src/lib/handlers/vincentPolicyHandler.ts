@@ -1,16 +1,20 @@
 // src/lib/handlers/vincentPolicyHandler.ts
 
+import type { z } from 'zod';
+
 import { ethers } from 'ethers';
 
-import { InferOrUndefined, PolicyConsumerContext, VincentPolicy } from '../types';
+import type { InferOrUndefined, PolicyConsumerContext, VincentPolicy } from '../types';
+
+import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
+import { createDenyResult } from '../policyCore/helpers';
 import {
   getDecodedPolicyParams,
   getPoliciesAndAppVersion,
 } from '../policyCore/policyParameters/getOnchainPolicyParams';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
-import { createDenyResult } from '../policyCore/helpers';
-import { z } from 'zod';
 import { getPkpInfo } from '../toolCore/helpers';
+import { bigintReplacer } from '../utils';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
 
 declare const Lit: {
   Actions: {
@@ -25,9 +29,7 @@ declare const LitAuth: {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const bigintReplacer = (key: any, value: any) => {
-  return typeof value === 'bigint' ? value.toString() : value;
-};
+declare const vincentToolApiVersion: string;
 
 /** @hidden */
 export async function vincentPolicyHandler<
@@ -56,12 +58,14 @@ export async function vincentPolicyHandler<
   toolParams: unknown;
   context: PolicyConsumerContext;
 }) {
+  assertSupportedToolVersion(vincentToolApiVersion);
+
   const { delegatorPkpEthAddress, toolIpfsCid } = context; // FIXME: Set from ipfsCidsStack when it's shipped
 
   console.log('actionIpfsIds:', LitAuth.actionIpfsIds.join(','));
   const policyIpfsCid = LitAuth.actionIpfsIds[0];
 
-  console.log('context:', JSON.stringify(context));
+  console.log('context:', JSON.stringify(context, bigintReplacer));
   try {
     const delegationRpcUrl = await Lit.Actions.getRpcUrl({
       chain: 'yellowstone',
@@ -69,17 +73,16 @@ export async function vincentPolicyHandler<
 
     const userPkpInfo = await getPkpInfo({
       litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-      yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+      yellowstoneRpcUrl: delegationRpcUrl,
       pkpEthAddress: delegatorPkpEthAddress,
     });
     const appDelegateeAddress = ethers.utils.getAddress(LitAuth.authSigAddress);
     console.log('appDelegateeAddress', appDelegateeAddress);
 
-    const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
+    const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
       delegationRpcUrl,
-      vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
       appDelegateeAddress,
-      agentWalletPkpTokenId: userPkpInfo.tokenId,
+      agentWalletPkpEthAddress: delegatorPkpEthAddress,
       toolIpfsCid,
     });
 
@@ -94,7 +97,7 @@ export async function vincentPolicyHandler<
     };
 
     const onChainPolicyParams = await getDecodedPolicyParams({
-      policies,
+      decodedPolicies,
       policyIpfsCid,
     });
 
@@ -118,7 +121,7 @@ export async function vincentPolicyHandler<
     Lit.Actions.setResponse({
       response: JSON.stringify(
         createDenyResult({
-          message: error instanceof Error ? error.message : String(error),
+          runtimeError: error instanceof Error ? error.message : String(error),
         }),
       ),
     });

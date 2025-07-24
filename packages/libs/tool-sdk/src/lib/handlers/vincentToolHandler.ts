@@ -1,22 +1,26 @@
+import type { z } from 'zod';
+
 import { ethers } from 'ethers';
 
-import {
+import type { ToolPolicyMap } from '../toolCore/helpers';
+import type { BaseToolContext } from '../toolCore/toolConfig/context/types';
+import type {
+  BaseContext,
   PolicyEvaluationResultContext,
   ToolConsumerContext,
   ToolExecutionPolicyContext,
   VincentTool,
 } from '../types';
-import type { BaseContext } from '../types';
-import { getPkpInfo } from '../toolCore/helpers';
-import { evaluatePolicies } from './evaluatePolicies';
-import { validateOrFail } from '../toolCore/helpers/zod';
-import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
-import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS, LIT_DATIL_VINCENT_ADDRESS } from './constants';
-import { validatePolicies } from '../toolCore/helpers/validatePolicies';
-import { ToolPolicyMap } from '../toolCore/helpers';
-import { z } from 'zod';
+
+import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
 import { getPoliciesAndAppVersion } from '../policyCore/policyParameters/getOnchainPolicyParams';
-import type { BaseToolContext } from '../toolCore/toolConfig/context/types';
+import { getPkpInfo } from '../toolCore/helpers';
+import { isToolFailureResult } from '../toolCore/helpers/typeGuards';
+import { validatePolicies } from '../toolCore/helpers/validatePolicies';
+import { validateOrFail } from '../toolCore/helpers/zod';
+import { bigintReplacer } from '../utils';
+import { LIT_DATIL_PUBKEY_ROUTER_ADDRESS } from './constants';
+import { evaluatePolicies } from './evaluatePolicies';
 
 declare const LitAuth: {
   authSigAddress: string;
@@ -30,6 +34,8 @@ declare const Lit: {
     getRpcUrl: (args: { chain: string }) => Promise<string>;
   };
 };
+
+declare const vincentToolApiVersion: string;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function createToolExecutionContext<
@@ -126,6 +132,8 @@ export const vincentToolHandler = <
   toolParams: Record<string, unknown>;
 }) => {
   return async () => {
+    assertSupportedToolVersion(vincentToolApiVersion);
+
     let policyEvalResults: PolicyEvaluationResultContext<PoliciesByPackageName> | undefined =
       undefined;
     const toolIpfsCid = LitAuth.actionIpfsIds[0];
@@ -164,37 +172,40 @@ export const vincentToolHandler = <
 
       const userPkpInfo = await getPkpInfo({
         litPubkeyRouterAddress: LIT_DATIL_PUBKEY_ROUTER_ADDRESS,
-        yellowstoneRpcUrl: 'https://yellowstone-rpc.litprotocol.com/',
+        yellowstoneRpcUrl: delegationRpcUrl,
         pkpEthAddress: context.delegatorPkpEthAddress,
       });
       baseContext.delegation.delegatorPkpInfo = userPkpInfo;
 
-      const { policies, appId, appVersion } = await getPoliciesAndAppVersion({
+      const { decodedPolicies, appId, appVersion } = await getPoliciesAndAppVersion({
         delegationRpcUrl,
-        vincentContractAddress: LIT_DATIL_VINCENT_ADDRESS,
         appDelegateeAddress,
-        agentWalletPkpTokenId: userPkpInfo.tokenId,
+        agentWalletPkpEthAddress: context.delegatorPkpEthAddress,
         toolIpfsCid,
       });
       baseContext.appId = appId.toNumber();
       baseContext.appVersion = appVersion.toNumber();
 
       const validatedPolicies = await validatePolicies({
-        policies,
+        decodedPolicies,
         vincentTool,
         parsedToolParams: parsedOrFail,
         toolIpfsCid,
       });
 
-      console.log('validatedPolicies', JSON.stringify(validatedPolicies));
+      console.log('validatedPolicies', JSON.stringify(validatedPolicies, bigintReplacer));
 
       const policyEvaluationResults = await evaluatePolicies({
         validatedPolicies,
         vincentTool,
         context: baseContext,
+        vincentToolApiVersion,
       });
 
-      console.log('policyEvaluationResults', JSON.stringify(policyEvaluationResults));
+      console.log(
+        'policyEvaluationResults',
+        JSON.stringify(policyEvaluationResults, bigintReplacer),
+      );
 
       policyEvalResults = policyEvaluationResults;
 
@@ -229,7 +240,7 @@ export const vincentToolHandler = <
         },
       );
 
-      console.log('toolExecutionResult', toolExecutionResult);
+      console.log('toolExecutionResult', JSON.stringify(toolExecutionResult, bigintReplacer));
 
       Lit.Actions.setResponse({
         response: JSON.stringify({
@@ -249,7 +260,7 @@ export const vincentToolHandler = <
           } as BaseToolContext<typeof policyEvalResults>,
           toolExecutionResult: {
             success: false,
-            error: err instanceof Error ? err.message : String(err),
+            runtimeError: err instanceof Error ? err.message : String(err),
           },
         }),
       });

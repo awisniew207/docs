@@ -1,4 +1,12 @@
-import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
+import {
+  createPublicClient,
+  createWalletClient,
+  defineChain,
+  http,
+  type Account,
+  type Transport,
+  type WalletClient,
+} from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { Wallet } from 'ethers';
 import path from 'path';
@@ -9,12 +17,10 @@ export const YELLOWSTONE_RPC_URL = getEnv('YELLOWSTONE_RPC_URL');
 export const BASE_RPC_URL = getEnv('BASE_RPC_URL');
 export const ETH_RPC_URL = getEnv('ETH_RPC_URL');
 export const TEST_CONFIG_PATH = path.join(__dirname, '../test-config.json');
-export const VINCENT_ADDRESS = getEnv('VINCENT_ADDRESS');
 
-export const DATIL_CHAIN = defineChain({
+export const DATIL_CHAIN = {
   id: 175188,
   name: 'Datil Mainnet',
-  network: 'datil',
   nativeCurrency: {
     decimals: 18,
     name: 'Ether',
@@ -28,7 +34,8 @@ export const DATIL_CHAIN = defineChain({
       http: [YELLOWSTONE_RPC_URL],
     },
   },
-});
+} as const;
+
 export const DATIL_PUBLIC_CLIENT = createPublicClient({
   chain: DATIL_CHAIN,
   transport: http(YELLOWSTONE_RPC_URL),
@@ -57,12 +64,11 @@ export const BASE_PUBLIC_CLIENT = createPublicClient({
   transport: http(BASE_RPC_URL),
 });
 
+type DatilWalletClient = WalletClient<Transport, typeof DATIL_CHAIN, Account>;
+
 export const TEST_FUNDER_PRIVATE_KEY = getEnv('TEST_FUNDER_PRIVATE_KEY');
-export const TEST_FUNDER_VIEM_ACCOUNT = privateKeyToAccount(
-  TEST_FUNDER_PRIVATE_KEY as `0x${string}`,
-);
-export const TEST_FUNDER_VIEM_WALLET_CLIENT = createWalletClient({
-  account: TEST_FUNDER_VIEM_ACCOUNT,
+export const TEST_FUNDER_VIEM_WALLET_CLIENT: DatilWalletClient = createWalletClient({
+  account: privateKeyToAccount(TEST_FUNDER_PRIVATE_KEY as `0x${string}`),
   chain: DATIL_CHAIN,
   transport: http(YELLOWSTONE_RPC_URL),
 });
@@ -70,21 +76,17 @@ export const TEST_FUNDER_VIEM_WALLET_CLIENT = createWalletClient({
 export const TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY = getEnv(
   'TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY',
 );
-export const TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT = privateKeyToAccount(
-  TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`,
+export const TEST_AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT: DatilWalletClient = createWalletClient(
+  {
+    account: privateKeyToAccount(TEST_AGENT_WALLET_PKP_OWNER_PRIVATE_KEY as `0x${string}`),
+    chain: DATIL_CHAIN,
+    transport: http(YELLOWSTONE_RPC_URL),
+  },
 );
-export const TEST_AGENT_WALLET_PKP_OWNER_VIEM_WALLET_CLIENT = createWalletClient({
-  account: TEST_AGENT_WALLET_PKP_OWNER_VIEM_ACCOUNT,
-  chain: DATIL_CHAIN,
-  transport: http(YELLOWSTONE_RPC_URL),
-});
 
 export const TEST_APP_MANAGER_PRIVATE_KEY = getEnv('TEST_APP_MANAGER_PRIVATE_KEY');
-export const TEST_APP_MANAGER_VIEM_ACCOUNT = privateKeyToAccount(
-  TEST_APP_MANAGER_PRIVATE_KEY as `0x${string}`,
-);
-export const TEST_APP_MANAGER_VIEM_WALLET_CLIENT = createWalletClient({
-  account: TEST_APP_MANAGER_VIEM_ACCOUNT,
+export const TEST_APP_MANAGER_VIEM_WALLET_CLIENT: DatilWalletClient = createWalletClient({
+  account: privateKeyToAccount(TEST_APP_MANAGER_PRIVATE_KEY as `0x${string}`),
   chain: DATIL_CHAIN,
   transport: http(YELLOWSTONE_RPC_URL),
 });

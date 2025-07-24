@@ -1,6 +1,7 @@
 // src/lib/policyCore/vincentPolicy.ts
 import { z } from 'zod';
-import {
+
+import type {
   CommitLifecycleFunction,
   PolicyLifecycleFunction,
   PolicyResponse,
@@ -9,9 +10,18 @@ import {
   PolicyResponseDeny,
   PolicyResponseDenyNoResult,
   VincentPolicy,
-  ZodValidationDenyResult,
+  SchemaValidationError,
 } from '../types';
-import { createPolicyContext } from './policyConfig/context/policyConfigContext';
+import type { BundledVincentPolicy } from './bundledPolicy/types';
+import type { PolicyContext } from './policyConfig/context/types';
+import type {
+  PolicyConfigCommitFunction,
+  PolicyConfigLifecycleFunction,
+  VincentPolicyConfig,
+} from './policyConfig/types';
+
+import { assertSupportedToolVersion } from '../assertSupportedToolVersion';
+import { bigintReplacer } from '../utils';
 import {
   createDenyResult,
   getSchemaForPolicyResponseResult,
@@ -20,12 +30,12 @@ import {
   validateOrDeny,
 } from './helpers';
 import {
-  PolicyConfigCommitFunction,
-  PolicyConfigLifecycleFunction,
-  VincentPolicyConfig,
-} from './policyConfig/types';
-import { createAllowResult, returnNoResultDeny, wrapAllow } from './helpers/resultCreators';
-import { BundledVincentPolicy } from './bundledPolicy/types';
+  createAllowResult,
+  createDenyNoResult,
+  returnNoResultDeny,
+  wrapAllow,
+} from './helpers/resultCreators';
+import { createPolicyContext } from './policyConfig/context/policyConfigContext';
 
 /**
  * The `createVincentPolicy()` method is used to define a policy's lifecycle methods and ensure that arguments provided to the tool's
@@ -91,10 +101,8 @@ export function createVincentPolicy<
     EvalDenyResult
   > = async (args, baseContext) => {
     try {
-      const context = createPolicyContext({
+      const context: PolicyContext<EvalAllowResult, EvalDenyResult> = createPolicyContext({
         baseContext,
-        allowSchema: evalAllowSchema,
-        denySchema: evalDenySchema,
       });
 
       const paramsOrDeny = getValidatedParamsOrDeny({
@@ -107,19 +115,13 @@ export function createVincentPolicy<
 
       if (isPolicyDenyResponse(paramsOrDeny)) {
         return paramsOrDeny as EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
           : PolicyResponseDenyNoResult;
       }
 
       const { toolParams, userParams } = paramsOrDeny;
 
       const result = await PolicyConfig.evaluate({ toolParams, userParams }, context);
-
-      if (isPolicyDenyResponse(result)) {
-        return result as unknown as EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
-          : PolicyResponseDenyNoResult;
-      }
 
       const { schemaToUse } = getSchemaForPolicyResponseResult({
         value: result,
@@ -136,7 +138,16 @@ export function createVincentPolicy<
 
       if (isPolicyDenyResponse(resultOrDeny)) {
         return resultOrDeny as EvalDenyResult extends z.ZodType
-          ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
+          : PolicyResponseDenyNoResult;
+      }
+
+      // We parsed the result -- it may be a success or a failure; return appropriately.
+      if (isPolicyDenyResponse(result)) {
+        return createDenyResult({
+          result: resultOrDeny,
+        }) as EvalDenyResult extends z.ZodType
+          ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
           : PolicyResponseDenyNoResult;
       }
 
@@ -147,7 +158,7 @@ export function createVincentPolicy<
       return returnNoResultDeny<EvalDenyResult>(
         err instanceof Error ? err.message : 'Unknown error',
       ) as unknown as EvalDenyResult extends z.ZodType
-        ? PolicyResponseDeny<z.infer<EvalDenyResult> | ZodValidationDenyResult>
+        ? PolicyResponseDeny<z.infer<EvalDenyResult> | SchemaValidationError>
         : PolicyResponseDenyNoResult;
     }
   };
@@ -159,11 +170,10 @@ export function createVincentPolicy<
   const precheck = PolicyConfig.precheck
     ? ((async (args, baseContext) => {
         try {
-          const context = createPolicyContext({
-            baseContext,
-            allowSchema: precheckAllowSchema,
-            denySchema: precheckDenySchema,
-          });
+          const context: PolicyContext<PrecheckAllowResult, PrecheckDenyResult> =
+            createPolicyContext({
+              baseContext,
+            });
 
           const { precheck: precheckFn } = PolicyConfig;
 
@@ -185,12 +195,6 @@ export function createVincentPolicy<
 
           const result = await precheckFn(args, context);
 
-          if (isPolicyDenyResponse(result)) {
-            return result as unknown as PrecheckDenyResult extends z.ZodType
-              ? PolicyResponseDeny<z.infer<PrecheckDenyResult> | ZodValidationDenyResult>
-              : PolicyResponseDenyNoResult;
-          }
-
           const { schemaToUse } = getSchemaForPolicyResponseResult({
             value: result,
             allowResultSchema: precheckAllowSchema,
@@ -208,11 +212,16 @@ export function createVincentPolicy<
             return resultOrDeny;
           }
 
+          // We parsed the result -- it may be a success or a failure; return appropriately.
+          if (isPolicyDenyResponse(result)) {
+            return createDenyResult({
+              result: resultOrDeny,
+            });
+          }
+
           return createAllowResult({ result: resultOrDeny });
         } catch (err) {
-          return createDenyResult({
-            message: err instanceof Error ? err.message : 'Unknown error',
-          });
+          return createDenyNoResult(err instanceof Error ? err.message : 'Unknown error');
         }
       }) as PolicyLifecycleFunction<
         PolicyToolParams,
@@ -230,10 +239,8 @@ export function createVincentPolicy<
   const commit = PolicyConfig.commit
     ? ((async (args, baseContext) => {
         try {
-          const context = createPolicyContext({
+          const context: PolicyContext<CommitAllowResult, CommitDenyResult> = createPolicyContext({
             baseContext,
-            denySchema: commitDenySchema,
-            allowSchema: commitAllowSchema,
           });
 
           const { commit: commitFn } = PolicyConfig;
@@ -242,6 +249,7 @@ export function createVincentPolicy<
             throw new Error('commit function unexpectedly missing');
           }
 
+          console.log('commit', JSON.stringify({ args, context }, bigintReplacer, 2));
           const paramsOrDeny = validateOrDeny(args, commitParamsSchema, 'commit', 'input');
 
           if (isPolicyDenyResponse(paramsOrDeny)) {
@@ -249,12 +257,6 @@ export function createVincentPolicy<
           }
 
           const result = await commitFn(args, context);
-
-          if (isPolicyDenyResponse(result)) {
-            return result as unknown as CommitDenyResult extends z.ZodType
-              ? PolicyResponseDeny<z.infer<CommitDenyResult> | ZodValidationDenyResult>
-              : PolicyResponseDenyNoResult;
-          }
 
           const { schemaToUse } = getSchemaForPolicyResponseResult({
             value: result,
@@ -273,11 +275,16 @@ export function createVincentPolicy<
             return resultOrDeny;
           }
 
+          // We parsed the result -- it may be a success or a failure; return appropriately.
+          if (isPolicyDenyResponse(result)) {
+            return createDenyResult({
+              result: resultOrDeny,
+            });
+          }
+
           return createAllowResult({ result: resultOrDeny });
         } catch (err) {
-          return createDenyResult({
-            message: err instanceof Error ? err.message : 'Unknown error',
-          });
+          return createDenyNoResult(err instanceof Error ? err.message : 'Unknown error');
         }
       }) as CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>)
     : undefined;
@@ -351,6 +358,7 @@ export function createVincentPolicy<
 export function createVincentToolPolicy<
   const PackageName extends string,
   const IpfsCid extends string,
+  const VincentToolApiVersion extends string,
   ToolParamsSchema extends z.ZodType,
   PolicyToolParams extends z.ZodType,
   UserParams extends z.ZodType = z.ZodUndefined,
@@ -384,23 +392,29 @@ export function createVincentToolPolicy<
       >,
       CommitLifecycleFunction<CommitParams, CommitAllowResult, CommitDenyResult>
     >,
-    IpfsCid
+    IpfsCid,
+    VincentToolApiVersion
   >;
   toolParameterMappings: Partial<{
     [K in keyof z.infer<ToolParamsSchema>]: keyof z.infer<PolicyToolParams>;
   }>;
 }) {
   const {
-    bundledVincentPolicy: { vincentPolicy, ipfsCid },
+    bundledVincentPolicy: { vincentPolicy, ipfsCid, vincentToolApiVersion },
   } = config;
+
+  assertSupportedToolVersion(vincentToolApiVersion);
 
   const result = {
     vincentPolicy: vincentPolicy,
     ipfsCid,
+    vincentToolApiVersion,
     toolParameterMappings: config.toolParameterMappings,
     // Explicitly include schema types in the returned object for type inference
     /** @hidden */
     __schemaTypes: {
+      policyToolParamsSchema: vincentPolicy.toolParamsSchema,
+      userParamsSchema: vincentPolicy.userParamsSchema,
       evalAllowResultSchema: vincentPolicy.evalAllowResultSchema,
       evalDenyResultSchema: vincentPolicy.evalDenyResultSchema,
       commitParamsSchema: vincentPolicy.commitParamsSchema,
@@ -421,7 +435,11 @@ export function createVincentToolPolicy<
     ipfsCid: typeof ipfsCid;
     toolParameterMappings: typeof config.toolParameterMappings;
     /** @hidden */
+    vincentToolApiVersion: typeof vincentToolApiVersion;
+    /** @hidden */
     __schemaTypes: {
+      policyToolParamsSchema: PolicyToolParams;
+      userParamsSchema: UserParams;
       evalAllowResultSchema: EvalAllowResult;
       evalDenyResultSchema: EvalDenyResult;
       precheckAllowResultSchema: PrecheckAllowResult;

@@ -7,10 +7,11 @@
  * using a tool with two policies - one simple and one with commit functionality.
  */
 import { z } from 'zod';
-import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 
 // Base tool schema
 const baseToolSchema = z.object({
@@ -134,6 +135,7 @@ export function testPolicyEvaluationResults() {
   // Create tool with both policies
   return createVincentTool({
     packageName: '@lit-protocol/mahTool@1.0.0',
+    toolDescription: 'Mah Tool',
     toolParamsSchema: baseToolSchema,
     supportedPolicies: supportedPoliciesForTool([simplePolicy, commitPolicy]),
 

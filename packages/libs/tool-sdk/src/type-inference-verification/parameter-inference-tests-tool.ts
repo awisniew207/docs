@@ -7,10 +7,11 @@
  * policy results, and context manipulation.
  */
 import { z } from 'zod';
-import { createVincentTool } from '../lib/toolCore/vincentTool';
-import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
+
 import { asBundledVincentPolicy } from '../lib/policyCore/bundledPolicy/bundledPolicy';
+import { createVincentPolicy, createVincentToolPolicy } from '../lib/policyCore/vincentPolicy';
 import { supportedPoliciesForTool } from '../lib/toolCore/helpers';
+import { createVincentTool } from '../lib/toolCore/vincentTool';
 
 // Define a schema for our test cases
 const testSchema = z.object({
@@ -52,6 +53,7 @@ function testBasicParameterInference() {
 
   return createVincentTool({
     packageName: '@lit-protocol/yestool3@1.0.0',
+    toolDescription: 'Yes Tool',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
@@ -188,6 +190,7 @@ function testPolicyResultInference() {
 
   return createVincentTool({
     packageName: '@lit-protocol/toolPlusPlus@1.0.0',
+    toolDescription: 'Plus Plus Tool',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([complexPolicy, commitPolicy]),
 
@@ -329,6 +332,7 @@ function testComplexDestructuring() {
 
   return createVincentTool({
     packageName: '@lit-protocol/toolPlus@1.0.0',
+    toolDescription: 'Plus Tool',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema: successSchema,
@@ -449,6 +453,7 @@ function testAdvancedParameterValidation() {
 
   return createVincentTool({
     packageName: '@lit-protocol/plusplustool@1.0.0',
+    toolDescription: 'Plus Plus Tool',
     toolParamsSchema: advancedSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
 
@@ -554,6 +559,7 @@ function testMissingTypes() {
   // Case where success schema is defined but fail schema is not
   const toolWithOnlySuccessSchema = createVincentTool({
     packageName: '@lit-protocol/toolofglory@1.0.0',
+    toolDescription: 'Glory Tool',
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeSuccessSchema: successSchema,
@@ -566,7 +572,7 @@ function testMissingTypes() {
       // Should be able to succeed with schema
       succeed({ result: 'test' });
 
-      // Should be able to fail with just an error string since no fail schema
+      // @ts-expect-error Can't return a string when no schema defined
       fail('Error message');
 
       // @ts-expect-error - Can't fail with an object when no fail schema defined
@@ -583,6 +589,7 @@ function testMissingTypes() {
 
   const toolWithOnlyFailSchema = createVincentTool({
     packageName: '@lit-protocol/lets-tool-this@1.0.0',
+    toolDescription: "Let's Tool This",
     toolParamsSchema: testSchema,
     supportedPolicies: supportedPoliciesForTool([testPolicy]),
     executeFailSchema: failSchema,

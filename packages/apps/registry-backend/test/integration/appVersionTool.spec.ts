@@ -1,6 +1,8 @@
-import { api, store } from './setup';
-import { expectAssertArray, expectAssertObject } from '../assertions';
+import { registerApp } from '@lit-protocol/vincent-contracts-sdk';
+
+import { expectAssertArray, expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
+import { api, store, defaultWallet, generateRandomEthAddresses } from './setup';
 
 // Create a debug instance for this file
 const debug = createTestDebugger('appVersionTool');
@@ -32,6 +34,7 @@ describe('AppVersionTool API Integration Tests', () => {
     logo: 'https://example.com/logo.png',
     redirectUris: ['https://example.com/callback'],
     deploymentStatus: 'dev' as const,
+    delegateeAddresses: generateRandomEthAddresses(2),
   };
 
   // Test data for creating tools
@@ -127,6 +130,29 @@ describe('AppVersionTool API Integration Tests', () => {
       testAppId = data.appId;
 
       expect(data).toMatchObject(appData);
+
+      // Register the app on the contracts using contracts-sdk
+      const toolIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval tool
+      const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
+
+      try {
+        const { txHash } = await registerApp({
+          signer: defaultWallet,
+          args: {
+            appId: testAppId,
+            delegateeAddresses: appData.delegateeAddresses,
+            versionTools: {
+              toolIpfsCids: [toolIpfsCid],
+              toolPolicies: [[policyIpfsCid]],
+            },
+          },
+        });
+
+        verboseLog({ txHash });
+      } catch (error) {
+        console.error('Failed to register app on contracts:', error);
+        throw error;
+      }
     });
 
     it('should create a second app version', async () => {
@@ -170,7 +196,7 @@ describe('AppVersionTool API Integration Tests', () => {
   });
 
   describe('POST /app/:appId/version/:version/tool/:toolPackageName', () => {
-    it('should create an app version tool for the first app version using the first tool', async () => {
+    it('should fail to create an app version tool for an app version that is already on-chain', async () => {
       const result = await store.dispatch(
         api.endpoints.createAppVersionTool.initiate({
           appId: testAppId!,
@@ -181,18 +207,19 @@ describe('AppVersionTool API Integration Tests', () => {
       );
 
       verboseLog(result);
-      expect(result).not.toHaveProperty('error');
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
 
-      const { data } = result;
-      expectAssertObject(data);
-
-      expect(data).toMatchObject({
-        appId: testAppId,
-        appVersion: firstAppVersion,
-        toolPackageName: testToolPackageName1,
-        toolVersion: appVersionToolData1.toolVersion,
-        hiddenSupportedPolicies: appVersionToolData1.hiddenSupportedPolicies,
-      });
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(403);
+        // @ts-expect-error it's a test
+        expect(error.data.message).toBe(
+          `Operation not allowed: App version ${firstAppVersion} for app ${testAppId} is already on-chain`,
+        );
+      }
     });
 
     it('should create app version tools for the second app version using both tools', async () => {
@@ -284,14 +311,9 @@ describe('AppVersionTool API Integration Tests', () => {
       const { data } = result;
       expectAssertArray(data);
 
-      expect(data).toHaveLength(1);
-      // @ts-expect-error It's a test
-      expect(data[0]).toMatchObject({
-        appId: testAppId,
-        appVersion: firstAppVersion,
-        toolPackageName: testToolPackageName1,
-        toolVersion: appVersionToolData1.toolVersion,
-      });
+      // The first app version is on-chain, so tool creation should be blocked
+      // Therefore, it should have 0 tools, not 1
+      expect(data).toHaveLength(0);
     });
 
     it('should list all tools for the second app version', async () => {
@@ -321,7 +343,7 @@ describe('AppVersionTool API Integration Tests', () => {
   });
 
   describe('PUT /app/:appId/version/:version/tool/:toolPackageName', () => {
-    it('should edit an app version tool', async () => {
+    it('should fail to edit an app version tool for an app version that is already on-chain', async () => {
       const updatedPolicies = [
         '@vincent/updated-policy1',
         '@vincent/updated-policy2',
@@ -329,11 +351,48 @@ describe('AppVersionTool API Integration Tests', () => {
       ];
 
       {
-        // Use the generated client to update the hiddenSupportedPolicies
+        // Try to update a tool for the first app version which is already on-chain
         const result = await store.dispatch(
           api.endpoints.editAppVersionTool.initiate({
             appId: testAppId!,
             appVersion: firstAppVersion,
+            toolPackageName: testToolPackageName1,
+            appVersionToolEdit: {
+              hiddenSupportedPolicies: updatedPolicies,
+            },
+          }),
+        );
+
+        verboseLog(result);
+        expect(result).toHaveProperty('error');
+        expect(hasError(result)).toBe(true);
+
+        if (hasError(result)) {
+          const { error } = result;
+          expectAssertObject(error);
+          // @ts-expect-error it's a test
+          expect(error.status).toBe(403);
+          // @ts-expect-error it's a test
+          expect(error.data.message).toBe(
+            `Operation not allowed: App version ${firstAppVersion} for app ${testAppId} is already on-chain`,
+          );
+        }
+      }
+    });
+
+    it('should edit an app version tool for an app version that is not on-chain', async () => {
+      const updatedPolicies = [
+        '@vincent/updated-policy1',
+        '@vincent/updated-policy2',
+        '@vincent/updated-policy3',
+      ];
+
+      {
+        // Use the generated client to update the hiddenSupportedPolicies for a tool in the second app version
+        const result = await store.dispatch(
+          api.endpoints.editAppVersionTool.initiate({
+            appId: testAppId!,
+            appVersion: secondAppVersion,
             toolPackageName: testToolPackageName1,
             appVersionToolEdit: {
               hiddenSupportedPolicies: updatedPolicies,
@@ -357,7 +416,7 @@ describe('AppVersionTool API Integration Tests', () => {
         const result = await store.dispatch(
           api.endpoints.listAppVersionTools.initiate({
             appId: testAppId!,
-            version: firstAppVersion,
+            version: secondAppVersion,
           }),
         );
 
@@ -367,11 +426,13 @@ describe('AppVersionTool API Integration Tests', () => {
         const { data } = result;
         expectAssertArray(data);
 
-        expect(data).toHaveLength(1);
+        // Find the updated tool
         // @ts-expect-error It's a test
-        expect(data[0]).toMatchObject({
+        const updatedTool = data.find((tool) => tool.toolPackageName === testToolPackageName1);
+        expect(updatedTool).toBeDefined();
+        expect(updatedTool).toMatchObject({
           appId: testAppId,
-          appVersion: firstAppVersion,
+          appVersion: secondAppVersion,
           toolPackageName: testToolPackageName1,
           toolVersion: appVersionToolData1.toolVersion,
           hiddenSupportedPolicies: updatedPolicies,
@@ -381,7 +442,33 @@ describe('AppVersionTool API Integration Tests', () => {
   });
 
   describe('DELETE /app/:appId/version/:version/tool/:toolPackageName', () => {
-    it('should delete an app version tool', async () => {
+    it('should fail to delete an app version tool for an app version that is already on-chain', async () => {
+      // Try to delete a tool from the first app version which is already on-chain
+      const result = await store.dispatch(
+        api.endpoints.deleteAppVersionTool.initiate({
+          appId: testAppId!,
+          appVersion: firstAppVersion,
+          toolPackageName: testToolPackageName1,
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
+
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(403);
+        // @ts-expect-error it's a test
+        expect(error.data.message).toBe(
+          `Operation not allowed: App version ${firstAppVersion} for app ${testAppId} is already on-chain`,
+        );
+      }
+    });
+
+    it('should delete an app version tool for an app version that is not on-chain', async () => {
       // Delete the second tool from the second app version
       const result = await store.dispatch(
         api.endpoints.deleteAppVersionTool.initiate({

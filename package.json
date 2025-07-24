@@ -18,6 +18,7 @@
   ],
   "packageManager": "pnpm@10.7.0",
   "scripts": {
+    "heroku-postbuild": "echo 'Skipping full repo build during Heroku deployment. Make sure your Procfile runs any necessary build commands.'",
     "build": "nx run-many --target=build --all",
     "test": "nx run-many --target=test --all",
     "lint": "nx run-many --target=lint --all",
@@ -59,6 +60,9 @@
     "eslint": "^9.22.0",
     "eslint-config-next": "15.1.7",
     "eslint-config-prettier": "^10.1.1",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import-x": "^4.16.1",
+    "eslint-plugin-perfectionist": "^4.15.0",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",

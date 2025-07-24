@@ -1,11 +1,15 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
-import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
+
+import { configureStore } from '@reduxjs/toolkit';
+import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
+import { providers, Wallet } from 'ethers';
 import { SiweMessage } from 'siwe';
-import { Wallet } from 'ethers';
+
+import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 const { vincentApiClientNode, setBaseQueryFn } = nodeClient;
+
+const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
 
 // Generate a secure random nonce
 export const generateNonce = () => {
@@ -16,9 +20,29 @@ export const generateNonce = () => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
+// Generate random Ethereum addresses
+export const generateRandomEthAddresses = (count = 2): string[] => {
+  const addresses: string[] = [];
+  for (let i = 0; i < count; i++) {
+    // Create a random wallet and use its address
+    const wallet = Wallet.createRandom();
+    addresses.push(wallet.address);
+  }
+  return addresses;
+};
+
 // Default wallet for testing
+const TEST_APP_MANAGER_PRIVATE_KEY = process.env['TEST_APP_MANAGER_PRIVATE_KEY'];
+
+if (!TEST_APP_MANAGER_PRIVATE_KEY)
+  throw new Error(
+    'TEST_APP_MANAGER_PRIVATE_KEY environment variable is not set. Please set it to a private key for a wallet that can manage apps.',
+  );
+
 export const defaultWallet = new Wallet(
-  '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+  process.env['TEST_APP_MANAGER_PRIVATE_KEY'] ||
+    '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+  provider,
 );
 
 // Function to generate a SIWE message
@@ -65,28 +89,32 @@ export const createWithSiweAuth = (
         args.method &&
         args.method !== 'GET';
 
+      if (!isMutation) {
+        // Non mutation endpoints don't get auth headers as of yet <3
+        return baseQuery(args, api, extraOptions);
+      }
+
       // If it's a mutation, add the SIWE authentication header
-      if (isMutation) {
-        // Generate SIWE message and signature
-        const { message, signature } = await generateSiweFn(wallet);
+      // Generate SIWE message and signature
+      const { message, signature } = await generateSiweFn(wallet);
 
-        // Format the Authorization header value - Base64 encode the payload
-        const payload = JSON.stringify({ message, signature });
-        const base64Payload = Buffer.from(payload).toString('base64');
-        const authHeader = `SIWE ${base64Payload}`;
+      // Format the Authorization header value - Base64 encode the payload
+      const payload = JSON.stringify({ message, signature });
+      const base64Payload = Buffer.from(payload).toString('base64');
+      const authHeader = `SIWE ${base64Payload}`;
 
-        // Add the authorization header to the request
-        args = {
+      // Pass the request to the original fetchBaseQuery function but with authorization headers added :tada:
+      return baseQuery(
+        {
           ...args,
           headers: {
             ...args.headers,
             authorization: authHeader,
           },
-        };
-      }
-
-      // Pass the request to the original fetchBaseQuery function
-      return baseQuery(args, api, extraOptions);
+        },
+        api,
+        extraOptions,
+      );
     };
   };
 };

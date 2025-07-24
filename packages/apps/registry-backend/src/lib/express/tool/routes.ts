@@ -1,14 +1,14 @@
+import type { Express } from 'express';
+
+import { Features } from '../../../features';
 import { Tool, ToolVersion } from '../../mongo/tool';
+import { withSession } from '../../mongo/withSession';
+import { importPackage, identifySupportedPolicies } from '../../packageImporter';
+import { requirePackage, withValidPackage } from '../package/requirePackage';
+import { requireUserIsAuthor } from '../package/requireUserIsAuthor';
+import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
 import { requireTool, withTool } from './requireTool';
 import { requireToolVersion, withToolVersion } from './requireToolVersion';
-import { requireUserIsAuthor } from '../package/requireUserIsAuthor';
-import { requirePackage, withValidPackage } from '../package/requirePackage';
-import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
-
-import type { Express } from 'express';
-import { withSession } from '../../mongo/withSession';
-import { Features } from '../../../features';
-import { importPackage, identifySupportedPolicies } from '../../packageImporter';
 
 export function registerRoutes(app: Express) {
   // Get all tools
@@ -35,7 +35,7 @@ export function registerRoutes(app: Express) {
     requirePackage(),
     withVincentAuth(
       withValidPackage(async (req, res) => {
-        const { description, title } = req.body;
+        const { description, title, logo } = req.body;
         const packageInfo = req.vincentPackage;
 
         // Import the package to get the metadata
@@ -73,6 +73,7 @@ export function registerRoutes(app: Express) {
             packageName: packageInfo.name,
             authorWalletAddress: req.vincentUser.address, // Now derived from authentication SIWE
             description,
+            logo,
             activeVersion: packageInfo.version,
             deploymentStatus: req.body.deploymentStatus || 'dev',
           });
