@@ -1,9 +1,7 @@
 import type { Express } from 'express';
 
-import { getAppById, getAppVersion } from '@lit-protocol/vincent-contracts-sdk';
-
 import { Features } from '../../../features';
-import { ethersSigner } from '../../ethersSigner';
+import { getContractClient } from '../../contractClient';
 import { App, AppTool, AppVersion } from '../../mongo/app';
 import { withSession } from '../../mongo/withSession';
 import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
@@ -95,9 +93,8 @@ export function registerRoutes(app: Express) {
           });
 
           // First, check if the appId exists in chain state; someone may have registered it off-registry
-          const appOnChain = await getAppById({
-            signer: ethersSigner,
-            args: { appId },
+          const appOnChain = await getContractClient().getAppById({
+            appId,
           });
 
           if (appOnChain) {
@@ -581,12 +578,9 @@ export function registerRoutes(app: Express) {
         }
 
         // Check if the app version exists on-chain
-        const appVersionOnChain = await getAppVersion({
-          signer: ethersSigner,
-          args: {
-            appId: vincentApp.appId,
-            version: vincentAppVersion.version,
-          },
+        const appVersionOnChain = await getContractClient().getAppVersion({
+          appId: vincentApp.appId,
+          version: vincentAppVersion.version,
         });
 
         if (!appVersionOnChain) {
