@@ -24,7 +24,7 @@ import {
 
 export const vincentTool = createVincentTool({
   packageName: '@lit-protocol/vincent-tool-aave' as const,
-  description: 'A Vincent tool for AAVE protocol operations (Supply, Withdraw, Borrow, Repay)',
+  toolDescription: 'A Vincent tool for AAVE protocol operations (Supply, Withdraw, Borrow, Repay)',
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([]),
 

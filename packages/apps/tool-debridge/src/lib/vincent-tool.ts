@@ -14,7 +14,6 @@ import {
   validateChainId,
   validateAddress,
   getTokenBalance,
-  getTokenDecimals,
   checkAndApproveToken,
   isNativeToken,
   callDeBridgeAPI,
@@ -23,7 +22,7 @@ import {
 
 export const vincentTool = createVincentTool({
   packageName: '@lit-protocol/vincent-tool-debridge' as const,
-  description: 'A Vincent tool for DeBridge protocol operations (Transfer, Swap)',
+  toolDescription: 'A Vincent tool for DeBridge protocol operations (Transfer, Swap)',
   toolParamsSchema,
   supportedPolicies: supportedPoliciesForTool([]),
 
@@ -100,9 +99,6 @@ export const vincentTool = createVincentTool({
 
       // Use PKP address for balance checks
       const pkpAddress = delegatorPkpInfo.ethAddress;
-
-      // Get token decimals
-      const sourceDecimals = await getTokenDecimals(provider, sourceToken);
 
       // Parse amount
       let amountBN: ethers.BigNumber;
@@ -201,8 +197,6 @@ export const vincentTool = createVincentTool({
       destinationToken,
       amount,
       recipientAddress,
-      operation,
-      slippageBps,
     } = toolParams;
 
     try {
@@ -298,7 +292,7 @@ export const vincentTool = createVincentTool({
           // Step 2: Estimate gas using the provider
           const gasLimit = await provider.estimateGas(txnRequest);
 
-          const nonce = await provider.getTransactionCount(txnRequest.from);
+          const nonce = await provider.getTransactionCount(pkpAddress);
           const gasPrice = await provider.getGasPrice();
           // console.log("RunOnce Gas price:", gasPrice.toString());
 
