@@ -1,7 +1,6 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query';
 import { Wallet } from 'ethers';
 
-import { registerApp } from '@lit-protocol/vincent-contracts-sdk';
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 import { expectAssertObject, hasError } from '../assertions';
@@ -10,9 +9,9 @@ import {
   api,
   store,
   withAuth,
-  defaultWallet,
   generateRandomEthAddresses,
   createWithAuth,
+  getDefaultWalletContractClient,
 } from './setup';
 
 // Create a debug instance for this file
@@ -85,15 +84,12 @@ describe('Authorization Integration Tests', () => {
     const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
     try {
-      const { txHash } = await registerApp({
-        signer: defaultWallet,
-        args: {
-          appId: testAppId,
-          delegateeAddresses: appData.delegateeAddresses,
-          versionTools: {
-            toolIpfsCids: [toolIpfsCid],
-            toolPolicies: [[policyIpfsCid]],
-          },
+      const { txHash } = await getDefaultWalletContractClient().registerApp({
+        appId: testAppId,
+        delegateeAddresses: appData.delegateeAddresses,
+        versionTools: {
+          toolIpfsCids: [toolIpfsCid],
+          toolPolicies: [[policyIpfsCid]],
         },
       });
 

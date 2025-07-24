@@ -5,6 +5,7 @@ import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
 import { providers, Wallet } from 'ethers';
 
 import { create } from '@lit-protocol/vincent-app-sdk/jwt';
+import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 const { vincentApiClientNode, setBaseQueryFn } = nodeClient;
@@ -36,6 +37,8 @@ export const defaultWallet = new Wallet(
   provider,
 );
 
+export const getDefaultWalletContractClient = () => getClient({ signer: defaultWallet });
+
 export type GenerateJWTFn = (wallet: Wallet) => Promise<string>;
 
 export const generateJWT: GenerateJWTFn = async (wallet: Wallet) => {
@@ -47,7 +50,7 @@ export const generateJWT: GenerateJWTFn = async (wallet: Wallet) => {
       tokenId: '1',
     },
     expiresInMinutes: 10,
-    audience: 'http://localhost:${process.env.PORT || 3000}',
+    audience: 'localhost',
     authentication: {
       type: 'email',
       value: 'test@example.com',
