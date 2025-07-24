@@ -136,11 +136,11 @@ describe('AppVersionTool API Integration Tests', () => {
       const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
       try {
-        const { txHash, newAppVersion } = await registerApp({
+        const { txHash } = await registerApp({
           signer: defaultWallet,
           args: {
-            appId: testAppId.toString(),
-            delegatees: appData.delegateeAddresses,
+            appId: testAppId,
+            delegateeAddresses: appData.delegateeAddresses,
             versionTools: {
               toolIpfsCids: [toolIpfsCid],
               toolPolicies: [[policyIpfsCid]],
@@ -148,8 +148,7 @@ describe('AppVersionTool API Integration Tests', () => {
           },
         });
 
-        verboseLog({ txHash, newAppVersion });
-        expect(newAppVersion).toBe('1'); // First version should be 1
+        verboseLog({ txHash });
       } catch (error) {
         console.error('Failed to register app on contracts:', error);
         throw error;
@@ -312,14 +311,9 @@ describe('AppVersionTool API Integration Tests', () => {
       const { data } = result;
       expectAssertArray(data);
 
-      expect(data).toHaveLength(1);
-      // @ts-expect-error It's a test
-      expect(data[0]).toMatchObject({
-        appId: testAppId,
-        appVersion: firstAppVersion,
-        toolPackageName: testToolPackageName1,
-        toolVersion: appVersionToolData1.toolVersion,
-      });
+      // The first app version is on-chain, so tool creation should be blocked
+      // Therefore, it should have 0 tools, not 1
+      expect(data).toHaveLength(0);
     });
 
     it('should list all tools for the second app version', async () => {

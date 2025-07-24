@@ -35,6 +35,7 @@ describe('Authorization Integration Tests', () => {
   // Test data for entities
   let testAppId: number;
   let testAppVersion: number;
+  let secondAppVersion: number;
   let testToolPackageName: string;
   let testToolVersion: string;
   let testPolicyPackageName: string;
@@ -84,11 +85,11 @@ describe('Authorization Integration Tests', () => {
     const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
     try {
-      const { txHash, newAppVersion } = await registerApp({
+      const { txHash } = await registerApp({
         signer: defaultWallet,
         args: {
-          appId: testAppId.toString(),
-          delegatees: appData.delegateeAddresses,
+          appId: testAppId,
+          delegateeAddresses: appData.delegateeAddresses,
           versionTools: {
             toolIpfsCids: [toolIpfsCid],
             toolPolicies: [[policyIpfsCid]],
@@ -96,8 +97,7 @@ describe('Authorization Integration Tests', () => {
         },
       });
 
-      verboseLog({ txHash, newAppVersion });
-      expect(newAppVersion).toBe('1'); // First version should be 1
+      verboseLog({ txHash });
     } catch (error) {
       console.error('Failed to register app on contracts:', error);
       throw error;
@@ -135,7 +135,10 @@ describe('Authorization Integration Tests', () => {
       }),
     );
     expect(appVersionResult).not.toHaveProperty('error');
-    const secondAppVersion = appVersionResult.data.version;
+    const { data: secondVersionData } = appVersionResult;
+    expectAssertObject(secondVersionData);
+    secondAppVersion = secondVersionData.version;
+    expect(secondAppVersion).toBe(2); // Second version should be 2
 
     // Create AppVersionTool for the second app version (not on-chain)
     const appVersionToolResult = await store.dispatch(

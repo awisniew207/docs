@@ -35,7 +35,7 @@ export function registerRoutes(app: Express) {
     requirePackage(),
     withVincentAuth(
       withValidPackage(async (req, res) => {
-        const { description, title } = req.body;
+        const { description, title, logo } = req.body;
         const packageInfo = req.vincentPackage;
 
         // Import the package to get the metadata
@@ -73,6 +73,7 @@ export function registerRoutes(app: Express) {
             packageName: packageInfo.name,
             authorWalletAddress: req.vincentUser.address, // Now derived from authentication SIWE
             description,
+            logo,
             activeVersion: packageInfo.version,
             deploymentStatus: req.body.deploymentStatus || 'dev',
           });

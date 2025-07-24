@@ -35,7 +35,7 @@ export function registerRoutes(app: Express) {
     requirePackage('packageName', 'activeVersion'),
     withVincentAuth(
       withValidPackage(async (req, res) => {
-        const { description, activeVersion, title } = req.body;
+        const { description, activeVersion, title, logo } = req.body;
         const packageInfo = req.vincentPackage;
 
         // Import the package to get the metadata
@@ -52,6 +52,7 @@ export function registerRoutes(app: Express) {
             packageName: packageInfo.name,
             authorWalletAddress: req.vincentUser.address,
             description,
+            logo,
             activeVersion,
             deploymentStatus: req.body.deploymentStatus || 'dev',
           });
