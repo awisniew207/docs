@@ -59,6 +59,8 @@
       "policy-spending-limit",
       "ability-erc20-approval",
       "ability-uniswap-swap",
+      "policy-contract-whitelist",
+      "tool-transaction-signer",
       "mcp-server",
       "abilities-e2e"
     ],

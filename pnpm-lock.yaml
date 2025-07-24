@@ -180,9 +180,15 @@ importers:
       '@lit-protocol/vincent-contracts-sdk':
         specifier: workspace:*
         version: link:../../libs/contracts-sdk
+      '@lit-protocol/vincent-policy-contract-whitelist':
+        specifier: workspace:*
+        version: link:../policy-contract-whitelist
       '@lit-protocol/vincent-policy-spending-limit':
         specifier: workspace:*
         version: link:../policy-spending-limit
+      '@lit-protocol/vincent-tool-transaction-signer':
+        specifier: workspace:*
+        version: link:../tool-transaction-signer
       esbuild:
         specifier: ^0.25.5
         version: 0.25.5
@@ -597,6 +603,34 @@ importers:
         specifier: ^4.19.4
         version: 4.20.3
 
+  packages/apps/policy-contract-whitelist:
+    dependencies:
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
+      '@lit-protocol/vincent-app-sdk':
+        specifier: workspace:^
+        version: link:../../libs/app-sdk
+      ethers:
+        specifier: ^5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.12
+        version: 0.19.12
+      esbuild-plugin-polyfill-node:
+        specifier: ^0.3.0
+        version: 0.3.0(esbuild@0.19.12)
+      ipfs-only-hash:
+        specifier: ^4.0.0
+        version: 4.0.0
+
   packages/apps/policy-spending-limit:
     dependencies:
       '@lit-protocol/vincent-ability-sdk':
@@ -730,6 +764,37 @@ importers:
       unbuild:
         specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.3)
+
+  packages/apps/tool-transaction-signer:
+    dependencies:
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
+      '@lit-protocol/vincent-app-sdk':
+        specifier: workspace:^
+        version: link:../../libs/app-sdk
+      '@lit-protocol/vincent-policy-contract-whitelist':
+        specifier: workspace:*
+        version: link:../policy-contract-whitelist
+      ethers:
+        specifier: ^5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.12
+        version: 0.19.12
+      esbuild-plugin-polyfill-node:
+        specifier: ^0.3.0
+        version: 0.3.0(esbuild@0.19.12)
+      ipfs-only-hash:
+        specifier: ^4.0.0
+        version: 4.0.0
 
   packages/libs/ability-sdk:
     dependencies:
