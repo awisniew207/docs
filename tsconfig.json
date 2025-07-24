@@ -38,6 +38,9 @@
     },
     {
       "path": "./packages/apps/mcp"
+    },
+    {
+      "path": "./packages/apps/tool-morpho"
     }
   ]
 }
