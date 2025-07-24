@@ -28,4 +28,4 @@
  */
 
 export * from './jwtProvider';
-export * from 'src/react/useVincentWebAuthClient';
+export * from './useVincentWebAuthClient';
