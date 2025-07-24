@@ -1,8 +1,4 @@
-import type {
-  PermitAppOptions,
-  UnPermitAppOptions,
-  SetToolPolicyParametersOptions,
-} from './types.ts';
+import type { PermitAppOptions, UnPermitAppOptions, SetToolPolicyParametersOptions } from './types';
 
 import { decodeContractError, gasAdjustedOverrides } from '../../utils';
 import { getPkpTokenId } from '../../utils/pkpInfo';
