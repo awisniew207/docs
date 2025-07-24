@@ -1,18 +1,13 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  useEffect,
-  JSX,
-  ReactNode,
-} from 'react';
-import { IRelayPKP } from '@lit-protocol/types';
+import type { JSX, ReactNode } from 'react';
+
+import React, { createContext, useCallback, useContext, useMemo, useState, useEffect } from 'react';
+
+import type { IRelayPKP } from '@lit-protocol/types';
+
+import type { AppInfo, AuthenticationInfo } from '../jwt/types';
 
 import { verify } from '../jwt';
-import type { AppInfo, AuthenticationInfo } from '../jwt/types';
-import { useVincentWebAppClient } from './useVincentWebAppClient';
+import { useVincentWebAuthClient } from './useVincentWebAuthClient';
 
 /**
  * Interface representing the authenticated user information.
@@ -169,7 +164,7 @@ export const JwtProvider = ({
   storageKeyBuilder = (appId) => `vincent-${appId}-jwt`,
 }: JwtProviderProps): JSX.Element => {
   const appJwtKey = storageKeyBuilder(appId);
-  const vincentWebAppClient = useVincentWebAppClient(appId);
+  const vincentWebAppClient = useVincentWebAuthClient(appId);
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -190,8 +185,8 @@ export const JwtProvider = ({
   const connect = useCallback(
     (redirectUri: string) => {
       // Redirect to Vincent Auth consent page with appId and version
-      vincentWebAppClient.redirectToConsentPage({
-        // consentPageUrl: `http://localhost:5173/`,
+      vincentWebAppClient.redirectToDelegationAuthPage({
+        // delegationAuthPageUrl: `http://localhost:5173/`,
         redirectUri,
       });
     },
@@ -259,7 +254,7 @@ export const JwtProvider = ({
   );
 
   useEffect(() => {
-    loginWithJwt();
+    void loginWithJwt();
   }, [loginWithJwt]);
 
   return <JwtContext.Provider value={value}>{children}</JwtContext.Provider>;

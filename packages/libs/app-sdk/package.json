@@ -39,6 +39,11 @@
       "import": "./dist/src/utils/index.js",
       "require": "./dist/src/utils/index.js",
       "types": "./dist/src/utils/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/src/react/index.js",
+      "require": "./dist/src/react/index.js",
+      "types": "./dist/src/react/index.d.ts"
     }
   },
   "keywords": [
@@ -65,6 +70,11 @@
   },
   "peerDependencies": {
     "react": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "sideEffects": false,
   "files": [

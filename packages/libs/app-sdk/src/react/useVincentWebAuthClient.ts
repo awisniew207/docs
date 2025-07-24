@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { getVincentWebAppClient } from '../app';
+import { getWebAuthClient } from '../webAuthClient';
 
 /**
  * React hook that provides a memoized VincentWebAppClient instance.
@@ -14,11 +14,11 @@ import { getVincentWebAppClient } from '../app';
  *
  * @example
  * ```typescript
- * import { useVincentWebAppClient } from '@lit-protocol/vincent-sdk';
+ * import { useVincentWebAuthClient } from '@lit-protocol/vincent-sdk';
  *
  * function MyComponent() {
  *   // Create a memoized Vincent Web App client
- *   const vincentClient = useVincentWebAppClient('my-app-id');
+ *   const vincentClient = useVincentWebAuthClient('my-app-id');
  *
  *   // Check if the user is logging in
  *   useEffect(() => {
@@ -46,6 +46,6 @@ import { getVincentWebAppClient } from '../app';
  * @param appId - The unique identifier for your Vincent application
  * @returns A memoized VincentWebAppClient instance
  */
-export const useVincentWebAppClient = (appId: string) => {
-  return useMemo(() => getVincentWebAppClient({ appId }), [appId]);
+export const useVincentWebAuthClient = (appId: string) => {
+  return useMemo(() => getWebAuthClient({ appId }), [appId]);
 };
