@@ -1,7 +1,6 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query';
 import { Wallet } from 'ethers';
 
-import { registerApp } from '@lit-protocol/vincent-contracts-sdk';
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 import { expectAssertObject, hasError } from '../assertions';
@@ -9,10 +8,10 @@ import { createTestDebugger } from '../debug';
 import {
   api,
   store,
-  withSiweAuth,
-  defaultWallet,
+  withAuth,
   generateRandomEthAddresses,
-  createWithSiweAuth,
+  createWithAuth,
+  getDefaultWalletContractClient,
 } from './setup';
 
 // Create a debug instance for this file
@@ -29,7 +28,7 @@ const unauthorizedWallet = new Wallet(
 );
 
 // Create a withSiweAuth function that uses the unauthorized wallet
-const withUnauthorizedSiweAuth = createWithSiweAuth(unauthorizedWallet);
+const withUnauthorizedSiweAuth = createWithAuth(unauthorizedWallet);
 
 describe('Authorization Integration Tests', () => {
   // Test data for entities
@@ -85,15 +84,12 @@ describe('Authorization Integration Tests', () => {
     const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
     try {
-      const { txHash } = await registerApp({
-        signer: defaultWallet,
-        args: {
-          appId: testAppId,
-          delegateeAddresses: appData.delegateeAddresses,
-          versionTools: {
-            toolIpfsCids: [toolIpfsCid],
-            toolPolicies: [[policyIpfsCid]],
-          },
+      const { txHash } = await getDefaultWalletContractClient().registerApp({
+        appId: testAppId,
+        delegateeAddresses: appData.delegateeAddresses,
+        versionTools: {
+          toolIpfsCids: [toolIpfsCid],
+          toolPolicies: [[policyIpfsCid]],
         },
       });
 
@@ -169,7 +165,7 @@ describe('Authorization Integration Tests', () => {
     // Reset the API client to use the authorized wallet
     const { setBaseQueryFn } = nodeClient;
     setBaseQueryFn(
-      withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+      withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
     );
 
     // Delete App (this will cascade delete AppVersions and AppVersionTools)
@@ -658,7 +654,7 @@ describe('Authorization Integration Tests', () => {
       // Reset the API client to use the authorized wallet
       const { setBaseQueryFn } = nodeClient;
       setBaseQueryFn(
-        withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+        withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
       );
 
       // Explicitly delete both tools and the policy before creating new ones
@@ -737,7 +733,7 @@ describe('Authorization Integration Tests', () => {
       // Reset the API client to use the authorized wallet
       const { setBaseQueryFn } = nodeClient;
       setBaseQueryFn(
-        withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+        withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
       );
 
       // Delete the test tool and policy
@@ -758,7 +754,7 @@ describe('Authorization Integration Tests', () => {
         // Reset the API client to use the authorized wallet
         const { setBaseQueryFn } = nodeClient;
         setBaseQueryFn(
-          withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+          withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
         );
 
         const result = await store.dispatch(
@@ -849,7 +845,7 @@ describe('Authorization Integration Tests', () => {
         // Reset the API client to use the authorized wallet
         const { setBaseQueryFn } = nodeClient;
         setBaseQueryFn(
-          withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+          withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
         );
 
         const result = await store.dispatch(

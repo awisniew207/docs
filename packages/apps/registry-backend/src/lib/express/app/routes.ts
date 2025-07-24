@@ -4,7 +4,7 @@ import { Features } from '../../../features';
 import { getContractClient } from '../../contractClient';
 import { App, AppTool, AppVersion } from '../../mongo/app';
 import { withSession } from '../../mongo/withSession';
-import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
+import { getPKPInfo, requireVincentAuth, withVincentAuth } from '../vincentAuth';
 import { requireApp, withApp } from './requireApp';
 import { requireAppOnChain, withAppOnChain } from './requireAppOnChain';
 import { requireAppTool, withAppTool } from './requireAppTool';
@@ -42,7 +42,7 @@ export function registerRoutes(app: Express) {
   // Create new App
   app.post(
     '/app',
-    requireVincentAuth(),
+    requireVincentAuth,
     withVincentAuth(async (req, res) => {
       await withSession(async (mongoSession) => {
         const {
@@ -89,7 +89,7 @@ export function registerRoutes(app: Express) {
             redirectUris,
             deploymentStatus,
             delegateeAddresses,
-            managerAddress: req.vincentUser.address,
+            managerAddress: getPKPInfo(req.vincentUser.decodedJWT).ethAddress,
           });
 
           // First, check if the appId exists in chain state; someone may have registered it off-registry
@@ -137,7 +137,7 @@ export function registerRoutes(app: Express) {
   // Edit App
   app.put(
     '/app/:appId',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     withVincentAuth(
@@ -154,7 +154,7 @@ export function registerRoutes(app: Express) {
   // Create new App Version
   app.post(
     '/app/:appId/version',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppOnChain(),
@@ -243,7 +243,7 @@ export function registerRoutes(app: Express) {
   // Edit App Version
   app.put(
     '/app/:appId/version/:version',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -263,7 +263,7 @@ export function registerRoutes(app: Express) {
   // Disable app version
   app.post(
     '/app/:appId/version/:version/disable',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -283,7 +283,7 @@ export function registerRoutes(app: Express) {
   // Enable app version
   app.post(
     '/app/:appId/version/:version/enable',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -321,7 +321,7 @@ export function registerRoutes(app: Express) {
   // Create App Version Tool
   app.post(
     '/app/:appId/version/:version/tool/:toolPackageName',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -372,7 +372,7 @@ export function registerRoutes(app: Express) {
   // Update App Version Tool
   app.put(
     '/app/:appId/version/:version/tool/:toolPackageName',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -395,7 +395,7 @@ export function registerRoutes(app: Express) {
   // Delete App Version Tool
   app.delete(
     '/app/:appId/version/:version/tool/:toolPackageName',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -421,7 +421,7 @@ export function registerRoutes(app: Express) {
   // Undelete App Version Tool
   app.post(
     '/app/:appId/version/:version/tool/:toolPackageName/undelete',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -451,7 +451,7 @@ export function registerRoutes(app: Express) {
   // Delete an app version, along with all of its tools
   app.delete(
     '/app/:appId/version/:version',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -484,7 +484,7 @@ export function registerRoutes(app: Express) {
   // Undelete an app version, along with all of its tools
   app.post(
     '/app/:appId/version/:version/undelete',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
@@ -510,7 +510,7 @@ export function registerRoutes(app: Express) {
   // Delete an app, along with all of its appVersions and their tools.
   app.delete(
     '/app/:appId',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     withVincentAuth(async (req, res) => {
@@ -534,7 +534,7 @@ export function registerRoutes(app: Express) {
   // Undelete an app, along with all of its appVersions and their tools.
   app.post(
     '/app/:appId/undelete',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     withVincentAuth(async (req, res) => {
@@ -554,7 +554,7 @@ export function registerRoutes(app: Express) {
   // Set the active version of an app
   app.post(
     '/app/:appId/setActiveVersion',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireApp(),
     requireUserManagesApp(),
     requireAppVersion(),
