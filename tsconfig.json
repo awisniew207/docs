@@ -41,6 +41,15 @@
     },
     {
       "path": "./packages/apps/tool-morpho"
+    },
+    {
+      "path": "./packages/apps/tool-aave"
+    },
+    {
+      "path": "./packages/apps/tool-debridge"
+    },
+    {
+      "path": "./packages/apps/policy-send-counter"
     }
   ]
 }

@@ -1,5 +1,4 @@
 import { createVincentTool, supportedPoliciesForTool } from '@lit-protocol/vincent-tool-sdk';
-import '@lit-protocol/vincent-tool-sdk/internal';
 
 import {
   executeFailSchema,
