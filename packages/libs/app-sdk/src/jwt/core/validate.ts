@@ -13,11 +13,20 @@ import { processJWTSignature, splitJWT, validateJWTTime } from './utils';
 export function verify({
   jwt,
   expectedAudience,
+}: {
+  jwt: string;
+  expectedAudience: string;
+  requiredAppId: undefined;
+}): VincentJWT;
+
+export function verify({
+  jwt,
+  expectedAudience,
   requiredAppId,
 }: {
   jwt: string;
   expectedAudience: string;
-  requiredAppId: number | undefined;
+  requiredAppId: number;
 }): VincentJWTAppSpecific;
 
 export function verify({
@@ -135,6 +144,14 @@ export function verify({
     );
   }
 }
+
+export function decode({
+  jwt,
+  requiredAppId,
+}: {
+  jwt: string;
+  requiredAppId: undefined;
+}): VincentJWT;
 
 export function decode({
   jwt,

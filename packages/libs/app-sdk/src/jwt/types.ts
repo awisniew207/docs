@@ -21,7 +21,7 @@ export interface JWTDecoded {
  * @property pkp - The PKP object
  * @property payload - Custom claims to include in the JWT payload
  * @property expiresInMinutes - Token expiration time in minutes from current time
- * @property app - The app / appversion that the JWT is limited to (if it is at all)
+ * @property [app] - The app / appversion that the JWT is limited to (if it is at all)
  * @property audience - The domain(s) this token is intended for (aud claim)
  * @property authentication - The authentication method used to generate the JWT.
  *

@@ -73,7 +73,7 @@ describe('JWT Module', () => {
       const jwt = await create(jwtConfig);
 
       // Decode the JWT using our function
-      const result = decode({ jwt });
+      const result = decode({ jwt, requiredAppId: undefined });
 
       // Verify the decoded JWT contains the expected fields
       expect(result).toMatchObject({
@@ -107,7 +107,9 @@ describe('JWT Module', () => {
       const jwt = await create(configWithoutPkp as any);
 
       // Verify that decode throws the expected error
-      expect(() => decode({ jwt })).toThrow(/Missing "pkp" field in JWT payload/);
+      expect(() => decode({ jwt, requiredAppId: undefined })).toThrow(
+        /Missing "pkp" field in JWT payload/
+      );
     });
 
     it('should not throw an error if JWT is missing app but no `requiredAppId` is provided', async () => {
@@ -119,7 +121,7 @@ describe('JWT Module', () => {
       const jwt = await create(configWithoutApp);
 
       // Verify that decode throws the expected error
-      expect(() => decode({ jwt })).not.toThrow();
+      expect(() => decode({ jwt, requiredAppId: undefined })).not.toThrow();
     });
 
     it('should throw an error if JWT is missing app and requires one', async () => {
@@ -155,7 +157,11 @@ describe('JWT Module', () => {
       const jwt = await create(jwtConfig);
 
       // Verify the JWT with the correct audience
-      const result = verify({ jwt, expectedAudience: 'https://test-app.com' });
+      const result = verify({
+        jwt,
+        expectedAudience: 'https://test-app.com',
+        requiredAppId: undefined,
+      });
 
       // Verify the result contains the expected fields
       expect(result).toMatchObject({
@@ -185,9 +191,13 @@ describe('JWT Module', () => {
       });
 
       // Verify that verification throws the expected error
-      expect(() => verify({ jwt: expiredJwt, expectedAudience: 'https://test-app.com' })).toThrow(
-        /JWT expired/
-      );
+      expect(() =>
+        verify({
+          jwt: expiredJwt,
+          expectedAudience: 'https://test-app.com',
+          requiredAppId: undefined,
+        })
+      ).toThrow(/JWT expired/);
     });
 
     it('should throw an error if audience does not match', async () => {
@@ -198,9 +208,9 @@ describe('JWT Module', () => {
       });
 
       // Verify that verification throws the expected error when using a different audience
-      expect(() => verify({ jwt, expectedAudience: 'https://test-app.com' })).toThrow(
-        /Expected audience/
-      );
+      expect(() =>
+        verify({ jwt, expectedAudience: 'https://test-app.com', requiredAppId: undefined })
+      ).toThrow(/Expected audience/);
     });
   });
 
@@ -216,7 +226,7 @@ describe('JWT Module', () => {
       });
 
       // Decode the JWT
-      const decodedJwt = decode({ jwt: expiredJwt });
+      const decodedJwt = decode({ jwt: expiredJwt, requiredAppId: undefined });
 
       // Check if it's expired
       expect(isExpired(decodedJwt)).toBe(true);
@@ -237,7 +247,7 @@ describe('JWT Module', () => {
       });
 
       // Decode the JWT
-      const decodedJwt = decode({ jwt: validJwt });
+      const decodedJwt = decode({ jwt: validJwt, requiredAppId: undefined });
 
       // Check if it's expired
       expect(isExpired(decodedJwt)).toBe(false);

@@ -8,7 +8,7 @@ export function getAppInfo(decodedJWT: VincentJWTAppSpecific): {
   appId: number;
   version: number;
 } {
-  if (!isAppSpecificJWT) {
+  if (!isAppSpecificJWT(decodedJWT)) {
     throw new Error('JWT is not app specific');
   }
 

@@ -42,6 +42,7 @@ module.exports = [
       },
     },
     rules: {
+      '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/consistent-type-imports': ['error'],
       '@typescript-eslint/no-floating-promises': 'error',
       'import-x/consistent-type-specifier-style': ['error', 'prefer-top-level'],
