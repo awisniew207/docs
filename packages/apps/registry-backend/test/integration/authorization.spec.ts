@@ -9,10 +9,10 @@ import { createTestDebugger } from '../debug';
 import {
   api,
   store,
-  withSiweAuth,
+  withAuth,
   defaultWallet,
   generateRandomEthAddresses,
-  createWithSiweAuth,
+  createWithAuth,
 } from './setup';
 
 // Create a debug instance for this file
@@ -29,7 +29,7 @@ const unauthorizedWallet = new Wallet(
 );
 
 // Create a withSiweAuth function that uses the unauthorized wallet
-const withUnauthorizedSiweAuth = createWithSiweAuth(unauthorizedWallet);
+const withUnauthorizedSiweAuth = createWithAuth(unauthorizedWallet);
 
 describe('Authorization Integration Tests', () => {
   // Test data for entities
@@ -169,7 +169,7 @@ describe('Authorization Integration Tests', () => {
     // Reset the API client to use the authorized wallet
     const { setBaseQueryFn } = nodeClient;
     setBaseQueryFn(
-      withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+      withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
     );
 
     // Delete App (this will cascade delete AppVersions and AppVersionTools)
@@ -658,7 +658,7 @@ describe('Authorization Integration Tests', () => {
       // Reset the API client to use the authorized wallet
       const { setBaseQueryFn } = nodeClient;
       setBaseQueryFn(
-        withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+        withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
       );
 
       // Explicitly delete both tools and the policy before creating new ones
@@ -737,7 +737,7 @@ describe('Authorization Integration Tests', () => {
       // Reset the API client to use the authorized wallet
       const { setBaseQueryFn } = nodeClient;
       setBaseQueryFn(
-        withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+        withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
       );
 
       // Delete the test tool and policy
@@ -758,7 +758,7 @@ describe('Authorization Integration Tests', () => {
         // Reset the API client to use the authorized wallet
         const { setBaseQueryFn } = nodeClient;
         setBaseQueryFn(
-          withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+          withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
         );
 
         const result = await store.dispatch(
@@ -849,7 +849,7 @@ describe('Authorization Integration Tests', () => {
         // Reset the API client to use the authorized wallet
         const { setBaseQueryFn } = nodeClient;
         setBaseQueryFn(
-          withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+          withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
         );
 
         const result = await store.dispatch(
