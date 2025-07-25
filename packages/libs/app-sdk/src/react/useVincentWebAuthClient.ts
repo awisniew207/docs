@@ -46,6 +46,6 @@ import { getWebAuthClient } from '../webAuthClient';
  * @param appId - The unique identifier for your Vincent application
  * @returns A memoized VincentWebAppClient instance
  */
-export const useVincentWebAuthClient = (appId: string) => {
+export const useVincentWebAuthClient = (appId: number) => {
   return useMemo(() => getWebAuthClient({ appId }), [appId]);
 };

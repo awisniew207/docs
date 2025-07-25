@@ -97,9 +97,9 @@ export interface AsyncStorage {
 
 interface JwtProviderProps {
   children: ReactNode;
-  appId: string;
+  appId: number;
   storage?: AsyncStorage;
-  storageKeyBuilder?: (appId: string) => string;
+  storageKeyBuilder?: (appId: number) => string;
 }
 
 /**
@@ -120,7 +120,7 @@ interface JwtProviderProps {
  *
  * function App() {
  *   return (
- *     <JwtProvider appId="your-vincent-app-id">
+ *     <JwtProvider appId=<YOUR_VINCENT_APP_ID>>
  *       <YourApplication />
  *     </JwtProvider>
  *   );
@@ -213,7 +213,11 @@ export const JwtProvider = ({
       return null;
     }
 
-    const decodedJWT = verify(existingJwtStr, window.location.origin);
+    const decodedJWT = verify({
+      expectedAudience: window.location.origin,
+      jwt: existingJwtStr,
+      requiredAppId: appId,
+    });
 
     return { jwtStr: existingJwtStr, decodedJWT };
   }, [appJwtKey, storage, vincentWebAppClient]);
