@@ -25,7 +25,7 @@
       "require": "./dist/src/toolClient/index.js",
       "types": "./dist/src/toolClient/index.d.ts"
     },
-    "./webAuthclient": {
+    "./webAuthClient": {
       "import": "./dist/src/webAuthClient/index.js",
       "require": "./dist/src/webAuthClient/index.js",
       "types": "./dist/src/webAuthClient/index.d.ts"
