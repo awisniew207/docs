@@ -130,17 +130,11 @@ export interface AppVersion {
 export interface GetAppsByManagerParams {
   manager: string;
   offset: string;
-  limit: string;
 }
 
 export interface GetAppsByManagerOptions {
   signer: Signer;
   args: GetAppsByManagerParams;
-}
-
-export interface AppWithVersions {
-  app: App;
-  versions: AppVersion[];
 }
 
 export interface GetAppByDelegateeParams {

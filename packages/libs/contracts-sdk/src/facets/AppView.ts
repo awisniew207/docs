@@ -6,7 +6,6 @@ import {
   GetAppVersionOptions,
   AppVersion,
   GetAppsByManagerOptions,
-  AppWithVersions,
   GetAppByDelegateeOptions,
   GetDelegatedAgentPkpTokenIdsOptions,
 } from '../types/App';
@@ -78,34 +77,17 @@ export async function getAppVersion({ signer, args }: GetAppVersionOptions): Pro
 export async function getAppsByManager({
   signer,
   args,
-}: GetAppsByManagerOptions): Promise<AppWithVersions[]> {
+}: GetAppsByManagerOptions): Promise<{ id: string; versionCount: string }[]> {
   const contract = createContract(signer);
 
   try {
     const offset = utils.parseUnits(args.offset, 0);
-    const limit = utils.parseUnits(args.limit, 0);
 
-    const appsWithVersions = await contract.getAppsByManager(args.manager, offset, limit);
+    const [appIds, appVersionCounts] = await contract.getAppsByManager(args.manager, offset);
 
-    return appsWithVersions.map((appWithVersions: any) => ({
-      app: {
-        id: appWithVersions.app.id.toString(),
-        isDeleted: appWithVersions.app.isDeleted,
-        manager: appWithVersions.app.manager,
-        latestVersion: appWithVersions.app.latestVersion.toString(),
-        delegatees: appWithVersions.app.delegatees,
-      },
-      versions: appWithVersions.versions.map((version: any) => ({
-        version: version.version.toString(),
-        enabled: version.enabled,
-        delegatedAgentPkpTokenIds: version.delegatedAgentPkpTokenIds.map((id: any) =>
-          id.toString(),
-        ),
-        tools: version.tools.map((tool: any) => ({
-          toolIpfsCid: tool.toolIpfsCid,
-          policyIpfsCids: tool.policyIpfsCids,
-        })),
-      })),
+    return appIds.map((id: any, idx: number) => ({
+      id: id.toString(),
+      versionCount: appVersionCounts[idx].toString(),
     }));
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
