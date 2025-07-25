@@ -195,13 +195,11 @@ export async function getDelegatedAgentPkpTokenIds({
     const appId = utils.parseUnits(args.appId, 0);
     const version = utils.parseUnits(args.version, 0);
     const offset = utils.parseUnits(args.offset, 0);
-    const limit = utils.parseUnits(args.limit, 0);
 
     const delegatedAgentPkpTokenIds = await contract.getDelegatedAgentPkpTokenIds(
       appId,
       version,
       offset,
-      limit,
     );
 
     return delegatedAgentPkpTokenIds.map((id: any) => id.toString());

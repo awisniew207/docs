@@ -333,7 +333,6 @@ describe('VincentContracts', () => {
     //   args: {
     //     userAddress: process.env.TEST_USER_PKP_ADDRESS!,
     //     offset: '0',
-    //     limit: '10',
     //   },
     // });
     // console.log('Agent pkps result:', agentPkpsResult);
@@ -357,7 +356,6 @@ describe('VincentContracts', () => {
     //   args: {
     //     pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
     //     offset: '0',
-    //     limit: '10',
     //   },
     // });
     // console.log('All permitted app ids for pkp result:', allPermittedAppIdsForPkpResult);
@@ -383,7 +381,6 @@ describe('VincentContracts', () => {
         appId: appId.toString(),
         version: nextAppVersion.newAppVersion,
         offset: '0',
-        limit: '1',
       },
     });
     console.log('Delegated agent pkp token ids result:', delegatedAgentPkpTokenIdsResult);

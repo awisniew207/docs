@@ -296,7 +296,7 @@ contract SmartUpdateFacet is Script {
         bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = VincentAppViewFacet.getAppById.selector;
         selectors[1] = VincentAppViewFacet.getAppVersion.selector;
-        selectors[2] = VincentAppViewFacet.getAppsByManager.selector;  // This will be NEW selector
+        selectors[2] = VincentAppViewFacet.getAppsByManager.selector;
         selectors[3] = VincentAppViewFacet.getAppByDelegatee.selector;
         selectors[4] = VincentAppViewFacet.getDelegatedAgentPkpTokenIds.selector;
         return selectors;

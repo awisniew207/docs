@@ -15,6 +15,8 @@ contract VincentUserViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    uint256 public constant PAGE_SIZE = 50;
+
     /**
      * @notice Thrown when a PKP is not permitted for a specific app version
      * @param pkpTokenId The PKP token ID
@@ -91,10 +93,9 @@ contract VincentUserViewFacet is VincentBase {
      * @dev Gets all PKP tokens that are registered as agents in the system with pagination support
      * @param userAddress The address of the user to query
      * @param offset The offset of the first PKP token ID to retrieve
-     * @param limit The maximum number of PKP token IDs to retrieve
      * @return An array of PKP token IDs that are registered as agents
      */
-    function getAllRegisteredAgentPkps(address userAddress, uint256 offset, uint256 limit) external view returns (uint256[] memory) {
+    function getAllRegisteredAgentPkps(address userAddress, uint256 offset) external view returns (uint256[] memory) {
         if (userAddress == address(0)) {
             revert ZeroAddressNotAllowed();
         }
@@ -111,7 +112,7 @@ contract VincentUserViewFacet is VincentBase {
             revert InvalidOffset(offset, length);
         }
 
-        uint256 end = offset + limit;
+        uint256 end = offset + PAGE_SIZE;
         if (end > length) {
             end = length;
         }
@@ -155,10 +156,9 @@ contract VincentUserViewFacet is VincentBase {
      * @dev Gets all app IDs that have permissions for a specific PKP token, excluding deleted apps, with pagination support
      * @param pkpTokenId The PKP token ID
      * @param offset The offset of the first app ID to retrieve
-     * @param limit The maximum number of app IDs to retrieve
      * @return An array of app IDs that have permissions for the PKP token and haven't been deleted
      */
-    function getAllPermittedAppIdsForPkp(uint256 pkpTokenId, uint256 offset, uint256 limit) external view returns (uint256[] memory) {
+    function getAllPermittedAppIdsForPkp(uint256 pkpTokenId, uint256 offset) external view returns (uint256[] memory) {
         if (pkpTokenId == 0) {
             revert InvalidPkpTokenId();
         }
@@ -186,7 +186,7 @@ contract VincentUserViewFacet is VincentBase {
             revert InvalidOffset(offset, nonDeletedCount);
         }
 
-        uint256 end = offset + limit;
+        uint256 end = offset + PAGE_SIZE;
         if (end > nonDeletedCount) {
             end = nonDeletedCount;
         }

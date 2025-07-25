@@ -157,7 +157,6 @@ export interface GetDelegatedAgentPkpTokenIdsParams {
   appId: string;
   version: string;
   offset: string;
-  limit: string;
 }
 
 export interface GetDelegatedAgentPkpTokenIdsOptions {

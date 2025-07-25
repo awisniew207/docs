@@ -656,15 +656,12 @@ contract VincentAppFacetTest is Test {
         );
         vm.stopPrank();
 
-        uint256[] memory delegatedAgentPkpTokenIds = vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 0, 1);
+        uint256[] memory delegatedAgentPkpTokenIds = vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 0);
         assertEq(delegatedAgentPkpTokenIds.length, 1);
         assertEq(delegatedAgentPkpTokenIds[0], PKP_TOKEN_ID_1);
 
         vm.expectRevert(abi.encodeWithSelector(VincentBase.InvalidOffset.selector, 1, 1));
-        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1, 1);
-
-        vm.expectRevert(abi.encodeWithSelector(VincentBase.InvalidOffset.selector, 1, 1));
-        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1, 0);
+        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1);
     }
 
     function _registerApp(

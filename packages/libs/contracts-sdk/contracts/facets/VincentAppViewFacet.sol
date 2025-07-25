@@ -18,6 +18,8 @@ contract VincentAppViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    uint256 public constant PAGE_SIZE = 50;
+
     /**
      * @notice Thrown when trying to access a delegatee that is not registered with any app
      * @param delegatee The address of the delegatee that is not registered
@@ -117,14 +119,16 @@ contract VincentAppViewFacet is VincentBase {
     }
 
     /**
-     * @notice Retrieves the delegatedAgentPkpTokenIds with an offset and limit
+     * @notice Retrieves the delegatedAgentPkpTokenIds with an offset and a max page size of PAGE_SIZE
      * @param appId ID of the app to retrieve
      * @param version Version number of the app to retrieve (1-indexed)
      * @param offset The offset of the first token ID to retrieve
-     * @param limit The maximum number of token IDs to retrieve
      * @return delegatedAgentPkpTokenIds Array of delegated agent PKP token IDs
      */
-    function getDelegatedAgentPkpTokenIds(uint256 appId, uint256 version, uint256 offset, uint256 limit) external view onlyRegisteredAppVersion(appId, version) returns (uint256[] memory delegatedAgentPkpTokenIds) {
+    function getDelegatedAgentPkpTokenIds(uint256 appId, uint256 version, uint256 offset) 
+        external view onlyRegisteredAppVersion(appId, version) 
+        returns (uint256[] memory delegatedAgentPkpTokenIds) 
+    {
         VincentAppStorage.AppVersion storage versionedApp =
             VincentAppStorage.appStorage().appIdToApp[appId].appVersions[getAppVersionIndex(version)];
 
@@ -133,7 +137,7 @@ contract VincentAppViewFacet is VincentBase {
             revert InvalidOffset(offset, length);
         }
 
-        uint256 end = offset + limit;
+        uint256 end = offset + PAGE_SIZE;
         if (end > length) {
             end = length;
         }
