@@ -1,8 +1,6 @@
-import { registerApp } from '@lit-protocol/vincent-contracts-sdk';
-
 import { expectAssertArray, expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
-import { api, store, defaultWallet, generateRandomEthAddresses } from './setup';
+import { api, store, generateRandomEthAddresses, getDefaultWalletContractClient } from './setup';
 
 // Create a debug instance for this file
 const debug = createTestDebugger('appVersionTool');
@@ -136,15 +134,12 @@ describe('AppVersionTool API Integration Tests', () => {
       const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
       try {
-        const { txHash } = await registerApp({
-          signer: defaultWallet,
-          args: {
-            appId: testAppId,
-            delegateeAddresses: appData.delegateeAddresses,
-            versionTools: {
-              toolIpfsCids: [toolIpfsCid],
-              toolPolicies: [[policyIpfsCid]],
-            },
+        const { txHash } = await getDefaultWalletContractClient().registerApp({
+          appId: testAppId,
+          delegateeAddresses: appData.delegateeAddresses,
+          versionTools: {
+            toolIpfsCids: [toolIpfsCid],
+            toolPolicies: [[policyIpfsCid]],
           },
         });
 
