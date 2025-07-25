@@ -89,7 +89,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -109,21 +109,11 @@ contract VincentAppFacetTest is Test {
         assertEq(appVersion.tools[1].toolIpfsCid, TOOL_IPFS_CID_2);
         assertEq(appVersion.tools[1].policyIpfsCids.length, 0);
 
-        VincentAppViewFacet.AppWithVersions[] memory apps = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0, 10); // Just setting the limit more than the number of Apps
-        assertEq(apps.length, 1);
-        assertEq(apps[0].app.id, newAppId);
-        assertFalse(apps[0].app.isDeleted);
-        assertEq(apps[0].app.manager, APP_MANAGER_ALICE);
-        assertEq(apps[0].app.latestVersion, newAppVersion);
-        assertEq(apps[0].versions.length, 1);
-        assertEq(apps[0].versions[0].version, newAppVersion);
-        assertTrue(apps[0].versions[0].enabled);
-        assertEq(apps[0].versions[0].tools.length, 2);
-        assertEq(apps[0].versions[0].tools[0].toolIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(apps[0].versions[0].tools[0].policyIpfsCids.length, 1);
-        assertEq(apps[0].versions[0].tools[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
-        assertEq(apps[0].versions[0].tools[1].toolIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(apps[0].versions[0].tools[1].policyIpfsCids.length, 0);
+        (uint256[] memory appIds, uint256[] memory appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
+        assertEq(appIds.length, 1);
+        assertEq(appIds[0], newAppId);
+        assertEq(appVersionCounts.length, 1);
+        assertEq(appVersionCounts[0], newAppVersion);
 
         /**
          * Now testing registering the next version of the app
@@ -162,7 +152,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees.length, 1);
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -188,41 +178,17 @@ contract VincentAppFacetTest is Test {
         assertEq(appVersion.tools[2].policyIpfsCids[1], POLICY_IPFS_CID_2);
         assertEq(appVersion.tools[2].policyIpfsCids[2], POLICY_IPFS_CID_3);
 
-        apps = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0, 10); // Just setting the limit more than the number of Apps
-        assertEq(apps.length, 1);
-        assertEq(apps[0].app.id, newAppId);
-        assertFalse(apps[0].app.isDeleted);
-        assertEq(apps[0].app.manager, APP_MANAGER_ALICE);
-        assertEq(apps[0].app.latestVersion, newAppVersion);
-        assertEq(apps[0].app.delegatees.length, 1);
-        assertEq(apps[0].app.delegatees[0], APP_DELEGATEE_CHARLIE);
+        (appIds, appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
+        assertEq(appIds.length, 1);
+        assertEq(appIds[0], newAppId);
+        assertEq(appVersionCounts.length, 1);
+        assertEq(appVersionCounts[0], newAppVersion);
 
-        assertEq(apps[0].versions.length, 2);
-        assertEq(apps[0].versions[0].version, 1);
-        assertTrue(apps[0].versions[0].enabled);
-        assertEq(apps[0].versions[0].tools.length, 2);
-        assertEq(apps[0].versions[0].tools[0].toolIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(apps[0].versions[0].tools[0].policyIpfsCids.length, 1);
-        assertEq(apps[0].versions[0].tools[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
-
-        assertEq(apps[0].versions[0].tools[1].toolIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(apps[0].versions[0].tools[1].policyIpfsCids.length, 0);
-
-        assertEq(apps[0].versions[1].version, newAppVersion);
-        assertTrue(apps[0].versions[1].enabled);
-        assertEq(apps[0].versions[1].tools.length, 3);
-        assertEq(apps[0].versions[1].tools[0].toolIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(apps[0].versions[1].tools[0].policyIpfsCids.length, 1);
-        assertEq(apps[0].versions[1].tools[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
-
-        assertEq(apps[0].versions[1].tools[1].toolIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(apps[0].versions[1].tools[1].policyIpfsCids.length, 0);
-
-        assertEq(apps[0].versions[1].tools[2].toolIpfsCid, TOOL_IPFS_CID_3);
-        assertEq(apps[0].versions[1].tools[2].policyIpfsCids.length, 3);
-        assertEq(apps[0].versions[1].tools[2].policyIpfsCids[0], POLICY_IPFS_CID_1);
-        assertEq(apps[0].versions[1].tools[2].policyIpfsCids[1], POLICY_IPFS_CID_2);
-        assertEq(apps[0].versions[1].tools[2].policyIpfsCids[2], POLICY_IPFS_CID_3);
+        (appIds, appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
+        assertEq(appIds.length, 1);
+        assertEq(appIds[0], newAppId);
+        assertEq(appVersionCounts.length, 1);
+        assertEq(appVersionCounts[0], newAppVersion);
 
         app = vincentAppViewFacet.getAppByDelegatee(APP_DELEGATEE_CHARLIE);
         assertEq(app.id, newAppId);
@@ -252,7 +218,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -277,7 +243,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees.length, 1);
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -309,7 +275,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[1], APP_DELEGATEE_DAVID);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -335,7 +301,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees.length, 1);
         assertEq(app.delegatees[0], APP_DELEGATEE_DAVID);
 
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -366,7 +332,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertTrue(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);

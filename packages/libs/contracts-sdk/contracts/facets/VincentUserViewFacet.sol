@@ -101,7 +101,7 @@ contract VincentUserViewFacet is VincentBase {
         }
 
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        uint256[] memory allPkps = us_.userAddressToRegisteredAgentPkps[userAddress].values();
+        uint256[] memory allPkps = us_.userAddressToRegisteredAgentPkps[userAddress].values(); // TODO: Remove values directly calculate the length
         uint256 length = allPkps.length;
 
         if (length == 0) {

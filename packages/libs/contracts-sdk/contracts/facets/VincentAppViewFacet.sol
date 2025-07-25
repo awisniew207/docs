@@ -42,17 +42,6 @@ contract VincentAppViewFacet is VincentBase {
     // ==================================================================================
 
     /**
-     * @notice Represents an app with all of its versions
-     * @dev Contains the basic app information and an array of all its versions
-     * @param app The basic app information
-     * @param versions Array of all versions of the app
-     */
-    struct AppWithVersions {
-        App app;
-        AppVersion[] versions;
-    }
-
-    /**
      * @notice Represents basic app information including metadata and relationships
      * @dev Used for returning app data in view functions
      * @param id Unique identifier for the app
@@ -217,21 +206,21 @@ contract VincentAppViewFacet is VincentBase {
     // ==================================================================================
 
     /**
-     * @notice Retrieves apps managed by a specific address with all their versions, with pagination support
-     * @dev Finds apps associated with the manager address and loads their complete data including versions
+     * @notice Retrieves app IDs managed by a specific address with their version numbers, with pagination support
+     * @dev Finds apps associated with the manager address and loads only their IDs and version numbers
      * @param manager Address of the manager to query
      * @param offset The offset of the first app to retrieve
-     * @param limit The maximum number of apps to retrieve
-     * @return appsWithVersions Array of apps with all their versions managed by the specified address
+     * @return appIds Array of app IDs managed by the specified address
+     * @return appVersionCounts Array of version counts for each app ID
      */
-    function getAppsByManager(address manager, uint256 offset, uint256 limit) external view returns (AppWithVersions[] memory appsWithVersions) {
+    function getAppsByManager(address manager, uint256 offset) external view returns (uint256[] memory appIds, uint256[] memory appVersionCounts) {
         if (manager == address(0)) {
             revert ZeroAddressNotAllowed();
         }
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        uint256[] memory appIds = as_.managerAddressToAppIds[manager].values();
-        uint256 length = appIds.length;
+        EnumerableSet.UintSet storage appIdSet = as_.managerAddressToAppIds[manager];
+        uint256 length = appIdSet.length();
 
         if (length == 0) {
             revert NoAppsFoundForManager(manager);
@@ -241,27 +230,20 @@ contract VincentAppViewFacet is VincentBase {
             revert InvalidOffset(offset, length);
         }
 
-        uint256 end = offset + limit;
+        uint256 end = offset + PAGE_SIZE;
         if (end > length) {
             end = length;
         }
 
         uint256 resultCount = end - offset;
-        appsWithVersions = new AppWithVersions[](resultCount);
+        appIds = new uint256[](resultCount);
+        appVersionCounts = new uint256[](resultCount);
 
         for (uint256 i = offset; i < end; i++) {
             uint256 resultIndex = i - offset;
-            App memory app = getAppById(appIds[i]);
-            appsWithVersions[resultIndex].app = app;
-
-            uint256 versionCount = app.latestVersion;
-            appsWithVersions[resultIndex].versions = new AppVersion[](versionCount);
-
-            for (uint256 j = 0; j < versionCount; j++) {
-                // Versions are 1-indexed in the contract
-                uint256 versionNumber = j + 1;
-                (, appsWithVersions[resultIndex].versions[j]) = getAppVersion(appIds[i], versionNumber);
-            }
+            uint256 appId = appIdSet.at(i);
+            appIds[resultIndex] = appId;
+            appVersionCounts[resultIndex] = as_.appIdToApp[appId].appVersions.length;
         }
     }
 
