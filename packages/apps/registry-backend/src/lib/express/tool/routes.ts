@@ -6,7 +6,7 @@ import { withSession } from '../../mongo/withSession';
 import { importPackage, identifySupportedPolicies } from '../../packageImporter';
 import { requirePackage, withValidPackage } from '../package/requirePackage';
 import { requireUserIsAuthor } from '../package/requireUserIsAuthor';
-import { requireVincentAuth, withVincentAuth } from '../requireVincentAuth';
+import { getPKPInfo, requireVincentAuth, withVincentAuth } from '../vincentAuth';
 import { requireTool, withTool } from './requireTool';
 import { requireToolVersion, withToolVersion } from './requireToolVersion';
 
@@ -31,7 +31,7 @@ export function registerRoutes(app: Express) {
   // Create new Tool
   app.post(
     '/tool/:packageName',
-    requireVincentAuth(),
+    requireVincentAuth,
     requirePackage(),
     withVincentAuth(
       withValidPackage(async (req, res) => {
@@ -71,7 +71,7 @@ export function registerRoutes(app: Express) {
           const tool = new Tool({
             title,
             packageName: packageInfo.name,
-            authorWalletAddress: req.vincentUser.address, // Now derived from authentication SIWE
+            authorWalletAddress: getPKPInfo(req.vincentUser.decodedJWT).ethAddress,
             description,
             logo,
             activeVersion: packageInfo.version,
@@ -106,7 +106,7 @@ export function registerRoutes(app: Express) {
   // Edit Tool
   app.put(
     '/tool/:packageName',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     withVincentAuth(
@@ -123,7 +123,7 @@ export function registerRoutes(app: Express) {
   // Change Tool Owner
   app.put(
     '/tool/:packageName/owner',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     withVincentAuth(
@@ -140,7 +140,7 @@ export function registerRoutes(app: Express) {
   // Create a new Tool Version
   app.post(
     '/tool/:packageName/version/:version',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     requirePackage(),
@@ -223,7 +223,7 @@ export function registerRoutes(app: Express) {
   // Edit Tool Version
   app.put(
     '/tool/:packageName/version/:version',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     requireToolVersion(),
@@ -243,7 +243,7 @@ export function registerRoutes(app: Express) {
   // Delete a tool version
   app.delete(
     '/tool/:packageName/version/:version',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     requireToolVersion(),
@@ -267,7 +267,7 @@ export function registerRoutes(app: Express) {
   // Undelete a tool version
   app.post(
     '/tool/:packageName/version/:version/undelete',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     requireToolVersion(),
@@ -287,7 +287,7 @@ export function registerRoutes(app: Express) {
   // Delete a tool, along with all of its tool versions
   app.delete(
     '/tool/:packageName',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     withVincentAuth(async (req, res) => {
@@ -313,7 +313,7 @@ export function registerRoutes(app: Express) {
   // Undelete a tool, along with all of its tool versions
   app.post(
     '/tool/:packageName/undelete',
-    requireVincentAuth(),
+    requireVincentAuth,
     requireTool(),
     requireUserIsAuthor('tool'),
     withVincentAuth(async (req, res) => {
