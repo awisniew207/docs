@@ -150,67 +150,63 @@ contract VincentAppViewFacet is VincentBase {
 
     /**
      * @notice Retrieves detailed information about a specific version of an app
-     * @dev Fetches basic app data and version-specific information from storage
+     * @dev Fetches version-specific information from storage (excluding delegatedAgentPkpTokenIds)
      * @param appId ID of the app to retrieve
      * @param version Version number of the app to retrieve (1-indexed)
-     * @return app Basic app information
-     * @return appVersion Version-specific information including tools and policies
+     * @return appVersion Version-specific information including tools and policies (excluding delegatedAgentPkpTokenIds)
      */
     function getAppVersion(uint256 appId, uint256 version)
         public
         view
         onlyRegisteredAppVersion(appId, version)
-        returns (App memory app, AppVersion memory appVersion)
+        returns (AppVersion memory appVersion)
     {
         // Step 1: Access storage and get app data
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
-        // Step 2: Retrieve basic app information
-        app = getAppById(appId);
-
-        // Step 3: Retrieve the specific version data
+        // Step 2: Retrieve the specific version data
         VincentAppStorage.AppVersion storage storedVersionedApp =
             storedApp.appVersions[getAppVersionIndex(version)];
 
-        // Step 4: Set basic version information
+        // Step 3: Set basic version information (excluding delegatedAgentPkpTokenIds)
         appVersion.version = version;
         appVersion.enabled = storedVersionedApp.enabled;
-        appVersion.delegatedAgentPkpTokenIds = storedVersionedApp.delegatedAgentPkps.values();
+        // appVersion.delegatedAgentPkpTokenIds is intentionally omitted
 
-        // Step 5: Prepare to access tool data
+        // Step 4: Prepare to access tool data
         VincentLitActionStorage.LitActionStorage storage ls = VincentLitActionStorage.litActionStorage();
 
-        // Step 6: Get the number of tools for this version
+        // Step 5: Get the number of tools for this version
         uint256 toolIpfsCidHashesLength = storedVersionedApp.toolIpfsCidHashes.length();
 
-        // Step 7: Initialize the tools array with the appropriate size
+        // Step 6: Initialize the tools array with the appropriate size
         appVersion.tools = new Tool[](toolIpfsCidHashesLength);
 
-        // Step 8: Iterate through each tool for this version
+        // Step 7: Iterate through each tool for this version
         for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
-            // Step 8.1: Get the tool hash and resolve to the actual IPFS CID
+            // Step 7.1: Get the tool hash and resolve to the actual IPFS CID
             bytes32 toolIpfsCidHash = storedVersionedApp.toolIpfsCidHashes.at(i);
             string memory toolIpfsCid = ls.ipfsCidHashToIpfsCid[toolIpfsCidHash];
 
-            // Step 8.2: Set the tool IPFS CID in the return structure
+            // Step 7.2: Set the tool IPFS CID in the return structure
             appVersion.tools[i].toolIpfsCid = toolIpfsCid;
 
-            // Step 9: Get the policies for this specific tool
+            // Step 8: Get the policies for this specific tool
             EnumerableSet.Bytes32Set storage toolPolicyIpfsCidHashes =
                 storedVersionedApp.toolIpfsCidHashToToolPolicyIpfsCidHashes[toolIpfsCidHash];
             uint256 policyCount = toolPolicyIpfsCidHashes.length();
 
-            // Step 9.1: Initialize the policies array for this tool
+            // Step 8.1: Initialize the policies array for this tool
             appVersion.tools[i].policyIpfsCids = new string[](policyCount);
 
-            // Step 10: Iterate through each policy for this tool
+            // Step 9: Iterate through each policy for this tool
             for (uint256 j = 0; j < policyCount; j++) {
-                // Step 10.1: Get the policy hash and resolve to the actual IPFS CID
+                // Step 9.1: Get the policy hash and resolve to the actual IPFS CID
                 bytes32 policyIpfsCidHash = toolPolicyIpfsCidHashes.at(j);
                 string memory policyIpfsCid = ls.ipfsCidHashToIpfsCid[policyIpfsCidHash];
 
-                // Step 10.2: Set the policy IPFS CID in the return structure
+                // Step 9.2: Set the policy IPFS CID in the return structure
                 appVersion.tools[i].policyIpfsCids[j] = policyIpfsCid;
             }
         }

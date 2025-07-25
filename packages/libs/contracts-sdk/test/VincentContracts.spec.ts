@@ -135,11 +135,6 @@ describe('VincentContracts', () => {
       },
     });
     console.log('App version result:', appVersionResult);
-    expect(appVersionResult.app.id).toBe(appId.toString());
-    expect(appVersionResult.app.isDeleted).toBe(false);
-    expect(appVersionResult.app.manager).toBe(appManagerSigner.address);
-    expect(appVersionResult.app.latestVersion).toBe(initialAppVersion.newAppVersion);
-    expect(appVersionResult.app.delegatees).toEqual(delegatees);
 
     // Get all apps by manager
     const appsByManagerResult = await getAppsByManager({

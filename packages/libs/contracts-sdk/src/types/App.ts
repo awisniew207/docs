@@ -124,7 +124,6 @@ export interface Tool {
 export interface AppVersion {
   version: string;
   enabled: boolean;
-  delegatedAgentPkpTokenIds: string[];
   tools: Tool[];
 }
 

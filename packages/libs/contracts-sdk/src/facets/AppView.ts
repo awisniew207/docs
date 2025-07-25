@@ -42,44 +42,27 @@ export async function getAppById({ signer, args }: GetAppByIdOptions): Promise<A
  * Get detailed information about a specific version of an app
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing appId and version
- * @returns Object containing basic app information and version-specific information including tools and policies
+ * @returns Version-specific information including tools and policies
  */
-export async function getAppVersion({
-  signer,
-  args,
-}: GetAppVersionOptions): Promise<{ app: App; appVersion: AppVersion }> {
+export async function getAppVersion({ signer, args }: GetAppVersionOptions): Promise<AppVersion> {
   const contract = createContract(signer);
 
   try {
     const appId = utils.parseUnits(args.appId, 0);
     const version = utils.parseUnits(args.version, 0);
 
-    const [app, appVersion] = await contract.getAppVersion(appId, version);
-
-    const convertedApp: App = {
-      id: app.id.toString(),
-      isDeleted: app.isDeleted,
-      manager: app.manager,
-      latestVersion: app.latestVersion.toString(),
-      delegatees: app.delegatees,
-    };
+    const appVersion = await contract.getAppVersion(appId, version);
 
     const convertedAppVersion: AppVersion = {
       version: appVersion.version.toString(),
       enabled: appVersion.enabled,
-      delegatedAgentPkpTokenIds: appVersion.delegatedAgentPkpTokenIds.map((id: any) =>
-        id.toString(),
-      ),
       tools: appVersion.tools.map((tool: any) => ({
         toolIpfsCid: tool.toolIpfsCid,
         policyIpfsCids: tool.policyIpfsCids,
       })),
     };
 
-    return {
-      app: convertedApp,
-      appVersion: convertedAppVersion,
-    };
+    return convertedAppVersion;
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get App Version: ${decodedError}`);
