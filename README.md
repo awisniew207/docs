@@ -1,10 +1,8 @@
 # Hello, Vincent
 
-Vincent is an open-source framework for creating programmable, user controlled agents. Built on [Lit Protocol](https://developer.litprotocol.com/what-is-lit) and powered by decentralized key management and policy enforcement, Vincent enables secure delegation of both on-chain and off-chain actions without compromising user control.
+Vincent is an open framework for creating programmable, user controlled agents and vaults. Built on [Lit Protocol](https://developer.litprotocol.com/what-is-lit) and powered by decentralized key management and policy enforcement, Vincent enables secure delegation of both on-chain and off-chain actions without compromising user control.
 
-Vincent is an open-source framework powered by [Lit Protocol](https://developer.litprotocol.com/what-is-lit) that empowers developers to create automated, user-controlled AI agents.
-
-With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data.
+With Vincent, you can build agents that automate the execution of operations across smart contracts on crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data.
 
 Powered by Lit’s [decentralized key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.
 
