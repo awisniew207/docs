@@ -1,1 +1,1 @@
-web: pnpm nx run-many --target=build --projects=registry-sdk,app-sdk,contracts-sdk --parallel=1 && cd packages/apps/registry-backend && pnpm build && pnpm start
+web: cd packages/apps/registry-backend && pnpm start
