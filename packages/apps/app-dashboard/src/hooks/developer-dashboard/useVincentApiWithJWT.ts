@@ -13,7 +13,7 @@ type StoredJWT = {
   expiresAt: number;
 };
 
-const JWT_STORAGE_KEY = 'vincentDeveloperJWT';
+const JWT_STORAGE_KEY = 'platformUserJWT';
 const EXPECTED_AUDIENCE = 'https://staging.registry.heyvincent.ai';
 
 /**
@@ -67,7 +67,7 @@ export const getCurrentJwt = async (
       pkpWallet,
       pkp: authInfo.agentPKP,
       payload: {
-        name: 'Vincent Developer Dashboard User',
+        name: 'Vincent Platform User',
       },
       expiresInMinutes: VITE_JWT_EXPIRATION_MINUTES,
       audience: EXPECTED_AUDIENCE,
