@@ -2,8 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es2018",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "nodenext",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
