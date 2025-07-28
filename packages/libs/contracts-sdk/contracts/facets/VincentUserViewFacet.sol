@@ -101,8 +101,8 @@ contract VincentUserViewFacet is VincentBase {
         }
 
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        uint256[] memory allPkps = us_.userAddressToRegisteredAgentPkps[userAddress].values(); // TODO: Remove values directly calculate the length
-        uint256 length = allPkps.length;
+        EnumerableSet.UintSet storage pkpSet = us_.userAddressToRegisteredAgentPkps[userAddress];
+        uint256 length = pkpSet.length();
 
         if (length == 0) {
             revert NoRegisteredPkpsFound(userAddress);
@@ -121,7 +121,7 @@ contract VincentUserViewFacet is VincentBase {
         uint256[] memory pkps = new uint256[](resultCount);
 
         for (uint256 i = offset; i < end; i++) {
-            pkps[i - offset] = allPkps[i];
+            pkps[i - offset] = pkpSet.at(i);
         }
 
         return pkps;
@@ -166,14 +166,14 @@ contract VincentUserViewFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
-        uint256[] memory allPermittedAppIds = us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedApps.values();
+        EnumerableSet.UintSet storage permittedAppSet = us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedApps;
+        uint256 permittedAppCount = permittedAppSet.length();
 
-        uint256[] memory nonDeletedAppIds = new uint256[](allPermittedAppIds.length);
         uint256 nonDeletedCount = 0;
 
-        for (uint256 i = 0; i < allPermittedAppIds.length; i++) {
-            if (!as_.appIdToApp[allPermittedAppIds[i]].isDeleted) {
-                nonDeletedAppIds[nonDeletedCount] = allPermittedAppIds[i];
+        for (uint256 i = 0; i < permittedAppCount; i++) {
+            uint256 appId = permittedAppSet.at(i);
+            if (!as_.appIdToApp[appId].isDeleted) {
                 nonDeletedCount++;
             }
         }
@@ -195,7 +195,7 @@ contract VincentUserViewFacet is VincentBase {
         uint256[] memory result = new uint256[](resultCount);
 
         for (uint256 i = offset; i < end; i++) {
-            result[i - offset] = nonDeletedAppIds[i];
+            result[i - offset] = permittedAppSet.at(i);
         }
 
         return result;
