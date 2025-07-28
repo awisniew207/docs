@@ -4,6 +4,7 @@ packages/apps/policy-spending-limit/
 packages/apps/tool-erc20-approval/
 packages/apps/tool-uniswap-swap/
 packages/apps/toolpolicies-e2e/
+packages/apps/app-dashboard/
 
 # Exclude development and build artifacts
 node_modules/
@@ -25,3 +26,24 @@ node_modules/
 **/*.spec.js
 **/jest.config.*
 **/eslint.config.*
+
+# Exclude documentation and development files
+docs/
+*.md
+README*
+CHANGELOG*
+CONTRIBUTING*
+LICENSE*
+
+# Exclude source files (keep only built artifacts)
+**/src/
+**/tsconfig*.json
+**/.gitignore
+**/package-lock.json
+**/yarn.lock
+
+# Exclude development tools
+.github/
+.vscode/
+.idea/
+**/.env.example
