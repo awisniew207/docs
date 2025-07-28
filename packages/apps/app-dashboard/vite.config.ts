@@ -24,7 +24,15 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-    conditions: ['import', 'module', 'browser', 'default'],
+    conditions: ['require', 'node', 'import', 'module', 'browser', 'default'],
+  },
+
+  ssr: {
+    noExternal: [
+      '@lit-protocol/vincent-registry-sdk',
+      '@lit-protocol/vincent-app-sdk',
+      '@lit-protocol/vincent-contracts-sdk',
+    ],
   },
 
   optimizeDeps: {
@@ -33,9 +41,18 @@ export default defineConfig({
       '@lit-protocol/vincent-registry-sdk',
       '@lit-protocol/vincent-contracts-sdk',
     ],
+    force: true,
   },
 
   build: {
     sourcemap: true,
+    commonjsOptions: {
+      include: [
+        /node_modules/,
+        /packages\/libs\/registry-sdk/,
+        /packages\/libs\/contracts-sdk/,
+        /packages\/libs\/app-sdk/,
+      ],
+    },
   },
 });

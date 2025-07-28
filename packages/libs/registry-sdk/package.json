@@ -22,7 +22,6 @@
   },
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
-  "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
