@@ -1,7 +1,0 @@
-# Exclude unused packages from deployment
-packages/apps/mcp/
-packages/apps/policy-spending-limit/
-packages/apps/tool-erc20-approval/
-packages/apps/tool-uniswap-swap/
-packages/apps/toolpolicies-e2e/
-packages/apps/app-dashboard/
