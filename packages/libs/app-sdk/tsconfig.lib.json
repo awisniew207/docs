@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "target": "es2018",
+    "module": "nodenext",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
