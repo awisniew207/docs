@@ -38,7 +38,7 @@ export function composeDelegationAuthUrl(
   delegationAuthPageUrl?: string
 ) {
   return new URL(
-    `/user/appId/${String(appId)}/consent?redirectUri=${redirectUri}`,
+    `/user/consent/appId/${String(appId)}?redirectUri=${redirectUri}`,
     delegationAuthPageUrl || PRODUCTION_VINCENT_DASHBOARD_URL
   );
 }
