@@ -1,1 +1,1 @@
-web: pnpm nx build registry-sdk && pnpm nx build app-sdk && pnpm nx build contracts-sdk && cd packages/apps/registry-backend && pnpm build && node ./dist/bin/apiServer.mjs
+web: pnpm nx build registry-sdk && pnpm nx build app-sdk && pnpm nx build contracts-sdk && cd packages/apps/registry-backend && pnpm build && pnpm start
