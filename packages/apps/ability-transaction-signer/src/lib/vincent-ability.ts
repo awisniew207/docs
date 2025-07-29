@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 import {
-  createVincentTool,
-  createVincentToolPolicy,
-  supportedPoliciesForTool,
-} from '@lit-protocol/vincent-tool-sdk';
+  createVincentAbility,
+  createVincentAbilityPolicy,
+  supportedPoliciesForAbility,
+} from '@lit-protocol/vincent-ability-sdk';
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-contract-whitelist';
 
 import {
@@ -11,7 +11,7 @@ import {
   executeSuccessSchema,
   precheckFailSchema,
   precheckSuccessSchema,
-  toolParamsSchema,
+  abilityParamsSchema,
 } from './schemas';
 import {
   buildTransactionForSigning,
@@ -19,19 +19,19 @@ import {
   signTx,
 } from './lit-action-helpers';
 
-const ContractWhitelistPolicy = createVincentToolPolicy({
-  toolParamsSchema,
+const ContractWhitelistPolicy = createVincentAbilityPolicy({
+  abilityParamsSchema,
   bundledVincentPolicy,
-  toolParameterMappings: {
+  abilityParameterMappings: {
     serializedTransaction: 'serializedTransaction',
   },
 });
 
-export const vincentTool = createVincentTool({
-  packageName: '@lit-protocol/vincent-tool-transaction-signer' as const,
-  toolDescription: 'Sign a transaction using a Vincent Agent Wallet.' as const,
-  toolParamsSchema,
-  supportedPolicies: supportedPoliciesForTool([ContractWhitelistPolicy]),
+export const vincentAbility = createVincentAbility({
+  packageName: '@lit-protocol/vincent-ability-transaction-signer' as const,
+  abilityDescription: 'Sign a transaction using a Vincent Agent Wallet.' as const,
+  abilityParamsSchema,
+  supportedPolicies: supportedPoliciesForAbility([ContractWhitelistPolicy]),
 
   precheckSuccessSchema,
   precheckFailSchema,
@@ -39,8 +39,8 @@ export const vincentTool = createVincentTool({
   executeSuccessSchema,
   executeFailSchema,
 
-  precheck: async ({ toolParams }, { succeed, fail }) => {
-    const { serializedTransaction } = toolParams;
+  precheck: async ({ abilityParams }, { succeed, fail }) => {
+    const { serializedTransaction } = abilityParams;
 
     try {
       return succeed({
@@ -55,8 +55,8 @@ export const vincentTool = createVincentTool({
       });
     }
   },
-  execute: async ({ toolParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
-    const { serializedTransaction } = toolParams;
+  execute: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
+    const { serializedTransaction } = abilityParams;
     const { publicKey } = delegatorPkpInfo;
 
     try {

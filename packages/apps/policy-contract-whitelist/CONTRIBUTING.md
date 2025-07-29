@@ -47,14 +47,14 @@ nx action:deploy policy-contract-whitelist
 
 ## Policy Development Guidelines
 
-1. Use the Vincent Tool SDK to create policies
-2. Define clear schemas for tool parameters and user parameters
+1. Use the Vincent Ability SDK to create policies
+2. Define clear schemas for ability parameters and user parameters
 3. Implement the policy lifecycle methods (evaluate, commit)
 4. Handle errors gracefully
 5. Write comprehensive tests for all functionality
 6. Document the policy's purpose and usage
 
-## Integration with Tools
+## Integration with Abilities
 
 <!-- TODO -->
 
@@ -83,4 +83,4 @@ pnpm test
 ## Additional Resources
 
 - [Vincent Documentation](https://docs.heyvincent.ai/)
-- [Vincent Tool SDK Documentation](../../libs/tool-sdk/README.md)
+- [Vincent Ability SDK Documentation](../../libs/ability-sdk/README.md)

@@ -15,7 +15,7 @@ if (!PINATA_JWT) {
     const filePath = path.join(generatedDir, outputFile);
     if (!fs.existsSync(filePath)) {
       throw new Error(
-        `Bundled Lit Action code string not found at ${filePath}. Please run pnpx nx run vincent-tool-erc20-approval:action:build first.`,
+        `Bundled Lit Action code string not found at ${filePath}. Please run pnpx nx run vincent-ability-transaction-signer:action:build first.`,
       );
     }
     const litActionCodeString = require(filePath);
@@ -23,7 +23,7 @@ if (!PINATA_JWT) {
     console.log(`Deploying ${outputFile} to IPFS...`);
     const ipfsCid = await uploadToIPFS(outputFile, litActionCodeString.code);
 
-    const cidJsonPath = path.join(generatedDir, 'vincent-tool-metadata.json');
+    const cidJsonPath = path.join(generatedDir, 'vincent-ability-metadata.json');
 
     const metadata = fs.readFileSync(cidJsonPath);
     const { ipfsCid: metadataIpfsCid } = JSON.parse(metadata);
@@ -38,9 +38,9 @@ if (!PINATA_JWT) {
     // };
     // fs.writeFileSync(cidJsonPath, JSON.stringify(cidJsonContent, null, 2), 'utf8');
 
-    console.log('✅ Successfully deployed Lit Action');
+    console.log('✅ Successfully deployed Lit Ability');
     console.log(`ℹ️  Deployed ${outputFile} to IPFS: ${ipfsCid}`);
-    // console.log(`ℹ️  Saved vincent-tool-metadata.json to: ${cidJsonPath}`);
+    // console.log(`ℹ️  Saved vincent-ability-metadata.json to: ${cidJsonPath}`);
   } catch (error) {
     console.error('❌ Error in deploy process:', error);
     process.exit(1);

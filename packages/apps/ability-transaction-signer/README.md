@@ -1,14 +1,14 @@
-# Vincent Tool: Transaction Signer
+# Vincent Ability: Transaction Signer
 
-A secure transaction signing tool for Vincent Agent Wallets that leverages policy-based access control to ensure only whitelisted contract interactions can be signed.
+A secure transaction signing ability for Vincent Agent Wallets that leverages policy-based access control to ensure only whitelisted contract interactions can be signed.
 
 ## Overview
 
-The Transaction Signer Tool enables Vincent Agent Wallets to sign Ethereum transactions with built-in security through the Contract Whitelist Policy. This tool is designed to prevent unauthorized contract interactions by validating transactions against a predefined whitelist before signing.
+The Transaction Signer Ability enables Vincent Agent Wallets to sign Ethereum transactions with built-in security through the Contract Whitelist Policy. This ability is designed to prevent unauthorized contract interactions by validating transactions against a predefined whitelist before signing.
 
 ## How It Works
 
-The tool is intended to be used with the `@lit-protocol/vincent-policy-contract-whitelist` policy to ensure transactions are only signed if the contract and function they are interacting with are whitelisted.
+The ability is intended to be used with the `@lit-protocol/vincent-policy-contract-whitelist` policy to ensure transactions are only signed if the contract and function they are interacting with are whitelisted.
 
 The policy validates that:
 
@@ -30,22 +30,22 @@ The policy validates that:
    - Signs the transaction using the Agent Wallet
    - Returns both the signed transaction ready for broadcast, and the deserialized signed transaction
 
-## Using the Tool
+## Using the Ability
 
-See the comprehensive E2E test in [contract-whitelist.spec.ts](../toolpolicies-e2e/test-e2e/contract-whitelist.spec.ts) for a complete example of:
+See the comprehensive E2E test in [contract-whitelist.spec.ts](../abilities-e2e/test-e2e/contract-whitelist.spec.ts) for a complete example of:
 
 - Setting up permissions and the Contract Whitelist Policy
-- Executing the Transaction Signer Tool
+- Executing the Transaction Signer Ability
 - Validating the signed transaction
 - Broadcasting the signed transaction to the network
 
 ```typescript
-import { getVincentToolClient } from '@lit-protocol/vincent-app-sdk/toolClient';
-import { bundledVincentTool } from '@lit-protocol/vincent-tool-transaction-signer';
+import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
+import { bundledVincentAbility } from '@lit-protocol/vincent-ability-transaction-signer';
 
-// Create tool client
-const toolClient = getVincentToolClient({
-  bundledVincentTool: bundledVincentTool,
+// Create ability client
+const abilityClient = getVincentAbilityClient({
+  bundledVincentAbility: bundledVincentAbility,
   ethersSigner: yourEthersSigner,
 });
 
@@ -63,8 +63,8 @@ const transaction = {
 // Serialize the transaction
 const serializedTx = ethers.utils.serializeTransaction(transaction);
 
-// Execute the tool
-const result = await toolClient.execute(
+// Execute the ability
+const result = await abilityClient.execute(
   {
     serializedTransaction: serializedTx,
   },
@@ -81,7 +81,7 @@ if (result.success) {
 
 ## Input/Output Schemas
 
-### Tool Parameters
+### Ability Parameters
 
 ```typescript
 {
@@ -137,11 +137,11 @@ if (result.success) {
 
 ## Building
 
-Run `nx build tool-transaction-signer` to build the Tool.
+Run `nx build ability-transaction-signer` to build the Ability.
 
 ## Running E2E tests
 
-Run `nx run toolpolicies-e2e:test-e2e packages/apps/toolpolicies-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
+Run `nx run abilities-e2e:test-e2e packages/apps/abilities-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
 
 ## Contributing
 

@@ -1,10 +1,10 @@
-# Contributing to Vincent Tool Transaction Signer
+# Contributing to Vincent Ability Transaction Signer
 
-This document provides guidelines for contributing to the Vincent Tool Transaction Signer project.
+This document provides guidelines for contributing to the Vincent Ability Transaction Signer project.
 
 ## Overview
 
-The Vincent Tool Transaction Signer is a tool to sign transactions using a Vincent Agent Wallet. It's part of the Vincent Tools ecosystem and is built using the Vincent Tool SDK.
+The Vincent Ability Transaction Signer is a ability to sign transactions using a Vincent Agent Wallet. It's part of the Vincent Abilities ecosystem and is built using the Vincent Ability SDK.
 
 ## Setup
 
@@ -21,7 +21,7 @@ The Vincent Tool Transaction Signer is a tool to sign transactions using a Vince
 Run tests:
 
 ```bash
-nx test tool-transaction-signer
+nx test ability-transaction-signer
 ```
 
 ### Building the Lit Action
@@ -29,7 +29,7 @@ nx test tool-transaction-signer
 Build the policy:
 
 ```bash
-nx action:build tool-transaction-signer
+nx action:build ability-transaction-signer
 ```
 
 ### Deploying the Lit Action to IPFS
@@ -37,7 +37,7 @@ nx action:build tool-transaction-signer
 Building will be done automatically. Deploy the policy:
 
 ```bash
-nx action:deploy tool-transaction-signer
+nx action:deploy ability-transaction-signer
 ```
 
 ## Project Structure
@@ -45,18 +45,18 @@ nx action:deploy tool-transaction-signer
 - `src/`: Source code
   - `index.ts`: Main entry point
 
-## Tool Development Guidelines
+## Ability Development Guidelines
 
-1. Use the Vincent Tool SDK to create tools
-2. Define clear schemas for tool parameters
-3. Implement the tool lifecycle methods (precheck, execute)
+1. Use the Vincent Ability SDK to create abilities
+2. Define clear schemas for ability parameters
+3. Implement the ability lifecycle methods (precheck, execute)
 4. Handle errors gracefully
 5. Write comprehensive tests for all functionality
-6. Document the tool's purpose and usage
+6. Document the ability's purpose and usage
 
 ## Integration with Policies
 
-This tool can be integrated with various Vincent Policies to enforce constraints. When developing or modifying the tool, consider how it will be used with policies such as:
+This ability can be integrated with various Vincent Policies to enforce constraints. When developing or modifying the ability, consider how it will be used with policies such as:
 
 - Vincent Policy Contract Whitelist
 
@@ -70,9 +70,9 @@ pnpm test
 
 ## Documentation
 
-- Document the tool's purpose and usage
+- Document the ability's purpose and usage
 - Update README.md when adding new features
-- Document the tool's parameters and behavior
+- Document the ability's parameters and behavior
 
 ## Pull Request Process
 
@@ -85,4 +85,4 @@ pnpm test
 ## Additional Resources
 
 - [Vincent Documentation](https://docs.heyvincent.ai/)
-- [Vincent Tool SDK Documentation](../../libs/tool-sdk/README.md)
+- [Vincent Ability SDK Documentation](../../libs/ability-sdk/README.md)

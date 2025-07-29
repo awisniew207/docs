@@ -1,4 +1,4 @@
-import { createVincentPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
 import { ethers } from 'ethers';
 
 import {
@@ -6,14 +6,14 @@ import {
   evalDenyResultSchema,
   precheckAllowResultSchema,
   precheckDenyResultSchema,
-  toolParamsSchema,
+  abilityParamsSchema,
   userParamsSchema,
 } from './schemas';
 
 export const vincentPolicy = createVincentPolicy({
   packageName: '@lit-protocol/vincent-policy-contract-whitelist' as const,
 
-  toolParamsSchema,
+  abilityParamsSchema,
   userParamsSchema,
 
   precheckAllowResultSchema,
@@ -22,9 +22,9 @@ export const vincentPolicy = createVincentPolicy({
   evalAllowResultSchema,
   evalDenyResultSchema,
 
-  precheck: async ({ toolParams, userParams }, { allow, deny }) => {
+  precheck: async ({ abilityParams, userParams }, { allow, deny }) => {
     try {
-      const { serializedTransaction } = toolParams;
+      const { serializedTransaction } = abilityParams;
       const { whitelist } = userParams;
 
       const transaction = ethers.utils.parseTransaction(serializedTransaction);
@@ -82,9 +82,9 @@ export const vincentPolicy = createVincentPolicy({
       });
     }
   },
-  evaluate: async ({ toolParams, userParams }, { allow, deny }) => {
+  evaluate: async ({ abilityParams, userParams }, { allow, deny }) => {
     try {
-      const { serializedTransaction } = toolParams;
+      const { serializedTransaction } = abilityParams;
       const { whitelist } = userParams;
 
       const transaction = ethers.utils.parseTransaction(serializedTransaction);

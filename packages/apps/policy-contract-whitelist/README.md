@@ -31,7 +31,7 @@ whitelist
 
 The policy uses two main schemas:
 
-**Tool Parameters** (what the tool provides):
+**Ability Parameters** (what the ability provides):
 
 ```typescript
 {
@@ -102,27 +102,27 @@ The policy supports using `'*'` as a wildcard to allow all functions for a speci
 
 **Security Note**: Use wildcards carefully! Only use `'*'` for contracts you fully trust, as it allows any function call to that contract.
 
-## Integration with Tools
+## Integration with Abilities
 
-The Contract Whitelist Policy is designed to work seamlessly with Vincent tools, particularly the [Transaction Signer Tool](../tool-transaction-signer/README.md):
+The Contract Whitelist Policy is designed to work seamlessly with Vincent abilities, particularly the [Transaction Signer Ability](../ability-transaction-signer/README.md):
 
 ```typescript
-import { createVincentToolPolicy } from '@lit-protocol/vincent-tool-sdk';
+import { createVincentAbilityPolicy } from '@lit-protocol/vincent-ability-sdk';
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-contract-whitelist';
 
-const ContractWhitelistPolicy = createVincentToolPolicy({
-  toolParamsSchema,
+const ContractWhitelistPolicy = createVincentAbilityPolicy({
+  abilityParamsSchema,
   bundledVincentPolicy,
-  toolParameterMappings: {
+  abilityParameterMappings: {
     serializedTransaction: 'serializedTransaction',
   },
 });
 ```
 
-See the comprehensive E2E test in [contract-whitelist.spec.ts](../toolpolicies-e2e/test-e2e/contract-whitelist.spec.ts) for a complete example of:
+See the comprehensive E2E test in [contract-whitelist.spec.ts](../abilities-e2e/test-e2e/contract-whitelist.spec.ts) for a complete example of:
 
 - Setting up permissions and the Contract Whitelist Policy
-- Executing the Transaction Signer Tool
+- Executing the Transaction Signer Ability
 - Validating the signed transaction
 - Broadcasting the signed transaction to the network
 
@@ -171,7 +171,7 @@ Run `nx build policy-contract-whitelist` to build the library.
 
 ## Running E2E tests
 
-Run `nx run toolpolicies-e2e:test-e2e packages/apps/toolpolicies-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
+Run `nx run abilities-e2e:test-e2e packages/apps/abilities-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
 
 ## Contributing
 

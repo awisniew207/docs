@@ -13,10 +13,10 @@
     "module": "nodenext",
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts", "src/generated/vincent-tool-metadata.json"],
+  "include": ["src/**/*.ts", "src/generated/vincent-ability-metadata.json"],
   "references": [
     {
-      "path": "../../libs/tool-sdk/tsconfig.lib.json"
+      "path": "../../libs/ability-sdk/tsconfig.lib.json"
     },
     {
       "path": "../policy-contract-whitelist/tsconfig.lib.json"

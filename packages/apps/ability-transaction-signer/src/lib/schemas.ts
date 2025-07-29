@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const toolParamsSchema = z.object({
+export const abilityParamsSchema = z.object({
   serializedTransaction: z
     .string()
     .describe('The serialized transaction to be evaluated and signed'),

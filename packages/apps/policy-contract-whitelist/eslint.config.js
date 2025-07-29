@@ -17,7 +17,7 @@ module.exports = [
             '{projectRoot}/esbuild.config.{js,cjs,mjs}',
           ],
           ignoredDependencies: [
-            // It's a peerDependency to ensure people don't try to use the wrong VincentToolClient with it -- not directly used.
+            // It's a peerDependency to ensure people don't try to use the wrong VincentAbilityClient with it -- not directly used.
             '@lit-protocol/vincent-app-sdk',
           ],
         },
