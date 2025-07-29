@@ -56,7 +56,8 @@ export const useJwtRedirect = ({ readAuthInfo }: UseJwtRedirectProps) => {
           expiresInMinutes: VITE_JWT_EXPIRATION_MINUTES,
           audience: app.redirectUris,
           app: {
-            id: app.appId.toString(),
+            // @ts-expect-error App id will be a number
+            id: app.appId,
             version: appVersion,
           },
           authentication: {
