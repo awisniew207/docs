@@ -165,6 +165,50 @@ contract VincentAppFacet is VincentBase {
     }
 
     /**
+     * @notice Replace all delegatees for an app with the provided array. Allows adding empty arrays effectively replacing all delegatees at once.
+     * @dev Only the app manager can set delegatees. This function removes all existing delegatees
+     *      and adds the new ones. Each delegatee can only be associated with one app at a time.
+     * @param appId ID of the app
+     * @param delegatees Array of addresses to set as delegatees
+     */
+    function setDelegatee(uint256 appId, address[] calldata delegatees)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        address[] memory currentDelegatees = app.delegatees.values();
+        
+        // Remove all current delegatees
+        for (uint256 i = 0; i < currentDelegatees.length; i++) {
+            app.delegatees.remove(currentDelegatees[i]);
+            as_.delegateeAddressToAppId[currentDelegatees[i]] = 0;
+            emit LibVincentAppFacet.DelegateeRemoved(appId, currentDelegatees[i]);
+        }
+        
+        // Add new delegatees
+        for (uint256 i = 0; i < delegatees.length; i++) {
+            address delegatee = delegatees[i];
+            
+            if (delegatee == address(0)) {
+                revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
+            }
+
+            uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
+            if (delegateeAppId != 0) {
+                revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
+            }
+
+            app.delegatees.add(delegatee);
+            as_.delegateeAddressToAppId[delegatee] = appId;
+            emit LibVincentAppFacet.DelegateeAdded(appId, delegatee);
+        }
+    }
+
+    /**
      * @notice Delete an application by setting its isDeleted flag to true
      * @dev Only the app manager can delete an app
      * @param appId ID of the app to delete

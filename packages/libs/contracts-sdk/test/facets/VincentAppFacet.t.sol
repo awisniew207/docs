@@ -313,6 +313,54 @@ contract VincentAppFacetTest is Test {
         assertTrue(appVersion.enabled);
     }
 
+    function testSetDelegatee() public {
+        uint256 newAppId = 1;
+        _registerBasicApp(newAppId);
+
+        VincentAppViewFacet.App memory app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 1);
+        assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
+
+        vm.startPrank(APP_MANAGER_ALICE);
+        
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentAppFacet.DelegateeRemoved(newAppId, APP_DELEGATEE_CHARLIE);
+        
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentAppFacet.DelegateeAdded(newAppId, APP_DELEGATEE_EVE);
+        
+        address[] memory newDelegatees = new address[](1);
+        newDelegatees[0] = APP_DELEGATEE_EVE;
+        vincentAppFacet.setDelegatee(newAppId, newDelegatees);
+        vm.stopPrank();
+
+        app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 1);
+        assertEq(app.delegatees[0], APP_DELEGATEE_EVE);
+    }
+
+    function testSetDelegatee_RemoveAllDelegatees() public {
+        uint256 newAppId = 1;
+        _registerBasicApp(newAppId);
+
+        VincentAppViewFacet.App memory app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 1);
+        assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
+
+        vm.startPrank(APP_MANAGER_ALICE);
+        
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentAppFacet.DelegateeRemoved(newAppId, APP_DELEGATEE_CHARLIE);
+        
+        address[] memory emptyDelegatees = new address[](0);
+        vincentAppFacet.setDelegatee(newAppId, emptyDelegatees);
+        vm.stopPrank();
+
+        // Verify that no delegatees remain
+        app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 0);
+    }
+
     function testDeleteApp() public {
         uint256 newAppId = 1;
         uint256 newAppVersion = _registerBasicApp(newAppId);
@@ -477,6 +525,27 @@ contract VincentAppFacetTest is Test {
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.DelegateeAlreadyRegisteredToApp.selector, newAppId, APP_DELEGATEE_CHARLIE));
         vincentAppFacet.addDelegatee(newAppId, APP_DELEGATEE_CHARLIE);
+    }
+
+    function testSetDelegatee_DelegateeAlreadyRegistered() public {
+        // Create first app with Charlie
+        uint256 appId1 = 1;
+        _registerBasicApp(appId1);
+        
+        // Create second app with David
+        uint256 appId2 = 2;
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = APP_DELEGATEE_DAVID;
+        _registerApp(appId2, delegatees, _createBasicVersionTools());
+        
+        vm.startPrank(APP_MANAGER_ALICE);
+        vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.DelegateeAlreadyRegisteredToApp.selector, appId1, APP_DELEGATEE_CHARLIE));
+        
+        // Try to add Charlie (from app1) to app2
+        address[] memory newDelegatees = new address[](1);
+        newDelegatees[0] = APP_DELEGATEE_CHARLIE;
+        vincentAppFacet.setDelegatee(appId2, newDelegatees);
+        vm.stopPrank();
     }
 
     /**
@@ -646,6 +715,11 @@ contract VincentAppFacetTest is Test {
         address[] memory delegatees = new address[](1);
         delegatees[0] = APP_DELEGATEE_CHARLIE;
 
+        newAppVersion = _registerApp(appId, delegatees, _createBasicVersionTools());
+        assertEq(newAppVersion, 1);
+    }
+
+    function _createBasicVersionTools() private pure returns (VincentAppFacet.AppVersionTools memory) {
         VincentAppFacet.AppVersionTools memory versionTools;
         versionTools.toolIpfsCids = new string[](2);
 
@@ -659,8 +733,6 @@ contract VincentAppFacetTest is Test {
 
         versionTools.toolPolicies[1] = new string[](0);
 
-        newAppVersion = _registerApp(appId, delegatees, versionTools);
-
-        assertEq(newAppVersion, 1);
+        return versionTools;
     }
 }
