@@ -226,7 +226,7 @@ contract SmartUpdateFacet is Script {
         } else if (compareStrings(facetName, "VincentUserFacet")) {
             testSelector = VincentUserFacet.permitAppVersion.selector;
         } else if (compareStrings(facetName, "VincentUserViewFacet")) {
-            testSelector = VincentUserViewFacet.getAllRegisteredAgentPkps.selector;
+            testSelector = VincentUserViewFacet.getPermittedAppVersionForPkp.selector;
         } else {
             return false;
         }
