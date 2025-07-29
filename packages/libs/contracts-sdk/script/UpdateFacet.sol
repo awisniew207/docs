@@ -110,10 +110,6 @@ contract SmartUpdateFacet is Script {
             }
         }
 
-        if (removeCount == 0 && addCount == 0) {
-            revert("No changes made for update");
-        }
-
         plan.toRemove = new bytes4[](removeCount);
         plan.toAdd = new bytes4[](addCount);
         plan.toReplace = new bytes4[](replaceCount);
