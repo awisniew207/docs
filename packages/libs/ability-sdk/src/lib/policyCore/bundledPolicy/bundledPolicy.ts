@@ -19,7 +19,7 @@ export function asBundledVincentPolicy<
   Object.defineProperty(bundledPolicy, 'vincentAbilityApiVersion', {
     value: VINCENT_TOOL_API_VERSION,
     writable: false,
-    enumerable: false,
+    enumerable: true,
     configurable: false,
   });
 
