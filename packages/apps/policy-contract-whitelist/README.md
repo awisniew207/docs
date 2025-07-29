@@ -1,59 +1,25 @@
 # Vincent Policy: Contract Whitelist
 
-A Vincent Policy that restricts the signing of EVM transactions to a predefined whitelist of contract addresses and function selectors across multiple chains.
+## Overview
+
+The Contract Whitelist Policy is a Vincent Policy that restricts the signing of EVM transactions to a predefined whitelist of contract addresses and function selectors across multiple chains. This policy provides critical security controls for Vincent Agent Wallets by ensuring they can only interact with trusted contracts and approved functions.
+
+This Vincent Policy is designed to work with Vincent Abilities, particularly the [@lit-protocol/vincent-ability-transaction-signer](../ability-transaction-signer/) ability, to provide granular control over which transactions can be signed.
 
 ## How It Works
 
-### Validation Process
+The Contract Whitelist Policy is built using the Vincent Policy SDK and validates transactions against a hierarchical whitelist. Here's how it operates:
 
-The policy:
+- **Input**: Receives a serialized EVM transaction from the ability
+- **Parsing**: Uses `ethers.utils.parseTransaction` to extract transaction details
+- **Extraction**: Gets the chain ID, target contract address, and function selector (first 4 bytes of `data` field)
+- **Validation**: Checks against the whitelist hierarchy
+  - **Whitelist Matching**: The policy checks in order:
+    - Is the chain ID whitelisted?
+    - Is the contract address whitelisted for that chain?
+    - Is the function selector allowed (either explicitly or via wildcard `*`)?
 
-1. Deserializes the incoming transaction
-2. Extracts the chain ID, target contract address, and function selector
-3. Checks if the chain ID is in the whitelist
-4. Verifies the contract address is whitelisted for that chain
-5. Confirms the function selector is allowed for that contract (either explicitly listed or via wildcard)
-
-### Whitelist Structure
-
-The whitelist is organized hierarchically:
-
-```
-whitelist
-├── [chainId]
-│   ├── [contractAddress]
-│   │   └── functionSelectors: string[]
-```
-
-## Configuration
-
-### Schema Definition
-
-The policy uses two main schemas:
-
-**Ability Parameters** (what the ability provides):
-
-```typescript
-{
-  serializedTransaction: string; // The serialized transaction to validate
-}
-```
-
-**User Parameters** (what the user configures):
-
-```typescript
-{
-  whitelist: {
-    [chainId: string]: {
-      [contractAddress: string]: {
-        functionSelectors: string[]; // Array of function selectors or '*' for all functions
-      }
-    }
-  }
-}
-```
-
-### Example Configuration
+## Example Configuration
 
 ```typescript
 const policyConfig = {
@@ -104,7 +70,7 @@ The policy supports using `'*'` as a wildcard to allow all functions for a speci
 
 ## Integration with Abilities
 
-The Contract Whitelist Policy is designed to work seamlessly with Vincent abilities, particularly the [Transaction Signer Ability](../ability-transaction-signer/README.md):
+The Contract Whitelist Policy is designed to work seamlessly with Vincent Abilities, particularly the [Transaction Signer Ability](../ability-transaction-signer/README.md):
 
 ```typescript
 import { createVincentAbilityPolicy } from '@lit-protocol/vincent-ability-sdk';
@@ -157,21 +123,13 @@ This information is valuable for auditing and security monitoring purposes.
 }
 ```
 
-## Error Messages
-
-The policy provides clear error messages:
-
-- `"to property of serialized transaction not provided"` - Missing recipient address
-- `"Chain ID not whitelisted"` - The blockchain network is not in the whitelist
-- `"Function selector not whitelisted"` - The contract or function is not allowed
-
 ## Building
 
-Run `nx build policy-contract-whitelist` to build the library.
+Run `pnpx nx build policy-contract-whitelist` to build the library.
 
 ## Running E2E tests
 
-Run `nx run abilities-e2e:test-e2e packages/apps/abilities-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
+Run `pnpx nx run abilities-e2e:test-e2e packages/apps/abilities-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
 
 ## Contributing
 

@@ -1,20 +1,20 @@
 # Vincent Ability: Transaction Signer
 
-A secure transaction signing ability for Vincent Agent Wallets that leverages policy-based access control to ensure only whitelisted contract interactions can be signed.
-
 ## Overview
 
-The Transaction Signer Ability enables Vincent Agent Wallets to sign Ethereum transactions with built-in security through the Contract Whitelist Policy. This ability is designed to prevent unauthorized contract interactions by validating transactions against a predefined whitelist before signing.
+The Transaction Signer Ability enables Vincent Agent Wallets to sign EVM transactions utilizing the Vincent ecosystem to govern who can request signatures, as well as what's included in the transactions.
+
+This Vincent Ability is intended to be used with Vincent Policies, such as the [@lit-protocol/vincent-policy-contract-whitelist](../policy-contract-whitelist/) policy, to provide protections such as only signing transactions that interact with specific contracts and/or call specific functions on contract.
 
 ## How It Works
 
-The ability is intended to be used with the `@lit-protocol/vincent-policy-contract-whitelist` policy to ensure transactions are only signed if the contract and function they are interacting with are whitelisted.
+The Transaction Signer Ability is built using the Vincent Ability SDK and provides a secure way to sign Ethereum transactions. Here's how it operates:
 
-The policy validates that:
-
-- The transaction's chain ID is whitelisted
-- The target contract address is whitelisted for that chain
-- The function selector (first 4 bytes of transaction data) is whitelisted for that contract
+- **Input**: Accepts a serialized unsigned EVM transaction
+- **Parsing**: Uses `ethers.utils.parseTransaction` to deserialize and validate the transaction structure
+  - Important: All properties of the transaction are expected to be provided, including `nonce`, `gasPrice`, `gasLimit`, etc. The Ability will not fetch these values from the network on your behalf.
+- **Signing**: The Vincent Agent Wallet (PKP (Programmable Key Pair)) signs the transaction within the Lit Action environment
+- **Output**: Returns both the signed transaction hex and a deserialized version with signature components
 
 ### Workflow
 
@@ -22,7 +22,7 @@ The policy validates that:
 
    - Deserializes the input transaction
    - Validates transaction structure
-   - Policy checks if the transaction meets whitelist criteria
+   - Executes any registered Vincent Policy to validate the transaction meets the policy requirements
    - Returns deserialized transaction details if successful
 
 2. **Execution Phase**:
@@ -63,18 +63,32 @@ const transaction = {
 // Serialize the transaction
 const serializedTx = ethers.utils.serializeTransaction(transaction);
 
-// Execute the ability
-const result = await abilityClient.execute(
+const precheckResult = await abilityClient.precheck(
   {
     serializedTransaction: serializedTx,
   },
   {
-    delegatorPkpEthAddress: '0x...', // The PKP that will sign
+    delegatorPkpEthAddress: '0x...', // The Agent Wallet PKP that will sign
   },
 );
 
-if (result.success) {
-  const { signedTransaction, deserializedSignedTransaction } = result.result;
+if (precheckResult.success) {
+  const { deserializedUnsignedTransaction } = precheckResult.result;
+  // Use the deserialized transaction
+}
+
+// Execute the ability
+const executeResult = await abilityClient.execute(
+  {
+    serializedTransaction: serializedTx,
+  },
+  {
+    delegatorPkpEthAddress: '0x...', // The Agent Wallet PKP that will sign
+  },
+);
+
+if (executeResult.success) {
+  const { signedTransaction, deserializedSignedTransaction } = executeResult.result;
   // Use the signed transaction
 }
 ```
@@ -94,7 +108,7 @@ if (result.success) {
 ```typescript
 {
   deserializedUnsignedTransaction: {
-    to?: string | null;
+    to?: string;
     nonce?: number;
     gasLimit: string;
     gasPrice?: string;
@@ -116,32 +130,32 @@ if (result.success) {
   signedTransaction: string; // The signed transaction ready for broadcast
   deserializedSignedTransaction: {
     hash?: string;
-    to?: string | null;
-    from?: string | null;
+    to: string;
+    from: string;
     nonce: number;
     gasLimit: string;
-    gasPrice?: string | null;
+    gasPrice?: string;
     data: string;
     value: string;
     chainId: number;
-    v?: number;
-    r?: string;
-    s?: string;
-    type?: number | null;
+    v: number;
+    r: string;
+    s: string;
+    type?: number;
     accessList?: any[];
-    maxPriorityFeePerGas?: string | null;
-    maxFeePerGas?: string | null;
+    maxPriorityFeePerGas?: string;
+    maxFeePerGas?: string;
   }
 }
 ```
 
 ## Building
 
-Run `nx build ability-transaction-signer` to build the Ability.
+Run `pnpx nx build ability-transaction-signer` to build the Ability.
 
 ## Running E2E tests
 
-Run `nx run abilities-e2e:test-e2e packages/apps/abilities-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
+Run `pnpx nx run abilities-e2e:test-e2e packages/apps/abilities-e2e/test-e2e/contract-whitelist.spec.ts` to execute the E2E tests via [Jest](https://jestjs.io).
 
 ## Contributing
 
