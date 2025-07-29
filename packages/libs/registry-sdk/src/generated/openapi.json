@@ -644,7 +644,7 @@
           "packageName": {
             "type": "string",
             "description": "Ability NPM package name",
-            "example": "@lit-protocol/vincent-erc20-approval-tool"
+            "example": "@lit-protocol/vincent-erc20-approval-ability"
           },
           "title": {
             "type": "string",
@@ -753,7 +753,7 @@
           "packageName": {
             "type": "string",
             "description": "Ability NPM package name",
-            "example": "@lit-protocol/vincent-erc20-approval-tool"
+            "example": "@lit-protocol/vincent-erc20-approval-ability"
           },
           "version": {
             "type": "string",
@@ -882,7 +882,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Policy versions that are not in the registry but are supported by this tool",
+            "description": "Policy versions that are not in the registry but are supported by this ability",
             "example": [
               "@lit-protocol/vincent-spending-limit-policy@1.0.1"
             ],
@@ -2612,7 +2612,7 @@
           "Ability",
           "AbilityVersion"
         ],
-        "summary": "Creates a new tool",
+        "summary": "Creates a new ability",
         "operationId": "createAbility",
         "security": [
           {

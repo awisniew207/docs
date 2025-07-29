@@ -1049,7 +1049,7 @@ export type AbilityVersionRead = {
   };
   /** IPFS CID of the code that implements this ability. */
   ipfsCid: string;
-  /** Policy versions that are not in the registry but are supported by this tool */
+  /** Policy versions that are not in the registry but are supported by this ability */
   policiesNotInRegistry: string[];
   /** Whether or not this AbilityVersion is deleted */
   isDeleted?: boolean;
