@@ -34,15 +34,15 @@ import {
 } from '@/components/shared/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shared/ui/tooltip';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { App, Tool, Policy } from '@/types/developer-dashboard/appTypes';
+import { App, Ability, Policy } from '@/types/developer-dashboard/appTypes';
 
 interface SidebarProps {
   userApps: App[];
-  userTools: Tool[];
+  userAbilities: Ability[];
   userPolicies: Policy[];
 }
 
-export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
+export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps) {
   // Removed isDark and themeStyles since developer dashboard doesn't have theme toggle (yet)
   const location = useLocation();
   const params = useParams();
@@ -52,9 +52,11 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Get the currently active app, tool, policy from route params
+  // Get the currently active app, ability, policy from route params
   const activeAppId = params.appId ? parseInt(params.appId) : null;
-  const activeToolPackageName = params.packageName ? decodeURIComponent(params.packageName) : null;
+  const activeAbilityPackageName = params.packageName
+    ? decodeURIComponent(params.packageName)
+    : null;
   const activePolicyPackageName = params.packageName
     ? decodeURIComponent(params.packageName)
     : null;
@@ -67,9 +69,9 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
     { skip: !activeAppId },
   );
 
-  const { data: activeToolVersions } = vincentApiClient.useGetToolVersionsQuery(
-    { packageName: activeToolPackageName || '' },
-    { skip: !activeToolPackageName },
+  const { data: activeAbilityVersions } = vincentApiClient.useGetAbilityVersionsQuery(
+    { packageName: activeAbilityPackageName || '' },
+    { skip: !activeAbilityPackageName },
   );
 
   const { data: activePolicyVersions } = vincentApiClient.useGetPolicyVersionsQuery(
@@ -97,15 +99,15 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
       }
     }
     if (
-      path.startsWith('/developer/tools') ||
-      path.includes('/toolId/') ||
-      path.startsWith('/developer/create-tool')
+      path.startsWith('/developer/abilities') ||
+      path.includes('/abilityId/') ||
+      path.startsWith('/developer/create-ability')
     ) {
-      initialExpanded.add('tools');
+      initialExpanded.add('abilities');
 
-      // Also expand tool versions if we're on a version page
+      // Also expand ability versions if we're on a version page
       if (path.includes('/version/') || path.includes('/versions')) {
-        initialExpanded.add('tool-versions');
+        initialExpanded.add('ability-versions');
       }
     }
     if (
@@ -311,68 +313,68 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
     );
   };
 
-  const renderToolList = () => {
-    if (!userTools || userTools.length === 0) {
+  const renderAbilityList = () => {
+    if (!userAbilities || userAbilities.length === 0) {
       return (
-        <div className="ml-4 mt-1 px-3 py-2 text-xs text-black opacity-75">No tools found</div>
+        <div className="ml-4 mt-1 px-3 py-2 text-xs text-black opacity-75">No abilities found</div>
       );
     }
 
     return (
       <div className="ml-4 mt-1 space-y-1">
-        {userTools.map((tool: Tool) => {
-          const toolRoute = `/developer/toolId/${encodeURIComponent(tool.packageName)}`;
-          const isToolActive = isActiveRoute(toolRoute);
-          const toolVersions = activeToolVersions || [];
+        {userAbilities.map((ability: Ability) => {
+          const abilityRoute = `/developer/abilityId/${encodeURIComponent(ability.packageName)}`;
+          const isAbilityActive = isActiveRoute(abilityRoute);
+          const abilityVersions = activeAbilityVersions || [];
 
           return (
-            <div key={tool.packageName}>
+            <div key={ability.packageName}>
               <SidebarMenuSubButton
                 asChild
                 className={`h-12 px-3 rounded-lg transition-all duration-200 text-xs w-full cursor-pointer ${
-                  isToolActive
+                  isAbilityActive
                     ? `bg-gray-100/50 text-orange-500 font-semibold`
                     : `text-black hover:bg-gray-100`
                 }`}
               >
-                <Link to={toolRoute}>
+                <Link to={abilityRoute}>
                   <div className="flex flex-col gap-1 flex-1 text-left">
                     <span
                       className={`font-medium truncate ${
-                        isToolActive ? 'text-orange-500' : 'text-black'
+                        isAbilityActive ? 'text-orange-500' : 'text-black'
                       }`}
                     >
-                      {tool.title}
+                      {ability.title}
                     </span>
                     <span
                       className={`text-xs opacity-75 truncate ${
-                        isToolActive ? 'text-orange-500' : 'text-black'
+                        isAbilityActive ? 'text-orange-500' : 'text-black'
                       }`}
                     >
-                      {tool.packageName}
+                      {ability.packageName}
                     </span>
                   </div>
                 </Link>
               </SidebarMenuSubButton>
 
-              {/* Show tool details/versions when tool is active */}
-              {isToolActive && (
+              {/* Show ability details/versions when ability is active */}
+              {isAbilityActive && (
                 <div className="ml-4 mt-2 space-y-1">
-                  {/* Tool Details */}
+                  {/* Ability Details */}
                   <SidebarMenuSubButton
                     asChild
                     className={`h-8 px-3 rounded-lg transition-all duration-200 text-xs w-full cursor-pointer ${
-                      isActiveRoute(toolRoute) &&
+                      isActiveRoute(abilityRoute) &&
                       !location.pathname.includes('/versions') &&
                       !location.pathname.includes('/version/')
                         ? `bg-gray-100/50 text-orange-500 font-semibold`
                         : `text-black hover:bg-gray-100`
                     }`}
                   >
-                    <Link to={toolRoute}>
+                    <Link to={abilityRoute}>
                       <FileText
                         className={`h-3 w-3 mr-2 ${
-                          isActiveRoute(toolRoute) &&
+                          isActiveRoute(abilityRoute) &&
                           !location.pathname.includes('/versions') &&
                           !location.pathname.includes('/version/')
                             ? '!text-orange-500'
@@ -381,41 +383,43 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
                       />
                       <span
                         className={
-                          isActiveRoute(toolRoute) &&
+                          isActiveRoute(abilityRoute) &&
                           !location.pathname.includes('/versions') &&
                           !location.pathname.includes('/version/')
                             ? 'text-orange-500'
                             : 'text-black'
                         }
                       >
-                        Tool Details
+                        Ability Details
                       </span>
                     </Link>
                   </SidebarMenuSubButton>
 
-                  {/* Tool Versions */}
+                  {/* Ability Versions */}
                   <SidebarMenuSubButton
-                    onClick={() => toggleMenu('tool-versions')}
+                    onClick={() => toggleMenu('ability-versions')}
                     className={`h-8 px-3 rounded-lg transition-all duration-200 text-xs w-full cursor-pointer ${
-                      isActiveRoute(`${toolRoute}/versions`)
+                      isActiveRoute(`${abilityRoute}/versions`)
                         ? `bg-gray-100/50 text-orange-500 font-semibold`
                         : `text-black hover:bg-gray-100`
                     }`}
                   >
                     <GitBranch
                       className={`h-3 w-3 mr-2 ${
-                        isActiveRoute(`${toolRoute}/versions`) ? '!text-orange-500' : '!text-black'
+                        isActiveRoute(`${abilityRoute}/versions`)
+                          ? '!text-orange-500'
+                          : '!text-black'
                       }`}
                     />
                     <span
                       className={
-                        isActiveRoute(`${toolRoute}/versions`) ? 'text-orange-500' : 'text-black'
+                        isActiveRoute(`${abilityRoute}/versions`) ? 'text-orange-500' : 'text-black'
                       }
                     >
-                      Tool Versions
+                      Ability Versions
                     </span>
                     <div className="ml-auto">
-                      {expandedMenus.has('tool-versions') ? (
+                      {expandedMenus.has('ability-versions') ? (
                         <ChevronDown className="h-3 w-3 !text-black" />
                       ) : (
                         <ChevronRight className="h-3 w-3 !text-black" />
@@ -424,29 +428,29 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
                   </SidebarMenuSubButton>
 
                   {/* Individual Versions */}
-                  {expandedMenus.has('tool-versions') && (
+                  {expandedMenus.has('ability-versions') && (
                     <div className="ml-4 mt-1 space-y-1">
-                      {toolVersions.length > 0 ? (
-                        toolVersions.map((version) => (
+                      {abilityVersions.length > 0 ? (
+                        abilityVersions.map((version) => (
                           <SidebarMenuSubButton
                             key={version.version}
                             asChild
                             className={`h-7 px-3 rounded-lg transition-all duration-200 text-xs w-full cursor-pointer ${
-                              isActiveRoute(`${toolRoute}/version/${version.version}`)
+                              isActiveRoute(`${abilityRoute}/version/${version.version}`)
                                 ? `bg-gray-100/50 text-orange-500 font-semibold`
                                 : `text-black hover:bg-gray-100`
                             }`}
                           >
-                            <Link to={`${toolRoute}/version/${version.version}`}>
+                            <Link to={`${abilityRoute}/version/${version.version}`}>
                               <span
                                 className={
-                                  isActiveRoute(`${toolRoute}/version/${version.version}`)
+                                  isActiveRoute(`${abilityRoute}/version/${version.version}`)
                                     ? 'text-orange-500'
                                     : 'text-black'
                                 }
                               >
                                 {version.version}
-                                {version.version === tool.activeVersion && (
+                                {version.version === ability.activeVersion && (
                                   <span className="ml-2 text-xs opacity-75">(Active)</span>
                                 )}
                               </span>
@@ -649,19 +653,19 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
       ],
     },
     {
-      id: 'tools',
-      label: 'Tools',
+      id: 'abilities',
+      label: 'Abilities',
       icon: <Wrench className="h-4 w-4" />,
-      route: '/developer/tools',
+      route: '/developer/abilities',
       type: 'group' as const,
       children: [
         {
-          id: 'my-tools',
-          label: 'My Tools',
-          route: '/developer/tools',
-          renderList: renderToolList,
+          id: 'my-abilities',
+          label: 'My Abilities',
+          route: '/developer/abilities',
+          renderList: renderAbilityList,
         },
-        { id: 'create-tool', label: 'Create Tool', route: '/developer/create-tool' },
+        { id: 'create-ability', label: 'Create Ability', route: '/developer/create-ability' },
       ],
     },
     {
@@ -756,7 +760,7 @@ export function Sidebar({ userApps, userTools, userPolicies }: SidebarProps) {
       <SidebarContent className="px-4 py-6">
         <SidebarGroup className="space-y-4">
           <SidebarGroupLabel className="px-3 text-sm font-semibold text-black uppercase tracking-wide">
-            Developer Tools
+            Developer Abilities
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">

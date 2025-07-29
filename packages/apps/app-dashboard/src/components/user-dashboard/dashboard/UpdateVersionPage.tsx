@@ -73,7 +73,7 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
       await addPermittedActions({
         wallet: userPkpWallet,
         agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
-        toolIpfsCids: Object.keys(formData),
+        abilityIpfsCids: Object.keys(formData),
       });
 
       try {

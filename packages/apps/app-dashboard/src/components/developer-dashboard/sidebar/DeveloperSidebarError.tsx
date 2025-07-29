@@ -81,7 +81,7 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
       <SidebarContent className="px-4 py-6">
         <SidebarGroup className="space-y-4">
           <SidebarGroupLabel className="px-3 text-sm font-semibold text-black uppercase tracking-wide">
-            Developer Tools
+            Developer Abilities
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
@@ -145,31 +145,31 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Tools */}
+              {/* Abilities */}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActiveRoute('/developer/tools')}
+                  isActive={isActiveRoute('/developer/abilities')}
                   className={`h-10 px-3 rounded-lg transition-all duration-200 ${
-                    isActiveRoute('/developer/tools')
+                    isActiveRoute('/developer/abilities')
                       ? `bg-gray-100/50 text-orange-500 font-semibold`
                       : `text-black hover:bg-gray-100`
                   }`}
                 >
-                  <Link to="/developer/tools" className="flex items-center gap-3">
+                  <Link to="/developer/abilities" className="flex items-center gap-3">
                     <div
                       className={`${
-                        isActiveRoute('/developer/tools') ? 'text-orange-500' : 'text-gray-600'
+                        isActiveRoute('/developer/abilities') ? 'text-orange-500' : 'text-gray-600'
                       } [&>svg]:!w-5 [&>svg]:!h-5`}
                     >
                       <Wrench className="h-4 w-4" />
                     </div>
                     <span
                       className={`font-medium ${
-                        isActiveRoute('/developer/tools') ? 'text-orange-500' : 'text-black'
+                        isActiveRoute('/developer/abilities') ? 'text-orange-500' : 'text-black'
                       }`}
                     >
-                      Tools
+                      Abilities
                     </span>
                   </Link>
                 </SidebarMenuButton>

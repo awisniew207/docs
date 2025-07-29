@@ -76,7 +76,7 @@ export function DeveloperSidebarSkeleton() {
                 ))}
               </SidebarMenuSub>
 
-              {/* Tools section skeleton */}
+              {/* Abilities section skeleton */}
               <SidebarMenuItem>
                 <SidebarMenuButton className="h-10 px-3 rounded-lg">
                   <div className="flex items-center gap-3 w-full">

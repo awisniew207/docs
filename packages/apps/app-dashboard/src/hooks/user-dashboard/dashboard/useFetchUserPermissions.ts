@@ -38,7 +38,7 @@ export const useFetchUserPermissions = ({
     const checkPermitted = async () => {
       try {
         const client = getClient({ signer: readOnlySigner });
-        const existingData = await client.getAllToolsAndPoliciesForApp({
+        const existingData = await client.getAllAbilitiesAndPoliciesForApp({
           pkpEthAddress,
           appId,
         });

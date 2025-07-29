@@ -112,7 +112,7 @@ const policyVersion = z
       example: 'Resolved issue with checking for spending limits on the wrong chain.',
     }),
 
-    // Both tools and policies have quite a few properties read from their package.json entries
+    // Both abilities and policies have quite a few properties read from their package.json entries
     ...fromPackageJson.shape,
 
     ipfsCid: z.string().openapi({

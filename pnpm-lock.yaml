@@ -163,6 +163,144 @@ importers:
         specifier: ^8.29.0
         version: 8.34.1(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
 
+  packages/apps/abilities-e2e:
+    dependencies:
+      '@lit-protocol/vincent-ability-erc20-approval':
+        specifier: workspace:*
+        version: link:../ability-erc20-approval
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
+      '@lit-protocol/vincent-ability-uniswap-swap':
+        specifier: workspace:*
+        version: link:../ability-uniswap-swap
+      '@lit-protocol/vincent-app-sdk':
+        specifier: workspace:*
+        version: link:../../libs/app-sdk
+      '@lit-protocol/vincent-contracts-sdk':
+        specifier: workspace:*
+        version: link:../../libs/contracts-sdk
+      '@lit-protocol/vincent-policy-spending-limit':
+        specifier: workspace:*
+        version: link:../policy-spending-limit
+      esbuild:
+        specifier: ^0.25.5
+        version: 0.25.5
+      esbuild-plugin-polyfill-node:
+        specifier: ^0.3.0
+        version: 0.3.0(esbuild@0.25.5)
+      ethers:
+        specifier: 5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      ipfs-only-hash:
+        specifier: ^4.0.0
+        version: 4.0.0
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: ^1.44.2
+        version: 1.44.2
+      '@lit-protocol/auth-helpers':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/constants':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/contracts-sdk':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client':
+        specifier: ^7.0.8
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      viem:
+        specifier: ^2.28.0
+        version: 2.31.3(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
+
+  packages/apps/ability-erc20-approval:
+    dependencies:
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
+      '@lit-protocol/vincent-app-sdk':
+        specifier: workspace:^
+        version: link:../../libs/app-sdk
+      ethers:
+        specifier: ^5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.12
+        version: 0.19.12
+      esbuild-plugin-polyfill-node:
+        specifier: ^0.3.0
+        version: 0.3.0(esbuild@0.19.12)
+      ipfs-only-hash:
+        specifier: ^4.0.0
+        version: 4.0.0
+
+  packages/apps/ability-uniswap-swap:
+    dependencies:
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
+      '@lit-protocol/vincent-app-sdk':
+        specifier: workspace:^
+        version: link:../../libs/app-sdk
+      '@lit-protocol/vincent-policy-spending-limit':
+        specifier: workspace:*
+        version: link:../policy-spending-limit
+      '@uniswap/sdk-core':
+        specifier: ^7.7.2
+        version: 7.7.2
+      ethers:
+        specifier: ^5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: ^1.44.2
+        version: 1.44.2
+      '@lit-protocol/auth-helpers':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/constants':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/contracts-sdk':
+        specifier: ^7.2.0
+        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client':
+        specifier: ^7.0.8
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      esbuild:
+        specifier: ^0.19.12
+        version: 0.19.12
+      esbuild-plugin-polyfill-node:
+        specifier: ^0.3.0
+        version: 0.3.0(esbuild@0.19.12)
+      ipfs-only-hash:
+        specifier: ^4.0.0
+        version: 4.0.0
+      viem:
+        specifier: ^2.28.0
+        version: 2.31.3(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
+
   packages/apps/app-dashboard:
     dependencies:
       '@hookform/resolvers':
@@ -191,13 +329,13 @@ importers:
         version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.0
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/misc':
         specifier: ^7.2.0
         version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/pkp-ethers':
         specifier: ^7.2.0
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/types':
         specifier: ^7.2.0
         version: 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -461,12 +599,12 @@ importers:
 
   packages/apps/policy-spending-limit:
     dependencies:
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
       '@lit-protocol/vincent-app-sdk':
         specifier: workspace:^
         version: link:../../libs/app-sdk
-      '@lit-protocol/vincent-tool-sdk':
-        specifier: workspace:*
-        version: link:../../libs/tool-sdk
       '@uniswap/sdk-core':
         specifier: ^7.7.2
         version: 7.7.2
@@ -593,143 +731,45 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.3)
 
-  packages/apps/tool-erc20-approval:
+  packages/libs/ability-sdk:
     dependencies:
-      '@lit-protocol/vincent-app-sdk':
-        specifier: workspace:^
-        version: link:../../libs/app-sdk
-      '@lit-protocol/vincent-tool-sdk':
-        specifier: workspace:*
-        version: link:../../libs/tool-sdk
-      ethers:
-        specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      tslib:
-        specifier: 2.8.1
-        version: 2.8.1
-      zod:
-        specifier: ^3.25.64
-        version: 3.25.64
-    devDependencies:
-      esbuild:
-        specifier: ^0.19.12
-        version: 0.19.12
-      esbuild-plugin-polyfill-node:
-        specifier: ^0.3.0
-        version: 0.3.0(esbuild@0.19.12)
-      ipfs-only-hash:
-        specifier: ^4.0.0
-        version: 4.0.0
-
-  packages/apps/tool-uniswap-swap:
-    dependencies:
-      '@lit-protocol/vincent-app-sdk':
-        specifier: workspace:^
-        version: link:../../libs/app-sdk
-      '@lit-protocol/vincent-policy-spending-limit':
-        specifier: workspace:*
-        version: link:../policy-spending-limit
-      '@lit-protocol/vincent-tool-sdk':
-        specifier: workspace:*
-        version: link:../../libs/tool-sdk
-      '@uniswap/sdk-core':
-        specifier: ^7.7.2
-        version: 7.7.2
-      ethers:
-        specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      tslib:
-        specifier: 2.8.1
-        version: 2.8.1
-      zod:
-        specifier: ^3.25.64
-        version: 3.25.64
-    devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: ^1.44.2
-        version: 1.44.2
-      '@lit-protocol/auth-helpers':
-        specifier: ^7.2.0
-        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/constants':
-        specifier: ^7.2.0
-        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/contracts-sdk':
-        specifier: ^7.2.0
-        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/lit-node-client':
-        specifier: ^7.0.8
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      esbuild:
-        specifier: ^0.19.12
-        version: 0.19.12
-      esbuild-plugin-polyfill-node:
-        specifier: ^0.3.0
-        version: 0.3.0(esbuild@0.19.12)
-      ipfs-only-hash:
-        specifier: ^4.0.0
-        version: 4.0.0
-      viem:
-        specifier: ^2.28.0
-        version: 2.31.3(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
-
-  packages/apps/toolpolicies-e2e:
-    dependencies:
-      '@lit-protocol/vincent-app-sdk':
-        specifier: workspace:*
-        version: link:../../libs/app-sdk
       '@lit-protocol/vincent-contracts-sdk':
         specifier: workspace:*
-        version: link:../../libs/contracts-sdk
-      '@lit-protocol/vincent-policy-spending-limit':
-        specifier: workspace:*
-        version: link:../policy-spending-limit
-      '@lit-protocol/vincent-tool-erc20-approval':
-        specifier: workspace:*
-        version: link:../tool-erc20-approval
-      '@lit-protocol/vincent-tool-sdk':
-        specifier: workspace:*
-        version: link:../../libs/tool-sdk
-      '@lit-protocol/vincent-tool-uniswap-swap':
-        specifier: workspace:*
-        version: link:../tool-uniswap-swap
-      esbuild:
-        specifier: ^0.25.5
-        version: 0.25.5
-      esbuild-plugin-polyfill-node:
-        specifier: ^0.3.0
-        version: 0.3.0(esbuild@0.25.5)
+        version: link:../contracts-sdk
       ethers:
         specifier: 5.8.0
         version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      ipfs-only-hash:
-        specifier: ^4.0.0
-        version: 4.0.0
+      semver:
+        specifier: ^7.7.2
+        version: 7.7.2
       tslib:
-        specifier: 2.8.1
+        specifier: ^2.8.1
         version: 2.8.1
       zod:
         specifier: ^3.25.64
         version: 3.25.64
     devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: ^1.44.2
-        version: 1.44.2
-      '@lit-protocol/auth-helpers':
-        specifier: ^7.2.0
-        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/constants':
-        specifier: ^7.2.0
-        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/contracts-sdk':
-        specifier: ^7.2.0
-        version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/lit-node-client':
-        specifier: ^7.0.8
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      viem:
-        specifier: ^2.28.0
-        version: 2.31.3(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.0
+      chokidar-cli:
+        specifier: ^3.0.0
+        version: 3.0.0
+      jsonc-eslint-parser:
+        specifier: ^2.4.0
+        version: 2.4.0
+      typedoc:
+        specifier: 0.27.9
+        version: 0.27.9(typescript@5.8.3)
+      typedoc-material-theme:
+        specifier: 1.3.0
+        version: 1.3.0(typedoc@0.27.9(typescript@5.8.3))
+      typedoc-plugin-extras:
+        specifier: ^4.0.0
+        version: 4.0.0(typedoc@0.27.9(typescript@5.8.3))
+      typedoc-plugin-zod:
+        specifier: ^1.4.1
+        version: 1.4.2(typedoc@0.27.9(typescript@5.8.3))
 
   packages/libs/app-sdk:
     dependencies:
@@ -741,13 +781,13 @@ importers:
         version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client':
         specifier: ^7.0.8
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../ability-sdk
       '@lit-protocol/vincent-contracts-sdk':
         specifier: workspace:*
         version: link:../contracts-sdk
-      '@lit-protocol/vincent-tool-sdk':
-        specifier: workspace:*
-        version: link:../tool-sdk
       '@noble/secp256k1':
         specifier: ^2.2.3
         version: 2.3.0
@@ -766,7 +806,7 @@ importers:
     devDependencies:
       '@lit-protocol/pkp-ethers':
         specifier: ^7.2.0
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/types':
         specifier: ^7.0.8
         version: 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -818,10 +858,10 @@ importers:
         version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.0
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/pkp-ethers':
         specifier: ^7.2.0
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@openzeppelin/contracts':
         specifier: 5.3.0
         version: 5.3.0
@@ -845,7 +885,7 @@ importers:
         version: 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.0
-        version: 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/types':
         specifier: 7.2.0
         version: 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -901,46 +941,6 @@ importers:
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@types/node@20.19.1)(typescript@5.8.3)
-
-  packages/libs/tool-sdk:
-    dependencies:
-      '@lit-protocol/vincent-contracts-sdk':
-        specifier: workspace:*
-        version: link:../contracts-sdk
-      ethers:
-        specifier: 5.8.0
-        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      semver:
-        specifier: ^7.7.2
-        version: 7.7.2
-      tslib:
-        specifier: ^2.8.1
-        version: 2.8.1
-      zod:
-        specifier: ^3.25.64
-        version: 3.25.64
-    devDependencies:
-      '@types/semver':
-        specifier: ^7.7.0
-        version: 7.7.0
-      chokidar-cli:
-        specifier: ^3.0.0
-        version: 3.0.0
-      jsonc-eslint-parser:
-        specifier: ^2.4.0
-        version: 2.4.0
-      typedoc:
-        specifier: 0.27.9
-        version: 0.27.9(typescript@5.8.3)
-      typedoc-material-theme:
-        specifier: 1.3.0
-        version: 1.3.0(typedoc@0.27.9(typescript@5.8.3))
-      typedoc-plugin-extras:
-        specifier: ^4.0.0
-        version: 4.0.0(typedoc@0.27.9(typescript@5.8.3))
-      typedoc-plugin-zod:
-        specifier: ^1.4.1
-        version: 1.4.2(typedoc@0.27.9(typescript@5.8.3))
 
 packages:
 
@@ -13252,7 +13252,7 @@ snapshots:
       '@lit-protocol/contracts-sdk': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/core': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/crypto': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/lit-node-client': 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client-nodejs': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/logger': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/misc': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -13262,7 +13262,7 @@ snapshots:
       '@lit-protocol/uint8arrays': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/wasm': 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       base64url: 3.0.1
       bech32: 2.0.0
@@ -13355,7 +13355,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@lit-protocol/lit-node-client@7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/lit-node-client@7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/abstract-provider': 5.7.0
@@ -13383,7 +13383,7 @@ snapshots:
       '@lit-protocol/uint8arrays': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/wasm': 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       bech32: 2.0.0
       cross-fetch: 3.1.8
@@ -13489,7 +13489,7 @@ snapshots:
     dependencies:
       tslib: 1.14.1
 
-  '@lit-protocol/pkp-base@7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/pkp-base@7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/abstract-provider': 5.7.0
@@ -13508,7 +13508,7 @@ snapshots:
       '@lit-protocol/contracts-sdk': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/core': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/crypto': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/lit-node-client': 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client-nodejs': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/logger': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/misc': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -13518,7 +13518,7 @@ snapshots:
       '@lit-protocol/uint8arrays': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/wasm': 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       bech32: 2.0.0
       cross-fetch: 3.1.8
@@ -13563,7 +13563,7 @@ snapshots:
       - uploadthing
       - utf-8-validate
 
-  '@lit-protocol/pkp-ethers@7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/pkp-ethers@7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/abstract-provider': 5.7.0
@@ -13592,19 +13592,19 @@ snapshots:
       '@lit-protocol/contracts-sdk': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/core': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/crypto': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/lit-node-client': 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client-nodejs': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/logger': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/misc': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/misc-browser': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/nacl': 7.2.0
-      '@lit-protocol/pkp-base': 7.2.0(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/pkp-base': 7.2.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/types': 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/uint8arrays': 7.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/wasm': 7.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@metamask/eth-sig-util': 5.0.2
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       bech32: 2.0.0
       cross-fetch: 3.1.8
@@ -16654,7 +16654,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@walletconnect/ethereum-provider@2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@walletconnect/ethereum-provider@2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@walletconnect/jsonrpc-http-connection': 1.0.8
       '@walletconnect/jsonrpc-provider': 1.0.14

@@ -48,12 +48,12 @@ export function ConsentPageSkeleton() {
               </div>
             </div>
 
-            {/* Tool Accordion Skeleton */}
+            {/* Ability Accordion Skeleton */}
             <Card
               className={`backdrop-blur-xl ${themeStyles.cardBg} border ${themeStyles.cardBorder}`}
             >
               <CardContent className="p-0">
-                {/* Tool Header */}
+                {/* Ability Header */}
                 <div className="p-3 sm:p-6 border-b border-gray-200/10">
                   <div className="flex items-center gap-3">
                     <Skeleton circle width={20} height={20} />

@@ -1,11 +1,11 @@
 import { useUserApps } from './app/useUserApps';
-import { useUserTools } from './tool/useUserTools';
+import { useUserAbilities } from '@/hooks/developer-dashboard/ability/useUserAbilities';
 import { useUserPolicies } from './policy/useUserPolicies';
-import { App, Tool, Policy } from '@/types/developer-dashboard/appTypes';
+import { App, Ability, Policy } from '@/types/developer-dashboard/appTypes';
 
 type UseDeveloperSidebarDataReturn = {
   userApps: App[];
-  userTools: Tool[];
+  userAbilities: Ability[];
   userPolicies: Policy[];
   isLoading: boolean;
   error: string | null;
@@ -14,23 +14,27 @@ type UseDeveloperSidebarDataReturn = {
 export function useDeveloperSidebarData(): UseDeveloperSidebarDataReturn {
   // Fetch base data only
   const { data: userApps, isLoading: appsLoading, error: appsError } = useUserApps();
-  const { data: userTools, isLoading: toolsLoading, error: toolsError } = useUserTools();
+  const {
+    data: userAbilities,
+    isLoading: abilitiesLoading,
+    error: abilitiesError,
+  } = useUserAbilities();
   const {
     data: userPolicies,
     isLoading: policiesLoading,
     error: policiesError,
   } = useUserPolicies();
 
-  const isLoading = appsLoading || toolsLoading || policiesLoading;
+  const isLoading = appsLoading || abilitiesLoading || policiesLoading;
 
   const appsErrorMsg = appsError ? 'Failed to load apps' : null;
-  const toolsErrorMsg = toolsError ? 'Failed to load tools' : null;
+  const abilitiesErrorMsg = abilitiesError ? 'Failed to load abilities' : null;
   const policiesErrorMsg = policiesError ? 'Failed to load policies' : null;
-  const error = appsErrorMsg || toolsErrorMsg || policiesErrorMsg;
+  const error = appsErrorMsg || abilitiesErrorMsg || policiesErrorMsg;
 
   return {
     userApps: userApps || [],
-    userTools: userTools || [],
+    userAbilities: userAbilities || [],
     userPolicies: userPolicies || [],
     isLoading,
     error,

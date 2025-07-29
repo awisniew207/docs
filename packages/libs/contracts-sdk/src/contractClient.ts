@@ -25,14 +25,14 @@ import {
 import {
   permitApp as _permitApp,
   unPermitApp as _unPermitApp,
-  setToolPolicyParameters as _setToolPolicyParameters,
+  setAbilityPolicyParameters as _setAbilityPolicyParameters,
 } from './internal/user/User';
 import {
   getAllRegisteredAgentPkpEthAddresses as _getAllRegisteredAgentPkpEthAddresses,
   getPermittedAppVersionForPkp as _getPermittedAppVersionForPkp,
   getAllPermittedAppIdsForPkp as _getAllPermittedAppIdsForPkp,
-  getAllToolsAndPoliciesForApp as _getAllToolsAndPoliciesForApp,
-  validateToolExecutionAndGetPolicies as _validateToolExecutionAndGetPolicies,
+  getAllAbilitiesAndPoliciesForApp as _getAllAbilitiesAndPoliciesForApp,
+  validateAbilityExecutionAndGetPolicies as _validateAbilityExecutionAndGetPolicies,
 } from './internal/user/UserView';
 import { createContract } from './utils';
 
@@ -67,8 +67,8 @@ export function clientFromContract({ contract }: { contract: Contract }): Contra
     // User write methods
     permitApp: (params, overrides) => _permitApp({ contract, args: params, overrides }),
     unPermitApp: (params, overrides) => _unPermitApp({ contract, args: params, overrides }),
-    setToolPolicyParameters: (params, overrides) =>
-      _setToolPolicyParameters({ contract, args: params, overrides }),
+    setAbilityPolicyParameters: (params, overrides) =>
+      _setAbilityPolicyParameters({ contract, args: params, overrides }),
 
     // User view methods
     getAllRegisteredAgentPkpEthAddresses: (params) =>
@@ -77,10 +77,10 @@ export function clientFromContract({ contract }: { contract: Contract }): Contra
       _getPermittedAppVersionForPkp({ contract, args: params }),
     getAllPermittedAppIdsForPkp: (params) =>
       _getAllPermittedAppIdsForPkp({ contract, args: params }),
-    getAllToolsAndPoliciesForApp: (params) =>
-      _getAllToolsAndPoliciesForApp({ contract, args: params }),
-    validateToolExecutionAndGetPolicies: (params) =>
-      _validateToolExecutionAndGetPolicies({ contract, args: params }),
+    getAllAbilitiesAndPoliciesForApp: (params) =>
+      _getAllAbilitiesAndPoliciesForApp({ contract, args: params }),
+    validateAbilityExecutionAndGetPolicies: (params) =>
+      _validateAbilityExecutionAndGetPolicies({ contract, args: params }),
   };
 }
 

@@ -5,14 +5,14 @@ import { MenuId } from '@/types/developer-dashboard/menuId';
 
 interface DashboardContentProps {
   filteredAppsCount: number;
-  filteredToolsCount: number;
+  filteredAbilitiesCount: number;
   filteredPoliciesCount: number;
   onMenuSelection: (id: MenuId) => void;
 }
 
 export function DashboardContent({
   filteredAppsCount,
-  filteredToolsCount,
+  filteredAbilitiesCount,
   filteredPoliciesCount,
   onMenuSelection,
 }: DashboardContentProps) {
@@ -38,10 +38,10 @@ export function DashboardContent({
         <Button
           variant="outline"
           className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 hover:border-orange-500 hover:bg-orange-50 transition-all"
-          onClick={() => onMenuSelection('create-tool')}
+          onClick={() => onMenuSelection('create-ability')}
         >
           <Wrench className="h-5 w-5 text-orange-500" />
-          Create a tool
+          Create an ability
         </Button>
         <Button
           variant="outline"
@@ -119,7 +119,7 @@ export function DashboardContent({
 
           <Card
             className="cursor-pointer hover:bg-gray-50 hover:border-orange-200 transition-all border-gray-200"
-            onClick={() => onMenuSelection('tool')}
+            onClick={() => onMenuSelection('ability')}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -128,12 +128,12 @@ export function DashboardContent({
                     <Wrench className="h-4 w-4 text-orange-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-black">Tools</p>
-                    <p className="text-sm text-gray-600">Create and manage your tools</p>
+                    <p className="font-medium text-black">Abilities</p>
+                    <p className="text-sm text-gray-600">Create and manage your abilities</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-semibold text-black">{filteredToolsCount}</p>
+                  <p className="text-2xl font-semibold text-black">{filteredAbilitiesCount}</p>
                 </div>
               </div>
             </CardContent>
