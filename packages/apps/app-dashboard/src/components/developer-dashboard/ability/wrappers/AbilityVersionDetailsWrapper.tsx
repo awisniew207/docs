@@ -37,7 +37,7 @@ export function AbilityVersionDetailsWrapper() {
 
   const onOpenMutation = (mutationType: string) => {
     navigate(
-      `/developer/abilityId/${encodeURIComponent(packageName!)}/version/${version}/${mutationType}`,
+      `/developer/ability/${encodeURIComponent(packageName!)}/version/${version}/${mutationType}`,
     );
   };
 

@@ -24,7 +24,7 @@ export function UndeleteAbilityVersionButton({
   // Effect
   useEffect(() => {
     if (isSuccess && data && abilityVersion) {
-      navigate(`/developer/abilityId/${encodeURIComponent(abilityVersion.packageName)}`);
+      navigate(`/developer/ability/${encodeURIComponent(abilityVersion.packageName)}`);
     }
   }, [isSuccess, data, abilityVersion]);
 

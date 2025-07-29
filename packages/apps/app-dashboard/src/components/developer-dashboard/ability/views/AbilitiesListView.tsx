@@ -48,7 +48,7 @@ export function AbilitiesListView({ abilities, deletedAbilities }: AbilitiesList
               key={ability.packageName}
               className="cursor-pointer hover:shadow-md transition-shadow"
               onClick={() =>
-                navigate(`/developer/abilityId/${encodeURIComponent(ability.packageName)}`)
+                navigate(`/developer/ability/${encodeURIComponent(ability.packageName)}`)
               }
             >
               <CardHeader>

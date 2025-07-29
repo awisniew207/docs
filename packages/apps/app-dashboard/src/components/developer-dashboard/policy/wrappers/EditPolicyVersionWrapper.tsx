@@ -40,7 +40,7 @@ export function EditPolicyVersionWrapper() {
     if (isSuccess && data && policy && versionData) {
       navigateWithDelay(
         navigate,
-        `/developer/policyId/${encodeURIComponent(policy.packageName)}/version/${versionData.version}`,
+        `/developer/policy/${encodeURIComponent(policy.packageName)}/version/${versionData.version}`,
       );
     }
   }, [isSuccess, data, navigate, policy, versionData]);

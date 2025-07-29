@@ -41,8 +41,8 @@ function AppLayout({ children, className }: ComponentProps<'div'>) {
 
   // Determine which specific authorization check is needed based on route
   const needsAppAuthorization = location.pathname.includes('/developer/appId/');
-  const needsAbilityAuthorization = location.pathname.includes('/developer/abilityId/');
-  const needsPolicyAuthorization = location.pathname.includes('/developer/policyId/');
+  const needsAbilityAuthorization = location.pathname.includes('/developer/ability/');
+  const needsPolicyAuthorization = location.pathname.includes('/developer/policy/');
 
   // Select the appropriate authorization result based on the current route
   let isResourceAuthorized: boolean | null = true;

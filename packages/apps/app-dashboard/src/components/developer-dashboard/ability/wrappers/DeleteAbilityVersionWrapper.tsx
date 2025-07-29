@@ -46,7 +46,7 @@ export function DeleteAbilityVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      navigate(`/developer/abilityId/${encodeURIComponent(packageName!)}/versions`); // Navigate immediately, no delay needed
+      navigate(`/developer/ability/${encodeURIComponent(packageName!)}/versions`); // Navigate immediately, no delay needed
     }
   }, [isSuccess, data, navigate]);
 

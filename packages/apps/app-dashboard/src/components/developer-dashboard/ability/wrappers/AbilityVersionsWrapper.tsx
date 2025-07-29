@@ -46,7 +46,7 @@ export function AbilityVersionsWrapper() {
   if (!versions) return <StatusMessage message="No ability versions found" type="info" />;
 
   const handleVersionClick = (version: string) => {
-    navigate(`/developer/abilityId/${encodeURIComponent(packageName!)}/version/${version}`);
+    navigate(`/developer/ability/${encodeURIComponent(packageName!)}/version/${version}`);
   };
 
   return (

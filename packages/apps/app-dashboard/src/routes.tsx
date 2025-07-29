@@ -150,39 +150,39 @@ const routes: RouteObject[] = [
             element: <CreateAbilityWrapper />,
           },
           {
-            path: 'abilityId/:packageName',
+            path: 'ability/:packageName',
             element: <AbilityOverviewWrapper />,
           },
           {
-            path: 'abilityId/:packageName/edit-ability',
+            path: 'ability/:packageName/edit-ability',
             element: <EditAbilityWrapper />,
           },
           {
-            path: 'abilityId/:packageName/create-ability-version',
+            path: 'ability/:packageName/create-ability-version',
             element: <CreateAbilityVersionWrapper />,
           },
           {
-            path: 'abilityId/:packageName/change-ability-owner',
+            path: 'ability/:packageName/change-ability-owner',
             element: <ChangeAbilityOwnerWrapper />,
           },
           {
-            path: 'abilityId/:packageName/versions',
+            path: 'ability/:packageName/versions',
             element: <AbilityVersionsWrapper />,
           },
           {
-            path: 'abilityId/:packageName/version/:version',
+            path: 'ability/:packageName/version/:version',
             element: <AbilityVersionDetailsWrapper />,
           },
           {
-            path: 'abilityId/:packageName/version/:version/edit-version',
+            path: 'ability/:packageName/version/:version/edit-version',
             element: <EditAbilityVersionWrapper />,
           },
           {
-            path: 'abilityId/:packageName/delete-ability',
+            path: 'ability/:packageName/delete-ability',
             element: <DeleteAbilityWrapper />,
           },
           {
-            path: 'abilityId/:packageName/version/:version/delete-version',
+            path: 'ability/:packageName/version/:version/delete-version',
             element: <DeleteAbilityVersionWrapper />,
           },
           {
@@ -194,39 +194,39 @@ const routes: RouteObject[] = [
             element: <CreatePolicyWrapper />,
           },
           {
-            path: 'policyId/:packageName',
+            path: 'policy/:packageName',
             element: <PolicyOverviewWrapper />,
           },
           {
-            path: 'policyId/:packageName/edit-policy',
+            path: 'policy/:packageName/edit-policy',
             element: <EditPolicyWrapper />,
           },
           {
-            path: 'policyId/:packageName/create-policy-version',
+            path: 'policy/:packageName/create-policy-version',
             element: <CreatePolicyVersionWrapper />,
           },
           {
-            path: 'policyId/:packageName/change-policy-owner',
+            path: 'policy/:packageName/change-policy-owner',
             element: <ChangePolicyOwnerWrapper />,
           },
           {
-            path: 'policyId/:packageName/versions',
+            path: 'policy/:packageName/versions',
             element: <PolicyVersionsWrapper />,
           },
           {
-            path: 'policyId/:packageName/version/:version',
+            path: 'policy/:packageName/version/:version',
             element: <PolicyVersionDetailsWrapper />,
           },
           {
-            path: 'policyId/:packageName/version/:version/edit-version',
+            path: 'policy/:packageName/version/:version/edit-version',
             element: <EditPolicyVersionWrapper />,
           },
           {
-            path: 'policyId/:packageName/delete-policy',
+            path: 'policy/:packageName/delete-policy',
             element: <DeletePolicyWrapper />,
           },
           {
-            path: 'policyId/:packageName/version/:version/delete-version',
+            path: 'policy/:packageName/version/:version/delete-version',
             element: <DeletePolicyVersionWrapper />,
           },
         ],
