@@ -201,7 +201,7 @@ contract VincentDiamond {
         selectors[2] = VincentAppViewFacet.getAppsByManager.selector;
         selectors[3] = VincentAppViewFacet.getAppByDelegatee.selector;
         selectors[4] = VincentAppViewFacet.getDelegatedAgentPkpTokenIds.selector;
-        selectors[5] = VincentAppViewFacet.PAGE_SIZE.selector;
+        selectors[5] = bytes4(keccak256("APP_PAGE_SIZE()"));
         return selectors;
     }
 
@@ -220,7 +220,7 @@ contract VincentDiamond {
         selectors[2] = VincentUserViewFacet.getAllPermittedAppIdsForPkp.selector;
         selectors[3] = VincentUserViewFacet.validateToolExecutionAndGetPolicies.selector;
         selectors[4] = VincentUserViewFacet.getAllToolsAndPoliciesForApp.selector;
-        selectors[5] = VincentUserViewFacet.PAGE_SIZE.selector;
+        selectors[5] = bytes4(keccak256("AGENT_PAGE_SIZE()"));
         return selectors;
     }
 

@@ -15,7 +15,7 @@ contract VincentUserViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    uint256 public constant PAGE_SIZE = 50;
+    uint256 public constant AGENT_PAGE_SIZE = 50;
 
     /**
      * @notice Thrown when a PKP is not permitted for a specific app version
@@ -112,7 +112,7 @@ contract VincentUserViewFacet is VincentBase {
             revert InvalidOffset(offset, length);
         }
 
-        uint256 end = offset + PAGE_SIZE;
+        uint256 end = offset + AGENT_PAGE_SIZE;
         if (end > length) {
             end = length;
         }
@@ -186,7 +186,7 @@ contract VincentUserViewFacet is VincentBase {
             revert InvalidOffset(offset, nonDeletedCount);
         }
 
-        uint256 end = offset + PAGE_SIZE;
+        uint256 end = offset + AGENT_PAGE_SIZE;
         if (end > nonDeletedCount) {
             end = nonDeletedCount;
         }

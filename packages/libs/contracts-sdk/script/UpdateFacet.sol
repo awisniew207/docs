@@ -240,21 +240,21 @@ contract SmartUpdateFacet is Script {
         if (plan.toRemove.length > 0) {
             console2.log("REMOVE", plan.toRemove.length, "selectors:");
             for (uint256 i = 0; i < plan.toRemove.length; i++) {
-                console2.log("  -", vm.toString(plan.toRemove[i]));
+                console2.log("-", vm.toString(plan.toRemove[i]));
             }
         }
 
         if (plan.toAdd.length > 0) {
             console2.log("ADD", plan.toAdd.length, "selectors:");
             for (uint256 i = 0; i < plan.toAdd.length; i++) {
-                console2.log("  +", vm.toString(plan.toAdd[i]));
+                console2.log("+", vm.toString(plan.toAdd[i]));
             }
         }
 
         if (plan.toReplace.length > 0) {
             console2.log("REPLACE", plan.toReplace.length, "selectors:");
             for (uint256 i = 0; i < plan.toReplace.length; i++) {
-                console2.log("  ~", vm.toString(plan.toReplace[i]));
+                console2.log("~", vm.toString(plan.toReplace[i]));
             }
         }
 
@@ -296,7 +296,7 @@ contract SmartUpdateFacet is Script {
         selectors[2] = VincentAppViewFacet.getAppsByManager.selector;
         selectors[3] = VincentAppViewFacet.getAppByDelegatee.selector;
         selectors[4] = VincentAppViewFacet.getDelegatedAgentPkpTokenIds.selector;
-        selectors[5] = VincentAppViewFacet.PAGE_SIZE.selector;
+        selectors[5] = bytes4(keccak256("APP_PAGE_SIZE()"));
         return selectors;
     }
 
@@ -315,7 +315,7 @@ contract SmartUpdateFacet is Script {
         selectors[2] = VincentUserViewFacet.getAllPermittedAppIdsForPkp.selector;
         selectors[3] = VincentUserViewFacet.validateToolExecutionAndGetPolicies.selector;
         selectors[4] = VincentUserViewFacet.getAllToolsAndPoliciesForApp.selector;
-        selectors[5] = VincentUserViewFacet.PAGE_SIZE.selector;
+        selectors[5] = bytes4(keccak256("AGENT_PAGE_SIZE()"));
         return selectors;
     }
 

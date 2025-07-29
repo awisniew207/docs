@@ -18,7 +18,7 @@ contract VincentAppViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    uint256 public constant PAGE_SIZE = 50;
+    uint256 public constant APP_PAGE_SIZE = 50;
 
     /**
      * @notice Thrown when trying to access a delegatee that is not registered with any app
@@ -138,7 +138,7 @@ contract VincentAppViewFacet is VincentBase {
             revert InvalidOffset(offset, length);
         }
 
-        uint256 end = offset + PAGE_SIZE;
+        uint256 end = offset + APP_PAGE_SIZE;
         if (end > length) {
             end = length;
         }
@@ -242,7 +242,7 @@ contract VincentAppViewFacet is VincentBase {
             revert InvalidOffset(offset, length);
         }
 
-        uint256 end = offset + PAGE_SIZE;
+        uint256 end = offset + APP_PAGE_SIZE;
         if (end > length) {
             end = length;
         }
