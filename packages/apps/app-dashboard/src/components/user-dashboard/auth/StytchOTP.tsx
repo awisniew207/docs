@@ -180,7 +180,7 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
           </p>
 
           <div className="flex justify-center">
-            <form className="space-y-4 w-full sm:w-3/4 md:w-3/4 lg:w-full" onSubmit={sendPasscode}>
+            <form className="space-y-4 w-4/5" onSubmit={sendPasscode}>
               {method === 'email' ? (
                 <div className="space-y-2">
                   <label htmlFor="email" className={`text-sm font-medium block ${theme.text}`}>
@@ -249,7 +249,7 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
           </p>
 
           <div className="flex justify-center">
-            <form className="space-y-4 w-full sm:w-3/4 md:w-3/4 lg:w-full" onSubmit={authenticate}>
+            <form className="space-y-4 w-4/5" onSubmit={authenticate}>
               <div className="space-y-2">
                 <label htmlFor="code" className={`text-sm font-medium block ${theme.text}`}>
                   Verification code

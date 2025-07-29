@@ -60,7 +60,7 @@ export function AccountTooltip() {
         <span className={`font-medium ${themeStyles.text}`}>My Account</span>
       </SidebarMenuButton>
       {isTooltipOpen && authInfo && (
-        <div className="absolute right-0 top-full mt-2 w-64 sm:w-auto px-3 py-2 bg-black text-white text-xs rounded-md whitespace-pre-line z-50 max-w-[calc(100vw-2rem)] sm:min-w-max">
+        <div className="absolute left-0 top-full mt-2 w-64 sm:w-auto px-3 py-2 bg-black text-white text-xs rounded-md whitespace-pre-line z-50 max-w-[calc(100vw-2rem)] sm:min-w-max">
           <div className="mb-2 break-words">{formatAuthInfo()}</div>
           {authInfo.agentPKP?.ethAddress && (
             <div className="flex items-start gap-2 pt-2 border-t border-gray-600">

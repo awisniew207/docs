@@ -8,6 +8,7 @@ import ConsentView from './Consent';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Link } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ConsentFooter } from '../ui/Footer';
 
 type AuthenticationErrorScreenProps = {
   readAuthInfo: UseReadAuthInfo;
@@ -82,6 +83,9 @@ export function AuthenticationErrorScreen({ readAuthInfo }: AuthenticationErrorS
             </CardContent>
           </Card>
         </div>
+
+        {/* Footer */}
+        <ConsentFooter />
       </div>
     </div>
   );

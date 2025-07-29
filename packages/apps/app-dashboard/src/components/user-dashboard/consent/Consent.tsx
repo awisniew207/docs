@@ -92,8 +92,8 @@ export default function ConsentView({ theme, readAuthInfo }: ConsentViewProps) {
   }, [error]);
 
   // Register with WebAuthn
-  async function handleRegisterWithWebAuthn() {
-    const newPKP = await registerWebAuthn();
+  async function handleRegisterWithWebAuthn(displayName: string) {
+    const newPKP = await registerWebAuthn(displayName);
     if (newPKP) {
       setuserPKP(newPKP);
     }
@@ -138,17 +138,17 @@ export default function ConsentView({ theme, readAuthInfo }: ConsentViewProps) {
 
   // If user is authenticated and has accounts, select the first one
   useEffect(() => {
-    if (authMethod && accounts.length > 0 && !userPKP) {
+    if (authMethod && accounts.length > 0) {
       setuserPKP(accounts[0]);
     }
-  }, [authMethod, accounts, userPKP, setuserPKP]);
+  }, [authMethod, accounts, setuserPKP]);
 
   // If user is authenticated and has selected an account, generate session sigs
   useEffect(() => {
-    if (authMethod && userPKP) {
+    if (authMethod && userPKP && accounts.length > 0) {
       generateSessionSigs();
     }
-  }, [authMethod, userPKP, generateSessionSigs]);
+  }, [authMethod, userPKP, accounts, generateSessionSigs]);
 
   // ------ LOADING STATES ------
 
