@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-tool-morpho",
-  "version": "0.0.3-mma",
+  "version": "0.0.6-mma",
   "publishConfig": {
     "access": "public"
   },
