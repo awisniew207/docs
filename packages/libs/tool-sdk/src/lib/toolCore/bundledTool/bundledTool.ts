@@ -19,7 +19,7 @@ export function asBundledVincentTool<
   Object.defineProperty(bundledTool, 'vincentToolApiVersion', {
     value: VINCENT_TOOL_API_VERSION,
     writable: false,
-    enumerable: false,
+    enumerable: true,
     configurable: false,
   });
 
