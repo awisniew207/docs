@@ -57,8 +57,10 @@
       "contracts-sdk",
       "registry-backend",
       "policy-spending-limit",
+      "policy-contract-whitelist",
       "ability-erc20-approval",
       "ability-uniswap-swap",
+      "ability-transaction-signer",
       "mcp-server",
       "abilities-e2e"
     ],

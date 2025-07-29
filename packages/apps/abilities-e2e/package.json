@@ -4,10 +4,12 @@
   "version": "0.1.1",
   "dependencies": {
     "@lit-protocol/vincent-app-sdk": "workspace:*",
+    "@lit-protocol/vincent-policy-contract-whitelist": "workspace:*",
     "@lit-protocol/vincent-policy-spending-limit": "workspace:*",
     "@lit-protocol/vincent-ability-erc20-approval": "workspace:*",
     "@lit-protocol/vincent-ability-sdk": "workspace:*",
     "@lit-protocol/vincent-ability-uniswap-swap": "workspace:*",
+    "@lit-protocol/vincent-ability-transaction-signer": "workspace:*",
     "@lit-protocol/vincent-contracts-sdk": "workspace:*",
     "esbuild": "^0.25.5",
     "esbuild-plugin-polyfill-node": "^0.3.0",

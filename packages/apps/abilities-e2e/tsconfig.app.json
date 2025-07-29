@@ -43,6 +43,12 @@
     },
     {
       "path": "../../libs/app-sdk/tsconfig.lib.json"
+    },
+    {
+      "path": "../ability-transaction-signer/tsconfig.lib.json"
+    },
+    {
+      "path": "../policy-contract-whitelist/tsconfig.lib.json"
     }
   ]
 }
