@@ -12,9 +12,9 @@ interface RequiredPoliciesProps {
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
-  onFormChange: (toolIpfsCid: string, policyIpfsCid: string, data: any) => void;
+  onFormChange: (abilityIpfsCid: string, policyIpfsCid: string, data: any) => void;
   onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
-  toolIpfsCid: string;
+  abilityIpfsCid: string;
 }
 
 export function RequiredPolicies({
@@ -25,7 +25,7 @@ export function RequiredPolicies({
   formData,
   onFormChange,
   onRegisterFormRef,
-  toolIpfsCid,
+  abilityIpfsCid,
 }: RequiredPoliciesProps) {
   if (policies.length === 0) {
     return null;
@@ -103,9 +103,9 @@ export function RequiredPolicies({
                   }}
                   policy={policy}
                   isDark={isDark}
-                  formData={formData[toolIpfsCid] || {}}
+                  formData={formData[abilityIpfsCid] || {}}
                   onFormChange={(policyIpfsCid, data) => {
-                    onFormChange(toolIpfsCid, policyIpfsCid, data);
+                    onFormChange(abilityIpfsCid, policyIpfsCid, data);
                   }}
                 />
               </div>

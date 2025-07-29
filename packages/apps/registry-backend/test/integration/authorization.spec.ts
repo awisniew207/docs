@@ -1,6 +1,7 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query';
 import { Wallet } from 'ethers';
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 import { expectAssertObject, hasError } from '../assertions';
@@ -35,8 +36,8 @@ describe('Authorization Integration Tests', () => {
   let testAppId: number;
   let testAppVersion: number;
   let secondAppVersion: number;
-  let testToolPackageName: string;
-  let testToolVersion: string;
+  let testAbilityPackageName: string;
+  let testAbilityVersion: string;
   let testPolicyPackageName: string;
   let testPolicyVersion: string;
 
@@ -51,9 +52,9 @@ describe('Authorization Integration Tests', () => {
     delegateeAddresses: generateRandomEthAddresses(2),
   };
 
-  const toolData = {
-    title: 'Auth Test Tool',
-    description: 'Test tool for authorization tests',
+  const abilityData = {
+    title: 'Auth Test Ability',
+    description: 'Test ability for authorization tests',
     activeVersion: '1.0.0',
   };
 
@@ -80,16 +81,16 @@ describe('Authorization Integration Tests', () => {
     testAppVersion = 1; // Initial version
 
     // Register the app on the contracts using contracts-sdk
-    const toolIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval tool
+    const abilityIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval ability
     const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
     try {
       const { txHash } = await getDefaultWalletContractClient().registerApp({
         appId: testAppId,
         delegateeAddresses: appData.delegateeAddresses,
-        versionTools: {
-          toolIpfsCids: [toolIpfsCid],
-          toolPolicies: [[policyIpfsCid]],
+        versionAbilities: {
+          abilityIpfsCids: [abilityIpfsCid],
+          abilityPolicies: [[policyIpfsCid]],
         },
       });
 
@@ -99,16 +100,16 @@ describe('Authorization Integration Tests', () => {
       throw error;
     }
 
-    // Create Tool
-    testToolPackageName = `@lit-protocol/vincent-tool-uniswap-swap`;
-    testToolVersion = toolData.activeVersion;
-    const toolResult = await store.dispatch(
-      api.endpoints.createTool.initiate({
-        packageName: testToolPackageName,
-        toolCreate: toolData,
+    // Create Ability
+    testAbilityPackageName = `@lit-protocol/vincent-ability-uniswap-swap`;
+    testAbilityVersion = abilityData.activeVersion;
+    const abilityResult = await store.dispatch(
+      api.endpoints.createAbility.initiate({
+        packageName: testAbilityPackageName,
+        abilityCreate: abilityData,
       }),
     );
-    expect(toolResult).not.toHaveProperty('error');
+    expect(abilityResult).not.toHaveProperty('error');
 
     // Create Policy
     testPolicyPackageName = `@lit-protocol/vincent-policy-spending-limit`;
@@ -136,18 +137,18 @@ describe('Authorization Integration Tests', () => {
     secondAppVersion = secondVersionData.version;
     expect(secondAppVersion).toBe(2); // Second version should be 2
 
-    // Create AppVersionTool for the second app version (not on-chain)
-    const appVersionToolResult = await store.dispatch(
-      api.endpoints.createAppVersionTool.initiate({
+    // Create AppVersionAbility for the second app version (not on-chain)
+    const appVersionAbilityResult = await store.dispatch(
+      api.endpoints.createAppVersionAbility.initiate({
         appId: testAppId,
         appVersion: secondAppVersion,
-        toolPackageName: testToolPackageName,
-        appVersionToolCreate: {
-          toolVersion: testToolVersion,
+        abilityPackageName: testAbilityPackageName,
+        appVersionAbilityCreate: {
+          abilityVersion: testAbilityVersion,
         },
       }),
     );
-    expect(appVersionToolResult).not.toHaveProperty('error');
+    expect(appVersionAbilityResult).not.toHaveProperty('error');
 
     // Setup the unauthorized API client
     const { setBaseQueryFn } = nodeClient;
@@ -168,11 +169,13 @@ describe('Authorization Integration Tests', () => {
       withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
     );
 
-    // Delete App (this will cascade delete AppVersions and AppVersionTools)
+    // Delete App (this will cascade delete AppVersions and AppVersionAbilities)
     await store.dispatch(api.endpoints.deleteApp.initiate({ appId: testAppId }));
 
-    // Delete Tool
-    await store.dispatch(api.endpoints.deleteTool.initiate({ packageName: testToolPackageName }));
+    // Delete Ability
+    await store.dispatch(
+      api.endpoints.deleteAbility.initiate({ packageName: testAbilityPackageName }),
+    );
 
     // Delete Policy
     await store.dispatch(
@@ -328,16 +331,16 @@ describe('Authorization Integration Tests', () => {
     });
   });
 
-  // Test AppVersionTool mutation endpoints
-  describe('AppVersionTool Mutation Endpoints', () => {
-    it('should fail to create a new app version tool with unauthorized wallet', async () => {
+  // Test AppVersionAbility mutation endpoints
+  describe('AppVersionAbility Mutation Endpoints', () => {
+    it('should fail to create a new app version ability with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.createAppVersionTool.initiate({
+        api.endpoints.createAppVersionAbility.initiate({
           appId: testAppId,
           appVersion: secondAppVersion,
-          toolPackageName: testToolPackageName,
-          appVersionToolCreate: {
-            toolVersion: testToolVersion,
+          abilityPackageName: testAbilityPackageName,
+          appVersionAbilityCreate: {
+            abilityVersion: testAbilityVersion,
           },
         }),
       );
@@ -354,13 +357,13 @@ describe('Authorization Integration Tests', () => {
       }
     });
 
-    it('should fail to update an app version tool with unauthorized wallet', async () => {
+    it('should fail to update an app version ability with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.editAppVersionTool.initiate({
+        api.endpoints.editAppVersionAbility.initiate({
           appId: testAppId,
           appVersion: secondAppVersion,
-          toolPackageName: testToolPackageName,
-          appVersionToolEdit: {
+          abilityPackageName: testAbilityPackageName,
+          appVersionAbilityEdit: {
             hiddenSupportedPolicies: ['@vincent/policy1'],
           },
         }),
@@ -378,12 +381,12 @@ describe('Authorization Integration Tests', () => {
       }
     });
 
-    it('should fail to delete an app version tool with unauthorized wallet', async () => {
+    it('should fail to delete an app version ability with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.deleteAppVersionTool.initiate({
+        api.endpoints.deleteAppVersionAbility.initiate({
           appId: testAppId,
           appVersion: secondAppVersion,
-          toolPackageName: testToolPackageName,
+          abilityPackageName: testAbilityPackageName,
         }),
       );
 
@@ -400,13 +403,13 @@ describe('Authorization Integration Tests', () => {
     });
   });
 
-  // Test Tool mutation endpoints
-  describe('Tool Mutation Endpoints', () => {
-    it('should fail to update a tool with unauthorized wallet', async () => {
+  // Test Ability mutation endpoints
+  describe('Ability Mutation Endpoints', () => {
+    it('should fail to update an ability with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.editTool.initiate({
-          packageName: testToolPackageName,
-          toolEdit: {
+        api.endpoints.editAbility.initiate({
+          packageName: testAbilityPackageName,
+          abilityEdit: {
             description: 'Unauthorized update',
           },
         }),
@@ -424,9 +427,9 @@ describe('Authorization Integration Tests', () => {
       }
     });
 
-    it('should fail to delete a tool with unauthorized wallet', async () => {
+    it('should fail to delete an ability with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.deleteTool.initiate({ packageName: testToolPackageName }),
+        api.endpoints.deleteAbility.initiate({ packageName: testAbilityPackageName }),
       );
 
       verboseLog(result);
@@ -442,14 +445,14 @@ describe('Authorization Integration Tests', () => {
     });
   });
 
-  // Test ToolVersion mutation endpoints
-  describe('ToolVersion Mutation Endpoints', () => {
-    it('should fail to create a new tool version with unauthorized wallet', async () => {
+  // Test AbilityVersion mutation endpoints
+  describe('AbilityVersion Mutation Endpoints', () => {
+    it('should fail to create a new ability version with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.createToolVersion.initiate({
-          packageName: testToolPackageName,
+        api.endpoints.createAbilityVersion.initiate({
+          packageName: testAbilityPackageName,
           version: '1.0.1',
-          toolVersionCreate: {
+          abilityVersionCreate: {
             changes: 'Unauthorized changes',
           },
         }),
@@ -467,12 +470,12 @@ describe('Authorization Integration Tests', () => {
       }
     });
 
-    it('should fail to update a tool version with unauthorized wallet', async () => {
+    it('should fail to update an ability version with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.editToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: testToolVersion,
-          toolVersionEdit: {
+        api.endpoints.editAbilityVersion.initiate({
+          packageName: testAbilityPackageName,
+          version: testAbilityVersion,
+          abilityVersionEdit: {
             changes: 'Unauthorized changes',
           },
         }),
@@ -490,11 +493,11 @@ describe('Authorization Integration Tests', () => {
       }
     });
 
-    it('should fail to delete a tool version with unauthorized wallet', async () => {
+    it('should fail to delete an ability version with unauthorized wallet', async () => {
       const result = await store.dispatch(
-        api.endpoints.deleteToolVersion.initiate({
-          packageName: testToolPackageName,
-          version: testToolVersion,
+        api.endpoints.deleteAbilityVersion.initiate({
+          packageName: testAbilityPackageName,
+          version: testAbilityVersion,
         }),
       );
 
@@ -644,10 +647,10 @@ describe('Authorization Integration Tests', () => {
   // Test ownership change and authorization flow
   describe('Ownership Change Tests', () => {
     // Test data for new entities to be created for ownership tests
-    let ownershipTestToolPackageName: string;
+    let ownershipTestAbilityPackageName: string;
     let ownershipTestPolicyPackageName: string;
 
-    // Create new tool and policy for ownership tests
+    // Create new ability and policy for ownership tests
     beforeAll(async () => {
       verboseLog('Ownership Change Tests - Setup');
 
@@ -657,30 +660,30 @@ describe('Authorization Integration Tests', () => {
         withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
       );
 
-      // Explicitly delete both tools and the policy before creating new ones
+      // Explicitly delete both abilities and the policy before creating new ones
       try {
         await store.dispatch(
-          api.endpoints.deleteTool.initiate({
-            packageName: '@lit-protocol/vincent-tool-uniswap-swap',
+          api.endpoints.deleteAbility.initiate({
+            packageName: '@lit-protocol/vincent-ability-uniswap-swap',
           }),
         );
-        verboseLog('Deleted @lit-protocol/vincent-tool-uniswap-swap');
+        verboseLog('Deleted @lit-protocol/vincent-ability-uniswap-swap');
       } catch (error: any) {
         verboseLog(
-          `Error deleting @lit-protocol/vincent-tool-uniswap-swap (may not exist): ${error.message}`,
+          `Error deleting @lit-protocol/vincent-ability-uniswap-swap (may not exist): ${error.message}`,
         );
       }
 
       try {
         await store.dispatch(
-          api.endpoints.deleteTool.initiate({
-            packageName: '@lit-protocol/vincent-tool-erc20-approval',
+          api.endpoints.deleteAbility.initiate({
+            packageName: '@lit-protocol/vincent-ability-erc20-approval',
           }),
         );
-        verboseLog('Deleted @lit-protocol/vincent-tool-erc20-approval');
+        verboseLog('Deleted @lit-protocol/vincent-ability-erc20-approval');
       } catch (error: any) {
         verboseLog(
-          `Error deleting @lit-protocol/vincent-tool-erc20-approval (may not exist): ${error.message}`,
+          `Error deleting @lit-protocol/vincent-ability-erc20-approval (may not exist): ${error.message}`,
         );
       }
 
@@ -697,19 +700,19 @@ describe('Authorization Integration Tests', () => {
         );
       }
 
-      // Create a new tool for ownership tests
-      ownershipTestToolPackageName = `@lit-protocol/vincent-tool-uniswap-swap`;
-      const toolResult = await store.dispatch(
-        api.endpoints.createTool.initiate({
-          packageName: ownershipTestToolPackageName,
-          toolCreate: {
-            title: 'Ownership Test Tool',
-            description: 'Tool for testing ownership changes',
+      // Create a new ability for ownership tests
+      ownershipTestAbilityPackageName = `@lit-protocol/vincent-ability-uniswap-swap`;
+      const abilityResult = await store.dispatch(
+        api.endpoints.createAbility.initiate({
+          packageName: ownershipTestAbilityPackageName,
+          abilityCreate: {
+            title: 'Ownership Test Ability',
+            description: 'Ability for testing ownership changes',
             activeVersion: '1.0.0',
           },
         }),
       );
-      expect(toolResult).not.toHaveProperty('error');
+      expect(abilityResult).not.toHaveProperty('error');
 
       // Create a new policy for ownership tests
       ownershipTestPolicyPackageName = `@lit-protocol/vincent-policy-spending-limit`;
@@ -736,10 +739,10 @@ describe('Authorization Integration Tests', () => {
         withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
       );
 
-      // Delete the test tool and policy
+      // Delete the test ability and policy
       await store.dispatch(
-        api.endpoints.deleteTool.initiate({
-          packageName: ownershipTestToolPackageName,
+        api.endpoints.deleteAbility.initiate({
+          packageName: ownershipTestAbilityPackageName,
         }),
       );
       await store.dispatch(
@@ -749,8 +752,8 @@ describe('Authorization Integration Tests', () => {
       );
     });
 
-    describe('Tool Ownership Change', () => {
-      it('should change tool owner to unauthorized wallet address', async () => {
+    describe('Ability Ownership Change', () => {
+      it('should change ability owner to unauthorized wallet address', async () => {
         // Reset the API client to use the authorized wallet
         const { setBaseQueryFn } = nodeClient;
         setBaseQueryFn(
@@ -758,8 +761,8 @@ describe('Authorization Integration Tests', () => {
         );
 
         const result = await store.dispatch(
-          api.endpoints.changeToolOwner.initiate({
-            packageName: ownershipTestToolPackageName,
+          api.endpoints.changeAbilityOwner.initiate({
+            packageName: ownershipTestAbilityPackageName,
             changeOwner: {
               authorWalletAddress: unauthorizedWallet.address,
             },
@@ -776,7 +779,7 @@ describe('Authorization Integration Tests', () => {
         expect(data.authorWalletAddress).toBe(unauthorizedWallet.address);
       });
 
-      it('should allow the new owner (previously unauthorized) to edit the tool', async () => {
+      it('should allow the new owner (previously unauthorized) to edit the ability', async () => {
         // Set the API client to use the previously unauthorized wallet
         const { setBaseQueryFn } = nodeClient;
         setBaseQueryFn(
@@ -790,9 +793,9 @@ describe('Authorization Integration Tests', () => {
         };
 
         const result = await store.dispatch(
-          api.endpoints.editTool.initiate({
-            packageName: ownershipTestToolPackageName,
-            toolEdit: updateData,
+          api.endpoints.editAbility.initiate({
+            packageName: ownershipTestAbilityPackageName,
+            abilityEdit: updateData,
           }),
         );
 
@@ -806,13 +809,13 @@ describe('Authorization Integration Tests', () => {
         expect(data.description).toBe(updateData.description);
       });
 
-      it('should allow the new owner (previously unauthorized) to delete the tool', async () => {
-        // Create a new tool version to delete
+      it('should allow the new owner (previously unauthorized) to delete the ability', async () => {
+        // Create a new ability version to delete
         const versionResult = await store.dispatch(
-          api.endpoints.createToolVersion.initiate({
-            packageName: ownershipTestToolPackageName,
+          api.endpoints.createAbilityVersion.initiate({
+            packageName: ownershipTestAbilityPackageName,
             version: '1.0.1',
-            toolVersionCreate: {
+            abilityVersionCreate: {
               changes: 'Version to be deleted by new owner',
             },
           }),
@@ -820,10 +823,10 @@ describe('Authorization Integration Tests', () => {
 
         expect(versionResult).not.toHaveProperty('error');
 
-        // Delete the tool version
+        // Delete the ability version
         const deleteResult = await store.dispatch(
-          api.endpoints.deleteToolVersion.initiate({
-            packageName: ownershipTestToolPackageName,
+          api.endpoints.deleteAbilityVersion.initiate({
+            packageName: ownershipTestAbilityPackageName,
             version: '1.0.1',
           }),
         );

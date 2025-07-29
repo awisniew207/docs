@@ -80,13 +80,13 @@ export function AppPermissionPage({
       await addPermittedActions({
         wallet: agentPkpWallet,
         agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
-        toolIpfsCids: Object.keys(formData),
+        abilityIpfsCids: Object.keys(formData),
       });
 
       try {
-        setLocalStatus('Setting tool policy parameters...');
+        setLocalStatus('Setting ability policy parameters...');
         const client = getClient({ signer: agentPkpWallet });
-        await client.setToolPolicyParameters({
+        await client.setAbilityPolicyParameters({
           pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
           appId: Number(consentInfoMap.app.appId),
           appVersion: Number(permittedVersion),

@@ -1,10 +1,10 @@
 import {
-  AppVersionTool,
+  AppVersionAbility,
   AppVersion,
-  ToolVersion,
+  AbilityVersion,
   PolicyVersion,
   App,
-  Tool,
+  Ability,
   Policy,
 } from '@/types/developer-dashboard/appTypes';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
@@ -13,11 +13,11 @@ import { useMemo, useEffect, useState } from 'react';
 export type ConsentInfoMap = {
   app: App;
   versionsByApp: Record<string, AppVersion[]>;
-  appVersionToolsByAppVersion: Record<string, AppVersionTool[]>;
-  toolVersionsByAppVersionTool: Record<string, ToolVersion[]>;
-  supportedPoliciesByToolVersion: Record<string, PolicyVersion[]>;
+  appVersionAbilitiesByAppVersion: Record<string, AppVersionAbility[]>;
+  abilityVersionsByAppVersionAbility: Record<string, AbilityVersion[]>;
+  supportedPoliciesByAbilityVersion: Record<string, PolicyVersion[]>;
   appVersionToSupportedPolicyIpfsCids: Record<string, string[]>;
-  toolsByPackageName: Record<string, Tool>;
+  abilitiesByPackageName: Record<string, Ability>;
   policiesByPackageName: Record<string, Policy>;
 };
 
@@ -48,23 +48,31 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
   } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Use lazy queries with their built-in states
-  const [triggerListAppVersionTools, { isFetching: toolsLoading, isError: toolsError }] =
-    vincentApiClient.useLazyListAppVersionToolsQuery();
-  const [triggerGetToolVersion, { isFetching: toolVersionsLoading, isError: toolVersionsError }] =
-    vincentApiClient.useLazyGetToolVersionQuery();
+  const [
+    triggerListAppVersionAbilities,
+    { isFetching: abilitiesLoading, isError: abilitiesError },
+  ] = vincentApiClient.useLazyListAppVersionAbilitiesQuery();
+  const [
+    triggerGetAbilityVersion,
+    { isFetching: abilityVersionsLoading, isError: abilityVersionsError },
+  ] = vincentApiClient.useLazyGetAbilityVersionQuery();
   const [triggerGetPolicyVersion, { isFetching: policiesLoading, isError: policiesError }] =
     vincentApiClient.useLazyGetPolicyVersionQuery();
-  const [triggerGetTool, { isFetching: toolsInfoLoading, isError: toolsInfoError }] =
-    vincentApiClient.useLazyGetToolQuery();
+  const [triggerGetAbility, { isFetching: abilitiesInfoLoading, isError: abilitiesInfoError }] =
+    vincentApiClient.useLazyGetAbilityQuery();
   const [triggerGetPolicy, { isFetching: policiesInfoLoading, isError: policiesInfoError }] =
     vincentApiClient.useLazyGetPolicyQuery();
 
-  const [versionToolsData, setVersionToolsData] = useState<Record<string, AppVersionTool[]>>({});
-  const [toolVersionsData, setToolVersionsData] = useState<Record<string, ToolVersion>>({});
+  const [versionAbilitiesData, setVersionAbilitiesData] = useState<
+    Record<string, AppVersionAbility[]>
+  >({});
+  const [abilityVersionsData, setAbilityVersionsData] = useState<Record<string, AbilityVersion>>(
+    {},
+  );
   const [supportedPoliciesData, setSupportedPoliciesData] = useState<
     Record<string, PolicyVersion[]>
   >({});
-  const [toolsData, setToolsData] = useState<Record<string, Tool>>({});
+  const [abilitiesData, setAbilitiesData] = useState<Record<string, Ability>>({});
   const [policiesData, setPoliciesData] = useState<Record<string, Policy>>({});
 
   // Fetch all data when appVersions changes
@@ -85,63 +93,63 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
 
     const fetchAllData = async () => {
       try {
-        // Step 1: Fetch version tools
-        const versionToolsData: Record<string, AppVersionTool[]> = {};
+        // Step 1: Fetch version abilities
+        const versionAbilitiesData: Record<string, AppVersionAbility[]> = {};
 
         for (const version of appVersions) {
-          const result = await triggerListAppVersionTools({
+          const result = await triggerListAppVersionAbilities({
             appId: Number(appId),
             version: Number(version.version),
           });
 
           const versionKey = `${appId}-${version.version}`;
-          versionToolsData[versionKey] = result.data || [];
+          versionAbilitiesData[versionKey] = result.data || [];
         }
 
-        setVersionToolsData(versionToolsData);
+        setVersionAbilitiesData(versionAbilitiesData);
 
-        // Step 2: Fetch tool versions and parent tools
-        const toolVersions: Record<string, ToolVersion> = {};
-        const tools: Record<string, Tool> = {};
+        // Step 2: Fetch ability versions and parent abilities
+        const abilityVersions: Record<string, AbilityVersion> = {};
+        const abilities: Record<string, Ability> = {};
 
-        for (const [_, toolsList] of Object.entries(versionToolsData)) {
-          for (const tool of toolsList) {
-            const toolVersionResult = await triggerGetToolVersion({
-              packageName: tool.toolPackageName,
-              version: tool.toolVersion,
+        for (const [_, abilitiesList] of Object.entries(versionAbilitiesData)) {
+          for (const ability of abilitiesList) {
+            const abilityVersionResult = await triggerGetAbilityVersion({
+              packageName: ability.abilityPackageName,
+              version: ability.abilityVersion,
             });
 
-            const toolKey = `${tool.toolPackageName}-${tool.toolVersion}`;
-            if (toolVersionResult.data) {
-              toolVersions[toolKey] = toolVersionResult.data;
+            const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
+            if (abilityVersionResult.data) {
+              abilityVersions[abilityKey] = abilityVersionResult.data;
             }
 
-            // Fetch parent tool info if we haven't already
-            if (!tools[tool.toolPackageName]) {
-              const toolResult = await triggerGetTool({
-                packageName: tool.toolPackageName,
+            // Fetch parent ability info if we haven't already
+            if (!abilities[ability.abilityPackageName]) {
+              const abilityResult = await triggerGetAbility({
+                packageName: ability.abilityPackageName,
               });
 
-              if (toolResult.data) {
-                tools[tool.toolPackageName] = toolResult.data;
+              if (abilityResult.data) {
+                abilities[ability.abilityPackageName] = abilityResult.data;
               }
             }
           }
         }
 
-        setToolVersionsData(toolVersions);
-        setToolsData(tools);
+        setAbilityVersionsData(abilityVersions);
+        setAbilitiesData(abilities);
 
         // Step 3: Fetch supported policies and parent policy info
         const supportedPoliciesData: Record<string, PolicyVersion[]> = {};
         const policies: Record<string, Policy> = {};
 
-        for (const [toolKey, toolVersion] of Object.entries(toolVersions)) {
-          const toolPolicies: PolicyVersion[] = [];
+        for (const [abilityKey, abilityVersion] of Object.entries(abilityVersions)) {
+          const abilityPolicies: PolicyVersion[] = [];
 
-          if (toolVersion.supportedPolicies) {
+          if (abilityVersion.supportedPolicies) {
             for (const [policyPackageName, policyVersion] of Object.entries(
-              toolVersion.supportedPolicies,
+              abilityVersion.supportedPolicies,
             )) {
               const policyVersionResult = await triggerGetPolicyVersion({
                 packageName: policyPackageName,
@@ -149,7 +157,7 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
               });
 
               if (policyVersionResult.data) {
-                toolPolicies.push(policyVersionResult.data);
+                abilityPolicies.push(policyVersionResult.data);
               }
 
               // Fetch parent policy info if we haven't already
@@ -165,7 +173,7 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
             }
           }
 
-          supportedPoliciesData[toolKey] = toolPolicies;
+          supportedPoliciesData[abilityKey] = abilityPolicies;
         }
 
         setSupportedPoliciesData(supportedPoliciesData);
@@ -189,18 +197,18 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
       [appId]: appVersions || [],
     };
 
-    const appVersionToolsByAppVersion: Record<string, AppVersionTool[]> = {};
+    const appVersionAbilitiesByAppVersion: Record<string, AppVersionAbility[]> = {};
     (appVersions || []).forEach((version) => {
       const versionKey = `${appId}-${version.version}`;
-      appVersionToolsByAppVersion[versionKey] = versionToolsData[versionKey] || [];
+      appVersionAbilitiesByAppVersion[versionKey] = versionAbilitiesData[versionKey] || [];
     });
 
-    const toolVersionsByAppVersionTool: Record<string, ToolVersion[]> = {};
-    Object.entries(toolVersionsData).forEach(([toolKey, toolVersion]) => {
-      toolVersionsByAppVersionTool[toolKey] = [toolVersion];
+    const abilityVersionsByAppVersionAbility: Record<string, AbilityVersion[]> = {};
+    Object.entries(abilityVersionsData).forEach(([abilityKey, abilityVersion]) => {
+      abilityVersionsByAppVersionAbility[abilityKey] = [abilityVersion];
     });
 
-    const supportedPoliciesByToolVersion: Record<string, PolicyVersion[]> = {
+    const supportedPoliciesByAbilityVersion: Record<string, PolicyVersion[]> = {
       ...supportedPoliciesData,
     };
 
@@ -211,14 +219,14 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
       const versionKey = `${appId}-${version.version}`;
       const ipfsCids: string[] = [];
 
-      // Get tools for this app version
-      const tools = versionToolsData[versionKey] || [];
+      // Get abilities for this app version
+      const abilities = versionAbilitiesData[versionKey] || [];
 
-      tools.forEach((tool) => {
-        const toolKey = `${tool.toolPackageName}-${tool.toolVersion}`;
+      abilities.forEach((ability) => {
+        const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
 
-        // Get supported policies for this tool
-        const policies = supportedPoliciesData[toolKey] || [];
+        // Get supported policies for this ability
+        const policies = supportedPoliciesData[abilityKey] || [];
 
         // Extract IPFS CIDs from each policy
         policies.forEach((policy) => {
@@ -235,31 +243,31 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
     return {
       app: app || ({} as App),
       versionsByApp,
-      appVersionToolsByAppVersion,
-      toolVersionsByAppVersionTool,
-      supportedPoliciesByToolVersion,
+      appVersionAbilitiesByAppVersion,
+      abilityVersionsByAppVersionAbility,
+      supportedPoliciesByAbilityVersion,
       appVersionToSupportedPolicyIpfsCids,
-      toolsByPackageName: toolsData,
+      abilitiesByPackageName: abilitiesData,
       policiesByPackageName: policiesData,
     };
   }, [
     appVersions,
-    versionToolsData,
-    toolVersionsData,
+    versionAbilitiesData,
+    abilityVersionsData,
     supportedPoliciesData,
     appId,
     app,
-    toolsData,
+    abilitiesData,
     policiesData,
   ]);
 
   const isLoadingValue =
     appLoading ||
     appVersionsLoading ||
-    toolsLoading ||
-    toolVersionsLoading ||
+    abilitiesLoading ||
+    abilityVersionsLoading ||
     policiesLoading ||
-    toolsInfoLoading ||
+    abilitiesInfoLoading ||
     policiesInfoLoading ||
     !isDataFetchingComplete;
 
@@ -268,10 +276,10 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
     isError:
       appError ||
       appVersionsError ||
-      toolsError ||
-      toolVersionsError ||
+      abilitiesError ||
+      abilityVersionsError ||
       policiesError ||
-      toolsInfoError ||
+      abilitiesInfoError ||
       policiesInfoError ||
       (!appLoading && !app && isDataFetchingComplete),
     errors:

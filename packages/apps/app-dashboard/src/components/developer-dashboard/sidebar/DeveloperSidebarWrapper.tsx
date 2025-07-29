@@ -4,8 +4,8 @@ import { DeveloperSidebarSkeleton } from './DeveloperSidebarSkeleton';
 import { DeveloperSidebarError } from './DeveloperSidebarError';
 
 export function DeveloperSidebarWrapper() {
-  // Get base data only (apps, tools, policies)
-  const { userApps, userTools, userPolicies, isLoading, error } = useDeveloperSidebarData();
+  // Get base data only (apps, abilities, policies)
+  const { userApps, userAbilities, userPolicies, isLoading, error } = useDeveloperSidebarData();
 
   // Handle loading state
   if (isLoading) {
@@ -17,5 +17,5 @@ export function DeveloperSidebarWrapper() {
     return <DeveloperSidebarError error={error} />;
   }
 
-  return <Sidebar userApps={userApps} userTools={userTools} userPolicies={userPolicies} />;
+  return <Sidebar userApps={userApps} userAbilities={userAbilities} userPolicies={userPolicies} />;
 }

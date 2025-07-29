@@ -3,7 +3,7 @@ import { AlertTriangle, Home, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 type ResourceNotOwnedErrorProps = {
-  resourceType: 'app' | 'tool' | 'policy';
+  resourceType: 'app' | 'ability' | 'policy';
   resourceName?: string;
   resourceId?: string;
   errorDetails?: string;

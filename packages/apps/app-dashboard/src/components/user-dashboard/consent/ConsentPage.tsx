@@ -90,7 +90,7 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
       await addPermittedActions({
         wallet: userPkpWallet,
         agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
-        toolIpfsCids: Object.keys(formData),
+        abilityIpfsCids: Object.keys(formData),
       });
 
       try {

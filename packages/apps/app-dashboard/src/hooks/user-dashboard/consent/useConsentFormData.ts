@@ -17,20 +17,22 @@ export function useConsentFormData(consentInfoMap: ConsentInfoMap) {
 
       if (activeVersion) {
         const versionKey = `${appName}-${activeVersion.version}`;
-        const appVersionTools = consentInfoMap.appVersionToolsByAppVersion[versionKey] || [];
+        const appVersionAbilities =
+          consentInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
 
-        appVersionTools.forEach((tool) => {
-          const toolKey = `${tool.toolPackageName}-${tool.toolVersion}`;
-          const policies = consentInfoMap.supportedPoliciesByToolVersion[toolKey] || [];
-          const toolVersions = consentInfoMap.toolVersionsByAppVersionTool[toolKey] || [];
-          const toolVersion = toolVersions[0];
+        appVersionAbilities.forEach((ability) => {
+          const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
+          const policies = consentInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
+          const abilityVersions =
+            consentInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
+          const abilityVersion = abilityVersions[0];
 
-          if (toolVersion) {
-            initialFormData[toolVersion.ipfsCid] = {};
+          if (abilityVersion) {
+            initialFormData[abilityVersion.ipfsCid] = {};
 
             // Add all policies (including hidden ones) with empty values
             policies.forEach((policy) => {
-              initialFormData[toolVersion.ipfsCid][policy.ipfsCid] = {};
+              initialFormData[abilityVersion.ipfsCid][policy.ipfsCid] = {};
             });
           }
         });
@@ -40,15 +42,18 @@ export function useConsentFormData(consentInfoMap: ConsentInfoMap) {
     setFormData(initialFormData);
   }, [consentInfoMap]);
 
-  const handleFormChange = useCallback((toolIpfsCid: string, policyIpfsCid: string, data: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [toolIpfsCid]: {
-        ...prev[toolIpfsCid],
-        [policyIpfsCid]: data.formData,
-      },
-    }));
-  }, []);
+  const handleFormChange = useCallback(
+    (abilityIpfsCid: string, policyIpfsCid: string, data: any) => {
+      setFormData((prev) => ({
+        ...prev,
+        [abilityIpfsCid]: {
+          ...prev[abilityIpfsCid],
+          [policyIpfsCid]: data.formData,
+        },
+      }));
+    },
+    [],
+  );
 
   return {
     formData,

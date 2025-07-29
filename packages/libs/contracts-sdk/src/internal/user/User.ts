@@ -1,4 +1,8 @@
-import type { PermitAppOptions, UnPermitAppOptions, SetToolPolicyParametersOptions } from './types';
+import type {
+  PermitAppOptions,
+  UnPermitAppOptions,
+  SetAbilityPolicyParametersOptions,
+} from './types';
 
 import { decodeContractError, gasAdjustedOverrides } from '../../utils';
 import { getPkpTokenId } from '../../utils/pkpInfo';
@@ -23,7 +27,7 @@ export async function permitApp(params: PermitAppOptions): Promise<{ txHash: str
         pkpTokenId,
         appId,
         appVersion,
-        flattenedParams.toolIpfsCids,
+        flattenedParams.abilityIpfsCids,
         flattenedParams.policyIpfsCids,
         flattenedParams.policyParameterValues,
       ],
@@ -34,7 +38,7 @@ export async function permitApp(params: PermitAppOptions): Promise<{ txHash: str
       pkpTokenId,
       appId,
       appVersion,
-      flattenedParams.toolIpfsCids,
+      flattenedParams.abilityIpfsCids,
       flattenedParams.policyIpfsCids,
       flattenedParams.policyParameterValues,
       {
@@ -81,8 +85,8 @@ export async function unPermitApp({
   }
 }
 
-export async function setToolPolicyParameters(
-  params: SetToolPolicyParametersOptions,
+export async function setAbilityPolicyParameters(
+  params: SetAbilityPolicyParametersOptions,
 ): Promise<{ txHash: string }> {
   const {
     contract,
@@ -97,23 +101,23 @@ export async function setToolPolicyParameters(
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
-      'setToolPolicyParameters',
+      'setAbilityPolicyParameters',
       [
         pkpTokenId,
         appId,
         appVersion,
-        flattenedParams.toolIpfsCids,
+        flattenedParams.abilityIpfsCids,
         flattenedParams.policyIpfsCids,
         flattenedParams.policyParameterValues,
       ],
       overrides,
     );
 
-    const tx = await contract.setToolPolicyParameters(
+    const tx = await contract.setAbilityPolicyParameters(
       pkpTokenId,
       appId,
       appVersion,
-      flattenedParams.toolIpfsCids,
+      flattenedParams.abilityIpfsCids,
       flattenedParams.policyIpfsCids,
       flattenedParams.policyParameterValues,
       {
@@ -127,6 +131,6 @@ export async function setToolPolicyParameters(
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
-    throw new Error(`Failed to Set Tool Policy Parameters: ${decodedError}`);
+    throw new Error(`Failed to Set Ability Policy Parameters: ${decodedError}`);
   }
 }

@@ -5,18 +5,18 @@ export interface PolicyWithParameters {
   policyParameterValues: string;
 }
 
-export interface ToolWithPolicies {
-  toolIpfsCid: string;
+export interface AbilityWithPolicies {
+  abilityIpfsCid: string;
   policies: PolicyWithParameters[];
 }
 
 export interface PermissionDataOnChain {
-  toolIpfsCids: string[];
+  abilityIpfsCids: string[];
   policyIpfsCids: string[][];
   policyParameterValues: string[][];
 }
 
-export interface ToolExecutionValidation {
+export interface AbilityExecutionValidation {
   isPermitted: boolean;
   appId: BigNumber;
   appVersion: BigNumber;
@@ -26,8 +26,8 @@ export interface ToolExecutionValidation {
 export interface AppVersionChain {
   version: BigNumber;
   enabled: boolean;
-  tools: {
-    toolIpfsCid: string;
+  abilities: {
+    abilityIpfsCid: string;
     policyIpfsCids: string[];
   }[];
 }

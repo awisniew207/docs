@@ -8,7 +8,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/shar
 import { Separator } from '@/components/shared/ui/separator';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useAppAddressCheck } from '@/hooks/developer-dashboard/app/useAppAddressCheck';
-import { useToolAddressCheck } from '@/hooks/developer-dashboard/tool/useToolAddressCheck';
+import { useAbilityAddressCheck } from '@/hooks/developer-dashboard/ability/useAbilityAddressCheck';
 import { usePolicyAddressCheck } from '@/hooks/developer-dashboard/policy/usePolicyAddressCheck';
 import { getCurrentJwt } from '@/hooks/developer-dashboard/useVincentApiWithJWT';
 import Loading from '@/components/shared/ui/Loading';
@@ -33,7 +33,7 @@ function AppLayout({ children, className }: ComponentProps<'div'>) {
 
   // Always call address check hooks (React hooks rule)
   const appAddressCheck = useAppAddressCheck();
-  const toolAddressCheck = useToolAddressCheck();
+  const abilityAddressCheck = useAbilityAddressCheck();
   const policyAddressCheck = usePolicyAddressCheck();
 
   // Check if we're on any developer route
@@ -41,7 +41,7 @@ function AppLayout({ children, className }: ComponentProps<'div'>) {
 
   // Determine which specific authorization check is needed based on route
   const needsAppAuthorization = location.pathname.includes('/developer/appId/');
-  const needsToolAuthorization = location.pathname.includes('/developer/toolId/');
+  const needsAbilityAuthorization = location.pathname.includes('/developer/abilityId/');
   const needsPolicyAuthorization = location.pathname.includes('/developer/policyId/');
 
   // Select the appropriate authorization result based on the current route
@@ -51,9 +51,9 @@ function AppLayout({ children, className }: ComponentProps<'div'>) {
   if (needsAppAuthorization) {
     isResourceAuthorized = appAddressCheck.isAuthorized;
     isResourceChecking = appAddressCheck.isChecking;
-  } else if (needsToolAuthorization) {
-    isResourceAuthorized = toolAddressCheck.isAuthorized;
-    isResourceChecking = toolAddressCheck.isChecking;
+  } else if (needsAbilityAuthorization) {
+    isResourceAuthorized = abilityAddressCheck.isAuthorized;
+    isResourceChecking = abilityAddressCheck.isChecking;
   } else if (needsPolicyAuthorization) {
     isResourceAuthorized = policyAddressCheck.isAuthorized;
     isResourceChecking = policyAddressCheck.isChecking;
@@ -97,17 +97,21 @@ function AppLayout({ children, className }: ComponentProps<'div'>) {
   }
 
   if (
-    (needsAppAuthorization || needsToolAuthorization || needsPolicyAuthorization) &&
+    (needsAppAuthorization || needsAbilityAuthorization || needsPolicyAuthorization) &&
     isResourceChecking
   ) {
     return layoutWrapper(<Loading />);
   }
 
   if (
-    (needsAppAuthorization || needsToolAuthorization || needsPolicyAuthorization) &&
+    (needsAppAuthorization || needsAbilityAuthorization || needsPolicyAuthorization) &&
     isResourceAuthorized === false
   ) {
-    const resourceType = needsAppAuthorization ? 'app' : needsToolAuthorization ? 'tool' : 'policy';
+    const resourceType = needsAppAuthorization
+      ? 'app'
+      : needsAbilityAuthorization
+        ? 'ability'
+        : 'policy';
 
     return layoutWrapper(
       <ResourceNotOwnedError

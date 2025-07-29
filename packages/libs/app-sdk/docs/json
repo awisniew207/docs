@@ -2275,7 +2275,7 @@
 		},
 		{
 			"id": 6073,
-			"name": "toolClient",
+			"name": "abilityClient",
 			"variant": "declaration",
 			"kind": 2,
 			"flags": {},
@@ -2283,7 +2283,7 @@
 				"summary": [
 					{
 						"kind": "text",
-						"text": "The VincentToolClient is used to handle all interactions with VincentTools -- both local execution of its precheck()\nmethod and the execution of its "
+						"text": "The VincentAbilityClient is used to handle all interactions with VincentAbilities -- both local execution of its precheck()\nmethod and the execution of its "
 					},
 					{
 						"kind": "code",
@@ -2291,14 +2291,14 @@
 					},
 					{
 						"kind": "text",
-						"text": " method via the LIT Action runtime.  The VincentToolClient also handles calling policy\nprecheck methods when they are defined, and returns all policy precheck results along with the tool precheck result."
+						"text": " method via the LIT Action runtime.  The VincentAbilityClient also handles calling policy\nprecheck methods when they are defined, and returns all policy precheck results along with the ability precheck result."
 					}
 				]
 			},
 			"children": [
 				{
 					"id": 6126,
-					"name": "BaseToolContext",
+					"name": "BaseAbilityContext",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -2306,7 +2306,7 @@
 						"summary": [
 							{
 								"kind": "text",
-								"text": "BaseToolContext is returned with tool execution results, and contains information about the app, delegation, and\npolicy evaluation results for any policies that the user had enabled for the tool."
+								"text": "BaseAbilityContext is returned with ability execution results, and contains information about the app, delegation, and\npolicy evaluation results for any policies that the user had enabled for the ability."
 							}
 						],
 						"blockTags": [
@@ -2332,7 +2332,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+									"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 									"line": 249,
 									"character": 4
 								}
@@ -2357,7 +2357,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+									"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 									"line": 250,
 									"character": 4
 								}
@@ -2382,7 +2382,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+									"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 									"line": 251,
 									"character": 4
 								}
@@ -2404,7 +2404,7 @@
 											"flags": {},
 											"sources": [
 												{
-													"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+													"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 													"line": 252,
 													"character": 8
 												}
@@ -2422,7 +2422,7 @@
 											"flags": {},
 											"sources": [
 												{
-													"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+													"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 													"line": 253,
 													"character": 8
 												}
@@ -2444,7 +2444,7 @@
 															"flags": {},
 															"sources": [
 																{
-																	"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+																	"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 																	"line": 255,
 																	"character": 12
 																}
@@ -2462,7 +2462,7 @@
 															"flags": {},
 															"sources": [
 																{
-																	"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+																	"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 																	"line": 256,
 																	"character": 12
 																}
@@ -2480,7 +2480,7 @@
 															"flags": {},
 															"sources": [
 																{
-																	"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+																	"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 																	"line": 254,
 																	"character": 12
 																}
@@ -2503,7 +2503,7 @@
 													],
 													"sources": [
 														{
-															"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+															"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 															"line": 253,
 															"character": 26
 														}
@@ -2523,7 +2523,7 @@
 									],
 									"sources": [
 										{
-											"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+											"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 											"line": 251,
 											"character": 16
 										}
@@ -2544,7 +2544,7 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/tool-sdk/dist/src/lib/toolCore/toolConfig/context/types.d.ts",
+									"fileName": "packages/libs/ability-sdk/dist/src/lib/abilityCore/abilityConfig/context/types.d.ts",
 									"line": 9,
 									"character": 4
 								}
@@ -2553,14 +2553,14 @@
 								"type": "reference",
 								"target": 6139,
 								"name": "Policies",
-								"package": "@lit-protocol/vincent-tool-sdk",
-								"qualifiedName": "BaseToolContext.Policies",
+								"package": "@lit-protocol/vincent-ability-sdk",
+								"qualifiedName": "BaseAbilityContext.Policies",
 								"refersToTypeParameter": true
 							}
 						},
 						{
 							"id": 6128,
-							"name": "toolIpfsCid",
+							"name": "abilityIpfsCid",
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {
@@ -2568,7 +2568,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/tool-sdk/dist/src/lib/types.d.ts",
+									"fileName": "packages/libs/ability-sdk/dist/src/lib/types.d.ts",
 									"line": 248,
 									"character": 4
 								}
@@ -2580,7 +2580,7 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"target": -1,
-								"name": "BaseContext.toolIpfsCid"
+								"name": "BaseContext.abilityIpfsCid"
 							}
 						}
 					],
@@ -2598,7 +2598,7 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/tool-sdk/dist/src/lib/toolCore/toolConfig/context/types.d.ts",
+							"fileName": "packages/libs/ability-sdk/dist/src/lib/abilityCore/abilityConfig/context/types.d.ts",
 							"line": 8,
 							"character": 17
 						}
@@ -2616,17 +2616,17 @@
 						{
 							"type": "reference",
 							"target": {
-								"sourceFileName": "../tool-sdk/src/lib/types.ts",
+								"sourceFileName": "../ability-sdk/src/lib/types.ts",
 								"qualifiedName": "BaseContext"
 							},
 							"name": "BaseContext",
-							"package": "@lit-protocol/vincent-tool-sdk"
+							"package": "@lit-protocol/vincent-ability-sdk"
 						}
 					]
 				},
 				{
 					"id": 6124,
-					"name": "ToolClientContext",
+					"name": "AbilityClientContext",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -2653,10 +2653,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 									"line": 71,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L71"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L71"
 								}
 							],
 							"type": {
@@ -2675,16 +2675,16 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 							"line": 70,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L70"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L70"
 						}
 					]
 				},
 				{
 					"id": 6157,
-					"name": "ToolExecuteResponseFailure",
+					"name": "AbilityExecuteResponseFailure",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -2713,10 +2713,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 31,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L31"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L31"
 								}
 							],
 							"type": {
@@ -2726,7 +2726,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "../tool-sdk/src/lib/types.ts",
+											"sourceFileName": "../ability-sdk/src/lib/types.ts",
 											"qualifiedName": "PolicyEvaluationResultContext"
 										},
 										"typeArguments": [
@@ -2735,16 +2735,16 @@
 												"target": 6164,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolExecuteResponseFailure.Policies",
+												"qualifiedName": "AbilityExecuteResponseFailure.Policies",
 												"refersToTypeParameter": true
 											}
 										],
 										"name": "PolicyEvaluationResultContext",
-										"package": "@lit-protocol/vincent-tool-sdk"
+										"package": "@lit-protocol/vincent-ability-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -2755,10 +2755,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 30,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L30"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L30"
 								}
 							],
 							"type": {
@@ -2766,7 +2766,7 @@
 								"target": 6163,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
-								"qualifiedName": "ToolExecuteResponseFailure.Result",
+								"qualifiedName": "AbilityExecuteResponseFailure.Result",
 								"refersToTypeParameter": true
 							}
 						},
@@ -2780,10 +2780,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 28,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L28"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L28"
 								}
 							],
 							"type": {
@@ -2801,20 +2801,20 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 29,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L29"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L29"
 								}
 							],
 							"type": {
 								"type": "reference",
 								"target": {
-									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"sourceFileName": "../ability-sdk/src/lib/types.ts",
 									"qualifiedName": "SchemaValidationError"
 								},
 								"name": "SchemaValidationError",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -2825,10 +2825,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 27,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L27"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L27"
 								}
 							],
 							"type": {
@@ -2851,10 +2851,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 							"line": 26,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L26"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L26"
 						}
 					],
 					"typeParameters": [
@@ -2895,7 +2895,7 @@
 				},
 				{
 					"id": 6150,
-					"name": "ToolExecuteResponseFailureNoResult",
+					"name": "AbilityExecuteResponseFailureNoResult",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -2924,10 +2924,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 40,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L40"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L40"
 								}
 							],
 							"type": {
@@ -2937,7 +2937,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "../tool-sdk/src/lib/types.ts",
+											"sourceFileName": "../ability-sdk/src/lib/types.ts",
 											"qualifiedName": "PolicyEvaluationResultContext"
 										},
 										"typeArguments": [
@@ -2946,16 +2946,16 @@
 												"target": 6156,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolExecuteResponseFailureNoResult.Policies",
+												"qualifiedName": "AbilityExecuteResponseFailureNoResult.Policies",
 												"refersToTypeParameter": true
 											}
 										],
 										"name": "PolicyEvaluationResultContext",
-										"package": "@lit-protocol/vincent-tool-sdk"
+										"package": "@lit-protocol/vincent-ability-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -2968,10 +2968,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 39,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L39"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L39"
 								}
 							],
 							"type": {
@@ -2989,10 +2989,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 37,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L37"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L37"
 								}
 							],
 							"type": {
@@ -3010,20 +3010,20 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 38,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L38"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L38"
 								}
 							],
 							"type": {
 								"type": "reference",
 								"target": {
-									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"sourceFileName": "../ability-sdk/src/lib/types.ts",
 									"qualifiedName": "SchemaValidationError"
 								},
 								"name": "SchemaValidationError",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3034,10 +3034,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 36,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L36"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L36"
 								}
 							],
 							"type": {
@@ -3060,10 +3060,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 							"line": 35,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L35"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L35"
 						}
 					],
 					"typeParameters": [
@@ -3097,7 +3097,7 @@
 				},
 				{
 					"id": 6170,
-					"name": "ToolExecuteResponseSuccess",
+					"name": "AbilityExecuteResponseSuccess",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -3126,10 +3126,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 15,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L15"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L15"
 								}
 							],
 							"type": {
@@ -3139,7 +3139,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "../tool-sdk/src/lib/types.ts",
+											"sourceFileName": "../ability-sdk/src/lib/types.ts",
 											"qualifiedName": "PolicyEvaluationResultContext"
 										},
 										"typeArguments": [
@@ -3148,16 +3148,16 @@
 												"target": 6175,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolExecuteResponseSuccess.Policies",
+												"qualifiedName": "AbilityExecuteResponseSuccess.Policies",
 												"refersToTypeParameter": true
 											}
 										],
 										"name": "PolicyEvaluationResultContext",
-										"package": "@lit-protocol/vincent-tool-sdk"
+										"package": "@lit-protocol/vincent-ability-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3168,10 +3168,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 14,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L14"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L14"
 								}
 							],
 							"type": {
@@ -3179,7 +3179,7 @@
 								"target": 6174,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
-								"qualifiedName": "ToolExecuteResponseSuccess.Result",
+								"qualifiedName": "AbilityExecuteResponseSuccess.Result",
 								"refersToTypeParameter": true
 							}
 						},
@@ -3191,10 +3191,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 13,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L13"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L13"
 								}
 							],
 							"type": {
@@ -3215,10 +3215,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 							"line": 12,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L12"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L12"
 						}
 					],
 					"typeParameters": [
@@ -3259,7 +3259,7 @@
 				},
 				{
 					"id": 6165,
-					"name": "ToolExecuteResponseSuccessNoResult",
+					"name": "AbilityExecuteResponseSuccessNoResult",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -3288,10 +3288,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 22,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L22"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L22"
 								}
 							],
 							"type": {
@@ -3301,7 +3301,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "../tool-sdk/src/lib/types.ts",
+											"sourceFileName": "../ability-sdk/src/lib/types.ts",
 											"qualifiedName": "PolicyEvaluationResultContext"
 										},
 										"typeArguments": [
@@ -3310,16 +3310,16 @@
 												"target": 6169,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolExecuteResponseSuccessNoResult.Policies",
+												"qualifiedName": "AbilityExecuteResponseSuccessNoResult.Policies",
 												"refersToTypeParameter": true
 											}
 										],
 										"name": "PolicyEvaluationResultContext",
-										"package": "@lit-protocol/vincent-tool-sdk"
+										"package": "@lit-protocol/vincent-ability-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3332,10 +3332,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 21,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L21"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L21"
 								}
 							],
 							"type": {
@@ -3351,10 +3351,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 									"line": 20,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L20"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L20"
 								}
 							],
 							"type": {
@@ -3375,10 +3375,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 							"line": 19,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L19"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L19"
 						}
 					],
 					"typeParameters": [
@@ -3412,7 +3412,7 @@
 				},
 				{
 					"id": 6187,
-					"name": "ToolPrecheckResponseFailure",
+					"name": "AbilityPrecheckResponseFailure",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -3441,10 +3441,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 30,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L30"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L30"
 								}
 							],
 							"type": {
@@ -3454,7 +3454,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "src/toolClient/precheck/types.ts",
+											"sourceFileName": "src/abilityClient/precheck/types.ts",
 											"qualifiedName": "PolicyPrecheckResultContext"
 										},
 										"typeArguments": [
@@ -3463,7 +3463,7 @@
 												"target": 6194,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolPrecheckResponseFailure.Policies",
+												"qualifiedName": "AbilityPrecheckResponseFailure.Policies",
 												"refersToTypeParameter": true
 											}
 										],
@@ -3471,8 +3471,8 @@
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3483,10 +3483,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 29,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L29"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L29"
 								}
 							],
 							"type": {
@@ -3494,7 +3494,7 @@
 								"target": 6193,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
-								"qualifiedName": "ToolPrecheckResponseFailure.Result",
+								"qualifiedName": "AbilityPrecheckResponseFailure.Result",
 								"refersToTypeParameter": true
 							}
 						},
@@ -3508,10 +3508,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 27,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L27"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L27"
 								}
 							],
 							"type": {
@@ -3529,20 +3529,20 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 28,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L28"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L28"
 								}
 							],
 							"type": {
 								"type": "reference",
 								"target": {
-									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"sourceFileName": "../ability-sdk/src/lib/types.ts",
 									"qualifiedName": "SchemaValidationError"
 								},
 								"name": "SchemaValidationError",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3553,10 +3553,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 26,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L26"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L26"
 								}
 							],
 							"type": {
@@ -3579,10 +3579,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 							"line": 25,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L25"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L25"
 						}
 					],
 					"typeParameters": [
@@ -3623,7 +3623,7 @@
 				},
 				{
 					"id": 6180,
-					"name": "ToolPrecheckResponseFailureNoResult",
+					"name": "AbilityPrecheckResponseFailureNoResult",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -3652,10 +3652,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 39,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L39"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L39"
 								}
 							],
 							"type": {
@@ -3665,7 +3665,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "src/toolClient/precheck/types.ts",
+											"sourceFileName": "src/abilityClient/precheck/types.ts",
 											"qualifiedName": "PolicyPrecheckResultContext"
 										},
 										"typeArguments": [
@@ -3674,7 +3674,7 @@
 												"target": 6186,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolPrecheckResponseFailureNoResult.Policies",
+												"qualifiedName": "AbilityPrecheckResponseFailureNoResult.Policies",
 												"refersToTypeParameter": true
 											}
 										],
@@ -3682,8 +3682,8 @@
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3696,10 +3696,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 38,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L38"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L38"
 								}
 							],
 							"type": {
@@ -3717,10 +3717,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 36,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L36"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L36"
 								}
 							],
 							"type": {
@@ -3738,20 +3738,20 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 37,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L37"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L37"
 								}
 							],
 							"type": {
 								"type": "reference",
 								"target": {
-									"sourceFileName": "../tool-sdk/src/lib/types.ts",
+									"sourceFileName": "../ability-sdk/src/lib/types.ts",
 									"qualifiedName": "SchemaValidationError"
 								},
 								"name": "SchemaValidationError",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3762,10 +3762,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 35,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L35"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L35"
 								}
 							],
 							"type": {
@@ -3788,10 +3788,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 							"line": 34,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L34"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L34"
 						}
 					],
 					"typeParameters": [
@@ -3825,7 +3825,7 @@
 				},
 				{
 					"id": 6200,
-					"name": "ToolPrecheckResponseSuccess",
+					"name": "AbilityPrecheckResponseSuccess",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -3854,10 +3854,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 14,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L14"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L14"
 								}
 							],
 							"type": {
@@ -3867,7 +3867,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "src/toolClient/precheck/types.ts",
+											"sourceFileName": "src/abilityClient/precheck/types.ts",
 											"qualifiedName": "PolicyPrecheckResultContext"
 										},
 										"typeArguments": [
@@ -3876,7 +3876,7 @@
 												"target": 6205,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolPrecheckResponseSuccess.Policies",
+												"qualifiedName": "AbilityPrecheckResponseSuccess.Policies",
 												"refersToTypeParameter": true
 											}
 										],
@@ -3884,8 +3884,8 @@
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -3896,10 +3896,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 13,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L13"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L13"
 								}
 							],
 							"type": {
@@ -3907,7 +3907,7 @@
 								"target": 6204,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
-								"qualifiedName": "ToolPrecheckResponseSuccess.Result",
+								"qualifiedName": "AbilityPrecheckResponseSuccess.Result",
 								"refersToTypeParameter": true
 							}
 						},
@@ -3919,10 +3919,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 12,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L12"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L12"
 								}
 							],
 							"type": {
@@ -3943,10 +3943,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 							"line": 11,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L11"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L11"
 						}
 					],
 					"typeParameters": [
@@ -3987,7 +3987,7 @@
 				},
 				{
 					"id": 6195,
-					"name": "ToolPrecheckResponseSuccessNoResult",
+					"name": "AbilityPrecheckResponseSuccessNoResult",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -4016,10 +4016,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 21,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L21"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L21"
 								}
 							],
 							"type": {
@@ -4029,7 +4029,7 @@
 									{
 										"type": "reference",
 										"target": {
-											"sourceFileName": "src/toolClient/precheck/types.ts",
+											"sourceFileName": "src/abilityClient/precheck/types.ts",
 											"qualifiedName": "PolicyPrecheckResultContext"
 										},
 										"typeArguments": [
@@ -4038,7 +4038,7 @@
 												"target": 6199,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
-												"qualifiedName": "ToolPrecheckResponseSuccessNoResult.Policies",
+												"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.Policies",
 												"refersToTypeParameter": true
 											}
 										],
@@ -4046,8 +4046,8 @@
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
 								],
-								"name": "BaseToolContext",
-								"package": "@lit-protocol/vincent-tool-sdk"
+								"name": "BaseAbilityContext",
+								"package": "@lit-protocol/vincent-ability-sdk"
 							}
 						},
 						{
@@ -4060,10 +4060,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 20,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L20"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L20"
 								}
 							],
 							"type": {
@@ -4079,10 +4079,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 									"line": 19,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L19"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L19"
 								}
 							],
 							"type": {
@@ -4103,10 +4103,10 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 							"line": 18,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L18"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L18"
 						}
 					],
 					"typeParameters": [
@@ -4140,7 +4140,7 @@
 				},
 				{
 					"id": 6107,
-					"name": "VincentToolClient",
+					"name": "VincentAbilityClient",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
@@ -4148,7 +4148,7 @@
 						"summary": [
 							{
 								"kind": "text",
-								"text": "The Vincent Tool Client is used to interact with Vincent tools.\n\n- Precheck tool parameters and policies\n- Execute tools remotely"
+								"text": "The Vincent Ability Client is used to interact with Vincent abilities.\n\n- Precheck ability parameters and policies\n- Execute abilities remotely"
 							}
 						],
 						"blockTags": [
@@ -4172,10 +4172,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 									"line": 63,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L63"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L63"
 								}
 							],
 							"signatures": [
@@ -4189,7 +4189,7 @@
 										"summary": [
 											{
 												"kind": "text",
-												"text": "Executes the tool with the given parameters.\n\nThis method validates the tool parameters, executes the tool remotely, and returns the result."
+												"text": "Executes the ability with the given parameters.\n\nThis method validates the ability parameters, executes the ability remotely, and returns the result."
 											}
 										],
 										"blockTags": [
@@ -4198,7 +4198,7 @@
 												"content": [
 													{
 														"kind": "text",
-														"text": "A promise that resolves to a ToolResponse containing the execution result"
+														"text": "A promise that resolves to a AbilityResponse containing the execution result"
 													}
 												]
 											}
@@ -4206,16 +4206,16 @@
 									},
 									"sources": [
 										{
-											"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+											"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 											"line": 63,
 											"character": 2,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L63"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L63"
 										}
 									],
 									"parameters": [
 										{
 											"id": 6116,
-											"name": "rawToolParams",
+											"name": "rawAbilityParams",
 											"variant": "param",
 											"kind": 32768,
 											"flags": {},
@@ -4237,9 +4237,9 @@
 													{
 														"type": "reference",
 														"target": -1,
-														"name": "ToolParamsSchema",
+														"name": "AbilityParamsSchema",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.ToolParamsSchema",
+														"qualifiedName": "VincentAbilityClient.AbilityParamsSchema",
 														"refersToTypeParameter": true
 													}
 												],
@@ -4257,14 +4257,14 @@
 												"summary": [
 													{
 														"kind": "text",
-														"text": "The context for the tool execution, including the delegator PKP Ethereum address"
+														"text": "The context for the ability execution, including the delegator PKP Ethereum address"
 													}
 												]
 											},
 											"type": {
 												"type": "reference",
 												"target": 6124,
-												"name": "ToolClientContext",
+												"name": "AbilityClientContext",
 												"package": "@lit-protocol/vincent-app-sdk"
 											}
 										}
@@ -4285,7 +4285,7 @@
 														"target": -1,
 														"name": "ExecuteSuccessSchema",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.ExecuteSuccessSchema",
+														"qualifiedName": "VincentAbilityClient.ExecuteSuccessSchema",
 														"refersToTypeParameter": true
 													},
 													{
@@ -4293,7 +4293,7 @@
 														"target": -1,
 														"name": "ExecuteFailSchema",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.ExecuteFailSchema",
+														"qualifiedName": "VincentAbilityClient.ExecuteFailSchema",
 														"refersToTypeParameter": true
 													},
 													{
@@ -4301,11 +4301,11 @@
 														"target": -1,
 														"name": "PoliciesByPackageName",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.PoliciesByPackageName",
+														"qualifiedName": "VincentAbilityClient.PoliciesByPackageName",
 														"refersToTypeParameter": true
 													}
 												],
-												"name": "ToolExecuteResponse",
+												"name": "AbilityExecuteResponse",
 												"package": "@lit-protocol/vincent-app-sdk"
 											}
 										],
@@ -4323,10 +4323,10 @@
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 									"line": 44,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L44"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L44"
 								}
 							],
 							"signatures": [
@@ -4340,7 +4340,7 @@
 										"summary": [
 											{
 												"kind": "text",
-												"text": "Performs a precheck of the tool parameters and policies.\n\nThis method validates the tool parameters and checks if the policies allow the tool to be executed."
+												"text": "Performs a precheck of the ability parameters and policies.\n\nThis method validates the ability parameters and checks if the policies allow the ability to be executed."
 											}
 										],
 										"blockTags": [
@@ -4349,7 +4349,7 @@
 												"content": [
 													{
 														"kind": "text",
-														"text": "A promise that resolves to a ToolResponse containing the precheck result"
+														"text": "A promise that resolves to a AbilityResponse containing the precheck result"
 													}
 												]
 											}
@@ -4357,16 +4357,16 @@
 									},
 									"sources": [
 										{
-											"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+											"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 											"line": 44,
 											"character": 2,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L44"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L44"
 										}
 									],
 									"parameters": [
 										{
 											"id": 6110,
-											"name": "rawToolParams",
+											"name": "rawAbilityParams",
 											"variant": "param",
 											"kind": 32768,
 											"flags": {},
@@ -4388,9 +4388,9 @@
 													{
 														"type": "reference",
 														"target": -1,
-														"name": "ToolParamsSchema",
+														"name": "AbilityParamsSchema",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.ToolParamsSchema",
+														"qualifiedName": "VincentAbilityClient.AbilityParamsSchema",
 														"refersToTypeParameter": true
 													}
 												],
@@ -4408,7 +4408,7 @@
 												"summary": [
 													{
 														"kind": "text",
-														"text": "The context for the tool execution, including the delegator PKP Ethereum address"
+														"text": "The context for the ability execution, including the delegator PKP Ethereum address"
 													}
 												]
 											},
@@ -4418,7 +4418,7 @@
 													{
 														"type": "reference",
 														"target": 6124,
-														"name": "ToolClientContext",
+														"name": "AbilityClientContext",
 														"package": "@lit-protocol/vincent-app-sdk"
 													},
 													{
@@ -4440,10 +4440,10 @@
 																	},
 																	"sources": [
 																		{
-																			"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+																			"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 																			"line": 47,
 																			"character": 6,
-																			"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L47"
+																			"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L47"
 																		}
 																	],
 																	"type": {
@@ -4462,10 +4462,10 @@
 															],
 															"sources": [
 																{
-																	"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+																	"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 																	"line": 46,
 																	"character": 33,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L46"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L46"
 																}
 															]
 														}
@@ -4490,7 +4490,7 @@
 														"target": -1,
 														"name": "PrecheckSuccessSchema",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.PrecheckSuccessSchema",
+														"qualifiedName": "VincentAbilityClient.PrecheckSuccessSchema",
 														"refersToTypeParameter": true
 													},
 													{
@@ -4498,7 +4498,7 @@
 														"target": -1,
 														"name": "PrecheckFailSchema",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.PrecheckFailSchema",
+														"qualifiedName": "VincentAbilityClient.PrecheckFailSchema",
 														"refersToTypeParameter": true
 													},
 													{
@@ -4506,11 +4506,11 @@
 														"target": -1,
 														"name": "PoliciesByPackageName",
 														"package": "@lit-protocol/vincent-app-sdk",
-														"qualifiedName": "VincentToolClient.PoliciesByPackageName",
+														"qualifiedName": "VincentAbilityClient.PoliciesByPackageName",
 														"refersToTypeParameter": true
 													}
 												],
-												"name": "ToolPrecheckResponse",
+												"name": "AbilityPrecheckResponse",
 												"package": "@lit-protocol/vincent-app-sdk"
 											}
 										],
@@ -4532,16 +4532,16 @@
 					],
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/types.ts",
 							"line": 27,
 							"character": 17,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/types.ts#L27"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/types.ts#L27"
 						}
 					]
 				},
 				{
 					"id": 6146,
-					"name": "ToolExecuteResponse",
+					"name": "AbilityExecuteResponse",
 					"variant": "declaration",
 					"kind": 2097152,
 					"flags": {},
@@ -4561,10 +4561,10 @@
 					},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/execute/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/execute/types.ts",
 							"line": 44,
 							"character": 12,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/execute/types.ts#L44"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/execute/types.ts#L44"
 						}
 					],
 					"typeParameters": [
@@ -4700,7 +4700,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolExecuteResponseSuccess",
+									"name": "AbilityExecuteResponseSuccess",
 									"package": "@lit-protocol/vincent-app-sdk"
 								},
 								"falseType": {
@@ -4715,7 +4715,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolExecuteResponseSuccessNoResult",
+									"name": "AbilityExecuteResponseSuccessNoResult",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
 							},
@@ -4769,7 +4769,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolExecuteResponseFailure",
+									"name": "AbilityExecuteResponseFailure",
 									"package": "@lit-protocol/vincent-app-sdk"
 								},
 								"falseType": {
@@ -4784,7 +4784,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolExecuteResponseFailureNoResult",
+									"name": "AbilityExecuteResponseFailureNoResult",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
 							}
@@ -4793,7 +4793,7 @@
 				},
 				{
 					"id": 6176,
-					"name": "ToolPrecheckResponse",
+					"name": "AbilityPrecheckResponse",
 					"variant": "declaration",
 					"kind": 2097152,
 					"flags": {},
@@ -4813,10 +4813,10 @@
 					},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/precheck/types.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/precheck/types.ts",
 							"line": 43,
 							"character": 12,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/precheck/types.ts#L43"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/precheck/types.ts#L43"
 						}
 					],
 					"typeParameters": [
@@ -4952,7 +4952,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolPrecheckResponseSuccess",
+									"name": "AbilityPrecheckResponseSuccess",
 									"package": "@lit-protocol/vincent-app-sdk"
 								},
 								"falseType": {
@@ -4967,7 +4967,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolPrecheckResponseSuccessNoResult",
+									"name": "AbilityPrecheckResponseSuccessNoResult",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
 							},
@@ -5021,7 +5021,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolPrecheckResponseFailure",
+									"name": "AbilityPrecheckResponseFailure",
 									"package": "@lit-protocol/vincent-app-sdk"
 								},
 								"falseType": {
@@ -5036,7 +5036,7 @@
 											"refersToTypeParameter": true
 										}
 									],
-									"name": "ToolPrecheckResponseFailureNoResult",
+									"name": "AbilityPrecheckResponseFailureNoResult",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
 							}
@@ -5045,7 +5045,7 @@
 				},
 				{
 					"id": 6074,
-					"name": "disconnectVincentToolClients",
+					"name": "disconnectVincentAbilityClients",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
@@ -5053,7 +5053,7 @@
 						"summary": [
 							{
 								"kind": "text",
-								"text": "This method closes any registered event listeners maintained by Vincent Tool Clients, allowing your process to exit gracefully."
+								"text": "This method closes any registered event listeners maintained by Vincent Ability Clients, allowing your process to exit gracefully."
 							}
 						],
 						"blockTags": [
@@ -5070,25 +5070,25 @@
 					},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/index.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/index.ts",
 							"line": 22,
 							"character": 6,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/index.ts#L22"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/index.ts#L22"
 						}
 					],
 					"signatures": [
 						{
 							"id": 6075,
-							"name": "disconnectVincentToolClients",
+							"name": "disconnectVincentAbilityClients",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/index.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/index.ts",
 									"line": 22,
 									"character": 6,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/index.ts#L22"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/index.ts#L22"
 								}
 							],
 							"type": {
@@ -5111,22 +5111,22 @@
 				},
 				{
 					"id": 6092,
-					"name": "getVincentToolClient",
+					"name": "getVincentAbilityClient",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts",
 							"line": 113,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L113"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts#L113"
 						}
 					],
 					"signatures": [
 						{
 							"id": 6093,
-							"name": "getVincentToolClient",
+							"name": "getVincentAbilityClient",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5134,7 +5134,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "A VincentToolClient provides a type-safe interface for executing tools, for both "
+										"text": "A VincentAbilityClient provides a type-safe interface for executing abilities, for both "
 									},
 									{
 										"kind": "code",
@@ -5154,7 +5154,7 @@
 									},
 									{
 										"kind": "code",
-										"text": "```typescript\nimport { disconnectVincentToolClients, getVincentToolClient, isToolResponseFailure } from '@lit-protocol/vincent-app-sdk/toolClient';\nimport { bundledVincentTool as uniswapBundledTool } from '@lit-protocol/vincent-tool-uniswap-swap';\nimport { delegateeEthersSigner } = from './ethersSigner';\nimport { ETH_RPC_URL, BASE_RPC_URL } from './rpcConfigs';\n\nconst uniswapToolClient = getVincentToolClient({\n    bundledVincentTool: uniswapBundledTool,\n    ethersSigner: delegateeEthersSigner,\n  });\n\n// First, call `precheck()` to get a best-estimate result indicating that the tool execution in the LIT action runtime will not fail\nconst precheckResult = await uniswapSwapToolClient.precheck({\n    ethRpcUrl: ETH_RPC_URL,\n    rpcUrlForUniswap: BASE_RPC_URL,\n    chainIdForUniswap: 8453, // Base\n    tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH\n    tokenInDecimals: 18,\n    tokenInAmount: 0.0000077,\n    tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base\n    tokenOutDecimals: 8,\n  },\n  {\n    delegatorPkpEthAddress: '0x123456789123456789123456789...',\n  });\n\nconst uniswapSwapExecutionResult = await uniswapSwapToolClient.execute({\n  ethRpcUrl: ETH_RPC_URL,\n  rpcUrlForUniswap: BASE_RPC_URL,\n  chainIdForUniswap: 8453,\n  tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH\n  tokenInDecimals: 18,\n  tokenInAmount: 0.0000077,\n  tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base\n  tokenOutDecimals: 8,\n},\n{\n  delegatorPkpEthAddress: '0x123456789123456789123456789...',\n});\n\nif(isToolResponseFailure(uniswapSwapExecutionResult)) {\n  ...handle failure\n} else {\n ...handle result\n}\n```"
+										"text": "```typescript\nimport { disconnectVincentAbilityClients, getVincentAbilityClient, isAbilityResponseFailure } from '@lit-protocol/vincent-app-sdk/abilityClient';\nimport { bundledVincentAbility as uniswapBundledAbility } from '@lit-protocol/vincent-ability-uniswap-swap';\nimport { delegateeEthersSigner } = from './ethersSigner';\nimport { ETH_RPC_URL, BASE_RPC_URL } from './rpcConfigs';\n\nconst uniswapAbilityClient = getVincentAbilityClient({\n    bundledVincentAbility: uniswapBundledAbility,\n    ethersSigner: delegateeEthersSigner,\n  });\n\n// First, call `precheck()` to get a best-estimate result indicating that the ability execution in the LIT action runtime will not fail\nconst precheckResult = await uniswapSwapAbilityClient.precheck({\n    ethRpcUrl: ETH_RPC_URL,\n    rpcUrlForUniswap: BASE_RPC_URL,\n    chainIdForUniswap: 8453, // Base\n    tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH\n    tokenInDecimals: 18,\n    tokenInAmount: 0.0000077,\n    tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base\n    tokenOutDecimals: 8,\n  },\n  {\n    delegatorPkpEthAddress: '0x123456789123456789123456789...',\n  });\n\nconst uniswapSwapExecutionResult = await uniswapSwapAbilityClient.execute({\n  ethRpcUrl: ETH_RPC_URL,\n  rpcUrlForUniswap: BASE_RPC_URL,\n  chainIdForUniswap: 8453,\n  tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH\n  tokenInDecimals: 18,\n  tokenInAmount: 0.0000077,\n  tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base\n  tokenOutDecimals: 8,\n},\n{\n  delegatorPkpEthAddress: '0x123456789123456789123456789...',\n});\n\nif(isAbilityResponseFailure(uniswapSwapExecutionResult)) {\n  ...handle failure\n} else {\n ...handle result\n}\n```"
 									}
 								],
 								"blockTags": [
@@ -5171,10 +5171,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts",
 									"line": 113,
 									"character": 16,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L113"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts#L113"
 								}
 							],
 							"parameters": [
@@ -5195,36 +5195,36 @@
 											"children": [
 												{
 													"id": 6105,
-													"name": "bundledVincentTool",
+													"name": "bundledVincentAbility",
 													"variant": "declaration",
 													"kind": 1024,
 													"flags": {},
 													"sources": [
 														{
-															"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
+															"fileName": "packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts",
 															"line": 124,
 															"character": 2,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L124"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts#L124"
 														}
 													],
 													"type": {
 														"type": "reference",
 														"target": {
-															"sourceFileName": "../tool-sdk/src/lib/toolCore/bundledTool/types.ts",
-															"qualifiedName": "BundledVincentTool"
+															"sourceFileName": "../ability-sdk/src/lib/abilityCore/bundledAbility/types.ts",
+															"qualifiedName": "BundledVincentAbility"
 														},
 														"typeArguments": [
 															{
 																"type": "reference",
 																"target": {
-																	"sourceFileName": "../tool-sdk/src/lib/types.ts",
-																	"qualifiedName": "VincentTool"
+																	"sourceFileName": "../ability-sdk/src/lib/types.ts",
+																	"qualifiedName": "VincentAbility"
 																},
 																"typeArguments": [
 																	{
 																		"type": "reference",
 																		"target": -1,
-																		"name": "ToolParamsSchema",
+																		"name": "AbilityParamsSchema",
 																		"package": "@lit-protocol/vincent-app-sdk",
 																		"refersToTypeParameter": true
 																	},
@@ -5286,8 +5286,8 @@
 																		"name": "any"
 																	}
 																],
-																"name": "VincentTool",
-																"package": "@lit-protocol/vincent-tool-sdk"
+																"name": "VincentAbility",
+																"package": "@lit-protocol/vincent-ability-sdk"
 															},
 															{
 																"type": "reference",
@@ -5297,8 +5297,8 @@
 																"refersToTypeParameter": true
 															}
 														],
-														"name": "BundledVincentTool",
-														"package": "@lit-protocol/vincent-tool-sdk"
+														"name": "BundledVincentAbility",
+														"package": "@lit-protocol/vincent-ability-sdk"
 													}
 												},
 												{
@@ -5317,10 +5317,10 @@
 													},
 													"sources": [
 														{
-															"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
+															"fileName": "packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts",
 															"line": 139,
 															"character": 2,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L139"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts#L139"
 														}
 													],
 													"type": {
@@ -5346,10 +5346,10 @@
 											],
 											"sources": [
 												{
-													"fileName": "packages/libs/app-sdk/src/toolClient/vincentToolClient.ts",
+													"fileName": "packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts",
 													"line": 123,
 													"character": 10,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/vincentToolClient.ts#L123"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/vincentAbilityClient.ts#L123"
 												}
 											]
 										}
@@ -5363,7 +5363,7 @@
 									{
 										"type": "reference",
 										"target": -1,
-										"name": "ToolParamsSchema",
+										"name": "AbilityParamsSchema",
 										"package": "@lit-protocol/vincent-app-sdk",
 										"refersToTypeParameter": true
 									},
@@ -5403,7 +5403,7 @@
 										"refersToTypeParameter": true
 									}
 								],
-								"name": "VincentToolClient",
+								"name": "VincentAbilityClient",
 								"package": "@lit-protocol/vincent-app-sdk"
 							}
 						}
@@ -5411,22 +5411,22 @@
 				},
 				{
 					"id": 6089,
-					"name": "isToolResponseFailure",
+					"name": "isAbilityResponseFailure",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 							"line": 30,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L30"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L30"
 						}
 					],
 					"signatures": [
 						{
 							"id": 6090,
-							"name": "isToolResponseFailure",
+							"name": "isAbilityResponseFailure",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5434,7 +5434,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Type guard function that returns true only if the passed value is a failure tool response"
+										"text": "Type guard function that returns true only if the passed value is a failure ability response"
 									}
 								],
 								"blockTags": [
@@ -5451,10 +5451,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 									"line": 30,
 									"character": 16,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L30"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L30"
 								}
 							],
 							"parameters": [
@@ -5505,7 +5505,7 @@
 													"package": "typescript"
 												}
 											],
-											"name": "ToolExecuteResponseFailure",
+											"name": "AbilityExecuteResponseFailure",
 											"package": "@lit-protocol/vincent-app-sdk"
 										},
 										{
@@ -5532,7 +5532,7 @@
 													"package": "typescript"
 												}
 											],
-											"name": "ToolExecuteResponseFailureNoResult",
+											"name": "AbilityExecuteResponseFailureNoResult",
 											"package": "@lit-protocol/vincent-app-sdk"
 										}
 									]
@@ -5543,22 +5543,22 @@
 				},
 				{
 					"id": 6083,
-					"name": "isToolResponseRuntimeFailure",
+					"name": "isAbilityResponseRuntimeFailure",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 							"line": 51,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L51"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L51"
 						}
 					],
 					"signatures": [
 						{
 							"id": 6084,
-							"name": "isToolResponseRuntimeFailure",
+							"name": "isAbilityResponseRuntimeFailure",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5566,7 +5566,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Type guard function that returns true only if the passed value is a failure tool response that was a runtime error\nThis could be caused by code "
+										"text": "Type guard function that returns true only if the passed value is a failure ability response that was a runtime error\nThis could be caused by code "
 									},
 									{
 										"kind": "code",
@@ -5574,12 +5574,12 @@
 									},
 									{
 										"kind": "text",
-										"text": "ing an error from inside tool or policy code, or by errors encountered in the\nVincent SDK wrapping code that handles the execution of the tool/policies.\n\nThis could also be the result of a schema validation error -- use "
+										"text": "ing an error from inside ability or policy code, or by errors encountered in the\nVincent SDK wrapping code that handles the execution of the tool/policies.\n\nThis could also be the result of a schema validation error -- use "
 									},
 									{
 										"kind": "inline-tag",
 										"tag": "@link",
-										"text": "isToolResponseSchemaValidationFailure",
+										"text": "isAbilityResponseSchemaValidationFailure",
 										"target": 6086
 									},
 									{
@@ -5601,10 +5601,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 									"line": 51,
 									"character": 16,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L51"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L51"
 								}
 							],
 							"parameters": [
@@ -5648,7 +5648,7 @@
 											"package": "typescript"
 										}
 									],
-									"name": "ToolExecuteResponseFailureNoResult",
+									"name": "AbilityExecuteResponseFailureNoResult",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
 							}
@@ -5657,22 +5657,22 @@
 				},
 				{
 					"id": 6086,
-					"name": "isToolResponseSchemaValidationFailure",
+					"name": "isAbilityResponseSchemaValidationFailure",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 							"line": 64,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L64"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L64"
 						}
 					],
 					"signatures": [
 						{
 							"id": 6087,
-							"name": "isToolResponseSchemaValidationFailure",
+							"name": "isAbilityResponseSchemaValidationFailure",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5680,7 +5680,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Type guard function that returns true only if the passed value is a failure tool response that was caused by\na schema parsing failure.  All data inputs and outputs to / from Vincent Tools and Policies is validated using ZOD schemas.\n\nIf this returns true, you can parse the "
+										"text": "Type guard function that returns true only if the passed value is a failure ability response that was caused by\na schema parsing failure.  All data inputs and outputs to / from Vincent Abilities and Policies is validated using ZOD schemas.\n\nIf this returns true, you can parse the "
 									},
 									{
 										"kind": "code",
@@ -5705,10 +5705,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 									"line": 64,
 									"character": 16,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L64"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L64"
 								}
 							],
 							"parameters": [
@@ -5752,7 +5752,7 @@
 											"package": "typescript"
 										}
 									],
-									"name": "ToolExecuteResponseFailureNoResult",
+									"name": "AbilityExecuteResponseFailureNoResult",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
 							}
@@ -5761,22 +5761,22 @@
 				},
 				{
 					"id": 6080,
-					"name": "isToolResponseSuccess",
+					"name": "isAbilityResponseSuccess",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+							"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 							"line": 15,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L15"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L15"
 						}
 					],
 					"signatures": [
 						{
 							"id": 6081,
-							"name": "isToolResponseSuccess",
+							"name": "isAbilityResponseSuccess",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5784,7 +5784,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Type guard function that returns true only if the passed value is a successful tool response"
+										"text": "Type guard function that returns true only if the passed value is a successful ability response"
 									}
 								],
 								"blockTags": [
@@ -5801,10 +5801,10 @@
 							},
 							"sources": [
 								{
-									"fileName": "packages/libs/app-sdk/src/toolClient/typeGuards.ts",
+									"fileName": "packages/libs/app-sdk/src/abilityClient/typeGuards.ts",
 									"line": 15,
 									"character": 16,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/typeGuards.ts#L15"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/typeGuards.ts#L15"
 								}
 							],
 							"parameters": [
@@ -5855,7 +5855,7 @@
 													"package": "typescript"
 												}
 											],
-											"name": "ToolExecuteResponseSuccess",
+											"name": "AbilityExecuteResponseSuccess",
 											"package": "@lit-protocol/vincent-app-sdk"
 										},
 										{
@@ -5882,7 +5882,7 @@
 													"package": "typescript"
 												}
 											],
-											"name": "ToolExecuteResponseSuccessNoResult",
+											"name": "AbilityExecuteResponseSuccessNoResult",
 											"package": "@lit-protocol/vincent-app-sdk"
 										}
 									]
@@ -5961,10 +5961,10 @@
 			],
 			"sources": [
 				{
-					"fileName": "packages/libs/app-sdk/src/toolClient/index.ts",
+					"fileName": "packages/libs/app-sdk/src/abilityClient/index.ts",
 					"line": 1,
 					"character": 0,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/toolClient/index.ts#L1"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/4a88a3be3ac0da81b1483ef36bbbb6977653d1f7/packages/libs/app-sdk/src/abilityClient/index.ts#L1"
 				}
 			]
 		},
@@ -7064,7 +7064,7 @@
 		},
 		{
 			"kind": "text",
-			"text": " from the jwt tools to verify the JWT is fully valid and not expired etc.\n\n- The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration\n\n- Returns: An object containing both the original JWT string and the decoded JWT object\n\n#### removeLoginJWTFromURI()\n\nRemoves the login JWT parameter from the current URI. Call this after you have verified and stored the JWT for later usage.\n\n### Basic Usage\n\n"
+			"text": " from the jwt abilities to verify the JWT is fully valid and not expired etc.\n\n- The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration\n\n- Returns: An object containing both the original JWT string and the decoded JWT object\n\n#### removeLoginJWTFromURI()\n\nRemoves the login JWT parameter from the current URI. Call this after you have verified and stored the JWT for later usage.\n\n### Basic Usage\n\n"
 		},
 		{
 			"kind": "code",
@@ -7072,15 +7072,15 @@
 		},
 		{
 			"kind": "text",
-			"text": "\n\n# Backend\n\nIn your backend, you will have to verify the JWT to make sure the user has granted you the required permissions to act on their behalf.\n\n## VincentToolClient\n\nThe Vincent Tool Client uses an ethers signer for your delegatee account to run Vincent Tools on behalf of your app users.\n\nThis client will typically be used by an AI agent or your app backend service, as it requires a signer that conforms to the ethers v5 signer API, and with access to your delegatee account's private key to authenticate with the LIT network when executing the Vincent Tool.\n\n### Configuration\n\n"
+			"text": "\n\n# Backend\n\nIn your backend, you will have to verify the JWT to make sure the user has granted you the required permissions to act on their behalf.\n\n## VincentAbilityClient\n\nThe Vincent Ability Client uses an ethers signer for your delegatee account to run Vincent Abilities on behalf of your app users.\n\nThis client will typically be used by an AI agent or your app backend service, as it requires a signer that conforms to the ethers v5 signer API, and with access to your delegatee account's private key to authenticate with the LIT network when executing the Vincent Ability.\n\n### Configuration\n\n"
 		},
 		{
 			"kind": "code",
-			"text": "```typescript\ninterface VincentToolClientConfig {\n  ethersSigner: ethers.Signer; // An ethers v5 compatible signer\n  vincentToolCid: string; // The CID of the Vincent Tool to execute\n}\n```"
+			"text": "```typescript\ninterface VincentAbilityClientConfig {\n  ethersSigner: ethers.Signer; // An ethers v5 compatible signer\n  vincentAbilityCid: string; // The CID of the Vincent Ability to execute\n}\n```"
 		},
 		{
 			"kind": "text",
-			"text": "\n\n### Methods\n\n#### execute(params: VincentToolParams): Promise<ExecuteJsResponse>\n\nExecutes a Vincent Tool with the provided parameters.\n\n- "
+			"text": "\n\n### Methods\n\n#### execute(params: VincentAbilityParams): Promise<ExecuteJsResponse>\n\nExecutes a Vincent Ability with the provided parameters.\n\n- "
 		},
 		{
 			"kind": "code",
@@ -7088,11 +7088,11 @@
 		},
 		{
 			"kind": "text",
-			"text": ": Record<string, unknown> - Parameters to pass to the Vincent Tool\n- Returns: Promise resolving to an ExecuteJsResponse from the LIT network\n\n### Tool execution\n\n"
+			"text": ": Record<string, unknown> - Parameters to pass to the Vincent Ability\n- Returns: Promise resolving to an ExecuteJsResponse from the LIT network\n\n### Ability execution\n\n"
 		},
 		{
 			"kind": "code",
-			"text": "```typescript\nimport { getVincentToolClient } from '@lit-protocol/vincent-app-sdk';\n// Import the tool you want to execute\nimport { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';\n\n// One of delegatee signers from your app's Vincent Dashboard\nconst delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');\n\n// Initialize the Vincent Tool Client\nconst toolClient = getVincentToolClient({\n  ethersSigner: delegateeSigner,\n  bundledVincentTool: erc20BundledTool,\n});\nconst delegatorPkpEthAddress = '0x09182301238';\n\nconst toolParams = {\n  // Fill with the params your tool needs\n};\n\n// Run precheck to see if tool should be executed\nconst precheckResult = await client.precheck(toolParams, {\n  delegatorPkpEthAddress,\n});\n\nif (precheckResult.success === true) {\n  // Execute the Vincent Tool\n  const executeResult = await client.execute(toolParams, {\n    delegatorPkpEthAddress,\n  });\n\n  // ...tool has executed, you can check `executeResult` for details\n}\n```"
+			"text": "```typescript\nimport { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk';\n// Import the ability you want to execute\nimport { bundledVincentAbility as erc20BundledAbility } from '@lit-protocol/vincent-ability-erc20-approval';\n\n// One of delegatee signers from your app's Vincent Dashboard\nconst delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');\n\n// Initialize the Vincent Ability Client\nconst abilityClient = getVincentAbilityClient({\n  ethersSigner: delegateeSigner,\n  bundledVincentAbility: erc20BundledAbility,\n});\nconst delegatorPkpEthAddress = '0x09182301238';\n\nconst abilityParams = {\n  // Fill with the params your ability needs\n};\n\n// Run precheck to see if ability should be executed\nconst precheckResult = await client.precheck(abilityParams, {\n  delegatorPkpEthAddress,\n});\n\nif (precheckResult.success === true) {\n  // Execute the Vincent Ability\n  const executeResult = await client.execute(abilityParams, {\n    delegatorPkpEthAddress,\n  });\n\n  // ...ability has executed, you can check `executeResult` for details\n}\n```"
 		},
 		{
 			"kind": "text",
@@ -7136,7 +7136,7 @@
 		},
 		{
 			"kind": "text",
-			"text": "\n\n## JWT Authentication\n\n### Overview\n\nThe JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Tools. JWTs are used to verify user consent and authorize tool executions.\n\n### Authentication Flow\n\n1. User initiates an action requiring Vincent Tool access\n2. Application redirects to the Vincent consent page using "
+			"text": "\n\n## JWT Authentication\n\n### Overview\n\nThe JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Abilities. JWTs are used to verify user consent and authorize ability executions.\n\n### Authentication Flow\n\n1. User initiates an action requiring Vincent Ability access\n2. Application redirects to the Vincent consent page using "
 		},
 		{
 			"kind": "code",
@@ -7144,7 +7144,7 @@
 		},
 		{
 			"kind": "text",
-			"text": "\n3. User provides consent for the requested tools/policies\n4. User is redirected back to the application with a JWT in the URL\n5. Application validates and stores the JWT using "
+			"text": "\n3. User provides consent for the requested abilities/policies\n4. User is redirected back to the application with a JWT in the URL\n5. Application validates and stores the JWT using "
 		},
 		{
 			"kind": "code",
@@ -7205,16 +7205,16 @@
 	],
 	"symbolIdMap": {
 		"6073": {
-			"sourceFileName": "src/toolClient/index.ts",
+			"sourceFileName": "src/abilityClient/index.ts",
 			"qualifiedName": ""
 		},
 		"6074": {
-			"sourceFileName": "src/toolClient/index.ts",
-			"qualifiedName": "disconnectVincentToolClients"
+			"sourceFileName": "src/abilityClient/index.ts",
+			"qualifiedName": "disconnectVincentAbilityClients"
 		},
 		"6075": {
 			"sourceFileName": "src/internal/LitNodeClient/getLitNodeClient.ts",
-			"qualifiedName": "disconnectVincentToolClients"
+			"qualifiedName": "disconnectVincentAbilityClients"
 		},
 		"6076": {
 			"sourceFileName": "src/jwt/index.ts",
@@ -7233,424 +7233,424 @@
 			"qualifiedName": ""
 		},
 		"6080": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseSuccess"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseSuccess"
 		},
 		"6081": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseSuccess"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseSuccess"
 		},
 		"6082": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
 		"6083": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseRuntimeFailure"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseRuntimeFailure"
 		},
 		"6084": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseRuntimeFailure"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseRuntimeFailure"
 		},
 		"6085": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
 		"6086": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseSchemaValidationFailure"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseSchemaValidationFailure"
 		},
 		"6087": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseSchemaValidationFailure"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseSchemaValidationFailure"
 		},
 		"6088": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
 		"6089": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseFailure"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseFailure"
 		},
 		"6090": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
-			"qualifiedName": "isToolResponseFailure"
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
+			"qualifiedName": "isAbilityResponseFailure"
 		},
 		"6091": {
-			"sourceFileName": "src/toolClient/typeGuards.ts",
+			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
 		"6092": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "getVincentToolClient"
+			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
+			"qualifiedName": "getVincentAbilityClient"
 		},
 		"6093": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "getVincentToolClient"
+			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
+			"qualifiedName": "getVincentAbilityClient"
 		},
 		"6103": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "params"
 		},
 		"6104": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "__type"
 		},
 		"6105": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
-			"qualifiedName": "__type.bundledVincentTool"
+			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
+			"qualifiedName": "__type.bundledVincentAbility"
 		},
 		"6106": {
-			"sourceFileName": "src/toolClient/vincentToolClient.ts",
+			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "__type.ethersSigner"
 		},
 		"6107": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "VincentToolClient"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "VincentAbilityClient"
 		},
 		"6108": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "VincentToolClient.precheck"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "VincentAbilityClient.precheck"
 		},
 		"6109": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "VincentToolClient.precheck"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "VincentAbilityClient.precheck"
 		},
 		"6110": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "rawToolParams"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "rawAbilityParams"
 		},
 		"6111": {
-			"sourceFileName": "src/toolClient/types.ts",
+			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "context"
 		},
 		"6112": {
-			"sourceFileName": "src/toolClient/types.ts",
+			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "__type"
 		},
 		"6113": {
-			"sourceFileName": "src/toolClient/types.ts",
+			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "__type.rpcUrl"
 		},
 		"6114": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "VincentToolClient.execute"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "VincentAbilityClient.execute"
 		},
 		"6115": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "VincentToolClient.execute"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "VincentAbilityClient.execute"
 		},
 		"6116": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "rawToolParams"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "rawAbilityParams"
 		},
 		"6117": {
-			"sourceFileName": "src/toolClient/types.ts",
+			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "context"
 		},
 		"6124": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "ToolClientContext"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "AbilityClientContext"
 		},
 		"6125": {
-			"sourceFileName": "src/toolClient/types.ts",
-			"qualifiedName": "ToolClientContext.delegatorPkpEthAddress"
+			"sourceFileName": "src/abilityClient/types.ts",
+			"qualifiedName": "AbilityClientContext.delegatorPkpEthAddress"
 		},
 		"6126": {
-			"sourceFileName": "../tool-sdk/src/lib/toolCore/toolConfig/context/types.ts",
-			"qualifiedName": "BaseToolContext"
+			"sourceFileName": "../ability-sdk/src/lib/abilityCore/abilityConfig/context/types.ts",
+			"qualifiedName": "BaseAbilityContext"
 		},
 		"6127": {
-			"sourceFileName": "../tool-sdk/src/lib/toolCore/toolConfig/context/types.ts",
-			"qualifiedName": "BaseToolContext.policiesContext"
+			"sourceFileName": "../ability-sdk/src/lib/abilityCore/abilityConfig/context/types.ts",
+			"qualifiedName": "BaseAbilityContext.policiesContext"
 		},
 		"6128": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
-			"qualifiedName": "BaseContext.toolIpfsCid"
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
+			"qualifiedName": "BaseContext.abilityIpfsCid"
 		},
 		"6129": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.appId"
 		},
 		"6130": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.appVersion"
 		},
 		"6131": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.delegation"
 		},
 		"6132": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type"
 		},
 		"6133": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.delegateeAddress"
 		},
 		"6134": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.delegatorPkpInfo"
 		},
 		"6135": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type"
 		},
 		"6136": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.tokenId"
 		},
 		"6137": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.ethAddress"
 		},
 		"6138": {
-			"sourceFileName": "../tool-sdk/src/lib/types.ts",
+			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.publicKey"
 		},
 		"6139": {
-			"sourceFileName": "../tool-sdk/src/lib/toolCore/toolConfig/context/types.ts",
-			"qualifiedName": "BaseToolContext.Policies"
+			"sourceFileName": "../ability-sdk/src/lib/abilityCore/abilityConfig/context/types.ts",
+			"qualifiedName": "BaseAbilityContext.Policies"
 		},
 		"6146": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponse"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponse"
 		},
 		"6147": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
+			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "SuccessSchema"
 		},
 		"6148": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
+			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "FailSchema"
 		},
 		"6149": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
+			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "Policies"
 		},
 		"6150": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult"
 		},
 		"6151": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult.success"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult.success"
 		},
 		"6152": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult.runtimeError"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult.runtimeError"
 		},
 		"6153": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult.schemaValidationError"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult.schemaValidationError"
 		},
 		"6154": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult.result"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult.result"
 		},
 		"6155": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult.context"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult.context"
 		},
 		"6156": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailureNoResult.Policies"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailureNoResult.Policies"
 		},
 		"6157": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure"
 		},
 		"6158": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.success"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.success"
 		},
 		"6159": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.runtimeError"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.runtimeError"
 		},
 		"6160": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.schemaValidationError"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.schemaValidationError"
 		},
 		"6161": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.result"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.result"
 		},
 		"6162": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.context"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.context"
 		},
 		"6163": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.Result"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.Result"
 		},
 		"6164": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseFailure.Policies"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseFailure.Policies"
 		},
 		"6165": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccessNoResult"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccessNoResult"
 		},
 		"6166": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccessNoResult.success"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.success"
 		},
 		"6167": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccessNoResult.result"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.result"
 		},
 		"6168": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccessNoResult.context"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.context"
 		},
 		"6169": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccessNoResult.Policies"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.Policies"
 		},
 		"6170": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccess"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccess"
 		},
 		"6171": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccess.success"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccess.success"
 		},
 		"6172": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccess.result"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccess.result"
 		},
 		"6173": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccess.context"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccess.context"
 		},
 		"6174": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccess.Result"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccess.Result"
 		},
 		"6175": {
-			"sourceFileName": "src/toolClient/execute/types.ts",
-			"qualifiedName": "ToolExecuteResponseSuccess.Policies"
+			"sourceFileName": "src/abilityClient/execute/types.ts",
+			"qualifiedName": "AbilityExecuteResponseSuccess.Policies"
 		},
 		"6176": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponse"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponse"
 		},
 		"6177": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "SuccessSchema"
 		},
 		"6178": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "FailSchema"
 		},
 		"6179": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "Policies"
 		},
 		"6180": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult"
 		},
 		"6181": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult.success"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.success"
 		},
 		"6182": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult.runtimeError"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.runtimeError"
 		},
 		"6183": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult.schemaValidationError"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.schemaValidationError"
 		},
 		"6184": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult.result"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.result"
 		},
 		"6185": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult.context"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.context"
 		},
 		"6186": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailureNoResult.Policies"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.Policies"
 		},
 		"6187": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure"
 		},
 		"6188": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.success"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.success"
 		},
 		"6189": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.runtimeError"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.runtimeError"
 		},
 		"6190": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.schemaValidationError"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.schemaValidationError"
 		},
 		"6191": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.result"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.result"
 		},
 		"6192": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.context"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.context"
 		},
 		"6193": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.Result"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.Result"
 		},
 		"6194": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseFailure.Policies"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseFailure.Policies"
 		},
 		"6195": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccessNoResult"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult"
 		},
 		"6196": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccessNoResult.success"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.success"
 		},
 		"6197": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccessNoResult.result"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.result"
 		},
 		"6198": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccessNoResult.context"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.context"
 		},
 		"6199": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccessNoResult.Policies"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.Policies"
 		},
 		"6200": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccess"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccess"
 		},
 		"6201": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccess.success"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccess.success"
 		},
 		"6202": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccess.result"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccess.result"
 		},
 		"6203": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccess.context"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccess.context"
 		},
 		"6204": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccess.Result"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccess.Result"
 		},
 		"6205": {
-			"sourceFileName": "src/toolClient/precheck/types.ts",
-			"qualifiedName": "ToolPrecheckResponseSuccess.Policies"
+			"sourceFileName": "src/abilityClient/precheck/types.ts",
+			"qualifiedName": "AbilityPrecheckResponseSuccess.Policies"
 		},
 		"6209": {
 			"sourceFileName": "src/jwt/core/isExpired.ts",
@@ -8055,7 +8055,7 @@
 	},
 	"files": {
 		"entries": {
-			"1": "src/toolClient/index.ts",
+			"1": "src/abilityClient/index.ts",
 			"2": "src/jwt/index.ts",
 			"3": "src/webAuthClient/index.ts",
 			"4": "src/expressMiddleware/index.ts",

@@ -265,7 +265,7 @@
 		},
 		{
 			"id": 84,
-			"name": "AppVersionTools",
+			"name": "AppVersionAbilities",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -286,7 +286,7 @@
 			"children": [
 				{
 					"id": 85,
-					"name": "toolIpfsCids",
+					"name": "abilityIpfsCids",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -308,7 +308,7 @@
 				},
 				{
 					"id": 86,
-					"name": "toolPolicies",
+					"name": "abilityPolicies",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -493,7 +493,7 @@
 		},
 		{
 			"id": 75,
-			"name": "Tool",
+			"name": "Ability",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -517,7 +517,7 @@
 			"children": [
 				{
 					"id": 76,
-					"name": "toolIpfsCid",
+					"name": "abilityIpfsCid",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -636,7 +636,7 @@
 				},
 				{
 					"id": 195,
-					"name": "tools",
+					"name": "abilities",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -661,7 +661,7 @@
 								"children": [
 									{
 										"id": 197,
-										"name": "toolIpfsCid",
+										"name": "abilityIpfsCid",
 										"variant": "declaration",
 										"kind": 1024,
 										"flags": {},
@@ -894,7 +894,7 @@
 				},
 				{
 					"id": 30,
-					"name": "versionTools",
+					"name": "versionAbilities",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -909,7 +909,7 @@
 					"type": {
 						"type": "reference",
 						"target": 84,
-						"name": "AppVersionTools",
+						"name": "AppVersionAbilities",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
 				}
@@ -975,7 +975,7 @@
 				},
 				{
 					"id": 26,
-					"name": "versionTools",
+					"name": "versionAbilities",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -990,7 +990,7 @@
 					"type": {
 						"type": "reference",
 						"target": 84,
-						"name": "AppVersionTools",
+						"name": "AppVersionAbilities",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
 				}
@@ -1804,7 +1804,7 @@
 		},
 		{
 			"id": 66,
-			"name": "ToolPolicyParameterData",
+			"name": "AbilityPolicyParameterData",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -1937,7 +1937,7 @@
 				"summary": [
 					{
 						"kind": "text",
-						"text": "Represents a nested structure of tool and policy parameters\nKeys are tool IPFS CIDs, values are ToolPolicyParameterData objects"
+						"text": "Represents a nested structure of ability and policy parameters\nKeys are ability IPFS CIDs, values are AbilityPolicyParameterData objects"
 					}
 				],
 				"blockTags": [
@@ -1978,7 +1978,7 @@
 					"parameters": [
 						{
 							"id": 191,
-							"name": "toolIpfsCid",
+							"name": "abilityIpfsCid",
 							"variant": "param",
 							"kind": 32768,
 							"flags": {},
@@ -1991,7 +1991,7 @@
 					"type": {
 						"type": "reference",
 						"target": 66,
-						"name": "ToolPolicyParameterData",
+						"name": "AbilityPolicyParameterData",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
 				}
@@ -1999,7 +1999,7 @@
 		},
 		{
 			"id": 184,
-			"name": "ValidateToolExecutionAndGetPoliciesResult",
+			"name": "ValidateAbilityExecutionAndGetPoliciesResult",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -2092,7 +2092,7 @@
 					"type": {
 						"type": "reference",
 						"target": 66,
-						"name": "ToolPolicyParameterData",
+						"name": "AbilityPolicyParameterData",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
 				}
@@ -2337,7 +2337,7 @@
 		},
 		{
 			"id": 52,
-			"name": "SetToolPolicyParametersParams",
+			"name": "SetAbilityPolicyParametersParams",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -2651,7 +2651,7 @@
 		},
 		{
 			"id": 42,
-			"name": "GetAllToolsAndPoliciesForAppParams",
+			"name": "GetAllAbilitiesAndPoliciesForAppParams",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -2729,7 +2729,7 @@
 		},
 		{
 			"id": 31,
-			"name": "ValidateToolExecutionAndGetPoliciesParams",
+			"name": "ValidateAbilityExecutionAndGetPoliciesParams",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -2788,7 +2788,7 @@
 				},
 				{
 					"id": 34,
-					"name": "toolIpfsCid",
+					"name": "abilityIpfsCid",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -3995,7 +3995,7 @@
 										"content": [
 											{
 												"kind": "text",
-												"text": "Object containing basic app information and version-specific information including tools and policies, or null if the app version is not registered"
+												"text": "Object containing basic app information and version-specific information including abilities and policies, or null if the app version is not registered"
 											}
 										]
 									}
@@ -4467,7 +4467,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Permits an app version for an Agent Wallet PKP token and optionally sets tool policy parameters"
+										"text": "Permits an app version for an Agent Wallet PKP token and optionally sets ability policy parameters"
 									}
 								],
 								"blockTags": [
@@ -4728,7 +4728,7 @@
 				},
 				{
 					"id": 163,
-					"name": "setToolPolicyParameters",
+					"name": "setAbilityPolicyParameters",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {},
@@ -4743,7 +4743,7 @@
 					"signatures": [
 						{
 							"id": 164,
-							"name": "setToolPolicyParameters",
+							"name": "setAbilityPolicyParameters",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -4751,7 +4751,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Sets tool policy parameters for a specific app version"
+										"text": "Sets ability policy parameters for a specific app version"
 									}
 								],
 								"blockTags": [
@@ -4784,7 +4784,7 @@
 									"type": {
 										"type": "reference",
 										"target": 52,
-										"name": "SetToolPolicyParametersParams",
+										"name": "SetAbilityPolicyParametersParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								},
@@ -5128,7 +5128,7 @@
 				},
 				{
 					"id": 178,
-					"name": "getAllToolsAndPoliciesForApp",
+					"name": "getAllAbilitiesAndPoliciesForApp",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {},
@@ -5143,7 +5143,7 @@
 					"signatures": [
 						{
 							"id": 179,
-							"name": "getAllToolsAndPoliciesForApp",
+							"name": "getAllAbilitiesAndPoliciesForApp",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5151,7 +5151,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Get all permitted tools, policies, and policy parameters for a specific app and PKP in a nested object structure"
+										"text": "Get all permitted abilities, policies, and policy parameters for a specific app and PKP in a nested object structure"
 									}
 								],
 								"blockTags": [
@@ -5160,7 +5160,7 @@
 										"content": [
 											{
 												"kind": "text",
-												"text": "Nested object structure where keys are tool IPFS CIDs and values are objects with policy IPFS CIDs as keys"
+												"text": "Nested object structure where keys are ability IPFS CIDs and values are objects with policy IPFS CIDs as keys"
 											}
 										]
 									}
@@ -5184,7 +5184,7 @@
 									"type": {
 										"type": "reference",
 										"target": 42,
-										"name": "GetAllToolsAndPoliciesForAppParams",
+										"name": "GetAllAbilitiesAndPoliciesForAppParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								}
@@ -5211,7 +5211,7 @@
 				},
 				{
 					"id": 181,
-					"name": "validateToolExecutionAndGetPolicies",
+					"name": "validateAbilityExecutionAndGetPolicies",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {},
@@ -5226,7 +5226,7 @@
 					"signatures": [
 						{
 							"id": 182,
-							"name": "validateToolExecutionAndGetPolicies",
+							"name": "validateAbilityExecutionAndGetPolicies",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -5234,7 +5234,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Validates tool execution and gets policies for a specific tool"
+										"text": "Validates ability execution and gets policies for a specific tool"
 									}
 								],
 								"blockTags": [
@@ -5267,7 +5267,7 @@
 									"type": {
 										"type": "reference",
 										"target": 31,
-										"name": "ValidateToolExecutionAndGetPoliciesParams",
+										"name": "ValidateAbilityExecutionAndGetPoliciesParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								}
@@ -5282,7 +5282,7 @@
 									{
 										"type": "reference",
 										"target": 184,
-										"name": "ValidateToolExecutionAndGetPoliciesResult",
+										"name": "ValidateAbilityExecutionAndGetPoliciesResult",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								],
@@ -5582,7 +5582,7 @@
 	"readme": [
 		{
 			"kind": "text",
-			"text": "# Hello, Vincent\n\nVincent is an open-source framework for creating programmable, user controlled agents. Built on [Lit Protocol](https://developer.litprotocol.com/what-is-lit) and powered by decentralized key management and policy enforcement, Vincent enables secure delegation of both on-chain and off-chain actions without compromising user control.\n\nVincent is an open-source framework powered by [Lit Protocol](https://developer.litprotocol.com/what-is-lit) that empowers developers to create automated, user-controlled AI agents.\n\nWith Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data.\n\nPowered by Lit’s [decentralized key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n# Key Concepts\n\n## Vincent Agent Wallets\n\nNon-custodial accounts controlled by users and backed by Lit [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), used to delegate signing authority to Vincent Apps during Tool execution.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Concepts.html#vincent-agent-wallet)\n\n## Vincent Tools\n\nVincent Tools are immutable functions, built with [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview), that define the specific operations a Vincent App can perform on behalf of users. Tools can interact with blockchains, APIs, and databases but only execute when permitted by all active Vincent Policies configured by the user.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Tool_Developers.html)\n\n## Vincent Policies\n\nVincent Policies are programmable guardrails that govern how and when Tools can be executed. Built using Lit Actions, Policies enforce user-defined constraints like spending limits, multi-factor authentication, rate limits, or time-based access before any Tool can run.\n\nEach Policy has user-configurable parameters, supports on/off-chain data access, and can persist state across executions. Users define the exact conditions under which a Vincent App can act on their behalf and can update or revoke those conditions at any time.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Policy_Developers.html)\n\n## Vincent App\n\nVincent Apps enable secure, policy-governed automation on behalf of users—without compromising custody or control. Users delegate specific on- and off-chain actions to your App via Vincent Tools, each governed by user-configured Policies. Every action is explicitly authorized, auditable, and constrained to the boundaries set by the user.\n\nApps are bundled as versioned packages and must be approved via the Consent Page before they can execute any actions.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.App___Agent_Developers.html)\n\n## Consent Page\n\nThe Consent Page is a standard interface where users review a Vincent App, approve its requested Tools and Policies, and configure any policy parameters. Vincent Apps use the Consent page to authenticate their users and execute Tools on their behalf.\n\n## On-chain App Registry\n\nThe On-chain App Registry is a smart contract that tracks which Vincent Apps, Tools, and Policies each user has authorized for their Agent Wallet, ensuring only Tools authorized by the user can be executed by the specific Apps they've permitted to act on their behalf.\n\n# How It All Fits Together\n\n### Vincent Developer Workflow\n\n1. Registers a Vincent App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/), selecting the from the existing Tools and Policies their App will use\n2. Optionally creates and publishes custom Tools and Policies tailored to their App’s functionality\n3. Integrates the Vincent App SDK to authenticate users and redirect them to the Vincent Consent Page for delegation\n4. Executes Tools on behalf of authenticated users, governed by the Vincent Policies each user has configured for their App\n\n### Vincent User Workflow\n\n1. Visits a Vincent App and is redirected to the Vincent Consent Page to log in or create their Agent Wallet\n2. Reviews the App’s requested Tools, configures Policy parameters, and approves the delegation\n3. Is redirected back to the App with a signed Vincent JWT, enabling the App to execute the approved Tools on their behalf within the user’s configured Policy limits\n\n# Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and tools for DeFi, TradFi, E-Commerce, and more.\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and tools, enabling them to be discovered and interacted with by end users.\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n# Useful Links\n\n- [Vincent Docs](https://docs.heyvincent.ai/modules/Vincent_Docs.html)\n- [Automated Dollar-Cost Averaging Demo](https://demo.heyvincent.ai/)\n- [Telegram Community](https://t.me/+aa73FAF9Vp82ZjJh)\n\n# Contributing\n\nSee [CONTRIBUTING.md]("
+			"text": "# Hello, Vincent\n\nVincent is an open-source framework for creating programmable, user controlled agents. Built on [Lit Protocol](https://developer.litprotocol.com/what-is-lit) and powered by decentralized key management and policy enforcement, Vincent enables secure delegation of both on-chain and off-chain actions without compromising user control.\n\nVincent is an open-source framework powered by [Lit Protocol](https://developer.litprotocol.com/what-is-lit) that empowers developers to create automated, user-controlled AI agents.\n\nWith Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data.\n\nPowered by Lit’s [decentralized key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.\n\n# Key Concepts\n\n## Vincent Agent Wallets\n\nNon-custodial accounts controlled by users and backed by Lit [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), used to delegate signing authority to Vincent Apps during Ability execution.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Concepts.html#vincent-agent-wallet)\n\n## Vincent Abilities\n\nVincent Abilities are immutable functions, built with [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview), that define the specific operations a Vincent App can perform on behalf of users. Abilities can interact with blockchains, APIs, and databases but only execute when permitted by all active Vincent Policies configured by the user.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Ability_Developers.html)\n\n## Vincent Policies\n\nVincent Policies are programmable guardrails that govern how and when Abilities can be executed. Built using Lit Actions, Policies enforce user-defined constraints like spending limits, multi-factor authentication, rate limits, or time-based access before any Ability can run.\n\nEach Policy has user-configurable parameters, supports on/off-chain data access, and can persist state across executions. Users define the exact conditions under which a Vincent App can act on their behalf and can update or revoke those conditions at any time.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.Policy_Developers.html)\n\n## Vincent App\n\nVincent Apps enable secure, policy-governed automation on behalf of users—without compromising custody or control. Users delegate specific on- and off-chain actions to your App via Vincent Abilities, each governed by user-configured Policies. Every action is explicitly authorized, auditable, and constrained to the boundaries set by the user.\n\nApps are bundled as versioned packages and must be approved via the Consent Page before they can execute any actions.\n\n[Learn more](https://docs.heyvincent.ai/documents/Vincent_Docs.App___Agent_Developers.html)\n\n## Consent Page\n\nThe Consent Page is a standard interface where users review a Vincent App, approve its requested Abilities and Policies, and configure any policy parameters. Vincent Apps use the Consent page to authenticate their users and execute Abilities on their behalf.\n\n## On-chain App Registry\n\nThe On-chain App Registry is a smart contract that tracks which Vincent Apps, Abilities, and Policies each user has authorized for their Agent Wallet, ensuring only Abilities authorized by the user can be executed by the specific Apps they've permitted to act on their behalf.\n\n# How It All Fits Together\n\n### Vincent Developer Workflow\n\n1. Registers a Vincent App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/), selecting the from the existing Abilities and Policies their App will use\n2. Optionally creates and publishes custom Abilities and Policies tailored to their App’s functionality\n3. Integrates the Vincent App SDK to authenticate users and redirect them to the Vincent Consent Page for delegation\n4. Executes Abilities on behalf of authenticated users, governed by the Vincent Policies each user has configured for their App\n\n### Vincent User Workflow\n\n1. Visits a Vincent App and is redirected to the Vincent Consent Page to log in or create their Agent Wallet\n2. Reviews the App’s requested Abilities, configures Policy parameters, and approves the delegation\n3. Is redirected back to the App with a signed Vincent JWT, enabling the App to execute the approved Abilities on their behalf within the user’s configured Policy limits\n\n# Why Vincent?\n\nVincent optimizes for security, interoperability, and user-control to redefine how agents interact across Web3 and beyond:\n\n- **Decentralized Key Management**: Vincent leverages Lit Protocol's [Programmable Key Pairs](https://developer.litprotocol.com/user-wallets/pkps/overview) (PKPs) to securely manage agent identities without exposing private keys.\n- **Verifiable, Fine-Grained Policies**: Users have full control over the policies they set and can revoke them at any time. Policies are fine-grained to specific operations and verifiable on-chain.\n- **Cross-Platform Automation**: With Vincent, agents can operate seamlessly across any blockchain or off-chain platform. Build agent-powered apps and abilities for DeFi, TradFi, E-Commerce, and more.\n- **Agent Marketplace**: Vincent will eventually serve as a marketplace for Vincent-powered apps and abilities, enabling them to be discovered and interacted with by end users.\n- **Open Source**: Fork, customize, and contribute to the [Vincent codebase](https://github.com/LIT-Protocol/Vincent) to shape the future of the agent-driven and user-controlled Web.\n\n# Useful Links\n\n- [Vincent Docs](https://docs.heyvincent.ai/modules/Vincent_Docs.html)\n- [Automated Dollar-Cost Averaging Demo](https://demo.heyvincent.ai/)\n- [Telegram Community](https://t.me/+aa73FAF9Vp82ZjJh)\n\n# Contributing\n\nSee [CONTRIBUTING.md]("
 		},
 		{
 			"kind": "relative-link",
@@ -5701,7 +5701,7 @@
 		},
 		"26": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterNextVersionParams.versionTools"
+			"qualifiedName": "RegisterNextVersionParams.versionAbilities"
 		},
 		"27": {
 			"sourceFileName": "src/types.ts",
@@ -5717,23 +5717,23 @@
 		},
 		"30": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterAppParams.versionTools"
+			"qualifiedName": "RegisterAppParams.versionAbilities"
 		},
 		"31": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesParams"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams"
 		},
 		"32": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesParams.delegateeAddress"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.delegateeAddress"
 		},
 		"33": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesParams.pkpEthAddress"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.pkpEthAddress"
 		},
 		"34": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesParams.toolIpfsCid"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.abilityIpfsCid"
 		},
 		"35": {
 			"sourceFileName": "src/types.ts",
@@ -5765,15 +5765,15 @@
 		},
 		"42": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllToolsAndPoliciesForAppParams"
+			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams"
 		},
 		"43": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllToolsAndPoliciesForAppParams.pkpEthAddress"
+			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams.pkpEthAddress"
 		},
 		"44": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllToolsAndPoliciesForAppParams.appId"
+			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams.appId"
 		},
 		"45": {
 			"sourceFileName": "src/types.ts",
@@ -5805,23 +5805,23 @@
 		},
 		"52": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetToolPolicyParametersParams"
+			"qualifiedName": "SetAbilityPolicyParametersParams"
 		},
 		"53": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetToolPolicyParametersParams.pkpEthAddress"
+			"qualifiedName": "SetAbilityPolicyParametersParams.pkpEthAddress"
 		},
 		"54": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetToolPolicyParametersParams.appId"
+			"qualifiedName": "SetAbilityPolicyParametersParams.appId"
 		},
 		"55": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetToolPolicyParametersParams.appVersion"
+			"qualifiedName": "SetAbilityPolicyParametersParams.appVersion"
 		},
 		"56": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetToolPolicyParametersParams.policyParams"
+			"qualifiedName": "SetAbilityPolicyParametersParams.policyParams"
 		},
 		"57": {
 			"sourceFileName": "src/types.ts",
@@ -5861,11 +5861,11 @@
 		},
 		"66": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ToolPolicyParameterData"
+			"qualifiedName": "AbilityPolicyParameterData"
 		},
 		"67": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ToolPolicyParameterData.__index"
+			"qualifiedName": "AbilityPolicyParameterData.__index"
 		},
 		"69": {
 			"sourceFileName": "src/types.ts",
@@ -5889,15 +5889,15 @@
 		},
 		"75": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Tool"
+			"qualifiedName": "Ability"
 		},
 		"76": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Tool.toolIpfsCid"
+			"qualifiedName": "Ability.abilityIpfsCid"
 		},
 		"77": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Tool.policyIpfsCids"
+			"qualifiedName": "Ability.policyIpfsCids"
 		},
 		"78": {
 			"sourceFileName": "src/types.ts",
@@ -5925,15 +5925,15 @@
 		},
 		"84": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersionTools"
+			"qualifiedName": "AppVersionAbilities"
 		},
 		"85": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersionTools.toolIpfsCids"
+			"qualifiedName": "AppVersionAbilities.abilityIpfsCids"
 		},
 		"86": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersionTools.toolPolicies"
+			"qualifiedName": "AppVersionAbilities.abilityPolicies"
 		},
 		"87": {
 			"sourceFileName": "src/types.ts",
@@ -6241,11 +6241,11 @@
 		},
 		"163": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.setToolPolicyParameters"
+			"qualifiedName": "ContractClient.setAbilityPolicyParameters"
 		},
 		"164": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.setToolPolicyParameters"
+			"qualifiedName": "ContractClient.setAbilityPolicyParameters"
 		},
 		"165": {
 			"sourceFileName": "src/types.ts",
@@ -6301,11 +6301,11 @@
 		},
 		"178": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllToolsAndPoliciesForApp"
+			"qualifiedName": "ContractClient.getAllAbilitiesAndPoliciesForApp"
 		},
 		"179": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllToolsAndPoliciesForApp"
+			"qualifiedName": "ContractClient.getAllAbilitiesAndPoliciesForApp"
 		},
 		"180": {
 			"sourceFileName": "src/types.ts",
@@ -6313,11 +6313,11 @@
 		},
 		"181": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.validateToolExecutionAndGetPolicies"
+			"qualifiedName": "ContractClient.validateAbilityExecutionAndGetPolicies"
 		},
 		"182": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.validateToolExecutionAndGetPolicies"
+			"qualifiedName": "ContractClient.validateAbilityExecutionAndGetPolicies"
 		},
 		"183": {
 			"sourceFileName": "src/types.ts",
@@ -6325,23 +6325,23 @@
 		},
 		"184": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesResult"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult"
 		},
 		"185": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesResult.isPermitted"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.isPermitted"
 		},
 		"186": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesResult.appId"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.appId"
 		},
 		"187": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesResult.appVersion"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.appVersion"
 		},
 		"188": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateToolExecutionAndGetPoliciesResult.decodedPolicies"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.decodedPolicies"
 		},
 		"189": {
 			"sourceFileName": "src/types.ts",
@@ -6365,19 +6365,19 @@
 		},
 		"195": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersion.tools"
+			"qualifiedName": "AppVersion.abilities"
 		},
 		"196": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Tool"
+			"qualifiedName": "Ability"
 		},
 		"197": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Tool.toolIpfsCid"
+			"qualifiedName": "Ability.abilityIpfsCid"
 		},
 		"198": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Tool.policyIpfsCids"
+			"qualifiedName": "Ability.policyIpfsCids"
 		},
 		"199": {
 			"sourceFileName": "src/contractClient.ts",

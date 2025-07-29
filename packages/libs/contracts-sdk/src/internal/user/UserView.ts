@@ -2,16 +2,16 @@ import type { BigNumber } from 'ethers';
 
 import type {
   PermissionData,
-  ToolPolicyParameterData,
-  ValidateToolExecutionAndGetPoliciesResult,
+  AbilityPolicyParameterData,
+  ValidateAbilityExecutionAndGetPoliciesResult,
 } from '../../types';
-import type { ToolWithPolicies, ToolExecutionValidation } from '../types/chain';
+import type { AbilityWithPolicies, AbilityExecutionValidation } from '../types/chain';
 import type {
   GetAllRegisteredAgentPkpsOptions,
   GetPermittedAppVersionForPkpOptions,
   GetAllPermittedAppIdsForPkpOptions,
-  GetAllToolsAndPoliciesForAppOptions,
-  ValidateToolExecutionAndGetPoliciesOptions,
+  GetAllAbilitiesAndPoliciesForAppOptions,
+  ValidateAbilityExecutionAndGetPoliciesOptions,
 } from './types.ts';
 
 import { decodeContractError } from '../../utils';
@@ -91,8 +91,8 @@ export async function getAllPermittedAppIdsForPkp(
   }
 }
 
-export async function getAllToolsAndPoliciesForApp(
-  params: GetAllToolsAndPoliciesForAppOptions,
+export async function getAllAbilitiesAndPoliciesForApp(
+  params: GetAllAbilitiesAndPoliciesForAppOptions,
 ): Promise<PermissionData> {
   const {
     contract,
@@ -102,33 +102,37 @@ export async function getAllToolsAndPoliciesForApp(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const tools: ToolWithPolicies[] = await contract.getAllToolsAndPoliciesForApp(
+    const abilities: AbilityWithPolicies[] = await contract.getAllAbilitiesAndPoliciesForApp(
       pkpTokenId,
       appId,
     );
 
-    return decodePermissionDataFromChain(tools);
+    return decodePermissionDataFromChain(abilities);
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
-    throw new Error(`Failed to Get All Tools And Policies For App: ${decodedError}`);
+    throw new Error(`Failed to Get All Abilities And Policies For App: ${decodedError}`);
   }
 }
 
-export async function validateToolExecutionAndGetPolicies(
-  params: ValidateToolExecutionAndGetPoliciesOptions,
-): Promise<ValidateToolExecutionAndGetPoliciesResult> {
+export async function validateAbilityExecutionAndGetPolicies(
+  params: ValidateAbilityExecutionAndGetPoliciesOptions,
+): Promise<ValidateAbilityExecutionAndGetPoliciesResult> {
   const {
     contract,
-    args: { delegateeAddress, pkpEthAddress, toolIpfsCid },
+    args: { delegateeAddress, pkpEthAddress, abilityIpfsCid },
   } = params;
 
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const validationResult: ToolExecutionValidation =
-      await contract.validateToolExecutionAndGetPolicies(delegateeAddress, pkpTokenId, toolIpfsCid);
+    const validationResult: AbilityExecutionValidation =
+      await contract.validateAbilityExecutionAndGetPolicies(
+        delegateeAddress,
+        pkpTokenId,
+        abilityIpfsCid,
+      );
 
-    const decodedPolicies: ToolPolicyParameterData = {};
+    const decodedPolicies: AbilityPolicyParameterData = {};
 
     for (const policy of validationResult.policies) {
       const policyIpfsCid = policy.policyIpfsCid;
@@ -143,6 +147,6 @@ export async function validateToolExecutionAndGetPolicies(
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
-    throw new Error(`Failed to Validate Tool Execution And Get Policies: ${decodedError}`);
+    throw new Error(`Failed to Validate Ability Execution And Get Policies: ${decodedError}`);
   }
 }

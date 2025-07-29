@@ -73,7 +73,7 @@ export function CreateAppForm({ onSubmit, isSubmitting = false }: CreateAppFormP
       <CardHeader>
         <CardTitle>Create New App</CardTitle>
         <CardDescription>
-          Add details then select tools to request permissions from users
+          Add details then select abilities to request permissions from users
         </CardDescription>
       </CardHeader>
       <CardContent>

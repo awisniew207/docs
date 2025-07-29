@@ -16,7 +16,7 @@ export function CreateAppWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data) {
-      navigateWithDelay(navigate, `/developer/appId/${data.appId}/version/1/tools`);
+      navigateWithDelay(navigate, `/developer/appId/${data.appId}/version/1/abilities`);
     }
   }, [isSuccess, data, navigate]);
 

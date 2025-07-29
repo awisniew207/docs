@@ -52,7 +52,7 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>Create New Policy</CardTitle>
-        <CardDescription>Define a user-configurable guardrail for Tools</CardDescription>
+        <CardDescription>Define a user-configurable guardrail for Abilities</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

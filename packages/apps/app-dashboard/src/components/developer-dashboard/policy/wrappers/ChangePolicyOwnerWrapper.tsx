@@ -10,7 +10,7 @@ export function ChangePolicyOwnerWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  // It's not needed here, but we'll fetch to make sure the tool exists
+  // It's not needed here, but we'll fetch to make sure the ability exists
   const {
     data: policy,
     isLoading: policyLoading,

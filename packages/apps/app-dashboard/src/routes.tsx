@@ -14,7 +14,7 @@ import {
   AppOverviewWrapper,
   AppVersionDetailWrapper,
   AppVersionsWrapper,
-  AppVersionToolsWrapper,
+  AppVersionAbilitiesWrapper,
   CreateAppVersionWrapper,
   EditAppVersionWrapper,
   EditAppWrapper,
@@ -26,18 +26,18 @@ import {
 } from './components/developer-dashboard/app/wrappers';
 
 import {
-  ToolsWrapper,
-  ToolOverviewWrapper,
-  CreateToolWrapper,
-  EditToolWrapper,
-  CreateToolVersionWrapper,
-  ChangeToolOwnerWrapper,
-  ToolVersionsWrapper,
-  ToolVersionDetailsWrapper,
-  EditToolVersionWrapper,
-  DeleteToolWrapper,
-  DeleteToolVersionWrapper,
-} from './components/developer-dashboard/tool/wrappers';
+  AbilitiesWrapper,
+  AbilityOverviewWrapper,
+  CreateAbilityWrapper,
+  EditAbilityWrapper,
+  CreateAbilityVersionWrapper,
+  ChangeAbilityOwnerWrapper,
+  AbilityVersionsWrapper,
+  AbilityVersionDetailsWrapper,
+  EditAbilityVersionWrapper,
+  DeleteAbilityWrapper,
+  DeleteAbilityVersionWrapper,
+} from '@/components/developer-dashboard/ability/wrappers';
 
 import {
   PoliciesWrapper,
@@ -134,56 +134,56 @@ const routes: RouteObject[] = [
             element: <EditAppVersionWrapper />,
           },
           {
-            path: 'appId/:appId/version/:versionId/tools',
-            element: <AppVersionToolsWrapper />,
+            path: 'appId/:appId/version/:versionId/abilities',
+            element: <AppVersionAbilitiesWrapper />,
           },
           {
             path: 'appId/:appId/version/:versionId/delete-version',
             element: <DeleteAppVersionWrapper />,
           },
           {
-            path: 'tools',
-            element: <ToolsWrapper />,
+            path: 'abilities',
+            element: <AbilitiesWrapper />,
           },
           {
-            path: 'create-tool',
-            element: <CreateToolWrapper />,
+            path: 'create-ability',
+            element: <CreateAbilityWrapper />,
           },
           {
-            path: 'toolId/:packageName',
-            element: <ToolOverviewWrapper />,
+            path: 'abilityId/:packageName',
+            element: <AbilityOverviewWrapper />,
           },
           {
-            path: 'toolId/:packageName/edit-tool',
-            element: <EditToolWrapper />,
+            path: 'abilityId/:packageName/edit-ability',
+            element: <EditAbilityWrapper />,
           },
           {
-            path: 'toolId/:packageName/create-tool-version',
-            element: <CreateToolVersionWrapper />,
+            path: 'abilityId/:packageName/create-ability-version',
+            element: <CreateAbilityVersionWrapper />,
           },
           {
-            path: 'toolId/:packageName/change-tool-owner',
-            element: <ChangeToolOwnerWrapper />,
+            path: 'abilityId/:packageName/change-ability-owner',
+            element: <ChangeAbilityOwnerWrapper />,
           },
           {
-            path: 'toolId/:packageName/versions',
-            element: <ToolVersionsWrapper />,
+            path: 'abilityId/:packageName/versions',
+            element: <AbilityVersionsWrapper />,
           },
           {
-            path: 'toolId/:packageName/version/:version',
-            element: <ToolVersionDetailsWrapper />,
+            path: 'abilityId/:packageName/version/:version',
+            element: <AbilityVersionDetailsWrapper />,
           },
           {
-            path: 'toolId/:packageName/version/:version/edit-version',
-            element: <EditToolVersionWrapper />,
+            path: 'abilityId/:packageName/version/:version/edit-version',
+            element: <EditAbilityVersionWrapper />,
           },
           {
-            path: 'toolId/:packageName/delete-tool',
-            element: <DeleteToolWrapper />,
+            path: 'abilityId/:packageName/delete-ability',
+            element: <DeleteAbilityWrapper />,
           },
           {
-            path: 'toolId/:packageName/version/:version/delete-version',
-            element: <DeleteToolVersionWrapper />,
+            path: 'abilityId/:packageName/version/:version/delete-version',
+            element: <DeleteAbilityVersionWrapper />,
           },
           {
             path: 'policies',

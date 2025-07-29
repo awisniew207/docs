@@ -92,10 +92,10 @@ export async function getAppsByManagerAddress(
           id: app.id.toNumber(),
           latestVersion: app.latestVersion.toNumber(),
         },
-        versions: versions.map(({ enabled, tools, version: appVersion }) => ({
+        versions: versions.map(({ enabled, abilities, version: appVersion }) => ({
           version: appVersion.toNumber(),
           enabled: enabled,
-          tools,
+          abilities,
         })),
       };
     });

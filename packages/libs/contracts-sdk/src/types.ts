@@ -18,23 +18,23 @@ import type {
 } from './internal/app/AppView';
 import type {
   permitApp as _permitApp,
-  setToolPolicyParameters as _setToolPolicyParameters,
+  setAbilityPolicyParameters as _setAbilityPolicyParameters,
   unPermitApp as _unPermitApp,
 } from './internal/user/User';
 import type {
   getAllPermittedAppIdsForPkp as _getAllPermittedAppIdsForPkp,
   getAllRegisteredAgentPkpEthAddresses as _getAllRegisteredAgentPkpEthAddresses,
-  getAllToolsAndPoliciesForApp as _getAllToolsAndPoliciesForApp,
+  getAllAbilitiesAndPoliciesForApp as _getAllAbilitiesAndPoliciesForApp,
   getPermittedAppVersionForPkp as _getPermittedAppVersionForPkp,
-  validateToolExecutionAndGetPolicies as _validateToolExecutionAndGetPolicies,
+  validateAbilityExecutionAndGetPolicies as _validateAbilityExecutionAndGetPolicies,
 } from './internal/user/UserView';
 
 /**
  * @category Interfaces
  * */
-export interface AppVersionTools {
-  toolIpfsCids: string[];
-  toolPolicies: string[][];
+export interface AppVersionAbilities {
+  abilityIpfsCids: string[];
+  abilityPolicies: string[][];
 }
 
 /**
@@ -53,8 +53,8 @@ export interface App {
  * @inline
  * @expand
  * */
-export interface Tool {
-  toolIpfsCid: string;
+export interface Ability {
+  abilityIpfsCid: string;
   policyIpfsCids: string[];
 }
 
@@ -64,7 +64,7 @@ export interface Tool {
 export interface AppVersion {
   version: number;
   enabled: boolean;
-  tools: Tool[];
+  abilities: Ability[];
 }
 
 /**
@@ -82,7 +82,7 @@ export interface AppWithVersions {
 export interface RegisterAppParams {
   appId: number;
   delegateeAddresses: string[];
-  versionTools: AppVersionTools;
+  versionAbilities: AppVersionAbilities;
 }
 
 /**
@@ -90,7 +90,7 @@ export interface RegisterAppParams {
  * */
 export interface RegisterNextVersionParams {
   appId: number;
-  versionTools: AppVersionTools;
+  versionAbilities: AppVersionAbilities;
 }
 
 /**
@@ -174,11 +174,11 @@ export interface GetDelegatedPkpEthAddressesParams {
 }
 
 /**
- * Represents the decoded parameters for policies associated with a single tool
+ * Represents the decoded parameters for policies associated with a single ability
  * Keys are policy IPFS CIDs, values are policy parameters for the policy
  * @category Interfaces
  */
-export interface ToolPolicyParameterData {
+export interface AbilityPolicyParameterData {
   [policyIpfsCid: string]:
     | {
         // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
@@ -188,23 +188,23 @@ export interface ToolPolicyParameterData {
 }
 
 /**
- * Represents a nested structure of tool and policy parameters
- * Keys are tool IPFS CIDs, values are ToolPolicyParameterData objects
+ * Represents a nested structure of ability and policy parameters
+ * Keys are ability IPFS CIDs, values are AbilityPolicyParameterData objects
  *
  * @category Interfaces
  */
 export interface PermissionData {
-  [toolIpfsCid: string]: ToolPolicyParameterData;
+  [abilityIpfsCid: string]: AbilityPolicyParameterData;
 }
 
 /**
  * @category Interfaces
  * */
-export interface ValidateToolExecutionAndGetPoliciesResult {
+export interface ValidateAbilityExecutionAndGetPoliciesResult {
   isPermitted: boolean;
   appId: number;
   appVersion: number;
-  decodedPolicies: ToolPolicyParameterData;
+  decodedPolicies: AbilityPolicyParameterData;
 }
 
 /**
@@ -229,7 +229,7 @@ export interface UnPermitAppParams {
 /**
  * @category Interfaces
  * */
-export interface SetToolPolicyParametersParams {
+export interface SetAbilityPolicyParametersParams {
   pkpEthAddress: string;
   appId: number;
   appVersion: number;
@@ -261,7 +261,7 @@ export interface GetAllPermittedAppIdsForPkpParams {
 /**
  * @category Interfaces
  * */
-export interface GetAllToolsAndPoliciesForAppParams {
+export interface GetAllAbilitiesAndPoliciesForAppParams {
   pkpEthAddress: string;
   appId: number;
 }
@@ -269,10 +269,10 @@ export interface GetAllToolsAndPoliciesForAppParams {
 /**
  * @category Interfaces
  * */
-export interface ValidateToolExecutionAndGetPoliciesParams {
+export interface ValidateAbilityExecutionAndGetPoliciesParams {
   delegateeAddress: string;
   pkpEthAddress: string;
-  toolIpfsCid: string;
+  abilityIpfsCid: string;
 }
 /** @category API */
 export interface ContractClient {
@@ -337,7 +337,7 @@ export interface ContractClient {
 
   /** Get detailed information about a specific version of an app
    *
-   * @returns Object containing basic app information and version-specific information including tools and policies, or null if the app version is not registered
+   * @returns Object containing basic app information and version-specific information including abilities and policies, or null if the app version is not registered
    */
   getAppVersion(params: GetAppVersionParams): ReturnType<typeof _getAppVersion>;
 
@@ -370,7 +370,7 @@ export interface ContractClient {
     params: GetDelegatedPkpEthAddressesParams,
   ): ReturnType<typeof _getDelegatedPkpEthAddresses>;
 
-  /** Permits an app version for an Agent Wallet PKP token and optionally sets tool policy parameters
+  /** Permits an app version for an Agent Wallet PKP token and optionally sets ability policy parameters
    *
    * @returns { txHash } The transaction hash that permitted the app
    */
@@ -382,14 +382,14 @@ export interface ContractClient {
    */
   unPermitApp(params: UnPermitAppParams, overrides?: Overrides): ReturnType<typeof _unPermitApp>;
 
-  /** Sets tool policy parameters for a specific app version
+  /** Sets ability policy parameters for a specific app version
    *
    * @returns { txHash } The transaction hash that set the policy parameters
    */
-  setToolPolicyParameters(
-    params: SetToolPolicyParametersParams,
+  setAbilityPolicyParameters(
+    params: SetAbilityPolicyParametersParams,
     overrides?: Overrides,
-  ): ReturnType<typeof _setToolPolicyParameters>;
+  ): ReturnType<typeof _setAbilityPolicyParameters>;
 
   /** Get all PKP tokens that are registered as agents for a specific user address
    *
@@ -415,19 +415,19 @@ export interface ContractClient {
     params: GetAllPermittedAppIdsForPkpParams,
   ): ReturnType<typeof _getAllPermittedAppIdsForPkp>;
 
-  /** Get all permitted tools, policies, and policy parameters for a specific app and PKP in a nested object structure
+  /** Get all permitted abilities, policies, and policy parameters for a specific app and PKP in a nested object structure
    *
-   * @returns Nested object structure where keys are tool IPFS CIDs and values are objects with policy IPFS CIDs as keys
+   * @returns Nested object structure where keys are ability IPFS CIDs and values are objects with policy IPFS CIDs as keys
    */
-  getAllToolsAndPoliciesForApp(
-    params: GetAllToolsAndPoliciesForAppParams,
-  ): ReturnType<typeof _getAllToolsAndPoliciesForApp>;
+  getAllAbilitiesAndPoliciesForApp(
+    params: GetAllAbilitiesAndPoliciesForAppParams,
+  ): ReturnType<typeof _getAllAbilitiesAndPoliciesForApp>;
 
-  /** Validates tool execution and gets policies for a specific tool
+  /** Validates ability execution and gets policies for a specific ability
    *
    * @returns Object containing validation result with isPermitted, appId, appVersion, and policies
    */
-  validateToolExecutionAndGetPolicies(
-    params: ValidateToolExecutionAndGetPoliciesParams,
-  ): ReturnType<typeof _validateToolExecutionAndGetPolicies>;
+  validateAbilityExecutionAndGetPolicies(
+    params: ValidateAbilityExecutionAndGetPoliciesParams,
+  ): ReturnType<typeof _validateAbilityExecutionAndGetPolicies>;
 }

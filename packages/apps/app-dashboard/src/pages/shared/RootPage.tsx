@@ -43,7 +43,7 @@ export default function RootPage() {
 
           <div className="text-center space-y-3 sm:space-y-4 px-2">
             <p className="text-gray-500 text-xs sm:text-sm">
-              <strong>Build:</strong> Create and manage applications, tools, and policies with
+              <strong>Build:</strong> Create and manage applications, abilities, and policies with
               delegated permissions
             </p>
             <p className="text-gray-500 text-xs sm:text-sm">

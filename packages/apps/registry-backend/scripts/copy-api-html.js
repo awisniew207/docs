@@ -1,18 +1,14 @@
-import fs from 'fs-extra';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// ES module equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// nx-ignore
+const fs = require('fs-extra');
+const path = require('path');
 
 // Get the path to the installed package
 let sourceFile;
 try {
   // Find the path to the package.json file of the installed package
-  const packageJsonPath = import.meta.resolve('@lit-protocol/vincent-registry-sdk/package.json');
+  const packageJsonPath = require.resolve('@lit-protocol/vincent-registry-sdk/package.json');
   // Get the directory containing the package.json
-  const packageDir = path.dirname(fileURLToPath(packageJsonPath));
+  const packageDir = path.dirname(packageJsonPath);
   // Path to the api.html file in the installed package
   sourceFile = path.join(packageDir, 'docs', 'api.html');
   console.log(`Looking for api.html at: ${sourceFile}`);

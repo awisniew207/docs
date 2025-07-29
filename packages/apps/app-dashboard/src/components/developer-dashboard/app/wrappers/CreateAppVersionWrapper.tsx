@@ -29,7 +29,10 @@ export function CreateAppVersionWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && app) {
-      navigateWithDelay(navigate, `/developer/appId/${app.appId}/version/${data.version}/tools`);
+      navigateWithDelay(
+        navigate,
+        `/developer/appId/${app.appId}/version/${data.version}/abilities`,
+      );
     }
   }, [isSuccess, data, navigate, app]);
 

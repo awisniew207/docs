@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { ToolAccordion } from './ToolAccordion';
+import { AbilityAccordion } from './AbilityAccordion';
 import { PolicyFormRef } from './PolicyForm';
 import { ThemeType } from './theme';
 
@@ -9,7 +9,7 @@ interface AppsAndVersionsProps {
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
-  onFormChange: (toolIpfsCid: string, policyIpfsCid: string, data: any) => void;
+  onFormChange: (abilityIpfsCid: string, policyIpfsCid: string, data: any) => void;
   onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
 }
 
@@ -44,33 +44,36 @@ export function AppsInfo({
           >
             {(() => {
               const versionKey = `${appName}-${activeVersion.version}`;
-              const appVersionTools = consentInfoMap.appVersionToolsByAppVersion[versionKey] || [];
+              const appVersionAbilities =
+                consentInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
 
               return (
                 <>
-                  {appVersionTools.map((tool) => {
-                    const toolKey = `${tool.toolPackageName}-${tool.toolVersion}`;
-                    const policies = consentInfoMap.supportedPoliciesByToolVersion[toolKey] || [];
+                  {appVersionAbilities.map((ability) => {
+                    const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
+                    const policies =
+                      consentInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
 
                     // Filter out policies that are in hiddenSupportedPolicies
                     const visiblePolicies = policies.filter((policy) => {
                       if (
-                        !tool.hiddenSupportedPolicies ||
-                        tool.hiddenSupportedPolicies.length === 0
+                        !ability.hiddenSupportedPolicies ||
+                        ability.hiddenSupportedPolicies.length === 0
                       ) {
                         return true; // Show all policies if no hidden policies specified
                       }
-                      return !tool.hiddenSupportedPolicies.includes(policy.packageName);
+                      return !ability.hiddenSupportedPolicies.includes(policy.packageName);
                     });
 
-                    const toolVersions = consentInfoMap.toolVersionsByAppVersionTool[toolKey] || [];
-                    const toolVersion = toolVersions[0];
+                    const abilityVersions =
+                      consentInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
+                    const abilityVersion = abilityVersions[0];
 
                     return (
-                      <ToolAccordion
-                        key={toolKey}
-                        tool={tool}
-                        toolVersion={toolVersion}
+                      <AbilityAccordion
+                        key={abilityKey}
+                        ability={ability}
+                        abilityVersion={abilityVersion}
                         policies={visiblePolicies}
                         consentInfoMap={consentInfoMap}
                         theme={theme}
@@ -78,8 +81,8 @@ export function AppsInfo({
                         formData={formData}
                         onFormChange={onFormChange}
                         onRegisterFormRef={onRegisterFormRef}
-                        toolIpfsCid={toolVersion.ipfsCid}
-                        defaultExpanded={false} // All tools start closed
+                        abilityIpfsCid={abilityVersion.ipfsCid}
+                        defaultExpanded={false} // All abilities start closed
                       />
                     );
                   })}

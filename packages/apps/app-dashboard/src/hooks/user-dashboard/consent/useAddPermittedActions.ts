@@ -8,7 +8,7 @@ import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 type AddPermittedActionsProps = {
   wallet: PKPEthersWallet;
   agentPKPTokenId: string;
-  toolIpfsCids: string[];
+  abilityIpfsCids: string[];
 };
 
 export const useAddPermittedActions = () => {
@@ -17,8 +17,8 @@ export const useAddPermittedActions = () => {
   const [error, setError] = useState<string | null>(null);
 
   const addPermittedActions = useCallback(
-    async ({ wallet, agentPKPTokenId, toolIpfsCids }: AddPermittedActionsProps) => {
-      if (!wallet || !agentPKPTokenId || !toolIpfsCids.length) {
+    async ({ wallet, agentPKPTokenId, abilityIpfsCids }: AddPermittedActionsProps) => {
+      if (!wallet || !agentPKPTokenId || !abilityIpfsCids.length) {
         setError('Missing required data for adding permitted actions');
         return;
       }
@@ -49,8 +49,8 @@ export const useAddPermittedActions = () => {
         );
 
         setLoadingStatus('Granting App Permissions');
-        // Process tool IPFS CIDs
-        for (const ipfsCid of toolIpfsCids) {
+        // Process ability IPFS CIDs
+        for (const ipfsCid of abilityIpfsCids) {
           if (!permittedActionSet.has(ipfsCid)) {
             await litContracts.addPermittedAction({
               ipfsId: ipfsCid,
