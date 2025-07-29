@@ -37,6 +37,13 @@ contract VincentAppViewFacet is VincentBase {
      */
     error NoAppsFoundForManager(address manager);
 
+    /**
+     * @notice Thrown when no delegated agent PKPs are found for the specified app and version
+     * @param appId The ID of the app
+     * @param version The version number
+     */
+    error NoDelegatedAgentPkpsFound(uint256 appId, uint256 version);
+
     // ==================================================================================
     // Data Structures
     // ==================================================================================
@@ -122,6 +129,11 @@ contract VincentAppViewFacet is VincentBase {
             VincentAppStorage.appStorage().appIdToApp[appId].appVersions[getAppVersionIndex(version)];
 
         uint256 length = versionedApp.delegatedAgentPkps.length();
+
+        if (length == 0) {
+            revert NoDelegatedAgentPkpsFound(appId, version);
+        }
+
         if (offset >= length) {
             revert InvalidOffset(offset, length);
         }
