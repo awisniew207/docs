@@ -195,12 +195,13 @@ contract VincentDiamond {
     }
 
     function getVincentAppViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](5);
+        bytes4[] memory selectors = new bytes4[](6);
         selectors[0] = VincentAppViewFacet.getAppById.selector;
         selectors[1] = VincentAppViewFacet.getAppVersion.selector;
         selectors[2] = VincentAppViewFacet.getAppsByManager.selector;
         selectors[3] = VincentAppViewFacet.getAppByDelegatee.selector;
         selectors[4] = VincentAppViewFacet.getDelegatedAgentPkpTokenIds.selector;
+        selectors[5] = VincentAppViewFacet.PAGE_SIZE.selector;
         return selectors;
     }
 
@@ -213,12 +214,13 @@ contract VincentDiamond {
     }
 
     function getVincentUserViewFacetSelectors() internal pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](5);
+        bytes4[] memory selectors = new bytes4[](6);
         selectors[0] = VincentUserViewFacet.getAllRegisteredAgentPkps.selector;
         selectors[1] = VincentUserViewFacet.getPermittedAppVersionForPkp.selector;
         selectors[2] = VincentUserViewFacet.getAllPermittedAppIdsForPkp.selector;
         selectors[3] = VincentUserViewFacet.validateToolExecutionAndGetPolicies.selector;
         selectors[4] = VincentUserViewFacet.getAllToolsAndPoliciesForApp.selector;
+        selectors[5] = VincentUserViewFacet.PAGE_SIZE.selector;
         return selectors;
     }
 
