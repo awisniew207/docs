@@ -28,9 +28,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
           onChange={() => setIsCustomToken(false)}
           className="mr-2"
         />
-        <label htmlFor="ethToken" className={`${themeStyles.text}`}>
-          Withdraw Native Asset
-        </label>
+        <label htmlFor="ethToken" className={`${themeStyles.text}`}>Withdraw Native Asset</label>
       </div>
 
       <div className="flex items-center mb-4">
@@ -41,9 +39,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
           onChange={() => setIsCustomToken(true)}
           className="mr-2"
         />
-        <label htmlFor="erc20Token" className={`${themeStyles.text}`}>
-          Withdraw ERC-20 Token
-        </label>
+        <label htmlFor="erc20Token" className={`${themeStyles.text}`}>Withdraw ERC-20 Token</label>
       </div>
 
       {isCustomToken && (

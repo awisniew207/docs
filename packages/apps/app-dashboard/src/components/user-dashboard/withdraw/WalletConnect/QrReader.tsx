@@ -68,9 +68,7 @@ export default function QrReader({ onConnect }: IProps) {
           </Button>
         </Fragment>
       ) : (
-        <div
-          className={`w-full flex flex-col items-center justify-center p-8 border ${themeStyles.cardBorder} rounded-lg ${themeStyles.mainCard}`}
-        >
+        <div className={`w-full flex flex-col items-center justify-center p-8 border ${themeStyles.cardBorder} rounded-lg ${themeStyles.mainCard}`}>
           <img
             src="/icons/qr-icon.svg"
             width={100}

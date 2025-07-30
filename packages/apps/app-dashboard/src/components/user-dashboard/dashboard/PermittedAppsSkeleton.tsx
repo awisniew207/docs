@@ -11,16 +11,13 @@ export function PermittedAppsSkeleton() {
 
   return (
     <div className="w-full flex justify-start pl-6">
-      <div
-        className="w-full"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          columnGap: '1.5rem',
-          rowGap: '1.5rem',
-          alignItems: 'start',
-        }}
-      >
+      <div className="w-full" style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        columnGap: '1.5rem',
+        rowGap: '1.5rem',
+        alignItems: 'start'
+      }}>
         {skeletonCards.map((index) => (
           <Card
             key={index}
@@ -32,9 +29,7 @@ export function PermittedAppsSkeleton() {
                 {/* Logo and Title Row */}
                 <div className="flex items-center gap-3">
                   <div className="flex-shrink-0">
-                    <div
-                      className={`w-10 h-10 rounded-lg ${themeStyles.itemBg} animate-pulse`}
-                    ></div>
+                    <div className={`w-10 h-10 rounded-lg ${themeStyles.itemBg} animate-pulse`}></div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className={`h-4 rounded ${themeStyles.itemBg} animate-pulse`}></div>

@@ -32,6 +32,7 @@ export const requireUserManagesApp = () => {
         return;
       }
 
+
       if (!reqWithAppAndUser.vincentUser) {
         debug('Authentication middleware did not run before requireUserManagesApp middleware');
         res.status(500).json({
