@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
-import { theme } from '@/components/user-dashboard/consent/ui/theme';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { useTheme } from '@/providers/ThemeProvider';
 
 function UserDashboardLayout({ children, className }: ComponentProps<'div'>) {

@@ -43,7 +43,7 @@ For any value that can be overriden, consider that those are the hints the LLM u
 
 If you are the owner of the app, most of the data can be obtained from the Vincent App page in the Vincent dashboard.
 
-If you are not the owner of the app, the ability fields and its included abilities IPFS CIDs are shown in the consent screen.
+If you are not the owner of the app, the ability fields and its included abilities IPFS CIDs are shown in the connect screen.
 
 The IPFS CID can also be obtained from the bundled ability code published in npm. For example [vincent-ability-metadata.json](../ability-erc20-approval/src/generated/vincent-ability-metadata.json) for our ERC20 approval ability.
 To get the ability params from source code, you can check the ability schemas such as [schemas.ts](../ability-erc20-approval/src/lib/schemas.ts) for our ERC20 approval ability.
@@ -133,7 +133,7 @@ HTTP mode requires one of two forms of authentication:
   3. Request an MCP server session at `POST /mcp` passing the `authorization` header with the following content `SIWE-V1 b64message="<base64_encoded_message>" signature="<hex_signature>"`
   - If your LLM client does not support passing the `authorization` header, you can still pass the delegator jwt in the `jwt` query param of the SIWE message and its signature in `b64message` and `signature` query params. However, using `authentication` header is preferred as query params might be logged or used for caching or tracing purposes.
 - A delegator JWT in `authorization` header.
-  - JWT can be obtained from the Vincent App consent screen.
+  - JWT can be obtained from the Vincent App connect screen.
   - This server displays a JWT collection website at its base URL (`GET /`). You can add the server URL as a redirect URL in your Vincent App to give customers the complete link they can use in any LLM client with support for HTTP MCPs
 
 # Development

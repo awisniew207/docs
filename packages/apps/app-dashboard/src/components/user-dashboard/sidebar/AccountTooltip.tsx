@@ -1,7 +1,7 @@
 import { User, Copy } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '../consent/ui/theme';
+import { theme } from '../connect/ui/theme';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { SidebarMenuButton } from '@/components/shared/ui/sidebar';
 

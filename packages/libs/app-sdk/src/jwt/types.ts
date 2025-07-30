@@ -13,7 +13,7 @@ export interface JWTDecoded {
 
 /**
  * Configuration interface for creating a JWT (JSON Web Token) signed by a PKP wallet.
- * Vincent App developers will likely never need this function, as the provider of the JWT is the Vincent delegation auth page frontend
+ * Vincent App developers will likely never need this function, as the provider of the JWT is the Vincent Connect page frontend
  *
  * @interface JWTConfig
  * @hidden

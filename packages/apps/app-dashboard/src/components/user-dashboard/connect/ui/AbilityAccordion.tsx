@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/shared/ui/card';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { AbilityHeader } from './AbilityHeader';
 import { RequiredPolicies } from './RequiredPolicies';
 import { PolicyFormRef } from './PolicyForm';
@@ -18,7 +18,7 @@ interface AbilityAccordionProps {
     ipfsCid: string;
   };
   policies: Array<any>;
-  consentInfoMap: ConsentInfoMap;
+  connectInfoMap: ConnectInfoMap;
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
@@ -32,7 +32,7 @@ export function AbilityAccordion({
   ability,
   abilityVersion,
   policies,
-  consentInfoMap,
+  connectInfoMap,
   theme,
   isDark,
   formData,
@@ -67,7 +67,7 @@ export function AbilityAccordion({
               <AbilityHeader
                 ability={ability}
                 abilityVersion={abilityVersion}
-                consentInfoMap={consentInfoMap}
+                connectInfoMap={connectInfoMap}
                 theme={theme}
               />
             </div>
@@ -84,7 +84,7 @@ export function AbilityAccordion({
           <div className="p-3 sm:p-6 pt-4">
             <RequiredPolicies
               policies={policies}
-              consentInfoMap={consentInfoMap}
+              connectInfoMap={connectInfoMap}
               theme={theme}
               isDark={isDark}
               formData={formData}

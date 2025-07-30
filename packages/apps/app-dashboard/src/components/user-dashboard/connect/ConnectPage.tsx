@@ -1,37 +1,37 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { useConsentFormData } from '@/hooks/user-dashboard/consent/useConsentFormData';
-import { ConsentPageHeader } from './ui/ConsentPageHeader';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
+import { useConnectFormData } from '@/hooks/user-dashboard/connect/useConnectFormData';
+import { ConnectPageHeader } from './ui/ConnectPageHeader';
 import { theme } from './ui/theme';
 import { PolicyFormRef } from './ui/PolicyForm';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { useAddPermittedActions } from '@/hooks/user-dashboard/consent/useAddPermittedActions';
-import { ConsentAppHeader } from './ui/ConsentAppHeader';
+import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
+import { ConnectAppHeader } from './ui/ConnectAppHeader';
 import { AppsInfo } from './ui/AppInfo';
 import { ActionButtons } from './ui/ActionButtons';
 import { StatusCard } from './ui/StatusCard';
-import { ConsentFooter } from '../ui/Footer';
+import { ConnectFooter } from '../ui/Footer';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
-import { useJwtRedirect } from '@/hooks/user-dashboard/consent/useJwtRedirect';
+import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { useTheme } from '@/providers/ThemeProvider';
 
-interface ConsentPageProps {
-  consentInfoMap: ConsentInfoMap;
+interface ConnectPageProps {
+  connectInfoMap: ConnectInfoMap;
   readAuthInfo: UseReadAuthInfo;
 }
 
-export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) {
+export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [localError, setLocalError] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
-  const [isConsentProcessing, setIsConsentProcessing] = useState(false);
+  const [isConnectProcessing, setIsConnectProcessing] = useState(false);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
 
-  const { formData, handleFormChange } = useConsentFormData(consentInfoMap);
+  const { formData, handleFormChange } = useConnectFormData(connectInfoMap);
   const {
     generateJWT,
     executeRedirect,
@@ -64,7 +64,7 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
     // Clear any previous local errors
     setLocalError(null);
     setLocalSuccess(null);
-    setIsConsentProcessing(true);
+    setIsConnectProcessing(true);
 
     // Check if all forms are valid using RJSF's built-in validateForm method
     const allValid = Object.values(formRefs.current).every((formRef) => {
@@ -74,7 +74,7 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
     if (allValid) {
       if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
-        setIsConsentProcessing(false);
+        setIsConnectProcessing(false);
         return;
       }
 
@@ -97,28 +97,28 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
         const client = getClient({ signer: userPkpWallet });
         await client.permitApp({
           pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
-          appId: Number(consentInfoMap.app.appId),
-          appVersion: Number(consentInfoMap.app.activeVersion),
+          appId: Number(connectInfoMap.app.appId),
+          appVersion: Number(connectInfoMap.app.activeVersion),
           permissionData: formData,
         });
 
-        setIsConsentProcessing(false);
+        setIsConnectProcessing(false);
         // Show success state for 3 seconds, then redirect
         setLocalSuccess('Permissions granted successfully!');
         setTimeout(async () => {
           setLocalSuccess(null);
-          await generateJWT(consentInfoMap.app, consentInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
+          await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
         }, 3000);
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
-        setIsConsentProcessing(false);
+        setIsConnectProcessing(false);
         return;
       }
     } else {
       setLocalError('Some of your permissions are not valid. Please check the form and try again.');
-      setIsConsentProcessing(false);
+      setIsConnectProcessing(false);
     }
-  }, [formData, readAuthInfo, addPermittedActions, generateJWT, consentInfoMap.app]);
+  }, [formData, readAuthInfo, addPermittedActions, generateJWT, connectInfoMap.app]);
 
   const handleDecline = useCallback(() => {
     navigate(-1);
@@ -128,11 +128,11 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
     formRefs.current[policyIpfsCid] = ref;
   }, []);
 
-  const isLoading = isJwtLoading || isActionsLoading || isConsentProcessing || !!localSuccess;
+  const isLoading = isJwtLoading || isActionsLoading || isConnectProcessing || !!localSuccess;
   const loadingStatus =
     jwtLoadingStatus ||
     actionsLoadingStatus ||
-    (isConsentProcessing ? 'Processing consent...' : null);
+    (isConnectProcessing ? 'Processing connect...' : null);
   const error = jwtError || actionsError || localError;
 
   return (
@@ -142,7 +142,7 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
         className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
       >
         {/* Header */}
-        <ConsentPageHeader
+        <ConnectPageHeader
           isDark={isDark}
           onToggleTheme={toggleTheme}
           theme={themeStyles}
@@ -151,11 +151,11 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
 
         <div className="px-3 sm:px-6 py-6 sm:py-8 space-y-6">
           {/* App Header */}
-          <ConsentAppHeader app={consentInfoMap.app} theme={themeStyles} />
+          <ConnectAppHeader app={connectInfoMap.app} theme={themeStyles} />
 
           {/* Apps and Versions */}
           <AppsInfo
-            consentInfoMap={consentInfoMap}
+            connectInfoMap={connectInfoMap}
             theme={themeStyles}
             isDark={isDark}
             formData={formData}
@@ -179,12 +179,12 @@ export function ConsentPage({ consentInfoMap, readAuthInfo }: ConsentPageProps) 
             theme={themeStyles}
             isLoading={isLoading}
             error={error || localError}
-            appName={consentInfoMap.app.name}
+            appName={connectInfoMap.app.name}
           />
         </div>
 
         {/* Footer */}
-        <ConsentFooter />
+        <ConnectFooter />
       </div>
     </div>
   );

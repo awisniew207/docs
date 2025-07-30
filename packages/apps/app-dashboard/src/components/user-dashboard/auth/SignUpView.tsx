@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { Button } from '@/components/shared/ui/button';
-import { ThemeType } from '../consent/ui/theme';
-import StatusMessage from '../consent/StatusMessage';
+import { ThemeType } from '../connect/ui/theme';
+import StatusMessage from '../connect/StatusMessage';
 
 interface SignUpViewProps {
   authMethodType: (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE];

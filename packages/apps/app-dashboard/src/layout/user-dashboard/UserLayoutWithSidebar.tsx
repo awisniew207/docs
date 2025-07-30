@@ -1,12 +1,12 @@
 import { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 import { SidebarWrapper } from '@/components/user-dashboard/sidebar/SidebarWrapper';
-import { theme } from '@/components/user-dashboard/consent/ui/theme';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { useTheme } from '@/providers/ThemeProvider';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/shared/ui/sidebar';
 import { Separator } from '@/components/shared/ui/separator';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
-import { AuthenticationErrorScreen } from '@/components/user-dashboard/consent/AuthenticationErrorScreen';
+import { AuthenticationErrorScreen } from '@/components/user-dashboard/connect/AuthenticationErrorScreen';
 import { ThemedLoading } from '@/components/user-dashboard/dashboard/ui/ThemedLoading';
 
 function UserLayoutWithSidebar({ children, className }: ComponentProps<'div'>) {

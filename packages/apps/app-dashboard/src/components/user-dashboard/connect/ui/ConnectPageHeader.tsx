@@ -4,19 +4,19 @@ import { Button } from '@/components/shared/ui/button';
 import { AuthInfo, useClearAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { ThemeType } from './theme';
 
-interface ConsentPageHeaderProps {
+interface ConnectPageHeaderProps {
   isDark: boolean;
   theme: ThemeType;
   onToggleTheme: () => void;
   authInfo: AuthInfo;
 }
 
-export function ConsentPageHeader({
+export function ConnectPageHeader({
   isDark,
   theme,
   onToggleTheme,
   authInfo,
-}: ConsentPageHeaderProps) {
+}: ConnectPageHeaderProps) {
   const { clearAuthInfo } = useClearAuthInfo();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);

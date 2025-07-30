@@ -114,11 +114,11 @@ On this screen you'll need to define the following:
 
 This is the name of your App that will be used to identify your App within the Vincent ecosystem, and the description used to detail what your App is offering to do on behalf of its Users.
 
-It's also displayed to the Vincent User when they are interacting with the Vincent Consent page to permit delegation to your App and configure their Policy parameters.
+It's also displayed to the Vincent User when they are interacting with the Vincent Connect page to permit delegation to your App and configure their Policy parameters.
 
 In this example image, `Automated Memecoin Dollar-Cost-Averaging` is the name of the Vincent App, and `This demo agent automatically identifies and purchases the top-performing Base memecoin on your predefined schedule.` is the description of the App:
 
-![Consent UI](../images/consent-ui.png)
+![Connect UI](../images/connect-ui.png)
 
 ### App Mode
 
@@ -132,9 +132,9 @@ This setting will be used to filter the Apps displayed in the Vincent App Regist
 
 ### Authorized Redirect URIs
 
-This is a list of URLs that are authorized to receive the Json Web Token (JWT) from the Vincent Consent page.
+This is a list of URLs that are authorized to receive the Json Web Token (JWT) from the Vincent Connect page.
 
-After Vincent Users have permitted delegation to your App, or are logging back into your App using Vincent, these redirect URIs are the only valid locations they can be redirected to from the Vincent Consent page back to your App.
+After Vincent Users have permitted delegation to your App, or are logging back into your App using Vincent, these redirect URIs are the only valid locations they can be redirected to from the Vincent Connect page back to your App.
 
 Included in the URL parameters of the redirect URI is a Json Web Token (JWT) that is given to your App to identify the Vincent User and the App Version they've authorized. This allows you to know which Vincent Abilities and Policies the User has permitted your App to execute on their behalf.
 
@@ -197,16 +197,16 @@ Whether you choose to generate a new wallet or add an existing wallet, you'll be
 
 At this point you have registered and configured your Vincent App, and it's ready to start having Vincent Users delegate to it.
 
-In order to do this, User needs to have a link to the Vincent Consent page that has your App's metadata. This link can be generated for you by clicking the `Generate App URL` button on the App's settings screen:
+In order to do this, User needs to have a link to the Vincent Connect page that has your App's metadata. This link can be generated for you by clicking the `Generate App URL` button on the App's settings screen:
 
 ![Generate App URL](../images/vincent-app-generate-app-url.png)
 
 You will be prompted to select which Authorized Redirect URI (you configured in the [Creating your App](#creating-your-app) section) you'd like Users to be redirected to after they've permitted delegation to your App, or are logging back into your App using Vincent.
 
-After selecting the Authorized Redirect URI, click on the `Copy Application URL` button to copy the link to the Vincent Consent page for your App to your clipboard. The link will look similar to:
+After selecting the Authorized Redirect URI, click on the `Copy Application URL` button to copy the link to the Vincent Connect page for your App to your clipboard. The link will look similar to:
 
 ```
-https://dashboard.heyvincent.ai/appId/526/consent?redirectUri=https%3A%2F%2Fyour-redirect-uri.com
+https://dashboard.heyvincent.ai/appId/526/connect?redirectUri=https%3A%2F%2Fyour-redirect-uri.com
 ```
 
 You can now share this link to allow Users to delegate the ability to execute your App's Vincent Abilities on their behalf.
@@ -227,7 +227,7 @@ Here’s a quick recap of what you covered:
 - **Selecting Vincent Policies:** Add programmable constraints to each Ability such as spending limits or token allowlists that ensure each execution respects the User’s intent.
 - **Registering Your App:** Use the Vincent App Dashboard to define your App including details such as it's name, description, authorized redirect URIs, and the selected Abilities and Policies.
 - **Adding Delegatees:** Specify the Ethereum addresses that will act on behalf of your Vincent App to execute Abilities Users have permitted.
-- **Generating Your App Link:** Generate a Vincent Consent URL that lets Users delegatee access to their Vincent Agent Wallets, so that your App Delegatees can execute Abilities on their behalf.
+- **Generating Your App Link:** Generate a Vincent Connect URL that lets Users delegatee access to their Vincent Agent Wallets, so that your App Delegatees can execute Abilities on their behalf.
 
 ## Next Steps
 
