@@ -5,11 +5,11 @@ title: Authenticating Vincent Users
 
 # Authenticating Users Using the Vincent Web App Client
 
-Exported from the Vincent App SDK, the Vincent Web App Client provides methods for securely authenticating users and obtaining their consent to execute Vincent Tools on their behalf.
+Exported from the Vincent App SDK, the Vincent Web App Client provides methods for securely authenticating users and obtaining their consent to execute Vincent Abilities on their behalf.
 
 Using the Web App Client, you can direct users to the Vincent Consent page where:
 
-- New users can review the Tools your App is requesting permission to execute and configure the Vincent Policies that govern their use.
+- New users can review the Abilities your App is requesting permission to execute and configure the Vincent Policies that govern their use.
 - Returning users can log in and confirm both their identity and the specific App Version they’ve previously authorized to act on their behalf.
 
 This guide walks you through the process of authenticating Vincent Users in your frontend application using the Web App Client.
@@ -46,13 +46,13 @@ In addition to the payload, the JWT also includes:
 ## Authentication Flow
 
 1. Your App redirects the user to the Vincent Consent Page using `redirectToConsentPage`
-2. The User reviews the Tools your App wants to use and configures the Policies that will govern them
+2. The User reviews the Abilities your App wants to use and configures the Policies that will govern them
 3. Upon approval, the User is redirected back to your App with a signed JWT in the URL
 4. Your App extracts and verifies the JWT using `decodeVincentLoginJWT` in your frontend
    - **Note:** For your backend it's **critical** that you verify the Vincent JWT that's submitted to your backend to authenticate the User. This is done by importing the `verify` method from the `@lit-protocol/vincent-app-sdk/jwt` package, and as shown [here](#verifying-the-vincent-jwt-on-your-backend).
 5. The verified JWT can now be stored and used to:
    - Authenticate requests to your backend APIs
-   - Execute Vincent Tools on behalf of the User
+   - Execute Vincent Abilities on behalf of the User
 
 # How the Vincent Web App Client Works
 
@@ -64,7 +64,7 @@ The Web App Client exposes the following methods:
 
 Redirects the user to the Vincent Consent Page, and once the User has completed the Consent flow, they will be redirected back to your App with a signed JWT that you can use to authenticate requests against your backend APIs.
 
-- New Users are shown the Tools your App wants to execute and can configure the Vincent Policies that govern their use.
+- New Users are shown the Abilities your App wants to execute and can configure the Vincent Policies that govern their use.
 - Returning Users can log in and confirm their prior delegation to your App.
 - When a Vincent JWT is expired, use this method to get a new JWT
 
@@ -175,10 +175,10 @@ You’ve learned how to:
 - Store the JWT for authenticated requests to your backend APIs
 - Re-initiate the Consent flow when a JWT is missing or expired
 
-With this in place, your frontend is ready to authenticate Users and safely execute Vincent Tools on their behalf—within the boundaries they’ve configured through Vincent Policies.
+With this in place, your frontend is ready to authenticate Users and safely execute Vincent Abilities on their behalf—within the boundaries they’ve configured through Vincent Policies.
 
 ## Next Steps
 
-- Dive into the [Executing Vincent Tools](./Executing-Tools.md) guide to learn how to use the Vincent Tool Client to execute your App's Tool on behalf of an authenticated User
-- Explore the [Creating Vincent Tools](../Tool-Developers/Getting-Started.md) guide to learn how to create your own Vincent Tools
+- Dive into the [Executing Vincent Abilities](./Executing-Abilities.md) guide to learn how to use the Vincent Ability Client to execute your App's Ability on behalf of an authenticated User
+- Explore the [Creating Vincent Abilities](../Ability-Developers/Getting-Started.md) guide to learn how to create your own Vincent Abilities
 - Explore the [Creating Vincent Policies](../Policy-Developers/Creating-Policies.md) guide to learn how to create your own Vincent Policies

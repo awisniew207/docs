@@ -15,7 +15,7 @@ import { decodeContractError, findEventByName, gasAdjustedOverrides } from '../.
 export async function registerApp(params: RegisterAppOptions): Promise<{ txHash: string }> {
   const {
     contract,
-    args: { appId, delegateeAddresses, versionTools },
+    args: { appId, delegateeAddresses, versionAbilities },
     overrides,
   } = params;
 
@@ -23,11 +23,11 @@ export async function registerApp(params: RegisterAppOptions): Promise<{ txHash:
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'registerApp',
-      [appId, delegateeAddresses, versionTools],
+      [appId, delegateeAddresses, versionAbilities],
       overrides,
     );
 
-    const tx = await contract.registerApp(appId, delegateeAddresses, versionTools, {
+    const tx = await contract.registerApp(appId, delegateeAddresses, versionAbilities, {
       ...adjustedOverrides,
     });
 
@@ -47,7 +47,7 @@ export async function registerNextVersion(
 ): Promise<{ txHash: string; newAppVersion: number }> {
   const {
     contract,
-    args: { appId, versionTools },
+    args: { appId, versionAbilities },
     overrides,
   } = params;
 
@@ -55,11 +55,11 @@ export async function registerNextVersion(
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
       'registerNextAppVersion',
-      [appId, versionTools],
+      [appId, versionAbilities],
       overrides,
     );
 
-    const tx = await contract.registerNextAppVersion(appId, versionTools, {
+    const tx = await contract.registerNextAppVersion(appId, versionAbilities, {
       ...adjustedOverrides,
     });
     const receipt = await tx.wait();

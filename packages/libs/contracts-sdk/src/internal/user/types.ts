@@ -1,12 +1,12 @@
 import type {
   GetAllPermittedAppIdsForPkpParams,
   GetAllRegisteredAgentPkpsParams,
-  GetAllToolsAndPoliciesForAppParams,
+  GetAllAbilitiesAndPoliciesForAppParams,
   GetPermittedAppVersionForPkpParams,
   PermitAppParams,
-  SetToolPolicyParametersParams,
+  SetAbilityPolicyParametersParams,
   UnPermitAppParams,
-  ValidateToolExecutionAndGetPoliciesParams,
+  ValidateAbilityExecutionAndGetPoliciesParams,
 } from '../../types';
 import type { BaseOptions, BaseWritableOptions } from '../types/options';
 
@@ -33,8 +33,8 @@ export interface UnPermitAppOptions extends BaseWritableOptions {
  * @inline
  * @expand
  * */
-export interface SetToolPolicyParametersOptions extends BaseWritableOptions {
-  args: SetToolPolicyParametersParams;
+export interface SetAbilityPolicyParametersOptions extends BaseWritableOptions {
+  args: SetAbilityPolicyParametersParams;
 }
 
 // ==================================================================================
@@ -73,8 +73,8 @@ export interface GetAllPermittedAppIdsForPkpOptions extends BaseOptions {
  * @inline
  * @expand
  * */
-export interface GetAllToolsAndPoliciesForAppOptions extends BaseOptions {
-  args: GetAllToolsAndPoliciesForAppParams;
+export interface GetAllAbilitiesAndPoliciesForAppOptions extends BaseOptions {
+  args: GetAllAbilitiesAndPoliciesForAppParams;
 }
 
 /**
@@ -82,6 +82,6 @@ export interface GetAllToolsAndPoliciesForAppOptions extends BaseOptions {
  * @inline
  * @expand
  * */
-export interface ValidateToolExecutionAndGetPoliciesOptions extends BaseOptions {
-  args: ValidateToolExecutionAndGetPoliciesParams;
+export interface ValidateAbilityExecutionAndGetPoliciesOptions extends BaseOptions {
+  args: ValidateAbilityExecutionAndGetPoliciesParams;
 }

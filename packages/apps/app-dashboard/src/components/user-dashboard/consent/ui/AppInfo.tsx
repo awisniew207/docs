@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/shared/ui/card';
 import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { ToolHeader } from './ToolHeader';
-import { RequiredPolicies } from './RequiredPolicies';
+import { AbilityAccordion } from './AbilityAccordion';
 import { PolicyFormRef } from './PolicyForm';
 import { ThemeType } from './theme';
 
@@ -11,7 +9,7 @@ interface AppsAndVersionsProps {
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
-  onFormChange: (toolIpfsCid: string, policyIpfsCid: string, data: any) => void;
+  onFormChange: (abilityIpfsCid: string, policyIpfsCid: string, data: any) => void;
   onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
 }
 
@@ -42,66 +40,55 @@ export function AppsInfo({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: appIndex * 0.1 }}
+            className="space-y-4"
           >
-            <Card className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}>
-              {/* Active Version Content */}
-              <CardContent className="p-6">
-                {(() => {
-                  const versionKey = `${appName}-${activeVersion.version}`;
-                  const appVersionTools =
-                    consentInfoMap.appVersionToolsByAppVersion[versionKey] || [];
+            {(() => {
+              const versionKey = `${appName}-${activeVersion.version}`;
+              const appVersionAbilities =
+                consentInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
 
-                  return (
-                    <div className="space-y-6">
-                      {appVersionTools.map((tool) => {
-                        const toolKey = `${tool.toolPackageName}-${tool.toolVersion}`;
-                        const policies =
-                          consentInfoMap.supportedPoliciesByToolVersion[toolKey] || [];
+              return (
+                <>
+                  {appVersionAbilities.map((ability) => {
+                    const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
+                    const policies =
+                      consentInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
 
-                        // Filter out policies that are in hiddenSupportedPolicies
-                        const visiblePolicies = policies.filter((policy) => {
-                          if (
-                            !tool.hiddenSupportedPolicies ||
-                            tool.hiddenSupportedPolicies.length === 0
-                          ) {
-                            return true; // Show all policies if no hidden policies specified
-                          }
-                          return !tool.hiddenSupportedPolicies.includes(policy.packageName);
-                        });
+                    // Filter out policies that are in hiddenSupportedPolicies
+                    const visiblePolicies = policies.filter((policy) => {
+                      if (
+                        !ability.hiddenSupportedPolicies ||
+                        ability.hiddenSupportedPolicies.length === 0
+                      ) {
+                        return true; // Show all policies if no hidden policies specified
+                      }
+                      return !ability.hiddenSupportedPolicies.includes(policy.packageName);
+                    });
 
-                        const toolVersions =
-                          consentInfoMap.toolVersionsByAppVersionTool[toolKey] || [];
-                        const toolVersion = toolVersions[0];
+                    const abilityVersions =
+                      consentInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
+                    const abilityVersion = abilityVersions[0];
 
-                        return (
-                          <div key={toolKey} className="space-y-4">
-                            {/* Tool Header */}
-                            <ToolHeader
-                              tool={tool}
-                              toolVersion={toolVersion}
-                              consentInfoMap={consentInfoMap}
-                              theme={theme}
-                            />
-
-                            {/* Required Policies */}
-                            <RequiredPolicies
-                              policies={visiblePolicies}
-                              consentInfoMap={consentInfoMap}
-                              theme={theme}
-                              isDark={isDark}
-                              formData={formData}
-                              onFormChange={onFormChange}
-                              onRegisterFormRef={onRegisterFormRef}
-                              toolIpfsCid={toolVersion.ipfsCid}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-              </CardContent>
-            </Card>
+                    return (
+                      <AbilityAccordion
+                        key={abilityKey}
+                        ability={ability}
+                        abilityVersion={abilityVersion}
+                        policies={visiblePolicies}
+                        consentInfoMap={consentInfoMap}
+                        theme={theme}
+                        isDark={isDark}
+                        formData={formData}
+                        onFormChange={onFormChange}
+                        onRegisterFormRef={onRegisterFormRef}
+                        abilityIpfsCid={abilityVersion.ipfsCid}
+                        defaultExpanded={false} // All abilities start closed
+                      />
+                    );
+                  })}
+                </>
+              );
+            })()}
           </motion.div>
         );
       })}

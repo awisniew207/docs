@@ -17,9 +17,9 @@ The following concepts are core to how the Vincent platform operates:
 
 ### Permissions
 
-1. 🔧 Tools define specific on-chain operations that can be executed on your behalf. From simple token swaps to complex multi-step DeFi strategies. Each tool can incorporate off-chain data and comes with built-in validation.
+1. 🔧 Abilities define specific on-chain operations that can be executed on your behalf. From simple token swaps to complex multi-step DeFi strategies. Each ability can incorporate off-chain data and comes with built-in validation.
 
-2. 🛡️ Policies are your programmable guardrails that govern when and how tools can execute. They can access real-time data from any source — market prices, social signals, external APIs — to make intelligent decisions about when operations should proceed.
+2. 🛡️ Policies are your programmable guardrails that govern when and how abilities can execute. They can access real-time data from any source — market prices, social signals, external APIs — to make intelligent decisions about when operations should proceed.
 
 ### 📱 Apps
 
