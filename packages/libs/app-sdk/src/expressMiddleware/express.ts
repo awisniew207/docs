@@ -53,7 +53,7 @@ function assertAuthenticatedRequest<const UserKey extends string>(
  * const { middleware, handler } = createVincentUserMiddleware({
  *  allowedAudience: ALLOWED_AUDIENCE,
  *  requiredAppId: VINCENT_APP_ID,
- *  userKey: 'vincentUser
+ *  userKey: 'vincentUser',
  * });
  *
  * // Apply to routes that require authentication; req is guaranteed authenticated because it is wrapped in `handler()`

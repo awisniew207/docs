@@ -31,7 +31,7 @@ Checks if the current window location contains a Vincent login JWT. You can use 
 
 #### decodeVincentLoginJWT(expectedAudience)
 
-Decodes a Vincent login JWT. Performs basic sanity check but does not perform full verify() logic. You will want to run `verify()` from the jwt tools to verify the JWT is fully valid and not expired etc.
+Decodes a Vincent login JWT. Performs basic sanity check but does not perform full verify() logic. You will want to run `verify()` from the jwt abilities to verify the JWT is fully valid and not expired etc.
 
 - The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration
 
@@ -73,63 +73,63 @@ if (vincentAppClient.isLogin()) {
 
 In your backend, you will have to verify the JWT to make sure the user has granted you the required permissions to act on their behalf.
 
-## VincentToolClient
+## VincentAbilityClient
 
-The Vincent Tool Client uses an ethers signer for your delegatee account to run Vincent Tools on behalf of your app users.
+The Vincent Ability Client uses an ethers signer for your delegatee account to run Vincent Abilities on behalf of your app users.
 
-This client will typically be used by an AI agent or your app backend service, as it requires a signer that conforms to the ethers v5 signer API, and with access to your delegatee account's private key to authenticate with the LIT network when executing the Vincent Tool.
+This client will typically be used by an AI agent or your app backend service, as it requires a signer that conforms to the ethers v5 signer API, and with access to your delegatee account's private key to authenticate with the LIT network when executing the Vincent Ability.
 
 ### Configuration
 
 ```typescript
-interface VincentToolClientConfig {
+interface VincentAbilityClientConfig {
   ethersSigner: ethers.Signer; // An ethers v5 compatible signer
-  vincentToolCid: string; // The CID of the Vincent Tool to execute
+  vincentAbilityCid: string; // The CID of the Vincent Ability to execute
 }
 ```
 
 ### Methods
 
-#### execute(params: VincentToolParams): Promise<ExecuteJsResponse>
+#### execute(params: VincentAbilityParams): Promise<ExecuteJsResponse>
 
-Executes a Vincent Tool with the provided parameters.
+Executes a Vincent Ability with the provided parameters.
 
-- `params`: Record<string, unknown> - Parameters to pass to the Vincent Tool
+- `params`: Record<string, unknown> - Parameters to pass to the Vincent Ability
 - Returns: Promise resolving to an ExecuteJsResponse from the LIT network
 
-### Tool execution
+### Ability execution
 
 ```typescript
-import { getVincentToolClient } from '@lit-protocol/vincent-app-sdk/toolClient';
-// Import the tool you want to execute
-import { bundledVincentTool as erc20BundledTool } from '@lit-protocol/vincent-tool-erc20-approval';
+import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
+// Import the ability you want to execute
+import { bundledVincentAbility as erc20BundledAbility } from '@lit-protocol/vincent-ability-erc20-approval';
 
 // One of delegatee signers from your app's Vincent Dashboard
 const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
 
-// Initialize the Vincent Tool Client
-const toolClient = getVincentToolClient({
+// Initialize the Vincent Ability Client
+const abilityClient = getVincentAbilityClient({
   ethersSigner: delegateeSigner,
-  bundledVincentTool: erc20BundledTool,
+  bundledVincentAbility: erc20BundledAbility,
 });
 const delegatorPkpEthAddress = '0x09182301238';
 
-const toolParams = {
-  // Fill with the params your tool needs
+const abilityParams = {
+  // Fill with the params your ability needs
 };
 
-// Run precheck to see if tool should be executed
-const precheckResult = await client.precheck(toolParams, {
+// Run precheck to see if ability should be executed
+const precheckResult = await client.precheck(abilityParams, {
   delegatorPkpEthAddress,
 });
 
 if (precheckResult.success === true) {
-  // Execute the Vincent Tool
-  const executeResult = await client.execute(toolParams, {
+  // Execute the Vincent Ability
+  const executeResult = await client.execute(abilityParams, {
     delegatorPkpEthAddress,
   });
 
-  // ...tool has executed, you can check `executeResult` for details
+  // ...ability has executed, you can check `executeResult` for details
 }
 ```
 
@@ -176,13 +176,13 @@ app.get('/profile', authenticateUser, authenticatedRequestHandler(getUserProfile
 
 ### Overview
 
-The JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Tools. JWTs are used to verify user consent and authorize tool executions.
+The JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Abilities. JWTs are used to verify user consent and authorize ability executions.
 
 ### Authentication Flow
 
-1. User initiates an action requiring Vincent Tool access
+1. User initiates an action requiring Vincent Ability access
 2. Application redirects to the Vincent consent page using `VincentWebAppClient.redirectToConsentPage()`
-3. User provides consent for the requested tools/policies
+3. User provides consent for the requested abilities/policies
 4. User is redirected back to the application with a JWT in the URL
 5. Application validates and stores the JWT using `VincentWebAppClient` methods
 6. JWT is used to authenticate with the app backend

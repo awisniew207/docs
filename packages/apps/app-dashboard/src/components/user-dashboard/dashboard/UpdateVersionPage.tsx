@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { permitApp } from '@lit-protocol/vincent-contracts-sdk';
+import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { useConsentFormData } from '@/hooks/user-dashboard/consent/useConsentFormData';
 import { theme } from '@/components/user-dashboard/consent/ui/theme';
@@ -73,19 +73,17 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
       await addPermittedActions({
         wallet: userPkpWallet,
         agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
-        toolIpfsCids: Object.keys(formData),
+        abilityIpfsCids: Object.keys(formData),
       });
 
       try {
         setLocalStatus('Updating to new version...');
-        await permitApp({
-          signer: userPkpWallet,
-          args: {
-            pkpTokenId: readAuthInfo.authInfo.agentPKP!.tokenId,
-            appId: consentInfoMap.app.appId.toString(),
-            appVersion: consentInfoMap.app.activeVersion!.toString(),
-            permissionData: formData,
-          },
+        const client = getClient({ signer: userPkpWallet });
+        await client.permitApp({
+          pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+          appId: Number(consentInfoMap.app.appId),
+          appVersion: Number(consentInfoMap.app.activeVersion),
+          permissionData: formData,
         });
 
         setLocalStatus(null);
@@ -118,7 +116,7 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
   const error = actionsError;
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} p-4`}>
+    <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} sm:p-4`}>
       {/* Main Card Container */}
       <div
         className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
@@ -178,6 +176,7 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
             theme={themeStyles}
             isLoading={isLoading}
             error={error || localError}
+            appName={consentInfoMap.app.name}
           />
         </div>
       </div>

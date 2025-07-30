@@ -14,7 +14,9 @@ export function HomeWrapper() {
 
   // Handle auth errors early
   if (error) {
-    return <AuthenticationErrorScreen />;
+    return (
+      <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
+    );
   }
 
   const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;

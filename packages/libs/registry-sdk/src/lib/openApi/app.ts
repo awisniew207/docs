@@ -5,9 +5,9 @@ import {
   appVersionDoc,
   appVersionCreate,
   appVersionEdit,
-  appVersionToolCreate,
-  appVersionToolEdit,
-  appVersionToolDoc,
+  appVersionAbilityCreate,
+  appVersionAbilityEdit,
+  appVersionAbilityDoc,
 } from '../schemas/appVersion';
 import { z } from '../schemas/openApiZod';
 import { GenericResult, ErrorResponse, jwtAuth } from './baseRegistry';
@@ -34,9 +34,12 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   const AppVersionEdit = registry.register('AppVersionEdit', appVersionEdit);
   const AppVersionRead = registry.register('AppVersion', appVersionDoc);
 
-  const AppVersionToolCreate = registry.register('AppVersionToolCreate', appVersionToolCreate);
-  const AppVersionToolEdit = registry.register('AppVersionToolEdit', appVersionToolEdit);
-  const AppVersionToolRead = registry.register('AppVersionTool', appVersionToolDoc);
+  const AppVersionAbilityCreate = registry.register(
+    'AppVersionAbilityCreate',
+    appVersionAbilityCreate,
+  );
+  const AppVersionAbilityEdit = registry.register('AppVersionAbilityEdit', appVersionAbilityEdit);
+  const AppVersionAbilityRead = registry.register('AppVersionAbility', appVersionAbilityDoc);
 
   // GET /apps - List all applications
   registry.registerPath({
@@ -195,7 +198,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'delete',
     path: '/app/{appId}',
-    tags: ['App', 'AppVersion', 'AppVersionTool'],
+    tags: ['App', 'AppVersion', 'AppVersionAbility'],
     summary: 'Deletes an application',
     operationId: 'deleteApp',
     security: [{ [jwtAuth.name]: [] }],
@@ -234,7 +237,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/undelete',
-    tags: ['App', 'AppVersion', 'AppVersionTool'],
+    tags: ['App', 'AppVersion', 'AppVersionAbility'],
     summary: 'Undeletes an application',
     operationId: 'undeleteApp',
     security: [{ [jwtAuth.name]: [] }],
@@ -517,13 +520,13 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // GET /app/{appId}/version/{version}/tools - List all tools for an application version
+  // GET /app/{appId}/version/{version}/abilities - List all abilities for an application version
   registry.registerPath({
     method: 'get',
-    path: '/app/{appId}/version/{version}/tools',
-    tags: ['AppVersionTool'],
-    summary: 'Lists all tools for an application version',
-    operationId: 'listAppVersionTools',
+    path: '/app/{appId}/version/{version}/abilities',
+    tags: ['AppVersionAbility'],
+    summary: 'Lists all abilities for an application version',
+    operationId: 'listAppVersionAbilities',
     request: {
       params: z.object({
         appId: appIdParam,
@@ -535,7 +538,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: z.array(AppVersionToolRead).openapi('AppVersionToolList'),
+            schema: z.array(AppVersionAbilityRead).openapi('AppVersionAbilityList'),
           },
         },
       },
@@ -553,27 +556,27 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Create a tool for an application version
+  // POST /app/{appId}/version/{appVersion}/ability/{abilityPackageName} - Create an ability for an application version
   registry.registerPath({
     method: 'post',
-    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
-    tags: ['AppVersionTool'],
-    summary: 'Creates a tool for an application version',
-    operationId: 'createAppVersionTool',
+    path: '/app/{appId}/version/{appVersion}/ability/{abilityPackageName}',
+    tags: ['AppVersionAbility'],
+    summary: 'Creates an ability for an application version',
+    operationId: 'createAppVersionAbility',
     security: [{ [jwtAuth.name]: [] }],
     request: {
       params: z.object({
         appId: appIdParam,
         appVersion: appVersionParam,
-        toolPackageName: packageNameParam,
+        abilityPackageName: packageNameParam,
       }),
       body: {
         content: {
           'application/json': {
-            schema: AppVersionToolCreate,
+            schema: AppVersionAbilityCreate,
           },
         },
-        description: 'Tool configuration for the application version',
+        description: 'Ability configuration for the application version',
         required: true,
       },
     },
@@ -582,7 +585,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionToolRead,
+            schema: AppVersionAbilityRead,
           },
         },
       },
@@ -603,27 +606,27 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // PUT /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Edit a tool for an application version
+  // PUT /app/{appId}/version/{appVersion}/ability/{abilityPackageName} - Edit an ability for an application version
   registry.registerPath({
     method: 'put',
-    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
-    tags: ['AppVersionTool'],
-    summary: 'Edits a tool for an application version',
-    operationId: 'editAppVersionTool',
+    path: '/app/{appId}/version/{appVersion}/ability/{abilityPackageName}',
+    tags: ['AppVersionAbility'],
+    summary: 'Edits an ability for an application version',
+    operationId: 'editAppVersionAbility',
     security: [{ [jwtAuth.name]: [] }],
     request: {
       params: z.object({
         appId: appIdParam,
         appVersion: appVersionParam,
-        toolPackageName: packageNameParam,
+        abilityPackageName: packageNameParam,
       }),
       body: {
         content: {
           'application/json': {
-            schema: AppVersionToolEdit,
+            schema: AppVersionAbilityEdit,
           },
         },
-        description: 'Updated tool configuration for the application version',
+        description: 'Updated ability configuration for the application version',
         required: true,
       },
     },
@@ -632,7 +635,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Successful operation',
         content: {
           'application/json': {
-            schema: AppVersionToolRead,
+            schema: AppVersionAbilityRead,
           },
         },
       },
@@ -640,7 +643,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Invalid input',
       },
       404: {
-        description: 'Application, version, or tool not found',
+        description: 'Application, version, or ability not found',
       },
       422: {
         description: 'Validation exception',
@@ -656,7 +659,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // DELETE /app/{appId}/version/{version} - Delete an application version and its AppVersionTools
+  // DELETE /app/{appId}/version/{version} - Delete an application version and its AppVersionAbilities
   registry.registerPath({
     method: 'delete',
     path: '/app/{appId}/version/{version}',
@@ -699,7 +702,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /app/{appId}/version/{version}/undelete - Undelete an application version and its AppVersionTools
+  // POST /app/{appId}/version/{version}/undelete - Undelete an application version and its AppVersionAbilities
   registry.registerPath({
     method: 'post',
     path: '/app/{appId}/version/{version}/undelete',
@@ -742,19 +745,19 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // DELETE /app/{appId}/version/{appVersion}/tool/{toolPackageName} - Delete a tool for an application version
+  // DELETE /app/{appId}/version/{appVersion}/ability/{abilityPackageName} - Delete an ability for an application version
   registry.registerPath({
     method: 'delete',
-    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}',
-    tags: ['AppVersionTool'],
-    summary: 'Deletes a tool for an application version',
-    operationId: 'deleteAppVersionTool',
+    path: '/app/{appId}/version/{appVersion}/ability/{abilityPackageName}',
+    tags: ['AppVersionAbility'],
+    summary: 'Deletes an ability for an application version',
+    operationId: 'deleteAppVersionAbility',
     security: [{ [jwtAuth.name]: [] }],
     request: {
       params: z.object({
         appId: appIdParam,
         appVersion: appVersionParam,
-        toolPackageName: packageNameParam,
+        abilityPackageName: packageNameParam,
       }),
     },
     responses: {
@@ -770,7 +773,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Invalid input',
       },
       404: {
-        description: 'Application, version, or tool not found',
+        description: 'Application, version, or ability not found',
       },
       422: {
         description: 'Validation exception',
@@ -786,19 +789,19 @@ export function addToRegistry(registry: OpenAPIRegistry) {
     },
   });
 
-  // POST /app/{appId}/version/{appVersion}/tool/{toolPackageName}/undelete - Undelete a tool for an application version
+  // POST /app/{appId}/version/{appVersion}/ability/{abilityPackageName}/undelete - Undelete an ability for an application version
   registry.registerPath({
     method: 'post',
-    path: '/app/{appId}/version/{appVersion}/tool/{toolPackageName}/undelete',
-    tags: ['AppVersionTool'],
-    summary: 'Undeletes a tool for an application version',
-    operationId: 'undeleteAppVersionTool',
+    path: '/app/{appId}/version/{appVersion}/ability/{abilityPackageName}/undelete',
+    tags: ['AppVersionAbility'],
+    summary: 'Undeletes an ability for an application version',
+    operationId: 'undeleteAppVersionAbility',
     security: [{ [jwtAuth.name]: [] }],
     request: {
       params: z.object({
         appId: appIdParam,
         appVersion: appVersionParam,
-        toolPackageName: packageNameParam,
+        abilityPackageName: packageNameParam,
       }),
     },
     responses: {
@@ -814,7 +817,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
         description: 'Invalid input',
       },
       404: {
-        description: 'Application, version, or tool not found',
+        description: 'Application, version, or ability not found',
       },
       422: {
         description: 'Validation exception',

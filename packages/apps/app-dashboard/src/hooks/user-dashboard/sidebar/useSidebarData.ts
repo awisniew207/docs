@@ -4,7 +4,7 @@ import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/u
 import { App } from '@/types/developer-dashboard/appTypes';
 
 interface UseSidebarDataProps {
-  pkpTokenId: string;
+  pkpEthAddress: string;
 }
 
 interface UseSidebarDataReturn {
@@ -15,7 +15,7 @@ interface UseSidebarDataReturn {
   error: string | null;
 }
 
-export function useSidebarData({ pkpTokenId }: UseSidebarDataProps): UseSidebarDataReturn {
+export function useSidebarData({ pkpEthAddress }: UseSidebarDataProps): UseSidebarDataReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [apps, setApps] = useState<App[]>([]);
   const [permittedAppVersions, setPermittedAppVersions] = useState<Record<string, string>>({});
@@ -28,7 +28,7 @@ export function useSidebarData({ pkpTokenId }: UseSidebarDataProps): UseSidebarD
     permittedAppVersions: permittedVersionsFromHook,
     isLoading: permissionsLoading,
     error: permissionsError,
-  } = useUserPermissionsMiddleware({ pkpTokenId });
+  } = useUserPermissionsMiddleware({ pkpEthAddress });
 
   // Lazy queries
   const [triggerGetApps] = vincentApiClient.useLazyListAppsQuery();
@@ -75,7 +75,7 @@ export function useSidebarData({ pkpTokenId }: UseSidebarDataProps): UseSidebarD
         const allApps = appsResponse.data || [];
 
         // Filter apps based on permitted app IDs
-        const filteredApps = allApps.filter((app) => permittedApps.includes(app.appId.toString()));
+        const filteredApps = allApps.filter((app) => permittedApps.includes(app.appId));
 
         setApps(filteredApps);
 

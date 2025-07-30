@@ -11,15 +11,15 @@ import {
   CardTitle,
 } from '@/components/shared/ui/card';
 import { docSchemas } from '@lit-protocol/vincent-registry-sdk';
-import { TextField, LongTextField } from '../../form-fields';
+import { TextField, LongTextField, ImageUploadField } from '../../form-fields';
 import { DeploymentStatusSelectField } from '../../form-fields/array/DeploymentStatusSelectField';
 
 const { policyDoc } = docSchemas;
 
-const { packageName, description, title, activeVersion, deploymentStatus } = policyDoc.shape;
+const { packageName, description, title, logo, activeVersion, deploymentStatus } = policyDoc.shape;
 
 export const CreatePolicySchema = z
-  .object({ packageName, description, title, activeVersion, deploymentStatus })
+  .object({ packageName, description, title, logo, activeVersion, deploymentStatus })
   .strict();
 
 export type CreatePolicyFormData = z.infer<typeof CreatePolicySchema>;
@@ -40,6 +40,10 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
+    setError,
+    clearErrors,
     formState: { errors },
     control,
   } = form;
@@ -48,7 +52,7 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>Create New Policy</CardTitle>
-        <CardDescription>Create a new Vincent policy</CardDescription>
+        <CardDescription>Define a user-configurable guardrail for Abilities</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -58,7 +62,7 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
               register={register}
               error={errors.packageName?.message}
               label="Package Name"
-              placeholder="Enter package name"
+              placeholder="Enter the published npm package name (e.g. @lit-protocol/vincent-policy)"
               required
             />
 
@@ -80,12 +84,22 @@ export function CreatePolicyForm({ onSubmit, isSubmitting = false }: CreatePolic
               required
             />
 
+            <ImageUploadField
+              name="logo"
+              watch={watch}
+              setValue={setValue}
+              control={control}
+              setError={setError}
+              clearErrors={clearErrors}
+              label="Logo"
+            />
+
             <TextField
               name="activeVersion"
               register={register}
               error={errors.activeVersion?.message}
               label="Active Version"
-              placeholder="Enter active version (e.g. 1.0.0)"
+              placeholder="Enter active version (e.g. 1.0.0). This must be a version that is published to npm."
               required
             />
 

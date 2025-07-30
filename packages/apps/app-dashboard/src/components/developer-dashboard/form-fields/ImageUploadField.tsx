@@ -124,7 +124,7 @@ export function ImageUploadField({
                   }`}
                 />
                 <div className="text-xs text-gray-600">
-                  Upload a square JPG, JPEG, or GIF image (max 5MB)
+                  Upload a square JPG, JPEG, or GIF image (max 100KB)
                 </div>
 
                 {isUploading && (

@@ -59,16 +59,16 @@ describe('App API Integration Tests', () => {
       expect(data).toMatchObject(appData);
 
       // Register the app on the contracts using contracts-sdk
-      const toolIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval tool
+      const abilityIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval ability
       const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
 
       try {
         const { txHash } = await getDefaultWalletContractClient().registerApp({
           appId: testAppId,
           delegateeAddresses: appData.delegateeAddresses,
-          versionTools: {
-            toolIpfsCids: [toolIpfsCid],
-            toolPolicies: [[policyIpfsCid]],
+          versionAbilities: {
+            abilityIpfsCids: [abilityIpfsCid],
+            abilityPolicies: [[policyIpfsCid]],
           },
         });
 

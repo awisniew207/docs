@@ -17,8 +17,8 @@ export function UserPermissionWrapper() {
     isLoading: isExistingDataLoading,
     error: isExistingDataError,
   } = useFetchUserPermissions({
-    appId: appId || '',
-    pkpTokenId: authInfo?.agentPKP?.tokenId || '',
+    appId: Number(appId),
+    pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
   });
 
   // Get permitted app versions for this user
@@ -27,7 +27,7 @@ export function UserPermissionWrapper() {
     isLoading: permissionsLoading,
     error: permissionsError,
   } = useUserPermissionsMiddleware({
-    pkpTokenId: authInfo?.agentPKP?.tokenId || '',
+    pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
   });
 
   if (isProcessing) {
@@ -36,7 +36,9 @@ export function UserPermissionWrapper() {
 
   const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
   if (!isProcessing && !isUserAuthed) {
-    return <AuthenticationErrorScreen />;
+    return (
+      <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
+    );
   }
 
   if (isLoading || isExistingDataLoading || permissionsLoading) {

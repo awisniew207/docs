@@ -41,17 +41,8 @@ export function PermittedAppsPage({ apps }: PermittedAppsPageProps) {
   }
 
   return (
-    <div className="w-full flex justify-start pl-6">
-      <div
-        className="w-full"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          columnGap: '1.5rem',
-          rowGap: '1.5rem',
-          alignItems: 'start',
-        }}
-      >
+    <div className="w-full flex justify-start px-3 sm:px-6">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {apps.map((app) => (
           <Card
             key={app.appId}

@@ -50,7 +50,9 @@ export function CreateAppVersionForm({
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>Create App Version</CardTitle>
-        <CardDescription>Create a new version of {appData.name} and select tools</CardDescription>
+        <CardDescription>
+          Create a new version of {appData.name} and select abilities
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

@@ -1,9 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import {
-  setToolPolicyParameters,
-  PermissionData,
-  unPermitApp,
-} from '@lit-protocol/vincent-contracts-sdk';
+import { getClient, PermissionData } from '@lit-protocol/vincent-contracts-sdk';
 import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
 import { useFormatUserPermissions } from '@/hooks/user-dashboard/dashboard/useFormatUserPermissions';
 import { theme } from '../consent/ui/theme';
@@ -84,19 +80,17 @@ export function AppPermissionPage({
       await addPermittedActions({
         wallet: agentPkpWallet,
         agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
-        toolIpfsCids: Object.keys(formData),
+        abilityIpfsCids: Object.keys(formData),
       });
 
       try {
-        setLocalStatus('Setting tool policy parameters...');
-        await setToolPolicyParameters({
-          signer: agentPkpWallet,
-          args: {
-            pkpTokenId: readAuthInfo.authInfo.agentPKP!.tokenId,
-            appId: consentInfoMap.app.appId.toString(),
-            appVersion: permittedVersion.toString(),
-            policyParams: formData,
-          },
+        setLocalStatus('Setting ability policy parameters...');
+        const client = getClient({ signer: agentPkpWallet });
+        await client.setAbilityPolicyParameters({
+          pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+          appId: Number(consentInfoMap.app.appId),
+          appVersion: Number(permittedVersion),
+          policyParams: formData,
         });
 
         setLocalStatus(null);
@@ -136,13 +130,11 @@ export function AppPermissionPage({
 
       setLocalStatus('Unpermitting app...');
 
-      await unPermitApp({
-        signer: agentPkpWallet,
-        args: {
-          pkpTokenId: readAuthInfo.authInfo.agentPKP!.tokenId,
-          appId: consentInfoMap.app.appId.toString(),
-          appVersion: permittedVersion.toString(), // FIXME: Why is a version needed here?
-        },
+      const client = getClient({ signer: agentPkpWallet });
+      await client.unPermitApp({
+        pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+        appId: Number(consentInfoMap.app.appId),
+        appVersion: Number(permittedVersion),
       });
 
       setLocalStatus(null);
@@ -168,7 +160,7 @@ export function AppPermissionPage({
   const error = actionsError;
 
   return (
-    <div className="w-full">
+    <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} sm:p-4`}>
       {/* Main Card Container */}
       <div
         className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
@@ -195,7 +187,7 @@ export function AppPermissionPage({
           theme={themeStyles}
         />
 
-        <div className="px-6 py-8 space-y-6">
+        <div className="px-3 sm:px-6 py-6 sm:py-8 space-y-6">
           {/* App Header */}
           <ConsentAppHeader app={consentInfoMap.app} theme={themeStyles} />
 
