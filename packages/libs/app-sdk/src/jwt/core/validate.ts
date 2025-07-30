@@ -225,8 +225,7 @@ export function decode({
     }
 
     const { app } = decodedJwt.payload;
-    if (requiredAppId != app.id) {
-      // TODO temp loose equality to support dashboard not yet migrated to use this as numbers
+    if (requiredAppId !== app.id) {
       throw new Error(
         `${JWT_ERROR.INVALID_JWT}: appId in JWT does not match requiredAppId. Expected ${requiredAppId}, got ${app.id} `
       );
