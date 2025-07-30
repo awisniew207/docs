@@ -39,7 +39,7 @@ export function PolicyVersionDetailsWrapper() {
 
   const onOpenMutation = (mutationType: string) => {
     navigate(
-      `/developer/policyId/${encodeURIComponent(packageName!)}/version/${version}/${mutationType}`,
+      `/developer/policy/${encodeURIComponent(packageName!)}/version/${version}/${mutationType}`,
     );
   };
 

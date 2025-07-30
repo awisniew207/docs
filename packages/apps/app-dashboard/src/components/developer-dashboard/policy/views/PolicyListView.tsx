@@ -48,7 +48,7 @@ export function PolicyListView({ policies, deletedPolicies }: PolicyListViewProp
               key={policy.packageName}
               className="cursor-pointer hover:shadow-md transition-shadow"
               onClick={() =>
-                navigate(`/developer/policyId/${encodeURIComponent(policy.packageName)}`)
+                navigate(`/developer/policy/${encodeURIComponent(policy.packageName)}`)
               }
             >
               <CardHeader>

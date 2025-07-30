@@ -34,7 +34,7 @@ export function CreatePolicyVersionWrapper() {
     if (isSuccess && data && policy) {
       navigateWithDelay(
         navigate,
-        `/developer/policyId/${encodeURIComponent(policy.packageName)}/version/${data.version}`,
+        `/developer/policy/${encodeURIComponent(policy.packageName)}/version/${data.version}`,
       );
     }
   }, [isSuccess, data, navigate, policy]);

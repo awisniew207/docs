@@ -32,10 +32,7 @@ export function EditAbilityWrapper() {
   // Effect
   useEffect(() => {
     if (isSuccess && data && ability) {
-      navigateWithDelay(
-        navigate,
-        `/developer/abilityId/${encodeURIComponent(ability.packageName)}`,
-      );
+      navigateWithDelay(navigate, `/developer/ability/${encodeURIComponent(ability.packageName)}`);
     }
   }, [isSuccess, data, ability]);
 
