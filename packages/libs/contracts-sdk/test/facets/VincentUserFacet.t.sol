@@ -993,6 +993,51 @@ contract VincentUserFacetTest is Test {
         assertEq(updatedToolsWithPolicies[1].policies.length, 0); // Second tool unchanged
     }
 
+    function testPermittedApps_AppHasBeenDeleted() public {
+        address[] memory delegatees1 = new address[](1);
+        delegatees1[0] = APP_DELEGATEE_CHARLIE;
+        uint256 newAppId_1 = 1;
+        uint256 newAppVersion_1 = _registerBasicApp(newAppId_1, delegatees1);
+
+        address[] memory delegatees2 = new address[](1);
+        delegatees2[0] = APP_DELEGATEE_DAVID;
+        uint256 newAppId_2 = 2;
+        uint256 newAppVersion_2 = _registerBasicApp(newAppId_2, delegatees2);
+
+        vm.startPrank(APP_USER_FRANK);
+        vincentUserFacet.permitAppVersion(
+            PKP_TOKEN_ID_1,
+            newAppId_1,
+            newAppVersion_1,
+            toolIpfsCids,
+            policyIpfsCids,
+            policyParameterValues
+        );
+
+        vincentUserFacet.permitAppVersion(
+            PKP_TOKEN_ID_1,
+            newAppId_2,
+            newAppVersion_2,
+            toolIpfsCids,
+            policyIpfsCids,
+            policyParameterValues
+        );
+        vm.stopPrank();
+
+        uint256[] memory permittedAppIds = vincentUserViewFacet.getAllPermittedAppIdsForPkp(PKP_TOKEN_ID_1, 0);
+        assertEq(permittedAppIds.length, 2);
+        assertEq(permittedAppIds[0], newAppId_1);
+        assertEq(permittedAppIds[1], newAppId_2);
+
+        vm.startPrank(APP_MANAGER_ALICE);
+        vincentAppFacet.deleteApp(newAppId_1);
+        vm.stopPrank();
+
+        permittedAppIds = vincentUserViewFacet.getAllPermittedAppIdsForPkp(PKP_TOKEN_ID_1, 0);
+        assertEq(permittedAppIds.length, 1);
+        assertEq(permittedAppIds[0], newAppId_2);
+    }
+
     function _registerApp(
         uint256 appId,
         address[] memory delegatees,

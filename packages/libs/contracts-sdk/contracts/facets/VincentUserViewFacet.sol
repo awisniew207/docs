@@ -169,17 +169,23 @@ contract VincentUserViewFacet is VincentBase {
         EnumerableSet.UintSet storage permittedAppSet = us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedApps;
         uint256 permittedAppCount = permittedAppSet.length();
 
+        uint256[] memory nonDeletedAppIds = new uint256[](permittedAppCount);
         uint256 nonDeletedCount = 0;
 
         for (uint256 i = 0; i < permittedAppCount; i++) {
             uint256 appId = permittedAppSet.at(i);
             if (!as_.appIdToApp[appId].isDeleted) {
+                nonDeletedAppIds[nonDeletedCount] = appId;
                 nonDeletedCount++;
             }
         }
 
         if (nonDeletedCount == 0) {
             return new uint256[](0);
+        }
+
+        assembly {
+            mstore(nonDeletedAppIds, nonDeletedCount)
         }
 
         if (offset >= nonDeletedCount) {
@@ -195,7 +201,7 @@ contract VincentUserViewFacet is VincentBase {
         uint256[] memory result = new uint256[](resultCount);
 
         for (uint256 i = offset; i < end; i++) {
-            result[i - offset] = permittedAppSet.at(i);
+            result[i - offset] = nonDeletedAppIds[i];
         }
 
         return result;

@@ -184,11 +184,12 @@ contract VincentAppFacet is VincentBase {
         
         // Remove all current delegatees
         for (uint256 i = 0; i < currentDelegatees.length; i++) {
-            app.delegatees.remove(currentDelegatees[i]);
-            as_.delegateeAddressToAppId[currentDelegatees[i]] = 0;
-            emit LibVincentAppFacet.DelegateeRemoved(appId, currentDelegatees[i]);
+            address currentDelegatee = currentDelegatees[i];
+            app.delegatees.remove(currentDelegatee);
+            as_.delegateeAddressToAppId[currentDelegatee] = 0;
+            emit LibVincentAppFacet.DelegateeRemoved(appId, currentDelegatee);
         }
-        
+
         // Add new delegatees
         for (uint256 i = 0; i < delegatees.length; i++) {
             address delegatee = delegatees[i];
