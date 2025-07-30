@@ -4,7 +4,7 @@ This document provides guidelines for contributing to the Vincent Ability Debrid
 
 ## Overview
 
-The Vincent Ability Debridge is a ability to send deposit, withdraw or redeem Debridge transactions from a Vincent app on behalf of the delegator. It's part of the Vincent Abilitys ecosystem and is built using the Vincent Ability SDK.
+The Vincent Ability Debridge is a ability to send deposit, withdraw or redeem Debridge transactions from a Vincent app on behalf of the delegator. It's part of the Vincent Abilities ecosystem and is built using the Vincent Ability SDK.
 
 ## Setup
 

@@ -4,7 +4,7 @@ A ability to interact with Morpho vaults (deposit, withdraw, redeem) from a Vinc
 
 ## Overview
 
-The Vincent Ability Morpho is part of the Vincent Abilitys ecosystem and is built using the Vincent Ability SDK. It allows
+The Vincent Ability Morpho is part of the Vincent Abilities ecosystem and is built using the Vincent Ability SDK. It allows
 Vincent apps to interact with Morpho vaults on behalf of users, enabling seamless integration with DeFi yield
 strategies.
 

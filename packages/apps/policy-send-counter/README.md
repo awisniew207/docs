@@ -4,7 +4,7 @@ A policy that can be attached to Vincent abilitys to limit the number of transac
 
 ## Overview
 
-The Vincent Policy Send Counter is part of the Vincent Abilitys ecosystem and is built using the Vincent Ability SDK. It allows users to set transaction count limits for abilitys, providing an additional layer of security and control.
+The Vincent Policy Send Counter is part of the Vincent Abilities ecosystem and is built using the Vincent Ability SDK. It allows users to set transaction count limits for abilitys, providing an additional layer of security and control.
 
 ## Features
 
@@ -20,7 +20,7 @@ npm install @lit-protocol/vincent-policy-send-counter
 
 ## Usage
 
-This policy can be integrated with Vincent Abilitys to enforce transaction count limits:
+This policy can be integrated with Vincent Abilities to enforce transaction count limits:
 
 ```typescript
 import {
