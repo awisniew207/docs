@@ -1,10 +1,28 @@
 [
   {
     "type": "function",
+    "name": "AGENT_PAGE_SIZE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getAllPermittedAppIdsForPkp",
     "inputs": [
       {
         "name": "pkpTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "offset",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -26,6 +44,11 @@
         "name": "userAddress",
         "type": "address",
         "internalType": "address"
+      },
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "outputs": [
@@ -246,6 +269,22 @@
     "type": "error",
     "name": "InvalidAppId",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidOffset",
+    "inputs": [
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalCount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",

@@ -370,6 +370,22 @@
   },
   {
     "type": "error",
+    "name": "InvalidOffset",
+    "inputs": [
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalCount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "NotAllRegisteredToolsProvided",
     "inputs": [
       {

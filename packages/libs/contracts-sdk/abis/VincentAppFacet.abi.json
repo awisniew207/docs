@@ -150,6 +150,24 @@
   },
   {
     "type": "function",
+    "name": "setDelegatee",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "delegatees",
+        "type": "address[]",
+        "internalType": "address[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "undeleteApp",
     "inputs": [
       {
@@ -511,6 +529,22 @@
       },
       {
         "name": "toolIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidOffset",
+    "inputs": [
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalCount",
         "type": "uint256",
         "internalType": "uint256"
       }
