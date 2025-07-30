@@ -41,7 +41,7 @@ export async function getAppById({ signer, args }: GetAppByIdOptions): Promise<A
  * Get detailed information about a specific version of an app
  * @param signer - The ethers signer to use for the transaction. Could be a standard Ethers Signer or a PKPEthersWallet
  * @param args - Object containing appId and version
- * @returns Version-specific information including tools and policies
+ * @returns Version-specific information including abilities and policies
  */
 export async function getAppVersion({ signer, args }: GetAppVersionOptions): Promise<AppVersion> {
   const contract = createContract(signer);
@@ -55,9 +55,9 @@ export async function getAppVersion({ signer, args }: GetAppVersionOptions): Pro
     const convertedAppVersion: AppVersion = {
       version: appVersion.version.toString(),
       enabled: appVersion.enabled,
-      tools: appVersion.tools.map((tool: any) => ({
-        toolIpfsCid: tool.toolIpfsCid,
-        policyIpfsCids: tool.policyIpfsCids,
+      abilities: appVersion.abilities.map((ability: any) => ({
+        abilityIpfsCid: ability.abilityIpfsCid,
+        policyIpfsCids: ability.policyIpfsCids,
       })),
     };
 

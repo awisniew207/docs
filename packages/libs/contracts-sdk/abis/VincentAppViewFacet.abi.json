@@ -141,12 +141,12 @@
             "internalType": "uint256[]"
           },
           {
-            "name": "tools",
+            "name": "abilities",
             "type": "tuple[]",
-            "internalType": "struct VincentAppViewFacet.Tool[]",
+            "internalType": "struct VincentAppViewFacet.Ability[]",
             "components": [
               {
-                "name": "toolIpfsCid",
+                "name": "abilityIpfsCid",
                 "type": "string",
                 "internalType": "string"
               },

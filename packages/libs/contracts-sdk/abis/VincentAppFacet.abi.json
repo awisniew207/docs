@@ -68,17 +68,17 @@
         "internalType": "address[]"
       },
       {
-        "name": "versionTools",
+        "name": "versionAbilities",
         "type": "tuple",
-        "internalType": "struct VincentAppFacet.AppVersionTools",
+        "internalType": "struct VincentAppFacet.AppVersionAbilities",
         "components": [
           {
-            "name": "toolIpfsCids",
+            "name": "abilityIpfsCids",
             "type": "string[]",
             "internalType": "string[]"
           },
           {
-            "name": "toolPolicies",
+            "name": "abilityPolicies",
             "type": "string[][]",
             "internalType": "string[][]"
           }
@@ -104,17 +104,17 @@
         "internalType": "uint256"
       },
       {
-        "name": "versionTools",
+        "name": "versionAbilities",
         "type": "tuple",
-        "internalType": "struct VincentAppFacet.AppVersionTools",
+        "internalType": "struct VincentAppFacet.AppVersionAbilities",
         "components": [
           {
-            "name": "toolIpfsCids",
+            "name": "abilityIpfsCids",
             "type": "string[]",
             "internalType": "string[]"
           },
           {
-            "name": "toolPolicies",
+            "name": "abilityPolicies",
             "type": "string[][]",
             "internalType": "string[][]"
           }
@@ -327,6 +327,22 @@
   },
   {
     "type": "error",
+    "name": "AbilityArrayDimensionMismatch",
+    "inputs": [
+      {
+        "name": "abilitiesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "policiesLength",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "AppAlreadyDeleted",
     "inputs": [
       {
@@ -467,7 +483,7 @@
   },
   {
     "type": "error",
-    "name": "DuplicateToolIpfsCidNotAllowed",
+    "name": "DuplicateAbilityIpfsCidNotAllowed",
     "inputs": [
       {
         "name": "appId",
@@ -475,7 +491,7 @@
         "internalType": "uint256"
       },
       {
-        "name": "toolIndex",
+        "name": "abilityIndex",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -483,7 +499,7 @@
   },
   {
     "type": "error",
-    "name": "DuplicateToolPolicyIpfsCidNotAllowed",
+    "name": "DuplicateAbilityPolicyIpfsCidNotAllowed",
     "inputs": [
       {
         "name": "appId",
@@ -491,12 +507,28 @@
         "internalType": "uint256"
       },
       {
-        "name": "toolIndex",
+        "name": "abilityIndex",
         "type": "uint256",
         "internalType": "uint256"
       },
       {
         "name": "policyIndex",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "EmptyAbilityIpfsCidNotAllowed",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "abilityIndex",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -512,23 +544,7 @@
         "internalType": "uint256"
       },
       {
-        "name": "toolIndex",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "EmptyToolIpfsCidNotAllowed",
-    "inputs": [
-      {
-        "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "toolIndex",
+        "name": "abilityIndex",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -552,7 +568,7 @@
   },
   {
     "type": "error",
-    "name": "NoToolsProvided",
+    "name": "NoAbilitiesProvided",
     "inputs": [
       {
         "name": "appId",
@@ -574,22 +590,6 @@
         "name": "msgSender",
         "type": "address",
         "internalType": "address"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "ToolArrayDimensionMismatch",
-    "inputs": [
-      {
-        "name": "toolsLength",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "policiesLength",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ]
   },

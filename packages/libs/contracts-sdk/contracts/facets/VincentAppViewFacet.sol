@@ -10,7 +10,7 @@ import "../VincentBase.sol";
  * @title VincentAppViewFacet
  * @notice Provides view functions for accessing app-related data in the Vincent ecosystem
  * @dev Read-only facet for the Vincent Diamond contract that exposes methods to query
- *      registered apps, their versions, tools, policies, and related metadata
+ *      registered apps, their versions, abilities, policies, and related metadata
  */
 contract VincentAppViewFacet is VincentBase {
     using VincentAppStorage for VincentAppStorage.AppStorage;
@@ -71,23 +71,23 @@ contract VincentAppViewFacet is VincentBase {
      * @param version Version number (1-indexed)
      * @param enabled Flag indicating if this version is currently enabled
      * @param delegatedAgentPkpTokenIds Array of Agent PKP token IDs that have permitted this version
-     * @param tools Array of tools with their associated policies for this version
+     * @param abilities Array of abilities with their associated policies for this version
      */
     struct AppVersion {
         uint256 version;
         bool enabled;
         uint256[] delegatedAgentPkpTokenIds;
-        Tool[] tools;
+        Ability[] abilities;
     }
 
     /**
-     * @notice Represents a tool with its associated policies
-     * @dev Used for returning tool data in view functions
-     * @param toolIpfsCid IPFS CID of the tool's Lit Action
-     * @param policies Array of policies associated with this tool
+     * @notice Represents a ability with its associated policies
+     * @dev Used for returning ability data in view functions
+     * @param abilityIpfsCid IPFS CID of the ability's Lit Action
+     * @param policies Array of policies associated with this ability
      */
-    struct Tool {
-        string toolIpfsCid;
+    struct Ability {
+        string abilityIpfsCid;
         string[] policyIpfsCids;
     }
 
@@ -154,7 +154,7 @@ contract VincentAppViewFacet is VincentBase {
      * @dev Fetches version-specific information from storage (excluding delegatedAgentPkpTokenIds)
      * @param appId ID of the app to retrieve
      * @param version Version number of the app to retrieve (1-indexed)
-     * @return appVersion Version-specific information including tools and policies (excluding delegatedAgentPkpTokenIds)
+     * @return appVersion Version-specific information including abilities and policies (excluding delegatedAgentPkpTokenIds)
      */
     function getAppVersion(uint256 appId, uint256 version)
         public
@@ -175,40 +175,40 @@ contract VincentAppViewFacet is VincentBase {
         appVersion.enabled = storedVersionedApp.enabled;
         // appVersion.delegatedAgentPkpTokenIds is intentionally omitted
 
-        // Step 4: Prepare to access tool data
+        // Step 4: Prepare to access ability data
         VincentLitActionStorage.LitActionStorage storage ls = VincentLitActionStorage.litActionStorage();
 
-        // Step 5: Get the number of tools for this version
-        uint256 toolIpfsCidHashesLength = storedVersionedApp.toolIpfsCidHashes.length();
+        // Step 5: Get the number of abilities for this version
+        uint256 abilityIpfsCidHashesLength = storedVersionedApp.abilityIpfsCidHashes.length();
 
-        // Step 6: Initialize the tools array with the appropriate size
-        appVersion.tools = new Tool[](toolIpfsCidHashesLength);
+        // Step 6: Initialize the abilities array with the appropriate size
+        appVersion.abilities = new Ability[](abilityIpfsCidHashesLength);
 
-        // Step 7: Iterate through each tool for this version
-        for (uint256 i = 0; i < toolIpfsCidHashesLength; i++) {
-            // Step 7.1: Get the tool hash and resolve to the actual IPFS CID
-            bytes32 toolIpfsCidHash = storedVersionedApp.toolIpfsCidHashes.at(i);
-            string memory toolIpfsCid = ls.ipfsCidHashToIpfsCid[toolIpfsCidHash];
+        // Step 7: Iterate through each ability for this version
+        for (uint256 i = 0; i < abilityIpfsCidHashesLength; i++) {
+            // Step 7.1: Get the ability hash and resolve to the actual IPFS CID
+            bytes32 abilityIpfsCidHash = storedVersionedApp.abilityIpfsCidHashes.at(i);
+            string memory abilityIpfsCid = ls.ipfsCidHashToIpfsCid[abilityIpfsCidHash];
 
-            // Step 7.2: Set the tool IPFS CID in the return structure
-            appVersion.tools[i].toolIpfsCid = toolIpfsCid;
+            // Step 7.2: Set the ability IPFS CID in the return structure
+            appVersion.abilities[i].abilityIpfsCid = abilityIpfsCid;
 
-            // Step 8: Get the policies for this specific tool
-            EnumerableSet.Bytes32Set storage toolPolicyIpfsCidHashes =
-                storedVersionedApp.toolIpfsCidHashToToolPolicyIpfsCidHashes[toolIpfsCidHash];
-            uint256 policyCount = toolPolicyIpfsCidHashes.length();
+            // Step 8: Get the policies for this specific ability
+            EnumerableSet.Bytes32Set storage abilityPolicyIpfsCidHashes =
+                storedVersionedApp.abilityIpfsCidHashToAbilityPolicyIpfsCidHashes[abilityIpfsCidHash];
+            uint256 policyCount = abilityPolicyIpfsCidHashes.length();
 
-            // Step 8.1: Initialize the policies array for this tool
-            appVersion.tools[i].policyIpfsCids = new string[](policyCount);
+            // Step 8.1: Initialize the policies array for this ability
+            appVersion.abilities[i].policyIpfsCids = new string[](policyCount);
 
-            // Step 9: Iterate through each policy for this tool
+            // Step 9: Iterate through each policy for this ability
             for (uint256 j = 0; j < policyCount; j++) {
                 // Step 9.1: Get the policy hash and resolve to the actual IPFS CID
-                bytes32 policyIpfsCidHash = toolPolicyIpfsCidHashes.at(j);
+                bytes32 policyIpfsCidHash = abilityPolicyIpfsCidHashes.at(j);
                 string memory policyIpfsCid = ls.ipfsCidHashToIpfsCid[policyIpfsCidHash];
 
                 // Step 9.2: Set the policy IPFS CID in the return structure
-                appVersion.tools[i].policyIpfsCids[j] = policyIpfsCid;
+                appVersion.abilities[i].policyIpfsCids[j] = policyIpfsCid;
             }
         }
     }
