@@ -24,7 +24,7 @@ As the Vincent App Manager, you can create a new version of your App whenever yo
 There are some parts of your Vincent App that you can change without creating a new Version by visiting the [Vincent App Dashboard](https://dashboard.heyvincent.ai/). For each Vincent App you've created, you can change:
 
 - The App Delegatees that are authorized to execute your App's Abilities for all App Versions
-- The authorized redirect URIs Users can be redirected to after they've authorized your App via the Vincent Consent page
+- The authorized redirect URIs Users can be redirected to after they've authorized your App via the Vincent Connect page
 - The current Deployment Status of your App
 
 # How App Versioning Works
@@ -65,7 +65,7 @@ You will then be shown the following screen which displays:
 
 After updating the Abilities and Policies for your App, you'll need to click the `Publish New Version` button to publish the Version on-chain. This will prompt you to sign a transaction with your connected Vincent App Manager wallet.
 
-After it's published, your new App Version will be immediately available for Vincent Users to authorize/upgrade to the next time they visit your App’s Vincent Consent Page.
+After it's published, your new App Version will be immediately available for Vincent Users to authorize/upgrade to the next time they visit your App’s Vincent Connect Page.
 
 # Managing App Versions
 
@@ -93,11 +93,11 @@ New Users will never be prompted to authorize disabled App Versions, and existin
 
 ![Disabled App Version Upgrade Dialog](../images/disabled-app-version-upgrade-dialog.png)
 
-The latest enabled App Version is always the version that new Users will be prompted to authorize when they visit your App’s Vincent Consent Page.
+The latest enabled App Version is always the version that new Users will be prompted to authorize when they visit your App’s Vincent Connect Page.
 
 If you have multiple enabled App Versions, existing Users who've permitted previous Versions are still able to use those Versions up until the point you disable it.
 
-However, those Users will be prompted to upgrade to the latest enabled App Version the next time they visit your App’s Vincent Consent Page:
+However, those Users will be prompted to upgrade to the latest enabled App Version the next time they visit your App’s Vincent Connect Page:
 
 ![Upgrade App Version Dialog](../images/upgrade-app-version-dialog.png)
 
@@ -116,7 +116,7 @@ Every App Version is:
 
 - **Immutable:** Once published, it can never be changed
 - **Transparent:** Users see exactly what Abilities and Policies they’re authorizing
-- **Opt-in:** Upgrades require explicit User consent through your App's Vincent Consent Page
+- **Opt-in:** Upgrades require explicit User connection through your App's Vincent Connect Page
 
 As the App Manager, versioning gives you control over your App’s configuration without ever taking control away from your Users.
 

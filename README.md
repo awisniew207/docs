@@ -32,13 +32,13 @@ Each Policy has user-configurable parameters, supports on/off-chain data access,
 
 Vincent Apps enable secure, policy-governed automation on behalf of users—without compromising custody or control. Users delegate specific on- and off-chain actions to your App via Vincent Abilities, each governed by user-configured Policies. Every action is explicitly authorized, auditable, and constrained to the boundaries set by the user.
 
-Apps are bundled as versioned packages and must be approved via the Consent Page before they can execute any actions.
+Apps are bundled as versioned packages and must be approved via the Connect Page before they can execute any actions.
 
 [Learn more](https://docs.heyvincent.ai/documents/App___Agent_Developers.html)
 
-## Consent Page
+## Connect Page
 
-The Consent Page is a standard interface where users review a Vincent App, approve its requested Abilities and Policies, and configure any policy parameters. Vincent Apps use the Consent page to authenticate their users and execute Abilities on their behalf.
+The Connect Page is a standard interface where users review a Vincent App, approve its requested Abilities and Policies, and configure any policy parameters. Vincent Apps use the Connect page to authenticate their users and execute Abilities on their behalf.
 
 ## On-chain App Registry
 
@@ -50,12 +50,12 @@ The On-chain App Registry is a smart contract that tracks which Vincent Apps, Ab
 
 1. Registers a Vincent App using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/), selecting the from the existing Abilities and Policies their App will use
 2. Optionally creates and publishes custom Abilities and Policies tailored to their App’s functionality
-3. Integrates the Vincent App SDK to authenticate users and redirect them to the Vincent Consent Page for delegation
+3. Integrates the Vincent App SDK to authenticate users and redirect them to the Vincent Connect Page for delegation
 4. Executes Abilities on behalf of authenticated users, governed by the Vincent Policies each user has configured for their App
 
 ### Vincent User Workflow
 
-1. Visits a Vincent App and is redirected to the Vincent Consent Page to log in or create their Agent Wallet
+1. Visits a Vincent App and is redirected to the Vincent Connect Page to log in or create their Agent Wallet
 2. Reviews the App’s requested Abilities, configures Policy parameters, and approves the delegation
 3. Is redirected back to the App with a signed Vincent JWT, enabling the App to execute the approved Abilities on their behalf within the user’s configured Policy limits
 

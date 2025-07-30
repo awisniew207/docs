@@ -1,7 +1,7 @@
 import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '../consent/ui/theme';
+import { theme } from '../connect/ui/theme';
 
-export function ConsentFooter() {
+export function ConnectFooter() {
   const { isDark } = useTheme();
   const themeStyles = theme(isDark);
 

@@ -44,7 +44,7 @@ pnpm typedoc
 
 ### WebAuthClient
 
-The Vincent Web Auth Client provides methods for managing user authentication, JWT tokens, and consent flows in Vincent applications.
+The Vincent Web Auth Client provides methods for managing user authentication, JWT tokens, and connect flows in Vincent applications.
 
 ### VincentAbilityClient
 

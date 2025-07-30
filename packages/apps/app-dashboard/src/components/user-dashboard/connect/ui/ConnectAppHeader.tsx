@@ -3,12 +3,12 @@ import { ThemeType } from './theme';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { Logo } from '@/components/shared/ui/Logo';
 
-interface ConsentAppHeaderProps {
+interface ConnectAppHeaderProps {
   app: App;
   theme: ThemeType;
 }
 
-export function ConsentAppHeader({ app, theme }: ConsentAppHeaderProps) {
+export function ConnectAppHeader({ app, theme }: ConnectAppHeaderProps) {
   return (
     <motion.div
       className="rounded-xl p-4 sm:p-6"

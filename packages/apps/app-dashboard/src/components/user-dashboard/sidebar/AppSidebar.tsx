@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Package, Wallet, Loader2, Sun, Moon, LogOut, TriangleAlert } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '../consent/ui/theme';
+import { theme } from '../connect/ui/theme';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { SidebarLogo } from './SidebarLogo';
 import { useClearAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';

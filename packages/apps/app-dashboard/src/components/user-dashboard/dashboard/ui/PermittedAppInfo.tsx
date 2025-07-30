@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { AbilityAccordion } from '@/components/user-dashboard/consent/ui/AbilityAccordion';
-import { PolicyFormRef } from '@/components/user-dashboard/consent/ui/PolicyForm';
-import { ThemeType } from '@/components/user-dashboard/consent/ui/theme';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
+import { AbilityAccordion } from '@/components/user-dashboard/connect/ui/AbilityAccordion';
+import { PolicyFormRef } from '@/components/user-dashboard/connect/ui/PolicyForm';
+import { ThemeType } from '@/components/user-dashboard/connect/ui/theme';
 
 interface AppsAndVersionsProps {
-  consentInfoMap: ConsentInfoMap;
+  connectInfoMap: ConnectInfoMap;
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
@@ -15,7 +15,7 @@ interface AppsAndVersionsProps {
 }
 
 export function PermittedAppInfo({
-  consentInfoMap,
+  connectInfoMap,
   theme,
   isDark,
   formData,
@@ -23,12 +23,12 @@ export function PermittedAppInfo({
   onRegisterFormRef,
   permittedVersion,
 }: AppsAndVersionsProps) {
-  const appNames = Object.keys(consentInfoMap.versionsByApp);
+  const appNames = Object.keys(connectInfoMap.versionsByApp);
 
   return (
     <>
       {appNames.map((appName, appIndex) => {
-        const versions = consentInfoMap.versionsByApp[appName];
+        const versions = connectInfoMap.versionsByApp[appName];
 
         // Skip if no version to use
         if (!permittedVersion) return null;
@@ -50,14 +50,14 @@ export function PermittedAppInfo({
             {(() => {
               const versionKey = `${appName}-${version.version}`;
               const appVersionAbilities =
-                consentInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
+                connectInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
 
               return (
                 <>
                   {appVersionAbilities.map((ability) => {
                     const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
                     const policies =
-                      consentInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
+                      connectInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
 
                     // Filter out policies that are in hiddenSupportedPolicies
                     const visiblePolicies = policies.filter((policy) => {
@@ -71,7 +71,7 @@ export function PermittedAppInfo({
                     });
 
                     const abilityVersions =
-                      consentInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
+                      connectInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
                     const abilityVersion = abilityVersions[0];
 
                     return (
@@ -80,7 +80,7 @@ export function PermittedAppInfo({
                         ability={ability}
                         abilityVersion={abilityVersion}
                         policies={visiblePolicies}
-                        consentInfoMap={consentInfoMap}
+                        connectInfoMap={connectInfoMap}
                         theme={theme}
                         isDark={isDark}
                         formData={formData}

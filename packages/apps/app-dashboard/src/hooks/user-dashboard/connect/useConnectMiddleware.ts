@@ -3,13 +3,13 @@ import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { useEffect, useState } from 'react';
 import { App } from '@/types/developer-dashboard/appTypes';
 
-export type UseConsentMiddlewareProps = {
+export type UseConnectMiddlewareProps = {
   appId: number;
   pkpEthAddress: string;
   appData: App;
 };
 
-export type UseConsentMiddlewareReturn = {
+export type UseConnectMiddlewareReturn = {
   isPermitted: boolean | null;
   appExists: boolean | null;
   activeVersionExists: boolean | null;
@@ -18,12 +18,12 @@ export type UseConsentMiddlewareReturn = {
   error: string | null;
 };
 
-export const useConsentMiddleware = ({
+export const useConnectMiddleware = ({
   appId,
   pkpEthAddress,
   appData,
-}: UseConsentMiddlewareProps): UseConsentMiddlewareReturn => {
-  const [state, setState] = useState<UseConsentMiddlewareReturn>({
+}: UseConnectMiddlewareProps): UseConnectMiddlewareReturn => {
+  const [state, setState] = useState<UseConnectMiddlewareReturn>({
     isPermitted: null,
     appExists: null,
     activeVersionExists: null,

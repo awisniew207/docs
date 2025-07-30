@@ -201,7 +201,7 @@ export function decode({
  *     // You still need to verify the JWT!
  *   } else {
  *     // User needs to get a new JWT
- *     webAuthClient.redirectToDelegationAuthPage({redirectUri: window.location.href });
+ *     webAuthClient.redirectToConnectPage({redirectUri: window.location.href });
  *   }
  *
  *  ```

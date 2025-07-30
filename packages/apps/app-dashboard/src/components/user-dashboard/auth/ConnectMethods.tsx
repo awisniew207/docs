@@ -1,12 +1,12 @@
 import { useState, Dispatch, SetStateAction } from 'react';
-import { ThemeType } from '../consent/ui/theme';
+import { ThemeType } from '../connect/ui/theme';
 
 import AuthMethods from './AuthMethods';
 import WebAuthn from './WebAuthn';
 import StytchOTP from './StytchOTP';
 import EthWalletAuth from './EthWalletAuth';
 
-interface LoginProps {
+interface ConnectProps {
   authWithWebAuthn: (credentialId: string, userId: string) => Promise<void>;
   authWithStytch: (sessionJwt: string, userId: string, method: 'email' | 'phone') => Promise<void>;
   authWithEthWallet: (
@@ -20,14 +20,14 @@ interface LoginProps {
 
 type AuthView = 'default' | 'email' | 'phone' | 'wallet' | 'webauthn';
 
-export default function LoginMethods({
+export default function ConnectMethods({
   authWithWebAuthn,
   authWithStytch,
   authWithEthWallet,
   registerWithWebAuthn,
   clearError,
   theme,
-}: LoginProps) {
+}: ConnectProps) {
   const [view, setView] = useState<AuthView>('default');
 
   return (

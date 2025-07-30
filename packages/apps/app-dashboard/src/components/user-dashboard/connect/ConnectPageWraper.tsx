@@ -1,21 +1,21 @@
 import { useParams } from 'react-router';
-import { ConsentPage } from './ConsentPage';
-import { ConsentPageSkeleton } from './ConsentPageSkeleton';
+import { ConnectPage } from './ConnectPage';
+import { ConnectPageSkeleton } from './ConnectPageSkeleton';
 import { GeneralErrorScreen } from './GeneralErrorScreen';
 import { BadRedirectUriError } from './BadRedirectUriError';
 import { AuthConnectScreen } from './AuthConnectScreen';
-import { useConsentInfo } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { useConsentMiddleware } from '@/hooks/user-dashboard/consent/useConsentMiddleware';
+import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
+import { useConnectMiddleware } from '@/hooks/user-dashboard/connect/useConnectMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
-import { ReturningUserConsent } from './ReturningUserConsent';
-import { AppVersionNotInRegistryConsent } from './AppVersionNotInRegistry';
-import { useUriPrecheck } from '@/hooks/user-dashboard/consent/useUriPrecheck';
+import { ReturningUserConnect } from './ReturningUserConnect';
+import { AppVersionNotInRegistryConnect } from './AppVersionNotInRegistry';
+import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
 
-export function ConsentPageWrapper() {
+export function ConnectPageWrapper() {
   const { appId } = useParams();
 
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
-  const { isLoading, isError, errors, data } = useConsentInfo(appId || '');
+  const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
   const {
     isPermitted,
     appExists,
@@ -23,7 +23,7 @@ export function ConsentPageWrapper() {
     userPermittedVersion,
     isLoading: isPermittedLoading,
     error: isPermittedError,
-  } = useConsentMiddleware({
+  } = useConnectMiddleware({
     appId: Number(appId),
     pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
     appData: data?.app,
@@ -44,11 +44,11 @@ export function ConsentPageWrapper() {
 
   // Wait for data to load first (but don't require sessionSigs for unauthenticated users)
   if (!data) {
-    return <ConsentPageSkeleton />;
+    return <ConnectPageSkeleton />;
   }
 
   if (isLoading || isProcessing || isPermittedLoading) {
-    return <ConsentPageSkeleton />;
+    return <ConnectPageSkeleton />;
   }
 
   // Check for redirect URI validation errors
@@ -83,7 +83,7 @@ export function ConsentPageWrapper() {
 
   if (appExists === true && activeVersionExists === false) {
     return (
-      <AppVersionNotInRegistryConsent
+      <AppVersionNotInRegistryConnect
         appData={data.app}
         readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
       />
@@ -92,7 +92,7 @@ export function ConsentPageWrapper() {
 
   if (isPermitted === true && userPermittedVersion) {
     return (
-      <ReturningUserConsent
+      <ReturningUserConnect
         appData={data.app}
         version={userPermittedVersion}
         readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
@@ -101,8 +101,8 @@ export function ConsentPageWrapper() {
   }
 
   return (
-    <ConsentPage
-      consentInfoMap={data}
+    <ConnectPage
+      connectInfoMap={data}
       readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
     />
   );

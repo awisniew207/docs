@@ -10,7 +10,7 @@ import {
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useMemo, useEffect, useState } from 'react';
 
-export type ConsentInfoMap = {
+export type ConnectInfoMap = {
   app: App;
   versionsByApp: Record<string, AppVersion[]>;
   appVersionAbilitiesByAppVersion: Record<string, AppVersionAbility[]>;
@@ -21,14 +21,14 @@ export type ConsentInfoMap = {
   policiesByPackageName: Record<string, Policy>;
 };
 
-export type ConsentInfoState = {
+export type ConnectInfoState = {
   isLoading: boolean;
   isError: boolean;
   errors: string[];
-  data: ConsentInfoMap;
+  data: ConnectInfoMap;
 };
 
-export const useConsentInfo = (appId: string): ConsentInfoState => {
+export const useConnectInfo = (appId: string): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
 
   // Reset completion state when app changes
@@ -182,7 +182,7 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
         // Mark data fetching as complete
         setIsDataFetchingComplete(true);
       } catch (error) {
-        console.error('Error fetching consent info:', error);
+        console.error('Error fetching connect info:', error);
         // Still mark as complete even if there was an error
         setIsDataFetchingComplete(true);
       }
@@ -191,8 +191,8 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
     fetchAllData();
   }, [appVersions, appId, app]);
 
-  // Construct ConsentInfoMap from available data
-  const consentInfoMap = useMemo((): ConsentInfoMap => {
+  // Construct ConnectInfoMap from available data
+  const connectInfoMap = useMemo((): ConnectInfoMap => {
     const versionsByApp: Record<string, AppVersion[]> = {
       [appId]: appVersions || [],
     };
@@ -288,6 +288,6 @@ export const useConsentInfo = (appId: string): ConsentInfoState => {
         : appVersionsError
           ? [`Failed to fetch app versions`]
           : [],
-    data: consentInfoMap,
+    data: connectInfoMap,
   };
 };

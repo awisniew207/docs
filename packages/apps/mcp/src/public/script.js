@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       approveButton.addEventListener('click', () => {
         if (appDefinition?.id) {
           const currentUrl = encodeURIComponent(window.location.origin);
-          window.location.href = `https://dashboard.heyvincent.ai/appId/${appDefinition.id}/consent?redirectUri=${currentUrl}`;
+          window.location.href = `https://dashboard.heyvincent.ai/appId/${appDefinition.id}/connect?redirectUri=${currentUrl}`;
         } else {
           console.error('App definition not loaded');
         }

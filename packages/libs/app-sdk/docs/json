@@ -5699,7 +5699,7 @@
 								"content": [
 									{
 										"kind": "code",
-										"text": "```typescript\n  import { decode, isExpired } from '@lit-protocol/vincent-app-sdk/jwt';\n\n  const decodedVincentJWT = decode({ jwt, requiredAppId: 555 });\n  const isJWTExpired = isExpired(decodedVincentJWT);\n\n  if(!isJWTExpired) {\n    // User is logged in\n    // You still need to verify the JWT!\n  } else {\n    // User needs to get a new JWT\n    webAuthClient.redirectToDelegationAuthPage({redirectUri: window.location.href });\n  }\n\n ```"
+										"text": "```typescript\n  import { decode, isExpired } from '@lit-protocol/vincent-app-sdk/jwt';\n\n  const decodedVincentJWT = decode({ jwt, requiredAppId: 555 });\n  const isJWTExpired = isExpired(decodedVincentJWT);\n\n  if(!isJWTExpired) {\n    // User is logged in\n    // You still need to verify the JWT!\n  } else {\n    // User needs to get a new JWT\n    webAuthClient.redirectToConnectPage({redirectUri: window.location.href });\n  }\n\n ```"
 									}
 								]
 							}
@@ -7352,14 +7352,14 @@
 						"summary": [
 							{
 								"kind": "text",
-								"text": "The Vincent Web Application Client is used in web apps to handle interactions with the Vincent app portal.\n\n- Delegation authorization page redirection\n- Authentication helpers that are browser specific"
+								"text": "The Vincent Web Application Client is used in web apps to handle interactions with the Vincent app portal.\n\n- Connect page redirection\n- Authentication helpers that are browser specific"
 							}
 						]
 					},
 					"children": [
 						{
 							"id": 228,
-							"name": "decodeVincentLoginJWT",
+							"name": "decodeVincentJWT",
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
@@ -7372,7 +7372,7 @@
 									{
 										"kind": "inline-tag",
 										"tag": "@link",
-										"text": "WebAuthClient.redirectToDelegationAuthPage",
+										"text": "WebAuthClient.redirectToConnectPage",
 										"target": 221
 									},
 									{
@@ -7567,7 +7567,7 @@
 						},
 						{
 							"id": 225,
-							"name": "isLogin",
+							"name": "uriContainsVincentJWT",
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
@@ -7575,12 +7575,12 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Determines whether the current window location is a login URI associated with Vincent\n\nYou can use this to detect if a user is loading your app as a result of approving permissions\non the Vincent delegation auth page -- e.g. they just logged in\n\nSee: "
+										"text": "Determines whether the current window location is a connect URI associated with Vincent\n\nYou can use this to detect if a user is loading your app as a result of approving permissions\non the Vincent Connect page -- e.g. they just logged in\n\nSee: "
 									},
 									{
 										"kind": "inline-tag",
 										"tag": "@link",
-										"text": "WebAuthClient.redirectToDelegationAuthPage",
+										"text": "WebAuthClient.redirectToConnectPage",
 										"target": 221
 									},
 									{
@@ -7638,7 +7638,7 @@
 															},
 															{
 																"kind": "text",
-																"text": " if the current window URI is a login URI, otherwise "
+																"text": " if the current window URI is a connect URI, otherwise "
 															},
 															{
 																"kind": "code",
@@ -7671,7 +7671,7 @@
 						},
 						{
 							"id": 221,
-							"name": "redirectToDelegationAuthPage",
+							"name": "redirectToConnectPage",
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
@@ -7679,7 +7679,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Redirects the user to the Vincent delegation auth page.\n\nIf the user approves your app permissions, they will be redirected back to the "
+										"text": "Redirects the user to the Vincent Connect page.\n\nIf the user approves your app permissions, they will be redirected back to the "
 									},
 									{
 										"kind": "code",
@@ -7692,17 +7692,17 @@
 									{
 										"kind": "inline-tag",
 										"tag": "@link",
-										"text": "WebAuthClient.isLogin",
+										"text": "WebAuthClient.uriContainsVincentJWT",
 										"target": 225
 									},
 									{
 										"kind": "text",
-										"text": " to detect if a user has just opened your app via the delegation auth page\n\nUse "
+										"text": " to detect if a user has just opened your app via the Connect page\n\nUse "
 									},
 									{
 										"kind": "inline-tag",
 										"tag": "@link",
-										"text": "WebAuthClient.decodeVincentLoginJWT",
+										"text": "WebAuthClient.decodeVincentJWT",
 										"target": 228
 									},
 									{
@@ -7734,7 +7734,7 @@
 										"content": [
 											{
 												"kind": "code",
-												"text": "```typescript\nimport { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';\n\nconst vincentAppClient = getWebAuthClient({ appId: MY_APP_ID });\n// ... In your app logic:\nif(vincentAppClient.isLogin()) {\n  // Handle app logic for the user has just logged in\n  const { decoded, jwtStr } = vincentAppClient.decodeVincentLoginJWT(EXPECTED_AUDIENCE);\n  // Store `jwtStr` for later usage; the user is now logged in.\n} else {\n  // Handle app logic for the user is already logged in (check for stored & unexpired JWT)\n  // ...\n   *   // Handle app logic for the user is not yet logged in\n vincentAppClient.redirectToDelegationAuthPage({ redirectUri: window.location.href });\n}\n```"
+												"text": "```typescript\nimport { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';\n\nconst vincentAppClient = getWebAuthClient({ appId: MY_APP_ID });\n// ... In your app logic:\nif(vincentAppClient.uriContainsVincentJWT()) {\n  // Handle app logic for the user has just logged in\n  const { decoded, jwtStr } = vincentAppClient.decodeVincentJWT(EXPECTED_AUDIENCE);\n  // Store `jwtStr` for later usage; the user is now logged in.\n} else {\n  // Handle app logic for the user is already logged in (check for stored & unexpired JWT)\n  // ...\n   *   // Handle app logic for the user is not yet logged in\n vincentAppClient.redirectToConnectPage({ redirectUri: window.location.href });\n}\n```"
 											}
 										]
 									},
@@ -7809,7 +7809,7 @@
 						},
 						{
 							"id": 235,
-							"name": "removeLoginJWTFromURI",
+							"name": "removeVincentJWTFromURI",
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
@@ -7817,7 +7817,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Removes the Vincent login JWT from the current window URI.\n\nThis is useful for cleaning up the URL after decoding and storing the JWT,\nensuring the redirect URL looks clean for the user and no sensitive information\nis exposed in the URI."
+										"text": "Removes the Vincent connect JWT from the current window URI.\n\nThis is useful for cleaning up the URL after decoding and storing the JWT,\nensuring the redirect URL looks clean for the user and no sensitive information\nis exposed in the URI."
 									}
 								],
 								"blockTags": [
@@ -7826,7 +7826,7 @@
 										"content": [
 											{
 												"kind": "code",
-												"text": "```typescript\nimport { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';\n\nconst vincentAppClient = getWebAuthClient({ appId: MY_APP_ID });\n\nif (vincentAppClient.isLogin()) {\n  const { decodedJWT, jwtStr } = vincentAppClient.decodeVincentLoginJWT();\n  // Store the JWT and use it for authentication\n\n  // Now we can remove the JWT from the URL searchParams\n  vincentAppClient.removeLoginJWTFromURI();\n}\n```"
+												"text": "```typescript\nimport { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';\n\nconst vincentAppClient = getWebAuthClient({ appId: MY_APP_ID });\n\nif (vincentAppClient.uriContainsVincentJWT()) {\n  const { decodedJWT, jwtStr } = vincentAppClient.decodeVincentJWT();\n  // Store the JWT and use it for authentication\n\n  // Now we can remove the JWT from the URL searchParams\n  vincentAppClient.removeVincentJWTFromURI();\n}\n```"
 											}
 										]
 									},
@@ -8080,7 +8080,7 @@
 		},
 		{
 			"kind": "text",
-			"text": "\n\n## Usage\n\n# Client (Web)\n\n## WebAuthClient\n\nThe Vincent Web Auth Client provides methods for managing user authentication, JWT tokens, and consent flows in Vincent applications.\n\n### Methods\n\n#### redirectToConsentPage()\n\nRedirects the user to the Vincent consent page to obtain authorization. Once the user has completed the vincent consent flow\nthey will be redirected back to your app with a signed JWT that you can use to authenticate requests against your backend APIs\n\n- When a JWT is expired, you need to use this method to get a new JWT\n\n#### isLoginUri()\n\nChecks if the current window location contains a Vincent login JWT. You can use this method to know that you should update login state with the newly provided JWT\n\n- Returns: Boolean indicating if the URI contains a login JWT\n\n#### decodeVincentLoginJWT(expectedAudience)\n\nDecodes a Vincent login JWT. Performs basic sanity check but does not perform full verify() logic. You will want to run "
+			"text": "\n\n## Usage\n\n# Client (Web)\n\n## WebAuthClient\n\nThe Vincent Web Auth Client provides methods for managing user authentication, JWT tokens, and connect flows in Vincent applications.\n\n### Methods\n\n#### redirectToConnectPage()\n\nRedirects the user to the Vincent connect page to obtain authorization. Once the user has completed the vincent connect flow\nthey will be redirected back to your app with a signed JWT that you can use to authenticate requests against your backend APIs\n\n- When a JWT is expired, you need to use this method to get a new JWT\n\n#### uriContainsVincentJWT()\n\nChecks if the current window location contains a Vincent connect JWT. You can use this method to know that you should update connect state with the newly provided JWT\n\n- Returns: Boolean indicating if the URI contains a connect JWT\n\n#### decodeVincentJWT(expectedAudience)\n\nDecodes a Vincent connect JWT. Performs basic sanity check but does not perform full verify() logic. You will want to run "
 		},
 		{
 			"kind": "code",
@@ -8088,11 +8088,11 @@
 		},
 		{
 			"kind": "text",
-			"text": " from the jwt abilities to verify the JWT is fully valid and not expired etc.\n\n- The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration\n\n- Returns: An object containing both the original JWT string and the decoded JWT object\n\n#### removeLoginJWTFromURI()\n\nRemoves the login JWT parameter from the current URI. Call this after you have verified and stored the JWT for later usage.\n\n### Basic Usage\n\n"
+			"text": " from the jwt abilities to verify the JWT is fully valid and not expired etc.\n\n- The expected audience is typically your app's domain -- it should be one of your valid redirectUri values from your Vincent app configuration\n\n- Returns: An object containing both the original JWT string and the decoded JWT object\n\n#### removeVincentJWTFromURI()\n\nRemoves the connect JWT parameter from the current URI. Call this after you have verified and stored the JWT for later usage.\n\n### Basic Usage\n\n"
 		},
 		{
 			"kind": "code",
-			"text": "```typescript\nimport { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webaAthClient';\nimport { isExpired } from '@lit-protocol/vincent-app-sdk/jwt';\n\nconst vincentAppClient = getWebAuthClient({ appId: MY_APP_ID });\n// ... In your app logic:\nif (vincentAppClient.isLogin()) {\n  // Handle app logic for the user has just logged in\n  const { decoded, jwt } = vincentAppClient.decodeVincentLoginJWT(window.location.origin);\n  // Store `jwt` for later usage; the user is now logged in.\n} else {\n  // Handle app logic for the user is _already logged in_ (check for stored & unexpired JWT)\n\n  const jwt = localStorage.getItem('VINCENT_AUTH_JWT');\n  if (jwt && isExpired(jwt)) {\n    // User must re-log in\n    vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });\n  }\n\n  if (!jwt) {\n    // Handle app logic for the user is not yet logged in\n    vincentAppClient.redirectToConsentPage({ redirectUri: window.location.href });\n  }\n}\n```"
+			"text": "```typescript\nimport { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webaAthClient';\nimport { isExpired } from '@lit-protocol/vincent-app-sdk/jwt';\n\nconst vincentAppClient = getWebAuthClient({ appId: MY_APP_ID });\n// ... In your app logic:\nif (vincentAppClient.uriContainsVincentJWT()) {\n  // Handle app logic for the user has just logged in\n  const { decoded, jwt } = vincentAppClient.decodeVincentJWT(window.location.origin);\n  // Store `jwt` for later usage; the user is now logged in.\n} else {\n  // Handle app logic for the user is _already logged in_ (check for stored & unexpired JWT)\n\n  const jwt = localStorage.getItem('VINCENT_AUTH_JWT');\n  if (jwt && isExpired(jwt)) {\n    // User must re-log in\n    vincentAppClient.redirectToConnectPage({ redirectUri: window.location.href });\n  }\n\n  if (!jwt) {\n    // Handle app logic for the user is not yet logged in\n    vincentAppClient.redirectToConnectPage({ redirectUri: window.location.href });\n  }\n}\n```"
 		},
 		{
 			"kind": "text",
@@ -8160,15 +8160,15 @@
 		},
 		{
 			"kind": "text",
-			"text": "\n\n## JWT Authentication\n\n### Overview\n\nThe JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Abilities. JWTs are used to verify user consent and authorize ability executions.\n\n### Authentication Flow\n\n1. User initiates an action requiring Vincent Ability access\n2. Application redirects to the Vincent consent page using "
+			"text": "\n\n## JWT Authentication\n\n### Overview\n\nThe JWT authentication system in Vincent SDK allows for secure communication between user applications and Vincent Abilities. JWTs are used to verify user connect and authorize ability executions.\n\n### Authentication Flow\n\n1. User initiates an action requiring Vincent Ability access\n2. Application redirects to the Vincent connect page using "
 		},
 		{
 			"kind": "code",
-			"text": "`VincentWebAppClient.redirectToConsentPage()`"
+			"text": "`VincentWebAppClient.redirectToConnectPage()`"
 		},
 		{
 			"kind": "text",
-			"text": "\n3. User provides consent for the requested abilities/policies\n4. User is redirected back to the application with a JWT in the URL\n5. Application validates and stores the JWT using "
+			"text": "\n3. User provides login for the requested abilities/policies\n4. User is redirected back to the application with a JWT in the URL\n5. Application validates and stores the JWT using "
 		},
 		{
 			"kind": "code",
@@ -8176,7 +8176,7 @@
 		},
 		{
 			"kind": "text",
-			"text": " methods\n6. JWT is used to authenticate with the app backend\n\n### JWT Structure\n\nVincent JWTs contain:\n\n- User account identity information (pkpAddress and pkpPublicKey)\n- Expiration timestamp\n- Signature from the Vincent authorization service\n\n### Error Handling\n\nWhen JWT validation fails, descriptive error messages are thrown to help with troubleshooting.\n\n### Usage Notes\n\n- JWTs have an expiration time after which they are no longer valid\n- When a JWT expires, redirect the user to the consent page to obtain a new one using the "
+			"text": " methods\n6. JWT is used to authenticate with the app backend\n\n### JWT Structure\n\nVincent JWTs contain:\n\n- User account identity information (pkpAddress and pkpPublicKey)\n- Expiration timestamp\n- Signature from the Vincent authorization service\n\n### Error Handling\n\nWhen JWT validation fails, descriptive error messages are thrown to help with troubleshooting.\n\n### Usage Notes\n\n- JWTs have an expiration time after which they are no longer valid\n- When a JWT expires, redirect the user to the connect page to obtain a new one using the "
 		},
 		{
 			"kind": "code",
@@ -8946,7 +8946,7 @@
 		},
 		"221": {
 			"sourceFileName": "src/webAuthClient/types.ts",
-			"qualifiedName": "WebAuthClient.redirectToDelegationAuthPage"
+			"qualifiedName": "WebAuthClient.redirectToConnectPage"
 		},
 		"222": {
 			"sourceFileName": "src/webAuthClient/types.ts",
@@ -8962,7 +8962,7 @@
 		},
 		"225": {
 			"sourceFileName": "src/webAuthClient/types.ts",
-			"qualifiedName": "WebAuthClient.isLogin"
+			"qualifiedName": "WebAuthClient.uriContainsVincentJWT"
 		},
 		"226": {
 			"sourceFileName": "src/webAuthClient/types.ts",
@@ -8974,7 +8974,7 @@
 		},
 		"228": {
 			"sourceFileName": "src/webAuthClient/types.ts",
-			"qualifiedName": "WebAuthClient.decodeVincentLoginJWT"
+			"qualifiedName": "WebAuthClient.decodeVincentJWT"
 		},
 		"229": {
 			"sourceFileName": "src/webAuthClient/types.ts",
@@ -9002,7 +9002,7 @@
 		},
 		"235": {
 			"sourceFileName": "src/webAuthClient/types.ts",
-			"qualifiedName": "WebAuthClient.removeLoginJWTFromURI"
+			"qualifiedName": "WebAuthClient.removeVincentJWTFromURI"
 		},
 		"236": {
 			"sourceFileName": "src/webAuthClient/types.ts",
