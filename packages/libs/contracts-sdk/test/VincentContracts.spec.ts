@@ -15,12 +15,12 @@ import {
   getAllRegisteredAgentPkps,
   getPermittedAppVersionForPkp,
   getAllPermittedAppIdsForPkp,
-  getAllToolsAndPoliciesForApp,
-  setToolPolicyParameters,
+  getAllAbilitiesAndPoliciesForApp,
+  setAbilityPolicyParameters,
   unPermitApp,
   getAppIdByDelegatee,
 } from '../src/index';
-import { AppVersionTools } from '../src/index';
+import { AppVersionAbilities } from '../src/index';
 import { ethers, providers } from 'ethers';
 import { config } from '@dotenvx/dotenvx';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
@@ -80,16 +80,16 @@ describe('VincentContracts', () => {
     const delegatees = [ethers.Wallet.createRandom().address];
 
     // Register initial app version
-    const initialVersionTools: AppVersionTools = {
-      toolIpfsCids: [generateRandomIpfsCid()],
-      toolPolicies: [[]],
+    const initialVersionAbilities: AppVersionAbilities = {
+      abilityIpfsCids: [generateRandomIpfsCid()],
+      abilityPolicies: [[]],
     };
     const initialAppVersion = await registerApp({
       signer: appManagerSigner,
       args: {
         appId: appId.toString(),
         delegatees,
-        versionTools: initialVersionTools,
+        versionAbilities: initialVersionAbilities,
       },
       overrides: {
         gasLimit: 10000000,
@@ -183,18 +183,18 @@ describe('VincentContracts', () => {
     expect(nonRegisteredAppIdResult).toBe(null);
 
     // Register next app version
-    const nextVersionTools: AppVersionTools = {
-      toolIpfsCids: [initialVersionTools.toolIpfsCids[0], generateRandomIpfsCid()], // one existing & one new tool
-      toolPolicies: [
-        [generateRandomIpfsCid()], // new policy for the existing tool
-        [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new tool
+    const nextVersionAbilities: AppVersionAbilities = {
+      abilityIpfsCids: [initialVersionAbilities.abilityIpfsCids[0], generateRandomIpfsCid()], // one existing & one new ability
+      abilityPolicies: [
+        [generateRandomIpfsCid()], // new policy for the existing ability
+        [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new ability
       ],
     };
     const nextAppVersion = await registerNextVersion({
       signer: appManagerSigner,
       args: {
         appId: appId.toString(),
-        versionTools: nextVersionTools,
+        versionAbilities: nextVersionAbilities,
       },
     });
     console.log('Next version registration result:', nextAppVersion);
@@ -304,8 +304,8 @@ describe('VincentContracts', () => {
         appId: appId.toString(),
         appVersion: nextAppVersion.newAppVersion,
         permissionData: {
-          toolIpfsCids: nextVersionTools.toolIpfsCids,
-          policyIpfsCids: nextVersionTools.toolPolicies,
+          abilityIpfsCids: nextVersionAbilities.abilityIpfsCids,
+          policyIpfsCids: nextVersionAbilities.abilityPolicies,
           policyParameterValues: [
             ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
             [
@@ -355,16 +355,16 @@ describe('VincentContracts', () => {
     console.log('All permitted app ids for pkp result:', allPermittedAppIdsForPkpResult);
     expect(allPermittedAppIdsForPkpResult.length).toBeGreaterThan(0);
 
-    // Get all tools and policies for app
-    const allToolsAndPoliciesForAppResult = await getAllToolsAndPoliciesForApp({
+    // Get all abilities and policies for app
+    const allAbilitiesAndPoliciesForAppResult = await getAllAbilitiesAndPoliciesForApp({
       signer: userSigner,
       args: {
         pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
         appId: appId.toString(),
       },
     });
-    console.log('All tools and policies for app result:', allToolsAndPoliciesForAppResult);
-    expect(allToolsAndPoliciesForAppResult.length).toBeGreaterThan(0); // Weak test since the order of the tool is not guaranteed
+    console.log('All abilities and policies for app result:', allAbilitiesAndPoliciesForAppResult);
+    expect(allAbilitiesAndPoliciesForAppResult.length).toBeGreaterThan(0); // Weak test since the order of the ability is not guaranteed
 
     await litNodeClient.disconnect();
 
@@ -381,15 +381,15 @@ describe('VincentContracts', () => {
     expect(delegatedAgentPkpTokenIdsResult.length).toBeGreaterThan(0);
     expect(delegatedAgentPkpTokenIdsResult[0]).toBe(process.env.TEST_USER_AGENT_PKP_TOKEN_ID!);
 
-    // Set tool policy parameters
-    const setToolPolicyParametersResult = await setToolPolicyParameters({
+    // Set ability policy parameters
+    const setAbilityPolicyParametersResult = await setAbilityPolicyParameters({
       signer: pkpEthersWallet,
       args: {
         pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
         appId: appId.toString(),
         appVersion: nextAppVersion.newAppVersion,
-        toolIpfsCids: [nextVersionTools.toolIpfsCids[1]],
-        policyIpfsCids: [[nextVersionTools.toolPolicies[1][1]]], // second policy was never set by the Agent
+        abilityIpfsCids: [nextVersionAbilities.abilityIpfsCids[1]],
+        policyIpfsCids: [[nextVersionAbilities.abilityPolicies[1][1]]], // second policy was never set by the Agent
         policyParameterValues: [
           [
             '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036',
@@ -397,9 +397,9 @@ describe('VincentContracts', () => {
         ],
       },
     });
-    console.log('Set tool policy parameters result:', setToolPolicyParametersResult);
-    expect(setToolPolicyParametersResult).toHaveProperty('txHash');
-    expect(setToolPolicyParametersResult.success).toBe(true);
+    console.log('Set ability policy parameters result:', setAbilityPolicyParametersResult);
+    expect(setAbilityPolicyParametersResult).toHaveProperty('txHash');
+    expect(setAbilityPolicyParametersResult.success).toBe(true);
 
     // Unpermit app
     const unpermitAppResult = await unPermitApp({
