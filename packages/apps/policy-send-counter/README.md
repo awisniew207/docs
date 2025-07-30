@@ -1,15 +1,15 @@
 # Vincent Policy Send Counter
 
-A policy that can be attached to Vincent tools to limit the number of transactions that can be sent within a specific time period.
+A policy that can be attached to Vincent abilitys to limit the number of transactions that can be sent within a specific time period.
 
 ## Overview
 
-The Vincent Policy Send Counter is part of the Vincent Tools ecosystem and is built using the Vincent Tool SDK. It allows users to set transaction count limits for tools, providing an additional layer of security and control.
+The Vincent Policy Send Counter is part of the Vincent Abilitys ecosystem and is built using the Vincent Ability SDK. It allows users to set transaction count limits for abilitys, providing an additional layer of security and control.
 
 ## Features
 
 - Set maximum transaction limits per time period
-- Track transaction counts across multiple tools
+- Track transaction counts across multiple abilitys
 - Configurable by users through the Vincent Dashboard
 
 ## Installation
@@ -20,33 +20,33 @@ npm install @lit-protocol/vincent-policy-send-counter
 
 ## Usage
 
-This policy can be integrated with Vincent Tools to enforce transaction count limits:
+This policy can be integrated with Vincent Abilitys to enforce transaction count limits:
 
 ```typescript
 import {
-  createVincentToolPolicy,
-  createVincentTool,
-  supportedPoliciesForTool,
-} from '@lit-protocol/vincent-tool-sdk';
+  createVincentAbilityPolicy,
+  createVincentAbility,
+  supportedPoliciesForAbility,
+} from '@lit-protocol/vincent-ability-sdk';
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-send-counter';
 
-const toolParamsSchema = z.object({
-  // Your tool's parameter schema
+const abilityParamsSchema = z.object({
+  // Your ability's parameter schema
 });
 
-const sendCounterPolicy = createVincentToolPolicy({
-  toolParamsSchema,
+const sendCounterPolicy = createVincentAbilityPolicy({
+  abilityParamsSchema,
   bundledVincentPolicy,
-  // Map your tool's parameters to the policy's expected parameters if needed
-  toolParameterMappings: {
+  // Map your ability's parameters to the policy's expected parameters if needed
+  abilityParameterMappings: {
     /* your parameter mappings */
   },
 });
 
-export const myTool = createVincentTool({
-  toolParamsSchema,
-  supportedPolicies: supportedPoliciesForTool([sendCounterPolicy]),
-  // ... rest of tool implementation
+export const myAbility = createVincentAbility({
+  abilityParamsSchema,
+  supportedPolicies: supportedPoliciesForAbility([sendCounterPolicy]),
+  // ... rest of ability implementation
 });
 ```
 

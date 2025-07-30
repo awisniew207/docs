@@ -4,7 +4,7 @@
   "include": [],
   "references": [
     {
-      "path": "../../libs/tool-sdk"
+      "path": "../../libs/ability-sdk"
     },
     {
       "path": "./tsconfig.lib.json"

@@ -1,19 +1,19 @@
-import { vincentPolicyHandler } from '@lit-protocol/vincent-tool-sdk';
+import { vincentPolicyHandler } from '@lit-protocol/vincent-ability-sdk';
 
 import { vincentPolicy } from './vincent-policy';
-import { toolParamsSchema } from './schemas';
+import { abilityParamsSchema } from './schemas';
 
 declare const context: {
-  toolIpfsCid: string;
+  abilityIpfsCid: string;
   delegatorPkpEthAddress: string;
 };
 
-declare const toolParams: typeof toolParamsSchema;
+declare const abilityParams: typeof abilityParamsSchema;
 
 (async () => {
   return await vincentPolicyHandler({
     vincentPolicy: vincentPolicy,
     context,
-    toolParams,
+    abilityParams,
   });
 })();
