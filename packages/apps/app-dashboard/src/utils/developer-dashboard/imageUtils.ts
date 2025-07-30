@@ -11,7 +11,7 @@ export interface ImageUploadResult {
 
 export const DEFAULT_IMAGE_OPTIONS: ImageValidationOptions = {
   allowedTypes: ['image/jpeg', 'image/jpg', 'image/gif'],
-  maxSize: 100 * 1024, // 100KB
+  maxSize: 512 * 1024, // 512KB
   requireSquare: true,
 };
 
@@ -34,7 +34,7 @@ export const processImageUpload = async (
 
   // Validate file size
   if (maxSize && file.size > maxSize) {
-    throw new Error(`File size must be less than ${Math.round(maxSize / (1024 * 1024))}MB`);
+    throw new Error(`File size must be less than ${Math.round(maxSize / 1024)}KB`);
   }
 
   // Create preview URL
