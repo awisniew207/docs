@@ -20,9 +20,9 @@ contract VincentAppFacetTest is Test {
     uint256 constant PKP_TOKEN_ID_1 = 1;
     uint256 constant PKP_TOKEN_ID_2 = 2;
 
-    string constant TOOL_IPFS_CID_1 = "QmTool1";
-    string constant TOOL_IPFS_CID_2 = "QmTool2";
-    string constant TOOL_IPFS_CID_3 = "QmTool3";
+    string constant ABILITY_IPFS_CID_1 = "QmAbility1";
+    string constant ABILITY_IPFS_CID_2 = "QmAbility2";
+    string constant ABILITY_IPFS_CID_3 = "QmAbility3";
 
     string constant POLICY_IPFS_CID_1 = "QmPolicy1";
     string constant POLICY_IPFS_CID_2 = "QmPolicy2";
@@ -71,9 +71,9 @@ contract VincentAppFacetTest is Test {
         vm.expectEmit(true, true, true, true);
         emit LibVincentAppFacet.NewAppRegistered(1, APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
-        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(TOOL_IPFS_CID_1)));
+        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(ABILITY_IPFS_CID_1)));
         vm.expectEmit(true, true, true, true);
-        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(TOOL_IPFS_CID_2)));
+        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(ABILITY_IPFS_CID_2)));
         vm.expectEmit(true, true, true, true);
         emit LibVincentAppFacet.NewAppVersionRegistered(1, 1, APP_MANAGER_ALICE);
         
@@ -100,14 +100,14 @@ contract VincentAppFacetTest is Test {
         assertEq(appVersion.version, newAppVersion);
         assertTrue(appVersion.enabled);
         assertEq(appVersion.delegatedAgentPkpTokenIds.length, 0);
-        assertEq(appVersion.tools.length, 2);
+        assertEq(appVersion.abilities.length, 2);
 
-        assertEq(appVersion.tools[0].toolIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(appVersion.tools[0].policyIpfsCids.length, 1);
-        assertEq(appVersion.tools[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
+        assertEq(appVersion.abilities[0].abilityIpfsCid, ABILITY_IPFS_CID_1);
+        assertEq(appVersion.abilities[0].policyIpfsCids.length, 1);
+        assertEq(appVersion.abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
 
-        assertEq(appVersion.tools[1].toolIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(appVersion.tools[1].policyIpfsCids.length, 0);
+        assertEq(appVersion.abilities[1].abilityIpfsCid, ABILITY_IPFS_CID_2);
+        assertEq(appVersion.abilities[1].policyIpfsCids.length, 0);
 
         (uint256[] memory appIds, uint256[] memory appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
         assertEq(appIds.length, 1);
@@ -119,27 +119,27 @@ contract VincentAppFacetTest is Test {
          * Now testing registering the next version of the app
          */
 
-        VincentAppFacet.AppVersionTools memory versionTools_newAppVersion;
-        versionTools_newAppVersion.toolIpfsCids = new string[](3);
+        VincentAppFacet.AppVersionAbilities memory versionAbilities_newAppVersion;
+        versionAbilities_newAppVersion.abilityIpfsCids = new string[](3);
 
-        versionTools_newAppVersion.toolIpfsCids[0] = TOOL_IPFS_CID_1;
-        versionTools_newAppVersion.toolIpfsCids[1] = TOOL_IPFS_CID_2;
-        versionTools_newAppVersion.toolIpfsCids[2] = TOOL_IPFS_CID_3;
+        versionAbilities_newAppVersion.abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        versionAbilities_newAppVersion.abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
+        versionAbilities_newAppVersion.abilityIpfsCids[2] = ABILITY_IPFS_CID_3;
 
-        versionTools_newAppVersion.toolPolicies = new string[][](3);
+        versionAbilities_newAppVersion.abilityPolicies = new string[][](3);
 
-        versionTools_newAppVersion.toolPolicies[0] = new string[](1);
-        versionTools_newAppVersion.toolPolicies[0][0] = POLICY_IPFS_CID_1;
+        versionAbilities_newAppVersion.abilityPolicies[0] = new string[](1);
+        versionAbilities_newAppVersion.abilityPolicies[0][0] = POLICY_IPFS_CID_1;
 
-        versionTools_newAppVersion.toolPolicies[1] = new string[](0);
+        versionAbilities_newAppVersion.abilityPolicies[1] = new string[](0);
 
-        versionTools_newAppVersion.toolPolicies[2] = new string[](3);
-        versionTools_newAppVersion.toolPolicies[2][0] = POLICY_IPFS_CID_1;
-        versionTools_newAppVersion.toolPolicies[2][1] = POLICY_IPFS_CID_2;
-        versionTools_newAppVersion.toolPolicies[2][2] = POLICY_IPFS_CID_3;
+        versionAbilities_newAppVersion.abilityPolicies[2] = new string[](3);
+        versionAbilities_newAppVersion.abilityPolicies[2][0] = POLICY_IPFS_CID_1;
+        versionAbilities_newAppVersion.abilityPolicies[2][1] = POLICY_IPFS_CID_2;
+        versionAbilities_newAppVersion.abilityPolicies[2][2] = POLICY_IPFS_CID_3;
 
         vm.startPrank(APP_MANAGER_ALICE);
-        (newAppVersion) = vincentAppFacet.registerNextAppVersion(newAppId, versionTools_newAppVersion);
+        (newAppVersion) = vincentAppFacet.registerNextAppVersion(newAppId, versionAbilities_newAppVersion);
         vm.stopPrank();
 
         assertEq(newAppVersion, 2);
@@ -163,20 +163,20 @@ contract VincentAppFacetTest is Test {
         assertEq(appVersion.version, newAppVersion);
         assertTrue(appVersion.enabled);
         assertEq(appVersion.delegatedAgentPkpTokenIds.length, 0);
-        assertEq(appVersion.tools.length, 3);
+        assertEq(appVersion.abilities.length, 3);
 
-        assertEq(appVersion.tools[0].toolIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(appVersion.tools[0].policyIpfsCids.length, 1);
-        assertEq(appVersion.tools[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
+        assertEq(appVersion.abilities[0].abilityIpfsCid, ABILITY_IPFS_CID_1);
+        assertEq(appVersion.abilities[0].policyIpfsCids.length, 1);
+        assertEq(appVersion.abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
 
-        assertEq(appVersion.tools[1].toolIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(appVersion.tools[1].policyIpfsCids.length, 0);
+        assertEq(appVersion.abilities[1].abilityIpfsCid, ABILITY_IPFS_CID_2);
+        assertEq(appVersion.abilities[1].policyIpfsCids.length, 0);
 
-        assertEq(appVersion.tools[2].toolIpfsCid, TOOL_IPFS_CID_3);
-        assertEq(appVersion.tools[2].policyIpfsCids.length, 3);
-        assertEq(appVersion.tools[2].policyIpfsCids[0], POLICY_IPFS_CID_1);
-        assertEq(appVersion.tools[2].policyIpfsCids[1], POLICY_IPFS_CID_2);
-        assertEq(appVersion.tools[2].policyIpfsCids[2], POLICY_IPFS_CID_3);
+        assertEq(appVersion.abilities[2].abilityIpfsCid, ABILITY_IPFS_CID_3);
+        assertEq(appVersion.abilities[2].policyIpfsCids.length, 3);
+        assertEq(appVersion.abilities[2].policyIpfsCids[0], POLICY_IPFS_CID_1);
+        assertEq(appVersion.abilities[2].policyIpfsCids[1], POLICY_IPFS_CID_2);
+        assertEq(appVersion.abilities[2].policyIpfsCids[2], POLICY_IPFS_CID_3);
 
         (appIds, appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
         assertEq(appIds.length, 1);
@@ -404,8 +404,8 @@ contract VincentAppFacetTest is Test {
         
         vm.expectRevert(abi.encodeWithSelector(VincentBase.AppHasBeenDeleted.selector, newAppId));
 
-        VincentAppFacet.AppVersionTools memory versionTools_newAppVersion;
-        vincentAppFacet.registerNextAppVersion(newAppId, versionTools_newAppVersion);
+        VincentAppFacet.AppVersionAbilities memory versionAbilities_newAppVersion;
+        vincentAppFacet.registerNextAppVersion(newAppId, versionAbilities_newAppVersion);
     }
 
     function testRegisterNextAppVersion_NotAppManager() public {
@@ -415,8 +415,8 @@ contract VincentAppFacetTest is Test {
         vm.startPrank(APP_DELEGATEE_CHARLIE);
         vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.NotAppManager.selector, newAppId, APP_DELEGATEE_CHARLIE));
 
-        VincentAppFacet.AppVersionTools memory versionTools_newAppVersion;
-        vincentAppFacet.registerNextAppVersion(newAppId, versionTools_newAppVersion);
+        VincentAppFacet.AppVersionAbilities memory versionAbilities_newAppVersion;
+        vincentAppFacet.registerNextAppVersion(newAppId, versionAbilities_newAppVersion);
     }
 
     /**
@@ -427,8 +427,8 @@ contract VincentAppFacetTest is Test {
     function testRegisterNextAppVersion_AppNotRegistered() public {
         vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.NotAppManager.selector, 1, address(this)));
 
-        VincentAppFacet.AppVersionTools memory versionTools_newAppVersion;
-        vincentAppFacet.registerNextAppVersion(1, versionTools_newAppVersion);
+        VincentAppFacet.AppVersionAbilities memory versionAbilities_newAppVersion;
+        vincentAppFacet.registerNextAppVersion(1, versionAbilities_newAppVersion);
     }
 
     /**
@@ -536,7 +536,7 @@ contract VincentAppFacetTest is Test {
         uint256 appId2 = 2;
         address[] memory delegatees = new address[](1);
         delegatees[0] = APP_DELEGATEE_DAVID;
-        _registerApp(appId2, delegatees, _createBasicVersionTools());
+        _registerApp(appId2, delegatees, _createBasicVersionAbilities());
         
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.DelegateeAlreadyRegisteredToApp.selector, appId1, APP_DELEGATEE_CHARLIE));
@@ -627,10 +627,10 @@ contract VincentAppFacetTest is Test {
         uint256 newAppId = 1;
         uint256 newAppVersion = _registerBasicApp(newAppId);
 
-        // Create arrays for all registered tools
-        string[] memory toolIpfsCids = new string[](2);
-        toolIpfsCids[0] = TOOL_IPFS_CID_1;
-        toolIpfsCids[1] = TOOL_IPFS_CID_2;
+        // Create arrays for all registered abilities
+        string[] memory abilityIpfsCids = new string[](2);
+        abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
 
         string[][] memory policyIpfsCids = new string[][](2);
         policyIpfsCids[0] = new string[](1);
@@ -647,7 +647,7 @@ contract VincentAppFacetTest is Test {
             PKP_TOKEN_ID_1,
             newAppId,
             newAppVersion,
-            toolIpfsCids,
+            abilityIpfsCids,
             policyIpfsCids,
             policyParameterValues
         );
@@ -665,10 +665,10 @@ contract VincentAppFacetTest is Test {
         uint256 newAppId = 1;
         uint256 newAppVersion = _registerBasicApp(newAppId);
 
-        // Create arrays for all registered tools
-        string[] memory toolIpfsCids = new string[](2);
-        toolIpfsCids[0] = TOOL_IPFS_CID_1;
-        toolIpfsCids[1] = TOOL_IPFS_CID_2;
+        // Create arrays for all registered abilities
+        string[] memory abilityIpfsCids = new string[](2);
+        abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
 
         string[][] memory policyIpfsCids = new string[][](2);
         policyIpfsCids[0] = new string[](1);
@@ -685,7 +685,7 @@ contract VincentAppFacetTest is Test {
             PKP_TOKEN_ID_1,
             newAppId,
             newAppVersion,
-            toolIpfsCids,
+            abilityIpfsCids,
             policyIpfsCids,
             policyParameterValues
         );
@@ -702,10 +702,10 @@ contract VincentAppFacetTest is Test {
     function _registerApp(
         uint256 appId,
         address[] memory delegatees,
-        VincentAppFacet.AppVersionTools memory versionTools
+        VincentAppFacet.AppVersionAbilities memory versionAbilities
     ) private returns (uint256) {
         vm.startPrank(APP_MANAGER_ALICE);
-        uint256 newAppVersion = vincentAppFacet.registerApp(appId, delegatees, versionTools);
+        uint256 newAppVersion = vincentAppFacet.registerApp(appId, delegatees, versionAbilities);
         vm.stopPrank();
 
         return newAppVersion;
@@ -715,24 +715,24 @@ contract VincentAppFacetTest is Test {
         address[] memory delegatees = new address[](1);
         delegatees[0] = APP_DELEGATEE_CHARLIE;
 
-        newAppVersion = _registerApp(appId, delegatees, _createBasicVersionTools());
+        newAppVersion = _registerApp(appId, delegatees, _createBasicVersionAbilities());
         assertEq(newAppVersion, 1);
     }
 
-    function _createBasicVersionTools() private pure returns (VincentAppFacet.AppVersionTools memory) {
-        VincentAppFacet.AppVersionTools memory versionTools;
-        versionTools.toolIpfsCids = new string[](2);
+    function _createBasicVersionAbilities() private pure returns (VincentAppFacet.AppVersionAbilities memory) {
+        VincentAppFacet.AppVersionAbilities memory versionAbilities;
+        versionAbilities.abilityIpfsCids = new string[](2);
 
-        versionTools.toolIpfsCids[0] = TOOL_IPFS_CID_1;
-        versionTools.toolIpfsCids[1] = TOOL_IPFS_CID_2;
+        versionAbilities.abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        versionAbilities.abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
 
-        versionTools.toolPolicies = new string[][](2);
+        versionAbilities.abilityPolicies = new string[][](2);
 
-        versionTools.toolPolicies[0] = new string[](1);
-        versionTools.toolPolicies[0][0] = POLICY_IPFS_CID_1;
+        versionAbilities.abilityPolicies[0] = new string[](1);
+        versionAbilities.abilityPolicies[0][0] = POLICY_IPFS_CID_1;
 
-        versionTools.toolPolicies[1] = new string[](0);
+        versionAbilities.abilityPolicies[1] = new string[](0);
 
-        return versionTools;
+        return versionAbilities;
     }
 }
