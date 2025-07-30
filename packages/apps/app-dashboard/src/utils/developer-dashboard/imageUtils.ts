@@ -11,7 +11,7 @@ export interface ImageUploadResult {
 
 export const DEFAULT_IMAGE_OPTIONS: ImageValidationOptions = {
   allowedTypes: ['image/svg+xml'],
-  maxSize: 512 * 1024, // 512KB
+  maxSize: 128 * 1024, // 128KB
   requireSquare: false, // SVGs don't have inherent dimensions like raster images
 };
 

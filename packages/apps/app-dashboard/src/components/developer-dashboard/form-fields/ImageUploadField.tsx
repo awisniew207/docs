@@ -123,7 +123,7 @@ export function ImageUploadField({
                     isUploading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 />
-                <div className="text-xs text-gray-600">Upload an SVG (max ~512KB)</div>
+                <div className="text-xs text-gray-600">Upload an SVG (max ~128KB)</div>
 
                 {isUploading && (
                   <div className="flex items-center space-x-2 text-xs text-gray-600">
