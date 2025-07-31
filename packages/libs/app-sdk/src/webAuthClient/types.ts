@@ -1,4 +1,4 @@
-import type { VincentJWT, VincentJWTAppSpecific } from '../jwt/types';
+import type { VincentJWTAppUser } from '../jwt/types';
 
 export interface WebAuthClientConfig {
   appId: number;
@@ -27,7 +27,7 @@ export interface WebAuthClient {
    *
    * Use {@link WebAuthClient.uriContainsVincentJWT} to detect if a user has just opened your app via the Connect page
    *
-   * Use {@link WebAuthClient.decodeVincentJWT} to decode and verify the {@link VincentJWT} from the page URI, and store it for later usage
+   * Use {@link WebAuthClient.decodeVincentJWT} to decode and verify the {@link VincentJWTAppUser} from the page URI, and store it for later usage
    *
    * NOTE: You must register the `redirectUri` on your Vincent app for it to be considered a valid redirect target
    *
@@ -82,7 +82,7 @@ export interface WebAuthClient {
    */
   decodeVincentJWT: (
     expectedAudience: string
-  ) => { decodedJWT: VincentJWTAppSpecific; jwtStr: string } | null;
+  ) => Promise<{ decodedJWT: VincentJWTAppUser; jwtStr: string } | null>;
 
   /**
    * Removes the Vincent connect JWT from the current window URI.
