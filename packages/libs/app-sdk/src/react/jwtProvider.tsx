@@ -185,8 +185,8 @@ export const JwtProvider = ({
   const connect = useCallback(
     (redirectUri: string) => {
       // Redirect to Vincent Auth consent page with appId and version
-      vincentWebAppClient.redirectToDelegationAuthPage({
-        // delegationAuthPageUrl: `http://localhost:5173/`,
+      vincentWebAppClient.redirectToConnectPage({
+        // connectPageUrl: `http://localhost:5173/`,
         redirectUri,
       });
     },
@@ -194,8 +194,8 @@ export const JwtProvider = ({
   );
 
   const getJwt = useCallback(async () => {
-    if (vincentWebAppClient.isLogin()) {
-      const jwtResult = vincentWebAppClient.decodeVincentLoginJWT(window.location.origin);
+    if (vincentWebAppClient.uriContainsVincentJWT()) {
+      const jwtResult = vincentWebAppClient.decodeVincentJWT(window.location.origin);
 
       if (!jwtResult) {
         return null;
@@ -203,7 +203,7 @@ export const JwtProvider = ({
 
       const { decodedJWT, jwtStr } = jwtResult;
       await storage.setItem(appJwtKey, jwtStr);
-      vincentWebAppClient.removeLoginJWTFromURI();
+      vincentWebAppClient.removeVincentJWTFromURI();
 
       return { jwtStr, decodedJWT };
     }
