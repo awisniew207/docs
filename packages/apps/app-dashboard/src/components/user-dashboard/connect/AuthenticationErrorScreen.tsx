@@ -4,11 +4,11 @@ import { theme } from './ui/theme';
 import { InfoBanner } from './ui/InfoBanner';
 import { Button } from '@/components/shared/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import ConsentView from './Consent';
+import ConnectView from './Connect';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Link } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { ConsentFooter } from '../ui/Footer';
+import { ConnectFooter } from '../ui/Footer';
 
 type AuthenticationErrorScreenProps = {
   readAuthInfo: UseReadAuthInfo;
@@ -66,7 +66,7 @@ export function AuthenticationErrorScreen({ readAuthInfo }: AuthenticationErrorS
               <div className="space-y-3">
                 {/* Sign In Option */}
                 <div className="relative">
-                  {/* ConsentView with smooth animation */}
+                  {/* ConnectView with smooth animation */}
                   <AnimatePresence>
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
@@ -75,7 +75,7 @@ export function AuthenticationErrorScreen({ readAuthInfo }: AuthenticationErrorS
                       transition={{ duration: 0.3, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <ConsentView theme={themeStyles} readAuthInfo={readAuthInfo} />
+                      <ConnectView theme={themeStyles} readAuthInfo={readAuthInfo} />
                     </motion.div>
                   </AnimatePresence>
                 </div>
@@ -85,7 +85,7 @@ export function AuthenticationErrorScreen({ readAuthInfo }: AuthenticationErrorS
         </div>
 
         {/* Footer */}
-        <ConsentFooter />
+        <ConnectFooter />
       </div>
     </div>
   );

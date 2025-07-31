@@ -1,7 +1,7 @@
 import { useLocation, Link } from 'react-router-dom';
 import { Package, Wallet, Sun, Moon, LogOut, AlertTriangle } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '../consent/ui/theme';
+import { theme } from '../connect/ui/theme';
 import { useClearAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { AccountTooltip } from './AccountTooltip';
 import {

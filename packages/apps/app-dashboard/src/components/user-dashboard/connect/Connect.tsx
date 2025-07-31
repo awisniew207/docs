@@ -6,7 +6,7 @@ import { ThemeType } from './ui/theme';
 import useAuthenticate from '../../../hooks/user-dashboard/useAuthenticate';
 import useAccounts from '../../../hooks/user-dashboard/useAccounts';
 import { registerWebAuthn, getSessionSigs } from '../../../utils/user-dashboard/lit';
-import LoginMethods from '../auth/LoginMethods';
+import ConnectMethods from '../auth/ConnectMethods';
 import { getAgentPKP } from '../../../utils/user-dashboard/getAgentPKP';
 import {
   useSetAuthInfo,
@@ -18,12 +18,12 @@ import SignUpView from '../auth/SignUpView';
 import StatusMessage from './StatusMessage';
 import Loading from '@/components/shared/ui/Loading';
 
-type ConsentViewProps = {
+type ConnectViewProps = {
   theme: ThemeType;
   readAuthInfo: UseReadAuthInfo;
 };
 
-export default function ConsentView({ theme, readAuthInfo }: ConsentViewProps) {
+export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   // ------ STATE AND HOOKS ------
   const { updateAuthInfo } = useSetAuthInfo();
   const { clearAuthInfo } = useClearAuthInfo();
@@ -182,7 +182,7 @@ export default function ConsentView({ theme, readAuthInfo }: ConsentViewProps) {
 
   // ------ CLEANUP ------
 
-  // Cleanup effect for consent flow
+  // Cleanup effect for connect flow
   useEffect(() => {
     return () => {
       // Cleanup web3 connection when component unmounts
@@ -202,7 +202,7 @@ export default function ConsentView({ theme, readAuthInfo }: ConsentViewProps) {
 
     // If authenticated with a new PKP and session sigs
     if (userPKP && agentPKP && sessionSigs) {
-      // Consent flow: save PKP info and refresh the page so ConsentPageWrapper can re-evaluate
+      // Connect flow: save PKP info and refresh the page so ConnectPageWrapper can re-evaluate
       try {
         updateAuthInfo({
           agentPKP,
@@ -243,9 +243,9 @@ export default function ConsentView({ theme, readAuthInfo }: ConsentViewProps) {
       );
     }
 
-    // Initial authentication state - show login methods
+    // Initial authentication state - show connect methods
     return (
-      <LoginMethods
+      <ConnectMethods
         authWithWebAuthn={authWithWebAuthn}
         authWithStytch={authWithStytch}
         authWithEthWallet={authWithEthWallet}

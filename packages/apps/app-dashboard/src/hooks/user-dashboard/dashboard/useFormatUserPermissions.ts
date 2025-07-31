@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { PermissionData } from '@lit-protocol/vincent-contracts-sdk';
 
 export function useFormatUserPermissions(
-  consentInfoMap: ConsentInfoMap,
+  connectInfoMap: ConnectInfoMap,
   initialPermissionData?: PermissionData | null,
 ) {
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -12,23 +12,23 @@ export function useFormatUserPermissions(
   useEffect(() => {
     const initialFormData: Record<string, any> = {};
 
-    const appNames = Object.keys(consentInfoMap.versionsByApp);
+    const appNames = Object.keys(connectInfoMap.versionsByApp);
     appNames.forEach((appName) => {
-      const versions = consentInfoMap.versionsByApp[appName];
+      const versions = connectInfoMap.versionsByApp[appName];
       const activeVersion = versions.find(
-        (version) => version.version === consentInfoMap.app.activeVersion,
+        (version) => version.version === connectInfoMap.app.activeVersion,
       );
 
       if (activeVersion) {
         const versionKey = `${appName}-${activeVersion.version}`;
         const appVersionAbilities =
-          consentInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
+          connectInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
 
         appVersionAbilities.forEach((ability) => {
           const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
-          const policies = consentInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
+          const policies = connectInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
           const abilityVersions =
-            consentInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
+            connectInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
           const abilityVersion = abilityVersions[0];
 
           if (abilityVersion) {
@@ -55,7 +55,7 @@ export function useFormatUserPermissions(
     });
 
     setFormData(initialFormData);
-  }, [consentInfoMap, initialPermissionData]);
+  }, [connectInfoMap, initialPermissionData]);
 
   const handleFormChange = useCallback(
     (abilityIpfsCid: string, policyIpfsCid: string, data: any) => {

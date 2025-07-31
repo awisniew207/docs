@@ -1,5 +1,5 @@
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { AuthenticationErrorScreen } from '../consent/AuthenticationErrorScreen';
+import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
 import { ThemedLoading } from './ui/ThemedLoading';
 import { Navigate } from 'react-router-dom';
 import SharedHome from '@/pages/shared/RootPage';

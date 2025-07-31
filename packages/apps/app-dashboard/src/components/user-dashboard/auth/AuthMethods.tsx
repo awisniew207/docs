@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { ThemeType } from '../consent/ui/theme';
+import { ThemeType } from '../connect/ui/theme';
 
 interface AuthMethodsProps {
   setView: Dispatch<SetStateAction<string>>;

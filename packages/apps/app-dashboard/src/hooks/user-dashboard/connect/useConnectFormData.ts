@@ -1,30 +1,30 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ConsentInfoMap } from './useConsentInfo';
+import { ConnectInfoMap } from './useConnectInfo';
 
-export function useConsentFormData(consentInfoMap: ConsentInfoMap) {
+export function useConnectFormData(connectInfoMap: ConnectInfoMap) {
   const [formData, setFormData] = useState<Record<string, any>>({});
 
   // Initialize formData with all policies (including hidden ones with empty values)
   useEffect(() => {
     const initialFormData: Record<string, any> = {};
 
-    const appNames = Object.keys(consentInfoMap.versionsByApp);
+    const appNames = Object.keys(connectInfoMap.versionsByApp);
     appNames.forEach((appName) => {
-      const versions = consentInfoMap.versionsByApp[appName];
+      const versions = connectInfoMap.versionsByApp[appName];
       const activeVersion = versions.find(
-        (version) => version.version === consentInfoMap.app.activeVersion,
+        (version) => version.version === connectInfoMap.app.activeVersion,
       );
 
       if (activeVersion) {
         const versionKey = `${appName}-${activeVersion.version}`;
         const appVersionAbilities =
-          consentInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
+          connectInfoMap.appVersionAbilitiesByAppVersion[versionKey] || [];
 
         appVersionAbilities.forEach((ability) => {
           const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
-          const policies = consentInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
+          const policies = connectInfoMap.supportedPoliciesByAbilityVersion[abilityKey] || [];
           const abilityVersions =
-            consentInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
+            connectInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
           const abilityVersion = abilityVersions[0];
 
           if (abilityVersion) {
@@ -40,7 +40,7 @@ export function useConsentFormData(consentInfoMap: ConsentInfoMap) {
     });
 
     setFormData(initialFormData);
-  }, [consentInfoMap]);
+  }, [connectInfoMap]);
 
   const handleFormChange = useCallback(
     (abilityIpfsCid: string, policyIpfsCid: string, data: any) => {

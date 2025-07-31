@@ -55,7 +55,7 @@ import {
 
 import { Wallet } from './pages/user-dashboard/wallet';
 import { UserPermissionWrapper } from './components/user-dashboard/dashboard/UserPermissionWrapper';
-import { ConsentPageWrapper } from './components/user-dashboard/consent/ConsentPageWraper';
+import { ConnectPageWrapper } from './components/user-dashboard/connect/ConnectPageWraper';
 import { PermittedAppsWrapper } from './components/user-dashboard/dashboard/PermittedAppsWrapper';
 import { UpdateVersionPageWrapper } from './components/user-dashboard/dashboard/UpdateVersionPageWrapper';
 
@@ -69,7 +69,7 @@ const UserLayoutWithSidebarAndProviders = wrap(
   [...UserProviders, UserLayoutWithSidebar],
 );
 
-// Minimal provider wrapper for root page - only needs ThemeProvider for ConsentFooter
+// Minimal provider wrapper for root page - only needs ThemeProvider for ConnectFooter
 // TODO: We'll need this everywhere eventually. Just keeping it simple for now.
 const RootPageWithProviders = wrap(RootPage, [ThemeProvider]);
 
@@ -237,8 +237,8 @@ const routes: RouteObject[] = [
     element: <UserDashboardLayoutWithProviders />,
     children: [
       {
-        path: '/user/appId/:appId/consent',
-        element: <ConsentPageWrapper />,
+        path: '/user/appId/:appId/connect',
+        element: <ConnectPageWrapper />,
       },
     ],
   },

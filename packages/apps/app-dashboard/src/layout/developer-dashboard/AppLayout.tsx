@@ -2,7 +2,7 @@ import { ComponentProps, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { cn } from '@/lib/utils';
 import { DeveloperSidebarWrapper } from '@/components/developer-dashboard/sidebar/DeveloperSidebarWrapper';
-import { AuthenticationErrorScreen } from '@/components/user-dashboard/consent/AuthenticationErrorScreen';
+import { AuthenticationErrorScreen } from '@/components/user-dashboard/connect/AuthenticationErrorScreen';
 import { ResourceNotOwnedError } from '@/components/developer-dashboard/ui/ResourceNotOwnedError';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/shared/ui/sidebar';
 import { Separator } from '@/components/shared/ui/separator';

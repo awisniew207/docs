@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '../consent/ui/theme';
+import { theme } from '../connect/ui/theme';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
 import { ExternalLink, Package } from 'lucide-react';

@@ -3,8 +3,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
-import { ThemeType } from '../consent/ui/theme';
-import StatusMessage from '../consent/StatusMessage';
+import { ThemeType } from '../connect/ui/theme';
+import StatusMessage from '../connect/StatusMessage';
 
 interface WalletAuthProps {
   authWithEthWallet: (

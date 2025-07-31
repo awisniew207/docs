@@ -4,8 +4,8 @@ import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/u
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { PermittedAppsSkeleton } from './PermittedAppsSkeleton';
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { AuthenticationErrorScreen } from '../consent/AuthenticationErrorScreen';
-import { GeneralErrorScreen } from '@/components/user-dashboard/consent/GeneralErrorScreen';
+import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
+import { GeneralErrorScreen } from '@/components/user-dashboard/connect/GeneralErrorScreen';
 
 export function PermittedAppsWrapper() {
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
