@@ -5,8 +5,8 @@ import { z } from 'zod';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { Button } from '@/components/shared/ui/button';
-import { ThemeType } from '../consent/ui/theme';
-import StatusMessage from '../consent/StatusMessage';
+import { ThemeType } from '../connect/ui/theme';
+import StatusMessage from '../connect/StatusMessage';
 
 interface StytchOTPProps {
   method: OtpMethod;

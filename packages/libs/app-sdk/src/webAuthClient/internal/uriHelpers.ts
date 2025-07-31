@@ -25,21 +25,17 @@ export const decodeVincentJWTFromUri = ({
   }
 };
 
-export const isLoginUri = (uri: string) => {
+export const uriContainsVincentJWT = (uri: string) => {
   const url = new URL(uri);
-  const loginJwt = url.searchParams.get(JWT_URL_KEY);
+  const connectJwt = url.searchParams.get(JWT_URL_KEY);
 
-  return !!loginJwt;
+  return !!connectJwt;
 };
 
-export function composeDelegationAuthUrl(
-  appId: number,
-  redirectUri: string,
-  delegationAuthPageUrl?: string
-) {
+export function composeConnectUrl(appId: number, redirectUri: string, connectPageUrl?: string) {
   return new URL(
-    `/user/consent/appId/${String(appId)}?redirectUri=${redirectUri}`,
-    delegationAuthPageUrl || PRODUCTION_VINCENT_DASHBOARD_URL
+    `/user/appId/${String(appId)}/connect?redirectUri=${redirectUri}`,
+    connectPageUrl || PRODUCTION_VINCENT_DASHBOARD_URL
   );
 }
 

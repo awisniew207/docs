@@ -1,5 +1,5 @@
 import { Settings } from 'lucide-react';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { Logo } from '@/components/shared/ui/Logo';
 import { ThemeType } from './theme';
 
@@ -11,17 +11,17 @@ interface AbilityHeaderProps {
   abilityVersion?: {
     ipfsCid: string;
   };
-  consentInfoMap: ConsentInfoMap;
+  connectInfoMap: ConnectInfoMap;
   theme: ThemeType;
 }
 
 export function AbilityHeader({
   ability,
   abilityVersion,
-  consentInfoMap,
+  connectInfoMap,
   theme,
 }: AbilityHeaderProps) {
-  const abilityData = consentInfoMap.abilitiesByPackageName[ability.abilityPackageName];
+  const abilityData = connectInfoMap.abilitiesByPackageName[ability.abilityPackageName];
 
   return (
     <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ export function AbilityHeader({
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <h4 className={`font-semibold ${theme.text}`}>
-            {consentInfoMap.abilitiesByPackageName[ability.abilityPackageName]?.title ||
+            {connectInfoMap.abilitiesByPackageName[ability.abilityPackageName]?.title ||
               ability.abilityPackageName}
           </h4>
           <a
@@ -67,9 +67,9 @@ export function AbilityHeader({
             </a>
           )}
         </div>
-        {consentInfoMap.abilitiesByPackageName[ability.abilityPackageName]?.description && (
+        {connectInfoMap.abilitiesByPackageName[ability.abilityPackageName]?.description && (
           <p className={`text-sm ${theme.textSubtle} mt-1`}>
-            {consentInfoMap.abilitiesByPackageName[ability.abilityPackageName].description}
+            {connectInfoMap.abilitiesByPackageName[ability.abilityPackageName].description}
           </p>
         )}
       </div>

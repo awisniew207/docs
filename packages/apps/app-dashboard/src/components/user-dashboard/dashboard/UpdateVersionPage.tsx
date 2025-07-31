@@ -1,16 +1,16 @@
 import { useState, useCallback, useRef } from 'react';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { useConsentFormData } from '@/hooks/user-dashboard/consent/useConsentFormData';
-import { theme } from '@/components/user-dashboard/consent/ui/theme';
-import { PolicyFormRef } from '@/components/user-dashboard/consent/ui/PolicyForm';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
+import { useConnectFormData } from '@/hooks/user-dashboard/connect/useConnectFormData';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
+import { PolicyFormRef } from '@/components/user-dashboard/connect/ui/PolicyForm';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { useAddPermittedActions } from '@/hooks/user-dashboard/consent/useAddPermittedActions';
-import { ConsentAppHeader } from '@/components/user-dashboard/consent/ui/ConsentAppHeader';
-import { AppsInfo } from '@/components/user-dashboard/consent/ui/AppInfo';
-import { ActionButtons } from '@/components/user-dashboard/consent/ui/ActionButtons';
-import { InfoBanner } from '@/components/user-dashboard/consent/ui/InfoBanner';
-import { StatusCard } from '@/components/user-dashboard/consent/ui/StatusCard';
+import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
+import { ConnectAppHeader } from '@/components/user-dashboard/connect/ui/ConnectAppHeader';
+import { AppsInfo } from '@/components/user-dashboard/connect/ui/AppInfo';
+import { ActionButtons } from '@/components/user-dashboard/connect/ui/ActionButtons';
+import { InfoBanner } from '@/components/user-dashboard/connect/ui/InfoBanner';
+import { StatusCard } from '@/components/user-dashboard/connect/ui/StatusCard';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -18,11 +18,11 @@ import { PageHeader } from './ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 
 interface UpdateVersionPageProps {
-  consentInfoMap: ConsentInfoMap;
+  connectInfoMap: ConnectInfoMap;
   readAuthInfo: UseReadAuthInfo;
 }
 
-export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersionPageProps) {
+export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersionPageProps) {
   const { isDark } = useTheme();
   const [localError, setLocalError] = useState<string | null>(null);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
   const navigate = useNavigate();
 
-  const { formData, handleFormChange } = useConsentFormData(consentInfoMap);
+  const { formData, handleFormChange } = useConnectFormData(connectInfoMap);
 
   const {
     addPermittedActions,
@@ -81,8 +81,8 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
         const client = getClient({ signer: userPkpWallet });
         await client.permitApp({
           pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
-          appId: Number(consentInfoMap.app.appId),
-          appVersion: Number(consentInfoMap.app.activeVersion),
+          appId: Number(connectInfoMap.app.appId),
+          appVersion: Number(connectInfoMap.app.activeVersion),
           permissionData: formData,
         });
 
@@ -91,7 +91,7 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
         setLocalSuccess('Version updated successfully!');
         setTimeout(() => {
           setLocalSuccess(null);
-          window.location.href = `/user/appId/${consentInfoMap.app.appId}`;
+          window.location.href = `/user/appId/${connectInfoMap.app.appId}`;
         }, 3000);
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to update version');
@@ -101,11 +101,11 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
     } else {
       setLocalStatus(null);
     }
-  }, [formData, readAuthInfo, addPermittedActions, consentInfoMap.app]);
+  }, [formData, readAuthInfo, addPermittedActions, connectInfoMap.app]);
 
   const handleDecline = useCallback(() => {
-    navigate(`/user/appId/${consentInfoMap.app.appId}`);
-  }, [consentInfoMap.app.appId, navigate]);
+    navigate(`/user/appId/${connectInfoMap.app.appId}`);
+  }, [connectInfoMap.app.appId, navigate]);
 
   const registerFormRef = useCallback((policyIpfsCid: string, ref: PolicyFormRef) => {
     formRefs.current[policyIpfsCid] = ref;
@@ -148,11 +148,11 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
           <InfoBanner theme={themeStyles} />
 
           {/* App Header */}
-          <ConsentAppHeader app={consentInfoMap.app} theme={themeStyles} />
+          <ConnectAppHeader app={connectInfoMap.app} theme={themeStyles} />
 
           {/* Apps and Versions */}
           <AppsInfo
-            consentInfoMap={consentInfoMap}
+            connectInfoMap={connectInfoMap}
             theme={themeStyles}
             isDark={isDark}
             formData={formData}
@@ -176,7 +176,7 @@ export function UpdateVersionPage({ consentInfoMap, readAuthInfo }: UpdateVersio
             theme={themeStyles}
             isLoading={isLoading}
             error={error || localError}
-            appName={consentInfoMap.app.name}
+            appName={connectInfoMap.app.name}
           />
         </div>
       </div>

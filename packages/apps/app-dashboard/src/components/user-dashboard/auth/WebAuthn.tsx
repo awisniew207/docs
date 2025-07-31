@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
-import { ThemeType } from '../consent/ui/theme';
+import { ThemeType } from '../connect/ui/theme';
 import Loading from '@/components/shared/ui/Loading';
-import StatusMessage from '../consent/StatusMessage';
+import StatusMessage from '../connect/StatusMessage';
 import { PasskeyNameInput } from '@/components/shared/ui/PasskeyNameInput';
 
 interface WebAuthnProps {
@@ -128,7 +128,7 @@ export default function WebAuthn({
         Passkey Authentication
       </h1>
       <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
-        Use passkeys for secure, passwordless login
+        Use passkeys for secure, passwordless connection
       </p>
 
       <div className="flex justify-center">

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/shared/ui/card';
 import { theme } from './ui/theme';
 import { useTheme } from '@/providers/ThemeProvider';
 
-export function ConsentPageSkeleton() {
+export function ConnectPageSkeleton() {
   const { isDark } = useTheme();
   const themeStyles = theme(isDark);
 

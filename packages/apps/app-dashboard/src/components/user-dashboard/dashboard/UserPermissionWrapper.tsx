@@ -1,8 +1,8 @@
 import { useParams } from 'react-router';
-import { ConsentPageSkeleton } from '../consent/ConsentPageSkeleton';
-import { GeneralErrorScreen } from '../consent/GeneralErrorScreen';
-import { AuthenticationErrorScreen } from '../consent/AuthenticationErrorScreen';
-import { useConsentInfo } from '@/hooks/user-dashboard/consent/useConsentInfo';
+import { ConnectPageSkeleton } from '../connect/ConnectPageSkeleton';
+import { GeneralErrorScreen } from '../connect/GeneralErrorScreen';
+import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
+import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { AppPermissionPage } from './UserPermissionPage';
 import { useFetchUserPermissions } from '@/hooks/user-dashboard/dashboard/useFetchUserPermissions';
@@ -11,7 +11,7 @@ import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/u
 export function UserPermissionWrapper() {
   const { appId } = useParams();
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
-  const { isLoading, isError, errors, data } = useConsentInfo(appId || '');
+  const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
   const {
     existingData,
     isLoading: isExistingDataLoading,
@@ -31,7 +31,7 @@ export function UserPermissionWrapper() {
   });
 
   if (isProcessing) {
-    return <ConsentPageSkeleton />;
+    return <ConnectPageSkeleton />;
   }
 
   const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
@@ -42,7 +42,7 @@ export function UserPermissionWrapper() {
   }
 
   if (isLoading || isExistingDataLoading || permissionsLoading) {
-    return <ConsentPageSkeleton />;
+    return <ConnectPageSkeleton />;
   }
 
   if (
@@ -60,7 +60,7 @@ export function UserPermissionWrapper() {
 
   return (
     <AppPermissionPage
-      consentInfoMap={data}
+      connectInfoMap={data}
       readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
       existingData={existingData}
       permittedAppVersions={permittedAppVersions || {}}

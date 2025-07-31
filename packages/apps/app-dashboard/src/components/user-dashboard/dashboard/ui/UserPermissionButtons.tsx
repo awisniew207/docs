@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/shared/ui/button';
 import { AlertCircle, Loader2 } from 'lucide-react';
-import { ThemeType } from '@/components/user-dashboard/consent/ui/theme';
+import { ThemeType } from '@/components/user-dashboard/connect/ui/theme';
 
 interface UserPermissionButtonsProps {
   theme: ThemeType;

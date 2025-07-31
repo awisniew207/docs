@@ -1,10 +1,10 @@
 import { useParams } from 'react-router';
 import { UpdateVersionPage } from './UpdateVersionPage';
-import { ConsentPageSkeleton } from '@/components/user-dashboard/consent/ConsentPageSkeleton';
-import { GeneralErrorScreen } from '@/components/user-dashboard/consent/GeneralErrorScreen';
-import { AuthenticationErrorScreen } from '@/components/user-dashboard/consent/AuthenticationErrorScreen';
-import { useConsentInfo } from '@/hooks/user-dashboard/consent/useConsentInfo';
-import { useConsentMiddleware } from '@/hooks/user-dashboard/consent/useConsentMiddleware';
+import { ConnectPageSkeleton } from '@/components/user-dashboard/connect/ConnectPageSkeleton';
+import { GeneralErrorScreen } from '@/components/user-dashboard/connect/GeneralErrorScreen';
+import { AuthenticationErrorScreen } from '@/components/user-dashboard/connect/AuthenticationErrorScreen';
+import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
+import { useConnectMiddleware } from '@/hooks/user-dashboard/connect/useConnectMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { AppVersionNotInRegistryUpdate } from './AppVersionNotInRegistryUpdate';
 
@@ -12,13 +12,13 @@ export function UpdateVersionPageWrapper() {
   const { appId } = useParams();
 
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
-  const { isLoading, isError, errors, data } = useConsentInfo(appId || '');
+  const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
   const {
     appExists,
     activeVersionExists,
     isLoading: isPermittedLoading,
     error: isPermittedError,
-  } = useConsentMiddleware({
+  } = useConnectMiddleware({
     appId: Number(appId),
     pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
     appData: data?.app,
@@ -37,7 +37,7 @@ export function UpdateVersionPageWrapper() {
   }
 
   if (isLoading || isProcessing || isPermittedLoading) {
-    return <ConsentPageSkeleton />;
+    return <ConnectPageSkeleton />;
   }
 
   if (isError || error || isPermittedError) {
@@ -49,7 +49,7 @@ export function UpdateVersionPageWrapper() {
   }
 
   if (!data || !authInfo || !sessionSigs) {
-    return <ConsentPageSkeleton />;
+    return <ConnectPageSkeleton />;
   }
 
   if (appExists === true && activeVersionExists === false) {
@@ -63,7 +63,7 @@ export function UpdateVersionPageWrapper() {
 
   return (
     <UpdateVersionPage
-      consentInfoMap={data}
+      connectInfoMap={data}
       readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
     />
   );

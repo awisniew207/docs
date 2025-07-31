@@ -1,5 +1,5 @@
 import { FileText } from 'lucide-react';
-import { ConsentInfoMap } from '@/hooks/user-dashboard/consent/useConsentInfo';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
 import { PolicyForm, PolicyFormRef } from './PolicyForm';
@@ -8,7 +8,7 @@ import { PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
 interface RequiredPoliciesProps {
   policies: Array<PolicyVersion>;
-  consentInfoMap: ConsentInfoMap;
+  connectInfoMap: ConnectInfoMap;
   theme: ThemeType;
   isDark: boolean;
   formData: Record<string, any>;
@@ -19,7 +19,7 @@ interface RequiredPoliciesProps {
 
 export function RequiredPolicies({
   policies,
-  consentInfoMap,
+  connectInfoMap,
   theme,
   isDark,
   formData,
@@ -34,7 +34,7 @@ export function RequiredPolicies({
   return (
     <div className="ml-0 sm:ml-4 space-y-3">
       {policies.map((policy) => {
-        const policyData = consentInfoMap.policiesByPackageName[policy.packageName];
+        const policyData = connectInfoMap.policiesByPackageName[policy.packageName];
 
         return (
           <Card
@@ -57,7 +57,7 @@ export function RequiredPolicies({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h6 className={`font-semibold ${theme.text}`}>
-                      {consentInfoMap.policiesByPackageName[policy.packageName]?.title ||
+                      {connectInfoMap.policiesByPackageName[policy.packageName]?.title ||
                         policy.packageName}
                     </h6>
                     <a
@@ -88,9 +88,9 @@ export function RequiredPolicies({
 
               {/* Description and Form - spans full width including under icon */}
               <div className="mt-2">
-                {consentInfoMap.policiesByPackageName[policy.packageName]?.description && (
+                {connectInfoMap.policiesByPackageName[policy.packageName]?.description && (
                   <p className={`text-sm ${theme.textSubtle} mb-3`}>
-                    {consentInfoMap.policiesByPackageName[policy.packageName].description}
+                    {connectInfoMap.policiesByPackageName[policy.packageName].description}
                   </p>
                 )}
 

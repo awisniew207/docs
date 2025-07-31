@@ -1,9 +1,9 @@
 import { Card, CardContent } from '@/components/shared/ui/card';
-import { useJwtRedirect } from '@/hooks/user-dashboard/consent/useJwtRedirect';
+import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { Settings, ArrowRight } from 'lucide-react';
 import { theme } from './ui/theme';
-import { ConsentAppHeader } from './ui/ConsentAppHeader';
-import { ConsentPageHeader } from './ui/ConsentPageHeader';
+import { ConnectAppHeader } from './ui/ConnectAppHeader';
+import { ConnectPageHeader } from './ui/ConnectPageHeader';
 import { InfoBanner } from './ui/InfoBanner';
 import { ActionCard } from './ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
@@ -11,17 +11,17 @@ import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { useTheme } from '@/providers/ThemeProvider';
 
-type ReturningUserConsentProps = {
+type ReturningUserConnectProps = {
   appData: App;
   version: number;
   readAuthInfo: UseReadAuthInfo;
 };
 
-export function ReturningUserConsent({
+export function ReturningUserConnect({
   appData,
   version,
   readAuthInfo,
-}: ReturningUserConsentProps) {
+}: ReturningUserConnectProps) {
   const { isDark, toggleTheme } = useTheme();
   const themeStyles = theme(isDark);
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ export function ReturningUserConsent({
         className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
       >
         {/* Header */}
-        <ConsentPageHeader
+        <ConnectPageHeader
           isDark={isDark}
           onToggleTheme={toggleTheme}
           theme={themeStyles}
@@ -52,7 +52,7 @@ export function ReturningUserConsent({
         {/* Main Content */}
         <div className="px-6 py-8 space-y-6">
           {/* App Header */}
-          {appData && <ConsentAppHeader app={appData} theme={themeStyles} />}
+          {appData && <ConnectAppHeader app={appData} theme={themeStyles} />}
 
           {/* Status Banner */}
           <InfoBanner

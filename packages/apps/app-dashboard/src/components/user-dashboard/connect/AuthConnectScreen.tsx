@@ -2,11 +2,11 @@ import { Card, CardContent } from '@/components/shared/ui/card';
 import { Sun, Moon } from 'lucide-react';
 import { theme } from './ui/theme';
 import { Button } from '@/components/shared/ui/button';
-import ConsentView from './Consent';
+import ConnectView from './Connect';
 import { useTheme } from '@/providers/ThemeProvider';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { Logo } from '@/components/shared/ui/Logo';
-import { ConsentFooter } from '../ui/Footer';
+import { ConnectFooter } from '../ui/Footer';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 
 type AuthConnectScreenProps = {
@@ -87,9 +87,9 @@ export function AuthConnectScreen({ app, readAuthInfo }: AuthConnectScreenProps)
                     </div>
                   </div>
 
-                  {/* ConsentView Section */}
+                  {/* ConnectView Section */}
                   <div className="flex-1 min-w-0">
-                    <ConsentView theme={themeStyles} readAuthInfo={readAuthInfo} />
+                    <ConnectView theme={themeStyles} readAuthInfo={readAuthInfo} />
                   </div>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export function AuthConnectScreen({ app, readAuthInfo }: AuthConnectScreenProps)
         </div>
 
         {/* Footer */}
-        <ConsentFooter />
+        <ConnectFooter />
       </div>
     </div>
   );

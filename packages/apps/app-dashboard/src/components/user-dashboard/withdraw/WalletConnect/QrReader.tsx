@@ -2,7 +2,7 @@ import { Button } from '@/components/shared/ui/button';
 import { Fragment, useState } from 'react';
 import ReactQrReader from 'react-qr-reader-es6';
 import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '@/components/user-dashboard/consent/ui/theme';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 /**
  * Types
@@ -68,7 +68,9 @@ export default function QrReader({ onConnect }: IProps) {
           </Button>
         </Fragment>
       ) : (
-        <div className={`w-full flex flex-col items-center justify-center p-8 border ${themeStyles.cardBorder} rounded-lg ${themeStyles.mainCard}`}>
+        <div
+          className={`w-full flex flex-col items-center justify-center p-8 border ${themeStyles.cardBorder} rounded-lg ${themeStyles.mainCard}`}
+        >
           <img
             src="/icons/qr-icon.svg"
             width={100}
