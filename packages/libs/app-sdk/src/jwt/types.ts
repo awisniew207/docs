@@ -5,7 +5,11 @@ import type { IRelayPKP } from '@lit-protocol/types';
 
 export type JWTWalletSigner = Omit<Wallet, '_signingKey' | '_mnemonic'>;
 
-type KnownKeys =
+/** Property keys that are set by internal logic during Vincent JWT creation, so should not be in your `payload`
+ *
+ * @category Interfaces
+ */
+export type InternallySetPayloadKeys =
   | 'iss'
   | 'sub'
   | 'aud'
@@ -21,7 +25,19 @@ type DisallowKeys<T, K extends keyof any> = {
   [P in K]?: never;
 };
 
-type PayloadWithoutInternallySetKeys = DisallowKeys<Record<string, any>, KnownKeys>;
+/** Many standard payload properties are set automatically on Vincent JWTs, and will be overridden if you try to pass them
+ * in the raw `payload` when creating a new JWT.
+ *
+ * This interface identifies the keys that should not be provided in your `payload`, as they are internally managed.
+ *
+ * See {@link InternallySetPayloadKeys} for the list.
+ *
+ * @category Interfaces
+ */
+export type PayloadWithoutInternallySetKeys = DisallowKeys<
+  Record<string, any>,
+  InternallySetPayloadKeys
+>;
 
 export interface CreateJWSConfig {
   payload: PayloadWithoutInternallySetKeys;
@@ -34,17 +50,18 @@ export interface CreateJWSConfig {
   };
 }
 
-/**
+/** JWT payload properties that are shared by all Vincent JWTs
  *
  * @category Interfaces
  */
-export interface BaseJWTPayload {
+export interface JWTPayload {
   iat: number;
   exp: number;
-  iss: string;
+  iss: `0x${string}`;
   aud: string | string[];
-  sub?: string;
+  sub?: `0x${string}`;
   nbf?: number;
+  publicKey: string; // This is the uncompressed pubKey of the issuer
 
   __vincentJWTApiVersion: number;
 
@@ -56,7 +73,7 @@ export interface BaseJWTPayload {
  *
  * @category Interfaces
  */
-export interface BaseDecodedJWT {
+export interface DecodedJWT {
   header: {
     typ: 'JWT';
     alg: 'ES256K';
@@ -64,12 +81,16 @@ export interface BaseDecodedJWT {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [x: string]: any;
   };
-  payload: BaseJWTPayload;
+  payload: JWTPayload;
   signature: string;
   data: string;
 }
 
-interface PKPAuthenticationMethod {
+/**
+ *
+ * @category Interfaces
+ */
+export interface PKPAuthenticationMethod {
   type: string;
   value?: string;
 }
@@ -80,20 +101,11 @@ interface PKPAuthenticationMethod {
  * */
 export type VincentJWTRole = 'platform-user' | 'app-user' | 'app-delegatee';
 
-/** Shared base fields for all JWT payloads
- *
- * @category Interfaces
- * */
-export interface BaseVincentJWTPayload extends BaseJWTPayload {
-  iss: `0x${string}`;
-  publicKey: string; // This is the uncompressed pubKey of the issuer
-}
-
 /**
- *
+ * @inline
  * @category Interfaces
  */
-export interface VincentPKPPayload extends BaseVincentJWTPayload {
+export interface VincentPKPPayload extends JWTPayload {
   pkpInfo: IRelayPKP;
   authentication: PKPAuthenticationMethod;
 }
@@ -102,7 +114,7 @@ export interface VincentPKPPayload extends BaseVincentJWTPayload {
  *
  * @category Interfaces
  */
-export interface VincentJWTPlatformUser extends BaseDecodedJWT {
+export interface VincentJWTPlatformUser extends DecodedJWT {
   payload: VincentPKPPayload & {
     role: 'platform-user';
   };
@@ -112,7 +124,7 @@ export interface VincentJWTPlatformUser extends BaseDecodedJWT {
  *
  * @category Interfaces
  */
-export interface VincentJWTAppUser extends BaseDecodedJWT {
+export interface VincentJWTAppUser extends DecodedJWT {
   payload: VincentPKPPayload & {
     role: 'app-user';
     app: {
@@ -126,8 +138,8 @@ export interface VincentJWTAppUser extends BaseDecodedJWT {
  *
  * @category Interfaces
  */
-export interface VincentJWTDelegatee extends BaseDecodedJWT {
-  payload: BaseVincentJWTPayload & {
+export interface VincentJWTDelegatee extends DecodedJWT {
+  payload: JWTPayload & {
     role: 'app-delegatee';
     sub?: `0x${string}`;
   };

@@ -22,9 +22,7 @@ export {
 export { isAppUser, isPlatformUser, isAnyVincentJWT, isDelegateee } from './typeGuards';
 
 export type {
-  BaseDecodedJWT,
-  BaseJWTPayload,
-  BaseVincentJWTPayload,
+  DecodedJWT,
   AnyVincentJWT,
   VincentJWTPlatformUser,
   VincentJWTAppUser,
@@ -33,7 +31,9 @@ export type {
   CreatePlatformUserJWTParams,
   CreateAppUserJWTParams,
   CreateDelegateeJWTParams,
-  VincentPKPPayload,
+  PKPAuthenticationMethod,
+  PayloadWithoutInternallySetKeys,
+  InternallySetPayloadKeys,
 } from './types';
 export {
   getAppInfo,

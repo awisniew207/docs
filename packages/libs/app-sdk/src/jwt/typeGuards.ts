@@ -3,7 +3,7 @@ import type {
   VincentJWTAppUser,
   VincentJWTDelegatee,
   AnyVincentJWT,
-  BaseDecodedJWT,
+  DecodedJWT,
 } from './types';
 
 import { JWT_ERROR, VINCENT_JWT_API_VERSION } from './constants';
@@ -14,7 +14,7 @@ import { isDefinedObject } from './core/utils/index';
  *
  * @category API > Type Guards
  * */
-export function isAppUser(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTAppUser {
+export function isAppUser(decodedJWT: DecodedJWT): decodedJWT is VincentJWTAppUser {
   return decodedJWT.payload?.role === 'app-user';
 }
 
@@ -22,7 +22,7 @@ export function isAppUser(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTA
  *
  * @category API > Type Guards
  * */
-export function isPlatformUser(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTPlatformUser {
+export function isPlatformUser(decodedJWT: DecodedJWT): decodedJWT is VincentJWTPlatformUser {
   return decodedJWT.payload?.role === 'platform-user';
 }
 
@@ -30,7 +30,7 @@ export function isPlatformUser(decodedJWT: BaseDecodedJWT): decodedJWT is Vincen
  *
  * @category API > Type Guards
  * */
-export function isDelegateee(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTDelegatee {
+export function isDelegateee(decodedJWT: DecodedJWT): decodedJWT is VincentJWTDelegatee {
   return decodedJWT.payload?.role === 'app-delegatee';
 }
 
@@ -38,7 +38,7 @@ export function isDelegateee(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJ
  *
  * @category API > Type Guards
  * */
-export function isAnyVincentJWT(decodedJWT: BaseDecodedJWT): decodedJWT is AnyVincentJWT {
+export function isAnyVincentJWT(decodedJWT: DecodedJWT): decodedJWT is AnyVincentJWT {
   return isPlatformUser(decodedJWT) || isAppUser(decodedJWT) || isDelegateee(decodedJWT);
 }
 
@@ -49,7 +49,7 @@ export function isAnyVincentJWT(decodedJWT: BaseDecodedJWT): decodedJWT is AnyVi
  * @internal
  */
 export function assertIsPKPSignedVincentJWT(
-  decodedJWT: BaseDecodedJWT
+  decodedJWT: DecodedJWT
 ): asserts decodedJWT is VincentJWTPlatformUser | VincentJWTAppUser {
   const { authentication, pkpInfo } = decodedJWT.payload;
 
