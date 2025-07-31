@@ -1,12 +1,12 @@
 {
-	"id": 42925,
+	"id": 45283,
 	"name": "vincent-app-sdk",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 42926,
+			"id": 45284,
 			"name": "abilityClient",
 			"variant": "declaration",
 			"kind": 2,
@@ -29,7 +29,7 @@
 			},
 			"children": [
 				{
-					"id": 42977,
+					"id": 45335,
 					"name": "AbilityClientContext",
 					"variant": "declaration",
 					"kind": 256,
@@ -50,7 +50,7 @@
 					},
 					"children": [
 						{
-							"id": 42978,
+							"id": 45336,
 							"name": "delegatorPkpEthAddress",
 							"variant": "declaration",
 							"kind": 1024,
@@ -73,7 +73,7 @@
 						{
 							"title": "Properties",
 							"children": [
-								42978
+								45336
 							]
 						}
 					],
@@ -87,7 +87,7 @@
 					]
 				},
 				{
-					"id": 43010,
+					"id": 45368,
 					"name": "AbilityExecuteResponseFailure",
 					"variant": "declaration",
 					"kind": 256,
@@ -108,7 +108,7 @@
 					},
 					"children": [
 						{
-							"id": 43015,
+							"id": 45373,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -125,7 +125,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -136,7 +136,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43017,
+												"target": 45375,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityExecuteResponseFailure.Policies",
@@ -152,7 +152,7 @@
 							}
 						},
 						{
-							"id": 43014,
+							"id": 45372,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -167,7 +167,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43016,
+								"target": 45374,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
 								"qualifiedName": "AbilityExecuteResponseFailure.Result",
@@ -175,7 +175,7 @@
 							}
 						},
 						{
-							"id": 43012,
+							"id": 45370,
 							"name": "runtimeError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -196,7 +196,7 @@
 							}
 						},
 						{
-							"id": 43013,
+							"id": 45371,
 							"name": "schemaValidationError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -222,7 +222,7 @@
 							}
 						},
 						{
-							"id": 43011,
+							"id": 45369,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -245,11 +245,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								43015,
-								43014,
-								43012,
-								43013,
-								43011
+								45373,
+								45372,
+								45370,
+								45371,
+								45369
 							]
 						}
 					],
@@ -263,14 +263,14 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43016,
+							"id": 45374,
 							"name": "Result",
 							"variant": "typeParam",
 							"kind": 131072,
 							"flags": {}
 						},
 						{
-							"id": 43017,
+							"id": 45375,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -298,7 +298,7 @@
 					]
 				},
 				{
-					"id": 43003,
+					"id": 45361,
 					"name": "AbilityExecuteResponseFailureNoResult",
 					"variant": "declaration",
 					"kind": 256,
@@ -319,7 +319,7 @@
 					},
 					"children": [
 						{
-							"id": 43008,
+							"id": 45366,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -336,7 +336,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -347,7 +347,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43009,
+												"target": 45367,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityExecuteResponseFailureNoResult.Policies",
@@ -363,7 +363,7 @@
 							}
 						},
 						{
-							"id": 43007,
+							"id": 45365,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -384,7 +384,7 @@
 							}
 						},
 						{
-							"id": 43005,
+							"id": 45363,
 							"name": "runtimeError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -405,7 +405,7 @@
 							}
 						},
 						{
-							"id": 43006,
+							"id": 45364,
 							"name": "schemaValidationError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -431,7 +431,7 @@
 							}
 						},
 						{
-							"id": 43004,
+							"id": 45362,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -454,11 +454,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								43008,
-								43007,
-								43005,
-								43006,
-								43004
+								45366,
+								45365,
+								45363,
+								45364,
+								45362
 							]
 						}
 					],
@@ -472,7 +472,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43009,
+							"id": 45367,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -500,7 +500,7 @@
 					]
 				},
 				{
-					"id": 43023,
+					"id": 45381,
 					"name": "AbilityExecuteResponseSuccess",
 					"variant": "declaration",
 					"kind": 256,
@@ -521,7 +521,7 @@
 					},
 					"children": [
 						{
-							"id": 43026,
+							"id": 45384,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -538,7 +538,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -549,7 +549,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43028,
+												"target": 45386,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityExecuteResponseSuccess.Policies",
@@ -565,7 +565,7 @@
 							}
 						},
 						{
-							"id": 43025,
+							"id": 45383,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -580,7 +580,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43027,
+								"target": 45385,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
 								"qualifiedName": "AbilityExecuteResponseSuccess.Result",
@@ -588,7 +588,7 @@
 							}
 						},
 						{
-							"id": 43024,
+							"id": 45382,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -611,9 +611,9 @@
 						{
 							"title": "Properties",
 							"children": [
-								43026,
-								43025,
-								43024
+								45384,
+								45383,
+								45382
 							]
 						}
 					],
@@ -627,14 +627,14 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43027,
+							"id": 45385,
 							"name": "Result",
 							"variant": "typeParam",
 							"kind": 131072,
 							"flags": {}
 						},
 						{
-							"id": 43028,
+							"id": 45386,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -662,7 +662,7 @@
 					]
 				},
 				{
-					"id": 43018,
+					"id": 45376,
 					"name": "AbilityExecuteResponseSuccessNoResult",
 					"variant": "declaration",
 					"kind": 256,
@@ -683,7 +683,7 @@
 					},
 					"children": [
 						{
-							"id": 43021,
+							"id": 45379,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -700,7 +700,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -711,7 +711,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43022,
+												"target": 45380,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityExecuteResponseSuccessNoResult.Policies",
@@ -727,7 +727,7 @@
 							}
 						},
 						{
-							"id": 43020,
+							"id": 45378,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -748,7 +748,7 @@
 							}
 						},
 						{
-							"id": 43019,
+							"id": 45377,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -771,9 +771,9 @@
 						{
 							"title": "Properties",
 							"children": [
-								43021,
-								43020,
-								43019
+								45379,
+								45378,
+								45377
 							]
 						}
 					],
@@ -787,7 +787,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43022,
+							"id": 45380,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -815,7 +815,7 @@
 					]
 				},
 				{
-					"id": 43040,
+					"id": 45398,
 					"name": "AbilityPrecheckResponseFailure",
 					"variant": "declaration",
 					"kind": 256,
@@ -836,7 +836,7 @@
 					},
 					"children": [
 						{
-							"id": 43045,
+							"id": 45403,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -853,7 +853,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -864,7 +864,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43047,
+												"target": 45405,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityPrecheckResponseFailure.Policies",
@@ -880,7 +880,7 @@
 							}
 						},
 						{
-							"id": 43044,
+							"id": 45402,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -895,7 +895,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43046,
+								"target": 45404,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
 								"qualifiedName": "AbilityPrecheckResponseFailure.Result",
@@ -903,7 +903,7 @@
 							}
 						},
 						{
-							"id": 43042,
+							"id": 45400,
 							"name": "runtimeError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -924,7 +924,7 @@
 							}
 						},
 						{
-							"id": 43043,
+							"id": 45401,
 							"name": "schemaValidationError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -950,7 +950,7 @@
 							}
 						},
 						{
-							"id": 43041,
+							"id": 45399,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -973,11 +973,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								43045,
-								43044,
-								43042,
-								43043,
-								43041
+								45403,
+								45402,
+								45400,
+								45401,
+								45399
 							]
 						}
 					],
@@ -991,14 +991,14 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43046,
+							"id": 45404,
 							"name": "Result",
 							"variant": "typeParam",
 							"kind": 131072,
 							"flags": {}
 						},
 						{
-							"id": 43047,
+							"id": 45405,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -1026,7 +1026,7 @@
 					]
 				},
 				{
-					"id": 43033,
+					"id": 45391,
 					"name": "AbilityPrecheckResponseFailureNoResult",
 					"variant": "declaration",
 					"kind": 256,
@@ -1047,7 +1047,7 @@
 					},
 					"children": [
 						{
-							"id": 43038,
+							"id": 45396,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1064,7 +1064,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1075,7 +1075,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43039,
+												"target": 45397,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityPrecheckResponseFailureNoResult.Policies",
@@ -1091,7 +1091,7 @@
 							}
 						},
 						{
-							"id": 43037,
+							"id": 45395,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1112,7 +1112,7 @@
 							}
 						},
 						{
-							"id": 43035,
+							"id": 45393,
 							"name": "runtimeError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1133,7 +1133,7 @@
 							}
 						},
 						{
-							"id": 43036,
+							"id": 45394,
 							"name": "schemaValidationError",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1159,7 +1159,7 @@
 							}
 						},
 						{
-							"id": 43034,
+							"id": 45392,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1182,11 +1182,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								43038,
-								43037,
-								43035,
-								43036,
-								43034
+								45396,
+								45395,
+								45393,
+								45394,
+								45392
 							]
 						}
 					],
@@ -1200,7 +1200,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43039,
+							"id": 45397,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -1228,7 +1228,7 @@
 					]
 				},
 				{
-					"id": 43053,
+					"id": 45411,
 					"name": "AbilityPrecheckResponseSuccess",
 					"variant": "declaration",
 					"kind": 256,
@@ -1249,7 +1249,7 @@
 					},
 					"children": [
 						{
-							"id": 43056,
+							"id": 45414,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1266,7 +1266,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1277,7 +1277,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43058,
+												"target": 45416,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityPrecheckResponseSuccess.Policies",
@@ -1293,7 +1293,7 @@
 							}
 						},
 						{
-							"id": 43055,
+							"id": 45413,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1308,7 +1308,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43057,
+								"target": 45415,
 								"name": "Result",
 								"package": "@lit-protocol/vincent-app-sdk",
 								"qualifiedName": "AbilityPrecheckResponseSuccess.Result",
@@ -1316,7 +1316,7 @@
 							}
 						},
 						{
-							"id": 43054,
+							"id": 45412,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1339,9 +1339,9 @@
 						{
 							"title": "Properties",
 							"children": [
-								43056,
-								43055,
-								43054
+								45414,
+								45413,
+								45412
 							]
 						}
 					],
@@ -1355,14 +1355,14 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43057,
+							"id": 45415,
 							"name": "Result",
 							"variant": "typeParam",
 							"kind": 131072,
 							"flags": {}
 						},
 						{
-							"id": 43058,
+							"id": 45416,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -1390,7 +1390,7 @@
 					]
 				},
 				{
-					"id": 43048,
+					"id": 45406,
 					"name": "AbilityPrecheckResponseSuccessNoResult",
 					"variant": "declaration",
 					"kind": 256,
@@ -1411,7 +1411,7 @@
 					},
 					"children": [
 						{
-							"id": 43051,
+							"id": 45409,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1428,7 +1428,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42979,
+								"target": 45337,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1439,7 +1439,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43052,
+												"target": 45410,
 												"name": "Policies",
 												"package": "@lit-protocol/vincent-app-sdk",
 												"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.Policies",
@@ -1455,7 +1455,7 @@
 							}
 						},
 						{
-							"id": 43050,
+							"id": 45408,
 							"name": "result",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1476,7 +1476,7 @@
 							}
 						},
 						{
-							"id": 43049,
+							"id": 45407,
 							"name": "success",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1499,9 +1499,9 @@
 						{
 							"title": "Properties",
 							"children": [
-								43051,
-								43050,
-								43049
+								45409,
+								45408,
+								45407
 							]
 						}
 					],
@@ -1515,7 +1515,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43052,
+							"id": 45410,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -1543,7 +1543,7 @@
 					]
 				},
 				{
-					"id": 42979,
+					"id": 45337,
 					"name": "BaseAbilityContext",
 					"variant": "declaration",
 					"kind": 256,
@@ -1569,7 +1569,7 @@
 					},
 					"children": [
 						{
-							"id": 42981,
+							"id": 45339,
 							"name": "abilityIpfsCid",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1594,7 +1594,7 @@
 							}
 						},
 						{
-							"id": 42982,
+							"id": 45340,
 							"name": "appId",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1619,7 +1619,7 @@
 							}
 						},
 						{
-							"id": 42983,
+							"id": 45341,
 							"name": "appVersion",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1644,7 +1644,7 @@
 							}
 						},
 						{
-							"id": 42984,
+							"id": 45342,
 							"name": "delegation",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1661,14 +1661,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 42985,
+									"id": 45343,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 42986,
+											"id": 45344,
 											"name": "delegateeAddress",
 											"variant": "declaration",
 											"kind": 1024,
@@ -1686,7 +1686,7 @@
 											}
 										},
 										{
-											"id": 42987,
+											"id": 45345,
 											"name": "delegatorPkpInfo",
 											"variant": "declaration",
 											"kind": 1024,
@@ -1701,14 +1701,14 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 42988,
+													"id": 45346,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
 													"flags": {},
 													"children": [
 														{
-															"id": 42990,
+															"id": 45348,
 															"name": "ethAddress",
 															"variant": "declaration",
 															"kind": 1024,
@@ -1726,7 +1726,7 @@
 															}
 														},
 														{
-															"id": 42991,
+															"id": 45349,
 															"name": "publicKey",
 															"variant": "declaration",
 															"kind": 1024,
@@ -1744,7 +1744,7 @@
 															}
 														},
 														{
-															"id": 42989,
+															"id": 45347,
 															"name": "tokenId",
 															"variant": "declaration",
 															"kind": 1024,
@@ -1766,9 +1766,9 @@
 														{
 															"title": "Properties",
 															"children": [
-																42990,
-																42991,
-																42989
+																45348,
+																45349,
+																45347
 															]
 														}
 													],
@@ -1787,8 +1787,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												42986,
-												42987
+												45344,
+												45345
 											]
 										}
 									],
@@ -1808,7 +1808,7 @@
 							}
 						},
 						{
-							"id": 42980,
+							"id": 45338,
 							"name": "policiesContext",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1822,7 +1822,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42992,
+								"target": 45350,
 								"name": "Policies",
 								"package": "@lit-protocol/vincent-ability-sdk",
 								"qualifiedName": "BaseAbilityContext.Policies",
@@ -1834,11 +1834,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								42981,
-								42982,
-								42983,
-								42984,
-								42980
+								45339,
+								45340,
+								45341,
+								45342,
+								45338
 							]
 						}
 					],
@@ -1851,7 +1851,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 42992,
+							"id": 45350,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -1871,7 +1871,7 @@
 					]
 				},
 				{
-					"id": 42960,
+					"id": 45318,
 					"name": "VincentAbilityClient",
 					"variant": "declaration",
 					"kind": 256,
@@ -1897,7 +1897,7 @@
 					},
 					"children": [
 						{
-							"id": 42967,
+							"id": 45325,
 							"name": "execute",
 							"variant": "declaration",
 							"kind": 2048,
@@ -1912,7 +1912,7 @@
 							],
 							"signatures": [
 								{
-									"id": 42968,
+									"id": 45326,
 									"name": "execute",
 									"variant": "signature",
 									"kind": 4096,
@@ -1946,7 +1946,7 @@
 									],
 									"parameters": [
 										{
-											"id": 42969,
+											"id": 45327,
 											"name": "rawAbilityParams",
 											"variant": "param",
 											"kind": 32768,
@@ -1980,7 +1980,7 @@
 											}
 										},
 										{
-											"id": 42970,
+											"id": 45328,
 											"name": "context",
 											"variant": "param",
 											"kind": 32768,
@@ -1995,7 +1995,7 @@
 											},
 											"type": {
 												"type": "reference",
-												"target": 42977,
+												"target": 45335,
 												"name": "AbilityClientContext",
 												"package": "@lit-protocol/vincent-app-sdk"
 											}
@@ -2010,7 +2010,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 42999,
+												"target": 45357,
 												"typeArguments": [
 													{
 														"type": "reference",
@@ -2048,7 +2048,7 @@
 							]
 						},
 						{
-							"id": 42961,
+							"id": 45319,
 							"name": "precheck",
 							"variant": "declaration",
 							"kind": 2048,
@@ -2063,7 +2063,7 @@
 							],
 							"signatures": [
 								{
-									"id": 42962,
+									"id": 45320,
 									"name": "precheck",
 									"variant": "signature",
 									"kind": 4096,
@@ -2097,7 +2097,7 @@
 									],
 									"parameters": [
 										{
-											"id": 42963,
+											"id": 45321,
 											"name": "rawAbilityParams",
 											"variant": "param",
 											"kind": 32768,
@@ -2131,7 +2131,7 @@
 											}
 										},
 										{
-											"id": 42964,
+											"id": 45322,
 											"name": "context",
 											"variant": "param",
 											"kind": 32768,
@@ -2149,21 +2149,21 @@
 												"types": [
 													{
 														"type": "reference",
-														"target": 42977,
+														"target": 45335,
 														"name": "AbilityClientContext",
 														"package": "@lit-protocol/vincent-app-sdk"
 													},
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 42965,
+															"id": 45323,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 42966,
+																	"id": 45324,
 																	"name": "rpcUrl",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -2188,7 +2188,7 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		42966
+																		45324
 																	]
 																}
 															],
@@ -2215,7 +2215,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 43029,
+												"target": 45387,
 												"typeArguments": [
 													{
 														"type": "reference",
@@ -2257,8 +2257,8 @@
 						{
 							"title": "Methods",
 							"children": [
-								42967,
-								42961
+								45325,
+								45319
 							]
 						}
 					],
@@ -2272,7 +2272,7 @@
 					]
 				},
 				{
-					"id": 42999,
+					"id": 45357,
 					"name": "AbilityExecuteResponse",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -2301,7 +2301,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43000,
+							"id": 45358,
 							"name": "SuccessSchema",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -2327,7 +2327,7 @@
 							}
 						},
 						{
-							"id": 43001,
+							"id": 45359,
 							"name": "FailSchema",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -2353,7 +2353,7 @@
 							}
 						},
 						{
-							"id": 43002,
+							"id": 45360,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -2386,7 +2386,7 @@
 								"type": "conditional",
 								"checkType": {
 									"type": "reference",
-									"target": 43000,
+									"target": 45358,
 									"name": "SuccessSchema",
 									"package": "@lit-protocol/vincent-app-sdk",
 									"refersToTypeParameter": true
@@ -2403,7 +2403,7 @@
 								},
 								"trueType": {
 									"type": "reference",
-									"target": 43023,
+									"target": 45381,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -2414,7 +2414,7 @@
 											"typeArguments": [
 												{
 													"type": "reference",
-													"target": 43000,
+													"target": 45358,
 													"name": "SuccessSchema",
 													"package": "@lit-protocol/vincent-app-sdk",
 													"refersToTypeParameter": true
@@ -2426,7 +2426,7 @@
 										},
 										{
 											"type": "reference",
-											"target": 43002,
+											"target": 45360,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2437,11 +2437,11 @@
 								},
 								"falseType": {
 									"type": "reference",
-									"target": 43018,
+									"target": 45376,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 43002,
+											"target": 45360,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2455,7 +2455,7 @@
 								"type": "conditional",
 								"checkType": {
 									"type": "reference",
-									"target": 43001,
+									"target": 45359,
 									"name": "FailSchema",
 									"package": "@lit-protocol/vincent-app-sdk",
 									"refersToTypeParameter": true
@@ -2472,7 +2472,7 @@
 								},
 								"trueType": {
 									"type": "reference",
-									"target": 43010,
+									"target": 45368,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -2483,7 +2483,7 @@
 											"typeArguments": [
 												{
 													"type": "reference",
-													"target": 43001,
+													"target": 45359,
 													"name": "FailSchema",
 													"package": "@lit-protocol/vincent-app-sdk",
 													"refersToTypeParameter": true
@@ -2495,7 +2495,7 @@
 										},
 										{
 											"type": "reference",
-											"target": 43002,
+											"target": 45360,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2506,11 +2506,11 @@
 								},
 								"falseType": {
 									"type": "reference",
-									"target": 43003,
+									"target": 45361,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 43002,
+											"target": 45360,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2524,7 +2524,7 @@
 					}
 				},
 				{
-					"id": 43029,
+					"id": 45387,
 					"name": "AbilityPrecheckResponse",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -2553,7 +2553,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43030,
+							"id": 45388,
 							"name": "SuccessSchema",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -2579,7 +2579,7 @@
 							}
 						},
 						{
-							"id": 43031,
+							"id": 45389,
 							"name": "FailSchema",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -2605,7 +2605,7 @@
 							}
 						},
 						{
-							"id": 43032,
+							"id": 45390,
 							"name": "Policies",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -2638,7 +2638,7 @@
 								"type": "conditional",
 								"checkType": {
 									"type": "reference",
-									"target": 43030,
+									"target": 45388,
 									"name": "SuccessSchema",
 									"package": "@lit-protocol/vincent-app-sdk",
 									"refersToTypeParameter": true
@@ -2655,7 +2655,7 @@
 								},
 								"trueType": {
 									"type": "reference",
-									"target": 43053,
+									"target": 45411,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -2666,7 +2666,7 @@
 											"typeArguments": [
 												{
 													"type": "reference",
-													"target": 43030,
+													"target": 45388,
 													"name": "SuccessSchema",
 													"package": "@lit-protocol/vincent-app-sdk",
 													"refersToTypeParameter": true
@@ -2678,7 +2678,7 @@
 										},
 										{
 											"type": "reference",
-											"target": 43032,
+											"target": 45390,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2689,11 +2689,11 @@
 								},
 								"falseType": {
 									"type": "reference",
-									"target": 43048,
+									"target": 45406,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 43032,
+											"target": 45390,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2707,7 +2707,7 @@
 								"type": "conditional",
 								"checkType": {
 									"type": "reference",
-									"target": 43031,
+									"target": 45389,
 									"name": "FailSchema",
 									"package": "@lit-protocol/vincent-app-sdk",
 									"refersToTypeParameter": true
@@ -2724,7 +2724,7 @@
 								},
 								"trueType": {
 									"type": "reference",
-									"target": 43040,
+									"target": 45398,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -2735,7 +2735,7 @@
 											"typeArguments": [
 												{
 													"type": "reference",
-													"target": 43031,
+													"target": 45389,
 													"name": "FailSchema",
 													"package": "@lit-protocol/vincent-app-sdk",
 													"refersToTypeParameter": true
@@ -2747,7 +2747,7 @@
 										},
 										{
 											"type": "reference",
-											"target": 43032,
+											"target": 45390,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2758,11 +2758,11 @@
 								},
 								"falseType": {
 									"type": "reference",
-									"target": 43033,
+									"target": 45391,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 43032,
+											"target": 45390,
 											"name": "Policies",
 											"package": "@lit-protocol/vincent-app-sdk",
 											"refersToTypeParameter": true
@@ -2776,7 +2776,7 @@
 					}
 				},
 				{
-					"id": 42927,
+					"id": 45285,
 					"name": "disconnectVincentAbilityClients",
 					"variant": "declaration",
 					"kind": 64,
@@ -2810,7 +2810,7 @@
 					],
 					"signatures": [
 						{
-							"id": 42928,
+							"id": 45286,
 							"name": "disconnectVincentAbilityClients",
 							"variant": "signature",
 							"kind": 4096,
@@ -2842,7 +2842,7 @@
 					]
 				},
 				{
-					"id": 42945,
+					"id": 45303,
 					"name": "getVincentAbilityClient",
 					"variant": "declaration",
 					"kind": 64,
@@ -2857,7 +2857,7 @@
 					],
 					"signatures": [
 						{
-							"id": 42946,
+							"id": 45304,
 							"name": "getVincentAbilityClient",
 							"variant": "signature",
 							"kind": 4096,
@@ -2911,7 +2911,7 @@
 							],
 							"parameters": [
 								{
-									"id": 42956,
+									"id": 45314,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
@@ -2919,14 +2919,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 42957,
+											"id": 45315,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 42958,
+													"id": 45316,
 													"name": "bundledVincentAbility",
 													"variant": "declaration",
 													"kind": 1024,
@@ -3042,7 +3042,7 @@
 													}
 												},
 												{
-													"id": 42959,
+													"id": 45317,
 													"name": "ethersSigner",
 													"variant": "declaration",
 													"kind": 1024,
@@ -3079,8 +3079,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														42958,
-														42959
+														45316,
+														45317
 													]
 												}
 											],
@@ -3098,7 +3098,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 42960,
+								"target": 45318,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -3150,7 +3150,7 @@
 					]
 				},
 				{
-					"id": 42942,
+					"id": 45300,
 					"name": "isAbilityResponseFailure",
 					"variant": "declaration",
 					"kind": 64,
@@ -3165,7 +3165,7 @@
 					],
 					"signatures": [
 						{
-							"id": 42943,
+							"id": 45301,
 							"name": "isAbilityResponseFailure",
 							"variant": "signature",
 							"kind": 4096,
@@ -3199,7 +3199,7 @@
 							],
 							"parameters": [
 								{
-									"id": 42944,
+									"id": 45302,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -3219,7 +3219,7 @@
 									"types": [
 										{
 											"type": "reference",
-											"target": 43010,
+											"target": 45368,
 											"typeArguments": [
 												{
 													"type": "intrinsic",
@@ -3250,7 +3250,7 @@
 										},
 										{
 											"type": "reference",
-											"target": 43003,
+											"target": 45361,
 											"typeArguments": [
 												{
 													"type": "reference",
@@ -3282,7 +3282,7 @@
 					]
 				},
 				{
-					"id": 42936,
+					"id": 45294,
 					"name": "isAbilityResponseRuntimeFailure",
 					"variant": "declaration",
 					"kind": 64,
@@ -3297,7 +3297,7 @@
 					],
 					"signatures": [
 						{
-							"id": 42937,
+							"id": 45295,
 							"name": "isAbilityResponseRuntimeFailure",
 							"variant": "signature",
 							"kind": 4096,
@@ -3320,7 +3320,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "isAbilityResponseSchemaValidationFailure",
-										"target": 42939
+										"target": 45297
 									},
 									{
 										"kind": "text",
@@ -3349,7 +3349,7 @@
 							],
 							"parameters": [
 								{
-									"id": 42938,
+									"id": 45296,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -3366,7 +3366,7 @@
 								"asserts": false,
 								"targetType": {
 									"type": "reference",
-									"target": 43003,
+									"target": 45361,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -3396,7 +3396,7 @@
 					]
 				},
 				{
-					"id": 42939,
+					"id": 45297,
 					"name": "isAbilityResponseSchemaValidationFailure",
 					"variant": "declaration",
 					"kind": 64,
@@ -3411,7 +3411,7 @@
 					],
 					"signatures": [
 						{
-							"id": 42940,
+							"id": 45298,
 							"name": "isAbilityResponseSchemaValidationFailure",
 							"variant": "signature",
 							"kind": 4096,
@@ -3453,7 +3453,7 @@
 							],
 							"parameters": [
 								{
-									"id": 42941,
+									"id": 45299,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -3470,7 +3470,7 @@
 								"asserts": false,
 								"targetType": {
 									"type": "reference",
-									"target": 43003,
+									"target": 45361,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -3500,7 +3500,7 @@
 					]
 				},
 				{
-					"id": 42933,
+					"id": 45291,
 					"name": "isAbilityResponseSuccess",
 					"variant": "declaration",
 					"kind": 64,
@@ -3515,7 +3515,7 @@
 					],
 					"signatures": [
 						{
-							"id": 42934,
+							"id": 45292,
 							"name": "isAbilityResponseSuccess",
 							"variant": "signature",
 							"kind": 4096,
@@ -3549,7 +3549,7 @@
 							],
 							"parameters": [
 								{
-									"id": 42935,
+									"id": 45293,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -3569,7 +3569,7 @@
 									"types": [
 										{
 											"type": "reference",
-											"target": 43023,
+											"target": 45381,
 											"typeArguments": [
 												{
 													"type": "intrinsic",
@@ -3600,7 +3600,7 @@
 										},
 										{
 											"type": "reference",
-											"target": 43018,
+											"target": 45376,
 											"typeArguments": [
 												{
 													"type": "reference",
@@ -3636,35 +3636,35 @@
 				{
 					"title": "Interfaces",
 					"children": [
-						42977,
-						43010,
-						43003,
-						43023,
-						43018,
-						43040,
-						43033,
-						43053,
-						43048,
-						42979,
-						42960
+						45335,
+						45368,
+						45361,
+						45381,
+						45376,
+						45398,
+						45391,
+						45411,
+						45406,
+						45337,
+						45318
 					]
 				},
 				{
 					"title": "Type Aliases",
 					"children": [
-						42999,
-						43029
+						45357,
+						45387
 					]
 				},
 				{
 					"title": "Functions",
 					"children": [
-						42927,
-						42945,
-						42942,
-						42936,
-						42939,
-						42933
+						45285,
+						45303,
+						45300,
+						45294,
+						45297,
+						45291
 					]
 				}
 			],
@@ -3672,30 +3672,30 @@
 				{
 					"title": "API",
 					"children": [
-						42927,
-						42945,
-						42942,
-						42936,
-						42939,
-						42933
+						45285,
+						45303,
+						45300,
+						45294,
+						45297,
+						45291
 					]
 				},
 				{
 					"title": "Interfaces",
 					"children": [
-						42977,
-						43010,
-						43003,
-						43023,
-						43018,
-						43040,
-						43033,
-						43053,
-						43048,
-						42979,
-						42960,
-						42999,
-						43029
+						45335,
+						45368,
+						45361,
+						45381,
+						45376,
+						45398,
+						45391,
+						45411,
+						45406,
+						45337,
+						45318,
+						45357,
+						45387
 					]
 				}
 			],
@@ -3709,7 +3709,7 @@
 			]
 		},
 		{
-			"id": 42931,
+			"id": 45289,
 			"name": "expressMiddleware",
 			"variant": "declaration",
 			"kind": 2,
@@ -3724,7 +3724,7 @@
 						"kind": "inline-tag",
 						"tag": "@link",
 						"text": "createVincentUserMiddleware",
-						"target": 43260
+						"target": 45618
 					},
 					{
 						"kind": "text",
@@ -3738,14 +3738,14 @@
 			},
 			"children": [
 				{
-					"id": 43304,
+					"id": 45662,
 					"name": "VincentJWTData",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
 					"children": [
 						{
-							"id": 43305,
+							"id": 45663,
 							"name": "decodedJWT",
 							"variant": "declaration",
 							"kind": 1024,
@@ -3763,13 +3763,13 @@
 								"types": [
 									{
 										"type": "reference",
-										"target": 43113,
+										"target": 45471,
 										"name": "VincentJWTPlatformUser",
 										"package": "@lit-protocol/vincent-app-sdk"
 									},
 									{
 										"type": "reference",
-										"target": 43138,
+										"target": 45496,
 										"name": "VincentJWTAppUser",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -3777,7 +3777,7 @@
 							}
 						},
 						{
-							"id": 43306,
+							"id": 45664,
 							"name": "rawJWT",
 							"variant": "declaration",
 							"kind": 1024,
@@ -3800,8 +3800,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								43305,
-								43306
+								45663,
+								45664
 							]
 						}
 					],
@@ -3815,7 +3815,7 @@
 					]
 				},
 				{
-					"id": 43284,
+					"id": 45642,
 					"name": "AuthenticatedRequest",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -3830,7 +3830,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "createVincentUserMiddleware",
-								"target": 43260
+								"target": 45618
 							},
 							{
 								"kind": "text",
@@ -3859,7 +3859,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43285,
+							"id": 45643,
 							"name": "UserKey",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -3870,7 +3870,7 @@
 							}
 						},
 						{
-							"id": 43286,
+							"id": 45644,
 							"name": "P",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -3881,7 +3881,7 @@
 							}
 						},
 						{
-							"id": 43287,
+							"id": 45645,
 							"name": "ResBody",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -3892,7 +3892,7 @@
 							}
 						},
 						{
-							"id": 43288,
+							"id": 45646,
 							"name": "ReqBody",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -3903,7 +3903,7 @@
 							}
 						},
 						{
-							"id": 43289,
+							"id": 45647,
 							"name": "ReqQuery",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -3926,28 +3926,28 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 43286,
+										"target": 45644,
 										"name": "P",
 										"package": "@lit-protocol/vincent-app-sdk",
 										"refersToTypeParameter": true
 									},
 									{
 										"type": "reference",
-										"target": 43287,
+										"target": 45645,
 										"name": "ResBody",
 										"package": "@lit-protocol/vincent-app-sdk",
 										"refersToTypeParameter": true
 									},
 									{
 										"type": "reference",
-										"target": 43288,
+										"target": 45646,
 										"name": "ReqBody",
 										"package": "@lit-protocol/vincent-app-sdk",
 										"refersToTypeParameter": true
 									},
 									{
 										"type": "reference",
-										"target": 43289,
+										"target": 45647,
 										"name": "ReqQuery",
 										"package": "@lit-protocol/vincent-app-sdk",
 										"refersToTypeParameter": true
@@ -3962,14 +3962,14 @@
 								"parameter": "K",
 								"parameterType": {
 									"type": "reference",
-									"target": 43285,
+									"target": 45643,
 									"name": "UserKey",
 									"package": "@lit-protocol/vincent-app-sdk",
 									"refersToTypeParameter": true
 								},
 								"templateType": {
 									"type": "reference",
-									"target": 43304,
+									"target": 45662,
 									"name": "VincentJWTData",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
@@ -3978,7 +3978,7 @@
 					}
 				},
 				{
-					"id": 43290,
+					"id": 45648,
 					"name": "AuthenticatedRequestHandler",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -3993,7 +3993,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "createVincentUserMiddleware",
-								"target": 43260
+								"target": 45618
 							},
 							{
 								"kind": "text",
@@ -4022,7 +4022,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43296,
+							"id": 45654,
 							"name": "UserKey",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4033,7 +4033,7 @@
 							}
 						},
 						{
-							"id": 43297,
+							"id": 45655,
 							"name": "P",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4046,7 +4046,7 @@
 								},
 								"objectType": {
 									"type": "reference",
-									"target": 43302,
+									"target": 45660,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -4065,7 +4065,7 @@
 							}
 						},
 						{
-							"id": 43298,
+							"id": 45656,
 							"name": "ResBody",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4078,7 +4078,7 @@
 								},
 								"objectType": {
 									"type": "reference",
-									"target": 43302,
+									"target": 45660,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -4097,7 +4097,7 @@
 							}
 						},
 						{
-							"id": 43299,
+							"id": 45657,
 							"name": "ReqBody",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4110,7 +4110,7 @@
 								},
 								"objectType": {
 									"type": "reference",
-									"target": 43302,
+									"target": 45660,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -4129,7 +4129,7 @@
 							}
 						},
 						{
-							"id": 43300,
+							"id": 45658,
 							"name": "ReqQuery",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4142,7 +4142,7 @@
 								},
 								"objectType": {
 									"type": "reference",
-									"target": 43302,
+									"target": 45660,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -4161,7 +4161,7 @@
 							}
 						},
 						{
-							"id": 43301,
+							"id": 45659,
 							"name": "Locals",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4193,7 +4193,7 @@
 								},
 								"objectType": {
 									"type": "reference",
-									"target": 43302,
+									"target": 45660,
 									"typeArguments": [
 										{
 											"type": "reference",
@@ -4215,7 +4215,7 @@
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 43291,
+							"id": 45649,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -4230,53 +4230,53 @@
 							],
 							"signatures": [
 								{
-									"id": 43292,
+									"id": 45650,
 									"name": "__type",
 									"variant": "signature",
 									"kind": 4096,
 									"flags": {},
 									"parameters": [
 										{
-											"id": 43293,
+											"id": 45651,
 											"name": "req",
 											"variant": "param",
 											"kind": 32768,
 											"flags": {},
 											"type": {
 												"type": "reference",
-												"target": 43284,
+												"target": 45642,
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 43296,
+														"target": 45654,
 														"name": "UserKey",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
 													},
 													{
 														"type": "reference",
-														"target": 43297,
+														"target": 45655,
 														"name": "P",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
 													},
 													{
 														"type": "reference",
-														"target": 43298,
+														"target": 45656,
 														"name": "ResBody",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
 													},
 													{
 														"type": "reference",
-														"target": 43299,
+														"target": 45657,
 														"name": "ReqBody",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
 													},
 													{
 														"type": "reference",
-														"target": 43300,
+														"target": 45658,
 														"name": "ReqQuery",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
@@ -4287,7 +4287,7 @@
 											}
 										},
 										{
-											"id": 43294,
+											"id": 45652,
 											"name": "res",
 											"variant": "param",
 											"kind": 32768,
@@ -4301,14 +4301,14 @@
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 43298,
+														"target": 45656,
 														"name": "ResBody",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
 													},
 													{
 														"type": "reference",
-														"target": 43301,
+														"target": 45659,
 														"name": "Locals",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
@@ -4320,7 +4320,7 @@
 											}
 										},
 										{
-											"id": 43295,
+											"id": 45653,
 											"name": "next",
 											"variant": "param",
 											"kind": 32768,
@@ -4367,7 +4367,7 @@
 					}
 				},
 				{
-					"id": 43302,
+					"id": 45660,
 					"name": "ExtractRequestHandlerParams",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -4382,7 +4382,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "createVincentUserMiddleware",
-								"target": 43260
+								"target": 45618
 							},
 							{
 								"kind": "text",
@@ -4411,7 +4411,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 43303,
+							"id": 45661,
 							"name": "T",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -4422,7 +4422,7 @@
 						"type": "conditional",
 						"checkType": {
 							"type": "reference",
-							"target": 43303,
+							"target": 45661,
 							"name": "T",
 							"package": "@lit-protocol/vincent-app-sdk",
 							"refersToTypeParameter": true
@@ -4521,7 +4521,7 @@
 					}
 				},
 				{
-					"id": 43260,
+					"id": 45618,
 					"name": "createVincentUserMiddleware",
 					"variant": "declaration",
 					"kind": 64,
@@ -4536,7 +4536,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43261,
+							"id": 45619,
 							"name": "createVincentUserMiddleware",
 							"variant": "signature",
 							"kind": 4096,
@@ -4679,7 +4679,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 43262,
+									"id": 45620,
 									"name": "UserKey",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -4694,7 +4694,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43263,
+									"id": 45621,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -4702,14 +4702,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 43264,
+											"id": 45622,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43265,
+													"id": 45623,
 													"name": "allowedAudience",
 													"variant": "declaration",
 													"kind": 1024,
@@ -4728,7 +4728,7 @@
 													}
 												},
 												{
-													"id": 43267,
+													"id": 45625,
 													"name": "requiredAppId",
 													"variant": "declaration",
 													"kind": 1024,
@@ -4756,7 +4756,7 @@
 													}
 												},
 												{
-													"id": 43266,
+													"id": 45624,
 													"name": "userKey",
 													"variant": "declaration",
 													"kind": 1024,
@@ -4771,7 +4771,7 @@
 													],
 													"type": {
 														"type": "reference",
-														"target": 43262,
+														"target": 45620,
 														"name": "UserKey",
 														"package": "@lit-protocol/vincent-app-sdk",
 														"refersToTypeParameter": true
@@ -4782,9 +4782,9 @@
 												{
 													"title": "Properties",
 													"children": [
-														43265,
-														43267,
-														43266
+														45623,
+														45625,
+														45624
 													]
 												}
 											],
@@ -4803,14 +4803,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43268,
+									"id": 45626,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43275,
+											"id": 45633,
 											"name": "handler",
 											"variant": "declaration",
 											"kind": 1024,
@@ -4826,7 +4826,7 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 43276,
+													"id": 45634,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
@@ -4841,7 +4841,7 @@
 													],
 													"signatures": [
 														{
-															"id": 43277,
+															"id": 45635,
 															"name": "__type",
 															"variant": "signature",
 															"kind": 4096,
@@ -4856,18 +4856,18 @@
 															],
 															"parameters": [
 																{
-																	"id": 43278,
+																	"id": 45636,
 																	"name": "handler",
 																	"variant": "param",
 																	"kind": 32768,
 																	"flags": {},
 																	"type": {
 																		"type": "reference",
-																		"target": 43290,
+																		"target": 45648,
 																		"typeArguments": [
 																			{
 																				"type": "reference",
-																				"target": 43262,
+																				"target": 45620,
 																				"name": "UserKey",
 																				"package": "@lit-protocol/vincent-app-sdk",
 																				"refersToTypeParameter": true
@@ -4881,7 +4881,7 @@
 															"type": {
 																"type": "reflection",
 																"declaration": {
-																	"id": 43279,
+																	"id": 45637,
 																	"name": "__type",
 																	"variant": "declaration",
 																	"kind": 65536,
@@ -4896,7 +4896,7 @@
 																	],
 																	"signatures": [
 																		{
-																			"id": 43280,
+																			"id": 45638,
 																			"name": "__type",
 																			"variant": "signature",
 																			"kind": 4096,
@@ -4911,7 +4911,7 @@
 																			],
 																			"parameters": [
 																				{
-																					"id": 43281,
+																					"id": 45639,
 																					"name": "req",
 																					"variant": "param",
 																					"kind": 32768,
@@ -4928,7 +4928,7 @@
 																					}
 																				},
 																				{
-																					"id": 43282,
+																					"id": 45640,
 																					"name": "res",
 																					"variant": "param",
 																					"kind": 32768,
@@ -4945,7 +4945,7 @@
 																					}
 																				},
 																				{
-																					"id": 43283,
+																					"id": 45641,
 																					"name": "next",
 																					"variant": "param",
 																					"kind": 32768,
@@ -4997,7 +4997,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 43269,
+											"id": 45627,
 											"name": "middleware",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5013,7 +5013,7 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 43270,
+													"id": 45628,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
@@ -5028,7 +5028,7 @@
 													],
 													"signatures": [
 														{
-															"id": 43271,
+															"id": 45629,
 															"name": "__type",
 															"variant": "signature",
 															"kind": 4096,
@@ -5043,7 +5043,7 @@
 															],
 															"parameters": [
 																{
-																	"id": 43272,
+																	"id": 45630,
 																	"name": "req",
 																	"variant": "param",
 																	"kind": 32768,
@@ -5060,7 +5060,7 @@
 																	}
 																},
 																{
-																	"id": 43273,
+																	"id": 45631,
 																	"name": "res",
 																	"variant": "param",
 																	"kind": 32768,
@@ -5077,7 +5077,7 @@
 																	}
 																},
 																{
-																	"id": 43274,
+																	"id": 45632,
 																	"name": "next",
 																	"variant": "param",
 																	"kind": 32768,
@@ -5120,8 +5120,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43275,
-												43269
+												45633,
+												45627
 											]
 										}
 									],
@@ -5143,21 +5143,21 @@
 				{
 					"title": "Interfaces",
 					"children": [
-						43304
+						45662
 					]
 				},
 				{
 					"title": "Type Aliases",
 					"children": [
-						43284,
-						43290,
-						43302
+						45642,
+						45648,
+						45660
 					]
 				},
 				{
 					"title": "Functions",
 					"children": [
-						43260
+						45618
 					]
 				}
 			],
@@ -5165,21 +5165,21 @@
 				{
 					"title": "API",
 					"children": [
-						43260
+						45618
 					]
 				},
 				{
 					"title": "Interfaces",
 					"children": [
-						43284,
-						43290,
-						43302
+						45642,
+						45648,
+						45660
 					]
 				},
 				{
 					"title": "Other",
 					"children": [
-						43304
+						45662
 					]
 				}
 			],
@@ -5193,7 +5193,7 @@
 			]
 		},
 		{
-			"id": 42929,
+			"id": 45287,
 			"name": "jwt",
 			"variant": "declaration",
 			"kind": 2,
@@ -5232,7 +5232,7 @@
 						"kind": "inline-tag",
 						"tag": "@link",
 						"text": "getWebAuthClient",
-						"target": 43234
+						"target": 45592
 					},
 					{
 						"kind": "text",
@@ -5242,7 +5242,7 @@
 						"kind": "inline-tag",
 						"tag": "@link",
 						"text": "WebAuthClient",
-						"target": 43237
+						"target": 45595
 					},
 					{
 						"kind": "text",
@@ -5252,7 +5252,7 @@
 			},
 			"children": [
 				{
-					"id": 43182,
+					"id": 45540,
 					"name": "CreateAppUserJWTParams",
 					"variant": "declaration",
 					"kind": 256,
@@ -5273,7 +5273,7 @@
 					},
 					"children": [
 						{
-							"id": 43183,
+							"id": 45541,
 							"name": "app",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5289,14 +5289,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43184,
+									"id": 45542,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43185,
+											"id": 45543,
 											"name": "id",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5315,7 +5315,7 @@
 											}
 										},
 										{
-											"id": 43186,
+											"id": 45544,
 											"name": "version",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5338,8 +5338,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43185,
-												43186
+												45543,
+												45544
 											]
 										}
 									],
@@ -5355,7 +5355,7 @@
 							}
 						},
 						{
-							"id": 43191,
+							"id": 45549,
 							"name": "audience",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5393,7 +5393,7 @@
 							}
 						},
 						{
-							"id": 43189,
+							"id": 45547,
 							"name": "authentication",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5410,7 +5410,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43199,
+								"target": 45557,
 								"name": "PKPAuthenticationMethod",
 								"package": "@lit-protocol/vincent-app-sdk"
 							},
@@ -5421,7 +5421,7 @@
 							}
 						},
 						{
-							"id": 43192,
+							"id": 45550,
 							"name": "expiresInMinutes",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5447,7 +5447,7 @@
 							}
 						},
 						{
-							"id": 43190,
+							"id": 45548,
 							"name": "payload",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5465,7 +5465,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43202,
+								"target": 45560,
 								"name": "PayloadWithoutInternallySetKeys",
 								"package": "@lit-protocol/vincent-app-sdk"
 							},
@@ -5476,7 +5476,7 @@
 							}
 						},
 						{
-							"id": 43188,
+							"id": 45546,
 							"name": "pkpInfo",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5508,7 +5508,7 @@
 							}
 						},
 						{
-							"id": 43187,
+							"id": 45545,
 							"name": "pkpWallet",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5544,13 +5544,13 @@
 						{
 							"title": "Properties",
 							"children": [
-								43183,
-								43191,
-								43189,
-								43192,
-								43190,
-								43188,
-								43187
+								45541,
+								45549,
+								45547,
+								45550,
+								45548,
+								45546,
+								45545
 							]
 						}
 					],
@@ -5575,7 +5575,7 @@
 					]
 				},
 				{
-					"id": 43193,
+					"id": 45551,
 					"name": "CreateDelegateeJWTParams",
 					"variant": "declaration",
 					"kind": 256,
@@ -5596,7 +5596,7 @@
 					},
 					"children": [
 						{
-							"id": 43197,
+							"id": 45555,
 							"name": "audience",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5634,7 +5634,7 @@
 							}
 						},
 						{
-							"id": 43194,
+							"id": 45552,
 							"name": "ethersWallet",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5658,7 +5658,7 @@
 							}
 						},
 						{
-							"id": 43198,
+							"id": 45556,
 							"name": "expiresInMinutes",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5684,7 +5684,7 @@
 							}
 						},
 						{
-							"id": 43196,
+							"id": 45554,
 							"name": "payload",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5702,7 +5702,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43202,
+								"target": 45560,
 								"name": "PayloadWithoutInternallySetKeys",
 								"package": "@lit-protocol/vincent-app-sdk"
 							},
@@ -5713,7 +5713,7 @@
 							}
 						},
 						{
-							"id": 43195,
+							"id": 45553,
 							"name": "subjectAddress",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5745,11 +5745,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								43197,
-								43194,
-								43198,
-								43196,
-								43195
+								45555,
+								45552,
+								45556,
+								45554,
+								45553
 							]
 						}
 					],
@@ -5774,7 +5774,7 @@
 					]
 				},
 				{
-					"id": 43102,
+					"id": 45460,
 					"name": "DecodedJWT",
 					"variant": "declaration",
 					"kind": 256,
@@ -5795,7 +5795,7 @@
 					},
 					"children": [
 						{
-							"id": 43111,
+							"id": 45469,
 							"name": "data",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5814,7 +5814,7 @@
 							}
 						},
 						{
-							"id": 43103,
+							"id": 45461,
 							"name": "header",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5830,14 +5830,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43104,
+									"id": 45462,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43106,
+											"id": 45464,
 											"name": "alg",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5856,7 +5856,7 @@
 											}
 										},
 										{
-											"id": 43105,
+											"id": 45463,
 											"name": "typ",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5879,8 +5879,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43106,
-												43105
+												45464,
+												45463
 											]
 										}
 									],
@@ -5894,7 +5894,7 @@
 									],
 									"indexSignatures": [
 										{
-											"id": 43107,
+											"id": 45465,
 											"name": "__index",
 											"variant": "signature",
 											"kind": 8192,
@@ -5909,7 +5909,7 @@
 											],
 											"parameters": [
 												{
-													"id": 43108,
+													"id": 45466,
 													"name": "x",
 													"variant": "param",
 													"kind": 32768,
@@ -5930,7 +5930,7 @@
 							}
 						},
 						{
-							"id": 43109,
+							"id": 45467,
 							"name": "payload",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5954,7 +5954,7 @@
 							}
 						},
 						{
-							"id": 43110,
+							"id": 45468,
 							"name": "signature",
 							"variant": "declaration",
 							"kind": 1024,
@@ -5977,10 +5977,10 @@
 						{
 							"title": "Properties",
 							"children": [
-								43111,
-								43103,
-								43109,
-								43110
+								45469,
+								45461,
+								45467,
+								45468
 							]
 						}
 					],
@@ -5995,23 +5995,23 @@
 					"extendedBy": [
 						{
 							"type": "reference",
-							"target": 43113,
+							"target": 45471,
 							"name": "VincentJWTPlatformUser"
 						},
 						{
 							"type": "reference",
-							"target": 43138,
+							"target": 45496,
 							"name": "VincentJWTAppUser"
 						},
 						{
 							"type": "reference",
-							"target": 43167,
+							"target": 45525,
 							"name": "VincentJWTDelegatee"
 						}
 					]
 				},
 				{
-					"id": 43199,
+					"id": 45557,
 					"name": "PKPAuthenticationMethod",
 					"variant": "declaration",
 					"kind": 256,
@@ -6032,7 +6032,7 @@
 					},
 					"children": [
 						{
-							"id": 43200,
+							"id": 45558,
 							"name": "type",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6051,7 +6051,7 @@
 							}
 						},
 						{
-							"id": 43201,
+							"id": 45559,
 							"name": "value",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6076,8 +6076,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								43200,
-								43201
+								45558,
+								45559
 							]
 						}
 					],
@@ -6091,7 +6091,7 @@
 					]
 				},
 				{
-					"id": 43138,
+					"id": 45496,
 					"name": "VincentJWTAppUser",
 					"variant": "declaration",
 					"kind": 256,
@@ -6112,7 +6112,7 @@
 					},
 					"children": [
 						{
-							"id": 43166,
+							"id": 45524,
 							"name": "data",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6133,12 +6133,12 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43111,
+								"target": 45469,
 								"name": "DecodedJWT.data"
 							}
 						},
 						{
-							"id": 43159,
+							"id": 45517,
 							"name": "header",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6156,14 +6156,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43160,
+									"id": 45518,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43162,
+											"id": 45520,
 											"name": "alg",
 											"variant": "declaration",
 											"kind": 1024,
@@ -6182,7 +6182,7 @@
 											}
 										},
 										{
-											"id": 43161,
+											"id": 45519,
 											"name": "typ",
 											"variant": "declaration",
 											"kind": 1024,
@@ -6205,8 +6205,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43162,
-												43161
+												45520,
+												45519
 											]
 										}
 									],
@@ -6220,7 +6220,7 @@
 									],
 									"indexSignatures": [
 										{
-											"id": 43163,
+											"id": 45521,
 											"name": "__index",
 											"variant": "signature",
 											"kind": 8192,
@@ -6235,7 +6235,7 @@
 											],
 											"parameters": [
 												{
-													"id": 43164,
+													"id": 45522,
 													"name": "x",
 													"variant": "param",
 													"kind": 32768,
@@ -6256,12 +6256,12 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43103,
+								"target": 45461,
 								"name": "DecodedJWT.header"
 							}
 						},
 						{
-							"id": 43139,
+							"id": 45497,
 							"name": "payload",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6280,14 +6280,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 43140,
+											"id": 45498,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43150,
+													"id": 45508,
 													"name": "__vincentJWTApiVersion",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6306,7 +6306,7 @@
 													}
 												},
 												{
-													"id": 43146,
+													"id": 45504,
 													"name": "aud",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6337,7 +6337,7 @@
 													}
 												},
 												{
-													"id": 43142,
+													"id": 45500,
 													"name": "authentication",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6352,13 +6352,13 @@
 													],
 													"type": {
 														"type": "reference",
-														"target": 43199,
+														"target": 45557,
 														"name": "PKPAuthenticationMethod",
 														"package": "@lit-protocol/vincent-app-sdk"
 													}
 												},
 												{
-													"id": 43144,
+													"id": 45502,
 													"name": "exp",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6377,7 +6377,7 @@
 													}
 												},
 												{
-													"id": 43143,
+													"id": 45501,
 													"name": "iat",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6396,7 +6396,7 @@
 													}
 												},
 												{
-													"id": 43145,
+													"id": 45503,
 													"name": "iss",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6424,7 +6424,7 @@
 													}
 												},
 												{
-													"id": 43148,
+													"id": 45506,
 													"name": "nbf",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6445,7 +6445,7 @@
 													}
 												},
 												{
-													"id": 43141,
+													"id": 45499,
 													"name": "pkpInfo",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6470,7 +6470,7 @@
 													}
 												},
 												{
-													"id": 43149,
+													"id": 45507,
 													"name": "publicKey",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6489,7 +6489,7 @@
 													}
 												},
 												{
-													"id": 43147,
+													"id": 45505,
 													"name": "sub",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6523,16 +6523,16 @@
 												{
 													"title": "Properties",
 													"children": [
-														43150,
-														43146,
-														43142,
-														43144,
-														43143,
-														43145,
-														43148,
-														43141,
-														43149,
-														43147
+														45508,
+														45504,
+														45500,
+														45502,
+														45501,
+														45503,
+														45506,
+														45499,
+														45507,
+														45505
 													]
 												}
 											],
@@ -6546,7 +6546,7 @@
 											],
 											"indexSignatures": [
 												{
-													"id": 43151,
+													"id": 45509,
 													"name": "__index",
 													"variant": "signature",
 													"kind": 8192,
@@ -6561,7 +6561,7 @@
 													],
 													"parameters": [
 														{
-															"id": 43152,
+															"id": 45510,
 															"name": "x",
 															"variant": "param",
 															"kind": 32768,
@@ -6583,14 +6583,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 43153,
+											"id": 45511,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43155,
+													"id": 45513,
 													"name": "app",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6606,14 +6606,14 @@
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 43156,
+															"id": 45514,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 43157,
+																	"id": 45515,
 																	"name": "id",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -6632,7 +6632,7 @@
 																	}
 																},
 																{
-																	"id": 43158,
+																	"id": 45516,
 																	"name": "version",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -6655,8 +6655,8 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		43157,
-																		43158
+																		45515,
+																		45516
 																	]
 																}
 															],
@@ -6672,7 +6672,7 @@
 													}
 												},
 												{
-													"id": 43154,
+													"id": 45512,
 													"name": "role",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6695,8 +6695,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														43155,
-														43154
+														45513,
+														45512
 													]
 												}
 											],
@@ -6714,12 +6714,12 @@
 							},
 							"overwrites": {
 								"type": "reference",
-								"target": 43109,
+								"target": 45467,
 								"name": "DecodedJWT.payload"
 							}
 						},
 						{
-							"id": 43165,
+							"id": 45523,
 							"name": "signature",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6740,7 +6740,7 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43110,
+								"target": 45468,
 								"name": "DecodedJWT.signature"
 							}
 						}
@@ -6749,10 +6749,10 @@
 						{
 							"title": "Properties",
 							"children": [
-								43166,
-								43159,
-								43139,
-								43165
+								45524,
+								45517,
+								45497,
+								45523
 							]
 						}
 					],
@@ -6767,14 +6767,14 @@
 					"extendedTypes": [
 						{
 							"type": "reference",
-							"target": 43102,
+							"target": 45460,
 							"name": "DecodedJWT",
 							"package": "@lit-protocol/vincent-app-sdk"
 						}
 					]
 				},
 				{
-					"id": 43167,
+					"id": 45525,
 					"name": "VincentJWTDelegatee",
 					"variant": "declaration",
 					"kind": 256,
@@ -6795,7 +6795,7 @@
 					},
 					"children": [
 						{
-							"id": 43179,
+							"id": 45537,
 							"name": "data",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6816,12 +6816,12 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43111,
+								"target": 45469,
 								"name": "DecodedJWT.data"
 							}
 						},
 						{
-							"id": 43172,
+							"id": 45530,
 							"name": "header",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6839,14 +6839,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43173,
+									"id": 45531,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43175,
+											"id": 45533,
 											"name": "alg",
 											"variant": "declaration",
 											"kind": 1024,
@@ -6865,7 +6865,7 @@
 											}
 										},
 										{
-											"id": 43174,
+											"id": 45532,
 											"name": "typ",
 											"variant": "declaration",
 											"kind": 1024,
@@ -6888,8 +6888,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43175,
-												43174
+												45533,
+												45532
 											]
 										}
 									],
@@ -6903,7 +6903,7 @@
 									],
 									"indexSignatures": [
 										{
-											"id": 43176,
+											"id": 45534,
 											"name": "__index",
 											"variant": "signature",
 											"kind": 8192,
@@ -6918,7 +6918,7 @@
 											],
 											"parameters": [
 												{
-													"id": 43177,
+													"id": 45535,
 													"name": "x",
 													"variant": "param",
 													"kind": 32768,
@@ -6939,12 +6939,12 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43103,
+								"target": 45461,
 								"name": "DecodedJWT.header"
 							}
 						},
 						{
-							"id": 43168,
+							"id": 45526,
 							"name": "payload",
 							"variant": "declaration",
 							"kind": 1024,
@@ -6972,14 +6972,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 43169,
+											"id": 45527,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43170,
+													"id": 45528,
 													"name": "role",
 													"variant": "declaration",
 													"kind": 1024,
@@ -6998,7 +6998,7 @@
 													}
 												},
 												{
-													"id": 43171,
+													"id": 45529,
 													"name": "sub",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7032,8 +7032,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														43170,
-														43171
+														45528,
+														45529
 													]
 												}
 											],
@@ -7051,12 +7051,12 @@
 							},
 							"overwrites": {
 								"type": "reference",
-								"target": 43109,
+								"target": 45467,
 								"name": "DecodedJWT.payload"
 							}
 						},
 						{
-							"id": 43178,
+							"id": 45536,
 							"name": "signature",
 							"variant": "declaration",
 							"kind": 1024,
@@ -7077,7 +7077,7 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43110,
+								"target": 45468,
 								"name": "DecodedJWT.signature"
 							}
 						}
@@ -7086,10 +7086,10 @@
 						{
 							"title": "Properties",
 							"children": [
-								43179,
-								43172,
-								43168,
-								43178
+								45537,
+								45530,
+								45526,
+								45536
 							]
 						}
 					],
@@ -7104,14 +7104,14 @@
 					"extendedTypes": [
 						{
 							"type": "reference",
-							"target": 43102,
+							"target": 45460,
 							"name": "DecodedJWT",
 							"package": "@lit-protocol/vincent-app-sdk"
 						}
 					]
 				},
 				{
-					"id": 43113,
+					"id": 45471,
 					"name": "VincentJWTPlatformUser",
 					"variant": "declaration",
 					"kind": 256,
@@ -7132,7 +7132,7 @@
 					},
 					"children": [
 						{
-							"id": 43137,
+							"id": 45495,
 							"name": "data",
 							"variant": "declaration",
 							"kind": 1024,
@@ -7153,12 +7153,12 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43111,
+								"target": 45469,
 								"name": "DecodedJWT.data"
 							}
 						},
 						{
-							"id": 43130,
+							"id": 45488,
 							"name": "header",
 							"variant": "declaration",
 							"kind": 1024,
@@ -7176,14 +7176,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43131,
+									"id": 45489,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43133,
+											"id": 45491,
 											"name": "alg",
 											"variant": "declaration",
 											"kind": 1024,
@@ -7202,7 +7202,7 @@
 											}
 										},
 										{
-											"id": 43132,
+											"id": 45490,
 											"name": "typ",
 											"variant": "declaration",
 											"kind": 1024,
@@ -7225,8 +7225,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43133,
-												43132
+												45491,
+												45490
 											]
 										}
 									],
@@ -7240,7 +7240,7 @@
 									],
 									"indexSignatures": [
 										{
-											"id": 43134,
+											"id": 45492,
 											"name": "__index",
 											"variant": "signature",
 											"kind": 8192,
@@ -7255,7 +7255,7 @@
 											],
 											"parameters": [
 												{
-													"id": 43135,
+													"id": 45493,
 													"name": "x",
 													"variant": "param",
 													"kind": 32768,
@@ -7276,12 +7276,12 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43103,
+								"target": 45461,
 								"name": "DecodedJWT.header"
 							}
 						},
 						{
-							"id": 43114,
+							"id": 45472,
 							"name": "payload",
 							"variant": "declaration",
 							"kind": 1024,
@@ -7300,14 +7300,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 43115,
+											"id": 45473,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43125,
+													"id": 45483,
 													"name": "__vincentJWTApiVersion",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7326,7 +7326,7 @@
 													}
 												},
 												{
-													"id": 43121,
+													"id": 45479,
 													"name": "aud",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7357,7 +7357,7 @@
 													}
 												},
 												{
-													"id": 43117,
+													"id": 45475,
 													"name": "authentication",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7372,13 +7372,13 @@
 													],
 													"type": {
 														"type": "reference",
-														"target": 43199,
+														"target": 45557,
 														"name": "PKPAuthenticationMethod",
 														"package": "@lit-protocol/vincent-app-sdk"
 													}
 												},
 												{
-													"id": 43119,
+													"id": 45477,
 													"name": "exp",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7397,7 +7397,7 @@
 													}
 												},
 												{
-													"id": 43118,
+													"id": 45476,
 													"name": "iat",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7416,7 +7416,7 @@
 													}
 												},
 												{
-													"id": 43120,
+													"id": 45478,
 													"name": "iss",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7444,7 +7444,7 @@
 													}
 												},
 												{
-													"id": 43123,
+													"id": 45481,
 													"name": "nbf",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7465,7 +7465,7 @@
 													}
 												},
 												{
-													"id": 43116,
+													"id": 45474,
 													"name": "pkpInfo",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7490,7 +7490,7 @@
 													}
 												},
 												{
-													"id": 43124,
+													"id": 45482,
 													"name": "publicKey",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7509,7 +7509,7 @@
 													}
 												},
 												{
-													"id": 43122,
+													"id": 45480,
 													"name": "sub",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7543,16 +7543,16 @@
 												{
 													"title": "Properties",
 													"children": [
-														43125,
-														43121,
-														43117,
-														43119,
-														43118,
-														43120,
-														43123,
-														43116,
-														43124,
-														43122
+														45483,
+														45479,
+														45475,
+														45477,
+														45476,
+														45478,
+														45481,
+														45474,
+														45482,
+														45480
 													]
 												}
 											],
@@ -7566,7 +7566,7 @@
 											],
 											"indexSignatures": [
 												{
-													"id": 43126,
+													"id": 45484,
 													"name": "__index",
 													"variant": "signature",
 													"kind": 8192,
@@ -7581,7 +7581,7 @@
 													],
 													"parameters": [
 														{
-															"id": 43127,
+															"id": 45485,
 															"name": "x",
 															"variant": "param",
 															"kind": 32768,
@@ -7603,14 +7603,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 43128,
+											"id": 45486,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43129,
+													"id": 45487,
 													"name": "role",
 													"variant": "declaration",
 													"kind": 1024,
@@ -7633,7 +7633,7 @@
 												{
 													"title": "Properties",
 													"children": [
-														43129
+														45487
 													]
 												}
 											],
@@ -7651,12 +7651,12 @@
 							},
 							"overwrites": {
 								"type": "reference",
-								"target": 43109,
+								"target": 45467,
 								"name": "DecodedJWT.payload"
 							}
 						},
 						{
-							"id": 43136,
+							"id": 45494,
 							"name": "signature",
 							"variant": "declaration",
 							"kind": 1024,
@@ -7677,7 +7677,7 @@
 							},
 							"inheritedFrom": {
 								"type": "reference",
-								"target": 43110,
+								"target": 45468,
 								"name": "DecodedJWT.signature"
 							}
 						}
@@ -7686,10 +7686,10 @@
 						{
 							"title": "Properties",
 							"children": [
-								43137,
-								43130,
-								43114,
-								43136
+								45495,
+								45488,
+								45472,
+								45494
 							]
 						}
 					],
@@ -7704,14 +7704,14 @@
 					"extendedTypes": [
 						{
 							"type": "reference",
-							"target": 43102,
+							"target": 45460,
 							"name": "DecodedJWT",
 							"package": "@lit-protocol/vincent-app-sdk"
 						}
 					]
 				},
 				{
-					"id": 43112,
+					"id": 45470,
 					"name": "AnyVincentJWT",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -7743,19 +7743,19 @@
 						"types": [
 							{
 								"type": "reference",
-								"target": 43113,
+								"target": 45471,
 								"name": "VincentJWTPlatformUser",
 								"package": "@lit-protocol/vincent-app-sdk"
 							},
 							{
 								"type": "reference",
-								"target": 43138,
+								"target": 45496,
 								"name": "VincentJWTAppUser",
 								"package": "@lit-protocol/vincent-app-sdk"
 							},
 							{
 								"type": "reference",
-								"target": 43167,
+								"target": 45525,
 								"name": "VincentJWTDelegatee",
 								"package": "@lit-protocol/vincent-app-sdk"
 							}
@@ -7763,7 +7763,7 @@
 					}
 				},
 				{
-					"id": 43181,
+					"id": 45539,
 					"name": "CreatePlatformUserJWTParams",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -7801,7 +7801,7 @@
 					}
 				},
 				{
-					"id": 43203,
+					"id": 45561,
 					"name": "InternallySetPayloadKeys",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -7876,7 +7876,7 @@
 					}
 				},
 				{
-					"id": 43202,
+					"id": 45560,
 					"name": "PayloadWithoutInternallySetKeys",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -7907,7 +7907,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "InternallySetPayloadKeys",
-								"target": 43203
+								"target": 45561
 							},
 							{
 								"kind": "text",
@@ -7962,7 +7962,7 @@
 							},
 							{
 								"type": "reference",
-								"target": 43203,
+								"target": 45561,
 								"name": "InternallySetPayloadKeys",
 								"package": "@lit-protocol/vincent-app-sdk"
 							}
@@ -7972,7 +7972,7 @@
 					}
 				},
 				{
-					"id": 43180,
+					"id": 45538,
 					"name": "VincentJWTRole",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -8023,7 +8023,7 @@
 					}
 				},
 				{
-					"id": 43065,
+					"id": 45423,
 					"name": "createAppUserJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -8038,7 +8038,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43066,
+							"id": 45424,
 							"name": "createAppUserJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -8072,14 +8072,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43067,
+									"id": 45425,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43182,
+										"target": 45540,
 										"name": "CreateAppUserJWTParams",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8104,7 +8104,7 @@
 					]
 				},
 				{
-					"id": 43062,
+					"id": 45420,
 					"name": "createDelegateeJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -8112,14 +8112,14 @@
 					"sources": [
 						{
 							"fileName": "app-sdk/src/jwt/core/create.ts",
-							"line": 106,
+							"line": 109,
 							"character": 22,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/adababebeb54377a26fe77e3c39fec3422ee0577/packages/libs/app-sdk/src/jwt/core/create.ts#L106"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/adababebeb54377a26fe77e3c39fec3422ee0577/packages/libs/app-sdk/src/jwt/core/create.ts#L109"
 						}
 					],
 					"signatures": [
 						{
-							"id": 43063,
+							"id": 45421,
 							"name": "createDelegateeJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -8128,7 +8128,15 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Creates a JWT for an app delegatee (Ethereum account that may act on behalf of a user)."
+										"text": "Creates a JWT for an app delegatee (Ethereum account that may act on behalf of a user).\n\nIf your use-case is to authenticate with a service on behalf of a specific delegator, you must provide a valid "
+									},
+									{
+										"kind": "code",
+										"text": "`subjectAddress`"
+									},
+									{
+										"kind": "text",
+										"text": "\nwhich should be a valid delegator for your Delegatee address."
 									}
 								],
 								"blockTags": [
@@ -8146,21 +8154,21 @@
 							"sources": [
 								{
 									"fileName": "app-sdk/src/jwt/core/create.ts",
-									"line": 106,
+									"line": 109,
 									"character": 22,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/adababebeb54377a26fe77e3c39fec3422ee0577/packages/libs/app-sdk/src/jwt/core/create.ts#L106"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/adababebeb54377a26fe77e3c39fec3422ee0577/packages/libs/app-sdk/src/jwt/core/create.ts#L109"
 								}
 							],
 							"parameters": [
 								{
-									"id": 43064,
+									"id": 45422,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43193,
+										"target": 45551,
 										"name": "CreateDelegateeJWTParams",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8185,7 +8193,7 @@
 					]
 				},
 				{
-					"id": 43059,
+					"id": 45417,
 					"name": "createPlatformUserJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -8200,7 +8208,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43060,
+							"id": 45418,
 							"name": "createPlatformUserJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -8234,7 +8242,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43061,
+									"id": 45419,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -8269,7 +8277,7 @@
 					]
 				},
 				{
-					"id": 43204,
+					"id": 45562,
 					"name": "getAppInfo",
 					"variant": "declaration",
 					"kind": 64,
@@ -8284,7 +8292,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43205,
+							"id": 45563,
 							"name": "getAppInfo",
 							"variant": "signature",
 							"kind": 4096,
@@ -8313,14 +8321,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43206,
+									"id": 45564,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43138,
+										"target": 45496,
 										"name": "VincentJWTAppUser",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8329,14 +8337,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43207,
+									"id": 45565,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43208,
+											"id": 45566,
 											"name": "appId",
 											"variant": "declaration",
 											"kind": 1024,
@@ -8355,7 +8363,7 @@
 											}
 										},
 										{
-											"id": 43209,
+											"id": 45567,
 											"name": "version",
 											"variant": "declaration",
 											"kind": 1024,
@@ -8378,8 +8386,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43208,
-												43209
+												45566,
+												45567
 											]
 										}
 									],
@@ -8397,7 +8405,7 @@
 					]
 				},
 				{
-					"id": 43222,
+					"id": 45580,
 					"name": "getAudience",
 					"variant": "declaration",
 					"kind": 64,
@@ -8412,7 +8420,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43223,
+							"id": 45581,
 							"name": "getAudience",
 							"variant": "signature",
 							"kind": 4096,
@@ -8441,14 +8449,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43224,
+									"id": 45582,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43112,
+										"target": 45470,
 										"name": "AnyVincentJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8465,7 +8473,7 @@
 					]
 				},
 				{
-					"id": 43228,
+					"id": 45586,
 					"name": "getAuthentication",
 					"variant": "declaration",
 					"kind": 64,
@@ -8480,7 +8488,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43229,
+							"id": 45587,
 							"name": "getAuthentication",
 							"variant": "signature",
 							"kind": 4096,
@@ -8509,7 +8517,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43230,
+									"id": 45588,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
@@ -8519,13 +8527,13 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 43113,
+												"target": 45471,
 												"name": "VincentJWTPlatformUser",
 												"package": "@lit-protocol/vincent-app-sdk"
 											},
 											{
 												"type": "reference",
-												"target": 43138,
+												"target": 45496,
 												"name": "VincentJWTAppUser",
 												"package": "@lit-protocol/vincent-app-sdk"
 											}
@@ -8536,14 +8544,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43231,
+									"id": 45589,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 43232,
+											"id": 45590,
 											"name": "type",
 											"variant": "declaration",
 											"kind": 1024,
@@ -8562,7 +8570,7 @@
 											}
 										},
 										{
-											"id": 43233,
+											"id": 45591,
 											"name": "value",
 											"variant": "declaration",
 											"kind": 1024,
@@ -8587,8 +8595,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												43232,
-												43233
+												45590,
+												45591
 											]
 										}
 									],
@@ -8606,7 +8614,7 @@
 					]
 				},
 				{
-					"id": 43219,
+					"id": 45577,
 					"name": "getIssuerAddress",
 					"variant": "declaration",
 					"kind": 64,
@@ -8621,7 +8629,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43220,
+							"id": 45578,
 							"name": "getIssuerAddress",
 							"variant": "signature",
 							"kind": 4096,
@@ -8650,14 +8658,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43221,
+									"id": 45579,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43112,
+										"target": 45470,
 										"name": "AnyVincentJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8680,7 +8688,7 @@
 					]
 				},
 				{
-					"id": 43210,
+					"id": 45568,
 					"name": "getPKPInfo",
 					"variant": "declaration",
 					"kind": 64,
@@ -8695,7 +8703,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43211,
+							"id": 45569,
 							"name": "getPKPInfo",
 							"variant": "signature",
 							"kind": 4096,
@@ -8724,7 +8732,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43212,
+									"id": 45570,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
@@ -8734,13 +8742,13 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 43113,
+												"target": 45471,
 												"name": "VincentJWTPlatformUser",
 												"package": "@lit-protocol/vincent-app-sdk"
 											},
 											{
 												"type": "reference",
-												"target": 43138,
+												"target": 45496,
 												"name": "VincentJWTAppUser",
 												"package": "@lit-protocol/vincent-app-sdk"
 											}
@@ -8762,7 +8770,7 @@
 					]
 				},
 				{
-					"id": 43225,
+					"id": 45583,
 					"name": "getPublicKey",
 					"variant": "declaration",
 					"kind": 64,
@@ -8777,7 +8785,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43226,
+							"id": 45584,
 							"name": "getPublicKey",
 							"variant": "signature",
 							"kind": 4096,
@@ -8806,14 +8814,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43227,
+									"id": 45585,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43112,
+										"target": 45470,
 										"name": "AnyVincentJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8827,7 +8835,7 @@
 					]
 				},
 				{
-					"id": 43213,
+					"id": 45571,
 					"name": "getRole",
 					"variant": "declaration",
 					"kind": 64,
@@ -8842,7 +8850,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43214,
+							"id": 45572,
 							"name": "getRole",
 							"variant": "signature",
 							"kind": 4096,
@@ -8871,14 +8879,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43215,
+									"id": 45573,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43112,
+										"target": 45470,
 										"name": "AnyVincentJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8892,7 +8900,7 @@
 					]
 				},
 				{
-					"id": 43216,
+					"id": 45574,
 					"name": "getSubjectAddress",
 					"variant": "declaration",
 					"kind": 64,
@@ -8907,7 +8915,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43217,
+							"id": 45575,
 							"name": "getSubjectAddress",
 							"variant": "signature",
 							"kind": 4096,
@@ -8936,14 +8944,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43218,
+									"id": 45576,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43167,
+										"target": 45525,
 										"name": "VincentJWTDelegatee",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -8966,7 +8974,7 @@
 					]
 				},
 				{
-					"id": 43096,
+					"id": 45454,
 					"name": "isAnyVincentJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -8981,7 +8989,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43097,
+							"id": 45455,
 							"name": "isAnyVincentJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -9015,14 +9023,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43098,
+									"id": 45456,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43102,
+										"target": 45460,
 										"name": "DecodedJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9034,7 +9042,7 @@
 								"asserts": false,
 								"targetType": {
 									"type": "reference",
-									"target": 43112,
+									"target": 45470,
 									"name": "AnyVincentJWT",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
@@ -9043,7 +9051,7 @@
 					]
 				},
 				{
-					"id": 43090,
+					"id": 45448,
 					"name": "isAppUser",
 					"variant": "declaration",
 					"kind": 64,
@@ -9058,7 +9066,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43091,
+							"id": 45449,
 							"name": "isAppUser",
 							"variant": "signature",
 							"kind": 4096,
@@ -9092,14 +9100,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43092,
+									"id": 45450,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43102,
+										"target": 45460,
 										"name": "DecodedJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9111,7 +9119,7 @@
 								"asserts": false,
 								"targetType": {
 									"type": "reference",
-									"target": 43138,
+									"target": 45496,
 									"name": "VincentJWTAppUser",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
@@ -9120,7 +9128,7 @@
 					]
 				},
 				{
-					"id": 43099,
+					"id": 45457,
 					"name": "isDelegateee",
 					"variant": "declaration",
 					"kind": 64,
@@ -9135,7 +9143,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43100,
+							"id": 45458,
 							"name": "isDelegateee",
 							"variant": "signature",
 							"kind": 4096,
@@ -9169,14 +9177,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43101,
+									"id": 45459,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43102,
+										"target": 45460,
 										"name": "DecodedJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9188,7 +9196,7 @@
 								"asserts": false,
 								"targetType": {
 									"type": "reference",
-									"target": 43167,
+									"target": 45525,
 									"name": "VincentJWTDelegatee",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
@@ -9197,7 +9205,7 @@
 					]
 				},
 				{
-					"id": 43068,
+					"id": 45426,
 					"name": "isExpired",
 					"variant": "declaration",
 					"kind": 64,
@@ -9212,7 +9220,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43069,
+							"id": 45427,
 							"name": "isExpired",
 							"variant": "signature",
 							"kind": 4096,
@@ -9255,14 +9263,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43070,
+									"id": 45428,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43112,
+										"target": 45470,
 										"name": "AnyVincentJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9276,7 +9284,7 @@
 					]
 				},
 				{
-					"id": 43093,
+					"id": 45451,
 					"name": "isPlatformUser",
 					"variant": "declaration",
 					"kind": 64,
@@ -9291,7 +9299,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43094,
+							"id": 45452,
 							"name": "isPlatformUser",
 							"variant": "signature",
 							"kind": 4096,
@@ -9325,14 +9333,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43095,
+									"id": 45453,
 									"name": "decodedJWT",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43102,
+										"target": 45460,
 										"name": "DecodedJWT",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9344,7 +9352,7 @@
 								"asserts": false,
 								"targetType": {
 									"type": "reference",
-									"target": 43113,
+									"target": 45471,
 									"name": "VincentJWTPlatformUser",
 									"package": "@lit-protocol/vincent-app-sdk"
 								}
@@ -9353,7 +9361,7 @@
 					]
 				},
 				{
-					"id": 43071,
+					"id": 45429,
 					"name": "verifyVincentAppUserJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -9368,7 +9376,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43072,
+							"id": 45430,
 							"name": "verifyVincentAppUserJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -9402,7 +9410,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43073,
+									"id": 45431,
 									"name": "__namedParameters",
 									"variant": "param",
 									"kind": 32768,
@@ -9410,14 +9418,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 43074,
+											"id": 45432,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43076,
+													"id": 45434,
 													"name": "expectedAudience",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9436,7 +9444,7 @@
 													}
 												},
 												{
-													"id": 43075,
+													"id": 45433,
 													"name": "jwt",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9455,7 +9463,7 @@
 													}
 												},
 												{
-													"id": 43077,
+													"id": 45435,
 													"name": "requiredAppId",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9478,9 +9486,9 @@
 												{
 													"title": "Properties",
 													"children": [
-														43076,
-														43075,
-														43077
+														45434,
+														45433,
+														45435
 													]
 												}
 											],
@@ -9505,7 +9513,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 43138,
+										"target": 45496,
 										"name": "VincentJWTAppUser",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9517,7 +9525,7 @@
 					]
 				},
 				{
-					"id": 43084,
+					"id": 45442,
 					"name": "verifyVincentDelegateeJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -9532,7 +9540,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43085,
+							"id": 45443,
 							"name": "verifyVincentDelegateeJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -9561,7 +9569,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43086,
+									"id": 45444,
 									"name": "__namedParameters",
 									"variant": "param",
 									"kind": 32768,
@@ -9569,14 +9577,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 43087,
+											"id": 45445,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43089,
+													"id": 45447,
 													"name": "expectedAudience",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9595,7 +9603,7 @@
 													}
 												},
 												{
-													"id": 43088,
+													"id": 45446,
 													"name": "jwt",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9618,8 +9626,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														43089,
-														43088
+														45447,
+														45446
 													]
 												}
 											],
@@ -9644,7 +9652,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 43167,
+										"target": 45525,
 										"name": "VincentJWTDelegatee",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9656,7 +9664,7 @@
 					]
 				},
 				{
-					"id": 43078,
+					"id": 45436,
 					"name": "verifyVincentPlatformJWT",
 					"variant": "declaration",
 					"kind": 64,
@@ -9671,7 +9679,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43079,
+							"id": 45437,
 							"name": "verifyVincentPlatformJWT",
 							"variant": "signature",
 							"kind": 4096,
@@ -9700,7 +9708,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43080,
+									"id": 45438,
 									"name": "__namedParameters",
 									"variant": "param",
 									"kind": 32768,
@@ -9708,14 +9716,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 43081,
+											"id": 45439,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43083,
+													"id": 45441,
 													"name": "expectedAudience",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9734,7 +9742,7 @@
 													}
 												},
 												{
-													"id": 43082,
+													"id": 45440,
 													"name": "jwt",
 													"variant": "declaration",
 													"kind": 1024,
@@ -9757,8 +9765,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														43083,
-														43082
+														45441,
+														45440
 													]
 												}
 											],
@@ -9783,7 +9791,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 43113,
+										"target": 45471,
 										"name": "VincentJWTPlatformUser",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -9799,47 +9807,47 @@
 				{
 					"title": "Interfaces",
 					"children": [
-						43182,
-						43193,
-						43102,
-						43199,
-						43138,
-						43167,
-						43113
+						45540,
+						45551,
+						45460,
+						45557,
+						45496,
+						45525,
+						45471
 					]
 				},
 				{
 					"title": "Type Aliases",
 					"children": [
-						43112,
-						43181,
-						43203,
-						43202,
-						43180
+						45470,
+						45539,
+						45561,
+						45560,
+						45538
 					]
 				},
 				{
 					"title": "Functions",
 					"children": [
-						43065,
-						43062,
-						43059,
-						43204,
-						43222,
-						43228,
-						43219,
-						43210,
-						43225,
-						43213,
-						43216,
-						43096,
-						43090,
-						43099,
-						43068,
-						43093,
-						43071,
-						43084,
-						43078
+						45423,
+						45420,
+						45417,
+						45562,
+						45580,
+						45586,
+						45577,
+						45568,
+						45583,
+						45571,
+						45574,
+						45454,
+						45448,
+						45457,
+						45426,
+						45451,
+						45429,
+						45442,
+						45436
 					]
 				}
 			],
@@ -9847,57 +9855,57 @@
 				{
 					"title": "Interfaces",
 					"children": [
-						43182,
-						43193,
-						43102,
-						43199,
-						43138,
-						43167,
-						43113,
-						43112,
-						43181,
-						43203,
-						43202,
-						43180
+						45540,
+						45551,
+						45460,
+						45557,
+						45496,
+						45525,
+						45471,
+						45470,
+						45539,
+						45561,
+						45560,
+						45538
 					]
 				},
 				{
 					"title": "API > Accessors",
 					"children": [
-						43204,
-						43222,
-						43228,
-						43219,
-						43210,
-						43225,
-						43213,
-						43216
+						45562,
+						45580,
+						45586,
+						45577,
+						45568,
+						45583,
+						45571,
+						45574
 					]
 				},
 				{
 					"title": "API > Create",
 					"children": [
-						43065,
-						43062,
-						43059
+						45423,
+						45420,
+						45417
 					]
 				},
 				{
 					"title": "API > Type Guards",
 					"children": [
-						43096,
-						43090,
-						43099,
-						43093
+						45454,
+						45448,
+						45457,
+						45451
 					]
 				},
 				{
 					"title": "API > Verify",
 					"children": [
-						43068,
-						43071,
-						43084,
-						43078
+						45426,
+						45429,
+						45442,
+						45436
 					]
 				}
 			],
@@ -9911,7 +9919,7 @@
 			]
 		},
 		{
-			"id": 42932,
+			"id": 45290,
 			"name": "utils",
 			"variant": "declaration",
 			"kind": 2,
@@ -9926,7 +9934,7 @@
 			},
 			"children": [
 				{
-					"id": 43307,
+					"id": 45665,
 					"name": "getDelegatorsAgentPkpAddresses",
 					"variant": "declaration",
 					"kind": 64,
@@ -9941,7 +9949,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43308,
+							"id": 45666,
 							"name": "getDelegatorsAgentPkpAddresses",
 							"variant": "signature",
 							"kind": 4096,
@@ -9969,7 +9977,7 @@
 							],
 							"parameters": [
 								{
-									"id": 43309,
+									"id": 45667,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
@@ -9977,14 +9985,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 43310,
+											"id": 45668,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 43311,
+													"id": 45669,
 													"name": "appId",
 													"variant": "declaration",
 													"kind": 1024,
@@ -10003,7 +10011,7 @@
 													}
 												},
 												{
-													"id": 43312,
+													"id": 45670,
 													"name": "appVersion",
 													"variant": "declaration",
 													"kind": 1024,
@@ -10022,7 +10030,7 @@
 													}
 												},
 												{
-													"id": 43314,
+													"id": 45672,
 													"name": "pageOpts",
 													"variant": "declaration",
 													"kind": 1024,
@@ -10040,14 +10048,14 @@
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 43315,
+															"id": 45673,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 43317,
+																	"id": 45675,
 																	"name": "limit",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -10068,7 +10076,7 @@
 																	}
 																},
 																{
-																	"id": 43316,
+																	"id": 45674,
 																	"name": "offset",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -10093,8 +10101,8 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		43317,
-																		43316
+																		45675,
+																		45674
 																	]
 																}
 															],
@@ -10110,7 +10118,7 @@
 													}
 												},
 												{
-													"id": 43313,
+													"id": 45671,
 													"name": "signer",
 													"variant": "declaration",
 													"kind": 1024,
@@ -10139,10 +10147,10 @@
 												{
 													"title": "Properties",
 													"children": [
-														43311,
-														43312,
-														43314,
-														43313
+														45669,
+														45670,
+														45672,
+														45671
 													]
 												}
 											],
@@ -10184,7 +10192,7 @@
 				{
 					"title": "Functions",
 					"children": [
-						43307
+						45665
 					]
 				}
 			],
@@ -10198,7 +10206,7 @@
 			]
 		},
 		{
-			"id": 42930,
+			"id": 45288,
 			"name": "webAuthClient",
 			"variant": "declaration",
 			"kind": 2,
@@ -10217,14 +10225,14 @@
 			},
 			"children": [
 				{
-					"id": 43257,
+					"id": 45615,
 					"name": "RedirectToVincentDelegationPageParams",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
 					"children": [
 						{
-							"id": 43258,
+							"id": 45616,
 							"name": "redirectUri",
 							"variant": "declaration",
 							"kind": 1024,
@@ -10247,7 +10255,7 @@
 						{
 							"title": "Properties",
 							"children": [
-								43258
+								45616
 							]
 						}
 					],
@@ -10261,7 +10269,7 @@
 					]
 				},
 				{
-					"id": 43237,
+					"id": 45595,
 					"name": "WebAuthClient",
 					"variant": "declaration",
 					"kind": 256,
@@ -10276,7 +10284,7 @@
 					},
 					"children": [
 						{
-							"id": 43245,
+							"id": 45603,
 							"name": "decodeVincentJWTFromUri",
 							"variant": "declaration",
 							"kind": 1024,
@@ -10291,7 +10299,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "WebAuthClient.redirectToConnectPage",
-										"target": 43238
+										"target": 45596
 									},
 									{
 										"kind": "text",
@@ -10325,7 +10333,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43246,
+									"id": 45604,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -10340,7 +10348,7 @@
 									],
 									"signatures": [
 										{
-											"id": 43247,
+											"id": 45605,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -10373,7 +10381,7 @@
 											],
 											"parameters": [
 												{
-													"id": 43248,
+													"id": 45606,
 													"name": "expectedAudience",
 													"variant": "param",
 													"kind": 32768,
@@ -10417,14 +10425,14 @@
 															{
 																"type": "reflection",
 																"declaration": {
-																	"id": 43249,
+																	"id": 45607,
 																	"name": "__type",
 																	"variant": "declaration",
 																	"kind": 65536,
 																	"flags": {},
 																	"children": [
 																		{
-																			"id": 43250,
+																			"id": 45608,
 																			"name": "decodedJWT",
 																			"variant": "declaration",
 																			"kind": 1024,
@@ -10439,13 +10447,13 @@
 																			],
 																			"type": {
 																				"type": "reference",
-																				"target": 43138,
+																				"target": 45496,
 																				"name": "VincentJWTAppUser",
 																				"package": "@lit-protocol/vincent-app-sdk"
 																			}
 																		},
 																		{
-																			"id": 43251,
+																			"id": 45609,
 																			"name": "jwtStr",
 																			"variant": "declaration",
 																			"kind": 1024,
@@ -10468,8 +10476,8 @@
 																		{
 																			"title": "Properties",
 																			"children": [
-																				43250,
-																				43251
+																				45608,
+																				45609
 																			]
 																		}
 																	],
@@ -10495,7 +10503,7 @@
 							}
 						},
 						{
-							"id": 43238,
+							"id": 45596,
 							"name": "redirectToConnectPage",
 							"variant": "declaration",
 							"kind": 1024,
@@ -10518,7 +10526,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "WebAuthClient.uriContainsVincentJWT",
-										"target": 43242
+										"target": 45600
 									},
 									{
 										"kind": "text",
@@ -10528,7 +10536,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "WebAuthClient.decodeVincentJWTFromUri",
-										"target": 43245
+										"target": 45603
 									},
 									{
 										"kind": "text",
@@ -10583,7 +10591,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43239,
+									"id": 45597,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -10598,7 +10606,7 @@
 									],
 									"signatures": [
 										{
-											"id": 43240,
+											"id": 45598,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -10613,14 +10621,14 @@
 											],
 											"parameters": [
 												{
-													"id": 43241,
+													"id": 45599,
 													"name": "redirectConfig",
 													"variant": "param",
 													"kind": 32768,
 													"flags": {},
 													"type": {
 														"type": "reference",
-														"target": 43257,
+														"target": 45615,
 														"name": "RedirectToVincentDelegationPageParams",
 														"package": "@lit-protocol/vincent-app-sdk"
 													}
@@ -10636,7 +10644,7 @@
 							}
 						},
 						{
-							"id": 43252,
+							"id": 45610,
 							"name": "removeVincentJWTFromURI",
 							"variant": "declaration",
 							"kind": 1024,
@@ -10675,7 +10683,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43253,
+									"id": 45611,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -10690,7 +10698,7 @@
 									],
 									"signatures": [
 										{
-											"id": 43254,
+											"id": 45612,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -10713,7 +10721,7 @@
 							}
 						},
 						{
-							"id": 43242,
+							"id": 45600,
 							"name": "uriContainsVincentJWT",
 							"variant": "declaration",
 							"kind": 1024,
@@ -10728,7 +10736,7 @@
 										"kind": "inline-tag",
 										"tag": "@link",
 										"text": "WebAuthClient.redirectToConnectPage",
-										"target": 43238
+										"target": 45596
 									},
 									{
 										"kind": "text",
@@ -10753,7 +10761,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 43243,
+									"id": 45601,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -10768,7 +10776,7 @@
 									],
 									"signatures": [
 										{
-											"id": 43244,
+											"id": 45602,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -10821,10 +10829,10 @@
 						{
 							"title": "Properties",
 							"children": [
-								43245,
-								43238,
-								43252,
-								43242
+								45603,
+								45596,
+								45610,
+								45600
 							]
 						}
 					],
@@ -10838,14 +10846,14 @@
 					]
 				},
 				{
-					"id": 43255,
+					"id": 45613,
 					"name": "WebAuthClientConfig",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
 					"children": [
 						{
-							"id": 43256,
+							"id": 45614,
 							"name": "appId",
 							"variant": "declaration",
 							"kind": 1024,
@@ -10868,7 +10876,7 @@
 						{
 							"title": "Properties",
 							"children": [
-								43256
+								45614
 							]
 						}
 					],
@@ -10882,7 +10890,7 @@
 					]
 				},
 				{
-					"id": 43234,
+					"id": 45592,
 					"name": "getWebAuthClient",
 					"variant": "declaration",
 					"kind": 64,
@@ -10897,7 +10905,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "WebAuthClient",
-								"target": 43237
+								"target": 45595
 							},
 							{
 								"kind": "text",
@@ -10923,7 +10931,7 @@
 					],
 					"signatures": [
 						{
-							"id": 43235,
+							"id": 45593,
 							"name": "getWebAuthClient",
 							"variant": "signature",
 							"kind": 4096,
@@ -10938,14 +10946,14 @@
 							],
 							"parameters": [
 								{
-									"id": 43236,
+									"id": 45594,
 									"name": "appClientConfig",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 43255,
+										"target": 45613,
 										"name": "WebAuthClientConfig",
 										"package": "@lit-protocol/vincent-app-sdk"
 									}
@@ -10953,7 +10961,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 43237,
+								"target": 45595,
 								"name": "WebAuthClient",
 								"package": "@lit-protocol/vincent-app-sdk"
 							}
@@ -10965,15 +10973,15 @@
 				{
 					"title": "Interfaces",
 					"children": [
-						43257,
-						43237,
-						43255
+						45615,
+						45595,
+						45613
 					]
 				},
 				{
 					"title": "Functions",
 					"children": [
-						43234
+						45592
 					]
 				}
 			],
@@ -10991,11 +10999,11 @@
 		{
 			"title": "Modules",
 			"children": [
-				42926,
-				42931,
-				42929,
-				42932,
-				42930
+				45284,
+				45289,
+				45287,
+				45290,
+				45288
 			]
 		}
 	],
@@ -11160,1459 +11168,1459 @@
 		}
 	],
 	"symbolIdMap": {
-		"42926": {
+		"45284": {
 			"sourceFileName": "src/abilityClient/index.ts",
 			"qualifiedName": ""
 		},
-		"42927": {
+		"45285": {
 			"sourceFileName": "src/abilityClient/index.ts",
 			"qualifiedName": "disconnectVincentAbilityClients"
 		},
-		"42928": {
+		"45286": {
 			"sourceFileName": "src/internal/LitNodeClient/getLitNodeClient.ts",
 			"qualifiedName": "disconnectVincentAbilityClients"
 		},
-		"42929": {
+		"45287": {
 			"sourceFileName": "src/jwt/index.ts",
 			"qualifiedName": ""
 		},
-		"42930": {
+		"45288": {
 			"sourceFileName": "src/webAuthClient/index.ts",
 			"qualifiedName": ""
 		},
-		"42931": {
+		"45289": {
 			"sourceFileName": "src/expressMiddleware/index.ts",
 			"qualifiedName": ""
 		},
-		"42932": {
+		"45290": {
 			"sourceFileName": "src/utils/typedocRoot.ts",
 			"qualifiedName": ""
 		},
-		"42933": {
+		"45291": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseSuccess"
 		},
-		"42934": {
+		"45292": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseSuccess"
 		},
-		"42935": {
+		"45293": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
-		"42936": {
+		"45294": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseRuntimeFailure"
 		},
-		"42937": {
+		"45295": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseRuntimeFailure"
 		},
-		"42938": {
+		"45296": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
-		"42939": {
+		"45297": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseSchemaValidationFailure"
 		},
-		"42940": {
+		"45298": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseSchemaValidationFailure"
 		},
-		"42941": {
+		"45299": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
-		"42942": {
+		"45300": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseFailure"
 		},
-		"42943": {
+		"45301": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "isAbilityResponseFailure"
 		},
-		"42944": {
+		"45302": {
 			"sourceFileName": "src/abilityClient/typeGuards.ts",
 			"qualifiedName": "value"
 		},
-		"42945": {
+		"45303": {
 			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "getVincentAbilityClient"
 		},
-		"42946": {
+		"45304": {
 			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "getVincentAbilityClient"
 		},
-		"42956": {
+		"45314": {
 			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "params"
 		},
-		"42957": {
+		"45315": {
 			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "__type"
 		},
-		"42958": {
+		"45316": {
 			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "__type.bundledVincentAbility"
 		},
-		"42959": {
+		"45317": {
 			"sourceFileName": "src/abilityClient/vincentAbilityClient.ts",
 			"qualifiedName": "__type.ethersSigner"
 		},
-		"42960": {
+		"45318": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "VincentAbilityClient"
 		},
-		"42961": {
+		"45319": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "VincentAbilityClient.precheck"
 		},
-		"42962": {
+		"45320": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "VincentAbilityClient.precheck"
 		},
-		"42963": {
+		"45321": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "rawAbilityParams"
 		},
-		"42964": {
+		"45322": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "context"
 		},
-		"42965": {
+		"45323": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"42966": {
+		"45324": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "__type.rpcUrl"
 		},
-		"42967": {
+		"45325": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "VincentAbilityClient.execute"
 		},
-		"42968": {
+		"45326": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "VincentAbilityClient.execute"
 		},
-		"42969": {
+		"45327": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "rawAbilityParams"
 		},
-		"42970": {
+		"45328": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "context"
 		},
-		"42977": {
+		"45335": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "AbilityClientContext"
 		},
-		"42978": {
+		"45336": {
 			"sourceFileName": "src/abilityClient/types.ts",
 			"qualifiedName": "AbilityClientContext.delegatorPkpEthAddress"
 		},
-		"42979": {
+		"45337": {
 			"sourceFileName": "../ability-sdk/src/lib/abilityCore/abilityConfig/context/types.ts",
 			"qualifiedName": "BaseAbilityContext"
 		},
-		"42980": {
+		"45338": {
 			"sourceFileName": "../ability-sdk/src/lib/abilityCore/abilityConfig/context/types.ts",
 			"qualifiedName": "BaseAbilityContext.policiesContext"
 		},
-		"42981": {
+		"45339": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.abilityIpfsCid"
 		},
-		"42982": {
+		"45340": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.appId"
 		},
-		"42983": {
+		"45341": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.appVersion"
 		},
-		"42984": {
+		"45342": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "BaseContext.delegation"
 		},
-		"42985": {
+		"45343": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type"
 		},
-		"42986": {
+		"45344": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.delegateeAddress"
 		},
-		"42987": {
+		"45345": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.delegatorPkpInfo"
 		},
-		"42988": {
+		"45346": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type"
 		},
-		"42989": {
+		"45347": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.tokenId"
 		},
-		"42990": {
+		"45348": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.ethAddress"
 		},
-		"42991": {
+		"45349": {
 			"sourceFileName": "../ability-sdk/src/lib/types.ts",
 			"qualifiedName": "__type.publicKey"
 		},
-		"42992": {
+		"45350": {
 			"sourceFileName": "../ability-sdk/src/lib/abilityCore/abilityConfig/context/types.ts",
 			"qualifiedName": "BaseAbilityContext.Policies"
 		},
-		"42999": {
+		"45357": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponse"
 		},
-		"43000": {
+		"45358": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "SuccessSchema"
 		},
-		"43001": {
+		"45359": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "FailSchema"
 		},
-		"43002": {
+		"45360": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "Policies"
 		},
-		"43003": {
+		"45361": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult"
 		},
-		"43004": {
+		"45362": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult.success"
 		},
-		"43005": {
+		"45363": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult.runtimeError"
 		},
-		"43006": {
+		"45364": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult.schemaValidationError"
 		},
-		"43007": {
+		"45365": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult.result"
 		},
-		"43008": {
+		"45366": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult.context"
 		},
-		"43009": {
+		"45367": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailureNoResult.Policies"
 		},
-		"43010": {
+		"45368": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure"
 		},
-		"43011": {
+		"45369": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.success"
 		},
-		"43012": {
+		"45370": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.runtimeError"
 		},
-		"43013": {
+		"45371": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.schemaValidationError"
 		},
-		"43014": {
+		"45372": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.result"
 		},
-		"43015": {
+		"45373": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.context"
 		},
-		"43016": {
+		"45374": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.Result"
 		},
-		"43017": {
+		"45375": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseFailure.Policies"
 		},
-		"43018": {
+		"45376": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccessNoResult"
 		},
-		"43019": {
+		"45377": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.success"
 		},
-		"43020": {
+		"45378": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.result"
 		},
-		"43021": {
+		"45379": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.context"
 		},
-		"43022": {
+		"45380": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccessNoResult.Policies"
 		},
-		"43023": {
+		"45381": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccess"
 		},
-		"43024": {
+		"45382": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccess.success"
 		},
-		"43025": {
+		"45383": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccess.result"
 		},
-		"43026": {
+		"45384": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccess.context"
 		},
-		"43027": {
+		"45385": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccess.Result"
 		},
-		"43028": {
+		"45386": {
 			"sourceFileName": "src/abilityClient/execute/types.ts",
 			"qualifiedName": "AbilityExecuteResponseSuccess.Policies"
 		},
-		"43029": {
+		"45387": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponse"
 		},
-		"43030": {
+		"45388": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "SuccessSchema"
 		},
-		"43031": {
+		"45389": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "FailSchema"
 		},
-		"43032": {
+		"45390": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "Policies"
 		},
-		"43033": {
+		"45391": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult"
 		},
-		"43034": {
+		"45392": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.success"
 		},
-		"43035": {
+		"45393": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.runtimeError"
 		},
-		"43036": {
+		"45394": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.schemaValidationError"
 		},
-		"43037": {
+		"45395": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.result"
 		},
-		"43038": {
+		"45396": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.context"
 		},
-		"43039": {
+		"45397": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailureNoResult.Policies"
 		},
-		"43040": {
+		"45398": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure"
 		},
-		"43041": {
+		"45399": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.success"
 		},
-		"43042": {
+		"45400": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.runtimeError"
 		},
-		"43043": {
+		"45401": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.schemaValidationError"
 		},
-		"43044": {
+		"45402": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.result"
 		},
-		"43045": {
+		"45403": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.context"
 		},
-		"43046": {
+		"45404": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.Result"
 		},
-		"43047": {
+		"45405": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseFailure.Policies"
 		},
-		"43048": {
+		"45406": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult"
 		},
-		"43049": {
+		"45407": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.success"
 		},
-		"43050": {
+		"45408": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.result"
 		},
-		"43051": {
+		"45409": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.context"
 		},
-		"43052": {
+		"45410": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccessNoResult.Policies"
 		},
-		"43053": {
+		"45411": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccess"
 		},
-		"43054": {
+		"45412": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccess.success"
 		},
-		"43055": {
+		"45413": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccess.result"
 		},
-		"43056": {
+		"45414": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccess.context"
 		},
-		"43057": {
+		"45415": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccess.Result"
 		},
-		"43058": {
+		"45416": {
 			"sourceFileName": "src/abilityClient/precheck/types.ts",
 			"qualifiedName": "AbilityPrecheckResponseSuccess.Policies"
 		},
-		"43059": {
+		"45417": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "createPlatformUserJWT"
 		},
-		"43060": {
+		"45418": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "createPlatformUserJWT"
 		},
-		"43061": {
+		"45419": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "config"
 		},
-		"43062": {
+		"45420": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "createDelegateeJWT"
 		},
-		"43063": {
+		"45421": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "createDelegateeJWT"
 		},
-		"43064": {
+		"45422": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "config"
 		},
-		"43065": {
+		"45423": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "createAppUserJWT"
 		},
-		"43066": {
+		"45424": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "createAppUserJWT"
 		},
-		"43067": {
+		"45425": {
 			"sourceFileName": "src/jwt/core/create.ts",
 			"qualifiedName": "config"
 		},
-		"43068": {
+		"45426": {
 			"sourceFileName": "src/jwt/core/isExpired.ts",
 			"qualifiedName": "isExpired"
 		},
-		"43069": {
+		"45427": {
 			"sourceFileName": "src/jwt/core/isExpired.ts",
 			"qualifiedName": "isExpired"
 		},
-		"43070": {
+		"45428": {
 			"sourceFileName": "src/jwt/core/isExpired.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43071": {
+		"45429": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "verifyVincentAppUserJWT"
 		},
-		"43072": {
+		"45430": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "verifyVincentAppUserJWT"
 		},
-		"43073": {
+		"45431": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__0"
 		},
-		"43074": {
+		"45432": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type"
 		},
-		"43075": {
+		"45433": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.jwt"
 		},
-		"43076": {
+		"45434": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.expectedAudience"
 		},
-		"43077": {
+		"45435": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.requiredAppId"
 		},
-		"43078": {
+		"45436": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "verifyVincentPlatformJWT"
 		},
-		"43079": {
+		"45437": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "verifyVincentPlatformJWT"
 		},
-		"43080": {
+		"45438": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__0"
 		},
-		"43081": {
+		"45439": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type"
 		},
-		"43082": {
+		"45440": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.jwt"
 		},
-		"43083": {
+		"45441": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.expectedAudience"
 		},
-		"43084": {
+		"45442": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "verifyVincentDelegateeJWT"
 		},
-		"43085": {
+		"45443": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "verifyVincentDelegateeJWT"
 		},
-		"43086": {
+		"45444": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__0"
 		},
-		"43087": {
+		"45445": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type"
 		},
-		"43088": {
+		"45446": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.jwt"
 		},
-		"43089": {
+		"45447": {
 			"sourceFileName": "src/jwt/core/verify.ts",
 			"qualifiedName": "__type.expectedAudience"
 		},
-		"43090": {
+		"45448": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isAppUser"
 		},
-		"43091": {
+		"45449": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isAppUser"
 		},
-		"43092": {
+		"45450": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43093": {
+		"45451": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isPlatformUser"
 		},
-		"43094": {
+		"45452": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isPlatformUser"
 		},
-		"43095": {
+		"45453": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43096": {
+		"45454": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isAnyVincentJWT"
 		},
-		"43097": {
+		"45455": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isAnyVincentJWT"
 		},
-		"43098": {
+		"45456": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43099": {
+		"45457": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isDelegateee"
 		},
-		"43100": {
+		"45458": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "isDelegateee"
 		},
-		"43101": {
+		"45459": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43102": {
+		"45460": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT"
 		},
-		"43103": {
+		"45461": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.header"
 		},
-		"43104": {
+		"45462": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43105": {
+		"45463": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.typ"
 		},
-		"43106": {
+		"45464": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.alg"
 		},
-		"43107": {
+		"45465": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"43109": {
+		"45467": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.payload"
 		},
-		"43110": {
+		"45468": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.signature"
 		},
-		"43111": {
+		"45469": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.data"
 		},
-		"43112": {
+		"45470": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "AnyVincentJWT"
 		},
-		"43113": {
+		"45471": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTPlatformUser"
 		},
-		"43114": {
+		"45472": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTPlatformUser.payload"
 		},
-		"43115": {
+		"45473": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPPayload"
 		},
-		"43116": {
+		"45474": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPPayload.pkpInfo"
 		},
-		"43117": {
+		"45475": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPPayload.authentication"
 		},
-		"43118": {
+		"45476": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.iat"
 		},
-		"43119": {
+		"45477": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.exp"
 		},
-		"43120": {
+		"45478": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.iss"
 		},
-		"43121": {
+		"45479": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.aud"
 		},
-		"43122": {
+		"45480": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.sub"
 		},
-		"43123": {
+		"45481": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.nbf"
 		},
-		"43124": {
+		"45482": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.publicKey"
 		},
-		"43125": {
+		"45483": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.__vincentJWTApiVersion"
 		},
-		"43126": {
+		"45484": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.__index"
 		},
-		"43128": {
+		"45486": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43129": {
+		"45487": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.role"
 		},
-		"43130": {
+		"45488": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.header"
 		},
-		"43131": {
+		"45489": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43132": {
+		"45490": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.typ"
 		},
-		"43133": {
+		"45491": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.alg"
 		},
-		"43134": {
+		"45492": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"43136": {
+		"45494": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.signature"
 		},
-		"43137": {
+		"45495": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.data"
 		},
-		"43138": {
+		"45496": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTAppUser"
 		},
-		"43139": {
+		"45497": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTAppUser.payload"
 		},
-		"43140": {
+		"45498": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPPayload"
 		},
-		"43141": {
+		"45499": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPPayload.pkpInfo"
 		},
-		"43142": {
+		"45500": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPPayload.authentication"
 		},
-		"43143": {
+		"45501": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.iat"
 		},
-		"43144": {
+		"45502": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.exp"
 		},
-		"43145": {
+		"45503": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.iss"
 		},
-		"43146": {
+		"45504": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.aud"
 		},
-		"43147": {
+		"45505": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.sub"
 		},
-		"43148": {
+		"45506": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.nbf"
 		},
-		"43149": {
+		"45507": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.publicKey"
 		},
-		"43150": {
+		"45508": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.__vincentJWTApiVersion"
 		},
-		"43151": {
+		"45509": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "JWTPayload.__index"
 		},
-		"43153": {
+		"45511": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43154": {
+		"45512": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.role"
 		},
-		"43155": {
+		"45513": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.app"
 		},
-		"43156": {
+		"45514": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43157": {
+		"45515": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.id"
 		},
-		"43158": {
+		"45516": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.version"
 		},
-		"43159": {
+		"45517": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.header"
 		},
-		"43160": {
+		"45518": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43161": {
+		"45519": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.typ"
 		},
-		"43162": {
+		"45520": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.alg"
 		},
-		"43163": {
+		"45521": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"43165": {
+		"45523": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.signature"
 		},
-		"43166": {
+		"45524": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.data"
 		},
-		"43167": {
+		"45525": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTDelegatee"
 		},
-		"43168": {
+		"45526": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTDelegatee.payload"
 		},
-		"43169": {
+		"45527": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43170": {
+		"45528": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.role"
 		},
-		"43171": {
+		"45529": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.sub"
 		},
-		"43172": {
+		"45530": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.header"
 		},
-		"43173": {
+		"45531": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43174": {
+		"45532": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.typ"
 		},
-		"43175": {
+		"45533": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.alg"
 		},
-		"43176": {
+		"45534": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"43178": {
+		"45536": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.signature"
 		},
-		"43179": {
+		"45537": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "DecodedJWT.data"
 		},
-		"43180": {
+		"45538": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentJWTRole"
 		},
-		"43181": {
+		"45539": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "CreatePlatformUserJWTParams"
 		},
-		"43182": {
+		"45540": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "CreateAppUserJWTParams"
 		},
-		"43183": {
+		"45541": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "CreateAppUserJWTParams.app"
 		},
-		"43184": {
+		"45542": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43185": {
+		"45543": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.id"
 		},
-		"43186": {
+		"45544": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "__type.version"
 		},
-		"43187": {
+		"45545": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPJWTParams.pkpWallet"
 		},
-		"43188": {
+		"45546": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPJWTParams.pkpInfo"
 		},
-		"43189": {
+		"45547": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "VincentPKPJWTParams.authentication"
 		},
-		"43190": {
+		"45548": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "BaseJWTParams.payload"
 		},
-		"43191": {
+		"45549": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "BaseJWTParams.audience"
 		},
-		"43192": {
+		"45550": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "BaseJWTParams.expiresInMinutes"
 		},
-		"43193": {
+		"45551": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "CreateDelegateeJWTParams"
 		},
-		"43194": {
+		"45552": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "CreateDelegateeJWTParams.ethersWallet"
 		},
-		"43195": {
+		"45553": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "CreateDelegateeJWTParams.subjectAddress"
 		},
-		"43196": {
+		"45554": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "BaseJWTParams.payload"
 		},
-		"43197": {
+		"45555": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "BaseJWTParams.audience"
 		},
-		"43198": {
+		"45556": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "BaseJWTParams.expiresInMinutes"
 		},
-		"43199": {
+		"45557": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "PKPAuthenticationMethod"
 		},
-		"43200": {
+		"45558": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "PKPAuthenticationMethod.type"
 		},
-		"43201": {
+		"45559": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "PKPAuthenticationMethod.value"
 		},
-		"43202": {
+		"45560": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "PayloadWithoutInternallySetKeys"
 		},
-		"43203": {
+		"45561": {
 			"sourceFileName": "src/jwt/types.ts",
 			"qualifiedName": "InternallySetPayloadKeys"
 		},
-		"43204": {
+		"45562": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getAppInfo"
 		},
-		"43205": {
+		"45563": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getAppInfo"
 		},
-		"43206": {
+		"45564": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43207": {
+		"45565": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "__type"
 		},
-		"43208": {
+		"45566": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "__type.appId"
 		},
-		"43209": {
+		"45567": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "__type.version"
 		},
-		"43210": {
+		"45568": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getPKPInfo"
 		},
-		"43211": {
+		"45569": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getPKPInfo"
 		},
-		"43212": {
+		"45570": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43213": {
+		"45571": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getRole"
 		},
-		"43214": {
+		"45572": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getRole"
 		},
-		"43215": {
+		"45573": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43216": {
+		"45574": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getSubjectAddress"
 		},
-		"43217": {
+		"45575": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getSubjectAddress"
 		},
-		"43218": {
+		"45576": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43219": {
+		"45577": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getIssuerAddress"
 		},
-		"43220": {
+		"45578": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getIssuerAddress"
 		},
-		"43221": {
+		"45579": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43222": {
+		"45580": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getAudience"
 		},
-		"43223": {
+		"45581": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getAudience"
 		},
-		"43224": {
+		"45582": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43225": {
+		"45583": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getPublicKey"
 		},
-		"43226": {
+		"45584": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getPublicKey"
 		},
-		"43227": {
+		"45585": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43228": {
+		"45586": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getAuthentication"
 		},
-		"43229": {
+		"45587": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "getAuthentication"
 		},
-		"43230": {
+		"45588": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "decodedJWT"
 		},
-		"43231": {
+		"45589": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "__type"
 		},
-		"43232": {
+		"45590": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "__type.type"
 		},
-		"43233": {
+		"45591": {
 			"sourceFileName": "src/jwt/accessors.ts",
 			"qualifiedName": "__type.value"
 		},
-		"43234": {
+		"45592": {
 			"sourceFileName": "src/webAuthClient/app.ts",
 			"qualifiedName": "getWebAuthClient"
 		},
-		"43235": {
+		"45593": {
 			"sourceFileName": "src/webAuthClient/app.ts",
 			"qualifiedName": "getWebAuthClient"
 		},
-		"43236": {
+		"45594": {
 			"sourceFileName": "src/webAuthClient/app.ts",
 			"qualifiedName": "appClientConfig"
 		},
-		"43237": {
+		"45595": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClient"
 		},
-		"43238": {
+		"45596": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClient.redirectToConnectPage"
 		},
-		"43239": {
+		"45597": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43240": {
+		"45598": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43241": {
+		"45599": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "redirectConfig"
 		},
-		"43242": {
+		"45600": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClient.uriContainsVincentJWT"
 		},
-		"43243": {
+		"45601": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43244": {
+		"45602": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43245": {
+		"45603": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClient.decodeVincentJWTFromUri"
 		},
-		"43246": {
+		"45604": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43247": {
+		"45605": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43248": {
+		"45606": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "expectedAudience"
 		},
-		"43249": {
+		"45607": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43250": {
+		"45608": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type.decodedJWT"
 		},
-		"43251": {
+		"45609": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type.jwtStr"
 		},
-		"43252": {
+		"45610": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClient.removeVincentJWTFromURI"
 		},
-		"43253": {
+		"45611": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43254": {
+		"45612": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43255": {
+		"45613": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClientConfig"
 		},
-		"43256": {
+		"45614": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "WebAuthClientConfig.appId"
 		},
-		"43257": {
+		"45615": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "RedirectToVincentDelegationPageParams"
 		},
-		"43258": {
+		"45616": {
 			"sourceFileName": "src/webAuthClient/types.ts",
 			"qualifiedName": "RedirectToVincentDelegationPageParams.redirectUri"
 		},
-		"43260": {
+		"45618": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "createVincentUserMiddleware"
 		},
-		"43261": {
+		"45619": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "createVincentUserMiddleware"
 		},
-		"43262": {
+		"45620": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "UserKey"
 		},
-		"43263": {
+		"45621": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "config"
 		},
-		"43264": {
+		"45622": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__type"
 		},
-		"43265": {
+		"45623": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__type.allowedAudience"
 		},
-		"43266": {
+		"45624": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__type.userKey"
 		},
-		"43267": {
+		"45625": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__type.requiredAppId"
 		},
-		"43268": {
+		"45626": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__object"
 		},
-		"43269": {
+		"45627": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__object.middleware"
 		},
-		"43270": {
+		"45628": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"43271": {
+		"45629": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"43272": {
+		"45630": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "req"
 		},
-		"43273": {
+		"45631": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "res"
 		},
-		"43274": {
+		"45632": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "next"
 		},
-		"43275": {
+		"45633": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__object.handler"
 		},
-		"43276": {
+		"45634": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"43277": {
+		"45635": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"43278": {
+		"45636": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "handler"
 		},
-		"43279": {
+		"45637": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"43280": {
+		"45638": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "__function"
 		},
-		"43281": {
+		"45639": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "req"
 		},
-		"43282": {
+		"45640": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "res"
 		},
-		"43283": {
+		"45641": {
 			"sourceFileName": "src/expressMiddleware/express.ts",
 			"qualifiedName": "next"
 		},
-		"43284": {
+		"45642": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "AuthenticatedRequest"
 		},
-		"43285": {
+		"45643": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "UserKey"
 		},
-		"43286": {
+		"45644": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "P"
 		},
-		"43287": {
+		"45645": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ResBody"
 		},
-		"43288": {
+		"45646": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ReqBody"
 		},
-		"43289": {
+		"45647": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ReqQuery"
 		},
-		"43290": {
+		"45648": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "AuthenticatedRequestHandler"
 		},
-		"43291": {
+		"45649": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43292": {
+		"45650": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43293": {
+		"45651": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "req"
 		},
-		"43294": {
+		"45652": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "res"
 		},
-		"43295": {
+		"45653": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "next"
 		},
-		"43296": {
+		"45654": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "UserKey"
 		},
-		"43297": {
+		"45655": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "P"
 		},
-		"43298": {
+		"45656": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ResBody"
 		},
-		"43299": {
+		"45657": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ReqBody"
 		},
-		"43300": {
+		"45658": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ReqQuery"
 		},
-		"43301": {
+		"45659": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "Locals"
 		},
-		"43302": {
+		"45660": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "ExtractRequestHandlerParams"
 		},
-		"43303": {
+		"45661": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "T"
 		},
-		"43304": {
+		"45662": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "VincentJWTData"
 		},
-		"43305": {
+		"45663": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "VincentJWTData.decodedJWT"
 		},
-		"43306": {
+		"45664": {
 			"sourceFileName": "src/expressMiddleware/types.ts",
 			"qualifiedName": "VincentJWTData.rawJWT"
 		},
-		"43307": {
+		"45665": {
 			"sourceFileName": "src/utils/delegation.ts",
 			"qualifiedName": "getDelegatorsAgentPkpAddresses"
 		},
-		"43308": {
+		"45666": {
 			"sourceFileName": "src/utils/delegation.ts",
 			"qualifiedName": "getDelegatorsAgentPkpAddresses"
 		},
-		"43309": {
+		"45667": {
 			"sourceFileName": "src/utils/delegation.ts",
 			"qualifiedName": "params"
 		},
-		"43310": {
+		"45668": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "GetDelegatorsAgentPkpsParams"
 		},
-		"43311": {
+		"45669": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "GetDelegatorsAgentPkpsParams.appId"
 		},
-		"43312": {
+		"45670": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "GetDelegatorsAgentPkpsParams.appVersion"
 		},
-		"43313": {
+		"45671": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "GetDelegatorsAgentPkpsParams.signer"
 		},
-		"43314": {
+		"45672": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "GetDelegatorsAgentPkpsParams.pageOpts"
 		},
-		"43315": {
+		"45673": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "__type"
 		},
-		"43316": {
+		"45674": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "__type.offset"
 		},
-		"43317": {
+		"45675": {
 			"sourceFileName": "src/utils/types.ts",
 			"qualifiedName": "__type.limit"
 		}
@@ -12626,11 +12634,11 @@
 			"5": "src/utils/typedocRoot.ts"
 		},
 		"reflections": {
-			"1": 42926,
-			"2": 42929,
-			"3": 42930,
-			"4": 42931,
-			"5": 42932
+			"1": 45284,
+			"2": 45287,
+			"3": 45288,
+			"4": 45289,
+			"5": 45290
 		}
 	}
 }

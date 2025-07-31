@@ -101,6 +101,9 @@ export async function createAppUserJWT(config: CreateAppUserJWTParams): Promise<
 /**
  * Creates a JWT for an app delegatee (Ethereum account that may act on behalf of a user).
  *
+ * If your use-case is to authenticate with a service on behalf of a specific delegator, you must provide a valid `subjectAddress`
+ * which should be a valid delegator for your Delegatee address.
+ *
  * @category API > Create
  */
 export async function createDelegateeJWT(config: CreateDelegateeJWTParams): Promise<string> {
