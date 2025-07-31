@@ -15,19 +15,11 @@
 export { createPlatformUserJWT, createDelegateeJWT, createAppUserJWT } from './core/create';
 export { isExpired } from './core/isExpired';
 export {
-  verifyAnyVincentJWT,
   verifyVincentAppUserJWT,
   verifyVincentPlatformJWT,
   verifyVincentDelegateeJWT,
 } from './core/verify';
-export { decodeVincentJWT } from './core/decode';
-export {
-  isAppUser,
-  isPlatformUser,
-  isAnyVincentJWT,
-  isDelegateee,
-  assertIsPKPSignedVincentJWT,
-} from './typeGuards';
+export { isAppUser, isPlatformUser, isAnyVincentJWT, isDelegateee } from './typeGuards';
 
 export type {
   BaseDecodedJWT,

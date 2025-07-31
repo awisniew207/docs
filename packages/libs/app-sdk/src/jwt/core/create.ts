@@ -11,7 +11,6 @@ import type {
 import { VINCENT_JWT_API_VERSION } from '../constants';
 import { toBase64Url } from './utils/base64';
 
-/** Create ES256K-compatible signer using an ethers-compatible wallet */
 function createES256KSigner(wallet: JWTWalletSigner) {
   return async (data: string | Uint8Array): Promise<string> => {
     const messageBytes = typeof data === 'string' ? toUtf8Bytes(data) : data;
@@ -55,7 +54,10 @@ async function createJWS({ payload, wallet, config }: CreateJWSConfig) {
   return [signingInput, signature].join('.');
 }
 
-/** Create JWT for a platform user */
+/**
+ * Create JWT for a platform user
+ * @category API > Create
+ * */
 export async function createPlatformUserJWT(config: CreatePlatformUserJWTParams): Promise<string> {
   const { pkpWallet, pkpInfo, authentication, audience, expiresInMinutes, payload = {} } = config;
 
@@ -70,7 +72,9 @@ export async function createPlatformUserJWT(config: CreatePlatformUserJWTParams)
   });
 }
 
-/** Create JWT for an app-scoped user */
+/** Create JWT for an app-scoped user
+ * @category API > Create
+ * */
 export async function createAppUserJWT(config: CreateAppUserJWTParams): Promise<string> {
   const {
     app,
@@ -96,6 +100,8 @@ export async function createAppUserJWT(config: CreateAppUserJWTParams): Promise<
 
 /**
  * Creates a JWT for an app delegatee (Ethereum account that may act on behalf of a user).
+ *
+ * @category API > Create
  */
 export async function createDelegateeJWT(config: CreateDelegateeJWTParams): Promise<string> {
   const { ethersWallet, subjectAddress, audience, expiresInMinutes, payload = {} } = config;

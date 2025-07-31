@@ -9,22 +9,35 @@ import type {
 import { JWT_ERROR, VINCENT_JWT_API_VERSION } from './constants';
 import { isDefinedObject } from './core/utils/index';
 
-/** Check if a decoded JWT is an app-specific JWT (role === 'app-user') */
+/**
+ * Check if a decoded JWT is an app-specific JWT (role === 'app-user')
+ *
+ * @category API > Type Guards
+ * */
 export function isAppUser(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTAppUser {
   return decodedJWT.payload?.role === 'app-user';
 }
 
-/** Check if a decoded JWT is a general platform-user JWT */
+/** Check if a decoded JWT is a general platform-user JWT
+ *
+ * @category API > Type Guards
+ * */
 export function isPlatformUser(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTPlatformUser {
   return decodedJWT.payload?.role === 'platform-user';
 }
 
-/** Check if a decoded JWT is a delegatee token (role === 'app-delegatee') */
+/** Check if a decoded JWT is a delegatee token (role === 'app-delegatee')
+ *
+ * @category API > Type Guards
+ * */
 export function isDelegateee(decodedJWT: BaseDecodedJWT): decodedJWT is VincentJWTDelegatee {
   return decodedJWT.payload?.role === 'app-delegatee';
 }
 
-/** Check if the decoded JWT matches any known Vincent JWT variant */
+/** Check if the decoded JWT matches any known Vincent JWT variant
+ *
+ * @category API > Type Guards
+ * */
 export function isAnyVincentJWT(decodedJWT: BaseDecodedJWT): decodedJWT is AnyVincentJWT {
   return isPlatformUser(decodedJWT) || isAppUser(decodedJWT) || isDelegateee(decodedJWT);
 }
@@ -32,6 +45,8 @@ export function isAnyVincentJWT(decodedJWT: BaseDecodedJWT): decodedJWT is AnyVi
 /**
  * Assert that the JWT contains expected fields for a PKP-authenticated JWT.
  * Used to validate `VincentJWT` and `VincentJWTAppSpecific` before accessing `.payload.pkp` or `.authentication`.
+ *
+ * @internal
  */
 export function assertIsPKPSignedVincentJWT(
   decodedJWT: BaseDecodedJWT

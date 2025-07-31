@@ -18,8 +18,11 @@ import { verifyES256KSignature } from './utils/verifyES256KSignature';
  * - expiration, not-before, issued-at
  * - audience against `expectedAudience`
  *
- * This function is used for `platform-user`, `app-delegatee`, and base of `app-user`.
+ * This method is called internally from the type-specific JWT verify methods and is not end-user facing
+ *
+ * @internal
  */
+
 export async function verifyAnyVincentJWT({
   jwt,
   expectedAudience,
@@ -60,6 +63,10 @@ export async function verifyAnyVincentJWT({
   return decoded;
 }
 
+/** Verify a JWT that must decode to a VincentAppUserJWT
+ *
+ * @category API > Verify
+ */
 export async function verifyVincentAppUserJWT({
   jwt,
   expectedAudience,
@@ -87,6 +94,10 @@ export async function verifyVincentAppUserJWT({
   return decoded;
 }
 
+/**
+ *
+ * @category API > Verify
+ */
 export async function verifyVincentPlatformJWT({
   jwt,
   expectedAudience,
@@ -104,6 +115,10 @@ export async function verifyVincentPlatformJWT({
   return decoded;
 }
 
+/**
+ *
+ * @category API > Verify
+ */
 export async function verifyVincentDelegateeJWT({
   jwt,
   expectedAudience,

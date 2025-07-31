@@ -10,6 +10,9 @@ import type {
 import { JWT_ERROR } from './constants';
 import { assertIsPKPSignedVincentJWT, isAppUser } from './typeGuards';
 
+/**
+ * @category API > Accessors
+ */
 export function getAppInfo(decodedJWT: VincentJWTAppUser): {
   appId: number;
   version: number;
@@ -21,15 +24,24 @@ export function getAppInfo(decodedJWT: VincentJWTAppUser): {
   return { appId: decodedJWT.payload.app.id, version: decodedJWT.payload.app.version };
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getPKPInfo(decodedJWT: VincentJWTPlatformUser | VincentJWTAppUser): IRelayPKP {
   assertIsPKPSignedVincentJWT(decodedJWT);
   return decodedJWT.payload.pkpInfo;
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getRole(decodedJWT: AnyVincentJWT): string {
   return decodedJWT.payload.role;
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getAuthentication(decodedJWT: VincentJWTPlatformUser | VincentJWTAppUser): {
   type: string;
   value?: string;
@@ -38,14 +50,23 @@ export function getAuthentication(decodedJWT: VincentJWTPlatformUser | VincentJW
   return decodedJWT.payload.authentication;
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getPublicKey(decodedJWT: AnyVincentJWT): string {
   return decodedJWT.payload.publicKey;
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getIssuerAddress(decodedJWT: AnyVincentJWT): string | undefined {
   return decodedJWT.payload.iss;
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getSubjectAddress(decodedJWT: VincentJWTDelegatee): string | undefined {
   if (!decodedJWT.payload.sub) {
     throw new Error(JWT_ERROR.INVALID_JWT + ' - Missing subject address');
@@ -53,6 +74,9 @@ export function getSubjectAddress(decodedJWT: VincentJWTDelegatee): string | und
   return decodedJWT.payload.sub;
 }
 
+/**
+ * @category API > Accessors
+ */
 export function getAudience(decodedJWT: AnyVincentJWT): string[] {
   const aud = decodedJWT.payload.aud;
 

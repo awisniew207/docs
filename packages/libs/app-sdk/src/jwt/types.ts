@@ -34,6 +34,10 @@ export interface CreateJWSConfig {
   };
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface BaseJWTPayload {
   iat: number;
   exp: number;
@@ -48,6 +52,10 @@ export interface BaseJWTPayload {
   [x: string]: any;
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface BaseDecodedJWT {
   header: {
     typ: 'JWT';
@@ -66,26 +74,44 @@ interface PKPAuthenticationMethod {
   value?: string;
 }
 
-/** All valid Vincent JWT roles */
+/** All valid Vincent JWT roles
+ *
+ * @category Interfaces
+ * */
 export type VincentJWTRole = 'platform-user' | 'app-user' | 'app-delegatee';
 
-/** Shared base fields for all JWT payloads */
+/** Shared base fields for all JWT payloads
+ *
+ * @category Interfaces
+ * */
 export interface BaseVincentJWTPayload extends BaseJWTPayload {
   iss: `0x${string}`;
   publicKey: string; // This is the uncompressed pubKey of the issuer
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface VincentPKPPayload extends BaseVincentJWTPayload {
   pkpInfo: IRelayPKP;
   authentication: PKPAuthenticationMethod;
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface VincentJWTPlatformUser extends BaseDecodedJWT {
   payload: VincentPKPPayload & {
     role: 'platform-user';
   };
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface VincentJWTAppUser extends BaseDecodedJWT {
   payload: VincentPKPPayload & {
     role: 'app-user';
@@ -96,6 +122,10 @@ export interface VincentJWTAppUser extends BaseDecodedJWT {
   };
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface VincentJWTDelegatee extends BaseDecodedJWT {
   payload: BaseVincentJWTPayload & {
     role: 'app-delegatee';
@@ -103,6 +133,10 @@ export interface VincentJWTDelegatee extends BaseDecodedJWT {
   };
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export type AnyVincentJWT = VincentJWTPlatformUser | VincentJWTAppUser | VincentJWTDelegatee;
 
 interface BaseJWTParams {
@@ -110,14 +144,23 @@ interface BaseJWTParams {
   audience: string | string[];
   expiresInMinutes: number;
 }
+
 interface VincentPKPJWTParams extends BaseJWTParams {
   pkpWallet: PKPEthersWallet;
   pkpInfo: IRelayPKP;
   authentication: PKPAuthenticationMethod;
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export type CreatePlatformUserJWTParams = VincentPKPJWTParams;
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface CreateAppUserJWTParams extends VincentPKPJWTParams {
   app: {
     id: number;
@@ -125,6 +168,10 @@ export interface CreateAppUserJWTParams extends VincentPKPJWTParams {
   };
 }
 
+/**
+ *
+ * @category Interfaces
+ */
 export interface CreateDelegateeJWTParams extends BaseJWTParams {
   ethersWallet: Wallet;
   subjectAddress: `0x${string}`; // This is typically the delegator address that we're trying to accessing data for

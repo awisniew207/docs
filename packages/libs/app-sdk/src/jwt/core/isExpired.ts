@@ -4,7 +4,7 @@ import type { AnyVincentJWT } from '../types';
  *
  * @returns true if expired, false otherwise
  * @param decodedJWT
- * @category API
+ * @category API > Verify
  */
 export function isExpired(decodedJWT: AnyVincentJWT): boolean {
   const { payload } = decodedJWT;
