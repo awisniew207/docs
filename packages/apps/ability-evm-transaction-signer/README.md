@@ -41,7 +41,7 @@ See the comprehensive E2E test in [contract-whitelist.spec.ts](../abilities-e2e/
 
 ```typescript
 import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
-import { bundledVincentAbility } from '@lit-protocol/vincent-ability-transaction-signer';
+import { bundledVincentAbility } from '@lit-protocol/vincent-ability-evm-transaction-signer';
 
 // Create ability client
 const abilityClient = getVincentAbilityClient({
@@ -151,7 +151,7 @@ if (executeResult.success) {
 
 ## Building
 
-Run `pnpx nx build ability-transaction-signer` to build the Ability.
+Run `pnpx nx build ability-evm-transaction-signer` to build the Ability.
 
 ## Running E2E tests
 

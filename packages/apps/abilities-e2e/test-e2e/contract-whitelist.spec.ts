@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { bundledVincentAbility } from '@lit-protocol/vincent-ability-transaction-signer';
+import { bundledVincentAbility } from '@lit-protocol/vincent-ability-evm-transaction-signer';
 import { vincentPolicyMetadata } from '@lit-protocol/vincent-policy-contract-whitelist';
 import {
   disconnectVincentAbilityClients,
