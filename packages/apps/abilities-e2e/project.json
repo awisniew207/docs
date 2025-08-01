@@ -14,7 +14,7 @@
         "policy-spending-limit:action:deploy",
         "ability-uniswap-swap:action:deploy",
         "ability-erc20-approval:action:deploy",
-        "ability-transaction-signer:action:deploy",
+        "ability-evm-transaction-signer:action:deploy",
         "policy-contract-whitelist:action:deploy",
         "^build"
       ]

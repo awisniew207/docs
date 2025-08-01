@@ -60,7 +60,7 @@
       "policy-contract-whitelist",
       "ability-erc20-approval",
       "ability-uniswap-swap",
-      "ability-transaction-signer",
+      "ability-evm-transaction-signer",
       "mcp-server",
       "abilities-e2e",
       "ability-morpho",

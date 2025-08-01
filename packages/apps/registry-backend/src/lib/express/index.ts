@@ -24,7 +24,7 @@ const corsConfig = {
 
 export function registerRoutes(app: Express) {
   app.use(cors(corsConfig));
-  app.use(json());
+  app.use(json({ limit: '256kb' }));
 
   app.get('/openApiJson', (req, res) => {
     res.json(openApiJson);

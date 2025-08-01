@@ -4,7 +4,7 @@
 
 The Contract Whitelist Policy is a Vincent Policy that restricts the signing of EVM transactions to a predefined whitelist of contract addresses and function selectors across multiple chains. This policy provides critical security controls for Vincent Agent Wallets by ensuring they can only interact with trusted contracts and approved functions.
 
-This Vincent Policy is designed to work with Vincent Abilities, particularly the [@lit-protocol/vincent-ability-transaction-signer](../ability-transaction-signer/) ability, to provide granular control over which transactions can be signed.
+This Vincent Policy is designed to work with Vincent Abilities, particularly the [@lit-protocol/vincent-ability-evm-transaction-signer](../ability-evm-transaction-signer/) ability, to provide granular control over which transactions can be signed.
 
 ## How It Works
 
@@ -70,7 +70,7 @@ The policy supports using `'*'` as a wildcard to allow all functions for a speci
 
 ## Integration with Abilities
 
-The Contract Whitelist Policy is designed to work seamlessly with Vincent Abilities, particularly the [Transaction Signer Ability](../ability-transaction-signer/README.md):
+The Contract Whitelist Policy is designed to work seamlessly with Vincent Abilities, particularly the [Transaction Signer Ability](../ability-evm-transaction-signer/README.md):
 
 ```typescript
 import { createVincentAbilityPolicy } from '@lit-protocol/vincent-ability-sdk';

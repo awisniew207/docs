@@ -168,12 +168,12 @@ importers:
       '@lit-protocol/vincent-ability-erc20-approval':
         specifier: workspace:*
         version: link:../ability-erc20-approval
+      '@lit-protocol/vincent-ability-evm-transaction-signer':
+        specifier: workspace:*
+        version: link:../ability-evm-transaction-signer
       '@lit-protocol/vincent-ability-sdk':
         specifier: workspace:*
         version: link:../../libs/ability-sdk
-      '@lit-protocol/vincent-ability-transaction-signer':
-        specifier: workspace:*
-        version: link:../ability-transaction-signer
       '@lit-protocol/vincent-ability-uniswap-swap':
         specifier: workspace:*
         version: link:../ability-uniswap-swap
@@ -231,7 +231,7 @@ importers:
     dependencies:
       '@bgd-labs/aave-address-book':
         specifier: ^4.19.3
-        version: 4.25.1
+        version: 4.25.3
       '@lit-protocol/vincent-ability-sdk':
         specifier: workspace:*
         version: link:../../libs/ability-sdk
@@ -326,6 +326,37 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
 
+  packages/apps/ability-evm-transaction-signer:
+    dependencies:
+      '@lit-protocol/vincent-ability-sdk':
+        specifier: workspace:*
+        version: link:../../libs/ability-sdk
+      '@lit-protocol/vincent-app-sdk':
+        specifier: workspace:^
+        version: link:../../libs/app-sdk
+      '@lit-protocol/vincent-policy-contract-whitelist':
+        specifier: workspace:*
+        version: link:../policy-contract-whitelist
+      ethers:
+        specifier: ^5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.12
+        version: 0.19.12
+      esbuild-plugin-polyfill-node:
+        specifier: ^0.3.0
+        version: 0.3.0(esbuild@0.19.12)
+      ipfs-only-hash:
+        specifier: ^4.0.0
+        version: 4.0.0
+
   packages/apps/ability-morpho:
     dependencies:
       '@lit-protocol/vincent-ability-sdk':
@@ -359,37 +390,6 @@ importers:
       tsx:
         specifier: ^4.19.4
         version: 4.20.3
-
-  packages/apps/ability-transaction-signer:
-    dependencies:
-      '@lit-protocol/vincent-ability-sdk':
-        specifier: workspace:*
-        version: link:../../libs/ability-sdk
-      '@lit-protocol/vincent-app-sdk':
-        specifier: workspace:^
-        version: link:../../libs/app-sdk
-      '@lit-protocol/vincent-policy-contract-whitelist':
-        specifier: workspace:*
-        version: link:../policy-contract-whitelist
-      ethers:
-        specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      tslib:
-        specifier: 2.8.1
-        version: 2.8.1
-      zod:
-        specifier: ^3.25.64
-        version: 3.25.64
-    devDependencies:
-      esbuild:
-        specifier: ^0.19.12
-        version: 0.19.12
-      esbuild-plugin-polyfill-node:
-        specifier: ^0.3.0
-        version: 0.3.0(esbuild@0.19.12)
-      ipfs-only-hash:
-        specifier: ^4.0.0
-        version: 4.0.0
 
   packages/apps/ability-uniswap-swap:
     dependencies:
@@ -1816,8 +1816,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@bgd-labs/aave-address-book@4.25.1':
-    resolution: {integrity: sha512-YVshMi5S3hUxeEjlfOpTjKcRs/J0LhK0uPC57AlFRXNtwlrnTNxfvsgXnG2MtDWOelu2Wxtw+aiwMCt3X/r7bw==}
+  '@bgd-labs/aave-address-book@4.25.3':
+    resolution: {integrity: sha512-B9bxg1QujWBOFoeMy5py9TNuyuC5r6qcSp60Tz4vA/5350a9UI3Mf7LRyAzmPbVes6kB/gGM+Ryf5LMhr2/0Og==}
 
   '@coinbase/wallet-sdk@3.9.3':
     resolution: {integrity: sha512-N/A2DRIf0Y3PHc1XAMvbBUu4zisna6qAdqABMZwBMNEfWrXpAwx16pZGkYCLGE+Rvv1edbcB2LYDRnACNcmCiw==}
@@ -3953,8 +3953,8 @@ packages:
     peerDependencies:
       typescript: 5.8.3
 
-  '@solana/web3.js@1.98.2':
-    resolution: {integrity: sha512-BqVwEG+TaG2yCkBMbD3C4hdpustR4FpuUFRPUmqRZYYlPI9Hg4XMWxHWOWRzHE9Lkc9NDjzXFX7lDXSgzC7R1A==}
+  '@solana/web3.js@1.98.4':
+    resolution: {integrity: sha512-vv9lfnvjUsRiq//+j5pBdXig0IQdtzA0BRZ3bXEP4KaIyF1CcaydWqgyzQgfZMNIsWNWmG+AUHwPy4AHOD6gpw==}
 
   '@spruceid/siwe-parser@2.1.2':
     resolution: {integrity: sha512-d/r3S1LwJyMaRAKQ0awmo9whfXeE88Qt00vRj91q5uv5ATtWIQEGJ67Yr5eSZw5zp1/fZCXZYuEckt8lSkereQ==}
@@ -12551,7 +12551,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@bgd-labs/aave-address-book@4.25.1': {}
+  '@bgd-labs/aave-address-book@4.25.3': {}
 
   '@coinbase/wallet-sdk@3.9.3':
     dependencies:
@@ -16211,7 +16211,7 @@ snapshots:
       typescript: 5.8.3
     optional: true
 
-  '@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/runtime': 7.27.6
       '@noble/curves': 1.9.2
@@ -18398,7 +18398,7 @@ snapshots:
       '@ethersproject/units': 5.8.0
       '@ethersproject/wallet': 5.8.0
       '@ethersproject/web': 5.8.0
-      '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@solana/web3.js': 1.98.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       axios: 1.10.0
       sturdy-websocket: 0.2.1
       websocket: 1.0.35
