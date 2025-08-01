@@ -16,7 +16,7 @@
       "path": "../ability-erc20-approval"
     },
     {
-      "path": "../ability-transaction-signer"
+      "path": "../ability-evm-transaction-signer"
     },
     {
       "path": "../policy-contract-whitelist"

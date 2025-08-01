@@ -21,7 +21,7 @@ The Vincent Ability Transaction Signer is a ability to sign transactions using a
 Run tests:
 
 ```bash
-nx test ability-transaction-signer
+nx test ability-evm-transaction-signer
 ```
 
 ### Building the Lit Action
@@ -29,7 +29,7 @@ nx test ability-transaction-signer
 Build the policy:
 
 ```bash
-nx action:build ability-transaction-signer
+nx action:build ability-evm-transaction-signer
 ```
 
 ### Deploying the Lit Action to IPFS
@@ -37,7 +37,7 @@ nx action:build ability-transaction-signer
 Building will be done automatically. Deploy the policy:
 
 ```bash
-nx action:deploy ability-transaction-signer
+nx action:deploy ability-evm-transaction-signer
 ```
 
 ## Project Structure
