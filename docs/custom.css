@@ -152,3 +152,8 @@
   flex: 1 1 auto !important;
   min-width: 0 !important;
 }
+
+/* Fix only the deepest level accordions (API Methods, Interfaces, Other) */
+.tsd-small-nested-navigation details details details {
+  margin-left: 0.5rem !important;
+}
