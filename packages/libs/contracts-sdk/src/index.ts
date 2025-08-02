@@ -1,6 +1,34 @@
-export * from './facets/App';
-export * from './facets/User';
-export * from './facets/AppView';
-export * from './facets/UserView';
-export * from './types/App';
-export * from './types/User';
+export type {
+  GetAppByDelegateeParams,
+  GetAppsByManagerParams,
+  GetAppVersionParams,
+  GetAppByIdParams,
+  UndeleteAppParams,
+  DeleteAppParams,
+  RemoveDelegateeParams,
+  AddDelegateeParams,
+  EnableAppVersionParams,
+  RegisterNextVersionParams,
+  RegisterAppParams,
+  ValidateAbilityExecutionAndGetPoliciesParams,
+  GetDelegatedPkpEthAddressesParams,
+  GetAllAbilitiesAndPoliciesForAppParams,
+  GetAllPermittedAppIdsForPkpParams,
+  GetPermittedAppVersionForPkpParams,
+  GetAllRegisteredAgentPkpsParams,
+  SetAbilityPolicyParametersParams,
+  UnPermitAppParams,
+  PermitAppParams,
+  AbilityPolicyParameterData,
+  Ability,
+  App,
+  AppVersionAbilities,
+  ContractClient,
+  ValidateAbilityExecutionAndGetPoliciesResult,
+  PermissionData,
+  AppVersion,
+} from './types';
+
+export { getTestClient, clientFromContract, getClient } from './contractClient';
+
+export { createContract } from './utils';

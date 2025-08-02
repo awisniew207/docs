@@ -1,59 +1,69 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
-import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
-import { SiweMessage } from 'siwe';
-import { Wallet } from 'ethers';
+
+import { configureStore } from '@reduxjs/toolkit';
+import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
+import { providers, Wallet } from 'ethers';
+
+import { create } from '@lit-protocol/vincent-app-sdk/jwt';
+import { getClient } from '@lit-protocol/vincent-contracts-sdk';
+
+import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 const { vincentApiClientNode, setBaseQueryFn } = nodeClient;
 
-// Generate a secure random nonce
-export const generateNonce = () => {
-  const array = new Uint8Array(16);
-  for (let i = 0; i < array.length; i++) {
-    array[i] = Math.floor(Math.random() * 256);
+const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
+
+// Generate random Ethereum addresses
+export const generateRandomEthAddresses = (count = 2): string[] => {
+  const addresses: string[] = [];
+  for (let i = 0; i < count; i++) {
+    // Create a random wallet and use its address
+    const wallet = Wallet.createRandom();
+    addresses.push(wallet.address);
   }
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return addresses;
 };
 
 // Default wallet for testing
+const TEST_APP_MANAGER_PRIVATE_KEY = process.env['TEST_APP_MANAGER_PRIVATE_KEY'];
+
+if (!TEST_APP_MANAGER_PRIVATE_KEY)
+  throw new Error(
+    'TEST_APP_MANAGER_PRIVATE_KEY environment variable is not set. Please set it to a private key for a wallet that can manage apps.',
+  );
+
 export const defaultWallet = new Wallet(
-  '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+  process.env['TEST_APP_MANAGER_PRIVATE_KEY'] ||
+    '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+  provider,
 );
 
-// Function to generate a SIWE message
-export type GenerateSiweMessageFn = (
-  wallet: Wallet,
-) => Promise<{ message: string; signature: string }>;
+export const getDefaultWalletContractClient = () => getClient({ signer: defaultWallet });
 
-export const generateSiweMessage: GenerateSiweMessageFn = async (wallet: Wallet) => {
-  const domain = 'localhost';
-  const statement = 'Sign in with Ethereum to authenticate with Vincent Registry API';
-  const nonce = generateNonce();
-  const siweMessage = new SiweMessage({
-    domain,
-    address: wallet.address,
-    statement,
-    uri: `http://localhost:${process.env.PORT || 3000}`,
-    version: '1',
-    chainId: 1,
-    nonce,
-    issuedAt: new Date().toISOString(),
+export type GenerateJWTFn = (wallet: Wallet) => Promise<string>;
+
+export const generateJWT: GenerateJWTFn = async (wallet: Wallet) => {
+  return await create({
+    pkpWallet: wallet as any,
+    pkp: {
+      publicKey: wallet.publicKey, // Use the actual public key from the wallet
+      ethAddress: wallet.address,
+      tokenId: '1',
+    },
+    expiresInMinutes: 10,
+    audience: 'localhost',
+    authentication: {
+      type: 'email',
+      value: 'test@example.com',
+    },
+    payload: { customClaim: 'test-value' },
   });
-
-  // Prepare the message for signing
-  const message = siweMessage.prepareMessage();
-
-  // Sign the message
-  const signature = await wallet.signMessage(message);
-
-  return { message, signature };
 };
 
 // Create a wrapper function factory that adds authentication headers to mutation requests
-export const createWithSiweAuth = (
+export const createWithAuth = (
   wallet: Wallet = defaultWallet,
-  generateSiweFn: GenerateSiweMessageFn = generateSiweMessage,
+  generateJWTFn: GenerateJWTFn = generateJWT,
 ) => {
   return (baseQuery: BaseQueryFn): BaseQueryFn => {
     return async (args, api, extraOptions) => {
@@ -65,38 +75,37 @@ export const createWithSiweAuth = (
         args.method &&
         args.method !== 'GET';
 
-      // If it's a mutation, add the SIWE authentication header
-      if (isMutation) {
-        // Generate SIWE message and signature
-        const { message, signature } = await generateSiweFn(wallet);
+      if (!isMutation) {
+        // Non mutation endpoints don't get auth headers as of yet <3
+        return baseQuery(args, api, extraOptions);
+      }
 
-        // Format the Authorization header value - Base64 encode the payload
-        const payload = JSON.stringify({ message, signature });
-        const base64Payload = Buffer.from(payload).toString('base64');
-        const authHeader = `SIWE ${base64Payload}`;
+      // If it's a mutation, add auth
+      const jwtStr = await generateJWTFn(wallet);
+      const authHeader = `Bearer ${jwtStr}`;
 
-        // Add the authorization header to the request
-        args = {
+      // Pass the request to the original fetchBaseQuery function but with authorization headers added :tada:
+      return baseQuery(
+        {
           ...args,
           headers: {
             ...args.headers,
             authorization: authHeader,
           },
-        };
-      }
-
-      // Pass the request to the original fetchBaseQuery function
-      return baseQuery(args, api, extraOptions);
+        },
+        api,
+        extraOptions,
+      );
     };
   };
 };
 
 // Create the default withSiweAuth function using the default wallet
-export const withSiweAuth = createWithSiweAuth();
+export const withAuth = createWithAuth();
 
 // FIXME: Identify port from jest-process-manager
 setBaseQueryFn(
-  withSiweAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
+  withAuth(fetchBaseQuery({ baseUrl: `http://localhost:${process.env.PORT || 3000}` })),
 );
 
 export { vincentApiClientNode };

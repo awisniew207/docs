@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+} from '@/components/shared/ui/select';
+import { Label } from '@/components/shared/ui/label';
 import { Control, Controller } from 'react-hook-form';
 
 interface SelectOption {

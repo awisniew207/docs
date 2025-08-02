@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import {
@@ -8,7 +7,7 @@ import {
   type CreatePolicyVersionFormData,
 } from '../forms/CreatePolicyVersionForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 
 export function CreatePolicyVersionWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
@@ -35,12 +34,10 @@ export function CreatePolicyVersionWrapper() {
     if (isSuccess && data && policy) {
       navigateWithDelay(
         navigate,
-        `/developer/policyId/${encodeURIComponent(policy.packageName)}/version/${data.version}`,
+        `/developer/policy/${encodeURIComponent(policy.packageName)}/version/${data.version}`,
       );
     }
   }, [isSuccess, data, navigate, policy]);
-
-  useAddressCheck(policy || null);
 
   // Loading states
   if (policyLoading || versionsLoading) return <Loading />;
@@ -77,12 +74,14 @@ export function CreatePolicyVersionWrapper() {
   // Render with page UI and form component
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Create New Version</h1>
-          <p className="text-gray-600 mt-2">
-            Create a new version of your policy with updated features
-          </p>
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-900">Create New Version</h1>
+            <p className="text-gray-600 mt-2">
+              Create a new version of your policy with updated features
+            </p>
+          </div>
         </div>
       </div>
 

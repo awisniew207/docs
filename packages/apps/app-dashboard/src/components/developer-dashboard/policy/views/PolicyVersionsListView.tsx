@@ -1,5 +1,5 @@
 import { PolicyVersion, Policy } from '@/types/developer-dashboard/appTypes';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/shared/ui/badge';
 import { Calendar, GitCommit, Package } from 'lucide-react';
 import { UndeletePolicyVersionButton } from '../../policy/wrappers';
 import { formatDate } from '@/utils/developer-dashboard/formatDateAndTime';

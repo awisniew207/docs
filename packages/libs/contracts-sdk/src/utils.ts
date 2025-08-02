@@ -1,17 +1,24 @@
-import { Contract, Signer } from 'ethers';
-import {
-  VINCENT_DIAMOND_CONTRACT_ADDRESS,
-  COMBINED_ABI,
-  GAS_ADJUSTMENT_PERCENT,
-} from './constants';
+import type { Signer, Overrides } from 'ethers';
+
+import { Contract, BigNumber } from 'ethers';
+
+import { COMBINED_ABI, GAS_ADJUSTMENT_PERCENT } from './constants';
 
 /**
- * Creates an Ethers Contract instance with the provided signer. For internal use only.
- * @param signer - The ethers signer to use for transactions. Could be a standard Ethers Signer or a PKPEthersWallet
+ * Creates an Ethers Contract instance with the provided signer. For internal use / local chain dev only
  * @returns Contract instance to be used internally for calling Vincent Contracts functions
+ *
+ * @internal
+ * @category Internal
  */
-export function createContract(signer: Signer): Contract {
-  return new Contract(VINCENT_DIAMOND_CONTRACT_ADDRESS, COMBINED_ABI, signer);
+export function createContract({
+  signer,
+  contractAddress,
+}: {
+  signer: Signer;
+  contractAddress: string;
+}): Contract {
+  return new Contract(contractAddress, COMBINED_ABI, signer);
 }
 
 /**
@@ -21,8 +28,12 @@ export function createContract(signer: Signer): Contract {
  * @param eventName - Name of the event to find
  * @returns The parsed event log or null if not found. To be used for error handling
  */
-export function findEventByName(contract: Contract, logs: any[], eventName: string): any {
-  return logs.find((log: any) => {
+export function findEventByName(
+  contract: Contract,
+  logs: { topics: Array<string>; data: string }[],
+  eventName: string,
+): { topics: Array<string>; data: string } | undefined {
+  return logs.find((log) => {
     try {
       const parsed = contract.interface.parseLog(log);
       return parsed?.name === eventName;
@@ -35,8 +46,8 @@ export function findEventByName(contract: Contract, logs: any[], eventName: stri
 export async function gasAdjustedOverrides(
   contract: Contract,
   methodName: string,
-  args: any[],
-  overrides: any = {},
+  args: unknown[],
+  overrides: Overrides = {},
 ) {
   if (!overrides?.gasLimit) {
     const estimatedGas = await contract.estimateGas[methodName](...args, overrides);
@@ -51,8 +62,14 @@ export async function gasAdjustedOverrides(
   return overrides;
 }
 
+// Ethers v5 returns BN.js instances. Ethers v6 returns native `bigint`.
+function isBigNumberOrBigInt(arg: unknown) {
+  return typeof arg === 'bigint' || BigNumber.isBigNumber(arg);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeContractError(error: any, contract: Contract): string {
-  console.error('Decoding contract error:', error);
+  // console.error('Decoding contract error:', error); // All contract revert errors appear to be logged by ethers :)
   try {
     // Check if it's a contract revert error
     if (error.code === 'CALL_EXCEPTION' || error.code === 'UNPREDICTABLE_GAS_LIMIT') {
@@ -71,7 +88,7 @@ export function decodeContractError(error: any, contract: Contract): string {
           if (body.error && body.error.data) {
             errorData = body.error.data;
           }
-        } catch (parseError) {
+        } catch {
           // Ignore JSON parse errors
         }
       }
@@ -82,15 +99,15 @@ export function decodeContractError(error: any, contract: Contract): string {
           const decodedError = contract.interface.parseError(errorData);
           if (decodedError) {
             // Format the arguments nicely
-            const formattedArgs = decodedError.args.map((arg: any) => {
-              if (typeof arg === 'bigint') {
+            const formattedArgs = decodedError.args.map((arg: unknown) => {
+              if (isBigNumberOrBigInt(arg)) {
                 return arg.toString();
               }
               return arg;
             });
             return `Contract Error: ${decodedError.name} - ${JSON.stringify(formattedArgs)}`;
           }
-        } catch (decodeError) {
+        } catch {
           // If we can't decode the specific error, try to get the reason
           if (error.reason) {
             return `Contract Error: ${error.reason}`;
@@ -109,15 +126,15 @@ export function decodeContractError(error: any, contract: Contract): string {
       try {
         const decodedError = contract.interface.parseError(error.data);
         if (decodedError) {
-          const formattedArgs = decodedError.args.map((arg: any) => {
-            if (typeof arg === 'bigint') {
+          const formattedArgs = decodedError.args.map((arg: unknown) => {
+            if (isBigNumberOrBigInt(arg)) {
               return arg.toString();
             }
             return arg;
           });
           return `Transaction Error: ${decodedError.name} - ${JSON.stringify(formattedArgs)}`;
         }
-      } catch (decodeError) {
+      } catch {
         // Fallback to error message
       }
     }
@@ -137,7 +154,7 @@ export function decodeContractError(error: any, contract: Contract): string {
           if (body.error && body.error.data) {
             errorData = body.error.data;
           }
-        } catch (parseError) {
+        } catch {
           // Ignore JSON parse errors
         }
       }
@@ -146,15 +163,15 @@ export function decodeContractError(error: any, contract: Contract): string {
         try {
           const decodedError = contract.interface.parseError(errorData);
           if (decodedError) {
-            const formattedArgs = decodedError.args.map((arg: any) => {
-              if (typeof arg === 'bigint') {
+            const formattedArgs = decodedError.args.map((arg: unknown) => {
+              if (isBigNumberOrBigInt(arg)) {
                 return arg.toString();
               }
               return arg;
             });
             return `Gas Estimation Error: ${decodedError.name} - ${JSON.stringify(formattedArgs)}`;
           }
-        } catch (decodeError) {
+        } catch {
           return `Gas Estimation Error: ${error.error?.message || error.message}`;
         }
       }
@@ -169,7 +186,7 @@ export function decodeContractError(error: any, contract: Contract): string {
 
     // Return original error message if we can't decode
     return error.message || 'Unknown contract error';
-  } catch (decodeError) {
+  } catch {
     return error.message || 'Unknown error';
   }
 }

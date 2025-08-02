@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteAppForm } from '../forms/DeleteAppForm';
-import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 
 export function DeleteAppWrapper() {
@@ -30,8 +29,6 @@ export function DeleteAppWrapper() {
       navigate('/developer/apps'); // Navigate immediately, no delay needed
     }
   }, [isSuccess, data, navigate]);
-
-  useAddressCheck(app || null);
 
   // Loading states
   if (appLoading) return <Loading />;
@@ -59,12 +56,12 @@ export function DeleteAppWrapper() {
   };
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Delete App</h1>
-          <p className="text-gray-600 mt-2">
-            Permanently delete "{app.name}" and all its data. This action cannot be undone.
-          </p>
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-900">Delete App</h1>
+            <p className="text-gray-600 mt-2">Delete "{app.name}" and all its data.</p>
+          </div>
         </div>
       </div>
 

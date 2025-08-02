@@ -1,9 +1,10 @@
-import type { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import type { IRelayPKP } from '@lit-protocol/types';
 import type { JWTHeader, JWTPayload } from 'did-jwt';
 
+import type { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+import type { IRelayPKP } from '@lit-protocol/types';
+
 // Copied interface from did-jwt that is not exposed publicly
-interface JWTDecoded {
+export interface JWTDecoded {
   header: JWTHeader;
   payload: JWTPayload;
   signature: string;
@@ -12,15 +13,18 @@ interface JWTDecoded {
 
 /**
  * Configuration interface for creating a JWT (JSON Web Token) signed by a PKP wallet.
- * Vincent App developers will likely never need this function, as the provider of the JWT is the Vincent consent page frontend
+ * Vincent App developers will likely never need this function, as the provider of the JWT is the Vincent Connect page frontend
  *
  * @interface JWTConfig
  * @hidden
- * @property {PKPEthersWallet} pkpWallet - The PKP Ethers wallet instance used for signing the JWT
- * @property {IRelayPKP} pkp - The PKP object
- * @property {Record<string, unknown>} payload - Custom claims to include in the JWT payload
- * @property {number} expiresInMinutes - Token expiration time in minutes from current time
- * @property {string} audience - The domain(s) this token is intended for (aud claim)
+ * @property pkpWallet - The PKP Ethers wallet instance used for signing the JWT
+ * @property pkp - The PKP object
+ * @property payload - Custom claims to include in the JWT payload
+ * @property expiresInMinutes - Token expiration time in minutes from current time
+ * @property [app] - The app / appversion that the JWT is limited to (if it is at all)
+ * @property audience - The domain(s) this token is intended for (aud claim)
+ * @property authentication - The authentication method used to generate the JWT.
+ *
  */
 export interface JWTConfig {
   pkpWallet: PKPEthersWallet;
@@ -28,8 +32,8 @@ export interface JWTConfig {
   payload: Record<string, unknown>;
   expiresInMinutes: number;
   audience: string | string[];
-  app: {
-    id: string;
+  app?: {
+    id: number;
     version: number;
   };
   authentication: {
@@ -41,20 +45,16 @@ export interface JWTConfig {
 /**
  * Extended payload interface for Vincent-specific JWTs.
  *
- * @interface VincentJWTPayload
+ * @interface BaseVincentJWTPayload
  * @extends {JWTPayload} Extends the JWTPayload type from `did-jwt` with Vincent-specific properties
- * @property {string} app - The app associated with the JWT.
- * @property {string} pkp - The PKP associated with the JWT.
- * @property {string} authentication - The authentication method used to generate the JWT.
+ *
+ * @property pkp - The PKP details associated with the JWT.
+ * @property authentication - The authentication method that was used to authenticate with the PKP that generated the JWT.
  *
  * @category Interfaces
  */
-export interface VincentJWTPayload extends JWTPayload {
+export interface BaseVincentJWTPayload extends JWTPayload {
   pkp: IRelayPKP;
-  app: {
-    id: string;
-    version: number;
-  };
   authentication: {
     type: string;
     value?: string;
@@ -65,11 +65,24 @@ export interface VincentJWTPayload extends JWTPayload {
  * Interface representing a decoded Vincent JWT
  *
  * @interface VincentJWT
- * @extends { JWTDecoded } Extends the payload provided by the JWTDecoded type from `did-jwt` with Vincent-specific properties
- * @property {VincentJWTPayload} payload - The payload of the JWT
+ * @property { BaseVincentJWTPayload } payload - The payload of the JWT
  *
  * @category Interfaces
  */
 export interface VincentJWT extends JWTDecoded {
-  payload: VincentJWTPayload;
+  payload: BaseVincentJWTPayload;
+}
+
+/** App-specific Vincent JWT payloads are used to authenticate with a specific app @ a specific version */
+interface VincentJWTAppSpecificPayload extends BaseVincentJWTPayload {
+  app: {
+    id: number;
+    version: number;
+  };
+}
+
+/** VincentJWTAppSpecific type JWTs are used to signal authorization from a user to use a specific app / appVersion
+ */
+export interface VincentJWTAppSpecific extends VincentJWT {
+  payload: VincentJWTAppSpecificPayload;
 }

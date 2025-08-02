@@ -4,14 +4,13 @@ import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { ChangePolicyOwnerForm, ChangePolicyOwnerFormData } from '../forms/ChangePolicyOwnerForm';
-import Loading from '@/components/layout/Loading';
-import { useAddressCheck } from '@/hooks/developer-dashboard/tool/useAddressCheck';
+import Loading from '@/components/shared/ui/Loading';
 
 export function ChangePolicyOwnerWrapper() {
   const { packageName } = useParams<{ packageName: string }>();
 
   // Fetching
-  // It's not needed here, but we'll fetch to make sure the tool exists
+  // It's not needed here, but we'll fetch to make sure the ability exists
   const {
     data: policy,
     isLoading: policyLoading,
@@ -31,8 +30,6 @@ export function ChangePolicyOwnerWrapper() {
       navigate(`/developer/policies`); // Immediate navigation, otherwise query will say policy DNE
     }
   }, [isSuccess, data, policy]);
-
-  useAddressCheck(policy || null);
 
   // Loading states
   if (policyLoading) return <Loading />;

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { ArchiveRestore } from 'lucide-react';
 import { PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
@@ -22,7 +22,7 @@ export function UndeletePolicyVersionButton({ policyVersion }: UndeletePolicyVer
   // Effect
   useEffect(() => {
     if (isSuccess && data && policyVersion) {
-      navigate(`/developer/policyId/${encodeURIComponent(policyVersion.packageName)}`);
+      navigate(`/developer/policy/${encodeURIComponent(policyVersion.packageName)}`);
     }
   }, [isSuccess, data, policyVersion]);
 

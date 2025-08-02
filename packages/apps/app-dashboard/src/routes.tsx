@@ -1,38 +1,43 @@
 import { Outlet, RouteObject } from 'react-router';
-import AppLayout from './components/layout/AppLayout';
-import UserLayout from './components/layout/UserLayout';
+import AppLayout from '@/layout/developer-dashboard/AppLayout';
+import UserDashboardLayout from '@/layout/user-dashboard/UserDashboardLayout';
+import UserLayoutWithSidebar from '@/layout/user-dashboard/UserLayoutWithSidebar';
 import { AppProviders, UserProviders } from './providers';
-import { wrap } from './utils/components';
+import ThemeProvider from '@/providers/ThemeProvider';
+import { wrap } from '@/utils/shared/components';
 
-import { ConnectWallet, Dashboard } from './pages/developer-dashboard';
+import { Dashboard } from './pages/developer-dashboard';
+import RootPage from './pages/shared/RootPage';
 
 import {
   AppsWrapper,
   AppOverviewWrapper,
   AppVersionDetailWrapper,
   AppVersionsWrapper,
-  AppVersionToolsWrapper,
+  AppVersionAbilitiesWrapper,
   CreateAppVersionWrapper,
   EditAppVersionWrapper,
   EditAppWrapper,
+  EditPublishedAppWrapper,
   DeleteAppWrapper,
   CreateAppWrapper,
   DeleteAppVersionWrapper,
+  ManageDelegateesWrapper,
 } from './components/developer-dashboard/app/wrappers';
 
 import {
-  ToolsWrapper,
-  ToolOverviewWrapper,
-  CreateToolWrapper,
-  EditToolWrapper,
-  CreateToolVersionWrapper,
-  ChangeToolOwnerWrapper,
-  ToolVersionsWrapper,
-  ToolVersionDetailsWrapper,
-  EditToolVersionWrapper,
-  DeleteToolWrapper,
-  DeleteToolVersionWrapper,
-} from './components/developer-dashboard/tool/wrappers';
+  AbilitiesWrapper,
+  AbilityOverviewWrapper,
+  CreateAbilityWrapper,
+  EditAbilityWrapper,
+  CreateAbilityVersionWrapper,
+  ChangeAbilityOwnerWrapper,
+  AbilityVersionsWrapper,
+  AbilityVersionDetailsWrapper,
+  EditAbilityVersionWrapper,
+  DeleteAbilityWrapper,
+  DeleteAbilityVersionWrapper,
+} from '@/components/developer-dashboard/ability/wrappers';
 
 import {
   PoliciesWrapper,
@@ -48,34 +53,34 @@ import {
   DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
-import Home from './pages/index';
-import Withdraw from './pages/withdraw';
-import AppDetails from './pages/appId/[appId]/index';
-import AdvancedFunctions from './pages/appId/[appId]/advanced-functions';
-import Consent from './pages/appId/[appId]/consent';
-import Delegatee from './pages/appId/[appId]/delegatee';
-import ToolPolicies from './pages/appId/[appId]/tool-policies';
-import CreateApp from './pages/create-app';
+import { Wallet } from './pages/user-dashboard/wallet';
+import { UserPermissionWrapper } from './components/user-dashboard/dashboard/UserPermissionWrapper';
+import { ConnectPageWrapper } from './components/user-dashboard/connect/ConnectPageWraper';
+import { PermittedAppsWrapper } from './components/user-dashboard/dashboard/PermittedAppsWrapper';
+import { UpdateVersionPageWrapper } from './components/user-dashboard/dashboard/UpdateVersionPageWrapper';
 
 const AppLayoutWithProviders = wrap(() => <Outlet />, [...AppProviders, AppLayout]);
-const UserLayoutWithProviders = wrap(() => <Outlet />, [...UserProviders, UserLayout]);
+const UserDashboardLayoutWithProviders = wrap(
+  () => <Outlet />,
+  [...UserProviders, UserDashboardLayout],
+);
+const UserLayoutWithSidebarAndProviders = wrap(
+  () => <Outlet />,
+  [...UserProviders, UserLayoutWithSidebar],
+);
+
+// Minimal provider wrapper for root page - only needs ThemeProvider for ConnectFooter
+// TODO: We'll need this everywhere eventually. Just keeping it simple for now.
+const RootPageWithProviders = wrap(RootPage, [ThemeProvider]);
 
 const routes: RouteObject[] = [
   {
+    path: '/',
+    element: <RootPageWithProviders />,
+  },
+  {
     element: <AppLayoutWithProviders />,
     children: [
-      {
-        path: '/',
-        element: <Home />,
-      },
-      {
-        path: '/create-app',
-        element: <CreateApp />,
-      },
-      {
-        path: '/developer',
-        element: <ConnectWallet />,
-      },
       {
         path: '/developer/*',
         element: <Outlet />,
@@ -93,12 +98,20 @@ const routes: RouteObject[] = [
             element: <CreateAppWrapper />,
           },
           {
+            path: 'appId/:appId/edit-published-app',
+            element: <EditPublishedAppWrapper />,
+          },
+          {
             path: 'appId/:appId',
             element: <AppOverviewWrapper />,
           },
           {
             path: 'appId/:appId/edit-app',
             element: <EditAppWrapper />,
+          },
+          {
+            path: 'appId/:appId/manage-delegatees',
+            element: <ManageDelegateesWrapper />,
           },
           {
             path: 'appId/:appId/delete-app',
@@ -121,56 +134,56 @@ const routes: RouteObject[] = [
             element: <EditAppVersionWrapper />,
           },
           {
-            path: 'appId/:appId/version/:versionId/tools',
-            element: <AppVersionToolsWrapper />,
+            path: 'appId/:appId/version/:versionId/abilities',
+            element: <AppVersionAbilitiesWrapper />,
           },
           {
             path: 'appId/:appId/version/:versionId/delete-version',
             element: <DeleteAppVersionWrapper />,
           },
           {
-            path: 'tools',
-            element: <ToolsWrapper />,
+            path: 'abilities',
+            element: <AbilitiesWrapper />,
           },
           {
-            path: 'create-tool',
-            element: <CreateToolWrapper />,
+            path: 'create-ability',
+            element: <CreateAbilityWrapper />,
           },
           {
-            path: 'toolId/:packageName',
-            element: <ToolOverviewWrapper />,
+            path: 'ability/:packageName',
+            element: <AbilityOverviewWrapper />,
           },
           {
-            path: 'toolId/:packageName/edit-tool',
-            element: <EditToolWrapper />,
+            path: 'ability/:packageName/edit-ability',
+            element: <EditAbilityWrapper />,
           },
           {
-            path: 'toolId/:packageName/create-tool-version',
-            element: <CreateToolVersionWrapper />,
+            path: 'ability/:packageName/create-ability-version',
+            element: <CreateAbilityVersionWrapper />,
           },
           {
-            path: 'toolId/:packageName/change-tool-owner',
-            element: <ChangeToolOwnerWrapper />,
+            path: 'ability/:packageName/change-ability-owner',
+            element: <ChangeAbilityOwnerWrapper />,
           },
           {
-            path: 'toolId/:packageName/versions',
-            element: <ToolVersionsWrapper />,
+            path: 'ability/:packageName/versions',
+            element: <AbilityVersionsWrapper />,
           },
           {
-            path: 'toolId/:packageName/version/:version',
-            element: <ToolVersionDetailsWrapper />,
+            path: 'ability/:packageName/version/:version',
+            element: <AbilityVersionDetailsWrapper />,
           },
           {
-            path: 'toolId/:packageName/version/:version/edit-version',
-            element: <EditToolVersionWrapper />,
+            path: 'ability/:packageName/version/:version/edit-version',
+            element: <EditAbilityVersionWrapper />,
           },
           {
-            path: 'toolId/:packageName/delete-tool',
-            element: <DeleteToolWrapper />,
+            path: 'ability/:packageName/delete-ability',
+            element: <DeleteAbilityWrapper />,
           },
           {
-            path: 'toolId/:packageName/version/:version/delete-version',
-            element: <DeleteToolVersionWrapper />,
+            path: 'ability/:packageName/version/:version/delete-version',
+            element: <DeleteAbilityVersionWrapper />,
           },
           {
             path: 'policies',
@@ -181,71 +194,78 @@ const routes: RouteObject[] = [
             element: <CreatePolicyWrapper />,
           },
           {
-            path: 'policyId/:packageName',
+            path: 'policy/:packageName',
             element: <PolicyOverviewWrapper />,
           },
           {
-            path: 'policyId/:packageName/edit-policy',
+            path: 'policy/:packageName/edit-policy',
             element: <EditPolicyWrapper />,
           },
           {
-            path: 'policyId/:packageName/create-policy-version',
+            path: 'policy/:packageName/create-policy-version',
             element: <CreatePolicyVersionWrapper />,
           },
           {
-            path: 'policyId/:packageName/change-policy-owner',
+            path: 'policy/:packageName/change-policy-owner',
             element: <ChangePolicyOwnerWrapper />,
           },
           {
-            path: 'policyId/:packageName/versions',
+            path: 'policy/:packageName/versions',
             element: <PolicyVersionsWrapper />,
           },
           {
-            path: 'policyId/:packageName/version/:version',
+            path: 'policy/:packageName/version/:version',
             element: <PolicyVersionDetailsWrapper />,
           },
           {
-            path: 'policyId/:packageName/version/:version/edit-version',
+            path: 'policy/:packageName/version/:version/edit-version',
             element: <EditPolicyVersionWrapper />,
           },
           {
-            path: 'policyId/:packageName/delete-policy',
+            path: 'policy/:packageName/delete-policy',
             element: <DeletePolicyWrapper />,
           },
           {
-            path: 'policyId/:packageName/version/:version/delete-version',
+            path: 'policy/:packageName/version/:version/delete-version',
             element: <DeletePolicyVersionWrapper />,
           },
         ],
       },
+    ],
+  },
+  {
+    element: <UserDashboardLayoutWithProviders />,
+    children: [
       {
-        path: '/appId/:appId',
-        element: <AppDetails />,
-      },
-      {
-        path: '/appId/:appId/advanced-functions',
-        element: <AdvancedFunctions />,
-      },
-      {
-        path: '/appId/:appId/delegatee',
-        element: <Delegatee />,
-      },
-      {
-        path: '/appId/:appId/tool-policies',
-        element: <ToolPolicies />,
+        path: '/user/appId/:appId/connect',
+        element: <ConnectPageWrapper />,
       },
     ],
   },
   {
-    element: <UserLayoutWithProviders />,
+    element: <UserLayoutWithSidebarAndProviders />,
     children: [
       {
-        path: '/withdraw',
-        element: <Withdraw />,
-      },
-      {
-        path: '/appId/:appId/consent',
-        element: <Consent />,
+        path: '/user/*',
+        element: <Outlet />,
+        children: [
+          {
+            path: 'appId/:appId',
+            element: <UserPermissionWrapper />,
+          },
+          {
+            path: 'appId/:appId/update-version',
+            element: <UpdateVersionPageWrapper />,
+          },
+          {
+            path: 'apps',
+            element: <PermittedAppsWrapper />,
+          },
+          {
+            path: 'wallet',
+            element: <Wallet />,
+          },
+        ],
       },
     ],
   },

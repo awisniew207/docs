@@ -1,5 +1,5 @@
 import { useUserApps } from '@/hooks/developer-dashboard/app/useUserApps';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { AppsListView } from '../views/AppsListView';
 

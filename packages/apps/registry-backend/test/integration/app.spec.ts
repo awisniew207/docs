@@ -1,6 +1,6 @@
-import { api, store } from './setup';
 import { expectAssertArray, expectAssertObject, hasError } from '../assertions';
 import { createTestDebugger } from '../debug';
+import { api, store, generateRandomEthAddresses, getDefaultWalletContractClient } from './setup';
 
 // Create a debug instance for this file
 const debug = createTestDebugger('app');
@@ -17,7 +17,6 @@ describe('App API Integration Tests', () => {
   });
 
   let testAppId: number | undefined;
-  const testAppVersion = 1;
 
   const appData = {
     name: 'Test App',
@@ -26,10 +25,7 @@ describe('App API Integration Tests', () => {
     appUserUrl: 'https://example.com/app',
     logo: 'https://example.com/logo.png',
     redirectUris: ['https://example.com/callback'],
-    delegateeAddresses: [
-      '0x1234567890123456789012345678901234567890',
-      '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
-    ],
+    delegateeAddresses: generateRandomEthAddresses(2),
     // deploymentStatus: 'dev' as const,
   };
 
@@ -61,6 +57,26 @@ describe('App API Integration Tests', () => {
       testAppId = data.appId;
 
       expect(data).toMatchObject(appData);
+
+      // Register the app on the contracts using contracts-sdk
+      const abilityIpfsCid = 'QmWWBMDT3URSp8sX9mFZjhAoufSk5kia7bpp84yxq9WHFd'; // ERC20 approval ability
+      const policyIpfsCid = 'QmSK8JoXxh7sR6MP7L6YJiUnzpevbNjjtde3PeP8FfLzV3'; // Spending limit policy
+
+      try {
+        const { txHash } = await getDefaultWalletContractClient().registerApp({
+          appId: testAppId,
+          delegateeAddresses: appData.delegateeAddresses,
+          versionAbilities: {
+            abilityIpfsCids: [abilityIpfsCid],
+            abilityPolicies: [[policyIpfsCid]],
+          },
+        });
+
+        verboseLog({ txHash });
+      } catch (error) {
+        console.error('Failed to register app on contracts:', error);
+        throw error;
+      }
     });
   });
 
@@ -176,6 +192,35 @@ describe('App API Integration Tests', () => {
       expect(data).toHaveProperty('changes', versionData.changes);
       expect(data).toHaveProperty('version', 2);
     });
+
+    it('should fail to create a second pending app version', async () => {
+      // Try to create a third app version without registering the second one
+      const versionData = {
+        changes: 'This should fail because there is already a pending app version',
+      };
+
+      const result = await store.dispatch(
+        api.endpoints.createAppVersion.initiate({
+          appId: testAppId!,
+          appVersionCreate: versionData,
+        }),
+      );
+
+      verboseLog(result);
+      expect(result).toHaveProperty('error');
+      expect(hasError(result)).toBe(true);
+
+      if (hasError(result)) {
+        const { error } = result;
+        expectAssertObject(error);
+        // @ts-expect-error it's a test
+        expect(error.status).toBe(500);
+        // @ts-expect-error it's a test
+        expect(error.data.message).toBe(
+          'There can only be 1 pending app version for an app on the registry.',
+        );
+      }
+    });
   });
 
   describe('GET /app/:appId/versions', () => {
@@ -239,16 +284,16 @@ describe('App API Integration Tests', () => {
   });
 
   describe('PUT /app/:appId/version/:version', () => {
-    it('should update an app version', async () => {
+    it('should update an app version that is not on-chain', async () => {
       store.dispatch(api.util.resetApiState());
 
-      const changes = 'Updated changes description for appVersion 1' as const;
+      const changes = 'Updated changes description for appVersion 2' as const;
 
       {
         const result = await store.dispatch(
           api.endpoints.editAppVersion.initiate({
             appId: testAppId!,
-            version: testAppVersion,
+            version: 2, // This version is not on-chain
             appVersionEdit: {
               changes,
             },
@@ -268,7 +313,7 @@ describe('App API Integration Tests', () => {
         const getResult = await store.dispatch(
           api.endpoints.getAppVersion.initiate({
             appId: testAppId!,
-            version: testAppVersion,
+            version: 2,
           }),
         );
 
@@ -283,12 +328,12 @@ describe('App API Integration Tests', () => {
   });
 
   describe('POST /app/:appId/version/:version/disable', () => {
-    it('should disable an app version', async () => {
+    it('should disable an app version that is not on-chain', async () => {
       {
         const result = await store.dispatch(
           api.endpoints.disableAppVersion.initiate({
             appId: testAppId!,
-            version: testAppVersion,
+            version: 2, // This version is not on-chain
           }),
         );
 
@@ -305,7 +350,7 @@ describe('App API Integration Tests', () => {
         const getResult = await store.dispatch(
           api.endpoints.getAppVersion.initiate({
             appId: testAppId!,
-            version: testAppVersion,
+            version: 2,
           }),
         );
 
@@ -320,12 +365,12 @@ describe('App API Integration Tests', () => {
   });
 
   describe('POST /app/:appId/version/:version/enable', () => {
-    it('should enable an app version', async () => {
+    it('should enable an app version that is not on-chain', async () => {
       {
         const result = await store.dispatch(
           api.endpoints.enableAppVersion.initiate({
             appId: testAppId!,
-            version: testAppVersion,
+            version: 2, // This version is not on-chain
           }),
         );
 
@@ -342,7 +387,7 @@ describe('App API Integration Tests', () => {
         const getResult = await store.dispatch(
           api.endpoints.getAppVersion.initiate({
             appId: testAppId!,
-            version: testAppVersion,
+            version: 2,
           }),
         );
 
@@ -357,32 +402,13 @@ describe('App API Integration Tests', () => {
   });
 
   describe('DELETE /app/:appId/version/:version', () => {
-    it('should delete an app version and its tools', async () => {
-      // Create a new version to delete
-      const versionData = {
-        changes: 'Version to be deleted',
-      };
-
-      const createResult = await store.dispatch(
-        api.endpoints.createAppVersion.initiate({
-          appId: testAppId!,
-          appVersionCreate: versionData,
-        }),
-      );
-
-      verboseLog(createResult);
-      expect(createResult).not.toHaveProperty('error');
-
-      const { data } = createResult;
-      expectAssertObject(data);
-      const versionToDelete = createResult.data.version;
-
-      // Delete the version
+    it('should delete an app version that is not on-chain', async () => {
+      // Delete the second version which is not on-chain
       {
         const result = await store.dispatch(
           api.endpoints.deleteAppVersion.initiate({
             appId: testAppId!,
-            version: versionToDelete,
+            version: 2,
           }),
         );
         verboseLog(result);
@@ -402,7 +428,7 @@ describe('App API Integration Tests', () => {
         const getResult = await store.dispatch(
           api.endpoints.getAppVersion.initiate({
             appId: testAppId!,
-            version: versionToDelete,
+            version: 2,
           }),
         );
 

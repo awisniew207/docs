@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppVersion } from '../../mongo/app';
-import { createDebugger } from '../../../../debug';
+import type { Request, Response, NextFunction } from 'express';
 
-import { RequestWithApp } from './requireApp';
+import type { RequestWithApp } from './requireApp';
+
+import { createDebugger } from '../../../../debug';
+import { AppVersion } from '../../mongo/app';
 
 export interface RequestWithAppAndVersion extends RequestWithApp {
   vincentAppVersion: InstanceType<typeof AppVersion>;
@@ -17,8 +18,8 @@ export const requireAppVersion = (versionParam = 'version') => {
     const reqWithApp = req as RequestWithApp;
     debug('Processing app version request');
 
-    const version = req.params[versionParam];
-    debug('Extracted version from params', {
+    const version = req.params[versionParam] || req.body.version || req.body.activeVersion;
+    debug('Extracted version from params/body', {
       versionParam,
       version,
       appId: reqWithApp.vincentApp.appId,

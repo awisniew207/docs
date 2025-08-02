@@ -1,5 +1,5 @@
-import { z } from './openApiZod';
 import { EXAMPLE_EMAIL_ADDRESS, EXAMPLE_WALLET_ADDRESS } from '../constants';
+import { z } from './openApiZod';
 
 // Contributors on NPM package
 export const contributor = z.object({
@@ -60,7 +60,7 @@ export const fromPackageJson = z.object({
   }),
 });
 
-// Request body for changing a tool/policy owner
+// Request body for changing an ability/policy owner
 export const changeOwner = z.object({
   authorWalletAddress: z.string().openapi({
     description: 'New owner address',

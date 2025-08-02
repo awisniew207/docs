@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DeleteAppVersionForm } from '../forms/DeleteAppVersionForm';
-import { useAddressCheck } from '@/hooks/developer-dashboard/app/useAddressCheck';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { getErrorMessage } from '@/utils/developer-dashboard/app-forms';
-import Loading from '@/components/layout/Loading';
+import Loading from '@/components/shared/ui/Loading';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { DeleteAppVersionFormData } from '../forms/DeleteAppVersionForm';
 
@@ -49,8 +48,6 @@ export function DeleteAppVersionWrapper() {
       navigate(`/developer/appId/${appId}/versions`); // Navigate immediately, no delay needed
     }
   }, [isSuccess, data, navigate]);
-
-  useAddressCheck(app || null);
 
   // Loading states
   if (appLoading || versionLoading) return <Loading />;
@@ -98,12 +95,14 @@ export function DeleteAppVersionWrapper() {
   };
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Delete App Version</h1>
-          <p className="text-gray-600 mt-2">
-            Delete "{app.name}" version {versionId}. This action can be undone.
-          </p>
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-900">Delete App Version</h1>
+            <p className="text-gray-600 mt-2">
+              Delete "{app.name}" version {versionId}. This action can be undone.
+            </p>
+          </div>
         </div>
       </div>
 

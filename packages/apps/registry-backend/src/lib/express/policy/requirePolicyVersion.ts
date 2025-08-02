@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { PolicyVersion } from '../../mongo/policy';
-import { createDebugger } from '../../../../debug';
+import type { Request, Response, NextFunction } from 'express';
 
-import { RequestWithPolicy } from './requirePolicy';
+import type { RequestWithPolicy } from './requirePolicy';
+
+import { createDebugger } from '../../../../debug';
+import { PolicyVersion } from '../../mongo/policy';
 
 // Create a debug instance for this middleware
 const debug = createDebugger('requirePolicyVersion');
@@ -18,6 +19,7 @@ export const requirePolicyVersion = (versionParam = 'version') => {
     const reqWithPolicy = req as RequestWithPolicy;
 
     // Ensure policy middleware ran first
+
     if (!reqWithPolicy.vincentPolicy) {
       debug('Policy middleware did not run before PolicyVersion middleware');
       res.status(500).json({

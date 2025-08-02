@@ -1,3 +1,18 @@
+import { config } from '@dotenvx/dotenvx';
+import { ethers, providers } from 'ethers';
+
+import {
+  LitActionResource,
+  LitPKPResource,
+  createSiweMessage,
+  generateAuthSig,
+} from '@lit-protocol/auth-helpers';
+import { LIT_NETWORK, LIT_ABILITY } from '@lit-protocol/constants';
+import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+
+import type { AppVersionAbilities } from '../src/index';
+
 import {
   registerApp,
   registerNextVersion,
@@ -9,29 +24,18 @@ import {
   undeleteApp,
   getAppById,
   getAppVersion,
-  getAppsByManager,
-  getAppByDelegatee,
-  getDelegatedAgentPkpTokenIds,
-  getAllRegisteredAgentPkps,
+  getAppsByManagerAddress,
+  getAppByDelegateeAddress,
+  getDelegatedPkpEthAddresses,
+  getAllRegisteredAgentPkpEthAddresses,
   getPermittedAppVersionForPkp,
   getAllPermittedAppIdsForPkp,
-  getAllToolsAndPoliciesForApp,
-  setToolPolicyParameters,
+  getAllAbilitiesAndPoliciesForApp,
+  setAbilityPolicyParameters,
   unPermitApp,
   getAppIdByDelegatee,
 } from '../src/index';
-import { AppVersionTools } from '../src/index';
-import { ethers, providers } from 'ethers';
-import { config } from '@dotenvx/dotenvx';
-import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { LitNodeClient } from '@lit-protocol/lit-node-client';
-import { LIT_NETWORK, LIT_ABILITY } from '@lit-protocol/constants';
-import {
-  LitActionResource,
-  LitPKPResource,
-  createSiweMessage,
-  generateAuthSig,
-} from '@lit-protocol/auth-helpers';
+import { expectAssertArray, expectAssertObject } from './assertions';
 
 const generateRandomIpfsCid = (): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -59,11 +63,6 @@ if (!process.env.TEST_USER_PKP_PUBKEY) {
   process.exit(1);
 }
 
-if (!process.env.TEST_USER_AGENT_PKP_TOKEN_ID) {
-  console.error('TEST_USER_AGENT_PKP_TOKEN_ID environment variable is required');
-  process.exit(1);
-}
-
 if (!process.env.TEST_USER_PKP_ADDRESS) {
   console.error('TEST_USER_PKP_ADDRESS environment variable is required');
   process.exit(1);
@@ -76,20 +75,20 @@ describe('VincentContracts', () => {
     // App Contracts Client
     const appManagerSigner = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
 
-    const appId = ethers.BigNumber.from(ethers.utils.randomBytes(32));
+    const appId = ethers.BigNumber.from(ethers.utils.randomBytes(32)).toNumber();
     const delegatees = [ethers.Wallet.createRandom().address];
 
     // Register initial app version
-    const initialVersionTools: AppVersionTools = {
-      toolIpfsCids: [generateRandomIpfsCid()],
-      toolPolicies: [[]],
+    const initialVersionAbilities: AppVersionAbilities = {
+      abilityIpfsCids: [generateRandomIpfsCid()],
+      abilityPolicies: [[]],
     };
     const initialAppVersion = await registerApp({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
-        delegatees,
-        versionTools: initialVersionTools,
+        appId,
+        delegateeAddresses: delegatees,
+        versionAbilities: initialVersionAbilities,
       },
       overrides: {
         gasLimit: 10000000,
@@ -97,50 +96,55 @@ describe('VincentContracts', () => {
     });
     console.log('App registration result:', initialAppVersion);
     expect(initialAppVersion).toHaveProperty('txHash');
-    expect(initialAppVersion.newAppVersion).toBe('1');
 
     // Get the app by ID
     const appByIdResult = await getAppById({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
+        appId,
       },
     });
     console.log('App by ID result:', appByIdResult);
-    expect(appByIdResult.id).toBe(appId.toString());
+
+    expectAssertObject(appByIdResult);
+
+    expect(appByIdResult.id).toBe(appId);
     expect(appByIdResult.isDeleted).toBe(false);
     expect(appByIdResult.manager).toBe(appManagerSigner.address);
-    expect(appByIdResult.latestVersion).toBe(initialAppVersion.newAppVersion);
-    expect(appByIdResult.delegatees).toEqual(delegatees);
+    expect(appByIdResult.latestVersion).toBe(1);
+    expect(appByIdResult.delegateeAddresses).toEqual(delegatees);
 
     // Disable the initial app version
     const disableAppVersionResult = await enableAppVersion({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
-        appVersion: initialAppVersion.newAppVersion,
+        appId,
+        appVersion: 1,
         enabled: false,
       },
     });
     console.log('Disable app version result:', disableAppVersionResult);
     expect(disableAppVersionResult).toHaveProperty('txHash');
-    expect(disableAppVersionResult.success).toBe(true);
 
     // Get app version
     const appVersionResult = await getAppVersion({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
-        version: initialAppVersion.newAppVersion,
+        appId,
+        version: 1,
       },
     });
     console.log('App version result:', appVersionResult);
 
+    expectAssertObject(appVersionResult);
+    expect(appVersionResult.appVersion.version).toBe(1);
+    expect(appVersionResult.appVersion.enabled).toBe(false);
+
     // Get all apps by manager
-    const appsByManagerResult = await getAppsByManager({
+    const appsByManagerResult = await getAppsByManagerAddress({
       signer: appManagerSigner,
       args: {
-        manager: appManagerSigner.address,
+        managerAddress: appManagerSigner.address,
         offset: '0',
       },
     });
@@ -148,18 +152,19 @@ describe('VincentContracts', () => {
     expect(appsByManagerResult.length).toBeGreaterThan(0);
 
     // Get app by delegatee
-    const appByDelegateeResult = await getAppByDelegatee({
+    const appByDelegateeResult = await getAppByDelegateeAddress({
       signer: appManagerSigner,
       args: {
-        delegatee: delegatees[0],
+        delegateeAddress: delegatees[0],
       },
     });
     console.log('App by delegatee result:', appByDelegateeResult);
-    expect(appByDelegateeResult.id).toBe(appId.toString());
+    expectAssertObject(appByDelegateeResult);
+    expect(appByDelegateeResult.id).toBe(appId);
     expect(appByDelegateeResult.isDeleted).toBe(false);
     expect(appByDelegateeResult.manager).toBe(appManagerSigner.address);
-    expect(appByDelegateeResult.latestVersion).toBe(initialAppVersion.newAppVersion);
-    expect(appByDelegateeResult.delegatees).toEqual(delegatees);
+    expect(appByDelegateeResult.latestVersion).toBe(1);
+    expect(appByDelegateeResult.delegateeAddresses).toEqual(delegatees);
 
     // Get app ID by delegatee
     const appIdByDelegateeResult = await getAppIdByDelegatee({
@@ -183,73 +188,65 @@ describe('VincentContracts', () => {
     expect(nonRegisteredAppIdResult).toBe(null);
 
     // Register next app version
-    const nextVersionTools: AppVersionTools = {
-      toolIpfsCids: [initialVersionTools.toolIpfsCids[0], generateRandomIpfsCid()], // one existing & one new tool
-      toolPolicies: [
-        [generateRandomIpfsCid()], // new policy for the existing tool
-        [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new tool
+    const nextVersionAbilities: AppVersionAbilities = {
+      abilityIpfsCids: [initialVersionAbilities.abilityIpfsCids[0], generateRandomIpfsCid()], // one existing & one new ability
+      abilityPolicies: [
+        [generateRandomIpfsCid()], // new policy for the existing ability
+        [generateRandomIpfsCid(), generateRandomIpfsCid()], // new policy for the new ability
       ],
     };
     const nextAppVersion = await registerNextVersion({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
-        versionTools: nextVersionTools,
+        appId,
+        versionAbilities: nextVersionAbilities,
       },
     });
     console.log('Next version registration result:', nextAppVersion);
     expect(nextAppVersion).toHaveProperty('txHash');
-    expect(nextAppVersion.newAppVersion).toBe('2');
-
-    const initialVersion = parseInt(initialAppVersion.newAppVersion);
-    const nextVersion = parseInt(nextAppVersion.newAppVersion);
-    expect(nextVersion).toBeGreaterThan(initialVersion);
+    expect(nextAppVersion.newAppVersion).toBe(2);
 
     // Add a delegatee
     const addDelegateeResult = await addDelegatee({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
-        delegatee: ethers.Wallet.createRandom().address,
+        appId,
+        delegateeAddress: ethers.Wallet.createRandom().address,
       },
     });
     console.log('Add delegatee result:', addDelegateeResult);
     expect(addDelegateeResult).toHaveProperty('txHash');
-    expect(addDelegateeResult.success).toBe(true);
 
     // Remove the delegatee
     const removeDelegateeResult = await removeDelegatee({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
-        delegatee: delegatees[0],
+        appId,
+        delegateeAddress: delegatees[0],
       },
     });
     console.log('Remove delegatee result:', removeDelegateeResult);
     expect(removeDelegateeResult).toHaveProperty('txHash');
-    expect(removeDelegateeResult.success).toBe(true);
 
     // Delete the app
     const deleteAppResult = await deleteApp({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
+        appId,
       },
     });
     console.log('Delete app result:', deleteAppResult);
     expect(deleteAppResult).toHaveProperty('txHash');
-    expect(deleteAppResult.success).toBe(true);
 
     // Undelete the app
     const undeleteAppResult = await undeleteApp({
       signer: appManagerSigner,
       args: {
-        appId: appId.toString(),
+        appId,
       },
     });
     console.log('Undelete app result:', undeleteAppResult);
     expect(undeleteAppResult).toHaveProperty('txHash');
-    expect(undeleteAppResult.success).toBe(true);
 
     // User Client
     const userSigner = new ethers.Wallet(process.env.TEST_USER_AUTH_SIG_PRIVATE_KEY!, provider);
@@ -300,29 +297,44 @@ describe('VincentContracts', () => {
     const permitAppResult = await permitApp({
       signer: pkpEthersWallet,
       args: {
-        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-        appId: appId.toString(),
+        pkpEthAddress: pkpEthersWallet.address,
+        appId,
         appVersion: nextAppVersion.newAppVersion,
+        // Pre-CBOR2 payload for this case was:
+        // permissionData: {
+        //   abilityIpfsCids: nextVersionAbilities.abilityIpfsCids,
+        //   policyIpfsCids: nextVersionAbilities.abilityPolicies,
+        //   policyParameterValues: [
+        //     ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
+        //     [
+        //       '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
+        //       '0x', // empty policy var
+        //     ],
+        //   ],
+        // },
+        // PermissionData from user-space should always be POJO
         permissionData: {
-          toolIpfsCids: nextVersionTools.toolIpfsCids,
-          policyIpfsCids: nextVersionTools.toolPolicies,
-          policyParameterValues: [
-            ['0xa1781f6d61784461696c795370656e64696e674c696d6974496e55736443656e7473653130303030'], // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "10000"}
-            [
-              '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036', // CBOR2 encoded {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
-              '0x', // empty policy var
-            ],
-          ],
+          [nextVersionAbilities.abilityIpfsCids[0]]: {
+            [nextVersionAbilities.abilityPolicies[0][0]]: {
+              maxDailySpendingLimitInUsdCents: '10000',
+            },
+          },
+          [nextVersionAbilities.abilityIpfsCids[1]]: {
+            [nextVersionAbilities.abilityPolicies[1][0]]: {
+              maxDailySpendingLimitInUsdCents: '50000',
+              tokenAddress: '0x4200000000000000000000000000000000000006',
+            },
+            // [nextVersionAbilities.abilityPolicies[1][1]]: Omitted entirely rather than `0x`, because it has no params in this case.
+          },
         },
       },
     });
 
     console.log('Permit app result:', permitAppResult);
     expect(permitAppResult).toHaveProperty('txHash');
-    expect(permitAppResult.success).toBe(true);
 
     // Get Agent Pkps
-    const agentPkpsResult = await getAllRegisteredAgentPkps({
+    const agentPkpsResult = await getAllRegisteredAgentPkpEthAddresses({
       signer: userSigner,
       args: {
         userAddress: process.env.TEST_USER_PKP_ADDRESS!,
@@ -331,14 +343,13 @@ describe('VincentContracts', () => {
     });
     console.log('Agent pkps result:', agentPkpsResult);
     expect(agentPkpsResult.length).toBeGreaterThan(0);
-    expect(agentPkpsResult[0]).toBe(process.env.TEST_USER_AGENT_PKP_TOKEN_ID!);
 
     // Get permitted app version for pkp
     const permittedAppVersionForPkpResult = await getPermittedAppVersionForPkp({
       signer: userSigner,
       args: {
-        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-        appId: appId.toString(),
+        pkpEthAddress: userSigner.address,
+        appId,
       },
     });
     console.log('Permitted app version for pkp result:', permittedAppVersionForPkpResult);
@@ -348,70 +359,79 @@ describe('VincentContracts', () => {
     const allPermittedAppIdsForPkpResult = await getAllPermittedAppIdsForPkp({
       signer: userSigner,
       args: {
-        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        // pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
+        pkpEthAddress: userSigner.address,
         offset: '0',
       },
     });
     console.log('All permitted app ids for pkp result:', allPermittedAppIdsForPkpResult);
     expect(allPermittedAppIdsForPkpResult.length).toBeGreaterThan(0);
 
-    // Get all tools and policies for app
-    const allToolsAndPoliciesForAppResult = await getAllToolsAndPoliciesForApp({
+    // Get all abilities and policies for app
+    const allAbilitiesAndPoliciesForAppResult = await getAllAbilitiesAndPoliciesForApp({
       signer: userSigner,
       args: {
-        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-        appId: appId.toString(),
+        pkpEthAddress: userSigner.address,
+        appId,
       },
     });
-    console.log('All tools and policies for app result:', allToolsAndPoliciesForAppResult);
-    expect(allToolsAndPoliciesForAppResult.length).toBeGreaterThan(0); // Weak test since the order of the tool is not guaranteed
+    expectAssertObject(allAbilitiesAndPoliciesForAppResult);
+    console.log('All abilities and policies for app result:', allAbilitiesAndPoliciesForAppResult);
+    expect(Object.keys(allAbilitiesAndPoliciesForAppResult).length).toBeGreaterThan(0); // Weak test since the order of the ability is not guaranteed
 
     await litNodeClient.disconnect();
 
     // Get delegated agent pkp token ids
-    const delegatedAgentPkpTokenIdsResult = await getDelegatedAgentPkpTokenIds({
+    const delegatedAgentPkpTokenIdsResult = await getDelegatedPkpEthAddresses({
       signer: userSigner,
       args: {
-        appId: appId.toString(),
+        appId,
         version: nextAppVersion.newAppVersion,
         offset: '0',
       },
     });
     console.log('Delegated agent pkp token ids result:', delegatedAgentPkpTokenIdsResult);
+    expectAssertArray(delegatedAgentPkpTokenIdsResult);
     expect(delegatedAgentPkpTokenIdsResult.length).toBeGreaterThan(0);
-    expect(delegatedAgentPkpTokenIdsResult[0]).toBe(process.env.TEST_USER_AGENT_PKP_TOKEN_ID!);
 
-    // Set tool policy parameters
-    const setToolPolicyParametersResult = await setToolPolicyParameters({
+    // Set ability policy parameters
+    const setAbilityPolicyParametersResult = await setAbilityPolicyParameters({
       signer: pkpEthersWallet,
       args: {
-        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-        appId: appId.toString(),
+        pkpEthAddress: pkpEthersWallet.address,
+        appId,
         appVersion: nextAppVersion.newAppVersion,
-        toolIpfsCids: [nextVersionTools.toolIpfsCids[1]],
-        policyIpfsCids: [[nextVersionTools.toolPolicies[1][1]]], // second policy was never set by the Agent
-        policyParameterValues: [
-          [
-            '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036',
-          ], // {"maxDailySpendingLimitInUsdCents": "50000", "tokenAddress": "0x4200000000000000000000000000000000000006"}
-        ],
+        // Pre-CBOR2 payload for this case was:
+        // abilityIpfsCids: [],
+        // policyIpfsCids: [[nextVersionAbilities.abilityPolicies[1][1]]], // second policy was never set by the Agent
+        // policyParameterValues: [
+        //   [
+        //     '0xa2781f6d61784461696c795370656e64696e674c696d6974496e55736443656e74736535303030306c746f6b656e41646472657373782a307834323030303030303030303030303030303030303030303030303030303030303030303030303036',
+        //   ], //
+        // ],
+        policyParams: {
+          [nextVersionAbilities.abilityIpfsCids[1]]: {
+            [nextVersionAbilities.abilityPolicies[1][1]]: {
+              maxDailySpendingLimitInUsdCents: '50000',
+              tokenAddress: '0x4200000000000000000000000000000000000006',
+            },
+          },
+        },
       },
     });
-    console.log('Set tool policy parameters result:', setToolPolicyParametersResult);
-    expect(setToolPolicyParametersResult).toHaveProperty('txHash');
-    expect(setToolPolicyParametersResult.success).toBe(true);
+    console.log('Set ability policy parameters result:', setAbilityPolicyParametersResult);
+    expect(setAbilityPolicyParametersResult).toHaveProperty('txHash');
 
     // Unpermit app
     const unpermitAppResult = await unPermitApp({
       signer: pkpEthersWallet,
       args: {
-        pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-        appId: appId.toString(),
+        pkpEthAddress: pkpEthersWallet.address,
+        appId,
         appVersion: nextAppVersion.newAppVersion,
       },
     });
     console.log('Unpermit app result:', unpermitAppResult);
     expect(unpermitAppResult).toHaveProperty('txHash');
-    expect(unpermitAppResult.success).toBe(true);
   }, 60000);
 });
