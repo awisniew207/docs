@@ -96,6 +96,7 @@ export const useConnectMiddleware = ({
 
         const userApps = await client.getAllPermittedAppIdsForPkp({
           pkpEthAddress,
+          offset: '0', // TODO: Make this configurable?
         });
 
         if (userApps.includes(appId)) {
