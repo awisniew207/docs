@@ -1,4 +1,4 @@
-import { Signer } from 'ethers';
+import type { Signer } from 'ethers';
 
 // ==================================================================================
 // User Mutation Types
@@ -20,6 +20,7 @@ export interface PermitAppParams {
 export interface PermitAppOptions {
   signer: Signer;
   args: PermitAppParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
@@ -32,6 +33,7 @@ export interface UnPermitAppParams {
 export interface UnPermitAppOptions {
   signer: Signer;
   args: UnPermitAppParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
@@ -47,6 +49,7 @@ export interface SetAbilityPolicyParametersParams {
 export interface SetAbilityPolicyParametersOptions {
   signer: Signer;
   args: SetAbilityPolicyParametersParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 

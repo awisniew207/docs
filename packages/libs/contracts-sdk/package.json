@@ -31,7 +31,6 @@
     "ts-jest": "^29.1.0"
   },
   "dependencies": {
-    "@ethersproject/abi": "5.8.0",
     "cbor2": "^2.0.1",
     "ethers": "^5.8.0"
   }

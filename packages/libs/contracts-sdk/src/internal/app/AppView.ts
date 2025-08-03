@@ -103,7 +103,7 @@ export async function getAppsByManagerAddress(
   try {
     const [appIds, appVersionCounts] = await contract.getAppsByManager(managerAddress, offset);
 
-    return appIds.map((id: any, idx: number) => ({
+    return appIds.map((id: BigNumber, idx: number) => ({
       id: id.toString(),
       versionCount: appVersionCounts[idx].toString(),
     }));

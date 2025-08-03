@@ -1,4 +1,4 @@
-import { Signer } from 'ethers';
+import type { Signer } from 'ethers';
 
 // ==================================================================================
 // App Mutation Types
@@ -23,12 +23,14 @@ export interface RegisterNextVersionParams {
 export interface RegisterAppOptions {
   signer: Signer;
   args: RegisterAppParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
 export interface RegisterNextVersionOptions {
   signer: Signer;
   args: RegisterNextVersionParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 export interface EnableAppVersionParams {
@@ -58,30 +60,35 @@ export interface UndeleteAppParams {
 export interface EnableAppVersionOptions {
   signer: Signer;
   args: EnableAppVersionParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
 export interface AddDelegateeOptions {
   signer: Signer;
   args: AddDelegateeParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
 export interface RemoveDelegateeOptions {
   signer: Signer;
   args: RemoveDelegateeParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
 export interface DeleteAppOptions {
   signer: Signer;
   args: DeleteAppParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 
 export interface UndeleteAppOptions {
   signer: Signer;
   args: UndeleteAppParams;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   overrides?: any;
 }
 

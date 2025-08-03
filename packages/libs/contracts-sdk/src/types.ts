@@ -170,6 +170,7 @@ export interface AbilityPolicyParameterData {
   [policyIpfsCid: string]:
     | {
         // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [paramName: string]: any;
       }
     | undefined;

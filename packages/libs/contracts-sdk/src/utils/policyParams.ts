@@ -65,6 +65,7 @@ export function encodePermissionDataForChain(
  */
 export function decodePolicyParametersFromChain(
   policy: PolicyWithParameters,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): { [paramName: string]: any } | undefined {
   const encodedParams = policy.policyParameterValues;
 
