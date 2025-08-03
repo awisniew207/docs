@@ -1,4 +1,3 @@
-import { decode, encode } from 'cbor2';
 import { arrayify } from 'ethers/lib/utils';
 
 import type {
@@ -14,9 +13,11 @@ import type { PermissionData } from '../types';
  * @param permissionData { PermissionData } - Object containing the nested policy parameters
  * @returns The flattened array structure with abilityIpfsCids, policyIpfsCids, and policyParameterValues
  */
-export function encodePermissionDataForChain(
+export async function encodePermissionDataForChain(
   permissionData: PermissionData,
-): PermissionDataOnChain {
+): Promise<PermissionDataOnChain> {
+  const { encode } = await import('cbor2');
+
   const abilityIpfsCids: string[] = [];
   const policyIpfsCids: string[][] = [];
   const policyParameterValues: string[][] = [];
@@ -63,10 +64,12 @@ export function encodePermissionDataForChain(
  * @param policy - PolicyWithParameters object containing policyIpfsCid and encoded policyParameterValues
  * @returns The decoded policy parameters object, or undefined if no parameters are provided
  */
-export function decodePolicyParametersFromChain(
+export async function decodePolicyParametersFromChain(
   policy: PolicyWithParameters,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): { [paramName: string]: any } | undefined {
+): Promise<{ [paramName: string]: any } | undefined> {
+  const { decode } = await import('cbor2');
+
   const encodedParams = policy.policyParameterValues;
 
   if (encodedParams && encodedParams.length > 0) {
@@ -84,9 +87,9 @@ export function decodePolicyParametersFromChain(
  * @param abilitiesWithPolicies - Array of AbilityWithPolicies objects
  * @returns The nested policy parameters object. PolicyParameters have been decoded using `CBOR2`.
  */
-export function decodePermissionDataFromChain(
+export async function decodePermissionDataFromChain(
   abilitiesWithPolicies: AbilityWithPolicies[],
-): PermissionData {
+): Promise<PermissionData> {
   const permissionData: PermissionData = {};
 
   for (const ability of abilitiesWithPolicies) {
@@ -95,7 +98,7 @@ export function decodePermissionDataFromChain(
 
     for (const policy of ability.policies) {
       const { policyIpfsCid } = policy;
-      permissionData[abilityIpfsCid][policyIpfsCid] = decodePolicyParametersFromChain(policy);
+      permissionData[abilityIpfsCid][policyIpfsCid] = await decodePolicyParametersFromChain(policy);
     }
   }
 

@@ -110,7 +110,7 @@ export async function getAllAbilitiesAndPoliciesForApp(
       appId,
     );
 
-    return decodePermissionDataFromChain(abilities);
+    return await decodePermissionDataFromChain(abilities);
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Abilities And Policies For App: ${decodedError}`);
@@ -139,7 +139,7 @@ export async function validateAbilityExecutionAndGetPolicies(
 
     for (const policy of validationResult.policies) {
       const policyIpfsCid = policy.policyIpfsCid;
-      decodedPolicies[policyIpfsCid] = decodePolicyParametersFromChain(policy);
+      decodedPolicies[policyIpfsCid] = await decodePolicyParametersFromChain(policy);
     }
 
     return {

@@ -75,7 +75,7 @@ export async function getAppVersion(
     const [, appVersion]: [never, AppVersionChain] = await contract.getAppVersion(appId, version);
 
     return {
-      appVersion: { ...appVersion, version: appVersion.version.toNumber() },
+      appVersion: { ...appVersion, version },
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);

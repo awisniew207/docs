@@ -12,6 +12,7 @@ import type {
 import type {
   getAppByDelegateeAddress as _getAppByDelegateeAddress,
   getAppById as _getAppById,
+  getAppIdByDelegatee as _getAppIdByDelegatee,
   getAppsByManagerAddress as _getAppsByManagerAddress,
   getAppVersion as _getAppVersion,
   getDelegatedPkpEthAddresses as _getDelegatedPkpEthAddresses,
@@ -127,6 +128,10 @@ export interface UndeleteAppParams {
  * */
 export interface GetAppByIdParams {
   appId: number;
+}
+
+export interface GetAppIdByDelegateeParams {
+  delegateeAddress: string;
 }
 
 /**
@@ -325,6 +330,12 @@ export interface ContractClient {
    * @returns Detailed view of the app containing its metadata and relationships, or null if the app is not registered
    */
   getAppById(params: GetAppByIdParams): ReturnType<typeof _getAppById>;
+
+  /** Get the app ID for a specific delegatee address
+   *
+   * @returns The app ID for the specified delegatee address
+   */
+  getAppIdByDelegatee(params: GetAppIdByDelegateeParams): ReturnType<typeof _getAppIdByDelegatee>;
 
   /** Get detailed information about a specific version of an app
    *

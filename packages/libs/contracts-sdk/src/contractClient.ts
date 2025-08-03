@@ -17,6 +17,7 @@ import {
 } from './internal/app/App';
 import {
   getAppById as _getAppById,
+  getAppIdByDelegatee as _getAppIdByDelegatee,
   getAppVersion as _getAppVersion,
   getAppsByManagerAddress as _getAppsByManagerAddress,
   getAppByDelegateeAddress as _getAppByDelegateeAddress,
@@ -58,6 +59,7 @@ export function clientFromContract({ contract }: { contract: Contract }): Contra
 
     // App view methods
     getAppById: (params) => _getAppById({ contract, args: params }),
+    getAppIdByDelegatee: (params) => _getAppIdByDelegatee({ contract, args: params }),
     getAppVersion: (params) => _getAppVersion({ contract, args: params }),
     getAppsByManagerAddress: (params) => _getAppsByManagerAddress({ contract, args: params }),
     getAppByDelegateeAddress: (params) => _getAppByDelegateeAddress({ contract, args: params }),
