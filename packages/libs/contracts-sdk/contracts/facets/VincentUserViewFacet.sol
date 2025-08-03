@@ -260,13 +260,8 @@ contract VincentUserViewFacet is VincentBase {
         for (uint256 i = 0; i < abilityCount; i++) {
             bytes32 abilityHash = abilityHashes[i];
             abilities[i] = _getAbilityWithPolicies(abilityHash, pkpTokenId, appId, appVersion, versionedApp, us_, ls_);
-        // For each ability, get its policies and parameters
-        for (uint256 i = 0; i < abilityCount; i++) {
-            bytes32 abilityHash = abilityHashes[i];
-            abilities[i] = _getAbilityWithPolicies(abilityHash, pkpTokenId, appId, appVersion, versionedApp, us_, ls_);
         }
 
-        return abilities;
         return abilities;
     }
 
@@ -275,14 +270,11 @@ contract VincentUserViewFacet is VincentBase {
      * @param delegatee The address of the delegatee
      * @param pkpTokenId The PKP token ID
      * @param abilityIpfsCid The IPFS CID of the ability
-     * @param abilityIpfsCid The IPFS CID of the ability
      * @return validation A struct containing validation result and policy information
      */
     function validateAbilityExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata abilityIpfsCid)
-    function validateAbilityExecutionAndGetPolicies(address delegatee, uint256 pkpTokenId, string calldata abilityIpfsCid)
         external
         view
-        returns (AbilityExecutionValidation memory validation)
         returns (AbilityExecutionValidation memory validation)
     {
         // Check for invalid inputs
