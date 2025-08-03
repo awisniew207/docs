@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "cbor2": "^2.0.1",
-    "ethers": "^5.8.0"
+    "ethers": "^5.8.0",
+    "@ethersproject/abi": "^5.8.0"
   }
 }

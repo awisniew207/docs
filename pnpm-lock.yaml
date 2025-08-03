@@ -902,6 +902,9 @@ importers:
 
   packages/libs/contracts-sdk:
     dependencies:
+      '@ethersproject/abi':
+        specifier: ^5.8.0
+        version: 5.8.0
       cbor2:
         specifier: ^2.0.1
         version: 2.0.1
