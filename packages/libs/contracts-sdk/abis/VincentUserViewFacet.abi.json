@@ -23,8 +23,8 @@
       },
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ],
     "outputs": [
@@ -78,8 +78,8 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint40[]",
+        "internalType": "uint40[]"
       }
     ],
     "stateMutability": "view"
@@ -119,15 +119,15 @@
       },
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ],
     "stateMutability": "view"
@@ -165,13 +165,13 @@
           },
           {
             "name": "appId",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint40",
+            "internalType": "uint40"
           },
           {
             "name": "appVersion",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "policies",
@@ -201,8 +201,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -212,8 +212,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -223,13 +223,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -239,13 +239,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -313,13 +313,13 @@
       },
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -334,13 +334,13 @@
       },
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       },
       {
         "name": "policyIpfsCid",

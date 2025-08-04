@@ -5,8 +5,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "delegatee",
@@ -23,8 +23,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ],
     "outputs": [],
@@ -36,13 +36,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       },
       {
         "name": "enabled",
@@ -59,8 +59,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "delegatees",
@@ -88,8 +88,8 @@
     "outputs": [
       {
         "name": "newAppVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ],
     "stateMutability": "nonpayable"
@@ -100,8 +100,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "versionAbilities",
@@ -124,8 +124,8 @@
     "outputs": [
       {
         "name": "newAppVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ],
     "stateMutability": "nonpayable"
@@ -136,8 +136,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "delegatee",
@@ -154,8 +154,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "delegatees",
@@ -172,8 +172,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ],
     "outputs": [],
@@ -185,9 +185,9 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       }
     ],
     "anonymous": false
@@ -198,15 +198,15 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
+        "type": "uint24",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint24"
       },
       {
         "name": "enabled",
@@ -223,9 +223,9 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       }
     ],
     "anonymous": false
@@ -236,9 +236,9 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       },
       {
         "name": "delegatee",
@@ -255,9 +255,9 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       },
       {
         "name": "delegatee",
@@ -274,9 +274,9 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       },
       {
         "name": "manager",
@@ -293,15 +293,15 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
+        "type": "uint40",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
+        "type": "uint24",
         "indexed": true,
-        "internalType": "uint256"
+        "internalType": "uint24"
       },
       {
         "name": "manager",
@@ -347,8 +347,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -358,8 +358,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -369,8 +369,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -380,8 +380,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -391,8 +391,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -402,13 +402,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       },
       {
         "name": "enabled",
@@ -423,13 +423,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -439,13 +439,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -455,8 +455,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "delegatee",
@@ -471,8 +471,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "delegatee",
@@ -487,8 +487,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "abilityIndex",
@@ -503,8 +503,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "abilityIndex",
@@ -524,8 +524,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "abilityIndex",
@@ -540,8 +540,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "abilityIndex",
@@ -572,8 +572,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -583,8 +583,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "msgSender",
