@@ -61,7 +61,7 @@ export interface JWTPayload {
   aud: string | string[];
   sub?: `0x${string}`;
   nbf?: number;
-  publicKey: string; // This is the uncompressed pubKey of the issuer
+  publicKey: `0x${string}`; // This is the uncompressed pubKey of the issuer
 
   __vincentJWTApiVersion: number;
 
