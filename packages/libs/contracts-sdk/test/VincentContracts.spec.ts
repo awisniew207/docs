@@ -1,5 +1,5 @@
 import { config } from '@dotenvx/dotenvx';
-import { ethers, providers } from 'ethers';
+import { BigNumber, ethers, providers } from 'ethers';
 
 import {
   LitActionResource,
@@ -13,31 +13,7 @@ import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 
 import type { AppVersionAbilities } from '../src/index';
 
-import {
-  // registerApp,
-  // registerNextVersion,
-  // permitApp,
-  // enableAppVersion,
-  // addDelegatee,
-  // removeDelegatee,
-  // deleteApp,
-  // undeleteApp,
-  // getAppById,
-  // getAppVersion,
-  // getAppsByManagerAddress,
-  // getAppByDelegateeAddress,
-  // getDelegatedPkpEthAddresses,
-  // getAllRegisteredAgentPkpEthAddresses,
-  // getPermittedAppVersionForPkp,
-  // getAllPermittedAppIdsForPkp,
-  // getAllAbilitiesAndPoliciesForApp,
-  // setAbilityPolicyParameters,
-  // unPermitApp,
-  // getAppIdByDelegatee,
-  getTestClient,
-  // createContract,
-} from '../src/index';
-// import { VINCENT_DIAMOND_CONTRACT_ADDRESS_DEV } from '../src/constants';
+import { getTestClient } from '../src/index';
 import { expectAssertArray, expectAssertObject } from './assertions';
 
 const generateRandomIpfsCid = (): string => {
@@ -71,6 +47,11 @@ if (!process.env.TEST_USER_PKP_ADDRESS) {
   process.exit(1);
 }
 
+if (!process.env.TEST_USER_AGENT_PKP_ADDRESS) {
+  console.error('TEST_USER_AGENT_PKP_ADDRESS environment variable is required');
+  process.exit(1);
+}
+
 describe('VincentContracts', () => {
   it('should perform all actions on a new App and User Agent', async () => {
     const provider = new providers.JsonRpcProvider('https://yellowstone-rpc.litprotocol.com');
@@ -79,7 +60,7 @@ describe('VincentContracts', () => {
     const appManagerSigner = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
     const appClient = getTestClient({ signer: appManagerSigner });
 
-    const appId = Math.floor(Math.random() * 1000000);
+    const appId = BigNumber.from(ethers.utils.randomBytes(32));
     const delegatees = [ethers.Wallet.createRandom().address];
 
     // Register initial app version
@@ -108,16 +89,16 @@ describe('VincentContracts', () => {
 
     expectAssertObject(appByIdResult);
 
-    expect(appByIdResult.id).toBe(appId);
-    expect(appByIdResult.isDeleted).toBe(false);
-    expect(appByIdResult.manager).toBe(appManagerSigner.address);
-    expect(appByIdResult.latestVersion).toBe(1);
+    expect(appByIdResult.id).toEqual(appId);
+    expect(appByIdResult.isDeleted).toEqual(false);
+    expect(appByIdResult.manager).toEqual(appManagerSigner.address);
+    expect(appByIdResult.latestVersion).toEqual(BigNumber.from(1));
     expect(appByIdResult.delegateeAddresses).toEqual(delegatees);
 
     // Disable the initial app version
     const disableAppVersionResult = await appClient.enableAppVersion({
       appId,
-      appVersion: 1,
+      appVersion: BigNumber.from(1),
       enabled: false,
     });
     console.log('Disable app version result:', disableAppVersionResult);
@@ -126,13 +107,13 @@ describe('VincentContracts', () => {
     // Get app version
     const appVersionResult = await appClient.getAppVersion({
       appId,
-      version: 1,
+      version: BigNumber.from(1),
     });
     console.log('App version result:', appVersionResult);
 
     expectAssertObject(appVersionResult);
-    expect(appVersionResult.appVersion.version).toBe(1);
-    expect(appVersionResult.appVersion.enabled).toBe(false);
+    expect(appVersionResult.appVersion.version).toEqual(BigNumber.from(1));
+    expect(appVersionResult.appVersion.enabled).toEqual(false);
 
     // Get all apps by manager
     const appsByManagerResult = await appClient.getAppsByManagerAddress({
@@ -148,10 +129,10 @@ describe('VincentContracts', () => {
     });
     console.log('App by delegatee result:', appByDelegateeResult);
     expectAssertObject(appByDelegateeResult);
-    expect(appByDelegateeResult.id).toBe(appId);
-    expect(appByDelegateeResult.isDeleted).toBe(false);
-    expect(appByDelegateeResult.manager).toBe(appManagerSigner.address);
-    expect(appByDelegateeResult.latestVersion).toBe(1);
+    expect(appByDelegateeResult.id).toEqual(appId);
+    expect(appByDelegateeResult.isDeleted).toEqual(false);
+    expect(appByDelegateeResult.manager).toEqual(appManagerSigner.address);
+    expect(appByDelegateeResult.latestVersion).toEqual(BigNumber.from(1));
     expect(appByDelegateeResult.delegateeAddresses).toEqual(delegatees);
 
     // Get app ID by delegatee
@@ -159,7 +140,7 @@ describe('VincentContracts', () => {
       delegateeAddress: delegatees[0],
     });
     console.log('App ID by delegatee result:', appIdByDelegateeResult);
-    expect(appIdByDelegateeResult).toBe(appId.toString());
+    expect(appIdByDelegateeResult).toEqual(appId);
 
     // Test getAppIdByDelegatee with non-registered delegatee
     const nonRegisteredDelegatee = ethers.Wallet.createRandom().address;
@@ -183,7 +164,7 @@ describe('VincentContracts', () => {
     });
     console.log('Next version registration result:', nextAppVersion);
     expect(nextAppVersion).toHaveProperty('txHash');
-    expect(nextAppVersion.newAppVersion).toBe(2);
+    expect(nextAppVersion.newAppVersion).toEqual(BigNumber.from(2));
 
     // Add a delegatee
     const addDelegateeResult = await appClient.addDelegatee({
@@ -266,7 +247,7 @@ describe('VincentContracts', () => {
     const pkpClient = getTestClient({ signer: pkpEthersWallet });
 
     const permitAppResult = await pkpClient.permitApp({
-      pkpEthAddress: pkpEthersWallet.address,
+      pkpEthAddress: process.env.TEST_USER_AGENT_PKP_ADDRESS!,
       appId,
       appVersion: nextAppVersion.newAppVersion,
       // Pre-CBOR2 payload for this case was:
@@ -308,19 +289,19 @@ describe('VincentContracts', () => {
     });
     console.log('Agent pkps result:', agentPkpsResult);
     expect(agentPkpsResult.length).toBeGreaterThan(0);
+    expect(agentPkpsResult[0]).toEqual(process.env.TEST_USER_AGENT_PKP_ADDRESS!);
 
     // Get permitted app version for pkp
     const permittedAppVersionForPkpResult = await userClient.getPermittedAppVersionForPkp({
-      pkpEthAddress: userSigner.address,
+      pkpEthAddress: process.env.TEST_USER_AGENT_PKP_ADDRESS!,
       appId,
     });
     console.log('Permitted app version for pkp result:', permittedAppVersionForPkpResult);
-    expect(permittedAppVersionForPkpResult).toBe(nextAppVersion.newAppVersion);
+    expect(permittedAppVersionForPkpResult).toEqual(nextAppVersion.newAppVersion);
 
     // Get all permitted app ids for pkp
     const allPermittedAppIdsForPkpResult = await userClient.getAllPermittedAppIdsForPkp({
-      // pkpTokenId: process.env.TEST_USER_AGENT_PKP_TOKEN_ID!,
-      pkpEthAddress: userSigner.address,
+      pkpEthAddress: process.env.TEST_USER_AGENT_PKP_ADDRESS!,
       offset: '0',
     });
     console.log('All permitted app ids for pkp result:', allPermittedAppIdsForPkpResult);
@@ -328,7 +309,7 @@ describe('VincentContracts', () => {
 
     // Get all abilities and policies for app
     const allAbilitiesAndPoliciesForAppResult = await userClient.getAllAbilitiesAndPoliciesForApp({
-      pkpEthAddress: userSigner.address,
+      pkpEthAddress: process.env.TEST_USER_AGENT_PKP_ADDRESS!,
       appId,
     });
     expectAssertObject(allAbilitiesAndPoliciesForAppResult);
@@ -346,10 +327,11 @@ describe('VincentContracts', () => {
     console.log('Delegated agent pkp token ids result:', delegatedAgentPkpTokenIdsResult);
     expectAssertArray(delegatedAgentPkpTokenIdsResult);
     expect(delegatedAgentPkpTokenIdsResult.length).toBeGreaterThan(0);
+    expect(delegatedAgentPkpTokenIdsResult[0]).toEqual(process.env.TEST_USER_AGENT_PKP_ADDRESS!);
 
     // Set ability policy parameters
     const setAbilityPolicyParametersResult = await pkpClient.setAbilityPolicyParameters({
-      pkpEthAddress: pkpEthersWallet.address,
+      pkpEthAddress: process.env.TEST_USER_AGENT_PKP_ADDRESS!,
       appId,
       appVersion: nextAppVersion.newAppVersion,
       // Pre-CBOR2 payload for this case was:
@@ -374,7 +356,7 @@ describe('VincentContracts', () => {
 
     // Unpermit app
     const unpermitAppResult = await pkpClient.unPermitApp({
-      pkpEthAddress: pkpEthersWallet.address,
+      pkpEthAddress: process.env.TEST_USER_AGENT_PKP_ADDRESS!,
       appId,
       appVersion: nextAppVersion.newAppVersion,
     });

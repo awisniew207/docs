@@ -1,3 +1,5 @@
+import type { BigNumber } from 'ethers';
+
 import type { Overrides } from 'ethers';
 
 import type {
@@ -42,10 +44,10 @@ export interface AppVersionAbilities {
  * @category Interfaces
  * */
 export interface App {
-  id: number;
+  id: BigNumber;
   isDeleted: boolean;
   manager: string;
-  latestVersion: number;
+  latestVersion: BigNumber;
   delegateeAddresses: string[];
 }
 
@@ -63,7 +65,7 @@ export interface Ability {
  * @category Interfaces
  * */
 export interface AppVersion {
-  version: number;
+  version: BigNumber;
   enabled: boolean;
   abilities: Ability[];
 }
@@ -71,7 +73,7 @@ export interface AppVersion {
 /** @category Interfaces
  * */
 export interface RegisterAppParams {
-  appId: number;
+  appId: BigNumber;
   delegateeAddresses: string[];
   versionAbilities: AppVersionAbilities;
 }
@@ -80,7 +82,7 @@ export interface RegisterAppParams {
  * @category Interfaces
  * */
 export interface RegisterNextVersionParams {
-  appId: number;
+  appId: BigNumber;
   versionAbilities: AppVersionAbilities;
 }
 
@@ -88,8 +90,8 @@ export interface RegisterNextVersionParams {
  * @category Interfaces
  * */
 export interface EnableAppVersionParams {
-  appId: number;
-  appVersion: number;
+  appId: BigNumber;
+  appVersion: BigNumber;
   enabled: boolean;
 }
 
@@ -97,7 +99,7 @@ export interface EnableAppVersionParams {
  * @category Interfaces
  * */
 export interface AddDelegateeParams {
-  appId: number;
+  appId: BigNumber;
   delegateeAddress: string;
 }
 
@@ -105,7 +107,7 @@ export interface AddDelegateeParams {
  * @category Interfaces
  * */
 export interface RemoveDelegateeParams {
-  appId: number;
+  appId: BigNumber;
   delegateeAddress: string;
 }
 
@@ -113,21 +115,21 @@ export interface RemoveDelegateeParams {
  * @category Interfaces
  * */
 export interface DeleteAppParams {
-  appId: number;
+  appId: BigNumber;
 }
 
 /**
  * @category Interfaces
  * */
 export interface UndeleteAppParams {
-  appId: number;
+  appId: BigNumber;
 }
 
 /**
  * @category Interfaces
  * */
 export interface GetAppByIdParams {
-  appId: number;
+  appId: BigNumber;
 }
 
 export interface GetAppIdByDelegateeParams {
@@ -138,8 +140,8 @@ export interface GetAppIdByDelegateeParams {
  * @category Interfaces
  * */
 export interface GetAppVersionParams {
-  appId: number;
-  version: number;
+  appId: BigNumber;
+  version: BigNumber;
 }
 
 /**
@@ -161,8 +163,8 @@ export interface GetAppByDelegateeParams {
  * @category Interfaces
  * */
 export interface GetDelegatedPkpEthAddressesParams {
-  appId: number;
-  version: number;
+  appId: BigNumber;
+  version: BigNumber;
   offset: number;
 }
 
@@ -196,8 +198,8 @@ export interface PermissionData {
  * */
 export interface ValidateAbilityExecutionAndGetPoliciesResult {
   isPermitted: boolean;
-  appId: number;
-  appVersion: number;
+  appId: BigNumber;
+  appVersion: BigNumber;
   decodedPolicies: AbilityPolicyParameterData;
 }
 
@@ -206,8 +208,8 @@ export interface ValidateAbilityExecutionAndGetPoliciesResult {
  * */
 export interface PermitAppParams {
   pkpEthAddress: string;
-  appId: number;
-  appVersion: number;
+  appId: BigNumber;
+  appVersion: BigNumber;
   permissionData: PermissionData;
 }
 
@@ -216,8 +218,8 @@ export interface PermitAppParams {
  * */
 export interface UnPermitAppParams {
   pkpEthAddress: string;
-  appId: number;
-  appVersion: number;
+  appId: BigNumber;
+  appVersion: BigNumber;
 }
 
 /**
@@ -225,8 +227,8 @@ export interface UnPermitAppParams {
  * */
 export interface SetAbilityPolicyParametersParams {
   pkpEthAddress: string;
-  appId: number;
-  appVersion: number;
+  appId: BigNumber;
+  appVersion: BigNumber;
   policyParams: PermissionData;
 }
 
@@ -243,7 +245,7 @@ export interface GetAllRegisteredAgentPkpsParams {
  * */
 export interface GetPermittedAppVersionForPkpParams {
   pkpEthAddress: string;
-  appId: number;
+  appId: BigNumber;
 }
 
 /**
@@ -259,7 +261,7 @@ export interface GetAllPermittedAppIdsForPkpParams {
  * */
 export interface GetAllAbilitiesAndPoliciesForAppParams {
   pkpEthAddress: string;
-  appId: number;
+  appId: BigNumber;
 }
 
 /**
