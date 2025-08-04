@@ -6,7 +6,7 @@ import type {
 } from '../types';
 
 import { JWT_ERROR } from '../constants';
-import { isAppUser, isDelegateee, isPlatformUser } from '../typeGuards';
+import { isAppUser, isDelegatee, isPlatformUser } from '../typeGuards';
 import { decodeVincentJWT } from './decode';
 import { isExpired } from './isExpired';
 import { validateJWTTime } from './utils';
@@ -126,7 +126,7 @@ export async function verifyVincentDelegateeJWT({
 }): Promise<VincentJWTDelegatee> {
   const decoded = await verifyAnyVincentJWT({ jwt, expectedAudience });
 
-  if (!isDelegateee(decoded)) {
+  if (!isDelegatee(decoded)) {
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT is not a delegatee token`);
   }
 

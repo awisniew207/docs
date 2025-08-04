@@ -9129,7 +9129,7 @@
 				},
 				{
 					"id": 45457,
-					"name": "isDelegateee",
+					"name": "isDelegatee",
 					"variant": "declaration",
 					"kind": 64,
 					"flags": {},
@@ -9144,7 +9144,7 @@
 					"signatures": [
 						{
 							"id": 45458,
-							"name": "isDelegateee",
+							"name": "isDelegatee",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -11778,11 +11778,11 @@
 		},
 		"45457": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
-			"qualifiedName": "isDelegateee"
+			"qualifiedName": "isDelegatee"
 		},
 		"45458": {
 			"sourceFileName": "src/jwt/typeGuards.ts",
-			"qualifiedName": "isDelegateee"
+			"qualifiedName": "isDelegatee"
 		},
 		"45459": {
 			"sourceFileName": "src/jwt/typeGuards.ts",

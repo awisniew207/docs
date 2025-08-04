@@ -19,7 +19,7 @@ export {
   verifyVincentPlatformJWT,
   verifyVincentDelegateeJWT,
 } from './core/verify';
-export { isAppUser, isPlatformUser, isAnyVincentJWT, isDelegateee } from './typeGuards';
+export { isAppUser, isPlatformUser, isAnyVincentJWT, isDelegatee } from './typeGuards';
 
 export type {
   DecodedJWT,

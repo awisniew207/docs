@@ -30,7 +30,7 @@ export function isPlatformUser(decodedJWT: DecodedJWT): decodedJWT is VincentJWT
  *
  * @category API > Type Guards
  * */
-export function isDelegateee(decodedJWT: DecodedJWT): decodedJWT is VincentJWTDelegatee {
+export function isDelegatee(decodedJWT: DecodedJWT): decodedJWT is VincentJWTDelegatee {
   return decodedJWT.payload?.role === 'app-delegatee';
 }
 
@@ -39,7 +39,7 @@ export function isDelegateee(decodedJWT: DecodedJWT): decodedJWT is VincentJWTDe
  * @category API > Type Guards
  * */
 export function isAnyVincentJWT(decodedJWT: DecodedJWT): decodedJWT is AnyVincentJWT {
-  return isPlatformUser(decodedJWT) || isAppUser(decodedJWT) || isDelegateee(decodedJWT);
+  return isPlatformUser(decodedJWT) || isAppUser(decodedJWT) || isDelegatee(decodedJWT);
 }
 
 /**
