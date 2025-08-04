@@ -5,6 +5,7 @@ import type {
   VincentJWTDelegatee,
 } from '../types';
 
+import { getAudience } from '../accessors';
 import { JWT_ERROR } from '../constants';
 import { isAppUser, isDelegatee, isPlatformUser } from '../typeGuards';
 import { decodeVincentJWT } from './decode';
@@ -36,7 +37,7 @@ export async function verifyAnyVincentJWT({
 
   const decoded = decodeVincentJWT(jwt);
   const { payload } = decoded;
-  const { aud, exp, publicKey } = payload;
+  const { exp, publicKey } = payload;
 
   if (!exp) {
     throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing expiration (exp)`);
@@ -48,7 +49,7 @@ export async function verifyAnyVincentJWT({
 
   validateJWTTime(payload, Math.floor(Date.now() / 1000));
 
-  const audiences = Array.isArray(aud) ? aud : [aud];
+  const audiences = getAudience(decoded);
   if (!audiences.includes(expectedAudience)) {
     throw new Error(
       `${JWT_ERROR.INVALID_AUDIENCE}: Expected audience ${expectedAudience} not found in aud claim`
