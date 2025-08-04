@@ -6,6 +6,7 @@ export type {
   UndeleteAppParams,
   DeleteAppParams,
   RemoveDelegateeParams,
+  SetDelegateeParams,
   AddDelegateeParams,
   EnableAppVersionParams,
   RegisterNextVersionParams,

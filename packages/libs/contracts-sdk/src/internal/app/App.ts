@@ -6,6 +6,7 @@ import type {
   EnableAppVersionOptions,
   AddDelegateeOptions,
   RemoveDelegateeOptions,
+  SetDelegateeOptions,
   DeleteAppOptions,
   UndeleteAppOptions,
 } from './types.ts';
@@ -173,6 +174,35 @@ export async function removeDelegatee(params: RemoveDelegateeOptions): Promise<{
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Remove Delegatee: ${decodedError}`);
+  }
+}
+
+export async function setDelegatee(params: SetDelegateeOptions): Promise<{ txHash: string }> {
+  const {
+    contract,
+    args: { appId, delegateeAddresses },
+    overrides,
+  } = params;
+
+  try {
+    const adjustedOverrides = await gasAdjustedOverrides(
+      contract,
+      'setDelegatee',
+      [appId, delegateeAddresses],
+      overrides,
+    );
+
+    const tx = await contract.setDelegatee(appId, delegateeAddresses, {
+      ...adjustedOverrides,
+    });
+    await tx.wait();
+
+    return {
+      txHash: tx.hash,
+    };
+  } catch (error: unknown) {
+    const decodedError = decodeContractError(error, contract);
+    throw new Error(`Failed to Set Delegatee: ${decodedError}`);
   }
 }
 

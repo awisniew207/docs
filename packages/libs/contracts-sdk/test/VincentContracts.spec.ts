@@ -362,5 +362,24 @@ describe('VincentContracts', () => {
     });
     console.log('Unpermit app result:', unpermitAppResult);
     expect(unpermitAppResult).toHaveProperty('txHash');
+
+    // Set delegatees (replaces all existing delegatees)
+    const newDelegatees = [
+      ethers.Wallet.createRandom().address,
+      ethers.Wallet.createRandom().address,
+    ];
+    const setDelegateeResult = await appClient.setDelegatee({
+      appId,
+      delegateeAddresses: newDelegatees,
+    });
+    console.log('Set delegatee result:', setDelegateeResult);
+    expect(setDelegateeResult).toHaveProperty('txHash');
+
+    const appAfterSetDelegatee = await appClient.getAppById({
+      appId,
+    });
+    console.log('App after set delegatee:', appAfterSetDelegatee);
+    expectAssertObject(appAfterSetDelegatee);
+    expect(appAfterSetDelegatee.delegateeAddresses).toEqual(newDelegatees);
   }, 60000);
 });

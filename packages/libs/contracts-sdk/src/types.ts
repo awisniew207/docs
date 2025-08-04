@@ -7,6 +7,7 @@ import type {
   registerApp as _registerApp,
   registerNextVersion as _registerNextVersion,
   removeDelegatee as _removeDelegatee,
+  setDelegatee as _setDelegatee,
   undeleteApp as _undeleteApp,
 } from './internal/app/App';
 import type {
@@ -107,6 +108,14 @@ export interface AddDelegateeParams {
 export interface RemoveDelegateeParams {
   appId: BigNumber;
   delegateeAddress: string;
+}
+
+/**
+ * @category Interfaces
+ * */
+export interface SetDelegateeParams {
+  appId: BigNumber;
+  delegateeAddresses: string[];
 }
 
 /**
@@ -311,6 +320,12 @@ export interface ContractClient {
     params: RemoveDelegateeParams,
     overrides?: Overrides,
   ): ReturnType<typeof _removeDelegatee>;
+
+  /** Set delegatees for an app (replaces all existing delegatees)
+   *
+   * @returns { txHash } The hash of the transaction that set the delegatees
+   */
+  setDelegatee(params: SetDelegateeParams, overrides?: Overrides): ReturnType<typeof _setDelegatee>;
 
   /** Delete an application by setting its isDeleted flag to true
    *

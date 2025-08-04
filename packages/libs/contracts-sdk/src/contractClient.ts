@@ -12,6 +12,7 @@ import {
   enableAppVersion as _enableAppVersion,
   addDelegatee as _addDelegatee,
   removeDelegatee as _removeDelegatee,
+  setDelegatee as _setDelegatee,
   deleteApp as _deleteApp,
   undeleteApp as _undeleteApp,
 } from './internal/app/App';
@@ -54,6 +55,7 @@ export function clientFromContract({ contract }: { contract: Contract }): Contra
       _enableAppVersion({ contract, args: params, overrides }),
     addDelegatee: (params, overrides) => _addDelegatee({ contract, args: params, overrides }),
     removeDelegatee: (params, overrides) => _removeDelegatee({ contract, args: params, overrides }),
+    setDelegatee: (params, overrides) => _setDelegatee({ contract, args: params, overrides }),
     deleteApp: (params, overrides) => _deleteApp({ contract, args: params, overrides }),
     undeleteApp: (params, overrides) => _undeleteApp({ contract, args: params, overrides }),
 
