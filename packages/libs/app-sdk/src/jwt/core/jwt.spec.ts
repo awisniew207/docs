@@ -220,7 +220,6 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
       );
       const invalidJwt = `${header}.${payload}.signature`;
 
-      console.log('invalidJwt', invalidJwt);
       expect(() => decodeVincentJWT(invalidJwt)).toThrow(/Unrecognized role/);
     });
 
@@ -231,7 +230,6 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
       );
       const invalidJwt = `${header}.${payload}.signature`;
 
-      console.log('invalidJwt', invalidJwt);
       expect(() => decodeVincentJWT(invalidJwt)).toThrow(/Invalid JWT API version./);
     });
   });

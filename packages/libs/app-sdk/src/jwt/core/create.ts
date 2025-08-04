@@ -109,8 +109,6 @@ export async function createAppUserJWT(config: CreateAppUserJWTParams): Promise<
 export async function createDelegateeJWT(config: CreateDelegateeJWTParams): Promise<string> {
   const { ethersWallet, subjectAddress, audience, expiresInMinutes, payload = {} } = config;
 
-  console.log('Creating delegatee JWT');
-
   return createJWS({
     payload,
     wallet: ethersWallet,
