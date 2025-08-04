@@ -121,7 +121,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
 
       await expect(
         verifyVincentDelegateeJWT({ jwt, expectedAudience: commonAudience })
-      ).rejects.toThrow(/not a platform token/);
+      ).rejects.toThrow(/not a delegatee token/);
     });
   });
 
