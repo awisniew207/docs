@@ -129,7 +129,7 @@ export async function verifyVincentDelegateeJWT({
   const decoded = await verifyAnyVincentJWT({ jwt, expectedAudience });
 
   if (!isDelegateee(decoded)) {
-    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT is not a platform token`);
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT is not a delegatee token`);
   }
 
   await verifyES256KSignature({ decoded });
