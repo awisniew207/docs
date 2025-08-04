@@ -100,7 +100,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     }
     if (
       path.startsWith('/developer/abilities') ||
-      path.includes('/abilityId/') ||
+      path.includes('/ability/') ||
       path.startsWith('/developer/create-ability')
     ) {
       initialExpanded.add('abilities');
@@ -112,7 +112,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     }
     if (
       path.startsWith('/developer/policies') ||
-      path.includes('/policyId/') ||
+      path.includes('/policy/') ||
       path.startsWith('/developer/create-policy')
     ) {
       initialExpanded.add('policies');
@@ -323,7 +323,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     return (
       <div className="ml-4 mt-1 space-y-1">
         {userAbilities.map((ability: Ability) => {
-          const abilityRoute = `/developer/abilityId/${encodeURIComponent(ability.packageName)}`;
+          const abilityRoute = `/developer/ability/${encodeURIComponent(ability.packageName)}`;
           const isAbilityActive = isActiveRoute(abilityRoute);
           const abilityVersions = activeAbilityVersions || [];
 
@@ -483,7 +483,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     return (
       <div className="ml-4 mt-1 space-y-1">
         {userPolicies.map((policy: Policy) => {
-          const policyRoute = `/developer/policyId/${encodeURIComponent(policy.packageName)}`;
+          const policyRoute = `/developer/policy/${encodeURIComponent(policy.packageName)}`;
           const isPolicyActive = isActiveRoute(policyRoute);
           const policyVersions = activePolicyVersions || [];
 
