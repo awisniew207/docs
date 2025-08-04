@@ -90,7 +90,6 @@ export async function verifyVincentAppUserJWT({
     );
   }
 
-  await verifyES256KSignature({ decoded });
   return decoded;
 }
 
@@ -111,7 +110,6 @@ export async function verifyVincentPlatformJWT({
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT is not a platform token`);
   }
 
-  await verifyES256KSignature({ decoded });
   return decoded;
 }
 
@@ -132,6 +130,5 @@ export async function verifyVincentDelegateeJWT({
     throw new Error(`${JWT_ERROR.INVALID_JWT}: JWT is not a delegatee token`);
   }
 
-  await verifyES256KSignature({ decoded });
   return decoded;
 }
