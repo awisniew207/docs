@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
 import { providers, Wallet } from 'ethers';
 
-import { create } from '@lit-protocol/vincent-app-sdk/jwt';
+import { createPlatformUserJWT } from '@lit-protocol/vincent-app-sdk/jwt';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
@@ -42,10 +42,10 @@ export const getDefaultWalletContractClient = () => getClient({ signer: defaultW
 export type GenerateJWTFn = (wallet: Wallet) => Promise<string>;
 
 export const generateJWT: GenerateJWTFn = async (wallet: Wallet) => {
-  return await create({
+  return await createPlatformUserJWT({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pkpWallet: wallet as any,
-    pkp: {
+    pkpInfo: {
       publicKey: wallet.publicKey, // Use the actual public key from the wallet
       ethAddress: wallet.address,
       tokenId: '1',
