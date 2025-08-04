@@ -30,8 +30,8 @@
         "components": [
           {
             "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint40",
+            "internalType": "uint40"
           },
           {
             "name": "isDeleted",
@@ -45,8 +45,8 @@
           },
           {
             "name": "latestVersion",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "delegatees",
@@ -64,8 +64,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ],
     "outputs": [
@@ -76,8 +76,8 @@
         "components": [
           {
             "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint40",
+            "internalType": "uint40"
           },
           {
             "name": "isDeleted",
@@ -91,8 +91,8 @@
           },
           {
             "name": "latestVersion",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "delegatees",
@@ -110,13 +110,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "version",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ],
     "outputs": [
@@ -127,8 +127,8 @@
         "components": [
           {
             "name": "version",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "enabled",
@@ -180,13 +180,13 @@
     "outputs": [
       {
         "name": "appIds",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint40[]",
+        "internalType": "uint40[]"
       },
       {
         "name": "appVersionCounts",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint24[]",
+        "internalType": "uint24[]"
       }
     ],
     "stateMutability": "view"
@@ -197,13 +197,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "version",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       },
       {
         "name": "offset",
@@ -226,8 +226,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -237,8 +237,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -248,13 +248,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -264,13 +264,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -318,13 +318,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "version",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },

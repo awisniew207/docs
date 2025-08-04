@@ -43,7 +43,7 @@ export async function getAppById(params: GetAppByIdOptions): Promise<App | null>
 
 export async function getAppIdByDelegatee(
   params: GetAppByDelegateeOptions,
-): Promise<BigNumber | null> {
+): Promise<number | null> {
   const {
     args: { delegateeAddress },
     contract,
@@ -103,7 +103,7 @@ export async function getAppVersion(
 
 export async function getAppsByManagerAddress(
   params: GetAppsByManagerOptions,
-): Promise<{ id: BigNumber; versionCount: BigNumber }[]> {
+): Promise<{ id: number; versionCount: number }[]> {
   const {
     args: { managerAddress, offset },
     contract,
@@ -112,8 +112,8 @@ export async function getAppsByManagerAddress(
   try {
     const [appIds, appVersionCounts] = await contract.getAppsByManager(managerAddress, offset);
 
-    return appIds.map((id: BigNumber, idx: number) => ({
-      id: id,
+    return appIds.map((id: number, idx: number) => ({
+      id,
       versionCount: appVersionCounts[idx],
     }));
   } catch (error: unknown) {

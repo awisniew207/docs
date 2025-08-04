@@ -1,5 +1,3 @@
-import type { BigNumber } from 'ethers';
-
 import type {
   RegisterAppOptions,
   RegisterNextVersionOptions,
@@ -45,7 +43,7 @@ export async function registerApp(params: RegisterAppOptions): Promise<{ txHash:
 
 export async function registerNextVersion(
   params: RegisterNextVersionOptions,
-): Promise<{ txHash: string; newAppVersion: BigNumber }> {
+): Promise<{ txHash: string; newAppVersion: number }> {
   const {
     contract,
     args: { appId, versionAbilities },
@@ -71,8 +69,7 @@ export async function registerNextVersion(
       throw new Error('NewAppVersionRegistered event not found');
     }
 
-    const newAppVersion: BigNumber | undefined =
-      contract.interface.parseLog(event)?.args?.appVersion;
+    const newAppVersion: number | undefined = contract.interface.parseLog(event)?.args?.appVersion;
 
     if (!newAppVersion) {
       throw new Error('NewAppVersionRegistered event does not contain appVersion argument');

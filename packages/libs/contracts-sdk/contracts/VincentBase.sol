@@ -9,10 +9,10 @@ contract VincentBase {
     using VincentAppStorage for VincentAppStorage.AppStorage;
     using EnumerableSet for EnumerableSet.UintSet;
 
-    error AppNotRegistered(uint256 appId);
-    error AppVersionNotRegistered(uint256 appId, uint256 appVersion);
-    error AppHasBeenDeleted(uint256 appId);
-    error AppVersionNotEnabled(uint256 appId, uint256 appVersion);
+    error AppNotRegistered(uint40 appId);
+    error AppVersionNotRegistered(uint40 appId, uint24 appVersion);
+    error AppHasBeenDeleted(uint40 appId);
+    error AppVersionNotEnabled(uint40 appId, uint24 appVersion);
     error InvalidOffset(uint256 offset, uint256 totalCount);
 
     /**
@@ -20,7 +20,7 @@ contract VincentBase {
      * @dev Checks if the app ID is valid (non-zero and not exceeding the counter)
      * @param appId ID of the app to validate
      */
-    modifier onlyRegisteredApp(uint256 appId) {
+    modifier onlyRegisteredApp(uint40 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (appId == 0 || as_.appIdToApp[appId].manager == address(0)) revert AppNotRegistered(appId);
         _;
@@ -32,7 +32,7 @@ contract VincentBase {
      * @param appId ID of the app to validate
      * @param appVersion Version number of the app to validate
      */
-    modifier onlyRegisteredAppVersion(uint256 appId, uint256 appVersion) {
+    modifier onlyRegisteredAppVersion(uint40 appId, uint24 appVersion) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (appId == 0 || as_.appIdToApp[appId].manager == address(0)) revert AppNotRegistered(appId);
 
@@ -43,7 +43,7 @@ contract VincentBase {
         _;
     }
 
-    modifier appEnabled(uint256 appId, uint256 appVersion) {
+    modifier appEnabled(uint40 appId, uint24 appVersion) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (!as_.appIdToApp[appId].appVersions[getAppVersionIndex(appVersion)].enabled) {
             revert AppVersionNotEnabled(appId, appVersion);
@@ -51,7 +51,7 @@ contract VincentBase {
         _;
     }
 
-    modifier appNotDeleted(uint256 appId) {
+    modifier appNotDeleted(uint40 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (as_.appIdToApp[appId].isDeleted) {
             revert AppHasBeenDeleted(appId);

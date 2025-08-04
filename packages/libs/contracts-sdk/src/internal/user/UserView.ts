@@ -54,7 +54,7 @@ export async function getAllRegisteredAgentPkpEthAddresses(
 
 export async function getPermittedAppVersionForPkp(
   params: GetPermittedAppVersionForPkpOptions,
-): Promise<BigNumber | null> {
+): Promise<number | null> {
   const {
     contract,
     args: { pkpEthAddress, appId },
@@ -63,7 +63,7 @@ export async function getPermittedAppVersionForPkp(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const appVersion: BigNumber = await contract.getPermittedAppVersionForPkp(pkpTokenId, appId);
+    const appVersion: number = await contract.getPermittedAppVersionForPkp(pkpTokenId, appId);
 
     if (!appVersion) return null;
 
@@ -76,7 +76,7 @@ export async function getPermittedAppVersionForPkp(
 
 export async function getAllPermittedAppIdsForPkp(
   params: GetAllPermittedAppIdsForPkpOptions,
-): Promise<BigNumber[]> {
+): Promise<number[]> {
   const {
     contract,
     args: { pkpEthAddress, offset },
@@ -85,9 +85,9 @@ export async function getAllPermittedAppIdsForPkp(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const appIds: BigNumber[] = await contract.getAllPermittedAppIdsForPkp(pkpTokenId, offset);
+    const appIds: number[] = await contract.getAllPermittedAppIdsForPkp(pkpTokenId, offset);
 
-    return appIds;
+    return appIds.map((id: number) => id);
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Permitted App IDs For PKP: ${decodedError}`);
