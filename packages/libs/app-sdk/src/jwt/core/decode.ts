@@ -3,7 +3,6 @@ import type {
   VincentJWTAppUser,
   VincentJWTDelegatee,
   AnyVincentJWT,
-  DecodedJWT,
 } from '../types';
 
 import { JWT_ERROR } from '../constants';
@@ -21,10 +20,10 @@ export function decodeVincentJWT(jwt: string): AnyVincentJWT {
 
   switch (role) {
     case 'platform-user':
-      assertIsPKPSignedVincentJWT(decoded as DecodedJWT);
+      assertIsPKPSignedVincentJWT(decoded);
       return decoded as VincentJWTPlatformUser;
     case 'app-user':
-      assertIsPKPSignedVincentJWT(decoded as DecodedJWT);
+      assertIsPKPSignedVincentJWT(decoded);
       return decoded as VincentJWTAppUser;
     case 'app-delegatee':
       return decoded as VincentJWTDelegatee;
