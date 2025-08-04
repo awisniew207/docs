@@ -48,19 +48,15 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
   } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
 
   // Use lazy queries with their built-in states
-  const [
-    triggerListAppVersionAbilities,
-    { isFetching: abilitiesLoading, isError: abilitiesError },
-  ] = vincentApiClient.useLazyListAppVersionAbilitiesQuery();
-  const [
-    triggerGetAbilityVersion,
-    { isFetching: abilityVersionsLoading, isError: abilityVersionsError },
-  ] = vincentApiClient.useLazyGetAbilityVersionQuery();
-  const [triggerGetPolicyVersion, { isFetching: policiesLoading, isError: policiesError }] =
+  const [triggerListAppVersionAbilities, { isError: abilitiesError }] =
+    vincentApiClient.useLazyListAppVersionAbilitiesQuery();
+  const [triggerGetAbilityVersion, { isError: abilityVersionsError }] =
+    vincentApiClient.useLazyGetAbilityVersionQuery();
+  const [triggerGetPolicyVersion, { isError: policiesError }] =
     vincentApiClient.useLazyGetPolicyVersionQuery();
-  const [triggerGetAbility, { isFetching: abilitiesInfoLoading, isError: abilitiesInfoError }] =
+  const [triggerGetAbility, { isError: abilitiesInfoError }] =
     vincentApiClient.useLazyGetAbilityQuery();
-  const [triggerGetPolicy, { isFetching: policiesInfoLoading, isError: policiesInfoError }] =
+  const [triggerGetPolicy, { isError: policiesInfoError }] =
     vincentApiClient.useLazyGetPolicyQuery();
 
   const [versionAbilitiesData, setVersionAbilitiesData] = useState<
@@ -189,7 +185,7 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
     };
 
     fetchAllData();
-  }, [appVersions, appId, app]);
+  }, [appVersions?.length, appId, app?.appId]);
 
   // Construct ConnectInfoMap from available data
   const connectInfoMap = useMemo((): ConnectInfoMap => {
@@ -261,18 +257,8 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
     policiesData,
   ]);
 
-  const isLoadingValue =
-    appLoading ||
-    appVersionsLoading ||
-    abilitiesLoading ||
-    abilityVersionsLoading ||
-    policiesLoading ||
-    abilitiesInfoLoading ||
-    policiesInfoLoading ||
-    !isDataFetchingComplete;
-
   return {
-    isLoading: isLoadingValue,
+    isLoading: !isDataFetchingComplete,
     isError:
       appError ||
       appVersionsError ||
