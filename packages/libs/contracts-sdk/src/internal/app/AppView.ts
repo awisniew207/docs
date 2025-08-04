@@ -25,8 +25,8 @@ export async function getAppById(params: GetAppByIdOptions): Promise<App | null>
     const { delegatees, ...app } = chainApp;
     return {
       ...app,
-      id: app.id,
-      latestVersion: app.latestVersion,
+      id: app.id.toNumber(),
+      latestVersion: app.latestVersion.toNumber(),
       delegateeAddresses: delegatees,
     };
   } catch (error: unknown) {
@@ -43,7 +43,7 @@ export async function getAppById(params: GetAppByIdOptions): Promise<App | null>
 
 export async function getAppIdByDelegatee(
   params: GetAppByDelegateeOptions,
-): Promise<BigNumber | null> {
+): Promise<number | null> {
   const {
     args: { delegateeAddress },
     contract,
@@ -51,7 +51,7 @@ export async function getAppIdByDelegatee(
 
   try {
     const app = await contract.getAppByDelegatee(delegateeAddress);
-    return app.id;
+    return app.id.toNumber();
   } catch (error: unknown) {
     const decodedError = error instanceof Error ? error.message : String(error);
 
@@ -75,7 +75,7 @@ export async function getAppVersion(
     const appVersion: AppVersionChain = await contract.getAppVersion(appId, version);
 
     const convertedAppVersion: AppVersion = {
-      version: appVersion.version,
+      version: appVersion.version.toNumber(),
       enabled: appVersion.enabled,
       abilities: appVersion.abilities.map((ability) => ({
         abilityIpfsCid: ability.abilityIpfsCid,
@@ -103,7 +103,7 @@ export async function getAppVersion(
 
 export async function getAppsByManagerAddress(
   params: GetAppsByManagerOptions,
-): Promise<{ id: BigNumber; versionCount: BigNumber }[]> {
+): Promise<{ id: number; versionCount: number }[]> {
   const {
     args: { managerAddress, offset },
     contract,
@@ -113,7 +113,7 @@ export async function getAppsByManagerAddress(
     const [appIds, appVersionCounts] = await contract.getAppsByManager(managerAddress, offset);
 
     return appIds.map((id: BigNumber, idx: number) => ({
-      id: id,
+      id: id.toNumber(),
       versionCount: appVersionCounts[idx],
     }));
   } catch (error: unknown) {
@@ -143,8 +143,8 @@ export async function getAppByDelegateeAddress(
     return {
       ...app,
       delegateeAddresses: delegatees,
-      id: app.id,
-      latestVersion: app.latestVersion,
+      id: app.id.toNumber(),
+      latestVersion: app.latestVersion.toNumber(),
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);

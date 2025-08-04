@@ -1,4 +1,4 @@
-import type { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers';
 
 export interface PolicyWithParameters {
   policyIpfsCid: string;

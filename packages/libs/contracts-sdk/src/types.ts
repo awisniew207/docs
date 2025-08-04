@@ -1,4 +1,4 @@
-import type { BigNumber, Overrides } from 'ethers';
+import type { Overrides } from 'ethers';
 
 import type {
   addDelegatee as _addDelegatee,
@@ -43,10 +43,10 @@ export interface AppVersionAbilities {
  * @category Interfaces
  * */
 export interface App {
-  id: BigNumber;
+  id: number;
   isDeleted: boolean;
   manager: string;
-  latestVersion: BigNumber;
+  latestVersion: number;
   delegateeAddresses: string[];
 }
 
@@ -64,7 +64,7 @@ export interface Ability {
  * @category Interfaces
  * */
 export interface AppVersion {
-  version: BigNumber;
+  version: number;
   enabled: boolean;
   abilities: Ability[];
 }
@@ -72,7 +72,7 @@ export interface AppVersion {
 /** @category Interfaces
  * */
 export interface RegisterAppParams {
-  appId: BigNumber;
+  appId: number;
   delegateeAddresses: string[];
   versionAbilities: AppVersionAbilities;
 }
@@ -81,7 +81,7 @@ export interface RegisterAppParams {
  * @category Interfaces
  * */
 export interface RegisterNextVersionParams {
-  appId: BigNumber;
+  appId: number;
   versionAbilities: AppVersionAbilities;
 }
 
@@ -89,8 +89,8 @@ export interface RegisterNextVersionParams {
  * @category Interfaces
  * */
 export interface EnableAppVersionParams {
-  appId: BigNumber;
-  appVersion: BigNumber;
+  appId: number;
+  appVersion: number;
   enabled: boolean;
 }
 
@@ -98,7 +98,7 @@ export interface EnableAppVersionParams {
  * @category Interfaces
  * */
 export interface AddDelegateeParams {
-  appId: BigNumber;
+  appId: number;
   delegateeAddress: string;
 }
 
@@ -106,7 +106,7 @@ export interface AddDelegateeParams {
  * @category Interfaces
  * */
 export interface RemoveDelegateeParams {
-  appId: BigNumber;
+  appId: number;
   delegateeAddress: string;
 }
 
@@ -114,7 +114,7 @@ export interface RemoveDelegateeParams {
  * @category Interfaces
  * */
 export interface SetDelegateeParams {
-  appId: BigNumber;
+  appId: number;
   delegateeAddresses: string[];
 }
 
@@ -122,21 +122,21 @@ export interface SetDelegateeParams {
  * @category Interfaces
  * */
 export interface DeleteAppParams {
-  appId: BigNumber;
+  appId: number;
 }
 
 /**
  * @category Interfaces
  * */
 export interface UndeleteAppParams {
-  appId: BigNumber;
+  appId: number;
 }
 
 /**
  * @category Interfaces
  * */
 export interface GetAppByIdParams {
-  appId: BigNumber;
+  appId: number;
 }
 
 export interface GetAppIdByDelegateeParams {
@@ -147,8 +147,8 @@ export interface GetAppIdByDelegateeParams {
  * @category Interfaces
  * */
 export interface GetAppVersionParams {
-  appId: BigNumber;
-  version: BigNumber;
+  appId: number;
+  version: number;
 }
 
 /**
@@ -170,8 +170,8 @@ export interface GetAppByDelegateeParams {
  * @category Interfaces
  * */
 export interface GetDelegatedPkpEthAddressesParams {
-  appId: BigNumber;
-  version: BigNumber;
+  appId: number;
+  version: number;
   offset: number;
 }
 
@@ -205,8 +205,8 @@ export interface PermissionData {
  * */
 export interface ValidateAbilityExecutionAndGetPoliciesResult {
   isPermitted: boolean;
-  appId: BigNumber;
-  appVersion: BigNumber;
+  appId: number;
+  appVersion: number;
   decodedPolicies: AbilityPolicyParameterData;
 }
 
@@ -215,8 +215,8 @@ export interface ValidateAbilityExecutionAndGetPoliciesResult {
  * */
 export interface PermitAppParams {
   pkpEthAddress: string;
-  appId: BigNumber;
-  appVersion: BigNumber;
+  appId: number;
+  appVersion: number;
   permissionData: PermissionData;
 }
 
@@ -225,8 +225,8 @@ export interface PermitAppParams {
  * */
 export interface UnPermitAppParams {
   pkpEthAddress: string;
-  appId: BigNumber;
-  appVersion: BigNumber;
+  appId: number;
+  appVersion: number;
 }
 
 /**
@@ -234,8 +234,8 @@ export interface UnPermitAppParams {
  * */
 export interface SetAbilityPolicyParametersParams {
   pkpEthAddress: string;
-  appId: BigNumber;
-  appVersion: BigNumber;
+  appId: number;
+  appVersion: number;
   policyParams: PermissionData;
 }
 
@@ -252,7 +252,7 @@ export interface GetAllRegisteredAgentPkpsParams {
  * */
 export interface GetPermittedAppVersionForPkpParams {
   pkpEthAddress: string;
-  appId: BigNumber;
+  appId: number;
 }
 
 /**
@@ -268,7 +268,7 @@ export interface GetAllPermittedAppIdsForPkpParams {
  * */
 export interface GetAllAbilitiesAndPoliciesForAppParams {
   pkpEthAddress: string;
-  appId: BigNumber;
+  appId: number;
 }
 
 /**

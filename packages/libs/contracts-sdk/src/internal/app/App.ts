@@ -45,7 +45,7 @@ export async function registerApp(params: RegisterAppOptions): Promise<{ txHash:
 
 export async function registerNextVersion(
   params: RegisterNextVersionOptions,
-): Promise<{ txHash: string; newAppVersion: BigNumber }> {
+): Promise<{ txHash: string; newAppVersion: number }> {
   const {
     contract,
     args: { appId, versionAbilities },
@@ -80,7 +80,7 @@ export async function registerNextVersion(
 
     return {
       txHash: tx.hash,
-      newAppVersion,
+      newAppVersion: newAppVersion.toNumber(),
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
