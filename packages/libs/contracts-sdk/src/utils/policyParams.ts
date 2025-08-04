@@ -1,5 +1,4 @@
 import { arrayify } from 'ethers/lib/utils';
-
 import type {
   PermissionDataOnChain,
   PolicyWithParameters,
@@ -72,13 +71,18 @@ export async function decodePolicyParametersFromChain(
 
   const encodedParams = policy.policyParameterValues;
 
-  if (encodedParams && encodedParams.length > 0) {
-    // arrayify() has no Buffer dep, validates well-formed, and handles leading `0x`
-    const byteArray = arrayify(encodedParams);
-    return decode(byteArray);
+  // Handle empty or invalid parameters - return undefined to omit this policy
+  if (!encodedParams || encodedParams === '0x') {
+    return undefined;
   }
 
-  return undefined;
+  try {
+    const byteArray = arrayify(encodedParams);
+    return decode(byteArray) as { [paramName: string]: any };
+  } catch (error: unknown) {
+    console.error('Error decoding policy parameters:', error);
+    throw error;
+  }
 }
 
 /**
@@ -98,7 +102,12 @@ export async function decodePermissionDataFromChain(
 
     for (const policy of ability.policies) {
       const { policyIpfsCid } = policy;
-      permissionData[abilityIpfsCid][policyIpfsCid] = await decodePolicyParametersFromChain(policy);
+      const decodedParams = await decodePolicyParametersFromChain(policy);
+
+      // Only include policies that have valid parameters i.e. Policies set by the user
+      if (decodedParams !== undefined) {
+        permissionData[abilityIpfsCid][policyIpfsCid] = decodedParams;
+      }
     }
   }
 
