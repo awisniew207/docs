@@ -28,7 +28,7 @@ const ContractWhitelistPolicy = createVincentAbilityPolicy({
 });
 
 export const vincentAbility = createVincentAbility({
-  packageName: '@lit-protocol/vincent-ability-transaction-signer' as const,
+  packageName: '@lit-protocol/vincent-ability-evm-transaction-signer' as const,
   abilityDescription: 'Sign a transaction using a Vincent Agent Wallet.' as const,
   abilityParamsSchema,
   supportedPolicies: supportedPoliciesForAbility([ContractWhitelistPolicy]),

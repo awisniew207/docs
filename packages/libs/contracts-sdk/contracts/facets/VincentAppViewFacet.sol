@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
 
@@ -18,6 +19,8 @@ contract VincentAppViewFacet is VincentBase {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    uint256 public constant APP_PAGE_SIZE = 50;
+
     /**
      * @notice Thrown when trying to access a delegatee that is not registered with any app
      * @param delegatee The address of the delegatee that is not registered
@@ -36,24 +39,15 @@ contract VincentAppViewFacet is VincentBase {
     error NoAppsFoundForManager(address manager);
 
     /**
-     * @notice Thrown when the offset and limit are invalid
+     * @notice Thrown when no delegated agent PKPs are found for the specified app and version
+     * @param appId The ID of the app
+     * @param version The version number
      */
-    error InvalidOffsetOrLimit();
+    error NoDelegatedAgentPkpsFound(uint40 appId, uint24 version);
 
     // ==================================================================================
     // Data Structures
     // ==================================================================================
-
-    /**
-     * @notice Represents an app with all of its versions
-     * @dev Contains the basic app information and an array of all its versions
-     * @param app The basic app information
-     * @param versions Array of all versions of the app
-     */
-    struct AppWithVersions {
-        App app;
-        AppVersion[] versions;
-    }
 
     /**
      * @notice Represents basic app information including metadata and relationships
@@ -65,10 +59,10 @@ contract VincentAppViewFacet is VincentBase {
      * @param delegatees Array of addresses that are delegated to act on behalf of this app
      */
     struct App {
-        uint256 id;
+        uint40 id;
         bool isDeleted;
         address manager;
-        uint256 latestVersion;
+        uint24 latestVersion;
         address[] delegatees;
     }
 
@@ -81,14 +75,14 @@ contract VincentAppViewFacet is VincentBase {
      * @param abilities Array of abilities with their associated policies for this version
      */
     struct AppVersion {
-        uint256 version;
+        uint24 version;
         bool enabled;
         uint256[] delegatedAgentPkpTokenIds;
         Ability[] abilities;
     }
 
     /**
-     * @notice Represents an ability with its associated policies
+     * @notice Represents a ability with its associated policies
      * @dev Used for returning ability data in view functions
      * @param abilityIpfsCid IPFS CID of the ability's Lit Action
      * @param policies Array of policies associated with this ability
@@ -109,7 +103,7 @@ contract VincentAppViewFacet is VincentBase {
      * @param appId ID of the app to retrieve
      * @return app Detailed view of the app containing its metadata and relationships
      */
-    function getAppById(uint256 appId) public view onlyRegisteredApp(appId) returns (App memory app) {
+    function getAppById(uint40 appId) public view onlyRegisteredApp(appId) returns (App memory app) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
@@ -117,95 +111,104 @@ contract VincentAppViewFacet is VincentBase {
         app.isDeleted = storedApp.isDeleted;
         app.manager = storedApp.manager;
         // App versions are 1-indexed, so the array length corresponds directly to the latest version number
-        app.latestVersion = storedApp.appVersions.length;
+        app.latestVersion = uint24(storedApp.appVersions.length);
         app.delegatees = storedApp.delegatees.values();
     }
 
     /**
-     * @notice Retrieves the delegatedAgentPkpTokenIds with an offset and limit
+     * @notice Retrieves the delegatedAgentPkpTokenIds with an offset and a max page size of PAGE_SIZE
      * @param appId ID of the app to retrieve
      * @param version Version number of the app to retrieve (1-indexed)
      * @param offset The offset of the first token ID to retrieve
-     * @param limit The maximum number of token IDs to retrieve
      * @return delegatedAgentPkpTokenIds Array of delegated agent PKP token IDs
      */
-    function getDelegatedAgentPkpTokenIds(uint256 appId, uint256 version, uint256 offset, uint256 limit) external view onlyRegisteredAppVersion(appId, version) returns (uint256[] memory delegatedAgentPkpTokenIds) {
+    function getDelegatedAgentPkpTokenIds(uint40 appId, uint24 version, uint256 offset) 
+        external view onlyRegisteredAppVersion(appId, version) 
+        returns (uint256[] memory delegatedAgentPkpTokenIds) 
+    {
         VincentAppStorage.AppVersion storage versionedApp =
             VincentAppStorage.appStorage().appIdToApp[appId].appVersions[getAppVersionIndex(version)];
 
-        if (limit == 0 || offset + limit > versionedApp.delegatedAgentPkps.length()) {
-            revert InvalidOffsetOrLimit();
+        uint256 length = versionedApp.delegatedAgentPkps.length();
+
+        if (length == 0) {
+            revert NoDelegatedAgentPkpsFound(appId, version);
         }
 
-        delegatedAgentPkpTokenIds = new uint256[](limit);
-        for (uint256 i = 0; i < limit; i++) {
-            delegatedAgentPkpTokenIds[i] = versionedApp.delegatedAgentPkps.at(offset + i);
+        if (offset >= length) {
+            revert InvalidOffset(offset, length);
+        }
+
+        uint256 end = offset + APP_PAGE_SIZE;
+        if (end > length) {
+            end = length;
+        }
+
+        delegatedAgentPkpTokenIds = new uint256[](end - offset);
+        for (uint256 i = offset; i < end; i++) {
+            delegatedAgentPkpTokenIds[i - offset] = versionedApp.delegatedAgentPkps.at(i);
         }
     }
 
     /**
      * @notice Retrieves detailed information about a specific version of an app
-     * @dev Fetches basic app data and version-specific information from storage
+     * @dev Fetches version-specific information from storage (excluding delegatedAgentPkpTokenIds)
      * @param appId ID of the app to retrieve
      * @param version Version number of the app to retrieve (1-indexed)
-     * @return app Basic app information
-     * @return appVersion Version-specific information including abilities and policies
+     * @return appVersion Version-specific information including abilities and policies (excluding delegatedAgentPkpTokenIds)
      */
-    function getAppVersion(uint256 appId, uint256 version)
+    function getAppVersion(uint40 appId, uint24 version)
         public
         view
         onlyRegisteredAppVersion(appId, version)
-        returns (App memory app, AppVersion memory appVersion)
+        returns (AppVersion memory appVersion)
     {
         // Step 1: Access storage and get app data
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage storedApp = as_.appIdToApp[appId];
 
-        // Step 2: Retrieve basic app information
-        app = getAppById(appId);
-
-        // Step 3: Retrieve the specific version data
+        // Step 2: Retrieve the specific version data
         VincentAppStorage.AppVersion storage storedVersionedApp =
             storedApp.appVersions[getAppVersionIndex(version)];
 
-        // Step 4: Set basic version information
+        // Step 3: Set basic version information (excluding delegatedAgentPkpTokenIds)
         appVersion.version = version;
         appVersion.enabled = storedVersionedApp.enabled;
-        appVersion.delegatedAgentPkpTokenIds = storedVersionedApp.delegatedAgentPkps.values();
+        // appVersion.delegatedAgentPkpTokenIds is intentionally omitted
 
-        // Step 5: Prepare to access ability data
+        // Step 4: Prepare to access ability data
         VincentLitActionStorage.LitActionStorage storage ls = VincentLitActionStorage.litActionStorage();
 
-        // Step 6: Get the number of abilities for this version
+        // Step 5: Get the number of abilities for this version
         uint256 abilityIpfsCidHashesLength = storedVersionedApp.abilityIpfsCidHashes.length();
 
-        // Step 7: Initialize the abilities array with the appropriate size
+        // Step 6: Initialize the abilities array with the appropriate size
         appVersion.abilities = new Ability[](abilityIpfsCidHashesLength);
 
-        // Step 8: Iterate through each ability for this version
+        // Step 7: Iterate through each ability for this version
         for (uint256 i = 0; i < abilityIpfsCidHashesLength; i++) {
-            // Step 8.1: Get the ability hash and resolve to the actual IPFS CID
+            // Step 7.1: Get the ability hash and resolve to the actual IPFS CID
             bytes32 abilityIpfsCidHash = storedVersionedApp.abilityIpfsCidHashes.at(i);
             string memory abilityIpfsCid = ls.ipfsCidHashToIpfsCid[abilityIpfsCidHash];
 
-            // Step 8.2: Set the ability IPFS CID in the return structure
+            // Step 7.2: Set the ability IPFS CID in the return structure
             appVersion.abilities[i].abilityIpfsCid = abilityIpfsCid;
 
-            // Step 9: Get the policies for this specific ability
+            // Step 8: Get the policies for this specific ability
             EnumerableSet.Bytes32Set storage abilityPolicyIpfsCidHashes =
                 storedVersionedApp.abilityIpfsCidHashToAbilityPolicyIpfsCidHashes[abilityIpfsCidHash];
             uint256 policyCount = abilityPolicyIpfsCidHashes.length();
 
-            // Step 9.1: Initialize the policies array for this ability
+            // Step 8.1: Initialize the policies array for this ability
             appVersion.abilities[i].policyIpfsCids = new string[](policyCount);
 
-            // Step 10: Iterate through each policy for this ability
+            // Step 9: Iterate through each policy for this ability
             for (uint256 j = 0; j < policyCount; j++) {
-                // Step 10.1: Get the policy hash and resolve to the actual IPFS CID
+                // Step 9.1: Get the policy hash and resolve to the actual IPFS CID
                 bytes32 policyIpfsCidHash = abilityPolicyIpfsCidHashes.at(j);
                 string memory policyIpfsCid = ls.ipfsCidHashToIpfsCid[policyIpfsCidHash];
 
-                // Step 10.2: Set the policy IPFS CID in the return structure
+                // Step 9.2: Set the policy IPFS CID in the return structure
                 appVersion.abilities[i].policyIpfsCids[j] = policyIpfsCid;
             }
         }
@@ -216,49 +219,44 @@ contract VincentAppViewFacet is VincentBase {
     // ==================================================================================
 
     /**
-     * @notice Retrieves all apps managed by a specific address with all their versions
-     * @dev Finds all apps associated with the manager address and loads their complete data including versions
+     * @notice Retrieves app IDs managed by a specific address with their version numbers, with pagination support
+     * @dev Finds apps associated with the manager address and loads only their IDs and version numbers
      * @param manager Address of the manager to query
-     * @return appsWithVersions Array of apps with all their versions managed by the specified address
+     * @param offset The offset of the first app to retrieve
+     * @return appIds Array of app IDs managed by the specified address
+     * @return appVersionCounts Array of version counts for each app ID
      */
-    function getAppsByManager(address manager) external view returns (AppWithVersions[] memory appsWithVersions) {
-        // Check for zero address
+    function getAppsByManager(address manager, uint256 offset) external view returns (uint40[] memory appIds, uint24[] memory appVersionCounts) {
         if (manager == address(0)) {
             revert ZeroAddressNotAllowed();
         }
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        uint256[] memory appIds = as_.managerAddressToAppIds[manager].values();
-        uint256 appCount = appIds.length;
+        EnumerableSet.UintSet storage appIdSet = as_.managerAddressToAppIds[manager];
+        uint256 length = appIdSet.length();
 
-        // Check if the manager has any apps
-        if (appCount == 0) {
+        if (length == 0) {
             revert NoAppsFoundForManager(manager);
         }
 
-        appsWithVersions = new AppWithVersions[](appCount);
+        if (offset >= length) {
+            revert InvalidOffset(offset, length);
+        }
 
-        for (uint256 i = 0; i < appCount; i++) {
-            // Get the app view
-            App memory app = getAppById(appIds[i]);
-            appsWithVersions[i].app = app;
+        uint256 end = offset + APP_PAGE_SIZE;
+        if (end > length) {
+            end = length;
+        }
 
-            // Get all versions for this app
-            uint256 versionCount = app.latestVersion;
+        uint256 resultCount = end - offset;
+        appIds = new uint40[](resultCount);
+        appVersionCounts = new uint24[](resultCount);
 
-            // Only create version arrays for apps that have versions
-            if (versionCount > 0) {
-                appsWithVersions[i].versions = new AppVersion[](versionCount);
-
-                for (uint256 j = 0; j < versionCount; j++) {
-                    // Versions are 1-indexed in the contract
-                    uint256 versionNumber = j + 1;
-                    (, appsWithVersions[i].versions[j]) = getAppVersion(appIds[i], versionNumber);
-                }
-            } else {
-                // For apps with no versions, initialize an empty array
-                appsWithVersions[i].versions = new AppVersion[](0);
-            }
+        for (uint256 i = offset; i < end; i++) {
+            uint256 resultIndex = i - offset;
+            uint40 appId = uint40(appIdSet.at(i));
+            appIds[resultIndex] = appId;
+            appVersionCounts[resultIndex] = uint24(as_.appIdToApp[appId].appVersions.length);
         }
     }
 
@@ -279,7 +277,7 @@ contract VincentAppViewFacet is VincentBase {
         }
 
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
-        uint256 appId = as_.delegateeAddressToAppId[delegatee];
+        uint40 appId = as_.delegateeAddressToAppId[delegatee];
 
         // If appId is 0, delegatee is not associated with any app, revert
         if (appId == 0) {

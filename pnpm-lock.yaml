@@ -168,12 +168,12 @@ importers:
       '@lit-protocol/vincent-ability-erc20-approval':
         specifier: workspace:*
         version: link:../ability-erc20-approval
+      '@lit-protocol/vincent-ability-evm-transaction-signer':
+        specifier: workspace:*
+        version: link:../ability-evm-transaction-signer
       '@lit-protocol/vincent-ability-sdk':
         specifier: workspace:*
         version: link:../../libs/ability-sdk
-      '@lit-protocol/vincent-ability-transaction-signer':
-        specifier: workspace:*
-        version: link:../ability-transaction-signer
       '@lit-protocol/vincent-ability-uniswap-swap':
         specifier: workspace:*
         version: link:../ability-uniswap-swap
@@ -255,7 +255,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
 
-  packages/apps/ability-transaction-signer:
+  packages/apps/ability-evm-transaction-signer:
     dependencies:
       '@lit-protocol/vincent-ability-sdk':
         specifier: workspace:*
@@ -900,7 +900,7 @@ importers:
   packages/libs/contracts-sdk:
     dependencies:
       '@ethersproject/abi':
-        specifier: 5.8.0
+        specifier: ^5.8.0
         version: 5.8.0
       cbor2:
         specifier: ^2.0.1
@@ -4625,6 +4625,7 @@ packages:
 
   '@walletconnect/modal@2.7.0':
     resolution: {integrity: sha512-RQVt58oJ+rwqnPcIvRFeMGKuXb9qkgSmwz4noF8JZGUym3gUAzVs+uW2NQ1Owm9XOJAV+sANrtJ+VoVq1ftElw==}
+    deprecated: Please follow the migration guide on https://docs.reown.com/appkit/upgrade/wcm
 
   '@walletconnect/relay-api@1.0.11':
     resolution: {integrity: sha512-tLPErkze/HmC9aCmdZOhtVmYZq1wKfWTJtygQHoWtgg722Jd4homo54Cs4ak2RUFUZIGO2RsOpIcWipaua5D5Q==}

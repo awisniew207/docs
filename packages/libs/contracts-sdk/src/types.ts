@@ -7,11 +7,13 @@ import type {
   registerApp as _registerApp,
   registerNextVersion as _registerNextVersion,
   removeDelegatee as _removeDelegatee,
+  setDelegatee as _setDelegatee,
   undeleteApp as _undeleteApp,
 } from './internal/app/App';
 import type {
   getAppByDelegateeAddress as _getAppByDelegateeAddress,
   getAppById as _getAppById,
+  getAppIdByDelegatee as _getAppIdByDelegatee,
   getAppsByManagerAddress as _getAppsByManagerAddress,
   getAppVersion as _getAppVersion,
   getDelegatedPkpEthAddresses as _getDelegatedPkpEthAddresses,
@@ -67,16 +69,6 @@ export interface AppVersion {
   abilities: Ability[];
 }
 
-/**
- * @category Interfaces
- * @inline
- * @expand
- * */
-export interface AppWithVersions {
-  app: App;
-  versions: AppVersion[];
-}
-
 /** @category Interfaces
  * */
 export interface RegisterAppParams {
@@ -121,6 +113,14 @@ export interface RemoveDelegateeParams {
 /**
  * @category Interfaces
  * */
+export interface SetDelegateeParams {
+  appId: number;
+  delegateeAddresses: string[];
+}
+
+/**
+ * @category Interfaces
+ * */
 export interface DeleteAppParams {
   appId: number;
 }
@@ -139,6 +139,10 @@ export interface GetAppByIdParams {
   appId: number;
 }
 
+export interface GetAppIdByDelegateeParams {
+  delegateeAddress: string;
+}
+
 /**
  * @category Interfaces
  * */
@@ -152,6 +156,7 @@ export interface GetAppVersionParams {
  * */
 export interface GetAppsByManagerParams {
   managerAddress: string;
+  offset: string;
 }
 
 /**
@@ -167,10 +172,7 @@ export interface GetAppByDelegateeParams {
 export interface GetDelegatedPkpEthAddressesParams {
   appId: number;
   version: number;
-  pageOpts?: {
-    offset?: number;
-    limit?: number;
-  };
+  offset: number;
 }
 
 /**
@@ -182,6 +184,7 @@ export interface AbilityPolicyParameterData {
   [policyIpfsCid: string]:
     | {
         // TODO: Add stronger type that narrows to only explicitly CBOR2 serializable values?
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [paramName: string]: any;
       }
     | undefined;
@@ -241,6 +244,7 @@ export interface SetAbilityPolicyParametersParams {
  * */
 export interface GetAllRegisteredAgentPkpsParams {
   userPkpAddress: string;
+  offset: string;
 }
 
 /**
@@ -256,6 +260,7 @@ export interface GetPermittedAppVersionForPkpParams {
  * */
 export interface GetAllPermittedAppIdsForPkpParams {
   pkpEthAddress: string;
+  offset: string;
 }
 
 /**
@@ -316,6 +321,12 @@ export interface ContractClient {
     overrides?: Overrides,
   ): ReturnType<typeof _removeDelegatee>;
 
+  /** Set delegatees for an app (replaces all existing delegatees)
+   *
+   * @returns { txHash } The hash of the transaction that set the delegatees
+   */
+  setDelegatee(params: SetDelegateeParams, overrides?: Overrides): ReturnType<typeof _setDelegatee>;
+
   /** Delete an application by setting its isDeleted flag to true
    *
    *
@@ -334,6 +345,12 @@ export interface ContractClient {
    * @returns Detailed view of the app containing its metadata and relationships, or null if the app is not registered
    */
   getAppById(params: GetAppByIdParams): ReturnType<typeof _getAppById>;
+
+  /** Get the app ID for a specific delegatee address
+   *
+   * @returns The app ID for the specified delegatee address
+   */
+  getAppIdByDelegatee(params: GetAppIdByDelegateeParams): ReturnType<typeof _getAppIdByDelegatee>;
 
   /** Get detailed information about a specific version of an app
    *
@@ -361,9 +378,8 @@ export interface ContractClient {
    *
    * Returns the first 100 PKP eth addresses.
    *
-   * Provide `pageOpts.offset` to fetch more than the initial 100
+   * Provide `offset` to fetch paginated results.
    *
-   * Provide `pageOpts.limit` to fetch more or less than 100-at-a-time
    * @returns Array of delegated agent PKP token IDs
    */
   getDelegatedPkpEthAddresses(
