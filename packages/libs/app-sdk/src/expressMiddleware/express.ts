@@ -131,7 +131,7 @@ function getAuthenticateUserExpressHandler<const UserKey extends string>({
 
     try {
       const decodedJWT =
-        requiredAppId !== undefined
+        requiredAppId != null
           ? await verifyVincentAppUserJWT({
               jwt: rawJWT,
               expectedAudience: allowedAudience,
