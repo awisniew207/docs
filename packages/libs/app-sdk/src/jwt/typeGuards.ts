@@ -58,7 +58,7 @@ export function assertIsPKPSignedVincentJWT(
   }
 
   if (!isDefinedObject(pkpInfo)) {
-    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "pkp" field in JWT payload.`);
+    throw new Error(`${JWT_ERROR.INVALID_JWT}: Missing "pkpInfo" field in JWT payload.`);
   }
 }
 
