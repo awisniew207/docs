@@ -101,9 +101,6 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
                           <span className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-400">
                             DELETED
                           </span>
-                          <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">
-                            v{app.activeVersion}
-                          </span>
                         </div>
                       </div>
                     </CardTitle>

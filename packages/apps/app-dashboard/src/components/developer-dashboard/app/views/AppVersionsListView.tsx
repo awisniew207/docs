@@ -102,16 +102,6 @@ export function AppVersionsListView({
                         )}
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                        <div className="flex items-center gap-2 text-gray-400">
-                          {version.enabled ? (
-                            <Power className="h-4 w-4" />
-                          ) : (
-                            <PowerOff className="h-4 w-4" />
-                          )}
-                          <span className="text-sm">
-                            {version.enabled ? 'Enabled' : 'Disabled'}
-                          </span>
-                        </div>
                         <div className="relative z-10 bg-white rounded-lg opacity-100">
                           <UndeleteAppVersionButton appVersion={version} />
                         </div>

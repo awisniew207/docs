@@ -6,6 +6,7 @@ import { Logo } from '@/components/shared/ui/Logo';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { AppPublishedButtons } from '../wrappers/ui/AppPublishedButtons';
 import { AppUnpublishedButtons } from '../wrappers/ui/AppUnpublishedButtons';
+import { UndeleteAppButton } from '../wrappers/ui/UndeleteAppButton';
 import { CheckCircle, XCircle, Share } from 'lucide-react';
 import { ConnectPageModal } from '../../ui/ConnectPageModal';
 
@@ -105,6 +106,8 @@ export function AppDetailsView({
                 onOpenMutation={onOpenMutation}
                 refetchBlockchainData={refetchBlockchainData}
               />
+            ) : isAppDeletedRegistry ? (
+              <UndeleteAppButton app={selectedApp} />
             ) : (
               <AppUnpublishedButtons onOpenMutation={onOpenMutation} />
             )}

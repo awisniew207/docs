@@ -135,7 +135,8 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     if (route === '/developer/dashboard') {
       return location.pathname === '/developer/dashboard';
     }
-    return location.pathname.startsWith(route);
+    // Exact match or starts with route followed by a slash or end of string
+    return location.pathname === route || location.pathname.startsWith(route + '/');
   };
 
   const handleSignOut = async () => {
