@@ -1,5 +1,5 @@
 import { config } from '@dotenvx/dotenvx';
-import { BigNumber, ethers, providers } from 'ethers';
+import { ethers, providers } from 'ethers';
 
 import {
   LitActionResource,
@@ -60,7 +60,7 @@ describe('VincentContracts', () => {
     const appManagerSigner = new ethers.Wallet(process.env.TEST_APP_MANAGER_PRIVATE_KEY!, provider);
     const appClient = getTestClient({ signer: appManagerSigner });
 
-    const appId = BigNumber.from(ethers.utils.randomBytes(32));
+    const appId = Math.floor(Math.random() * (10_000_000_000 - 1000)) + 1000; // Copied from Registry upto 10B
     const delegatees = [ethers.Wallet.createRandom().address];
 
     // Register initial app version
@@ -92,13 +92,13 @@ describe('VincentContracts', () => {
     expect(appByIdResult.id).toEqual(appId);
     expect(appByIdResult.isDeleted).toEqual(false);
     expect(appByIdResult.manager).toEqual(appManagerSigner.address);
-    expect(appByIdResult.latestVersion).toEqual(BigNumber.from(1));
+    expect(appByIdResult.latestVersion).toEqual(1);
     expect(appByIdResult.delegateeAddresses).toEqual(delegatees);
 
     // Disable the initial app version
     const disableAppVersionResult = await appClient.enableAppVersion({
       appId,
-      appVersion: BigNumber.from(1),
+      appVersion: 1,
       enabled: false,
     });
     console.log('Disable app version result:', disableAppVersionResult);
@@ -107,12 +107,12 @@ describe('VincentContracts', () => {
     // Get app version
     const appVersionResult = await appClient.getAppVersion({
       appId,
-      version: BigNumber.from(1),
+      version: 1,
     });
     console.log('App version result:', appVersionResult);
 
     expectAssertObject(appVersionResult);
-    expect(appVersionResult.appVersion.version).toEqual(BigNumber.from(1));
+    expect(appVersionResult.appVersion.version).toEqual(1);
     expect(appVersionResult.appVersion.enabled).toEqual(false);
 
     // Get all apps by manager
@@ -132,7 +132,7 @@ describe('VincentContracts', () => {
     expect(appByDelegateeResult.id).toEqual(appId);
     expect(appByDelegateeResult.isDeleted).toEqual(false);
     expect(appByDelegateeResult.manager).toEqual(appManagerSigner.address);
-    expect(appByDelegateeResult.latestVersion).toEqual(BigNumber.from(1));
+    expect(appByDelegateeResult.latestVersion).toEqual(1);
     expect(appByDelegateeResult.delegateeAddresses).toEqual(delegatees);
 
     // Get app ID by delegatee
@@ -164,7 +164,7 @@ describe('VincentContracts', () => {
     });
     console.log('Next version registration result:', nextAppVersion);
     expect(nextAppVersion).toHaveProperty('txHash');
-    expect(nextAppVersion.newAppVersion).toEqual(BigNumber.from(2));
+    expect(nextAppVersion.newAppVersion).toEqual(2);
 
     // Add a delegatee
     const addDelegateeResult = await appClient.addDelegatee({

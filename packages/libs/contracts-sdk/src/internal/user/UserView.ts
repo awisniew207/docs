@@ -63,11 +63,11 @@ export async function getPermittedAppVersionForPkp(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const appVersion: BigNumber = await contract.getPermittedAppVersionForPkp(pkpTokenId, appId);
+    const appVersion: number = await contract.getPermittedAppVersionForPkp(pkpTokenId, appId);
 
     if (!appVersion) return null;
 
-    return appVersion.toNumber();
+    return appVersion;
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get Permitted App Version For PKP: ${decodedError}`);
@@ -85,9 +85,9 @@ export async function getAllPermittedAppIdsForPkp(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const appIds: BigNumber[] = await contract.getAllPermittedAppIdsForPkp(pkpTokenId, offset);
+    const appIds: number[] = await contract.getAllPermittedAppIdsForPkp(pkpTokenId, offset);
 
-    return appIds.map((id: BigNumber) => id.toNumber());
+    return appIds.map((id: number) => id);
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Permitted App IDs For PKP: ${decodedError}`);
@@ -144,8 +144,8 @@ export async function validateAbilityExecutionAndGetPolicies(
 
     return {
       ...validationResult,
-      appId: validationResult.appId.toNumber(),
-      appVersion: validationResult.appVersion.toNumber(),
+      appId: validationResult.appId,
+      appVersion: validationResult.appVersion,
       decodedPolicies,
     };
   } catch (error: unknown) {

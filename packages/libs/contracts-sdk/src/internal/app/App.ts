@@ -1,5 +1,3 @@
-import type { BigNumber } from 'ethers';
-
 import type {
   RegisterAppOptions,
   RegisterNextVersionOptions,
@@ -71,8 +69,7 @@ export async function registerNextVersion(
       throw new Error('NewAppVersionRegistered event not found');
     }
 
-    const newAppVersion: BigNumber | undefined =
-      contract.interface.parseLog(event)?.args?.appVersion;
+    const newAppVersion: number | undefined = contract.interface.parseLog(event)?.args?.appVersion;
 
     if (!newAppVersion) {
       throw new Error('NewAppVersionRegistered event does not contain appVersion argument');
@@ -80,7 +77,7 @@ export async function registerNextVersion(
 
     return {
       txHash: tx.hash,
-      newAppVersion: newAppVersion.toNumber(),
+      newAppVersion,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
