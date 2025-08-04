@@ -1,5 +1,4 @@
 export type {
-  // TODO: Remove duplicate types from multiple files
   GetAppByDelegateeParams,
   GetAppsByManagerParams,
   GetAppVersionParams,

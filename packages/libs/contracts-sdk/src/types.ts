@@ -1,6 +1,4 @@
-import type { BigNumber } from 'ethers';
-
-import type { Overrides } from 'ethers';
+import type { BigNumber, Overrides } from 'ethers';
 
 import type {
   addDelegatee as _addDelegatee,

@@ -1,4 +1,5 @@
 import { arrayify } from 'ethers/lib/utils';
+
 import type {
   PermissionDataOnChain,
   PolicyWithParameters,
