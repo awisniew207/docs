@@ -109,6 +109,7 @@ export function registerRoutes(app: Express) {
 
             success = true;
           } catch (error: any) {
+             
             // Check if the error is due to duplicate appId
             if (error.code === 11000 && error.keyPattern && error.keyPattern.appId) {
               // This is a duplicate key error for appId, try again with a new appId
@@ -344,6 +345,7 @@ export function registerRoutes(app: Express) {
           res.status(201).json(savedAppAbility);
           return;
         } catch (error: any) {
+           
           if (error.code === 11000 && error.keyPattern) {
             res.status(409).json({
               message: `The ability ${abilityPackageName} is already associated with this app version.`,

@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/vincent-contracts-sdk",
-  "version": "1.0.0-4",
+  "version": "1.0.0",
   "description": "Lit Protocol Vincent Contracts",
   "author": "Lit Protocol",
   "license": "ISC",
@@ -16,7 +16,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.44.2",
@@ -31,8 +31,8 @@
     "ts-jest": "^29.1.0"
   },
   "dependencies": {
-    "@ethersproject/abi": "5.8.0",
     "cbor2": "^2.0.1",
-    "ethers": "^5.8.0"
+    "ethers": "^5.8.0",
+    "@ethersproject/abi": "^5.8.0"
   }
 }

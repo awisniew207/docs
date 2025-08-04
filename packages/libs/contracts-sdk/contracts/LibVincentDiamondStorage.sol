@@ -29,9 +29,9 @@ library VincentAppStorage {
     }
 
     struct AppStorage {
-        mapping(uint256 => App) appIdToApp;
+        mapping(uint40 => App) appIdToApp; // Since we're using numbers upto 10B on the Registry to create appId without requiring BitInt in JS
         mapping(address => EnumerableSet.UintSet) managerAddressToAppIds;
-        mapping(address => uint256) delegateeAddressToAppId;
+        mapping(address => uint40) delegateeAddressToAppId;
     }
 
     function appStorage() internal pure returns (AppStorage storage as_) {
@@ -70,9 +70,9 @@ library VincentUserStorage {
         // Set of App IDs that have a permitted version
         EnumerableSet.UintSet permittedApps;
         // App ID -> Permitted App Version
-        mapping(uint256 => uint256) permittedAppVersion;
+        mapping(uint40 => uint24) permittedAppVersion;
         // App ID -> App version -> Ability IPFS CID hash -> Ability Policy storage -> Ability Policy IPFS CID hash -> User's CBOR2 encoded Policy parameter values
-        mapping(uint256 => mapping(uint256 => mapping(bytes32 => mapping(bytes32 => bytes)))) abilityPolicyParameterValues;
+        mapping(uint40 => mapping(uint24 => mapping(bytes32 => mapping(bytes32 => bytes)))) abilityPolicyParameterValues;
     }
 
     struct UserStorage {

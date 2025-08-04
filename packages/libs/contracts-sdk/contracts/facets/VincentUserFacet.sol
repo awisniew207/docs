@@ -55,8 +55,8 @@ contract VincentUserFacet is VincentBase {
      */
     function permitAppVersion(
         uint256 pkpTokenId,
-        uint256 appId,
-        uint256 appVersion,
+        uint40 appId,
+        uint24 appVersion,
         string[] calldata abilityIpfsCids,
         string[][] calldata policyIpfsCids,
         bytes[][] calldata policyParameterValues
@@ -76,7 +76,7 @@ contract VincentUserFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
-        uint256 currentPermittedAppVersion = agentStorage.permittedAppVersion[appId];
+        uint24 currentPermittedAppVersion = agentStorage.permittedAppVersion[appId];
 
         if (currentPermittedAppVersion == appVersion) {
             revert LibVincentUserFacet.AppVersionAlreadyPermitted(pkpTokenId, appId, appVersion);
@@ -139,7 +139,7 @@ contract VincentUserFacet is VincentBase {
      * @param appId The ID of the app to unpermit
      * @param appVersion The version of the app to unpermit
      */
-    function unPermitAppVersion(uint256 pkpTokenId, uint256 appId, uint256 appVersion)
+    function unPermitAppVersion(uint256 pkpTokenId, uint40 appId, uint24 appVersion)
         external
         onlyPkpOwner(pkpTokenId)
         onlyRegisteredAppVersion(appId, appVersion)
@@ -180,8 +180,8 @@ contract VincentUserFacet is VincentBase {
      */
     function setAbilityPolicyParameters(
         uint256 pkpTokenId,
-        uint256 appId,
-        uint256 appVersion,
+        uint40 appId,
+        uint24 appVersion,
         string[] calldata abilityIpfsCids,
         string[][] calldata policyIpfsCids,
         bytes[][] calldata policyParameterValues
@@ -201,7 +201,7 @@ contract VincentUserFacet is VincentBase {
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
 
         VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
-        uint256 currentPermittedAppVersion = agentStorage.permittedAppVersion[appId];
+        uint24 currentPermittedAppVersion = agentStorage.permittedAppVersion[appId];
 
         if (currentPermittedAppVersion != appVersion) {
             revert LibVincentUserFacet.AppVersionNotPermitted(pkpTokenId, appId, appVersion);
@@ -226,9 +226,9 @@ contract VincentUserFacet is VincentBase {
      * @param policyParameterValues 2D array of parameter values matching each parameter name for a policy
      */
     function _setAbilityPolicyParameters(
-        uint256 appId,
+        uint40 appId,
         uint256 pkpTokenId,
-        uint256 appVersion,
+        uint24 appVersion,
         string[] calldata abilityIpfsCids,
         string[][] calldata policyIpfsCids,
         bytes[][] calldata policyParameterValues

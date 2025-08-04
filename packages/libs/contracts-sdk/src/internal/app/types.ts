@@ -10,6 +10,7 @@ import type {
   RegisterAppParams,
   RegisterNextVersionParams,
   RemoveDelegateeParams,
+  SetDelegateeParams,
   UndeleteAppParams,
 } from '../../types';
 import type { BaseOptions, BaseWritableOptions } from '../types/options';
@@ -57,6 +58,15 @@ export interface AddDelegateeOptions extends BaseWritableOptions {
  * */
 export interface RemoveDelegateeOptions extends BaseWritableOptions {
   args: RemoveDelegateeParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface SetDelegateeOptions extends BaseWritableOptions {
+  args: SetDelegateeParams;
 }
 
 /**

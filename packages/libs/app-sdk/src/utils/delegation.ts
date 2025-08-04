@@ -7,12 +7,12 @@ import type { GetDelegatorsAgentPkpsParams } from './types';
  * See documentation at {@link vincent-contracts-sdk!getDelegatedPkpEthAddresses | vincent-contracts-sdk/getDelegatedPkpEthAddresses}
  */
 export async function getDelegatorsAgentPkpAddresses(params: GetDelegatorsAgentPkpsParams) {
-  const { appId, appVersion, signer, pageOpts } = params;
+  const { appId, appVersion, signer, offset } = params;
 
   const contractClient = getClient({ signer });
   return await contractClient.getDelegatedPkpEthAddresses({
     appId,
     version: appVersion,
-    pageOpts,
+    offset,
   });
 }
