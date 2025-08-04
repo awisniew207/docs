@@ -6,7 +6,6 @@ import { providers, Wallet } from 'ethers';
 
 import { create } from '@lit-protocol/vincent-app-sdk/jwt';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
-
 import { nodeClient } from '@lit-protocol/vincent-registry-sdk';
 
 const { vincentApiClientNode, setBaseQueryFn } = nodeClient;
@@ -44,6 +43,7 @@ export type GenerateJWTFn = (wallet: Wallet) => Promise<string>;
 
 export const generateJWT: GenerateJWTFn = async (wallet: Wallet) => {
   return await create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pkpWallet: wallet as any,
     pkp: {
       publicKey: wallet.publicKey, // Use the actual public key from the wallet

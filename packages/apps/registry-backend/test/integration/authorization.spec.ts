@@ -19,6 +19,7 @@ const debug = createTestDebugger('authorization');
 
 // For backwards compatibility
 const verboseLog = (value: any) => {
+   
   debug(value);
 };
 
@@ -668,6 +669,7 @@ describe('Authorization Integration Tests', () => {
         );
         verboseLog('Deleted @lit-protocol/vincent-ability-uniswap-swap');
       } catch (error: any) {
+         
         verboseLog(
           `Error deleting @lit-protocol/vincent-ability-uniswap-swap (may not exist): ${error.message}`,
         );
@@ -681,6 +683,7 @@ describe('Authorization Integration Tests', () => {
         );
         verboseLog('Deleted @lit-protocol/vincent-ability-erc20-approval');
       } catch (error: any) {
+         
         verboseLog(
           `Error deleting @lit-protocol/vincent-ability-erc20-approval (may not exist): ${error.message}`,
         );
@@ -694,6 +697,7 @@ describe('Authorization Integration Tests', () => {
         );
         verboseLog('Deleted @lit-protocol/vincent-policy-spending-limit');
       } catch (error: any) {
+         
         verboseLog(
           `Error deleting @lit-protocol/vincent-policy-spending-limit (may not exist): ${error.message}`,
         );

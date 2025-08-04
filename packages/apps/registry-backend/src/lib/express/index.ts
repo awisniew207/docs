@@ -48,7 +48,8 @@ export function registerRoutes(app: Express) {
   registerPolicyRoutes(app);
 
   // @ts-expect-error Error handler is abstract/generic
-  app.use((err, req, res, next) => {
+  app.use((err, _req, res, _next) => {
+     
     // format error
     res.status(err.status || 500).json({
       message: err.message,

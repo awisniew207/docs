@@ -6,6 +6,7 @@ import { api, store, generateRandomEthAddresses, getDefaultWalletContractClient 
 const debug = createTestDebugger('app');
 
 // For backwards compatibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const verboseLog = (value: any) => {
   debug(value);
 };

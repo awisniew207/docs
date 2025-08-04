@@ -20,6 +20,7 @@ const ENABLE_VERBOSE_LOGGING = false;
  * Debug logging utility
  */
 function debugLog(message: string, data?: any): void {
+   
   if (ENABLE_VERBOSE_LOGGING) {
     const timestamp = new Date().toISOString();
     console.log(`[DEBUG ${timestamp}] ${message}`, data ? JSON.stringify(data, null, 2) : '');
@@ -205,7 +206,9 @@ export async function identifySupportedPolicies(dependencies: Record<string, str
 
   // Filter out dependencies with non-explicit semvers
   const explicitDependencies = Object.entries(dependencies).filter(
-    ([_, version]) =>
+    (
+      [_, version], // eslint-disable-line @typescript-eslint/no-unused-vars
+    ) =>
       !version.startsWith('^') &&
       !version.startsWith('~') &&
       !version.includes('*') &&
