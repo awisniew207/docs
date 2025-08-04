@@ -6,8 +6,8 @@ import { buildDiamondInterface } from './buildDiamondInterface';
 
 // TODO!: Pull from the ABI after re-publishing
 // FIXME: Ensure dev and prod point to different contracts
-export const VINCENT_DIAMOND_CONTRACT_ADDRESS_DEV = '0x1A8d4afCD3a7Bf9b0Fc6Fe341cE745AC619aE304';
-export const VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD = '0x1A8d4afCD3a7Bf9b0Fc6Fe341cE745AC619aE304';
+export const VINCENT_DIAMOND_CONTRACT_ADDRESS_DEV = '0xa3a602F399E9663279cdF63a290101cB6560A87e';
+export const VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD = '0xa3a602F399E9663279cdF63a290101cB6560A87e';
 
 export const COMBINED_ABI = buildDiamondInterface([
   appFacetAbi,
