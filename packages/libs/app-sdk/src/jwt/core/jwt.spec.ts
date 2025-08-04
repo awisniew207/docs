@@ -13,7 +13,6 @@ import { isExpired } from './isExpired';
 import { toBase64Url, validateJWTTime } from './utils';
 import { verifyES256KSignature } from './utils/verifyES256KSignature';
 import {
-  verifyAnyVincentJWT,
   verifyVincentAppUserJWT,
   verifyVincentPlatformJWT,
   verifyVincentDelegateeJWT,
@@ -23,7 +22,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
   const testPrivateKey = '0x1234567890123456789012345678901234567890123456789012345678901234';
   const testWallet = new ethers.Wallet(testPrivateKey);
   const publicKeyBytes = secp256k1.getPublicKey(testWallet.privateKey.slice(2), false); // uncompressed
-  const publicKeyHex = `0x${Buffer.from(publicKeyBytes).toString('hex')}`;
+  const publicKeyHex: `0x${string}` = `0x${Buffer.from(publicKeyBytes).toString('hex')}`;
 
   const testWalletAddress = `${testWallet.address}` as const;
 
@@ -36,22 +35,6 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
   const commonAudience = 'https://test-app.com';
 
   describe('platform-user JWT', () => {
-    it('creates and verifies a platform-user token', async () => {
-      const jwt = await createPlatformUserJWT({
-        pkpWallet: testWallet as any,
-        pkpInfo: testPkp,
-        authentication: { type: 'email', value: 'test@example.com' },
-        audience: commonAudience,
-        expiresInMinutes: 60,
-        payload: { custom: 'yes' },
-      });
-
-      const decoded = await verifyAnyVincentJWT({ jwt, expectedAudience: commonAudience });
-      expect(decoded.payload.role).toBe('platform-user');
-      expect(decoded.payload.iss).toBe(testWalletAddress);
-      expect(decoded.payload.pkpInfo.publicKey).toBe(testPkp.publicKey);
-    });
-
     it('verifies a platform-user token with verifyVincentPlatformJWT', async () => {
       const jwt = await createPlatformUserJWT({
         pkpWallet: testWallet as any,
@@ -111,22 +94,6 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
   });
 
   describe('app-delegatee JWT', () => {
-    it('creates and verifies a delegatee token', async () => {
-      const subjectAddress = `0xuser0000000000000000000000000000000000000000`;
-      const jwt = await createDelegateeJWT({
-        ethersWallet: testWallet,
-        subjectAddress,
-        audience: commonAudience,
-        expiresInMinutes: 60,
-      });
-
-      const verified = await verifyAnyVincentJWT({ jwt, expectedAudience: commonAudience });
-      expect(verified.payload.role).toBe('app-delegatee');
-      expect(verified.payload.sub).toBe(subjectAddress);
-      expect(verified.payload.iss).toBe(testWalletAddress);
-      expect(verified.payload.publicKey).toBe(publicKeyHex);
-    });
-
     it('verifies a delegatee token with verifyVincentDelegateeJWT', async () => {
       const subjectAddress = `0xuser0000000000000000000000000000000000000000`;
       const jwt = await createDelegateeJWT({
@@ -234,7 +201,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
     });
   });
 
-  describe('verifyAnyVincentJWT() error cases', () => {
+  describe('verification error cases', () => {
     it('throws error when expectedAudience is not provided', async () => {
       const jwt = await createPlatformUserJWT({
         pkpWallet: testWallet as any,
@@ -245,7 +212,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
       });
 
       // @ts-expect-error - Testing invalid input
-      await expect(verifyAnyVincentJWT({ jwt })).rejects.toThrow(
+      await expect(verifyVincentPlatformJWT({ jwt })).rejects.toThrow(
         /must provide an expectedAudience/
       );
     });
@@ -260,7 +227,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
       });
 
       await expect(
-        verifyAnyVincentJWT({ jwt, expectedAudience: 'wrong-audience' })
+        verifyVincentPlatformJWT({ jwt, expectedAudience: 'wrong-audience' })
       ).rejects.toThrow(/Expected audience/);
     });
 
@@ -273,9 +240,9 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
         expiresInMinutes: -1, // Expired
       });
 
-      await expect(verifyAnyVincentJWT({ jwt, expectedAudience: commonAudience })).rejects.toThrow(
-        /JWT expired/
-      );
+      await expect(
+        verifyVincentPlatformJWT({ jwt, expectedAudience: commonAudience })
+      ).rejects.toThrow(/JWT expired/);
     });
   });
 

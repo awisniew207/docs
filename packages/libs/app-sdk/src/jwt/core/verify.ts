@@ -24,7 +24,7 @@ import { verifyES256KSignature } from './utils/verifyES256KSignature';
  * @internal
  */
 
-export async function verifyAnyVincentJWT({
+async function verifyAnyVincentJWT({
   jwt,
   expectedAudience,
 }: {
