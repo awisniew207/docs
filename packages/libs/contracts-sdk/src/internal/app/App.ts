@@ -1,11 +1,10 @@
-import type { BigNumber } from 'ethers';
-
 import type {
   RegisterAppOptions,
   RegisterNextVersionOptions,
   EnableAppVersionOptions,
   AddDelegateeOptions,
   RemoveDelegateeOptions,
+  SetDelegateeOptions,
   DeleteAppOptions,
   UndeleteAppOptions,
 } from './types.ts';
@@ -70,8 +69,7 @@ export async function registerNextVersion(
       throw new Error('NewAppVersionRegistered event not found');
     }
 
-    const newAppVersion: BigNumber | undefined =
-      contract.interface.parseLog(event)?.args?.appVersion;
+    const newAppVersion: number | undefined = contract.interface.parseLog(event)?.args?.appVersion;
 
     if (!newAppVersion) {
       throw new Error('NewAppVersionRegistered event does not contain appVersion argument');
@@ -79,7 +77,7 @@ export async function registerNextVersion(
 
     return {
       txHash: tx.hash,
-      newAppVersion: newAppVersion.toNumber(),
+      newAppVersion,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -173,6 +171,35 @@ export async function removeDelegatee(params: RemoveDelegateeOptions): Promise<{
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Remove Delegatee: ${decodedError}`);
+  }
+}
+
+export async function setDelegatee(params: SetDelegateeOptions): Promise<{ txHash: string }> {
+  const {
+    contract,
+    args: { appId, delegateeAddresses },
+    overrides,
+  } = params;
+
+  try {
+    const adjustedOverrides = await gasAdjustedOverrides(
+      contract,
+      'setDelegatee',
+      [appId, delegateeAddresses],
+      overrides,
+    );
+
+    const tx = await contract.setDelegatee(appId, delegateeAddresses, {
+      ...adjustedOverrides,
+    });
+    await tx.wait();
+
+    return {
+      txHash: tx.hash,
+    };
+  } catch (error: unknown) {
+    const decodedError = decodeContractError(error, contract);
+    throw new Error(`Failed to Set Delegatee: ${decodedError}`);
   }
 }
 

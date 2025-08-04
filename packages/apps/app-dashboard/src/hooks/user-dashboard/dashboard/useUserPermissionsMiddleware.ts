@@ -40,6 +40,7 @@ export const useUserPermissionsMiddleware = ({
         const client = getClient({ signer: readOnlySigner });
         const userApps = await client.getAllPermittedAppIdsForPkp({
           pkpEthAddress,
+          offset: '0', // TODO: Make this configurable?
         });
 
         // Get app versions for each permitted app

@@ -12,11 +12,13 @@ import {
   enableAppVersion as _enableAppVersion,
   addDelegatee as _addDelegatee,
   removeDelegatee as _removeDelegatee,
+  setDelegatee as _setDelegatee,
   deleteApp as _deleteApp,
   undeleteApp as _undeleteApp,
 } from './internal/app/App';
 import {
   getAppById as _getAppById,
+  getAppIdByDelegatee as _getAppIdByDelegatee,
   getAppVersion as _getAppVersion,
   getAppsByManagerAddress as _getAppsByManagerAddress,
   getAppByDelegateeAddress as _getAppByDelegateeAddress,
@@ -53,11 +55,13 @@ export function clientFromContract({ contract }: { contract: Contract }): Contra
       _enableAppVersion({ contract, args: params, overrides }),
     addDelegatee: (params, overrides) => _addDelegatee({ contract, args: params, overrides }),
     removeDelegatee: (params, overrides) => _removeDelegatee({ contract, args: params, overrides }),
+    setDelegatee: (params, overrides) => _setDelegatee({ contract, args: params, overrides }),
     deleteApp: (params, overrides) => _deleteApp({ contract, args: params, overrides }),
     undeleteApp: (params, overrides) => _undeleteApp({ contract, args: params, overrides }),
 
     // App view methods
     getAppById: (params) => _getAppById({ contract, args: params }),
+    getAppIdByDelegatee: (params) => _getAppIdByDelegatee({ contract, args: params }),
     getAppVersion: (params) => _getAppVersion({ contract, args: params }),
     getAppsByManagerAddress: (params) => _getAppsByManagerAddress({ contract, args: params }),
     getAppByDelegateeAddress: (params) => _getAppByDelegateeAddress({ contract, args: params }),
