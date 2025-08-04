@@ -67,7 +67,7 @@ export function getIssuerAddress(decodedJWT: AnyVincentJWT): string | undefined 
 /**
  * @category API > Accessors
  */
-export function getSubjectAddress(decodedJWT: VincentJWTDelegatee): string | undefined {
+export function getSubjectAddress(decodedJWT: VincentJWTDelegatee): string {
   if (!decodedJWT.payload.sub) {
     throw new Error(JWT_ERROR.INVALID_JWT + ' - Missing subject address');
   }
