@@ -1,8 +1,8 @@
 import { useParams } from 'react-router';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import Loading from '@/components/shared/ui/Loading';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { AppInfoView } from '../views/AppInfoView';
+import { ExplorerAppIdSkeleton } from '../ui/ExplorerAppIdSkeleton';
 
 export function AppInfoWrapper() {
   const { appId } = useParams<{ appId: string }>();
@@ -36,7 +36,7 @@ export function AppInfoWrapper() {
     },
   );
 
-  if (isLoading || versionsLoading || versionAbilitysLoading) return <Loading />;
+  if (isLoading || versionsLoading || versionAbilitysLoading) return <ExplorerAppIdSkeleton />;
   if (isError) return <StatusMessage message="Failed to load app" type="error" />;
   if (versionsError) return <StatusMessage message="Failed to load app versions" type="error" />;
   if (versionAbilitysError)

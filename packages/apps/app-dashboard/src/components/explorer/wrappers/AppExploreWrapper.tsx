@@ -1,7 +1,7 @@
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
-import Loading from '@/components/shared/ui/Loading';
 import { AppExploreView } from '../views/AppExploreView';
+import { ExplorerAppsSkeleton } from '../ui/ExplorerAppsSkeleton';
 import { App } from '@/types/developer-dashboard/appTypes';
 
 export const AppExploreWrapper = () => {
@@ -10,7 +10,7 @@ export const AppExploreWrapper = () => {
   const activeApps = apps?.filter((app: App) => app.deploymentStatus !== 'dev') || [];
 
   // Loading states
-  if (isLoading) return <Loading />;
+  if (isLoading) return <ExplorerAppsSkeleton />;
 
   // Error states
   if (isError) return <StatusMessage message="Failed to load apps" type="error" />;

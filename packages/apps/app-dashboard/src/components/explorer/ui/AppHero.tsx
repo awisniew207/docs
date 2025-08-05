@@ -1,50 +1,31 @@
-import { Layers } from 'lucide-react';
-import { useTheme } from '@/providers/ThemeProvider';
-import { explorerTheme } from '@/utils/explorer/theme';
 import { App } from '@/types/developer-dashboard/appTypes';
 
 export function AppHero({ apps }: { apps: App[] }) {
-  const { isDark } = useTheme();
-  const theme = explorerTheme(isDark);
-
   return (
     <div className="relative group">
-      <div
-        className={`absolute inset-0 ${theme.glowColor} rounded-2xl blur-xl group-hover:${theme.glowOpacity} transition-all duration-700`}
-      ></div>
-      <div
-        className={`relative ${theme.cardBg} backdrop-blur-xl border ${theme.cardBorder} rounded-2xl p-12 ${theme.cardHoverBorder} transition-all duration-500`}
-      >
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-          <div className="flex-1">
-            <div className="mb-4">
-              <span className={`text-sm font-medium ${theme.textSubtle} mb-2 block`}>
-                Total Applications: {apps.length}
+      <div className="absolute inset-0 bg-black/5 rounded-2xl blur-xl opacity-0 transition-all duration-700"></div>
+      <div className="relative bg-white/40 backdrop-blur-xl border border-black/10 rounded-2xl p-12 hover:border-black/20 transition-all duration-500">
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-3 bg-white/40 backdrop-blur-sm border border-black/10 rounded-full px-4 py-2">
+              <div className="w-2 h-2 bg-black/5 rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-black">
+                {apps.length} {apps.length === 1 ? 'Application' : 'Applications'} Available
               </span>
             </div>
-            <h1 className={`text-5xl sm:text-6xl font-light ${theme.text} mb-6 leading-tight`}>
-              Delegate your
-              <br />
+          </div>
+          <h1 className="text-5xl sm:text-6xl font-light text-black mb-6 leading-tight">
+            Delegate your
+            <br />
+            <span className="relative">
               success
-            </h1>
-          </div>
-
-          <div className="relative">
-            <div
-              className={`w-64 h-64 ${theme.glowColor} rounded-3xl transform rotate-12 hover:rotate-45 transition-all duration-1000 flex items-center justify-center backdrop-blur-sm border ${theme.cardBorder}`}
-            >
-              <div
-                className={`w-48 h-48 ${theme.itemBg} rounded-2xl transform -rotate-12 hover:rotate-12 transition-all duration-700 flex items-center justify-center border ${theme.itemBorder}`}
-              >
-                <Layers
-                  className={`w-16 h-16 ${theme.iconColor} transform hover:scale-110 transition-all duration-500`}
-                />
-              </div>
-            </div>
-            <div
-              className={`absolute inset-0 w-64 h-64 ${theme.glowOpacity} rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
-            ></div>
-          </div>
+              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-black/5 rounded-full opacity-50"></div>
+            </span>
+          </h1>
+          <p className="text-lg text-gray-500 max-w-2xl leading-relaxed">
+            Discover applications that work autonomously on your behalf, giving you more time to
+            focus on what matters most.
+          </p>
         </div>
       </div>
     </div>

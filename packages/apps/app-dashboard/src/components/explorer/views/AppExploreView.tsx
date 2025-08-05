@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { AppsDisplay } from '../ui/AppsDisplay';
 import { AppFilter } from '../ui/AppFilter';
 import { AppHero } from '../ui/AppHero';
-import { useTheme } from '@/providers/ThemeProvider';
-import { explorerTheme } from '@/utils/explorer/theme';
+import { Header } from '../ui/Header';
 
 interface ExploreViewProps {
   apps: App[];
@@ -15,8 +14,6 @@ export function AppExploreView({ apps }: ExploreViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'prod' | 'test'>('all');
   const [sortBy, setSortBy] = useState<'name' | 'updated' | 'version'>('name');
-  const { isDark } = useTheme();
-  const theme = explorerTheme(isDark);
 
   const filteredApps = apps
     .filter((app) => {
@@ -44,8 +41,11 @@ export function AppExploreView({ apps }: ExploreViewProps) {
         <meta name="description" content="Explore applications on your terms" />
       </Helmet>
 
-      <div className={`min-h-screen transition-colors duration-500 ${theme.bg}`}>
+      <div className="fixed inset-0 bg-white overflow-auto">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          {/* Navigation Header */}
+          <Header />
+
           {/* Hero Section */}
           <AppHero apps={apps} />
 

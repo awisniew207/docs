@@ -1,9 +1,7 @@
 import { App, AppVersion, AppVersionAbility } from '@/types/developer-dashboard/appTypes';
 import { Activity, Code, Database, ExternalLink } from 'lucide-react';
-import { getStatusColor } from '../../../utils/explorer/getStatusColor';
 import { Logo } from '@/components/shared/ui/Logo';
-import { useTheme } from '@/providers/ThemeProvider';
-import { explorerTheme } from '@/utils/explorer/theme';
+import { useNavigate } from 'react-router';
 
 export function AppHeader({
   app,
@@ -14,26 +12,17 @@ export function AppHeader({
   versions: AppVersion[];
   versionAbilities: AppVersionAbility[];
 }) {
-  const { isDark } = useTheme();
-  const theme = explorerTheme(isDark);
+  const navigate = useNavigate();
 
   return (
     <div className="relative group">
-      <div
-        className={`absolute inset-0 ${theme.glowColor} rounded-2xl blur-xl group-hover:${theme.glowOpacity} transition-all duration-700`}
-      ></div>
-      <div
-        className={`relative ${theme.cardBg} backdrop-blur-xl border ${theme.cardBorder} rounded-2xl p-8 ${theme.cardHoverBorder} transition-all duration-500`}
-      >
+      <div className="absolute inset-0 bg-black/5 rounded-2xl blur-xl opacity-0 transition-all duration-700"></div>
+      <div className="relative bg-white/40 backdrop-blur-xl border border-black/10 rounded-2xl p-8 hover:border-black/20 transition-all duration-500">
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
           {/* Logo with subtle glow */}
           <div className="relative group/logo">
-            <div
-              className={`absolute inset-0 ${theme.glowOpacity} rounded-xl blur-2xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500`}
-            ></div>
-            <div
-              className={`relative w-20 h-20 rounded-xl overflow-hidden ${theme.iconBg} border ${theme.iconBorder} flex items-center justify-center backdrop-blur-sm`}
-            >
+            <div className="absolute inset-0 bg-black/5 rounded-xl blur-2xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-black/5 border border-black/5 flex items-center justify-center backdrop-blur-sm">
               <Logo
                 logo={app.logo}
                 alt={`${app.name} logo`}
@@ -45,52 +34,34 @@ export function AppHeader({
           {/* App Info */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
-              <h1
-                className={`text-3xl sm:text-4xl font-light ${theme.text} tracking-tight transition-colors duration-500`}
-              >
+              <h1 className="text-3xl sm:text-4xl font-light text-black tracking-tight transition-colors duration-500">
                 {app.name}
               </h1>
-              <span
-                className={`px-4 py-1.5 rounded-full text-xs font-medium ${isDark ? 'text-white/90' : 'text-black/90'} border ${getStatusColor(isDark, app.deploymentStatus)} backdrop-blur-sm transition-all duration-300`}
-              >
+              <span className="px-4 py-1.5 rounded-full text-xs font-medium text-black/90 border border-orange-500 !bg-orange-50 !text-orange-700 backdrop-blur-sm transition-all duration-300">
                 {app.deploymentStatus?.toUpperCase()}
               </span>
             </div>
-            <p
-              className={`${theme.textMuted} text-base leading-relaxed transition-colors duration-500`}
-            >
+            <p className="text-gray-600 text-base leading-relaxed transition-colors duration-500">
               {app.description}
             </p>
 
             {/* Quick Stats */}
             <div className="flex items-center gap-8 mt-6">
               <div className="flex items-center gap-2 group/stat">
-                <Activity
-                  className={`w-4 h-4 ${theme.iconColorMuted} group-hover/stat:${theme.iconColor} transition-colors duration-300`}
-                />
-                <span
-                  className={`text-sm ${theme.textSubtle} group-hover/stat:${theme.textMuted} transition-colors duration-300`}
-                >
+                <Activity className="w-4 h-4 text-black/40 group-hover/stat:text-black/60 transition-colors duration-300" />
+                <span className="text-sm text-gray-500 group-hover/stat:text-gray-600 transition-colors duration-300">
                   {app.deploymentStatus?.toUpperCase()}
                 </span>
               </div>
               <div className="flex items-center gap-2 group/stat">
-                <Code
-                  className={`w-4 h-4 ${theme.iconColorMuted} group-hover/stat:${theme.iconColor} transition-colors duration-300`}
-                />
-                <span
-                  className={`text-sm ${theme.textSubtle} group-hover/stat:${theme.textMuted} transition-colors duration-300`}
-                >
+                <Code className="w-4 h-4 text-black/40 group-hover/stat:text-black/60 transition-colors duration-300" />
+                <span className="text-sm text-gray-500 group-hover/stat:text-gray-600 transition-colors duration-300">
                   {versions.length} Versions
                 </span>
               </div>
               <div className="flex items-center gap-2 group/stat">
-                <Database
-                  className={`w-4 h-4 ${theme.iconColorMuted} group-hover/stat:${theme.iconColor} transition-colors duration-300`}
-                />
-                <span
-                  className={`text-sm ${theme.textSubtle} group-hover/stat:${theme.textMuted} transition-colors duration-300`}
-                >
+                <Database className="w-4 h-4 text-black/40 group-hover/stat:text-black/60 transition-colors duration-300" />
+                <span className="text-sm text-gray-500 group-hover/stat:text-gray-600 transition-colors duration-300">
                   {versionAbilities.length} Abilities
                 </span>
               </div>
@@ -98,20 +69,18 @@ export function AppHeader({
           </div>
 
           {/* Action Buttons */}
-          {app.appUserUrl && (
-            <a
-              href={app.appUserUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group px-6 py-3 rounded-full ${theme.buttonBg} ${theme.accentHover} font-medium flex items-center gap-2 hover:scale-105 transition-all duration-300 no-underline`}
-              style={{
-                color: isDark ? 'black' : 'white',
-                textDecoration: 'none',
-              }}
+          {app.redirectUris && app.redirectUris.length > 0 && (
+            <button
+              onClick={() =>
+                navigate(
+                  `/user/appId/${app.appId}/connect?redirectUri=${encodeURIComponent(app.redirectUris![0])}`,
+                )
+              }
+              className="group px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-medium flex items-center gap-2 hover:scale-105 transition-all duration-300"
             >
               Launch App
               <ExternalLink className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-            </a>
+            </button>
           )}
         </div>
       </div>

@@ -1,41 +1,37 @@
 import { Policy } from '@/types/developer-dashboard/appTypes';
 import { Shield } from 'lucide-react';
-import { useTheme } from '@/providers/ThemeProvider';
-import { explorerTheme } from '@/utils/explorer/theme';
+import { Logo } from '@/components/shared/ui/Logo';
 
 interface PolicyVersionInfoViewProps {
   policy: Policy;
 }
 
 export function PolicyVersionInfoView({ policy }: PolicyVersionInfoViewProps) {
-  const { isDark } = useTheme();
-  const theme = explorerTheme(isDark);
-
   return (
     <div className="group relative">
-      <div
-        className={`absolute inset-0 ${theme.glowColor} rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
-      ></div>
-      <div
-        className={`relative p-5 rounded-xl ${theme.itemBg} ${theme.itemHoverBg} border ${theme.itemBorder} ${theme.itemHoverBorder} transition-all duration-300`}
-      >
+      <div className="absolute inset-0 bg-black/5 rounded-xl blur-xl opacity-0 transition-opacity duration-700"></div>
+      <div className="relative p-5 rounded-xl bg-black/[0.02] border border-black/5 hover:border-black/10 transition-all duration-300">
         <div className="flex items-center gap-4 mb-3">
-          <div
-            className={`p-2 rounded-lg ${theme.iconBg} border ${theme.itemBorder} group-hover:${theme.itemHoverBorder} transition-all duration-300`}
-          >
-            <Shield className={`w-4 h-4 ${theme.iconColorMuted}`} />
+          <div className="w-10 h-10 rounded-lg bg-black/5 border border-black/5 hover:border-black/10 transition-all duration-300 flex items-center justify-center overflow-hidden">
+            {policy.logo ? (
+              <Logo
+                logo={policy.logo}
+                alt={`${policy.title} logo`}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <Shield className="w-4 h-4 text-black/40" />
+            )}
           </div>
           <div className="flex-1">
-            <p className={`text-base font-light ${isDark ? 'text-white/90' : 'text-black/90'}`}>
-              {policy.title}
-            </p>
-            <p className={`text-xs ${theme.textSubtle}`}>
+            <p className="text-base font-light text-black/90">{policy.title}</p>
+            <p className="text-xs text-gray-500">
               {policy.packageName} v{policy.activeVersion}
             </p>
           </div>
         </div>
 
-        <p className={`text-sm ${theme.textMuted} leading-relaxed mb-3`}>{policy.description}</p>
+        <p className="text-sm text-gray-600 leading-relaxed mb-3">{policy.description}</p>
       </div>
     </div>
   );

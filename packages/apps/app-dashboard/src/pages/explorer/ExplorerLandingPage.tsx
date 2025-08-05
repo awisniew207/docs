@@ -51,29 +51,26 @@ export function ExplorerLandingPage() {
               </div>
             </button>
 
-            <button
-              onClick={() => navigate('/developer/abilities')}
-              className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-orange-200 hover:bg-orange-50 transition-colors group"
-            >
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-orange-100 transition-colors">
-                <Compass className="w-4 h-4 text-gray-600 group-hover:text-orange-600 transition-colors" />
+            <div className="relative bg-gray-100 border border-gray-200 rounded-xl p-6 text-left opacity-60 cursor-not-allowed">
+              <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center mb-3">
+                <Compass className="w-4 h-4 text-gray-500" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2 text-lg">Abilities</h3>
-              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+              <h3 className="font-semibold text-gray-600 mb-2 text-lg">Abilities</h3>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">
                 Discover reusable abilities to build into your applications.
               </p>
-              <div className="flex items-center text-sm text-gray-500 group-hover:text-orange-600 transition-colors">
+              <div className="flex items-center text-sm text-gray-500">
                 For Developers <ArrowRight className="w-3 h-3 ml-1" />
               </div>
-            </button>
+              <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                Coming Soon
+              </div>
+            </div>
 
-            <button
-              onClick={() => navigate('/developer/policies')}
-              className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-orange-200 hover:bg-orange-50 transition-colors group"
-            >
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-orange-100 transition-colors">
+            <div className="relative bg-gray-100 border border-gray-200 rounded-xl p-6 text-left opacity-60 cursor-not-allowed">
+              <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center mb-3">
                 <svg
-                  className="w-4 h-4 text-gray-600 group-hover:text-orange-600 transition-colors"
+                  className="w-4 h-4 text-gray-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -86,14 +83,17 @@ export function ExplorerLandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2 text-lg">Policies</h3>
-              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+              <h3 className="font-semibold text-gray-600 mb-2 text-lg">Policies</h3>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">
                 Find access control policies to secure your applications.
               </p>
-              <div className="flex items-center text-sm text-gray-500 group-hover:text-orange-600 transition-colors">
+              <div className="flex items-center text-sm text-gray-500">
                 For Developers <ArrowRight className="w-3 h-3 ml-1" />
               </div>
-            </button>
+              <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                Coming Soon
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 sm:mt-10">
