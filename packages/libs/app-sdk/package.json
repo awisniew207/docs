@@ -68,7 +68,7 @@
     "*.md"
   ],
   "devDependencies": {
-    "@lit-protocol/pkp-ethers": "^7.2.0",
+    "@lit-protocol/pkp-ethers": "^7.2.3",
     "@lit-protocol/types": "^7.0.8",
     "@types/express": "^5.0.1",
     "chokidar-cli": "^3.0.0",
