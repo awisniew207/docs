@@ -157,10 +157,10 @@ export function AppPermissionPage({
   const error = actionsError;
 
   return (
-    <div className={`w-full transition-colors duration-500 ${themeStyles.bg} sm:p-4`}>
+    <div className={`w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>
       {/* Main Card Container */}
       <div
-        className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl`}
+        className={`max-w-6xl mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl`}
       >
         {/* Page Header */}
         <PageHeader

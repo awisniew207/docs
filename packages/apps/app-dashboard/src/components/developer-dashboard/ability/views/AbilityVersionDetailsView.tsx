@@ -100,7 +100,7 @@ export function AbilityVersionDetailsView({
           {version.ipfsCid && (
             <div className="sm:col-span-2">
               <dt className="text-sm font-medium text-gray-500 dark:text-white/40">IPFS CID</dt>
-              <dd className="mt-1 text-xs text-neutral-800 dark:text-white font-mono break-all bg-gray-50 dark:bg-white/5 p-2 rounded">
+              <dd className="mt-1 text-xs text-neutral-800 dark:text-white font-mono break-all">
                 {version.ipfsCid}
               </dd>
             </div>
