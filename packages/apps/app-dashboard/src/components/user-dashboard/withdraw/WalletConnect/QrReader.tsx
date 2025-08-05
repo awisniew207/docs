@@ -69,7 +69,7 @@ export default function QrReader({ onConnect }: IProps) {
           className={`w-full flex flex-col items-center justify-center p-8 border ${theme.cardBorder} rounded-lg ${theme.mainCard}`}
         >
           <img
-            src="/qrcode.svg"
+            src="/icons/qr-icon.svg"
             width={100}
             height={100}
             alt="qr code icon"
