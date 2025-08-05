@@ -36,12 +36,16 @@ export function VersionDetails({ version, versionData, abilities }: VersionDetai
       {versionData.changes && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-gray-900">Version Changes</CardTitle>
-            <CardDescription className="text-gray-700">What's new in this version</CardDescription>
+            <CardTitle className="text-neutral-800 dark:text-white">Version Changes</CardTitle>
+            <CardDescription className="text-gray-700 dark:text-white/60">
+              What's new in this version
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="p-4 bg-gray-50 rounded-lg border">
-              <p className="text-gray-900 text-sm whitespace-pre-wrap">{versionData.changes}</p>
+            <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border dark:border-white/10">
+              <p className="text-neutral-800 dark:text-white text-sm whitespace-pre-wrap">
+                {versionData.changes}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -49,8 +53,8 @@ export function VersionDetails({ version, versionData, abilities }: VersionDetai
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-gray-900">Associated Abilities</CardTitle>
-          <CardDescription className="text-gray-700">
+          <CardTitle className="text-neutral-800 dark:text-white">Associated Abilities</CardTitle>
+          <CardDescription className="text-gray-700 dark:text-white/60">
             Abilities included in this version
           </CardDescription>
         </CardHeader>

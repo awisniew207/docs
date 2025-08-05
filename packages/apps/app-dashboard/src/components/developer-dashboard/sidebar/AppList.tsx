@@ -93,10 +93,10 @@ export function AppList({
               onClick={() => onAppSelection(app)}
               className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
                 selectedApp?.appId === app.appId
-                  ? 'bg-blue-50 text-blue-700 font-medium'
+                  ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
                   : isDeleted
-                    ? 'text-gray-400 hover:bg-gray-50 opacity-75'
-                    : 'text-gray-500 hover:bg-gray-50'
+                    ? 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-white/10 opacity-75'
+                    : 'text-gray-500 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/10'
               }`}
               style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
               aria-label={`Select app ${app.name}`}
@@ -129,10 +129,10 @@ export function AppList({
                           disabled={hasVersionsError || isDeleted}
                           className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors focus:outline-none ${
                             hasVersionsError || isDeleted
-                              ? 'text-gray-400 cursor-not-allowed'
+                              ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
                               : selectedAppView === appItem.id
-                                ? 'bg-blue-50 text-blue-700 font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
+                                ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
+                                : 'text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/10'
                           }`}
                           style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                           aria-label={appItem.label}
@@ -163,10 +163,10 @@ export function AppList({
                                   disabled={subMenuItem.disabled || isDeleted}
                                   className={`w-full text-left px-4 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
                                     subMenuItem.disabled || isDeleted
-                                      ? 'text-gray-400 cursor-not-allowed'
+                                      ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
                                       : selectedAppView === subMenuItem.id
-                                        ? 'bg-blue-50 text-blue-700 font-medium'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
+                                        : 'text-gray-600 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/10'
                                   }`}
                                   style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                                   aria-label={subMenuItem.label}
@@ -193,10 +193,10 @@ export function AppList({
                       disabled={isDeleted}
                       className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out text-sm focus:outline-none ${
                         isDeleted
-                          ? 'text-gray-400 cursor-not-allowed'
+                          ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
                           : selectedAppView === appItem.id
-                            ? 'bg-blue-50 text-blue-700 font-medium'
-                            : 'text-gray-600 hover:bg-gray-50'
+                            ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
+                            : 'text-gray-600 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/10'
                       }`}
                       style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                       aria-label={appItem.label}

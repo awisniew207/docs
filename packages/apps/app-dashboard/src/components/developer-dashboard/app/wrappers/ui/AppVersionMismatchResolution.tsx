@@ -127,7 +127,7 @@ export function AppVersionMismatchResolution({
         type="error"
       />
 
-      <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border">
+      <div className="text-sm text-gray-600 dark:text-white/60 bg-gray-50 dark:bg-white/5 p-3 rounded-lg border dark:border-white/10">
         <p className="font-medium mb-1">Choose how to resolve this mismatch:</p>
         <p>
           On-chain: <span className="font-medium">{onChainEnabled ? 'Enabled' : 'Disabled'}</span> •
@@ -139,7 +139,7 @@ export function AppVersionMismatchResolution({
         <button
           onClick={handleCommitToOnChain}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-blue-300 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title={`Update on-chain to ${registryEnabled ? 'enabled' : 'disabled'} (requires transaction)`}
         >
           {isLoading ? (

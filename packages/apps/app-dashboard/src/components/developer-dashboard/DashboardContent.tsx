@@ -23,13 +23,15 @@ export function DashboardContent({
   return (
     <div className="max-w-4xl mx-auto">
       {/* Greeting */}
-      <h1 className="text-4xl font-medium text-black text-center mb-12">{greeting}, Developer</h1>
+      <h1 className="text-4xl font-medium text-neutral-800 dark:text-white text-center mb-12">
+        {greeting}, Developer
+      </h1>
 
       {/* Action Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
         <Button
           variant="outline"
-          className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 hover:border-orange-500 hover:bg-orange-50 transition-all"
+          className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 dark:border-white/20 hover:!border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/5 focus:!border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:!outline-none active:!border-orange-500 focus-visible:!border-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/20 focus-visible:!outline-none transition-all"
           onClick={() => onMenuSelection('create-app')}
         >
           <SquareStack className="h-5 w-5 text-orange-500" />
@@ -37,7 +39,7 @@ export function DashboardContent({
         </Button>
         <Button
           variant="outline"
-          className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 hover:border-orange-500 hover:bg-orange-50 transition-all"
+          className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 dark:border-white/20 hover:!border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/5 focus:!border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:!outline-none active:!border-orange-500 focus-visible:!border-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/20 focus-visible:!outline-none transition-all"
           onClick={() => onMenuSelection('create-ability')}
         >
           <Wrench className="h-5 w-5 text-orange-500" />
@@ -45,7 +47,7 @@ export function DashboardContent({
         </Button>
         <Button
           variant="outline"
-          className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 hover:border-orange-500 hover:bg-orange-50 transition-all"
+          className="h-16 flex items-center justify-center gap-3 text-base font-medium border-gray-300 dark:border-white/20 hover:!border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/5 focus:!border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:!outline-none active:!border-orange-500 focus-visible:!border-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/20 focus-visible:!outline-none transition-all"
           onClick={() => onMenuSelection('create-policy')}
         >
           <Shield className="h-5 w-5 text-orange-500" />
@@ -54,16 +56,16 @@ export function DashboardContent({
       </div>
 
       {/* Announcement Card */}
-      <Card className="mb-12 border border-orange-200 bg-orange-50/50">
+      <Card className="mb-12 border border-orange-200 dark:border-orange-500/30 bg-orange-50/50 dark:bg-orange-500/10">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-orange-100 dark:bg-orange-500/20 rounded-full flex items-center justify-center">
                 <BookOpen className="h-4 w-4 text-orange-600" />
               </div>
               <div>
-                <p className="font-medium text-black">New to Vincent?</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-medium text-neutral-800 dark:text-white">New to Vincent?</p>
+                <p className="text-sm text-gray-600 dark:text-white/60">
                   Get started with the quick start guide and join the builder&apos;s thread
                 </p>
               </div>
@@ -92,70 +94,82 @@ export function DashboardContent({
 
       {/* Project Stats */}
       <div className="space-y-4 mb-20">
-        <h2 className="text-lg font-medium text-black">Your Projects</h2>
+        <h2 className="text-lg font-medium text-neutral-800 dark:text-white">Your Projects</h2>
 
         <div className="space-y-3">
           <Card
-            className="cursor-pointer hover:bg-gray-50 hover:border-orange-200 transition-all border-gray-200"
+            className="cursor-pointer hover:bg-gray-50 dark:hover:bg-orange-500/5 hover:border-orange-200 dark:hover:border-orange-500/20 transition-all border-gray-200 dark:border-white/10"
             onClick={() => onMenuSelection('app')}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-100 rounded flex items-center justify-center">
+                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-500/20 rounded flex items-center justify-center">
                     <SquareStack className="h-4 w-4 text-orange-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-black">Apps</p>
-                    <p className="text-sm text-gray-600">Create and manage your applications</p>
+                    <p className="font-medium text-neutral-800 dark:text-white">Apps</p>
+                    <p className="text-sm text-gray-600 dark:text-white/60">
+                      Create and manage your applications
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-semibold text-black">{filteredAppsCount}</p>
+                  <p className="text-2xl font-semibold text-neutral-800 dark:text-white">
+                    {filteredAppsCount}
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:bg-gray-50 hover:border-orange-200 transition-all border-gray-200"
+            className="cursor-pointer hover:bg-gray-50 dark:hover:bg-orange-500/5 hover:border-orange-200 dark:hover:border-orange-500/20 transition-all border-gray-200 dark:border-white/10"
             onClick={() => onMenuSelection('ability')}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-100 rounded flex items-center justify-center">
+                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-500/20 rounded flex items-center justify-center">
                     <Wrench className="h-4 w-4 text-orange-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-black">Abilities</p>
-                    <p className="text-sm text-gray-600">Create and manage your abilities</p>
+                    <p className="font-medium text-neutral-800 dark:text-white">Abilities</p>
+                    <p className="text-sm text-gray-600 dark:text-white/60">
+                      Create and manage your abilities
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-semibold text-black">{filteredAbilitiesCount}</p>
+                  <p className="text-2xl font-semibold text-neutral-800 dark:text-white">
+                    {filteredAbilitiesCount}
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:bg-gray-50 hover:border-orange-200 transition-all border-gray-200"
+            className="cursor-pointer hover:bg-gray-50 dark:hover:bg-orange-500/5 hover:border-orange-200 dark:hover:border-orange-500/20 transition-all border-gray-200 dark:border-white/10"
             onClick={() => onMenuSelection('policy')}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-100 rounded flex items-center justify-center">
+                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-500/20 rounded flex items-center justify-center">
                     <Shield className="h-4 w-4 text-orange-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-black">Policies</p>
-                    <p className="text-sm text-gray-600">Create and manage your policies</p>
+                    <p className="font-medium text-neutral-800 dark:text-white">Policies</p>
+                    <p className="text-sm text-gray-600 dark:text-white/60">
+                      Create and manage your policies
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-semibold text-black">{filteredPoliciesCount}</p>
+                  <p className="text-2xl font-semibold text-neutral-800 dark:text-white">
+                    {filteredPoliciesCount}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -167,7 +181,7 @@ export function DashboardContent({
       <div className="flex justify-center pb-8">
         <Button
           variant="ghost"
-          className="text-gray-600 hover:text-orange-600 hover:bg-orange-50"
+          className="text-gray-600 dark:text-white/60 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-500/10"
           onClick={() => window.open('https://t.me/+vZWoA5k8jGoxZGEx', '_blank')}
         >
           <MessageCircle className="h-4 w-4 mr-2" />

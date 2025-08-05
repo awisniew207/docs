@@ -22,7 +22,7 @@ export function StatusFilterDropdown({
   selectedOptionId,
   onChange,
   buttonVariant = 'outline',
-  buttonClassName = 'text-black flex items-center gap-2',
+  buttonClassName = 'text-neutral-800 dark:text-white flex items-center gap-2',
   dropdownWidth = 'w-48',
 }: StatusFilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,14 +43,16 @@ export function StatusFilterDropdown({
 
       {isOpen && (
         <div
-          className={`absolute right-0 mt-2 ${dropdownWidth} bg-white rounded-md shadow-lg z-10 border`}
+          className={`absolute right-0 mt-2 ${dropdownWidth} bg-white dark:bg-neutral-800 rounded-md shadow-lg z-10 border dark:border-white/10`}
         >
           <div className="py-1">
             {options.map((option) => (
               <button
                 key={option.id}
-                className={`w-full text-left px-4 py-2 text-sm ${
-                  selectedOptionId === option.id ? 'bg-gray-100' : 'hover:bg-gray-100'
+                className={`w-full text-left px-4 py-2 text-sm text-neutral-800 dark:text-white ${
+                  selectedOptionId === option.id
+                    ? 'bg-gray-100 dark:bg-white/10'
+                    : 'hover:bg-gray-100 dark:hover:bg-white/10'
                 }`}
                 onClick={() => {
                   onChange(option.id);

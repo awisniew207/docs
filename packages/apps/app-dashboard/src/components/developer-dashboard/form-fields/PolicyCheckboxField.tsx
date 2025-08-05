@@ -40,13 +40,13 @@ export function PolicyCheckboxField({
     <div className="space-y-2">
       <Label>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </Label>
 
       {policies.length === 0 ? (
-        <div className="text-sm text-gray-500">No policies available</div>
+        <div className="text-sm text-gray-500 dark:text-white/40">No policies available</div>
       ) : (
-        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+        <div className="max-h-60 overflow-y-auto border dark:border-white/10 rounded-md p-3 space-y-3 dark:bg-neutral-800">
           {policies.map((policy) => (
             <div key={policy.packageName} className="flex items-start space-x-3">
               <Checkbox
@@ -74,12 +74,12 @@ export function PolicyCheckboxField({
       )}
 
       {currentValues.length > 0 && (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-white/60">
           Selected: {currentValues.length} of {policies.length} policies
         </div>
       )}
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }

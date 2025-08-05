@@ -82,10 +82,10 @@ export function EditPolicyVersionWrapper() {
       <div className="w-full max-w-4xl mx-auto">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">
               Edit {policy.packageName} - Version {versionData.version}
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 dark:text-white/60 mt-2">
               Update the settings and configuration for this version
             </p>
           </div>

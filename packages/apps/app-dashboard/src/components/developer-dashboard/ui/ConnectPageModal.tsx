@@ -66,7 +66,7 @@ export function ConnectPageModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-full max-w-2xl bg-white">
+      <DialogContent className="w-full max-w-2xl bg-white dark:bg-neutral-800">
         <DialogHeader>
           <DialogTitle>View Connect Page</DialogTitle>
           <DialogDescription>
@@ -77,7 +77,10 @@ export function ConnectPageModal({
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="redirectUri" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="redirectUri"
+              className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2"
+            >
               Select Redirect URI
             </label>
             {redirectUris.length > 0 ? (
@@ -117,7 +120,7 @@ export function ConnectPageModal({
                 )}
               </div>
             ) : (
-              <div className="text-sm text-gray-500 p-4 bg-gray-50 rounded-lg">
+              <div className="text-sm text-gray-500 dark:text-white/40 p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
                 No redirect URIs configured. Please add redirect URIs to your app settings first.
               </div>
             )}

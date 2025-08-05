@@ -73,8 +73,12 @@ export function EditPolicyWrapper() {
       <div className="w-full max-w-2xl mx-auto">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900">Edit {policy.packageName}</h1>
-            <p className="text-gray-600 mt-2">Update your policy settings and configuration</p>
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">
+              Edit {policy.packageName}
+            </h1>
+            <p className="text-gray-600 dark:text-white/40 mt-2">
+              Update your policy settings and configuration
+            </p>
           </div>
         </div>
       </div>

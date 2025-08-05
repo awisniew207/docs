@@ -23,7 +23,7 @@ export function AppVersionAbilitiesDisplay({ abilities }: AppVersionAbilitiesDis
         <div key={ability.abilityPackageName} className="p-4 bg-gray-50 rounded-lg border">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <div className="font-medium text-gray-900">{ability.abilityPackageName}</div>
+              <div className="font-medium text-neutral-800">{ability.abilityPackageName}</div>
               <div className="text-sm text-gray-600 mt-1">Version: {ability.abilityVersion}</div>
             </div>
             <div className="text-xs text-gray-400">

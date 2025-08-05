@@ -21,16 +21,22 @@ export function PolicyVersionsListView({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Policy Versions</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Policy Versions</h1>
+          <p className="text-gray-600 dark:text-white/60 mt-2">
             All versions for <span className="font-mono">{policy.packageName}</span>
           </p>
           <div className="flex items-center gap-2 mt-3">
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge
+              variant="outline"
+              className="bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white border-gray-300 dark:border-gray-600"
+            >
               <Package className="h-3 w-3 mr-1" />
               Active: {policy.activeVersion}
             </Badge>
-            <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+            <Badge
+              variant="outline"
+              className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-white/80 border-gray-200 dark:border-gray-600"
+            >
               {activeVersions.length} version{activeVersions.length !== 1 ? 's' : ''}
             </Badge>
           </div>
@@ -41,10 +47,10 @@ export function PolicyVersionsListView({
         {activeVersions.map((version) => (
           <div
             key={version.version}
-            className={`bg-white shadow rounded-lg border ${
+            className={`bg-white dark:bg-neutral-800 shadow rounded-lg border ${
               version.version === policy.activeVersion
-                ? 'border-blue-200 ring-1 ring-blue-100'
-                : 'border-gray-200 hover:border-gray-300'
+                ? 'border-gray-300 ring-1 ring-gray-200 dark:border-gray-600 dark:ring-gray-700'
+                : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
             } transition-colors ${onVersionClick ? 'cursor-pointer hover:shadow-md' : ''}`}
             onClick={onVersionClick ? () => onVersionClick(version.version) : undefined}
           >
@@ -53,7 +59,7 @@ export function PolicyVersionsListView({
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <GitCommit className="h-5 w-5 text-gray-500" />
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-lg font-semibold text-neutral-800 dark:text-white">
                       Version {version.version}
                     </h3>
                   </div>
@@ -83,8 +89,10 @@ export function PolicyVersionsListView({
       {activeVersions.length === 0 && (
         <div className="bg-white shadow rounded-lg p-8 text-center">
           <GitCommit className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No versions found</h3>
-          <p className="text-gray-600">
+          <h3 className="text-lg font-medium text-neutral-800 dark:text-white mb-2">
+            No versions found
+          </h3>
+          <p className="text-gray-600 dark:text-white/60">
             This policy doesn't have any versions yet. Create the first version to get started.
           </p>
         </div>

@@ -36,7 +36,7 @@ export function NumberSelectField({
     <div className="space-y-2">
       <Label>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </Label>
       <Controller
         name={name}
@@ -46,7 +46,7 @@ export function NumberSelectField({
             value={field.value?.toString() || ''}
             onValueChange={(value) => field.onChange(parseInt(value, 10))}
           >
-            <SelectTrigger className={error ? 'border-red-500' : ''}>
+            <SelectTrigger className={error ? 'border-red-500 dark:border-red-400' : ''}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -59,7 +59,7 @@ export function NumberSelectField({
           </Select>
         )}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }

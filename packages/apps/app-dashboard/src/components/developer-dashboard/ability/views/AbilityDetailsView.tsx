@@ -18,8 +18,10 @@ export default function AbilityOverview({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">{ability.packageName}</h1>
-          <p className="text-gray-600 mt-2">{activeVersionData.description}</p>
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">
+            {ability.packageName}
+          </h1>
+          <p className="text-gray-600 dark:text-white/60 mt-2">{activeVersionData.description}</p>
           {activeVersionData?.keywords && activeVersionData.keywords.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {activeVersionData.keywords.map((keyword: string) => (
@@ -35,43 +37,43 @@ export default function AbilityOverview({
             <Logo
               logo={ability.logo}
               alt="Ability logo"
-              className="max-w-24 max-h-24 object-contain rounded-lg border shadow-sm bg-gray-50"
+              className="max-w-24 max-h-24 object-contain rounded-lg border dark:border-white/10 shadow-sm bg-gray-50 dark:bg-white/5"
             />
           ) : (
-            <div className="w-16 h-16 bg-gray-100 rounded-lg border flex items-center justify-center">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-lg border dark:border-white/10 flex items-center justify-center">
               <img src="/logo.svg" alt="Vincent logo" className="w-8 h-8 opacity-50" />
             </div>
           )}
         </div>
       </div>
 
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white dark:bg-neutral-800 shadow rounded-lg">
         <div className="p-6">
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => onOpenMutation('edit-ability')}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/20 rounded-lg text-sm font-medium text-gray-700 dark:text-white/80 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
             >
               <Edit className="h-4 w-4" />
               Edit Ability
             </button>
             <button
               onClick={() => onOpenMutation('create-ability-version')}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/20 rounded-lg text-sm font-medium text-gray-700 dark:text-white/80 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
             >
               <Plus className="h-4 w-4" />
               Create Ability Version
             </button>
             <button
               onClick={() => onOpenMutation('change-ability-owner')}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-orange-200 rounded-lg text-sm font-medium text-orange-600 bg-white hover:bg-orange-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-orange-200 dark:border-orange-500/30 rounded-lg text-sm font-medium text-orange-600 dark:text-orange-400 bg-white dark:bg-neutral-800 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors"
             >
               <ArrowLeftRight className="h-4 w-4" />
               Change Owner
             </button>
             <button
               onClick={() => onOpenMutation('delete-ability')}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 bg-white hover:bg-red-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 dark:border-red-500/30 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
               Delete Ability
@@ -80,50 +82,64 @@ export default function AbilityOverview({
         </div>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Ability Details</h2>
+      <div className="bg-white dark:bg-neutral-800 shadow rounded-lg p-6">
+        <h2 className="text-lg font-medium text-neutral-800 dark:text-white mb-4">
+          Ability Details
+        </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Package Name</dt>
-            <dd className="mt-1 text-sm text-gray-900 font-mono">{ability.packageName}</dd>
+            <dt className="text-sm font-medium text-gray-500 dark:text-white/40">Package Name</dt>
+            <dd className="mt-1 text-sm text-neutral-800 dark:text-white font-mono">
+              {ability.packageName}
+            </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Active Version</dt>
-            <dd className="mt-1 text-sm text-gray-900">{ability.activeVersion || 'N/A'}</dd>
+            <dt className="text-sm font-medium text-gray-500 dark:text-white/40">Active Version</dt>
+            <dd className="mt-1 text-sm text-neutral-800 dark:text-white">
+              {ability.activeVersion || 'N/A'}
+            </dd>
           </div>
           {activeVersionData.ipfsCid && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">IPFS CID</dt>
-              <dd className="mt-1 text-xs text-gray-900 font-mono break-all">
+              <dt className="text-sm font-medium text-gray-500 dark:text-white/40">IPFS CID</dt>
+              <dd className="mt-1 text-xs text-neutral-800 dark:text-white font-mono break-all">
                 {activeVersionData.ipfsCid}
               </dd>
             </div>
           )}
           {ability.deploymentStatus && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Deployment Status</dt>
-              <dd className="mt-1 text-sm text-gray-900">{ability.deploymentStatus}</dd>
+              <dt className="text-sm font-medium text-gray-500 dark:text-white/40">
+                Deployment Status
+              </dt>
+              <dd className="mt-1 text-sm text-neutral-800 dark:text-white">
+                {ability.deploymentStatus}
+              </dd>
             </div>
           )}
         </div>
       </div>
 
       {activeVersionData?.changes && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Version Changes</h2>
-          <p className="text-sm text-gray-700">{activeVersionData.changes}</p>
+        <div className="bg-white dark:bg-neutral-800 shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-neutral-800 dark:text-white mb-4">
+            Version Changes
+          </h2>
+          <p className="text-sm text-gray-700 dark:text-white/60">{activeVersionData.changes}</p>
         </div>
       )}
 
       {activeVersionData?.supportedPolicies &&
         Object.keys(activeVersionData.supportedPolicies).length > 0 && (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Supported Policies</h2>
+          <div className="bg-white dark:bg-neutral-800 shadow rounded-lg p-6">
+            <h2 className="text-lg font-medium text-neutral-800 dark:text-white mb-4">
+              Supported Policies
+            </h2>
             <div className="space-y-2">
               {Object.entries(activeVersionData.supportedPolicies).map(([key, value]) => (
                 <div
                   key={key}
-                  className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded"
+                  className="text-sm text-neutral-800 dark:text-white font-mono bg-gray-50 dark:bg-white/5 px-3 py-2 rounded"
                 >
                   {key}: {value}
                 </div>
@@ -134,12 +150,12 @@ export default function AbilityOverview({
 
       {activeVersionData?.dependencies && activeVersionData.dependencies.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Dependencies</h2>
+          <h2 className="text-lg font-medium text-neutral-800 mb-4">Dependencies</h2>
           <div className="space-y-2">
             {activeVersionData.dependencies.map((dep: string) => (
               <div
                 key={dep}
-                className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded"
+                className="text-sm text-neutral-800 dark:text-white font-mono bg-gray-50 px-3 py-2 rounded"
               >
                 {dep}
               </div>
@@ -150,11 +166,11 @@ export default function AbilityOverview({
 
       {activeVersionData?.contributors && activeVersionData.contributors.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Contributors</h2>
+          <h2 className="text-lg font-medium text-neutral-800 mb-4">Contributors</h2>
           <div className="space-y-3">
             {activeVersionData.contributors.map((contributor: any, index: number) => (
-              <div key={index} className="border-l-4 border-blue-200 pl-4">
-                <div className="font-medium text-gray-900">{contributor.name}</div>
+              <div key={index} className="border-l-4 border-gray-200 dark:border-white/20 pl-4">
+                <div className="font-medium text-neutral-800">{contributor.name}</div>
                 {contributor.email && (
                   <div className="text-sm text-gray-600">{contributor.email}</div>
                 )}
@@ -164,7 +180,7 @@ export default function AbilityOverview({
                       href={contributor.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-gray-700 dark:text-white/70 hover:text-gray-800 dark:hover:text-white/80"
                     >
                       {contributor.url}
                     </a>

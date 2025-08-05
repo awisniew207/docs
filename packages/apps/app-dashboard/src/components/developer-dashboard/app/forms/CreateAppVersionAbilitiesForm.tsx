@@ -32,7 +32,9 @@ export function CreateAppVersionAbilitiesForm({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Add Abilities to App Version</CardTitle>
+        <CardTitle className="text-neutral-800 dark:text-white">
+          Add Abilities to App Version
+        </CardTitle>
         <CardDescription>
           Clicking the package name will open the ability's npm page. Otherwise, abilities will be
           added immediately when selected.
