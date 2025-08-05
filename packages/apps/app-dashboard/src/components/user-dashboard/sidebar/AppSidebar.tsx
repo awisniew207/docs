@@ -248,7 +248,7 @@ export function AppSidebar({
                                         onClick={() => handleWarningClick(child.id)}
                                       />
                                       <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover/triangle:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                        <div className="bg-gray-900 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap shadow-lg">
+                                        <div className="bg-neutral-900 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap shadow-lg">
                                           {child.warningType === 'yellow' && (
                                             <>
                                               <div className="font-medium">

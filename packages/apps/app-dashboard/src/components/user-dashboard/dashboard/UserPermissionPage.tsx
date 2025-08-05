@@ -13,7 +13,9 @@ import { StatusCard } from '../connect/ui/StatusCard';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { PageHeader } from './ui/PageHeader';
-import { useNavigate } from 'react-router-dom';
+import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
+import { useUrlRedirectUri } from '@/hooks/user-dashboard/connect/useUrlRedirectUri';
+import { useEffect } from 'react';
 
 interface AppPermissionPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -32,7 +34,29 @@ export function AppPermissionPage({
   const [localStatus, setLocalStatus] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
-  const navigate = useNavigate();
+
+  // Check if there's a redirectUri in URL for redirect logic
+  const { redirectUri } = useUrlRedirectUri();
+
+  // JWT redirect logic for when there's a redirectUri
+  const {
+    generateJWT,
+    executeRedirect,
+    isLoading: isJwtLoading,
+    loadingStatus: jwtLoadingStatus,
+    error: jwtError,
+    redirectUrl,
+  } = useJwtRedirect({ readAuthInfo });
+
+  // Handle redirect when JWT is ready
+  useEffect(() => {
+    if (redirectUrl && !localSuccess) {
+      setLocalSuccess('Success! Redirecting to app...');
+      setTimeout(() => {
+        executeRedirect();
+      }, 2000);
+    }
+  }, [redirectUrl, localSuccess, executeRedirect]);
 
   const { formData, handleFormChange } = useFormatUserPermissions(connectInfoMap, existingData);
 
@@ -91,10 +115,16 @@ export function AppPermissionPage({
         });
 
         setLocalStatus(null);
-        // Show success state for 3 seconds
+        // Show success state for 3 seconds, then handle redirect or clear success
         setLocalSuccess('Permissions granted successfully!');
-        setTimeout(() => {
+
+        // Generate JWT for redirect (useJwtRedirect will handle if there's a redirectUri)
+        setTimeout(async () => {
           setLocalSuccess(null);
+          // Only generate JWT if there's a redirectUri (for app redirects)
+          if (redirectUri) {
+            await generateJWT(connectInfoMap.app, Number(permittedVersion));
+          }
         }, 3000);
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
@@ -104,7 +134,14 @@ export function AppPermissionPage({
     } else {
       setLocalStatus(null);
     }
-  }, [formData, readAuthInfo, addPermittedActions, connectInfoMap.app, permittedVersion]);
+  }, [
+    formData,
+    readAuthInfo,
+    addPermittedActions,
+    connectInfoMap.app,
+    permittedVersion,
+    generateJWT,
+  ]);
 
   const handleUnpermit = useCallback(async () => {
     // Clear any previous local errors and success
@@ -146,15 +183,15 @@ export function AppPermissionPage({
       setLocalError(error instanceof Error ? error.message : 'Failed to unpermit app');
       setLocalStatus(null);
     }
-  }, [readAuthInfo, connectInfoMap.app, permittedVersion, navigate]);
+  }, [readAuthInfo, connectInfoMap.app, permittedVersion]);
 
   const registerFormRef = useCallback((policyIpfsCid: string, ref: PolicyFormRef) => {
     formRefs.current[policyIpfsCid] = ref;
   }, []);
 
-  const isLoading = isActionsLoading || !!localStatus || !!localSuccess;
-  const loadingStatus = actionsLoadingStatus || localStatus;
-  const error = actionsError;
+  const isLoading = isJwtLoading || isActionsLoading || !!localStatus || !!localSuccess;
+  const loadingStatus = jwtLoadingStatus || actionsLoadingStatus || localStatus;
+  const error = jwtError || actionsError;
 
   return (
     <div className={`w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>

@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { AbilityAccordion } from './AbilityAccordion';
 import { PolicyFormRef } from './PolicyForm';
+import { Card, CardContent } from '@/components/shared/ui/card';
+import { AbilityHeader } from './AbilityHeader';
+import { theme } from './theme';
 
 interface AppsAndVersionsProps {
   connectInfoMap: ConnectInfoMap;
@@ -35,7 +38,7 @@ export function AppsInfo({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: appIndex * 0.1 }}
-            className="space-y-4"
+            className="space-y-1"
           >
             {(() => {
               const versionKey = `${appName}-${activeVersion.version}`;
@@ -64,6 +67,25 @@ export function AppsInfo({
                       connectInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
                     const abilityVersion = abilityVersions[0];
 
+                    // If no visible policies, render a simple card without accordion
+                    if (visiblePolicies.length === 0) {
+                      return (
+                        <Card
+                          key={abilityKey}
+                          className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}
+                        >
+                          <CardContent className="py-1 px-2 sm:py-1.5 sm:px-3">
+                            <AbilityHeader
+                              ability={ability}
+                              abilityVersion={abilityVersion}
+                              connectInfoMap={connectInfoMap}
+                            />
+                          </CardContent>
+                        </Card>
+                      );
+                    }
+
+                    // If there are visible policies, render the accordion
                     return (
                       <AbilityAccordion
                         key={abilityKey}

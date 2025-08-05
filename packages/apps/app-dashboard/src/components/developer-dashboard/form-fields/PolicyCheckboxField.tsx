@@ -63,7 +63,20 @@ export function PolicyCheckboxField({
                 >
                   {policy.title}
                 </label>
-                <p className="text-xs text-muted-foreground">{policy.packageName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-muted-foreground">{policy.packageName}</p>
+                  <a
+                    href={`https://www.npmjs.com/package/${policy.packageName}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-75 transition-opacity"
+                    title={`View ${policy.packageName} on npm`}
+                  >
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <img src="/npm.png" alt="npm" className="w-full h-full object-contain" />
+                    </div>
+                  </a>
+                </div>
                 {policy.description && (
                   <p className="text-xs text-muted-foreground">{policy.description}</p>
                 )}

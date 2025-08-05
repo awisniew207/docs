@@ -7,6 +7,7 @@ import { AuthConnectScreen } from './AuthConnectScreen';
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useConnectMiddleware } from '@/hooks/user-dashboard/connect/useConnectMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { ReturningUserConnect } from './ReturningUserConnect';
 import { AppVersionNotInRegistryConnect } from './AppVersionNotInRegistry';
 import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
@@ -29,13 +30,24 @@ export function ConnectPageWrapper() {
     appData: data?.app,
   });
 
-  const {
-    result: isRedirectUriAuthorized,
-    error: redirectUriError,
-    redirectUri,
-  } = useUriPrecheck({
+  const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
     authorizedRedirectUris: data?.app?.redirectUris,
   });
+
+  // Fetch version data for returning users to check if version is disabled
+  const {
+    data: versionData,
+    isLoading: versionDataLoading,
+    error: versionDataError,
+  } = vincentApiClient.useGetAppVersionQuery(
+    {
+      appId: Number(appId),
+      version: userPermittedVersion || 0,
+    },
+    {
+      skip: !userPermittedVersion, // Only fetch if user has a permitted version
+    },
+  );
 
   // Early return if required params are missing
   if (!appId) {
@@ -47,12 +59,12 @@ export function ConnectPageWrapper() {
     return <ConnectPageSkeleton />;
   }
 
-  if (isLoading || isProcessing || isPermittedLoading) {
+  if (isLoading || isProcessing || isPermittedLoading || versionDataLoading) {
     return <ConnectPageSkeleton />;
   }
 
-  // Check for redirect URI validation errors
-  if (isRedirectUriAuthorized === false || redirectUriError) {
+  // Check for redirect URI validation errors (only when redirectUri is provided but invalid)
+  if (isRedirectUriAuthorized === false && redirectUri) {
     return (
       <BadRedirectUriError
         redirectUri={redirectUri || undefined}
@@ -73,7 +85,7 @@ export function ConnectPageWrapper() {
     );
   }
 
-  if (isError || error || isPermittedError) {
+  if (isError || error || isPermittedError || versionDataError) {
     const errorMessage =
       errors.length > 0
         ? errors.join(', ')
@@ -90,11 +102,13 @@ export function ConnectPageWrapper() {
     );
   }
 
-  if (isPermitted === true && userPermittedVersion) {
+  if (isPermitted === true && userPermittedVersion && versionData) {
     return (
       <ReturningUserConnect
         appData={data.app}
         version={userPermittedVersion}
+        versionData={versionData}
+        redirectUri={redirectUri || undefined}
         readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
       />
     );

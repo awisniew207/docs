@@ -6,6 +6,8 @@ import { AuthenticationErrorScreen } from '@/components/user-dashboard/connect/A
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useConnectMiddleware } from '@/hooks/user-dashboard/connect/useConnectMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
+import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
+import { BadRedirectUriError } from '@/components/user-dashboard/connect/BadRedirectUriError';
 import { AppVersionNotInRegistryUpdate } from './AppVersionNotInRegistryUpdate';
 
 export function UpdateVersionPageWrapper() {
@@ -24,6 +26,10 @@ export function UpdateVersionPageWrapper() {
     appData: data?.app,
   });
 
+  const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
+    authorizedRedirectUris: data?.app?.redirectUris,
+  });
+
   // Early return if required params are missing
   if (!appId) {
     return <GeneralErrorScreen errorDetails="App ID was not provided" />;
@@ -38,6 +44,16 @@ export function UpdateVersionPageWrapper() {
 
   if (isLoading || isProcessing || isPermittedLoading) {
     return <ConnectPageSkeleton />;
+  }
+
+  // Check for redirect URI validation errors (only when redirectUri is provided but invalid)
+  if (isRedirectUriAuthorized === false && redirectUri) {
+    return (
+      <BadRedirectUriError
+        redirectUri={redirectUri || undefined}
+        authorizedUris={data?.app?.redirectUris}
+      />
+    );
   }
 
   if (isError || error || isPermittedError) {
