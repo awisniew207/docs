@@ -1,9 +1,4 @@
-# 2.0.0 (2025-08-05)
-
-### 🚀 Features
-
-- Add validateAbilityExecutionAndGetPolicies() method ([176e2023](https://github.com/LIT-Protocol/Vincent/commit/176e2023))
-- Add CBOR2 encoding to policy parameter persistence and loading from the chain ([4f592cea](https://github.com/LIT-Protocol/Vincent/commit/4f592cea))
+# 1.0.1 (2025-08-05)
 
 ### 🩹 Fixes
 
@@ -13,7 +8,21 @@
   - Removed dynamic imports
   - Replaced `Buffer` dependency with ethers.utils.hexlify usage
 
-- ### Enable typedoc generation for the contracts-sdk ([bcf9244c](https://github.com/LIT-Protocol/Vincent/commit/bcf9244c))
+### ❤️ Thank You
+
+- Daryl Collins
+
+# 1.0.0 (2025-08-05)
+
+### 🚀 Features
+
+- Add validateAbilityExecutionAndGetPolicies() method ([176e2023](https://github.com/LIT-Protocol/Vincent/commit/176e2023))
+- Add CBOR2 encoding to policy parameter persistence and loading from the chain ([4f592cea](https://github.com/LIT-Protocol/Vincent/commit/4f592cea))
+
+### 🩹 Fixes
+
+### Enable typedoc generation for the contracts-sdk ([bcf9244c](https://github.com/LIT-Protocol/Vincent/commit/bcf9244c))
+
 - Return null from getAppVersion() if the error is an AppNotRegistered error (previously only did this for AppVersionNotRegistered) ([176e2023](https://github.com/LIT-Protocol/Vincent/commit/176e2023))
 - De-dupe definitions in our combined Vincent Diamond ABI to avoid being spammed by logging from ethers about the duplication ([176e2023](https://github.com/LIT-Protocol/Vincent/commit/176e2023))
 
