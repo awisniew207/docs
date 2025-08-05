@@ -37,7 +37,7 @@ nx action:build ability-morpho
 Building will be done automatically. Deploy the ability:
 
 ```bash
-nx action:deploy ability-erc20-approval
+nx action:deploy ability-morpho
 ```
 
 ## Project Structure
