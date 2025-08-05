@@ -38,7 +38,7 @@ export function AppsInfo({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: appIndex * 0.1 }}
-            className="space-y-4"
+            className="space-y-1"
           >
             {(() => {
               const versionKey = `${appName}-${activeVersion.version}`;
@@ -74,7 +74,7 @@ export function AppsInfo({
                           key={abilityKey}
                           className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}
                         >
-                          <CardContent className="p-3 sm:p-6">
+                          <CardContent className="py-1 px-2 sm:py-1.5 sm:px-3">
                             <AbilityHeader
                               ability={ability}
                               abilityVersion={abilityVersion}

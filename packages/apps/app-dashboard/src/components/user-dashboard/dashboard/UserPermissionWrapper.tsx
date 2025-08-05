@@ -4,6 +4,8 @@ import { GeneralErrorScreen } from '../connect/GeneralErrorScreen';
 import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
+import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
+import { BadRedirectUriError } from '@/components/user-dashboard/connect/BadRedirectUriError';
 import { AppPermissionPage } from './UserPermissionPage';
 import { useFetchUserPermissions } from '@/hooks/user-dashboard/dashboard/useFetchUserPermissions';
 import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/useUserPermissionsMiddleware';
@@ -30,6 +32,10 @@ export function UserPermissionWrapper() {
     pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
   });
 
+  const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
+    authorizedRedirectUris: data?.app?.redirectUris,
+  });
+
   if (isProcessing) {
     return <ConnectPageSkeleton />;
   }
@@ -43,6 +49,16 @@ export function UserPermissionWrapper() {
 
   if (isLoading || isExistingDataLoading || permissionsLoading) {
     return <ConnectPageSkeleton />;
+  }
+
+  // Check for redirect URI validation errors (only when redirectUri is provided but invalid)
+  if (isRedirectUriAuthorized === false && redirectUri) {
+    return (
+      <BadRedirectUriError
+        redirectUri={redirectUri || undefined}
+        authorizedUris={data?.app?.redirectUris}
+      />
+    );
   }
 
   if (

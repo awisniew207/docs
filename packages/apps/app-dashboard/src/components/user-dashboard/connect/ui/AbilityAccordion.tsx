@@ -49,7 +49,7 @@ export function AbilityAccordion({
         {/* Clickable Header */}
         <div
           onClick={toggleExpanded}
-          className={`p-3 sm:p-6 cursor-pointer ${theme.itemHoverBg} transition-colors border-b ${theme.cardBorder} ${!isExpanded ? 'border-b-0' : ''}`}
+          className={`py-1 px-2 sm:py-1.5 sm:px-3 cursor-pointer ${theme.itemHoverBg} transition-colors border-b ${theme.cardBorder} ${!isExpanded ? 'border-b-0' : ''}`}
         >
           <div className="flex items-center gap-3">
             <motion.div
@@ -76,7 +76,7 @@ export function AbilityAccordion({
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="overflow-hidden"
         >
-          <div className="p-3 sm:p-6 pt-4">
+          <div className="p-1.5 sm:p-2 pt-1.5">
             <RequiredPolicies
               policies={policies}
               connectInfoMap={connectInfoMap}

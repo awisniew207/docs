@@ -14,6 +14,9 @@ import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { PageHeader } from './ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
+import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
+import { useUrlRedirectUri } from '@/hooks/user-dashboard/connect/useUrlRedirectUri';
+import { useEffect } from 'react';
 
 interface UpdateVersionPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -26,6 +29,29 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
   const navigate = useNavigate();
+
+  // Check if there's a redirectUri in URL for redirect logic
+  const { redirectUri } = useUrlRedirectUri();
+
+  // JWT redirect logic for when there's a redirectUri
+  const {
+    generateJWT,
+    executeRedirect,
+    isLoading: isJwtLoading,
+    loadingStatus: jwtLoadingStatus,
+    error: jwtError,
+    redirectUrl,
+  } = useJwtRedirect({ readAuthInfo });
+
+  // Handle redirect when JWT is ready
+  useEffect(() => {
+    if (redirectUrl && !localSuccess) {
+      setLocalSuccess('Success! Redirecting to app...');
+      setTimeout(() => {
+        executeRedirect();
+      }, 2000);
+    }
+  }, [redirectUrl, localSuccess, executeRedirect]);
 
   const { formData, handleFormChange } = useConnectFormData(connectInfoMap);
 
@@ -53,8 +79,6 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
         return;
       }
 
-      console.log('formData', formData);
-
       setLocalStatus('Initializing account...');
       const userPkpWallet = new PKPEthersWallet({
         controllerSessionSigs: readAuthInfo.sessionSigs,
@@ -81,11 +105,14 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
         });
 
         setLocalStatus(null);
-        // Show success state for 3 seconds, then refresh to app page
+        // Show success state for 3 seconds, then redirect
         setLocalSuccess('Version updated successfully!');
-        setTimeout(() => {
+        setTimeout(async () => {
           setLocalSuccess(null);
-          window.location.href = `/user/appId/${connectInfoMap.app.appId}`;
+          // Only generate JWT if there's a redirectUri (for app redirects)
+          if (redirectUri) {
+            await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!);
+          }
         }, 3000);
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to update version');
@@ -93,9 +120,10 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
         return;
       }
     } else {
+      setLocalError('Some of your permissions are not valid. Please check the form and try again.');
       setLocalStatus(null);
     }
-  }, [formData, readAuthInfo, addPermittedActions, connectInfoMap.app]);
+  }, [formData, readAuthInfo, addPermittedActions, connectInfoMap.app, generateJWT]);
 
   const handleDecline = useCallback(() => {
     navigate(`/user/appId/${connectInfoMap.app.appId}`);
@@ -105,9 +133,9 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     formRefs.current[policyIpfsCid] = ref;
   }, []);
 
-  const isLoading = isActionsLoading || !!localStatus || !!localSuccess;
-  const loadingStatus = actionsLoadingStatus || localStatus;
-  const error = actionsError;
+  const isLoading = isJwtLoading || isActionsLoading || !!localStatus || !!localSuccess;
+  const loadingStatus = jwtLoadingStatus || actionsLoadingStatus || localStatus;
+  const error = jwtError || actionsError;
 
   return (
     <div className={`min-h-screen w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>

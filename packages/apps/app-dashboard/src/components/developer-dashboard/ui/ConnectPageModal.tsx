@@ -66,7 +66,7 @@ export function ConnectPageModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-full max-w-2xl bg-white dark:bg-neutral-800">
+      <DialogContent className="w-full max-w-2xl bg-white dark:bg-neutral-800 overflow-hidden">
         <DialogHeader>
           <DialogTitle>View Connect Page</DialogTitle>
           <DialogDescription>
@@ -75,7 +75,7 @@ export function ConnectPageModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-hidden">
           <div>
             <label
               htmlFor="redirectUri"
@@ -85,15 +85,19 @@ export function ConnectPageModal({
             </label>
             {redirectUris.length > 0 ? (
               <div className="flex items-center gap-3">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <Select value={selectedRedirectUri} onValueChange={setSelectedRedirectUri}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a redirect URI..." />
+                    <SelectTrigger className="w-full max-w-full overflow-hidden">
+                      <div className="truncate">
+                        <SelectValue placeholder="Choose a redirect URI..." />
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       {redirectUris.map((uri) => (
-                        <SelectItem key={uri} value={uri}>
-                          {uri}
+                        <SelectItem key={uri} value={uri} className="break-all">
+                          <span className="truncate" title={uri}>
+                            {uri}
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -104,14 +108,14 @@ export function ConnectPageModal({
                     <Button
                       variant="outline"
                       onClick={handleCopy}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 flex-shrink-0"
                     >
                       <Copy className="h-4 w-4" />
                       {copied ? 'Copied!' : 'Copy Link'}
                     </Button>
                     <Button
                       onClick={handleOpenDirectly}
-                      className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white"
+                      className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white flex-shrink-0"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Open Page
