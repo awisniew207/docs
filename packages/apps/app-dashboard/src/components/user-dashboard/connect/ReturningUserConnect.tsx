@@ -9,6 +9,7 @@ import { ActionCard } from './ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
+import { useState, useEffect } from 'react';
 
 type ReturningUserConnectProps = {
   appData: App;
@@ -22,7 +23,19 @@ export function ReturningUserConnect({
   readAuthInfo,
 }: ReturningUserConnectProps) {
   const navigate = useNavigate();
-  const { generateJWT, isLoading, loadingStatus, error } = useJwtRedirect({ readAuthInfo });
+  const [localSuccess, setLocalSuccess] = useState<string | null>(null);
+  const { generateJWT, executeRedirect, isLoading, loadingStatus, error, redirectUrl } =
+    useJwtRedirect({ readAuthInfo });
+
+  // Handle redirect when JWT is ready
+  useEffect(() => {
+    if (redirectUrl && !localSuccess) {
+      setLocalSuccess('Success! Redirecting to app...');
+      setTimeout(() => {
+        executeRedirect();
+      }, 2000);
+    }
+  }, [redirectUrl, localSuccess, executeRedirect]);
 
   const handleEditParameters = () => {
     navigate(`/user/appId/${appData.appId}`);
@@ -86,8 +99,8 @@ export function ReturningUserConnect({
                     title={`Continue to ${appData.name}`}
                     description="Proceed with your existing permissions"
                     onClick={handleContinue}
-                    isLoading={isLoading}
-                    loadingStatus={loadingStatus}
+                    isLoading={isLoading || !!localSuccess}
+                    loadingStatus={loadingStatus || (localSuccess ? localSuccess : null)}
                     error={error}
                   />
                 </div>

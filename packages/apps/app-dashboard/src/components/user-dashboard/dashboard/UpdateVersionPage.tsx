@@ -9,7 +9,6 @@ import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPer
 import { ConnectAppHeader } from '@/components/user-dashboard/connect/ui/ConnectAppHeader';
 import { AppsInfo } from '@/components/user-dashboard/connect/ui/AppInfo';
 import { ActionButtons } from '@/components/user-dashboard/connect/ui/ActionButtons';
-import { InfoBanner } from '@/components/user-dashboard/connect/ui/InfoBanner';
 import { StatusCard } from '@/components/user-dashboard/connect/ui/StatusCard';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
@@ -138,9 +137,6 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
         />
 
         <div className="px-6 py-8 space-y-6">
-          {/* Warning Banner */}
-          <InfoBanner />
-
           {/* App Header */}
           <ConnectAppHeader app={connectInfoMap.app} />
 

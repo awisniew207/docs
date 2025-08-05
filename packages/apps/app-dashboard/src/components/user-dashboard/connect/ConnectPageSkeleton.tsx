@@ -9,8 +9,8 @@ export function ConnectPageSkeleton() {
 
   return (
     <SkeletonTheme
-      baseColor={isDark ? '#1f2937' : '#f3f4f6'}
-      highlightColor={isDark ? '#374151' : '#e5e7eb'}
+      baseColor={isDark ? '#404040' : '#f3f4f6'}
+      highlightColor={isDark ? '#737373' : '#e5e7eb'}
     >
       <div className={`w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>
         {/* Main Card Container */}
