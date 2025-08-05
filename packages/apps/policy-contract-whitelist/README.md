@@ -2,22 +2,28 @@
 
 ## Overview
 
-The Contract Whitelist Policy is a Vincent Policy that restricts the signing of EVM transactions to a predefined whitelist of contract addresses and function selectors across multiple chains. This policy provides critical security controls for Vincent Agent Wallets by ensuring they can only interact with trusted contracts and approved functions.
+The Contract Whitelist Policy enforces strict access control for blockchain transactions by ensuring that Vincent Apps can only interact with
+pre-approved smart contracts and execute specific whitelisted functions on those contracts.
 
 This Vincent Policy is designed to work with Vincent Abilities, particularly the [@lit-protocol/vincent-ability-evm-transaction-signer](../ability-evm-transaction-signer/) ability, to provide granular control over which transactions can be signed.
+
+## Key Features
+
+- **Multi-chain Support**: Configure whitelists for multiple blockchain networks
+- **Granular Function Control**: Specify which functions are whitelisted using the Solidity function signature
+- **Wildcard Support**: Allow all functions for trusted contracts using the `*` wildcard
 
 ## How It Works
 
 The Contract Whitelist Policy is built using the Vincent Policy SDK and validates transactions against a hierarchical whitelist. Here's how it operates:
 
-- **Input**: Receives a serialized EVM transaction from the ability
-- **Parsing**: Uses `ethers.utils.parseTransaction` to extract transaction details
-- **Extraction**: Gets the chain ID, target contract address, and function selector (first 4 bytes of `data` field)
-- **Validation**: Checks against the whitelist hierarchy
-  - **Whitelist Matching**: The policy checks in order:
-    - Is the chain ID whitelisted?
-    - Is the contract address whitelisted for that chain?
-    - Is the function selector allowed (either explicitly or via wildcard `*`)?
+1. **Transaction Parsing**: Receives a serialized EVM transaction and parses it using ethers.js
+2. **Data Extraction**: Extracts the chain ID (the `chainId` field in the transaction), target contract address (the `to` field in the transaction), and function selector (first 4 bytes of the transaction `data` field)
+3. **Whitelist Validation**: Checks the transaction against the configured on-chain whitelist:
+   - Is the chain ID whitelisted?
+   - Is the contract address whitelisted for that chain?
+   - Is the function selector allowed (explicitly or via wildcard)?
+4. **Result**: Returns an allow or deny decision with detailed information
 
 ## Example Configuration
 
