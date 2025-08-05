@@ -18,7 +18,7 @@ export async function permitApp(params: PermitAppOptions): Promise<{ txHash: str
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const flattenedParams = await encodePermissionDataForChain(permissionData);
+    const flattenedParams = encodePermissionDataForChain(permissionData);
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
@@ -97,7 +97,7 @@ export async function setAbilityPolicyParameters(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const flattenedParams = await encodePermissionDataForChain(policyParams);
+    const flattenedParams = encodePermissionDataForChain(policyParams);
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,
