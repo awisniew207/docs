@@ -45,6 +45,8 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
+
+    return undefined;
   }, [isOpen]);
 
   const handleCopyEthAddress = async () => {
@@ -74,7 +76,7 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
     <div ref={tooltipRef}>
       <Tooltip
         open={isOpen}
-        onOpenChange={(open) => {
+        onOpenChange={(open): void => {
           // Only allow tooltip to open on desktop via hover, or mobile via click
           if (typeof window !== 'undefined' && window.innerWidth < 768) {
             // On mobile, only manual control
@@ -112,7 +114,7 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
                         theme.cardBg && theme.cardBorder ? 'text-gray-600' : 'text-gray-300'
                       }
                     >
-                      Agent PKP:
+                      Agent Wallet:
                     </div>
                     <div
                       className={`font-mono text-xs break-all ${theme.cardBg && theme.cardBorder ? 'text-black' : 'text-white'}`}
