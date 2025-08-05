@@ -62,6 +62,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function hasError(result: any): boolean {
   return result && !!result.runtimeError;
 }
@@ -596,7 +597,8 @@ describe('VincentAbilityClient failure tests', () => {
         const client = getExecuteSuccessWithSchemaAbilityClient();
         // Call with a number instead of a string for 'x'
         const result = await client.execute(
-          { x: 42 as any }, // Invalid: x should be a string
+          // @ts-expect-error intentionally passing number to string param
+          { x: 42 }, // Invalid: x should be a string
           {
             delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
           },
@@ -618,7 +620,8 @@ describe('VincentAbilityClient failure tests', () => {
         const client = getPrecheckSuccessWithSchemaAbilityClient();
         // Call with an object that doesn't have 'x' property
         const result = await client.precheck(
-          { y: 'invalid-param' } as any, // Invalid: missing 'x' property
+          // @ts-expect-error intentionally omitting required 'x' param
+          { y: 'invalid-param' }, // Invalid: missing 'x' property
           {
             delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
           },
