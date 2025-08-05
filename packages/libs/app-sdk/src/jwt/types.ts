@@ -45,7 +45,7 @@ export interface CreateJWSConfig {
   config: {
     audience: string | string[];
     expiresInMinutes: number;
-    subjectAddress?: string;
+    subjectAddress?: `0x${string}`;
     role: VincentJWTRole;
   };
 }

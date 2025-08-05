@@ -5,11 +5,15 @@ import type {
   CreateDelegateeJWTParams,
   CreatePlatformUserJWTParams,
   CreateJWSConfig,
+  JWTPayload,
   JWTWalletSigner,
 } from '../types';
 
 import { VINCENT_JWT_API_VERSION } from '../constants';
 import { toBase64Url } from './utils/base64';
+
+const isHex = (s: string): s is `0x${string}` => /^0x[0-9a-fA-F]*$/.test(s);
+const ensureHex = (s: string): `0x${string}` => (isHex(s) ? s : (`0x${s}` as `0x${string}`));
 
 function createES256KSigner(wallet: JWTWalletSigner) {
   return async (data: string | Uint8Array): Promise<string> => {
@@ -29,12 +33,16 @@ async function createJWS({ payload, wallet, config }: CreateJWSConfig) {
   const iat = Math.floor(Date.now() / 1000);
   const exp = <number>(payload.nbf || Math.floor(Date.now() / 1000) + expiresInMinutes * 60);
   const header = { alg: 'ES256K', typ: 'JWT' };
-  const _payload = {
+
+  const iss = ensureHex(await wallet.getAddress());
+  const publicKey = ensureHex(wallet.publicKey);
+
+  const _payload: JWTPayload = {
     ...payload,
     iat,
     exp,
-    iss: await wallet.getAddress(),
-    publicKey: wallet.publicKey,
+    iss,
+    publicKey,
     aud: audience,
     role,
     ...(subjectAddress ? { sub: subjectAddress } : {}),
