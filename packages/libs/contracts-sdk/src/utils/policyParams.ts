@@ -1,5 +1,5 @@
 import { decode, encode } from 'cbor2';
-import { arrayify } from 'ethers/lib/utils';
+import { arrayify, hexlify } from 'ethers/lib/utils';
 
 import type {
   PermissionDataOnChain,
@@ -43,7 +43,7 @@ export function encodePermissionDataForChain(
       const encodedParams = encode(policyParams, { collapseBigInts: false });
 
       // Convert the encoded bytes to a hex string for the contract
-      abilityPolicyParameterValues.push('0x' + Buffer.from(encodedParams).toString('hex'));
+      abilityPolicyParameterValues.push(hexlify(encodedParams));
     });
 
     policyIpfsCids.push(abilityPolicyIpfsCids);
