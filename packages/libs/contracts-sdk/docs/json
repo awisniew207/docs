@@ -6,7 +6,7 @@
 	"flags": {},
 	"children": [
 		{
-			"id": 199,
+			"id": 208,
 			"name": "getTestClient",
 			"variant": "declaration",
 			"kind": 64,
@@ -14,14 +14,14 @@
 			"sources": [
 				{
 					"fileName": "contractClient.ts",
-					"line": 93,
+					"line": 97,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L93"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L97"
 				}
 			],
 			"signatures": [
 				{
-					"id": 200,
+					"id": 209,
 					"name": "getTestClient",
 					"variant": "signature",
 					"kind": 4096,
@@ -36,7 +36,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "getClient",
-								"target": 209
+								"target": 218
 							},
 							{
 								"kind": "text",
@@ -58,14 +58,14 @@
 					"sources": [
 						{
 							"fileName": "contractClient.ts",
-							"line": 93,
+							"line": 97,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L93"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L97"
 						}
 					],
 					"parameters": [
 						{
-							"id": 201,
+							"id": 210,
 							"name": "__namedParameters",
 							"variant": "param",
 							"kind": 32768,
@@ -73,14 +73,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 202,
+									"id": 211,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 203,
+											"id": 212,
 											"name": "signer",
 											"variant": "declaration",
 											"kind": 1024,
@@ -88,9 +88,9 @@
 											"sources": [
 												{
 													"fileName": "contractClient.ts",
-													"line": 93,
+													"line": 97,
 													"character": 44,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L93"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L97"
 												}
 											],
 											"type": {
@@ -109,16 +109,16 @@
 										{
 											"title": "Properties",
 											"children": [
-												203
+												212
 											]
 										}
 									],
 									"sources": [
 										{
 											"fileName": "contractClient.ts",
-											"line": 93,
+											"line": 97,
 											"character": 42,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L93"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L97"
 										}
 									]
 								}
@@ -135,7 +135,7 @@
 			]
 		},
 		{
-			"id": 209,
+			"id": 218,
 			"name": "getClient",
 			"variant": "declaration",
 			"kind": 64,
@@ -143,14 +143,14 @@
 			"sources": [
 				{
 					"fileName": "contractClient.ts",
-					"line": 106,
+					"line": 110,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L106"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L110"
 				}
 			],
 			"signatures": [
 				{
-					"id": 210,
+					"id": 219,
 					"name": "getClient",
 					"variant": "signature",
 					"kind": 4096,
@@ -165,7 +165,7 @@
 								"kind": "inline-tag",
 								"tag": "@link",
 								"text": "getTestClient",
-								"target": 199
+								"target": 208
 							},
 							{
 								"kind": "text",
@@ -187,14 +187,14 @@
 					"sources": [
 						{
 							"fileName": "contractClient.ts",
-							"line": 106,
+							"line": 110,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L106"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L110"
 						}
 					],
 					"parameters": [
 						{
-							"id": 211,
+							"id": 220,
 							"name": "__namedParameters",
 							"variant": "param",
 							"kind": 32768,
@@ -202,14 +202,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 212,
+									"id": 221,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 213,
+											"id": 222,
 											"name": "signer",
 											"variant": "declaration",
 											"kind": 1024,
@@ -217,9 +217,9 @@
 											"sources": [
 												{
 													"fileName": "contractClient.ts",
-													"line": 106,
+													"line": 110,
 													"character": 40,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L106"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L110"
 												}
 											],
 											"type": {
@@ -238,16 +238,16 @@
 										{
 											"title": "Properties",
 											"children": [
-												213
+												222
 											]
 										}
 									],
 									"sources": [
 										{
 											"fileName": "contractClient.ts",
-											"line": 106,
+											"line": 110,
 											"character": 38,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/contractClient.ts#L106"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/contractClient.ts#L110"
 										}
 									]
 								}
@@ -293,9 +293,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 36,
+							"line": 38,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L36"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L38"
 						}
 					],
 					"type": {
@@ -315,9 +315,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 37,
+							"line": 39,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L37"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L39"
 						}
 					],
 					"type": {
@@ -344,9 +344,9 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 35,
+					"line": 37,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L35"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L37"
 				}
 			]
 		},
@@ -380,9 +380,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 44,
+							"line": 46,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L44"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L46"
 						}
 					],
 					"type": {
@@ -399,9 +399,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 45,
+							"line": 47,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L45"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L47"
 						}
 					],
 					"type": {
@@ -418,9 +418,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 46,
+							"line": 48,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L46"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L48"
 						}
 					],
 					"type": {
@@ -437,9 +437,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 47,
+							"line": 49,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L47"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L49"
 						}
 					],
 					"type": {
@@ -456,9 +456,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 48,
+							"line": 50,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L48"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L50"
 						}
 					],
 					"type": {
@@ -485,9 +485,9 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 43,
+					"line": 45,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L43"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L45"
 				}
 			]
 		},
@@ -524,9 +524,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 57,
+							"line": 59,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L57"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L59"
 						}
 					],
 					"type": {
@@ -543,9 +543,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 58,
+							"line": 60,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L58"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L60"
 						}
 					],
 					"type": {
@@ -569,14 +569,14 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 56,
+					"line": 58,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L56"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L58"
 				}
 			]
 		},
 		{
-			"id": 192,
+			"id": 201,
 			"name": "AppVersion",
 			"variant": "declaration",
 			"kind": 256,
@@ -597,46 +597,8 @@
 			},
 			"children": [
 				{
-					"id": 193,
+					"id": 202,
 					"name": "version",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 65,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L65"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 194,
-					"name": "enabled",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 66,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L66"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "boolean"
-					}
-				},
-				{
-					"id": 195,
-					"name": "abilities",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -645,7 +607,45 @@
 							"fileName": "types.ts",
 							"line": 67,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L67"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L67"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 203,
+					"name": "enabled",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 68,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L68"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 204,
+					"name": "abilities",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 69,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L69"
 						}
 					],
 					"type": {
@@ -653,14 +653,14 @@
 						"elementType": {
 							"type": "reflection",
 							"declaration": {
-								"id": 196,
+								"id": 205,
 								"name": "__type",
 								"variant": "declaration",
 								"kind": 65536,
 								"flags": {},
 								"children": [
 									{
-										"id": 197,
+										"id": 206,
 										"name": "abilityIpfsCid",
 										"variant": "declaration",
 										"kind": 1024,
@@ -668,9 +668,9 @@
 										"sources": [
 											{
 												"fileName": "types.ts",
-												"line": 57,
+												"line": 59,
 												"character": 2,
-												"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L57"
+												"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L59"
 											}
 										],
 										"type": {
@@ -679,7 +679,7 @@
 										}
 									},
 									{
-										"id": 198,
+										"id": 207,
 										"name": "policyIpfsCids",
 										"variant": "declaration",
 										"kind": 1024,
@@ -687,9 +687,9 @@
 										"sources": [
 											{
 												"fileName": "types.ts",
-												"line": 58,
+												"line": 60,
 												"character": 2,
-												"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L58"
+												"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L60"
 											}
 										],
 										"type": {
@@ -705,17 +705,17 @@
 									{
 										"title": "Properties",
 										"children": [
-											197,
-											198
+											206,
+											207
 										]
 									}
 								],
 								"sources": [
 									{
 										"fileName": "types.ts",
-										"line": 56,
+										"line": 58,
 										"character": 17,
-										"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L56"
+										"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L58"
 									}
 								]
 							}
@@ -727,111 +727,23 @@
 				{
 					"title": "Properties",
 					"children": [
-						193,
-						194,
-						195
+						202,
+						203,
+						204
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 64,
+					"line": 66,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L64"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L66"
 				}
 			]
 		},
 		{
-			"id": 72,
-			"name": "AppWithVersions",
-			"variant": "declaration",
-			"kind": 256,
-			"flags": {},
-			"comment": {
-				"summary": [],
-				"blockTags": [
-					{
-						"tag": "@category",
-						"content": [
-							{
-								"kind": "text",
-								"text": "Interfaces"
-							}
-						]
-					}
-				],
-				"modifierTags": [
-					"@expand"
-				]
-			},
-			"children": [
-				{
-					"id": 73,
-					"name": "app",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 76,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L76"
-						}
-					],
-					"type": {
-						"type": "reference",
-						"target": 78,
-						"name": "App",
-						"package": "@lit-protocol/vincent-contracts-sdk"
-					}
-				},
-				{
-					"id": 74,
-					"name": "versions",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 77,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L77"
-						}
-					],
-					"type": {
-						"type": "array",
-						"elementType": {
-							"type": "reference",
-							"target": 192,
-							"name": "AppVersion",
-							"package": "@lit-protocol/vincent-contracts-sdk"
-						}
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Properties",
-					"children": [
-						73,
-						74
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "types.ts",
-					"line": 75,
-					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L75"
-				}
-			]
-		},
-		{
-			"id": 27,
+			"id": 31,
 			"name": "RegisterAppParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -852,7 +764,7 @@
 			},
 			"children": [
 				{
-					"id": 28,
+					"id": 32,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -860,9 +772,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 83,
+							"line": 75,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L83"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L75"
 						}
 					],
 					"type": {
@@ -871,7 +783,7 @@
 					}
 				},
 				{
-					"id": 29,
+					"id": 33,
 					"name": "delegateeAddresses",
 					"variant": "declaration",
 					"kind": 1024,
@@ -879,9 +791,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 84,
+							"line": 76,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L84"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L76"
 						}
 					],
 					"type": {
@@ -893,7 +805,7 @@
 					}
 				},
 				{
-					"id": 30,
+					"id": 34,
 					"name": "versionAbilities",
 					"variant": "declaration",
 					"kind": 1024,
@@ -901,9 +813,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 85,
+							"line": 77,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L85"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L77"
 						}
 					],
 					"type": {
@@ -918,7 +830,87 @@
 				{
 					"title": "Properties",
 					"children": [
-						28,
+						32,
+						33,
+						34
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "types.ts",
+					"line": 74,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L74"
+				}
+			]
+		},
+		{
+			"id": 28,
+			"name": "RegisterNextVersionParams",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 29,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 84,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L84"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 30,
+					"name": "versionAbilities",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 85,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L85"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 84,
+						"name": "AppVersionAbilities",
+						"package": "@lit-protocol/vincent-contracts-sdk"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
 						29,
 						30
 					]
@@ -927,15 +919,15 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 82,
+					"line": 83,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L82"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L83"
 				}
 			]
 		},
 		{
 			"id": 24,
-			"name": "RegisterNextVersionParams",
+			"name": "EnableAppVersionParams",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
@@ -965,7 +957,7 @@
 							"fileName": "types.ts",
 							"line": 92,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L92"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L92"
 						}
 					],
 					"type": {
@@ -975,7 +967,7 @@
 				},
 				{
 					"id": 26,
-					"name": "versionAbilities",
+					"name": "appVersion",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -984,68 +976,7 @@
 							"fileName": "types.ts",
 							"line": 93,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L93"
-						}
-					],
-					"type": {
-						"type": "reference",
-						"target": 84,
-						"name": "AppVersionAbilities",
-						"package": "@lit-protocol/vincent-contracts-sdk"
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Properties",
-					"children": [
-						25,
-						26
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "types.ts",
-					"line": 91,
-					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L91"
-				}
-			]
-		},
-		{
-			"id": 20,
-			"name": "EnableAppVersionParams",
-			"variant": "declaration",
-			"kind": 256,
-			"flags": {},
-			"comment": {
-				"summary": [],
-				"blockTags": [
-					{
-						"tag": "@category",
-						"content": [
-							{
-								"kind": "text",
-								"text": "Interfaces"
-							}
-						]
-					}
-				]
-			},
-			"children": [
-				{
-					"id": 21,
-					"name": "appId",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 100,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L100"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L93"
 						}
 					],
 					"type": {
@@ -1054,26 +985,7 @@
 					}
 				},
 				{
-					"id": 22,
-					"name": "appVersion",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 101,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L101"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 23,
+					"id": 27,
 					"name": "enabled",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1081,9 +993,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 102,
+							"line": 94,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L102"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L94"
 						}
 					],
 					"type": {
@@ -1096,23 +1008,23 @@
 				{
 					"title": "Properties",
 					"children": [
-						21,
-						22,
-						23
+						25,
+						26,
+						27
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 99,
+					"line": 91,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L99"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L91"
 				}
 			]
 		},
 		{
-			"id": 17,
+			"id": 21,
 			"name": "AddDelegateeParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1133,7 +1045,7 @@
 			},
 			"children": [
 				{
-					"id": 18,
+					"id": 22,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1141,9 +1053,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 109,
+							"line": 101,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L109"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L101"
 						}
 					],
 					"type": {
@@ -1152,7 +1064,7 @@
 					}
 				},
 				{
-					"id": 19,
+					"id": 23,
 					"name": "delegateeAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1160,9 +1072,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 110,
+							"line": 102,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L110"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L102"
 						}
 					],
 					"type": {
@@ -1175,22 +1087,22 @@
 				{
 					"title": "Properties",
 					"children": [
-						18,
-						19
+						22,
+						23
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 108,
+					"line": 100,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L108"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L100"
 				}
 			]
 		},
 		{
-			"id": 14,
+			"id": 15,
 			"name": "RemoveDelegateeParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1211,7 +1123,7 @@
 			},
 			"children": [
 				{
-					"id": 15,
+					"id": 16,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1219,9 +1131,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 117,
+							"line": 109,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L117"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L109"
 						}
 					],
 					"type": {
@@ -1230,7 +1142,7 @@
 					}
 				},
 				{
-					"id": 16,
+					"id": 17,
 					"name": "delegateeAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1238,9 +1150,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 118,
+							"line": 110,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L118"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L110"
 						}
 					],
 					"type": {
@@ -1253,8 +1165,89 @@
 				{
 					"title": "Properties",
 					"children": [
-						15,
-						16
+						16,
+						17
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "types.ts",
+					"line": 108,
+					"character": 17,
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L108"
+				}
+			]
+		},
+		{
+			"id": 18,
+			"name": "SetDelegateeParams",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [],
+				"blockTags": [
+					{
+						"tag": "@category",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Interfaces"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 19,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 117,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L117"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 20,
+					"name": "delegateeAddresses",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 118,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L118"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "string"
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						19,
+						20
 					]
 				}
 			],
@@ -1263,12 +1256,12 @@
 					"fileName": "types.ts",
 					"line": 116,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L116"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L116"
 				}
 			]
 		},
 		{
-			"id": 12,
+			"id": 13,
 			"name": "DeleteAppParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1289,7 +1282,7 @@
 			},
 			"children": [
 				{
-					"id": 13,
+					"id": 14,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1299,7 +1292,7 @@
 							"fileName": "types.ts",
 							"line": 125,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L125"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L125"
 						}
 					],
 					"type": {
@@ -1312,7 +1305,7 @@
 				{
 					"title": "Properties",
 					"children": [
-						13
+						14
 					]
 				}
 			],
@@ -1321,12 +1314,12 @@
 					"fileName": "types.ts",
 					"line": 124,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L124"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L124"
 				}
 			]
 		},
 		{
-			"id": 10,
+			"id": 11,
 			"name": "UndeleteAppParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1347,7 +1340,7 @@
 			},
 			"children": [
 				{
-					"id": 11,
+					"id": 12,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1357,7 +1350,7 @@
 							"fileName": "types.ts",
 							"line": 132,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L132"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L132"
 						}
 					],
 					"type": {
@@ -1370,7 +1363,7 @@
 				{
 					"title": "Properties",
 					"children": [
-						11
+						12
 					]
 				}
 			],
@@ -1379,12 +1372,12 @@
 					"fileName": "types.ts",
 					"line": 131,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L131"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L131"
 				}
 			]
 		},
 		{
-			"id": 8,
+			"id": 9,
 			"name": "GetAppByIdParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1405,7 +1398,7 @@
 			},
 			"children": [
 				{
-					"id": 9,
+					"id": 10,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1415,7 +1408,7 @@
 							"fileName": "types.ts",
 							"line": 139,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L139"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L139"
 						}
 					],
 					"type": {
@@ -1428,7 +1421,7 @@
 				{
 					"title": "Properties",
 					"children": [
-						9
+						10
 					]
 				}
 			],
@@ -1437,12 +1430,12 @@
 					"fileName": "types.ts",
 					"line": 138,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L138"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L138"
 				}
 			]
 		},
 		{
-			"id": 5,
+			"id": 6,
 			"name": "GetAppVersionParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1463,7 +1456,7 @@
 			},
 			"children": [
 				{
-					"id": 6,
+					"id": 7,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1471,9 +1464,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 146,
+							"line": 150,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L146"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L150"
 						}
 					],
 					"type": {
@@ -1482,7 +1475,7 @@
 					}
 				},
 				{
-					"id": 7,
+					"id": 8,
 					"name": "version",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1490,9 +1483,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 147,
+							"line": 151,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L147"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L151"
 						}
 					],
 					"type": {
@@ -1505,17 +1498,17 @@
 				{
 					"title": "Properties",
 					"children": [
-						6,
-						7
+						7,
+						8
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 145,
+					"line": 149,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L145"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L149"
 				}
 			]
 		},
@@ -1549,9 +1542,28 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 154,
+							"line": 158,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L154"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L158"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 5,
+					"name": "offset",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 159,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L159"
 						}
 					],
 					"type": {
@@ -1564,16 +1576,17 @@
 				{
 					"title": "Properties",
 					"children": [
-						4
+						4,
+						5
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 153,
+					"line": 157,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L153"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L157"
 				}
 			]
 		},
@@ -1607,9 +1620,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 161,
+							"line": 166,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L161"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L166"
 						}
 					],
 					"type": {
@@ -1629,14 +1642,14 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 160,
+					"line": 165,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L160"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L165"
 				}
 			]
 		},
 		{
-			"id": 35,
+			"id": 39,
 			"name": "GetDelegatedPkpEthAddressesParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -1657,7 +1670,7 @@
 			},
 			"children": [
 				{
-					"id": 36,
+					"id": 40,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1665,9 +1678,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 168,
+							"line": 173,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L168"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L173"
 						}
 					],
 					"type": {
@@ -1676,7 +1689,7 @@
 					}
 				},
 				{
-					"id": 37,
+					"id": 41,
 					"name": "version",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1684,9 +1697,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 169,
+							"line": 174,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L169"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L174"
 						}
 					],
 					"type": {
@@ -1695,91 +1708,22 @@
 					}
 				},
 				{
-					"id": 38,
-					"name": "pageOpts",
+					"id": 42,
+					"name": "offset",
 					"variant": "declaration",
 					"kind": 1024,
-					"flags": {
-						"isOptional": true
-					},
+					"flags": {},
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 170,
+							"line": 175,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L170"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L175"
 						}
 					],
 					"type": {
-						"type": "reflection",
-						"declaration": {
-							"id": 39,
-							"name": "__type",
-							"variant": "declaration",
-							"kind": 65536,
-							"flags": {},
-							"children": [
-								{
-									"id": 40,
-									"name": "offset",
-									"variant": "declaration",
-									"kind": 1024,
-									"flags": {
-										"isOptional": true
-									},
-									"sources": [
-										{
-											"fileName": "types.ts",
-											"line": 171,
-											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L171"
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "number"
-									}
-								},
-								{
-									"id": 41,
-									"name": "limit",
-									"variant": "declaration",
-									"kind": 1024,
-									"flags": {
-										"isOptional": true
-									},
-									"sources": [
-										{
-											"fileName": "types.ts",
-											"line": 172,
-											"character": 4,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L172"
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "number"
-									}
-								}
-							],
-							"groups": [
-								{
-									"title": "Properties",
-									"children": [
-										40,
-										41
-									]
-								}
-							],
-							"sources": [
-								{
-									"fileName": "types.ts",
-									"line": 170,
-									"character": 13,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L170"
-								}
-							]
-						}
+						"type": "intrinsic",
+						"name": "number"
 					}
 				}
 			],
@@ -1787,23 +1731,23 @@
 				{
 					"title": "Properties",
 					"children": [
-						36,
-						37,
-						38
+						40,
+						41,
+						42
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 167,
+					"line": 172,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L167"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L172"
 				}
 			]
 		},
 		{
-			"id": 66,
+			"id": 69,
 			"name": "AbilityPolicyParameterData",
 			"variant": "declaration",
 			"kind": 256,
@@ -1830,14 +1774,14 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 181,
+					"line": 183,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L181"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L183"
 				}
 			],
 			"indexSignatures": [
 				{
-					"id": 67,
+					"id": 70,
 					"name": "__index",
 					"variant": "signature",
 					"kind": 8192,
@@ -1845,14 +1789,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 182,
+							"line": 184,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L182"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L184"
 						}
 					],
 					"parameters": [
 						{
-							"id": 68,
+							"id": 71,
 							"name": "policyIpfsCid",
 							"variant": "param",
 							"kind": 32768,
@@ -1873,7 +1817,7 @@
 							{
 								"type": "reflection",
 								"declaration": {
-									"id": 69,
+									"id": 72,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -1881,14 +1825,14 @@
 									"sources": [
 										{
 											"fileName": "types.ts",
-											"line": 183,
+											"line": 185,
 											"character": 6,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L183"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L185"
 										}
 									],
 									"indexSignatures": [
 										{
-											"id": 70,
+											"id": 73,
 											"name": "__index",
 											"variant": "signature",
 											"kind": 8192,
@@ -1896,14 +1840,14 @@
 											"sources": [
 												{
 													"fileName": "types.ts",
-													"line": 185,
+													"line": 188,
 													"character": 8,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L185"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L188"
 												}
 											],
 											"parameters": [
 												{
-													"id": 71,
+													"id": 74,
 													"name": "paramName",
 													"variant": "param",
 													"kind": 32768,
@@ -1928,7 +1872,7 @@
 			]
 		},
 		{
-			"id": 189,
+			"id": 198,
 			"name": "PermissionData",
 			"variant": "declaration",
 			"kind": 256,
@@ -1955,14 +1899,14 @@
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 196,
+					"line": 199,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L196"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L199"
 				}
 			],
 			"indexSignatures": [
 				{
-					"id": 190,
+					"id": 199,
 					"name": "__index",
 					"variant": "signature",
 					"kind": 8192,
@@ -1970,14 +1914,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 197,
+							"line": 200,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L197"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L200"
 						}
 					],
 					"parameters": [
 						{
-							"id": 191,
+							"id": 200,
 							"name": "abilityIpfsCid",
 							"variant": "param",
 							"kind": 32768,
@@ -1990,7 +1934,7 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 66,
+						"target": 69,
 						"name": "AbilityPolicyParameterData",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
@@ -1998,7 +1942,7 @@
 			]
 		},
 		{
-			"id": 184,
+			"id": 193,
 			"name": "ValidateAbilityExecutionAndGetPoliciesResult",
 			"variant": "declaration",
 			"kind": 256,
@@ -2019,65 +1963,8 @@
 			},
 			"children": [
 				{
-					"id": 185,
+					"id": 194,
 					"name": "isPermitted",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 204,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L204"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "boolean"
-					}
-				},
-				{
-					"id": 186,
-					"name": "appId",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 205,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L205"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 187,
-					"name": "appVersion",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 206,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L206"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 188,
-					"name": "decodedPolicies",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -2086,12 +1973,69 @@
 							"fileName": "types.ts",
 							"line": 207,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L207"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L207"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 195,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 208,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L208"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 196,
+					"name": "appVersion",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 209,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L209"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 197,
+					"name": "decodedPolicies",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 210,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L210"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 66,
+						"target": 69,
 						"name": "AbilityPolicyParameterData",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
@@ -2101,24 +2045,24 @@
 				{
 					"title": "Properties",
 					"children": [
-						185,
-						186,
-						187,
-						188
+						194,
+						195,
+						196,
+						197
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 203,
+					"line": 206,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L203"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L206"
 				}
 			]
 		},
 		{
-			"id": 61,
+			"id": 64,
 			"name": "PermitAppParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2139,65 +2083,8 @@
 			},
 			"children": [
 				{
-					"id": 62,
-					"name": "pkpEthAddress",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 214,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L214"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				},
-				{
-					"id": 63,
-					"name": "appId",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 215,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L215"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 64,
-					"name": "appVersion",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 216,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L216"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
 					"id": 65,
-					"name": "permissionData",
+					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -2206,12 +2093,69 @@
 							"fileName": "types.ts",
 							"line": 217,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L217"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L217"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 66,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 218,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L218"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 67,
+					"name": "appVersion",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 219,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L219"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 68,
+					"name": "permissionData",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 220,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L220"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 189,
+						"target": 198,
 						"name": "PermissionData",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
@@ -2221,24 +2165,24 @@
 				{
 					"title": "Properties",
 					"children": [
-						62,
-						63,
-						64,
-						65
+						65,
+						66,
+						67,
+						68
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 213,
+					"line": 216,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L213"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L216"
 				}
 			]
 		},
 		{
-			"id": 57,
+			"id": 60,
 			"name": "UnPermitAppParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2259,7 +2203,7 @@
 			},
 			"children": [
 				{
-					"id": 58,
+					"id": 61,
 					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2267,9 +2211,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 224,
+							"line": 227,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L224"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L227"
 						}
 					],
 					"type": {
@@ -2278,7 +2222,7 @@
 					}
 				},
 				{
-					"id": 59,
+					"id": 62,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2286,9 +2230,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 225,
+							"line": 228,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L225"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L228"
 						}
 					],
 					"type": {
@@ -2297,7 +2241,7 @@
 					}
 				},
 				{
-					"id": 60,
+					"id": 63,
 					"name": "appVersion",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2305,9 +2249,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 226,
+							"line": 229,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L226"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L229"
 						}
 					],
 					"type": {
@@ -2320,23 +2264,23 @@
 				{
 					"title": "Properties",
 					"children": [
-						58,
-						59,
-						60
+						61,
+						62,
+						63
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 223,
+					"line": 226,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L223"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L226"
 				}
 			]
 		},
 		{
-			"id": 52,
+			"id": 55,
 			"name": "SetAbilityPolicyParametersParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2357,65 +2301,8 @@
 			},
 			"children": [
 				{
-					"id": 53,
-					"name": "pkpEthAddress",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 233,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L233"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "string"
-					}
-				},
-				{
-					"id": 54,
-					"name": "appId",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 234,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L234"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
-					"id": 55,
-					"name": "appVersion",
-					"variant": "declaration",
-					"kind": 1024,
-					"flags": {},
-					"sources": [
-						{
-							"fileName": "types.ts",
-							"line": 235,
-							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L235"
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "number"
-					}
-				},
-				{
 					"id": 56,
-					"name": "policyParams",
+					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
 					"flags": {},
@@ -2424,12 +2311,69 @@
 							"fileName": "types.ts",
 							"line": 236,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L236"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L236"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 57,
+					"name": "appId",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 237,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L237"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 58,
+					"name": "appVersion",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 238,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L238"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 59,
+					"name": "policyParams",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 239,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L239"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 189,
+						"target": 198,
 						"name": "PermissionData",
 						"package": "@lit-protocol/vincent-contracts-sdk"
 					}
@@ -2439,24 +2383,24 @@
 				{
 					"title": "Properties",
 					"children": [
-						53,
-						54,
-						55,
-						56
+						56,
+						57,
+						58,
+						59
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 232,
+					"line": 235,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L232"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L235"
 				}
 			]
 		},
 		{
-			"id": 50,
+			"id": 52,
 			"name": "GetAllRegisteredAgentPkpsParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2477,7 +2421,7 @@
 			},
 			"children": [
 				{
-					"id": 51,
+					"id": 53,
 					"name": "userPkpAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2485,9 +2429,28 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 243,
+							"line": 246,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L243"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L246"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 54,
+					"name": "offset",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 247,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L247"
 						}
 					],
 					"type": {
@@ -2500,21 +2463,22 @@
 				{
 					"title": "Properties",
 					"children": [
-						51
+						53,
+						54
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 242,
+					"line": 245,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L242"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L245"
 				}
 			]
 		},
 		{
-			"id": 47,
+			"id": 49,
 			"name": "GetPermittedAppVersionForPkpParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2535,7 +2499,7 @@
 			},
 			"children": [
 				{
-					"id": 48,
+					"id": 50,
 					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2543,9 +2507,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 250,
+							"line": 254,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L250"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L254"
 						}
 					],
 					"type": {
@@ -2554,7 +2518,7 @@
 					}
 				},
 				{
-					"id": 49,
+					"id": 51,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2562,9 +2526,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 251,
+							"line": 255,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L251"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L255"
 						}
 					],
 					"type": {
@@ -2577,22 +2541,22 @@
 				{
 					"title": "Properties",
 					"children": [
-						48,
-						49
+						50,
+						51
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 249,
+					"line": 253,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L249"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L253"
 				}
 			]
 		},
 		{
-			"id": 45,
+			"id": 46,
 			"name": "GetAllPermittedAppIdsForPkpParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2613,7 +2577,7 @@
 			},
 			"children": [
 				{
-					"id": 46,
+					"id": 47,
 					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2621,9 +2585,28 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 258,
+							"line": 262,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L258"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L262"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 48,
+					"name": "offset",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 263,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L263"
 						}
 					],
 					"type": {
@@ -2636,21 +2619,22 @@
 				{
 					"title": "Properties",
 					"children": [
-						46
+						47,
+						48
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 257,
+					"line": 261,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L257"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L261"
 				}
 			]
 		},
 		{
-			"id": 42,
+			"id": 43,
 			"name": "GetAllAbilitiesAndPoliciesForAppParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2671,7 +2655,7 @@
 			},
 			"children": [
 				{
-					"id": 43,
+					"id": 44,
 					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2679,9 +2663,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 265,
+							"line": 270,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L265"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L270"
 						}
 					],
 					"type": {
@@ -2690,7 +2674,7 @@
 					}
 				},
 				{
-					"id": 44,
+					"id": 45,
 					"name": "appId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2698,9 +2682,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 266,
+							"line": 271,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L266"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L271"
 						}
 					],
 					"type": {
@@ -2713,22 +2697,22 @@
 				{
 					"title": "Properties",
 					"children": [
-						43,
-						44
+						44,
+						45
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 264,
+					"line": 269,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L264"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L269"
 				}
 			]
 		},
 		{
-			"id": 31,
+			"id": 35,
 			"name": "ValidateAbilityExecutionAndGetPoliciesParams",
 			"variant": "declaration",
 			"kind": 256,
@@ -2749,7 +2733,7 @@
 			},
 			"children": [
 				{
-					"id": 32,
+					"id": 36,
 					"name": "delegateeAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2757,9 +2741,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 273,
+							"line": 278,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L273"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L278"
 						}
 					],
 					"type": {
@@ -2768,7 +2752,7 @@
 					}
 				},
 				{
-					"id": 33,
+					"id": 37,
 					"name": "pkpEthAddress",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2776,9 +2760,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 274,
+							"line": 279,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L274"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L279"
 						}
 					],
 					"type": {
@@ -2787,7 +2771,7 @@
 					}
 				},
 				{
-					"id": 34,
+					"id": 38,
 					"name": "abilityIpfsCid",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2795,9 +2779,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 275,
+							"line": 280,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L275"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L280"
 						}
 					],
 					"type": {
@@ -2810,18 +2794,18 @@
 				{
 					"title": "Properties",
 					"children": [
-						32,
-						33,
-						34
+						36,
+						37,
+						38
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 272,
+					"line": 277,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L272"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L277"
 				}
 			]
 		},
@@ -2855,9 +2839,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 283,
+							"line": 288,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L283"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L288"
 						}
 					],
 					"signatures": [
@@ -2889,9 +2873,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 283,
+									"line": 288,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L283"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L288"
 								}
 							],
 							"parameters": [
@@ -2903,7 +2887,7 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 27,
+										"target": 31,
 										"name": "RegisterAppParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -2952,9 +2936,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 15,
+															"line": 14,
 															"character": 73,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L15"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L14"
 														}
 													],
 													"type": {
@@ -2974,9 +2958,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 15,
+													"line": 14,
 													"character": 71,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L15"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L14"
 												}
 											]
 										}
@@ -2997,9 +2981,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 290,
+							"line": 295,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L290"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L295"
 						}
 					],
 					"signatures": [
@@ -3040,9 +3024,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 290,
+									"line": 295,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L290"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L295"
 								}
 							],
 							"parameters": [
@@ -3054,7 +3038,7 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 24,
+										"target": 28,
 										"name": "RegisterNextVersionParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -3103,9 +3087,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 47,
+															"line": 46,
 															"character": 13,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L47"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L46"
 														}
 													],
 													"type": {
@@ -3122,9 +3106,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 47,
+															"line": 46,
 															"character": 29,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L47"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L46"
 														}
 													],
 													"type": {
@@ -3145,9 +3129,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 47,
+													"line": 46,
 													"character": 11,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L47"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L46"
 												}
 											]
 										}
@@ -3168,9 +3152,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 299,
+							"line": 304,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L299"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L304"
 						}
 					],
 					"signatures": [
@@ -3202,9 +3186,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 299,
+									"line": 304,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L299"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L304"
 								}
 							],
 							"parameters": [
@@ -3216,7 +3200,7 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 20,
+										"target": 24,
 										"name": "EnableAppVersionParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -3265,9 +3249,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 92,
+															"line": 90,
 															"character": 13,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L92"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L90"
 														}
 													],
 													"type": {
@@ -3287,9 +3271,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 92,
+													"line": 90,
 													"character": 11,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L92"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L90"
 												}
 											]
 										}
@@ -3310,9 +3294,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 308,
+							"line": 313,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L308"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L313"
 						}
 					],
 					"signatures": [
@@ -3344,9 +3328,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 308,
+									"line": 313,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L308"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L313"
 								}
 							],
 							"parameters": [
@@ -3358,7 +3342,7 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 17,
+										"target": 21,
 										"name": "AddDelegateeParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -3407,9 +3391,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 121,
+															"line": 119,
 															"character": 75,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L121"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L119"
 														}
 													],
 													"type": {
@@ -3429,9 +3413,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 121,
+													"line": 119,
 													"character": 73,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L121"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L119"
 												}
 											]
 										}
@@ -3452,9 +3436,9 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 314,
+							"line": 319,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L314"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L319"
 						}
 					],
 					"signatures": [
@@ -3486,9 +3470,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 314,
+									"line": 319,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L314"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L319"
 								}
 							],
 							"parameters": [
@@ -3500,7 +3484,7 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 14,
+										"target": 15,
 										"name": "RemoveDelegateeParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -3549,9 +3533,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 150,
+															"line": 148,
 															"character": 81,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L150"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L148"
 														}
 													],
 													"type": {
@@ -3571,9 +3555,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 150,
+													"line": 148,
 													"character": 79,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L150"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L148"
 												}
 											]
 										}
@@ -3587,22 +3571,22 @@
 				},
 				{
 					"id": 119,
-					"name": "deleteApp",
+					"name": "setDelegatee",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {},
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 324,
+							"line": 328,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L324"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L328"
 						}
 					],
 					"signatures": [
 						{
 							"id": 120,
-							"name": "deleteApp",
+							"name": "setDelegatee",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -3610,7 +3594,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Delete an application by setting its isDeleted flag to true"
+										"text": "Set delegatees for an app (replaces all existing delegatees)"
 									}
 								],
 								"blockTags": [
@@ -3619,7 +3603,7 @@
 										"content": [
 											{
 												"kind": "text",
-												"text": "The hash of the transaction that marked the app deleted"
+												"text": "The hash of the transaction that set the delegatees"
 											}
 										]
 									}
@@ -3628,9 +3612,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 324,
+									"line": 328,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L324"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L328"
 								}
 							],
 							"parameters": [
@@ -3642,8 +3626,8 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 12,
-										"name": "DeleteAppParams",
+										"target": 18,
+										"name": "SetDelegateeParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								},
@@ -3691,9 +3675,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 179,
-															"character": 69,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L179"
+															"line": 177,
+															"character": 75,
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L177"
 														}
 													],
 													"type": {
@@ -3713,9 +3697,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 179,
-													"character": 67,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L179"
+													"line": 177,
+													"character": 73,
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L177"
 												}
 											]
 										}
@@ -3729,22 +3713,22 @@
 				},
 				{
 					"id": 125,
-					"name": "undeleteApp",
+					"name": "deleteApp",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {},
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 330,
+							"line": 335,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L330"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L335"
 						}
 					],
 					"signatures": [
 						{
 							"id": 126,
-							"name": "undeleteApp",
+							"name": "deleteApp",
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
@@ -3752,7 +3736,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Undelete an app by setting its isDeleted flag to false"
+										"text": "Delete an application by setting its isDeleted flag to true"
 									}
 								],
 								"blockTags": [
@@ -3761,7 +3745,7 @@
 										"content": [
 											{
 												"kind": "text",
-												"text": "The hash of the transaction that undeleted the app"
+												"text": "The hash of the transaction that marked the app deleted"
 											}
 										]
 									}
@@ -3770,9 +3754,9 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 330,
+									"line": 335,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L330"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L335"
 								}
 							],
 							"parameters": [
@@ -3784,8 +3768,8 @@
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 10,
-										"name": "UndeleteAppParams",
+										"target": 13,
+										"name": "DeleteAppParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								},
@@ -3833,9 +3817,9 @@
 													"sources": [
 														{
 															"fileName": "internal/app/App.ts",
-															"line": 203,
-															"character": 73,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L203"
+															"line": 206,
+															"character": 69,
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L206"
 														}
 													],
 													"type": {
@@ -3855,9 +3839,9 @@
 											"sources": [
 												{
 													"fileName": "internal/app/App.ts",
-													"line": 203,
-													"character": 71,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/App.ts#L203"
+													"line": 206,
+													"character": 67,
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L206"
 												}
 											]
 										}
@@ -3871,6 +3855,148 @@
 				},
 				{
 					"id": 131,
+					"name": "undeleteApp",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 341,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L341"
+						}
+					],
+					"signatures": [
+						{
+							"id": 132,
+							"name": "undeleteApp",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Undelete an app by setting its isDeleted flag to false"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "The hash of the transaction that undeleted the app"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "types.ts",
+									"line": 341,
+									"character": 2,
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L341"
+								}
+							],
+							"parameters": [
+								{
+									"id": 133,
+									"name": "params",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": 11,
+										"name": "UndeleteAppParams",
+										"package": "@lit-protocol/vincent-contracts-sdk"
+									}
+								},
+								{
+									"id": 134,
+									"name": "overrides",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {
+										"isOptional": true
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../../node_modules/.pnpm/@ethersproject+contracts@5.8.0/node_modules/@ethersproject/contracts/src.ts/index.ts",
+											"qualifiedName": "Overrides"
+										},
+										"name": "Overrides",
+										"package": "@ethersproject/contracts"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reflection",
+										"declaration": {
+											"id": 135,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"children": [
+												{
+													"id": 136,
+													"name": "txHash",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "internal/app/App.ts",
+															"line": 230,
+															"character": 73,
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L230"
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "string"
+													}
+												}
+											],
+											"groups": [
+												{
+													"title": "Properties",
+													"children": [
+														136
+													]
+												}
+											],
+											"sources": [
+												{
+													"fileName": "internal/app/App.ts",
+													"line": 230,
+													"character": 71,
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/App.ts#L230"
+												}
+											]
+										}
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 137,
 					"name": "getAppById",
 					"variant": "declaration",
 					"kind": 2048,
@@ -3878,14 +4004,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 336,
+							"line": 347,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L336"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L347"
 						}
 					],
 					"signatures": [
 						{
-							"id": 132,
+							"id": 138,
 							"name": "getAppById",
 							"variant": "signature",
 							"kind": 4096,
@@ -3912,21 +4038,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 336,
+									"line": 347,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L336"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L347"
 								}
 							],
 							"parameters": [
 								{
-									"id": 133,
+									"id": 139,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 8,
+										"target": 9,
 										"name": "GetAppByIdParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -3962,7 +4088,100 @@
 					]
 				},
 				{
-					"id": 134,
+					"id": 140,
+					"name": "getAppIdByDelegatee",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 353,
+							"character": 2,
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L353"
+						}
+					],
+					"signatures": [
+						{
+							"id": 141,
+							"name": "getAppIdByDelegatee",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Get the app ID for a specific delegatee address"
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "The app ID for the specified delegatee address"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "types.ts",
+									"line": 353,
+									"character": 2,
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L353"
+								}
+							],
+							"parameters": [
+								{
+									"id": 142,
+									"name": "params",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "src/types.ts",
+											"qualifiedName": "GetAppIdByDelegateeParams"
+										},
+										"name": "GetAppIdByDelegateeParams",
+										"package": "@lit-protocol/vincent-contracts-sdk"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../node_modules/.pnpm/typescript@5.8.3/node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "union",
+										"types": [
+											{
+												"type": "literal",
+												"value": null
+											},
+											{
+												"type": "intrinsic",
+												"name": "number"
+											}
+										]
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 143,
 					"name": "getAppVersion",
 					"variant": "declaration",
 					"kind": 2048,
@@ -3970,14 +4189,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 342,
+							"line": 359,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L342"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L359"
 						}
 					],
 					"signatures": [
 						{
-							"id": 135,
+							"id": 144,
 							"name": "getAppVersion",
 							"variant": "signature",
 							"kind": 4096,
@@ -4004,21 +4223,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 342,
+									"line": 359,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L342"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L359"
 								}
 							],
 							"parameters": [
 								{
-									"id": 136,
+									"id": 145,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 5,
+										"target": 6,
 										"name": "GetAppVersionParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -4041,14 +4260,14 @@
 											{
 												"type": "reflection",
 												"declaration": {
-													"id": 137,
+													"id": 146,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
 													"flags": {},
 													"children": [
 														{
-															"id": 138,
+															"id": 147,
 															"name": "appVersion",
 															"variant": "declaration",
 															"kind": 1024,
@@ -4056,14 +4275,14 @@
 															"sources": [
 																{
 																	"fileName": "internal/app/AppView.ts",
-																	"line": 47,
+																	"line": 68,
 																	"character": 13,
-																	"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L47"
+																	"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L68"
 																}
 															],
 															"type": {
 																"type": "reference",
-																"target": 192,
+																"target": 201,
 																"name": "AppVersion",
 																"package": "@lit-protocol/vincent-contracts-sdk"
 															}
@@ -4073,16 +4292,16 @@
 														{
 															"title": "Properties",
 															"children": [
-																138
+																147
 															]
 														}
 													],
 													"sources": [
 														{
 															"fileName": "internal/app/AppView.ts",
-															"line": 47,
+															"line": 68,
 															"character": 11,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L47"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L68"
 														}
 													]
 												}
@@ -4097,7 +4316,7 @@
 					]
 				},
 				{
-					"id": 139,
+					"id": 148,
 					"name": "getAppsByManagerAddress",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4105,14 +4324,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 348,
+							"line": 365,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L348"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L365"
 						}
 					],
 					"signatures": [
 						{
-							"id": 140,
+							"id": 149,
 							"name": "getAppsByManagerAddress",
 							"variant": "signature",
 							"kind": 4096,
@@ -4139,14 +4358,14 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 348,
+									"line": 365,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L348"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L365"
 								}
 							],
 							"parameters": [
 								{
-									"id": 141,
+									"id": 150,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
@@ -4171,55 +4390,48 @@
 										"elementType": {
 											"type": "reflection",
 											"declaration": {
-												"id": 142,
+												"id": 151,
 												"name": "__type",
 												"variant": "declaration",
 												"kind": 65536,
 												"flags": {},
 												"children": [
 													{
-														"id": 143,
-														"name": "app",
+														"id": 152,
+														"name": "id",
 														"variant": "declaration",
 														"kind": 1024,
 														"flags": {},
 														"sources": [
 															{
-																"fileName": "types.ts",
-																"line": 76,
-																"character": 2,
-																"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L76"
+																"fileName": "internal/app/AppView.ts",
+																"line": 106,
+																"character": 13,
+																"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L106"
 															}
 														],
 														"type": {
-															"type": "reference",
-															"target": 78,
-															"name": "App",
-															"package": "@lit-protocol/vincent-contracts-sdk"
+															"type": "intrinsic",
+															"name": "number"
 														}
 													},
 													{
-														"id": 144,
-														"name": "versions",
+														"id": 153,
+														"name": "versionCount",
 														"variant": "declaration",
 														"kind": 1024,
 														"flags": {},
 														"sources": [
 															{
-																"fileName": "types.ts",
-																"line": 77,
-																"character": 2,
-																"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L77"
+																"fileName": "internal/app/AppView.ts",
+																"line": 106,
+																"character": 25,
+																"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L106"
 															}
 														],
 														"type": {
-															"type": "array",
-															"elementType": {
-																"type": "reference",
-																"target": 192,
-																"name": "AppVersion",
-																"package": "@lit-protocol/vincent-contracts-sdk"
-															}
+															"type": "intrinsic",
+															"name": "number"
 														}
 													}
 												],
@@ -4227,17 +4439,17 @@
 													{
 														"title": "Properties",
 														"children": [
-															143,
-															144
+															152,
+															153
 														]
 													}
 												],
 												"sources": [
 													{
-														"fileName": "types.ts",
-														"line": 75,
-														"character": 17,
-														"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L75"
+														"fileName": "internal/app/AppView.ts",
+														"line": 106,
+														"character": 11,
+														"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/app/AppView.ts#L106"
 													}
 												]
 											}
@@ -4251,7 +4463,7 @@
 					]
 				},
 				{
-					"id": 145,
+					"id": 154,
 					"name": "getAppByDelegateeAddress",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4259,14 +4471,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 356,
+							"line": 373,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L356"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L373"
 						}
 					],
 					"signatures": [
 						{
-							"id": 146,
+							"id": 155,
 							"name": "getAppByDelegateeAddress",
 							"variant": "signature",
 							"kind": 4096,
@@ -4293,14 +4505,14 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 356,
+									"line": 373,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L356"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L373"
 								}
 							],
 							"parameters": [
 								{
-									"id": 147,
+									"id": 156,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
@@ -4343,7 +4555,7 @@
 					]
 				},
 				{
-					"id": 148,
+					"id": 157,
 					"name": "getDelegatedPkpEthAddresses",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4351,14 +4563,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 369,
+							"line": 385,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L369"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L385"
 						}
 					],
 					"signatures": [
 						{
-							"id": 149,
+							"id": 158,
 							"name": "getDelegatedPkpEthAddresses",
 							"variant": "signature",
 							"kind": 4096,
@@ -4371,19 +4583,11 @@
 									},
 									{
 										"kind": "code",
-										"text": "`pageOpts.offset`"
+										"text": "`offset`"
 									},
 									{
 										"kind": "text",
-										"text": " to fetch more than the initial 100\n\nProvide "
-									},
-									{
-										"kind": "code",
-										"text": "`pageOpts.limit`"
-									},
-									{
-										"kind": "text",
-										"text": " to fetch more or less than 100-at-a-time"
+										"text": " to fetch paginated results."
 									}
 								],
 								"blockTags": [
@@ -4401,21 +4605,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 369,
+									"line": 385,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L369"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L385"
 								}
 							],
 							"parameters": [
 								{
-									"id": 150,
+									"id": 159,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 35,
+										"target": 39,
 										"name": "GetDelegatedPkpEthAddressesParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -4443,7 +4647,7 @@
 					]
 				},
 				{
-					"id": 151,
+					"id": 160,
 					"name": "permitApp",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4451,14 +4655,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 377,
+							"line": 393,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L377"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L393"
 						}
 					],
 					"signatures": [
 						{
-							"id": 152,
+							"id": 161,
 							"name": "permitApp",
 							"variant": "signature",
 							"kind": 4096,
@@ -4485,27 +4689,27 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 377,
+									"line": 393,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L377"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L393"
 								}
 							],
 							"parameters": [
 								{
-									"id": 153,
+									"id": 162,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 61,
+										"target": 64,
 										"name": "PermitAppParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								},
 								{
-									"id": 154,
+									"id": 163,
 									"name": "overrides",
 									"variant": "param",
 									"kind": 32768,
@@ -4533,14 +4737,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 155,
+											"id": 164,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 156,
+													"id": 165,
 													"name": "txHash",
 													"variant": "declaration",
 													"kind": 1024,
@@ -4550,7 +4754,7 @@
 															"fileName": "internal/user/User.ts",
 															"line": 11,
 															"character": 69,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/user/User.ts#L11"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/user/User.ts#L11"
 														}
 													],
 													"type": {
@@ -4563,7 +4767,7 @@
 												{
 													"title": "Properties",
 													"children": [
-														156
+														165
 													]
 												}
 											],
@@ -4572,7 +4776,7 @@
 													"fileName": "internal/user/User.ts",
 													"line": 11,
 													"character": 67,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/user/User.ts#L11"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/user/User.ts#L11"
 												}
 											]
 										}
@@ -4585,7 +4789,7 @@
 					]
 				},
 				{
-					"id": 157,
+					"id": 166,
 					"name": "unPermitApp",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4593,14 +4797,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 383,
+							"line": 399,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L383"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L399"
 						}
 					],
 					"signatures": [
 						{
-							"id": 158,
+							"id": 167,
 							"name": "unPermitApp",
 							"variant": "signature",
 							"kind": 4096,
@@ -4627,27 +4831,27 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 383,
+									"line": 399,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L383"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L399"
 								}
 							],
 							"parameters": [
 								{
-									"id": 159,
+									"id": 168,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 57,
+										"target": 60,
 										"name": "UnPermitAppParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								},
 								{
-									"id": 160,
+									"id": 169,
 									"name": "overrides",
 									"variant": "param",
 									"kind": 32768,
@@ -4675,14 +4879,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 161,
+											"id": 170,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 162,
+													"id": 171,
 													"name": "txHash",
 													"variant": "declaration",
 													"kind": 1024,
@@ -4692,7 +4896,7 @@
 															"fileName": "internal/user/User.ts",
 															"line": 63,
 															"character": 34,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/user/User.ts#L63"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/user/User.ts#L63"
 														}
 													],
 													"type": {
@@ -4705,7 +4909,7 @@
 												{
 													"title": "Properties",
 													"children": [
-														162
+														171
 													]
 												}
 											],
@@ -4714,7 +4918,7 @@
 													"fileName": "internal/user/User.ts",
 													"line": 63,
 													"character": 32,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/user/User.ts#L63"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/user/User.ts#L63"
 												}
 											]
 										}
@@ -4727,7 +4931,7 @@
 					]
 				},
 				{
-					"id": 163,
+					"id": 172,
 					"name": "setAbilityPolicyParameters",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4735,14 +4939,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 389,
+							"line": 405,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L389"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L405"
 						}
 					],
 					"signatures": [
 						{
-							"id": 164,
+							"id": 173,
 							"name": "setAbilityPolicyParameters",
 							"variant": "signature",
 							"kind": 4096,
@@ -4769,27 +4973,27 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 389,
+									"line": 405,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L389"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L405"
 								}
 							],
 							"parameters": [
 								{
-									"id": 165,
+									"id": 174,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 52,
+										"target": 55,
 										"name": "SetAbilityPolicyParametersParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
 								},
 								{
-									"id": 166,
+									"id": 175,
 									"name": "overrides",
 									"variant": "param",
 									"kind": 32768,
@@ -4817,14 +5021,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 167,
+											"id": 176,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 168,
+													"id": 177,
 													"name": "txHash",
 													"variant": "declaration",
 													"kind": 1024,
@@ -4834,7 +5038,7 @@
 															"fileName": "internal/user/User.ts",
 															"line": 90,
 															"character": 13,
-															"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/user/User.ts#L90"
+															"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/user/User.ts#L90"
 														}
 													],
 													"type": {
@@ -4847,7 +5051,7 @@
 												{
 													"title": "Properties",
 													"children": [
-														168
+														177
 													]
 												}
 											],
@@ -4856,7 +5060,7 @@
 													"fileName": "internal/user/User.ts",
 													"line": 90,
 													"character": 11,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/internal/user/User.ts#L90"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/internal/user/User.ts#L90"
 												}
 											]
 										}
@@ -4869,7 +5073,7 @@
 					]
 				},
 				{
-					"id": 169,
+					"id": 178,
 					"name": "getAllRegisteredAgentPkpEthAddresses",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4877,14 +5081,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 398,
+							"line": 414,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L398"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L414"
 						}
 					],
 					"signatures": [
 						{
-							"id": 170,
+							"id": 179,
 							"name": "getAllRegisteredAgentPkpEthAddresses",
 							"variant": "signature",
 							"kind": 4096,
@@ -4911,21 +5115,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 398,
+									"line": 414,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L398"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L414"
 								}
 							],
 							"parameters": [
 								{
-									"id": 171,
+									"id": 180,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 50,
+										"target": 52,
 										"name": "GetAllRegisteredAgentPkpsParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -4953,7 +5157,7 @@
 					]
 				},
 				{
-					"id": 172,
+					"id": 181,
 					"name": "getPermittedAppVersionForPkp",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4961,14 +5165,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 406,
+							"line": 422,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L406"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L422"
 						}
 					],
 					"signatures": [
 						{
-							"id": 173,
+							"id": 182,
 							"name": "getPermittedAppVersionForPkp",
 							"variant": "signature",
 							"kind": 4096,
@@ -4995,21 +5199,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 406,
+									"line": 422,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L406"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L422"
 								}
 							],
 							"parameters": [
 								{
-									"id": 174,
+									"id": 183,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 47,
+										"target": 49,
 										"name": "GetPermittedAppVersionForPkpParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -5043,7 +5247,7 @@
 					]
 				},
 				{
-					"id": 175,
+					"id": 184,
 					"name": "getAllPermittedAppIdsForPkp",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5051,14 +5255,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 414,
+							"line": 430,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L414"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L430"
 						}
 					],
 					"signatures": [
 						{
-							"id": 176,
+							"id": 185,
 							"name": "getAllPermittedAppIdsForPkp",
 							"variant": "signature",
 							"kind": 4096,
@@ -5085,21 +5289,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 414,
+									"line": 430,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L414"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L430"
 								}
 							],
 							"parameters": [
 								{
-									"id": 177,
+									"id": 186,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 45,
+										"target": 46,
 										"name": "GetAllPermittedAppIdsForPkpParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -5127,7 +5331,7 @@
 					]
 				},
 				{
-					"id": 178,
+					"id": 187,
 					"name": "getAllAbilitiesAndPoliciesForApp",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5135,14 +5339,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 422,
+							"line": 438,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L422"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L438"
 						}
 					],
 					"signatures": [
 						{
-							"id": 179,
+							"id": 188,
 							"name": "getAllAbilitiesAndPoliciesForApp",
 							"variant": "signature",
 							"kind": 4096,
@@ -5169,21 +5373,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 422,
+									"line": 438,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L422"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L438"
 								}
 							],
 							"parameters": [
 								{
-									"id": 180,
+									"id": 189,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 42,
+										"target": 43,
 										"name": "GetAllAbilitiesAndPoliciesForAppParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -5198,7 +5402,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 189,
+										"target": 198,
 										"name": "PermissionData",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -5210,7 +5414,7 @@
 					]
 				},
 				{
-					"id": 181,
+					"id": 190,
 					"name": "validateAbilityExecutionAndGetPolicies",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5218,14 +5422,14 @@
 					"sources": [
 						{
 							"fileName": "types.ts",
-							"line": 430,
+							"line": 446,
 							"character": 2,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L430"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L446"
 						}
 					],
 					"signatures": [
 						{
-							"id": 182,
+							"id": 191,
 							"name": "validateAbilityExecutionAndGetPolicies",
 							"variant": "signature",
 							"kind": 4096,
@@ -5252,21 +5456,21 @@
 							"sources": [
 								{
 									"fileName": "types.ts",
-									"line": 430,
+									"line": 446,
 									"character": 2,
-									"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L430"
+									"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L446"
 								}
 							],
 							"parameters": [
 								{
-									"id": 183,
+									"id": 192,
 									"name": "params",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 31,
+										"target": 35,
 										"name": "ValidateAbilityExecutionAndGetPoliciesParams",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -5281,7 +5485,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 184,
+										"target": 193,
 										"name": "ValidateAbilityExecutionAndGetPoliciesResult",
 										"package": "@lit-protocol/vincent-contracts-sdk"
 									}
@@ -5305,32 +5509,34 @@
 						119,
 						125,
 						131,
-						134,
-						139,
-						145,
+						137,
+						140,
+						143,
 						148,
-						151,
+						154,
 						157,
-						163,
-						169,
+						160,
+						166,
 						172,
-						175,
 						178,
-						181
+						181,
+						184,
+						187,
+						190
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "types.ts",
-					"line": 278,
+					"line": 283,
 					"character": 17,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/types.ts#L278"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/types.ts#L283"
 				}
 			]
 		},
 		{
-			"id": 214,
+			"id": 223,
 			"name": "createContract",
 			"variant": "declaration",
 			"kind": 64,
@@ -5340,12 +5546,12 @@
 					"fileName": "utils.ts",
 					"line": 14,
 					"character": 16,
-					"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/utils.ts#L14"
+					"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/utils.ts#L14"
 				}
 			],
 			"signatures": [
 				{
-					"id": 215,
+					"id": 224,
 					"name": "createContract",
 					"variant": "signature",
 					"kind": 4096,
@@ -5386,12 +5592,12 @@
 							"fileName": "utils.ts",
 							"line": 14,
 							"character": 16,
-							"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/utils.ts#L14"
+							"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/utils.ts#L14"
 						}
 					],
 					"parameters": [
 						{
-							"id": 216,
+							"id": 225,
 							"name": "__namedParameters",
 							"variant": "param",
 							"kind": 32768,
@@ -5399,14 +5605,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 217,
+									"id": 226,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 218,
+											"id": 227,
 											"name": "signer",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5416,7 +5622,7 @@
 													"fileName": "utils.ts",
 													"line": 18,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/utils.ts#L18"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/utils.ts#L18"
 												}
 											],
 											"type": {
@@ -5431,7 +5637,7 @@
 											}
 										},
 										{
-											"id": 219,
+											"id": 228,
 											"name": "contractAddress",
 											"variant": "declaration",
 											"kind": 1024,
@@ -5441,7 +5647,7 @@
 													"fileName": "utils.ts",
 													"line": 19,
 													"character": 2,
-													"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/utils.ts#L19"
+													"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/utils.ts#L19"
 												}
 											],
 											"type": {
@@ -5454,8 +5660,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												218,
-												219
+												227,
+												228
 											]
 										}
 									],
@@ -5464,7 +5670,7 @@
 											"fileName": "utils.ts",
 											"line": 17,
 											"character": 3,
-											"url": "https://github.com/LIT-Protocol/Vincent/blob/1d0291702859b630f17e14434b05465edc24e22b/packages/libs/contracts-sdk/src/utils.ts#L17"
+											"url": "https://github.com/LIT-Protocol/Vincent/blob/2a789eadadbbf366908606f34f5f808437d29a70/packages/libs/contracts-sdk/src/utils.ts#L17"
 										}
 									]
 								}
@@ -5491,40 +5697,40 @@
 				84,
 				78,
 				75,
-				192,
-				72,
-				27,
+				201,
+				31,
+				28,
 				24,
-				20,
-				17,
-				14,
-				12,
-				10,
-				8,
-				5,
+				21,
+				15,
+				18,
+				13,
+				11,
+				9,
+				6,
 				3,
 				1,
-				35,
-				66,
-				189,
-				184,
-				61,
-				57,
+				39,
+				69,
+				198,
+				193,
+				64,
+				60,
+				55,
 				52,
-				50,
-				47,
-				45,
-				42,
-				31,
+				49,
+				46,
+				43,
+				35,
 				87
 			]
 		},
 		{
 			"title": "Functions",
 			"children": [
-				199,
-				209,
-				214
+				208,
+				218,
+				223
 			]
 		}
 	],
@@ -5532,8 +5738,8 @@
 		{
 			"title": "API",
 			"children": [
-				199,
-				209,
+				208,
+				218,
 				87
 			]
 		},
@@ -5543,42 +5749,42 @@
 				84,
 				78,
 				75,
-				192,
-				72,
-				27,
+				201,
+				31,
+				28,
 				24,
-				20,
-				17,
-				14,
-				12,
-				10,
-				8,
-				5,
+				21,
+				15,
+				18,
+				13,
+				11,
+				9,
+				6,
 				3,
 				1,
-				35,
-				66,
-				189,
-				184,
-				61,
-				57,
+				39,
+				69,
+				198,
+				193,
+				64,
+				60,
+				55,
 				52,
-				50,
-				47,
-				45,
-				42,
-				31
+				49,
+				46,
+				43,
+				35
 			]
 		},
 		{
 			"title": "Internal",
 			"children": [
-				214
+				223
 			]
 		}
 	],
 	"packageName": "@lit-protocol/vincent-contracts-sdk",
-	"packageVersion": "1.0.0-4",
+	"packageVersion": "2.0.0",
 	"readme": [
 		{
 			"kind": "text",
@@ -5617,275 +5823,275 @@
 		},
 		"5": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAppVersionParams"
+			"qualifiedName": "GetAppsByManagerParams.offset"
 		},
 		"6": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAppVersionParams.appId"
+			"qualifiedName": "GetAppVersionParams"
 		},
 		"7": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAppVersionParams.version"
+			"qualifiedName": "GetAppVersionParams.appId"
 		},
 		"8": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAppByIdParams"
+			"qualifiedName": "GetAppVersionParams.version"
 		},
 		"9": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAppByIdParams.appId"
+			"qualifiedName": "GetAppByIdParams"
 		},
 		"10": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "UndeleteAppParams"
+			"qualifiedName": "GetAppByIdParams.appId"
 		},
 		"11": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "UndeleteAppParams.appId"
+			"qualifiedName": "UndeleteAppParams"
 		},
 		"12": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "DeleteAppParams"
+			"qualifiedName": "UndeleteAppParams.appId"
 		},
 		"13": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "DeleteAppParams.appId"
+			"qualifiedName": "DeleteAppParams"
 		},
 		"14": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RemoveDelegateeParams"
+			"qualifiedName": "DeleteAppParams.appId"
 		},
 		"15": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RemoveDelegateeParams.appId"
+			"qualifiedName": "RemoveDelegateeParams"
 		},
 		"16": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RemoveDelegateeParams.delegateeAddress"
+			"qualifiedName": "RemoveDelegateeParams.appId"
 		},
 		"17": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AddDelegateeParams"
+			"qualifiedName": "RemoveDelegateeParams.delegateeAddress"
 		},
 		"18": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AddDelegateeParams.appId"
+			"qualifiedName": "SetDelegateeParams"
 		},
 		"19": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AddDelegateeParams.delegateeAddress"
+			"qualifiedName": "SetDelegateeParams.appId"
 		},
 		"20": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "EnableAppVersionParams"
+			"qualifiedName": "SetDelegateeParams.delegateeAddresses"
 		},
 		"21": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "EnableAppVersionParams.appId"
+			"qualifiedName": "AddDelegateeParams"
 		},
 		"22": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "EnableAppVersionParams.appVersion"
+			"qualifiedName": "AddDelegateeParams.appId"
 		},
 		"23": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "EnableAppVersionParams.enabled"
+			"qualifiedName": "AddDelegateeParams.delegateeAddress"
 		},
 		"24": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterNextVersionParams"
+			"qualifiedName": "EnableAppVersionParams"
 		},
 		"25": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterNextVersionParams.appId"
+			"qualifiedName": "EnableAppVersionParams.appId"
 		},
 		"26": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterNextVersionParams.versionAbilities"
+			"qualifiedName": "EnableAppVersionParams.appVersion"
 		},
 		"27": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterAppParams"
+			"qualifiedName": "EnableAppVersionParams.enabled"
 		},
 		"28": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterAppParams.appId"
+			"qualifiedName": "RegisterNextVersionParams"
 		},
 		"29": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterAppParams.delegateeAddresses"
+			"qualifiedName": "RegisterNextVersionParams.appId"
 		},
 		"30": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "RegisterAppParams.versionAbilities"
+			"qualifiedName": "RegisterNextVersionParams.versionAbilities"
 		},
 		"31": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams"
+			"qualifiedName": "RegisterAppParams"
 		},
 		"32": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.delegateeAddress"
+			"qualifiedName": "RegisterAppParams.appId"
 		},
 		"33": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.pkpEthAddress"
+			"qualifiedName": "RegisterAppParams.delegateeAddresses"
 		},
 		"34": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.abilityIpfsCid"
+			"qualifiedName": "RegisterAppParams.versionAbilities"
 		},
 		"35": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetDelegatedPkpEthAddressesParams"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams"
 		},
 		"36": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetDelegatedPkpEthAddressesParams.appId"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.delegateeAddress"
 		},
 		"37": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetDelegatedPkpEthAddressesParams.version"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.pkpEthAddress"
 		},
 		"38": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetDelegatedPkpEthAddressesParams.pageOpts"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesParams.abilityIpfsCid"
 		},
 		"39": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "__type"
+			"qualifiedName": "GetDelegatedPkpEthAddressesParams"
 		},
 		"40": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "__type.offset"
+			"qualifiedName": "GetDelegatedPkpEthAddressesParams.appId"
 		},
 		"41": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "__type.limit"
+			"qualifiedName": "GetDelegatedPkpEthAddressesParams.version"
 		},
 		"42": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams"
+			"qualifiedName": "GetDelegatedPkpEthAddressesParams.offset"
 		},
 		"43": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams.pkpEthAddress"
+			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams"
 		},
 		"44": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams.appId"
+			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams.pkpEthAddress"
 		},
 		"45": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllPermittedAppIdsForPkpParams"
+			"qualifiedName": "GetAllAbilitiesAndPoliciesForAppParams.appId"
 		},
 		"46": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllPermittedAppIdsForPkpParams.pkpEthAddress"
+			"qualifiedName": "GetAllPermittedAppIdsForPkpParams"
 		},
 		"47": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetPermittedAppVersionForPkpParams"
+			"qualifiedName": "GetAllPermittedAppIdsForPkpParams.pkpEthAddress"
 		},
 		"48": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetPermittedAppVersionForPkpParams.pkpEthAddress"
+			"qualifiedName": "GetAllPermittedAppIdsForPkpParams.offset"
 		},
 		"49": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetPermittedAppVersionForPkpParams.appId"
+			"qualifiedName": "GetPermittedAppVersionForPkpParams"
 		},
 		"50": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllRegisteredAgentPkpsParams"
+			"qualifiedName": "GetPermittedAppVersionForPkpParams.pkpEthAddress"
 		},
 		"51": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "GetAllRegisteredAgentPkpsParams.userPkpAddress"
+			"qualifiedName": "GetPermittedAppVersionForPkpParams.appId"
 		},
 		"52": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetAbilityPolicyParametersParams"
+			"qualifiedName": "GetAllRegisteredAgentPkpsParams"
 		},
 		"53": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetAbilityPolicyParametersParams.pkpEthAddress"
+			"qualifiedName": "GetAllRegisteredAgentPkpsParams.userPkpAddress"
 		},
 		"54": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetAbilityPolicyParametersParams.appId"
+			"qualifiedName": "GetAllRegisteredAgentPkpsParams.offset"
 		},
 		"55": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetAbilityPolicyParametersParams.appVersion"
+			"qualifiedName": "SetAbilityPolicyParametersParams"
 		},
 		"56": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "SetAbilityPolicyParametersParams.policyParams"
+			"qualifiedName": "SetAbilityPolicyParametersParams.pkpEthAddress"
 		},
 		"57": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "UnPermitAppParams"
+			"qualifiedName": "SetAbilityPolicyParametersParams.appId"
 		},
 		"58": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "UnPermitAppParams.pkpEthAddress"
+			"qualifiedName": "SetAbilityPolicyParametersParams.appVersion"
 		},
 		"59": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "UnPermitAppParams.appId"
+			"qualifiedName": "SetAbilityPolicyParametersParams.policyParams"
 		},
 		"60": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "UnPermitAppParams.appVersion"
+			"qualifiedName": "UnPermitAppParams"
 		},
 		"61": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermitAppParams"
+			"qualifiedName": "UnPermitAppParams.pkpEthAddress"
 		},
 		"62": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermitAppParams.pkpEthAddress"
+			"qualifiedName": "UnPermitAppParams.appId"
 		},
 		"63": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermitAppParams.appId"
+			"qualifiedName": "UnPermitAppParams.appVersion"
 		},
 		"64": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermitAppParams.appVersion"
+			"qualifiedName": "PermitAppParams"
 		},
 		"65": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermitAppParams.permissionData"
+			"qualifiedName": "PermitAppParams.pkpEthAddress"
 		},
 		"66": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AbilityPolicyParameterData"
+			"qualifiedName": "PermitAppParams.appId"
 		},
 		"67": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AbilityPolicyParameterData.__index"
+			"qualifiedName": "PermitAppParams.appVersion"
+		},
+		"68": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "PermitAppParams.permissionData"
 		},
 		"69": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "__type"
+			"qualifiedName": "AbilityPolicyParameterData"
 		},
 		"70": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "__type.__index"
+			"qualifiedName": "AbilityPolicyParameterData.__index"
 		},
 		"72": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppWithVersions"
+			"qualifiedName": "__type"
 		},
 		"73": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppWithVersions.app"
-		},
-		"74": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppWithVersions.versions"
+			"qualifiedName": "__type.__index"
 		},
 		"75": {
 			"sourceFileName": "src/types.ts",
@@ -6065,11 +6271,11 @@
 		},
 		"119": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.deleteApp"
+			"qualifiedName": "ContractClient.setDelegatee"
 		},
 		"120": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.deleteApp"
+			"qualifiedName": "ContractClient.setDelegatee"
 		},
 		"121": {
 			"sourceFileName": "src/types.ts",
@@ -6089,11 +6295,11 @@
 		},
 		"125": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.undeleteApp"
+			"qualifiedName": "ContractClient.deleteApp"
 		},
 		"126": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.undeleteApp"
+			"qualifiedName": "ContractClient.deleteApp"
 		},
 		"127": {
 			"sourceFileName": "src/types.ts",
@@ -6113,11 +6319,11 @@
 		},
 		"131": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppById"
+			"qualifiedName": "ContractClient.undeleteApp"
 		},
 		"132": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppById"
+			"qualifiedName": "ContractClient.undeleteApp"
 		},
 		"133": {
 			"sourceFileName": "src/types.ts",
@@ -6125,103 +6331,103 @@
 		},
 		"134": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppVersion"
+			"qualifiedName": "overrides"
 		},
 		"135": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppVersion"
-		},
-		"136": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "params"
-		},
-		"137": {
-			"sourceFileName": "src/internal/app/AppView.ts",
+			"sourceFileName": "src/internal/app/App.ts",
 			"qualifiedName": "__type"
 		},
+		"136": {
+			"sourceFileName": "src/internal/app/App.ts",
+			"qualifiedName": "__type.txHash"
+		},
+		"137": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "ContractClient.getAppById"
+		},
 		"138": {
-			"sourceFileName": "src/internal/app/AppView.ts",
-			"qualifiedName": "__type.appVersion"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "ContractClient.getAppById"
 		},
 		"139": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppsByManagerAddress"
+			"qualifiedName": "params"
 		},
 		"140": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppsByManagerAddress"
+			"qualifiedName": "ContractClient.getAppIdByDelegatee"
 		},
 		"141": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "params"
+			"qualifiedName": "ContractClient.getAppIdByDelegatee"
 		},
 		"142": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppWithVersions"
+			"qualifiedName": "params"
 		},
 		"143": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppWithVersions.app"
+			"qualifiedName": "ContractClient.getAppVersion"
 		},
 		"144": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppWithVersions.versions"
+			"qualifiedName": "ContractClient.getAppVersion"
 		},
 		"145": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppByDelegateeAddress"
+			"qualifiedName": "params"
 		},
 		"146": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAppByDelegateeAddress"
+			"sourceFileName": "src/internal/app/AppView.ts",
+			"qualifiedName": "__type"
 		},
 		"147": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "params"
+			"sourceFileName": "src/internal/app/AppView.ts",
+			"qualifiedName": "__type.appVersion"
 		},
 		"148": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getDelegatedPkpEthAddresses"
+			"qualifiedName": "ContractClient.getAppsByManagerAddress"
 		},
 		"149": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getDelegatedPkpEthAddresses"
+			"qualifiedName": "ContractClient.getAppsByManagerAddress"
 		},
 		"150": {
 			"sourceFileName": "src/types.ts",
 			"qualifiedName": "params"
 		},
 		"151": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.permitApp"
+			"sourceFileName": "src/internal/app/AppView.ts",
+			"qualifiedName": "__type"
 		},
 		"152": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.permitApp"
+			"sourceFileName": "src/internal/app/AppView.ts",
+			"qualifiedName": "__type.id"
 		},
 		"153": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "params"
+			"sourceFileName": "src/internal/app/AppView.ts",
+			"qualifiedName": "__type.versionCount"
 		},
 		"154": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "overrides"
+			"qualifiedName": "ContractClient.getAppByDelegateeAddress"
 		},
 		"155": {
-			"sourceFileName": "src/internal/user/User.ts",
-			"qualifiedName": "__type"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "ContractClient.getAppByDelegateeAddress"
 		},
 		"156": {
-			"sourceFileName": "src/internal/user/User.ts",
-			"qualifiedName": "__type.txHash"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "params"
 		},
 		"157": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.unPermitApp"
+			"qualifiedName": "ContractClient.getDelegatedPkpEthAddresses"
 		},
 		"158": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.unPermitApp"
+			"qualifiedName": "ContractClient.getDelegatedPkpEthAddresses"
 		},
 		"159": {
 			"sourceFileName": "src/types.ts",
@@ -6229,59 +6435,59 @@
 		},
 		"160": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "overrides"
+			"qualifiedName": "ContractClient.permitApp"
 		},
 		"161": {
-			"sourceFileName": "src/internal/user/User.ts",
-			"qualifiedName": "__type"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "ContractClient.permitApp"
 		},
 		"162": {
-			"sourceFileName": "src/internal/user/User.ts",
-			"qualifiedName": "__type.txHash"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "params"
 		},
 		"163": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.setAbilityPolicyParameters"
-		},
-		"164": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.setAbilityPolicyParameters"
-		},
-		"165": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "params"
-		},
-		"166": {
-			"sourceFileName": "src/types.ts",
 			"qualifiedName": "overrides"
 		},
-		"167": {
+		"164": {
 			"sourceFileName": "src/internal/user/User.ts",
 			"qualifiedName": "__type"
 		},
-		"168": {
+		"165": {
 			"sourceFileName": "src/internal/user/User.ts",
 			"qualifiedName": "__type.txHash"
 		},
-		"169": {
+		"166": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllRegisteredAgentPkpEthAddresses"
+			"qualifiedName": "ContractClient.unPermitApp"
 		},
-		"170": {
+		"167": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllRegisteredAgentPkpEthAddresses"
+			"qualifiedName": "ContractClient.unPermitApp"
 		},
-		"171": {
+		"168": {
 			"sourceFileName": "src/types.ts",
 			"qualifiedName": "params"
 		},
+		"169": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "overrides"
+		},
+		"170": {
+			"sourceFileName": "src/internal/user/User.ts",
+			"qualifiedName": "__type"
+		},
+		"171": {
+			"sourceFileName": "src/internal/user/User.ts",
+			"qualifiedName": "__type.txHash"
+		},
 		"172": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getPermittedAppVersionForPkp"
+			"qualifiedName": "ContractClient.setAbilityPolicyParameters"
 		},
 		"173": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getPermittedAppVersionForPkp"
+			"qualifiedName": "ContractClient.setAbilityPolicyParameters"
 		},
 		"174": {
 			"sourceFileName": "src/types.ts",
@@ -6289,23 +6495,23 @@
 		},
 		"175": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllPermittedAppIdsForPkp"
+			"qualifiedName": "overrides"
 		},
 		"176": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllPermittedAppIdsForPkp"
+			"sourceFileName": "src/internal/user/User.ts",
+			"qualifiedName": "__type"
 		},
 		"177": {
-			"sourceFileName": "src/types.ts",
-			"qualifiedName": "params"
+			"sourceFileName": "src/internal/user/User.ts",
+			"qualifiedName": "__type.txHash"
 		},
 		"178": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllAbilitiesAndPoliciesForApp"
+			"qualifiedName": "ContractClient.getAllRegisteredAgentPkpEthAddresses"
 		},
 		"179": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.getAllAbilitiesAndPoliciesForApp"
+			"qualifiedName": "ContractClient.getAllRegisteredAgentPkpEthAddresses"
 		},
 		"180": {
 			"sourceFileName": "src/types.ts",
@@ -6313,11 +6519,11 @@
 		},
 		"181": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.validateAbilityExecutionAndGetPolicies"
+			"qualifiedName": "ContractClient.getPermittedAppVersionForPkp"
 		},
 		"182": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ContractClient.validateAbilityExecutionAndGetPolicies"
+			"qualifiedName": "ContractClient.getPermittedAppVersionForPkp"
 		},
 		"183": {
 			"sourceFileName": "src/types.ts",
@@ -6325,121 +6531,157 @@
 		},
 		"184": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult"
+			"qualifiedName": "ContractClient.getAllPermittedAppIdsForPkp"
 		},
 		"185": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.isPermitted"
+			"qualifiedName": "ContractClient.getAllPermittedAppIdsForPkp"
 		},
 		"186": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.appId"
+			"qualifiedName": "params"
 		},
 		"187": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.appVersion"
+			"qualifiedName": "ContractClient.getAllAbilitiesAndPoliciesForApp"
 		},
 		"188": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.decodedPolicies"
+			"qualifiedName": "ContractClient.getAllAbilitiesAndPoliciesForApp"
 		},
 		"189": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermissionData"
+			"qualifiedName": "params"
 		},
 		"190": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "PermissionData.__index"
+			"qualifiedName": "ContractClient.validateAbilityExecutionAndGetPolicies"
+		},
+		"191": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "ContractClient.validateAbilityExecutionAndGetPolicies"
 		},
 		"192": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersion"
+			"qualifiedName": "params"
 		},
 		"193": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersion.version"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult"
 		},
 		"194": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersion.enabled"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.isPermitted"
 		},
 		"195": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "AppVersion.abilities"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.appId"
 		},
 		"196": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Ability"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.appVersion"
 		},
 		"197": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Ability.abilityIpfsCid"
+			"qualifiedName": "ValidateAbilityExecutionAndGetPoliciesResult.decodedPolicies"
 		},
 		"198": {
 			"sourceFileName": "src/types.ts",
-			"qualifiedName": "Ability.policyIpfsCids"
+			"qualifiedName": "PermissionData"
 		},
 		"199": {
-			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "getTestClient"
-		},
-		"200": {
-			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "getTestClient"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "PermissionData.__index"
 		},
 		"201": {
-			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "__0"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "AppVersion"
 		},
 		"202": {
-			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "__type"
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "AppVersion.version"
 		},
 		"203": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "AppVersion.enabled"
+		},
+		"204": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "AppVersion.abilities"
+		},
+		"205": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "Ability"
+		},
+		"206": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "Ability.abilityIpfsCid"
+		},
+		"207": {
+			"sourceFileName": "src/types.ts",
+			"qualifiedName": "Ability.policyIpfsCids"
+		},
+		"208": {
 			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "__type.signer"
+			"qualifiedName": "getTestClient"
 		},
 		"209": {
 			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "getClient"
+			"qualifiedName": "getTestClient"
 		},
 		"210": {
 			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "getClient"
+			"qualifiedName": "__0"
 		},
 		"211": {
 			"sourceFileName": "src/contractClient.ts",
-			"qualifiedName": "__0"
+			"qualifiedName": "__type"
 		},
 		"212": {
 			"sourceFileName": "src/contractClient.ts",
+			"qualifiedName": "__type.signer"
+		},
+		"218": {
+			"sourceFileName": "src/contractClient.ts",
+			"qualifiedName": "getClient"
+		},
+		"219": {
+			"sourceFileName": "src/contractClient.ts",
+			"qualifiedName": "getClient"
+		},
+		"220": {
+			"sourceFileName": "src/contractClient.ts",
+			"qualifiedName": "__0"
+		},
+		"221": {
+			"sourceFileName": "src/contractClient.ts",
 			"qualifiedName": "__type"
 		},
-		"213": {
+		"222": {
 			"sourceFileName": "src/contractClient.ts",
 			"qualifiedName": "__type.signer"
 		},
-		"214": {
+		"223": {
 			"sourceFileName": "src/utils.ts",
 			"qualifiedName": "createContract"
 		},
-		"215": {
+		"224": {
 			"sourceFileName": "src/utils.ts",
 			"qualifiedName": "createContract"
 		},
-		"216": {
+		"225": {
 			"sourceFileName": "src/utils.ts",
 			"qualifiedName": "__0"
 		},
-		"217": {
+		"226": {
 			"sourceFileName": "src/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"218": {
+		"227": {
 			"sourceFileName": "src/utils.ts",
 			"qualifiedName": "__type.signer"
 		},
-		"219": {
+		"228": {
 			"sourceFileName": "src/utils.ts",
 			"qualifiedName": "__type.contractAddress"
 		}
