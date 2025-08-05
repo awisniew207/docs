@@ -59,7 +59,7 @@ export function ManageAppVersionAbilities({
                   // Edit mode - render wrapper
                   <div className="space-y-4">
                     <div className="flex justify-between items-center border-b pb-3">
-                      <h4 className="font-medium text-gray-900">
+                      <h4 className="font-medium text-neutral-800">
                         Edit {ability.abilityPackageName}
                       </h4>
                       <Button
@@ -83,7 +83,7 @@ export function ManageAppVersionAbilities({
                   // Normal display mode
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{ability.abilityPackageName}</h4>
+                      <h4 className="font-medium text-neutral-800">{ability.abilityPackageName}</h4>
                       <p className="text-sm text-gray-500">Version: {ability.abilityVersion}</p>
                       {ability.hiddenSupportedPolicies &&
                         ability.hiddenSupportedPolicies.length > 0 && (
@@ -124,7 +124,9 @@ export function ManageAppVersionAbilities({
       {deletedAbilities && deletedAbilities.length > 0 && (
         <div className="space-y-4">
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted Abilities</h3>
+            <h3 className="text-lg font-medium text-gray-600 dark:text-white/60 mb-4">
+              Deleted Abilities
+            </h3>
             <div className="grid gap-4">
               {deletedAbilities.map((ability) => (
                 <div

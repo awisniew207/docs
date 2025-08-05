@@ -113,7 +113,7 @@ export function DeveloperSidebarSkeleton() {
             </div>
           ))}
 
-          <div className="border-t border-gray-900/10 dark:border-white/10 my-2" />
+          <div className="border-t border-neutral-800/10 dark:border-white/10 my-2" />
 
           {/* Theme toggle skeleton */}
           <div className="h-10 px-3 rounded-lg">

@@ -53,16 +53,18 @@ export function ChangeAbilityOwnerForm({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto dark:bg-neutral-800 dark:border-white/10">
       <CardHeader>
-        <CardTitle>Change Ability Owner</CardTitle>
-        <CardDescription>Transfer ownership of this ability to another address</CardDescription>
+        <CardTitle className="text-neutral-800 dark:text-white">Change Ability Owner</CardTitle>
+        <CardDescription className="text-gray-600 dark:text-white/60">
+          Transfer ownership of this ability to another address
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+        <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-lg">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-orange-800">
+            <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-orange-800 dark:text-orange-200">
               <p className="font-medium mb-1">Warning: This action cannot be undone</p>
               <p>
                 Once you transfer ownership, you will no longer be able to manage this ability. The

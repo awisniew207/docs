@@ -101,10 +101,10 @@ export function AppVersionAbilitiesWrapper() {
       <div className="w-full max-w-6xl mx-auto">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">
               {app.name} - Version {versionData.version} Abilities
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 dark:text-white/60 mt-2">
               Manage and configure abilities for this app version
             </p>
           </div>
@@ -125,8 +125,10 @@ export function AppVersionAbilitiesWrapper() {
       {/* Current Abilities List */}
       <div>
         <div className="mb-4">
-          <h3 className="text-lg font-medium text-gray-900">Current Abilities</h3>
-          <p className="text-gray-600 text-sm mt-1">
+          <h3 className="text-lg font-medium text-neutral-800 dark:text-white">
+            Current Abilities
+          </h3>
+          <p className="text-gray-600 dark:text-white/60 text-sm mt-1">
             Abilities currently associated with this version. After adding and editing your
             abilities, you can publish your app version to be accessible by users.
           </p>

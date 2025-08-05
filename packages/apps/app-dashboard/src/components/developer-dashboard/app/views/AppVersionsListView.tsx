@@ -26,8 +26,10 @@ export function AppVersionsListView({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">App Versions</h1>
-          <p className="text-gray-600 mt-2">Manage and view all versions of your application</p>
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">App Versions</h1>
+          <p className="text-gray-600 dark:text-white/60 mt-2">
+            Manage and view all versions of your application
+          </p>
         </div>
       </div>
 
@@ -35,7 +37,7 @@ export function AppVersionsListView({
       {versions.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-white/40">
               <p>No app versions found.</p>
             </div>
           </CardContent>
@@ -53,7 +55,7 @@ export function AppVersionsListView({
                   <div className="flex items-center gap-3">
                     <CardTitle className="text-lg">Version {version.version}</CardTitle>
                     {version.version === activeVersion && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white/80">
                         Active
                       </span>
                     )}
@@ -64,7 +66,7 @@ export function AppVersionsListView({
                     ) : (
                       <PowerOff className="h-4 w-4 text-gray-400" />
                     )}
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-white/40">
                       {version.enabled ? 'Enabled' : 'Disabled'}
                     </span>
                   </div>
@@ -81,22 +83,27 @@ export function AppVersionsListView({
       {/* Deleted Versions Section */}
       {deletedVersions && deletedVersions.length > 0 && (
         <div className="space-y-4">
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted App Versions</h3>
+          <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+            <h3 className="text-lg font-medium text-gray-600 dark:text-white/60 mb-4">
+              Deleted App Versions
+            </h3>
             <div className="grid gap-4">
               {deletedVersions.map((version) => (
-                <Card key={version.version} className="border-dashed">
+                <Card
+                  key={version.version}
+                  className="border-dashed border-gray-200 dark:border-white/10"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <CardTitle className="text-lg text-gray-600 line-through">
+                        <CardTitle className="text-lg text-gray-600 dark:text-white/60 line-through">
                           Version {version.version}
                         </CardTitle>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-400">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-400 dark:text-red-400">
                           DELETED
                         </span>
                         {version.version === activeVersion && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/40">
                             Active
                           </span>
                         )}
@@ -107,7 +114,7 @@ export function AppVersionsListView({
                         </div>
                       </div>
                     </div>
-                    <CardDescription className="text-gray-500 line-through">
+                    <CardDescription className="text-gray-500 dark:text-white/40 line-through">
                       Created: {new Date(version.createdAt).toLocaleDateString()}
                     </CardDescription>
                   </CardHeader>

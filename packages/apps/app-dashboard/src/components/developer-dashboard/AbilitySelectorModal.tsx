@@ -59,7 +59,7 @@ const TOOL_GRID_COLUMNS: ColDef[] = [
                 window.open(npmUrl, '_blank');
               };
             }}
-            className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-mono cursor-pointer"
+            className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:underline text-sm font-mono cursor-pointer"
             title={`View ${params.value} on npm`}
           >
             {params.value}
@@ -148,11 +148,13 @@ export function AbilitySelectorModal({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="w-[85vw] max-w-6xl h-[70vh] flex flex-col !max-w-none bg-white"
+        className="w-[85vw] max-w-6xl h-[70vh] flex flex-col !max-w-none bg-white dark:bg-neutral-800"
         style={{ width: '85vw', maxWidth: '72rem' }}
       >
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Add Abilities to App Version</DialogTitle>
+          <DialogTitle className="text-neutral-800 dark:text-white">
+            Add Abilities to App Version
+          </DialogTitle>
           <DialogDescription>
             Click any ability to add it immediately to your app version.
             {existingAbilities.length > 0 &&
@@ -163,7 +165,7 @@ export function AbilitySelectorModal({
         </DialogHeader>
 
         <div className="flex-1 min-h-0">
-          <div className="ag-theme-alpine h-full w-full bg-white">
+          <div className="ag-theme-alpine h-full w-full bg-white dark:bg-neutral-800">
             <AgGridReact
               rowData={filteredAbilities}
               columnDefs={TOOL_GRID_COLUMNS}

@@ -49,7 +49,7 @@ export function ArrayField({
     <div className="space-y-2">
       <Label>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </Label>
 
       <div className="space-y-2">
@@ -63,7 +63,7 @@ export function ArrayField({
                   type="text"
                   placeholder={placeholder}
                   {...register(`${name}.${index}`)}
-                  className={fieldError ? 'border-red-500 flex-1' : 'flex-1'}
+                  className={fieldError ? 'border-red-500 dark:border-red-400 flex-1' : 'flex-1'}
                 />
                 {fields.length > 1 && (
                   <Button
@@ -76,7 +76,7 @@ export function ArrayField({
                   </Button>
                 )}
               </div>
-              {fieldError && <p className="text-sm text-red-500">{fieldError}</p>}
+              {fieldError && <p className="text-sm text-red-500 dark:text-red-400">{fieldError}</p>}
             </div>
           );
         })}
@@ -87,7 +87,7 @@ export function ArrayField({
       </div>
 
       {/* Show array-level error only */}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }

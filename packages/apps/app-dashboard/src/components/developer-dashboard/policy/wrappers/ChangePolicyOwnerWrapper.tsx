@@ -66,7 +66,7 @@ export function ChangePolicyOwnerWrapper() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Change Policy Owner</h1>
+          <h1 className="text-3xl font-bold text-neutral-800">Change Policy Owner</h1>
           <p className="text-gray-600 mt-2">Change the owner of this policy</p>
         </div>
       </div>

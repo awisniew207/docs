@@ -55,7 +55,7 @@ export function UndeleteAppButton({ app }: UndeleteAppWrapperProps) {
   return (
     <button
       onClick={() => handleSubmit()}
-      className="inline-flex items-center gap-2 px-4 py-2 border border-green-200 rounded-lg text-sm font-medium text-green-600 bg-white hover:bg-green-50 transition-colors relative z-10 !opacity-100 shadow-sm"
+      className="inline-flex items-center gap-2 px-4 py-2 border border-green-200 dark:border-green-500/30 rounded-lg text-sm font-medium text-green-600 dark:text-green-400 bg-white dark:bg-neutral-800 hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors relative z-10 !opacity-100 shadow-sm"
     >
       <ArchiveRestore className="h-4 w-4" />
       Undelete App

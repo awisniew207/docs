@@ -132,21 +132,21 @@ export function AppPublishedButtons({
         <>
           <button
             onClick={() => onOpenMutation('edit-published-app')}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/20 rounded-lg text-sm font-medium text-gray-700 dark:text-white/80 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
           >
             <Edit className="h-4 w-4" />
             Edit App
           </button>
           <button
             onClick={() => onOpenMutation('create-app-version')}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/20 rounded-lg text-sm font-medium text-gray-700 dark:text-white/80 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
           >
             <Plus className="h-4 w-4" />
             Create App Version
           </button>
           <button
             onClick={() => onOpenMutation('manage-delegatees')}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/20 rounded-lg text-sm font-medium text-gray-700 dark:text-white/80 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
           >
             <Users className="h-4 w-4" />
             Manage Delegatees
@@ -154,7 +154,7 @@ export function AppPublishedButtons({
           <button
             onClick={() => handleAppToggle(true)}
             disabled={isLoading}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 dark:border-red-500/30 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <SkeletonButton />
@@ -175,8 +175,8 @@ export function AppPublishedButtons({
           disabled={isLoading}
           className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             registryDeleted
-              ? 'border-green-300 text-green-700 bg-green-50 hover:bg-green-100'
-              : 'border-red-300 text-red-700 bg-red-50 hover:bg-red-100'
+              ? 'border-green-300 dark:border-green-500/30 text-green-700 dark:text-green-400 bg-green-50 dark:bg-neutral-800 hover:bg-green-50 dark:hover:bg-green-500/10'
+              : 'border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 bg-red-50 dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-500/10'
           }`}
         >
           {isLoading ? (

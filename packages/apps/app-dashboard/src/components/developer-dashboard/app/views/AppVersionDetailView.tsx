@@ -37,8 +37,12 @@ export function AppVersionDetailView({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Version {versionData.version}</h1>
-          <p className="text-gray-600 mt-2">View and manage this version of your application</p>
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">
+            Version {versionData.version}
+          </h1>
+          <p className="text-gray-600 dark:text-white/60 mt-2">
+            View and manage this version of your application
+          </p>
         </div>
       </div>
 
@@ -48,19 +52,21 @@ export function AppVersionDetailView({
       )}
 
       {/* Version Management Card */}
-      <div className="bg-white border rounded-lg">
-        <div className="p-6 border-b border-gray-100">
+      <div className="bg-white dark:bg-neutral-800 border dark:border-white/10 rounded-lg">
+        <div className="p-6 border-b border-gray-100 dark:border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Version Management</h3>
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-white">
+                Version Management
+              </h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Registry Status:</span>
+              <span className="text-sm text-gray-500 dark:text-white/40">Registry Status:</span>
               <span
                 className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                   isVersionEnabledRegistry
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400'
+                    : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
                 }`}
               >
                 {isVersionEnabledRegistry ? (

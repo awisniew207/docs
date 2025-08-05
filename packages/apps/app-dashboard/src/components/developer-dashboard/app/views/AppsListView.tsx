@@ -22,15 +22,19 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
   return (
     <div className="space-y-6">
       {apps.length === 0 ? (
-        <div className="border rounded-lg p-8 text-center">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">No Apps Yet</h2>
-          <p className="text-gray-600 mb-6">Create your first app to get started with Vincent.</p>
+        <div className="border dark:border-white/10 rounded-lg p-8 text-center">
+          <h2 className="text-xl font-semibold mb-4 text-neutral-800 dark:text-white">
+            No Apps Yet
+          </h2>
+          <p className="text-gray-600 dark:text-white/60 mb-6">
+            Create your first app to get started with Vincent.
+          </p>
           <Button
             variant="outline"
-            className="text-gray-700"
+            className="text-gray-700 dark:text-white dark:border-white/20 hover:!border-orange-500 focus:!border-orange-500"
             onClick={() => navigate('/developer/create-app')}
           >
-            <Plus className="h-4 w-4 mr-2 font-bold text-gray-700" />
+            <Plus className="h-4 w-4 mr-2 font-bold text-gray-700 dark:text-white" />
             Create App
           </Button>
         </div>
@@ -39,11 +43,11 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
           {apps.map((app) => (
             <Card
               key={app.appId}
-              className="cursor-pointer hover:shadow-md transition-shadow"
+              className="cursor-pointer hover:shadow-md dark:hover:bg-white/[0.02] dark:border-white/10 transition-shadow"
               onClick={() => navigate(`/developer/appId/${app.appId}`)}
             >
               <CardHeader>
-                <CardTitle className="flex justify-between items-center text-gray-900">
+                <CardTitle className="flex justify-between items-center text-neutral-800 dark:text-white">
                   <div className="flex items-center gap-3">
                     <Logo
                       logo={app.logo}
@@ -53,18 +57,20 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
                     <span>{app.name}</span>
                   </div>
                   <div className="flex gap-2">
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white/70">
                       v{app.activeVersion}
                     </span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 uppercase">
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-white/70 uppercase">
                       {app.deploymentStatus}
                     </span>
                   </div>
                 </CardTitle>
-                <CardDescription className="text-gray-700">{app.description}</CardDescription>
+                <CardDescription className="text-gray-700 dark:text-white/60">
+                  {app.description}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-gray-700 dark:text-white/60">
                   <div>
                     <span className="font-medium">App ID:</span> {app.appId}
                   </div>
@@ -78,16 +84,18 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
       {deletedApps && deletedApps.length > 0 && (
         <div className="space-y-4">
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted Apps</h3>
+            <h3 className="text-lg font-medium text-gray-600 dark:text-white/60 mb-4">
+              Deleted Apps
+            </h3>
             <div className="grid grid-cols-1 gap-4">
               {deletedApps.map((app) => (
                 <Card
                   key={app.appId}
-                  className="border-dashed cursor-pointer hover:shadow-md transition-shadow"
+                  className="border-dashed dark:border-white/10 cursor-pointer hover:shadow-md dark:hover:bg-white/[0.02] transition-shadow"
                   onClick={() => navigate(`/developer/appId/${app.appId}`)}
                 >
                   <CardHeader>
-                    <CardTitle className="flex justify-between items-start text-gray-600">
+                    <CardTitle className="flex justify-between items-start text-gray-600 dark:text-white/60">
                       <div className="flex items-center gap-3">
                         <Logo
                           logo={app.logo}
@@ -104,12 +112,12 @@ export function AppsListView({ apps, deletedApps }: AppsListViewProps) {
                         </div>
                       </div>
                     </CardTitle>
-                    <CardDescription className="text-gray-500 line-through">
+                    <CardDescription className="text-gray-500 dark:text-white/40 line-through">
                       {app.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-gray-700 dark:text-white/60">
                       <div>
                         <span className="font-medium">App ID:</span> {app.appId}
                       </div>

@@ -23,21 +23,23 @@ export function AbilitiesListView({ abilities, deletedAbilities }: AbilitiesList
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Your Abilities</h1>
+        <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Your Abilities</h1>
       </div>
 
       {abilities.length === 0 ? (
-        <div className="border rounded-lg p-8 text-center">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">No Abilities Yet</h2>
-          <p className="text-gray-600 mb-6">
+        <div className="border dark:border-white/10 rounded-lg p-8 text-center">
+          <h2 className="text-xl font-semibold mb-4 text-neutral-800 dark:text-white">
+            No Abilities Yet
+          </h2>
+          <p className="text-gray-600 dark:text-white/60 mb-6">
             Create your first ability to get started with Vincent.
           </p>
           <Button
             variant="outline"
-            className="text-gray-700"
+            className="text-gray-700 dark:text-white dark:border-white/20"
             onClick={() => navigate('/developer/create-ability')}
           >
-            <Plus className="h-4 w-4 mr-2 font-bold text-gray-700" />
+            <Plus className="h-4 w-4 mr-2 font-bold text-gray-700 dark:text-white" />
             Create Ability
           </Button>
         </div>
@@ -46,19 +48,21 @@ export function AbilitiesListView({ abilities, deletedAbilities }: AbilitiesList
           {abilities.map((ability) => (
             <Card
               key={ability.packageName}
-              className="cursor-pointer hover:shadow-md transition-shadow"
+              className="cursor-pointer hover:shadow-md dark:hover:bg-white/[0.02] dark:border-white/10 transition-shadow"
               onClick={() =>
                 navigate(`/developer/ability/${encodeURIComponent(ability.packageName)}`)
               }
             >
               <CardHeader>
-                <CardTitle className="text-gray-900">{ability.packageName}</CardTitle>
-                <CardDescription className="text-gray-700">
+                <CardTitle className="text-neutral-800 dark:text-white">
+                  {ability.packageName}
+                </CardTitle>
+                <CardDescription className="text-gray-700 dark:text-white/60">
                   {ability.description || 'No description available'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-gray-700 dark:text-white/60">
                   <div className="space-y-1">
                     <div>
                       <span className="font-medium">Version:</span> {ability.activeVersion}
@@ -77,10 +81,12 @@ export function AbilitiesListView({ abilities, deletedAbilities }: AbilitiesList
       {deletedAbilities && deletedAbilities.length > 0 && (
         <div className="space-y-4">
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-600 mb-4">Deleted Abilities</h3>
+            <h3 className="text-lg font-medium text-gray-600 dark:text-white/60 mb-4">
+              Deleted Abilities
+            </h3>
             <div className="grid grid-cols-1 gap-4">
               {deletedAbilities.map((ability) => (
-                <Card key={ability.packageName} className="border-dashed">
+                <Card key={ability.packageName} className="border-dashed dark:border-white/10">
                   <CardHeader className="pb-3">
                     <CardTitle className="flex justify-between items-start text-gray-600">
                       <div className="flex items-center gap-3">

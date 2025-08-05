@@ -309,7 +309,9 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
             </SidebarMenuItem>
           </SidebarMenu>
 
-          <div className={`border-t ${isDark ? 'border-white/10' : 'border-gray-900/10'} my-2`} />
+          <div
+            className={`border-t ${isDark ? 'border-white/10' : 'border-neutral-800/10'} my-2`}
+          />
 
           <SidebarMenu>
             {/* Theme Toggle */}
