@@ -54,12 +54,15 @@ export function ManageAppVersionAbilities({
         <div className="space-y-4">
           <div className="grid gap-4">
             {abilities.map((ability) => (
-              <div key={ability.abilityPackageName} className="bg-white border rounded-lg p-4">
+              <div
+                key={ability.abilityPackageName}
+                className="bg-white dark:bg-neutral-900 border dark:border-neutral-700 rounded-lg p-4"
+              >
                 {editingAbility === ability.abilityPackageName ? (
                   // Edit mode - render wrapper
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b pb-3">
-                      <h4 className="font-medium text-neutral-800">
+                    <div className="flex justify-between items-center border-b dark:border-neutral-700 pb-3">
+                      <h4 className="font-medium text-neutral-800 dark:text-neutral-200">
                         Edit {ability.abilityPackageName}
                       </h4>
                       <Button
@@ -83,17 +86,21 @@ export function ManageAppVersionAbilities({
                   // Normal display mode
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h4 className="font-medium text-neutral-800">{ability.abilityPackageName}</h4>
-                      <p className="text-sm text-gray-500">Version: {ability.abilityVersion}</p>
+                      <h4 className="font-medium text-neutral-800 dark:text-neutral-200">
+                        {ability.abilityPackageName}
+                      </h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Version: {ability.abilityVersion}
+                      </p>
                       {ability.hiddenSupportedPolicies &&
                         ability.hiddenSupportedPolicies.length > 0 && (
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             Hidden policies: {ability.hiddenSupportedPolicies.join(', ')}
                           </p>
                         )}
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-gray-400 dark:text-gray-300">
                         Added: {new Date(ability.createdAt).toLocaleDateString()}
                       </div>
                       <div className="flex items-center gap-2">
