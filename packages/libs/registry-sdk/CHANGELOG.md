@@ -1,3 +1,23 @@
+# 4.0.0 (2025-08-05)
+
+### 🚀 Features
+
+- ### Add logo support for abilities and policies ([6ef30e41](https://github.com/LIT-Protocol/Vincent/commit/6ef30e41))
+
+  - Added optional `logo` property to endpoint definitions for both abilities and policies during creationg and editing
+
+- Add new `setActiveVersion` endpoint definition to allow atomic setting of activeVersion on apps without using the general edit endpoint ([169b6a1e](https://github.com/LIT-Protocol/Vincent/commit/169b6a1e))
+
+### ⚠️ Breaking Changes
+
+- #### Replace SIWE auth with JWT auth ([e9a5b5be](https://github.com/LIT-Protocol/Vincent/commit/e9a5b5be))
+
+  - JWTs must be issued by Vincent JWT code (assumed linked to a valid Datil PKP) for this authentication
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 3.3.2 (2025-07-09)
 
 ### 🚀 Features

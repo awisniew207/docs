@@ -1,3 +1,29 @@
+# 1.0.0 (2025-08-05)
+
+### 🚀 Features
+
+- Bug fix in app-sdk that kept a policy's allow result from being returned ([11325427](https://github.com/LIT-Protocol/Vincent/commit/11325427))
+
+### ⚠️ Breaking Changes
+
+- Update e2e test suites to use new CBOR2 compatible contracts-sdk APIs ([e67077e1](https://github.com/LIT-Protocol/Vincent/commit/e67077e1))
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.0.0
+- Updated app-sdk to 2.0.0
+- Updated contracts-sdk to 2.0.0
+- Updated policy-spending-limit to 2.0.0
+- Updated policy-contract-whitelist to 1.0.0
+- Updated ability-erc20-approval to 2.0.0
+- Updated ability-uniswap-swap to 2.0.0
+- Updated ability-evm-transaction-signer to 0.0.2
+
+### ❤️ Thank You
+
+- Daryl Collins
+- Wyatt Barnes @spacesailor24
+
 ## 0.1.1 (2025-07-09)
 
 ### 🩹 Fixes

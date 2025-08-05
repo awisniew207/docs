@@ -1,3 +1,20 @@
+## 1.0.0-0 (2025-08-05)
+
+### ⚠️ Breaking Changes
+
+- #### Update imports from `app-sdk` to use sub-paths, and resolve data type inconsistency (appId and appVersion are numbers now) ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+
+  - Updated Typedoc structure to show each sub-path as its own category; removed package-wise catch-all 'Interfaces'
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.0.0
+- Updated mcp-sdk to 1.0.0-0
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 0.0.2-0 (2025-07-08)
 
 ### 🩹 Fixes
