@@ -1,6 +1,6 @@
 ---
-category: Developers
-title: Policy - Contract Whitelist
+category: Official Policies
+title: Contract Whitelist
 ---
 
 # Contract Whitelist

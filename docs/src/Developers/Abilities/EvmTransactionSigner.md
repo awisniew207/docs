@@ -1,6 +1,6 @@
 ---
-category: Developers
-title: Ability - EVM Transaction Signer
+category: Official Abilities
+title: EVM Transaction Signer
 ---
 
 # EVM Transaction Signer

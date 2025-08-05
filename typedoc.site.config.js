@@ -31,7 +31,14 @@ module.exports = {
     'docs/src/Users/Onboarding.md',
     'docs/src/Contact-Us.md',
   ],
-  categoryOrder: ['Developers', 'Users', 'Contact', 'Packages'],
+  categoryOrder: [
+    'Developers',
+    'Official Abilities',
+    'Official Policies',
+    'Users',
+    'Contact',
+    'Packages',
+  ],
   entryPointStrategy: 'merge',
   entryPoints: [
     './packages/libs/app-sdk/docs/json',
