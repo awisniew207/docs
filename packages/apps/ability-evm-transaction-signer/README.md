@@ -1,34 +1,42 @@
-# Vincent Ability: Transaction Signer
+# Vincent Ability: EVM Transaction Signer
 
 ## Overview
 
-The Transaction Signer Ability enables Vincent Agent Wallets to sign EVM transactions utilizing the Vincent ecosystem to govern who can request signatures, as well as what's included in the transactions.
+The EVM Transaction Signer Ability enables Vincent Apps to sign Ethereum Virtual Machine (EVM) transactions on behalf of Vincent Users using their Vincent Agent Wallets. This enables Vincent Apps to interact with contracts even if there isn't an explicit Vincent Ability made for interacting with that contract.
 
 This Vincent Ability is intended to be used with Vincent Policies, such as the [@lit-protocol/vincent-policy-contract-whitelist](../policy-contract-whitelist/) policy, to provide protections such as only signing transactions that interact with specific contracts and/or call specific functions on contract.
+
+## Key Features
+
+- **Secure Transaction Signing**: Signs transactions using Vincent Agent Wallets within Lit Protocol's secure Trusted Execution Environment
+- **Full Transaction Support**: Handles all EVM transaction types including legacy, EIP-2930, and EIP-1559
+- **Policy Integration**: Supports the Contract Whitelist Policy for restricting what transactions can be signed
 
 ## How It Works
 
 The Transaction Signer Ability is built using the Vincent Ability SDK and provides a secure way to sign Ethereum transactions. Here's how it operates:
 
-- **Input**: Accepts a serialized unsigned EVM transaction
-- **Parsing**: Uses `ethers.utils.parseTransaction` to deserialize and validate the transaction structure
-  - Important: All properties of the transaction are expected to be provided, including `nonce`, `gasPrice`, `gasLimit`, etc. The Ability will not fetch these values from the network on your behalf.
-- **Signing**: The Vincent Agent Wallet (PKP (Programmable Key Pair)) signs the transaction within the Lit Action environment
-- **Output**: Returns both the signed transaction hex and a deserialized version with signature components
+1. **Precheck Phase**: Validates the transaction structure and runs policy checks
+
+   - Deserializes the provided serialized transaction using ethers.js
+   - Validates all required fields are present (nonce, gasPrice, gasLimit, etc.)
+   - Returns deserialized transaction details for review
+
+2. **Execution Phase**: If permitted by the evaluated Policies, signs the serialized transaction
+   - Signs the transaction using the Vincent Agent Wallet
+   - Returns both the signed transaction hex and decoded signature components
 
 ### Workflow
 
-1. **Precheck Phase**:
+1. **Precheck Phase**: Validates the transaction structure and runs policy checks
 
-   - Deserializes the input transaction
-   - Validates transaction structure
-   - Executes any registered Vincent Policy to validate the transaction meets the policy requirements
-   - Returns deserialized transaction details if successful
+   - Deserializes the provided serialized transaction using ethers.js
+   - Validates all required fields are present (nonce, gasPrice, gasLimit, etc.)
+   - Returns deserialized transaction details for review
 
-2. **Execution Phase**:
-   - Performs the same validation as the precheck phase
-   - Signs the transaction using the Agent Wallet
-   - Returns both the signed transaction ready for broadcast, and the deserialized signed transaction
+2. **Execution Phase**: If permitted by the evaluated Policies, signs the serialized transaction
+   - Signs the transaction using the Vincent Agent Wallet
+   - Returns both the signed transaction hex and decoded signature components
 
 ## Using the Ability
 

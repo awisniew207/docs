@@ -26,6 +26,8 @@ module.exports = {
     'docs/src/Developers/Ability-Developers/Creating-Abilities.md',
     'docs/src/Developers/Ability-Developers/AI-Ability-Development.md',
     'docs/src/Developers/Policy-Developers/Creating-Policies.md',
+    'docs/src/Developers/Abilities/EvmTransactionSigner.md',
+    'docs/src/Developers/Policies/ContractWhitelist.md',
     'docs/src/Users/Onboarding.md',
     'docs/src/Contact-Us.md',
   ],
