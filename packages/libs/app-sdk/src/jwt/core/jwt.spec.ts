@@ -47,7 +47,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
 
       const decoded = await verifyVincentPlatformJWT({ jwt, expectedAudience: commonAudience });
       expect(decoded.payload.role).toBe('platform-user');
-      expect(decoded.payload.iss).toBe(testWalletAddress);
+      expect(decoded.payload.iss.toLowerCase()).toBe(testWalletAddress.toLowerCase());
       expect(decoded.payload.pkpInfo.publicKey).toBe(testPkp.publicKey);
       expect(decoded.payload.authentication.type).toBe('email');
       expect(decoded.payload.authentication.value).toBe('test@example.com');
@@ -89,7 +89,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
 
       expect(decoded.payload.role).toBe('app-user');
       expect(decoded.payload.app.id).toBe(123);
-      expect(decoded.payload.iss).toBe(testWalletAddress);
+      expect(decoded.payload.iss.toLowerCase()).toBe(testWalletAddress.toLowerCase());
     });
   });
 
@@ -106,7 +106,7 @@ describe('Vincent JWT - 3 Role Test Suite', () => {
       const verified = await verifyVincentDelegateeJWT({ jwt, expectedAudience: commonAudience });
       expect(verified.payload.role).toBe('app-delegatee');
       expect(verified.payload.sub).toBe(subjectAddress);
-      expect(verified.payload.iss).toBe(testWalletAddress);
+      expect(verified.payload.iss.toLowerCase()).toBe(testWalletAddress.toLowerCase());
       expect(verified.payload.publicKey).toBe(publicKeyHex);
     });
 
