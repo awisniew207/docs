@@ -25,11 +25,6 @@ export const abilityParamsSchema = z.object({
     .regex(/^\d*\.?\d+$/, 'Invalid amount format')
     .refine((val) => parseFloat(val) > 0, 'Amount must be greater than 0')
     .describe('The amount of tokens to deposit/withdraw/redeem, as a string'),
-  onBehalfOf: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address')
-    .optional()
-    .describe('The address that will receive the vault shares (optional)'),
   chain: z.string().describe('The blockchain network where the vault is deployed'),
   rpcUrl: z.string().optional().describe('Custom RPC URL (optional, uses default if not provided)'),
   // Gas sponsorship parameters for EIP-7702

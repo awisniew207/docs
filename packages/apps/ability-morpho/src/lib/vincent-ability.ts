@@ -41,7 +41,7 @@ export const vincentAbility = createVincentAbility({
         abilityParams,
       });
 
-      const { operation, vaultAddress, amount, onBehalfOf, rpcUrl } = abilityParams;
+      const { operation, vaultAddress, amount, rpcUrl } = abilityParams;
 
       // Validate operation
       if (!Object.values(MorphoOperation).includes(operation)) {
@@ -142,12 +142,11 @@ export const vincentAbility = createVincentAbility({
       let estimatedGas = 0;
       try {
         const vaultContract = new ethers.Contract(vaultAddress, ERC4626_VAULT_ABI, provider);
-        const targetAddress = onBehalfOf || pkpAddress;
 
         switch (operation) {
           case MorphoOperation.DEPOSIT:
             estimatedGas = (
-              await vaultContract.estimateGas.deposit(convertedAmount, targetAddress, {
+              await vaultContract.estimateGas.deposit(convertedAmount, pkpAddress, {
                 from: pkpAddress,
               })
             ).toNumber();
@@ -212,7 +211,6 @@ export const vincentAbility = createVincentAbility({
         operation,
         vaultAddress,
         amount,
-        onBehalfOf,
         chain,
         rpcUrl,
         alchemyGasSponsor,
@@ -288,7 +286,7 @@ export const vincentAbility = createVincentAbility({
       switch (operation) {
         case MorphoOperation.DEPOSIT:
           functionName = 'deposit';
-          args = [convertedAmount, onBehalfOf || pkpAddress];
+          args = [convertedAmount, pkpAddress];
           break;
 
         case MorphoOperation.WITHDRAW:

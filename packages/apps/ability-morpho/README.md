@@ -45,7 +45,6 @@ const abilityParams = {
   vaultAddress: '0x1234...', // The Morpho vault address
   amount: '1.0', // Amount to deposit/withdraw/redeem
   chain: 'base', // The chain where the vault is deployed
-  onBehalfOf: '0xabcd...', // Optional: address to receive vault shares (defaults to delegator)
 };
 
 // Run precheck to see if ability should be executed
@@ -89,7 +88,6 @@ The ability supports the following operations on Morpho vaults:
 | `vaultAddress`              | `string`                              | ✅       | Morpho vault contract address (0x format)                                                        |
 | `amount`                    | `string`                              | ✅       | Amount as string in units, no decimal places (assets for deposit or withdraw, shares for redeem) |
 | `chain`                     | `string`                              | ✅       | Chain identifier (e.g., "base")                                                                  |
-| `onBehalfOf`                | `string`                              | ❌       | Address to receive tokens (defaults to the delegator pkp)                                        |
 | `rpcUrl`                    | `string`                              | ❌       | Custom RPC URL (for precheck validation)                                                         |
 | `alchemyGasSponsor`         | `boolean`                             | ❌       | Whether to use Alchemy's gas sponsorship (EIP-7702)                                              |
 | `alchemyGasSponsorApiKey`   | `string`                              | ❌       | Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)                      |

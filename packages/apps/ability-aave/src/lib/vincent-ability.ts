@@ -45,8 +45,7 @@ export const vincentAbility = createVincentAbility({
         abilityParams,
       });
 
-      const { operation, asset, amount, interestRateMode, onBehalfOf, rpcUrl, chain } =
-        abilityParams;
+      const { operation, asset, amount, interestRateMode, rpcUrl, chain } = abilityParams;
 
       // Validate operation
       if (!Object.values(AaveOperation).includes(operation)) {
@@ -170,12 +169,11 @@ export const vincentAbility = createVincentAbility({
       let estimatedGas = 0;
       try {
         const aavePool = new ethers.Contract(aaveAddresses.POOL, AAVE_POOL_ABI, provider);
-        const targetAddress = onBehalfOf || pkpAddress;
 
         switch (operation) {
           case AaveOperation.SUPPLY:
             estimatedGas = (
-              await aavePool.estimateGas.supply(asset, convertedAmount, targetAddress, 0, {
+              await aavePool.estimateGas.supply(asset, convertedAmount, pkpAddress, 0, {
                 from: pkpAddress,
               })
             ).toNumber();
@@ -194,7 +192,7 @@ export const vincentAbility = createVincentAbility({
                 convertedAmount,
                 interestRateMode,
                 0,
-                targetAddress,
+                pkpAddress,
                 { from: pkpAddress },
               )
             ).toNumber();
@@ -205,7 +203,7 @@ export const vincentAbility = createVincentAbility({
                 asset,
                 convertedAmount,
                 interestRateMode || INTEREST_RATE_MODE.VARIABLE,
-                targetAddress,
+                pkpAddress,
                 { from: pkpAddress },
               )
             ).toNumber();
@@ -259,8 +257,7 @@ export const vincentAbility = createVincentAbility({
 
   execute: async ({ abilityParams }, { succeed, fail, delegation }) => {
     try {
-      const { operation, asset, amount, interestRateMode, onBehalfOf, chain, rpcUrl } =
-        abilityParams;
+      const { operation, asset, amount, interestRateMode, chain, rpcUrl } = abilityParams;
 
       console.log('[@lit-protocol/vincent-ability-aave/execute] Executing AAVE Ability', {
         operation,
@@ -331,7 +328,7 @@ export const vincentAbility = createVincentAbility({
             pkpPublicKey,
             asset,
             convertedAmount,
-            onBehalfOf || pkpAddress,
+            pkpAddress,
             chainId,
             aaveAddresses,
           );
@@ -359,7 +356,7 @@ export const vincentAbility = createVincentAbility({
             asset,
             convertedAmount,
             interestRateMode,
-            onBehalfOf || pkpAddress,
+            pkpAddress,
             chainId,
             aaveAddresses,
           );
@@ -372,7 +369,7 @@ export const vincentAbility = createVincentAbility({
             asset,
             convertedAmount,
             interestRateMode || INTEREST_RATE_MODE.VARIABLE,
-            onBehalfOf || pkpAddress,
+            pkpAddress,
             chainId,
             aaveAddresses,
           );
@@ -415,7 +412,7 @@ async function executeSupply(
   pkpPublicKey: string,
   asset: string,
   amount: string,
-  onBehalfOf: string,
+  pkpAddress: string,
   chainId: number,
   aaveAddresses: { POOL: string; POOL_ADDRESSES_PROVIDER: string },
 ): Promise<string> {
@@ -431,7 +428,7 @@ async function executeSupply(
     abi: AAVE_POOL_ABI,
     contractAddress: aaveAddresses.POOL,
     functionName: 'supply',
-    args: [asset, amount, onBehalfOf, 0],
+    args: [asset, amount, pkpAddress, 0],
     chainId,
     gasBumpPercentage: 10,
   });
@@ -479,7 +476,7 @@ async function executeBorrow(
   asset: string,
   amount: string,
   interestRateMode: number,
-  onBehalfOf: string,
+  pkpAddress: string,
   chainId: number,
   aaveAddresses: { POOL: string; POOL_ADDRESSES_PROVIDER: string },
 ): Promise<string> {
@@ -494,7 +491,7 @@ async function executeBorrow(
     abi: AAVE_POOL_ABI,
     contractAddress: aaveAddresses.POOL,
     functionName: 'borrow',
-    args: [asset, amount, interestRateMode, 0, onBehalfOf],
+    args: [asset, amount, interestRateMode, 0, pkpAddress],
     chainId,
     gasBumpPercentage: 10,
   });
@@ -511,7 +508,7 @@ async function executeRepay(
   asset: string,
   amount: string,
   rateMode: number,
-  onBehalfOf: string,
+  pkpAddress: string,
   chainId: number,
   aaveAddresses: { POOL: string; POOL_ADDRESSES_PROVIDER: string },
 ): Promise<string> {
@@ -527,7 +524,7 @@ async function executeRepay(
     abi: AAVE_POOL_ABI,
     contractAddress: aaveAddresses.POOL,
     functionName: 'repay',
-    args: [asset, amount, rateMode, onBehalfOf],
+    args: [asset, amount, rateMode, pkpAddress],
     chainId,
     gasBumpPercentage: 10,
   });

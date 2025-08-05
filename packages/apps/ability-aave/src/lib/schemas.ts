@@ -60,11 +60,6 @@ export const abilityParamsSchema = z.object({
     .max(2)
     .optional()
     .describe('Interest rate mode: 1 for Stable, 2 for Variable (only for borrow operations)'),
-  onBehalfOf: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address')
-    .optional()
-    .describe('The address that will receive the aTokens (optional)'),
   chain: z
     .string()
     .refine(

@@ -63,15 +63,14 @@ if (precheckRes.success) {
 
 ## Parameters
 
-| Parameter          | Type                                            | Required | Description                                                    |
-| ------------------ | ----------------------------------------------- | -------- | -------------------------------------------------------------- |
-| `operation`        | `"supply" \| "withdraw" \| "borrow" \| "repay"` | ✅       | The Aave operation to perform                                  |
-| `asset`            | `string`                                        | ✅       | Token contract address (0x format)                             |
-| `amount`           | `string`                                        | ✅       | Amount as a string (e.g., "1.5")                               |
-| `chain`            | `string`                                        | ✅       | Chain identifier (e.g., "ethereum", "polygon")                 |
-| `interestRateMode` | `1 \| 2`                                        | ❌       | 1=Stable, 2=Variable (required for borrow/repay)               |
-| `onBehalfOf`       | `string`                                        | ❌       | Address to perform operation on behalf of (defaults to sender) |
-| `rpcUrl`           | `string`                                        | ❌       | Custom RPC URL for precheck validation                         |
+| Parameter          | Type                                            | Required | Description                                      |
+| ------------------ | ----------------------------------------------- | -------- | ------------------------------------------------ |
+| `operation`        | `"supply" \| "withdraw" \| "borrow" \| "repay"` | ✅       | The Aave operation to perform                    |
+| `asset`            | `string`                                        | ✅       | Token contract address (0x format)               |
+| `amount`           | `string`                                        | ✅       | Amount as a string (e.g., "1.5")                 |
+| `chain`            | `string`                                        | ✅       | Chain identifier (e.g., "ethereum", "polygon")   |
+| `interestRateMode` | `1 \| 2`                                        | ❌       | 1=Stable, 2=Variable (required for borrow/repay) |
+| `rpcUrl`           | `string`                                        | ❌       | Custom RPC URL for precheck validation           |
 
 ## Prerequisites
 
