@@ -4,9 +4,9 @@ import {
   bundledVincentAbility as erc20BundledAbility,
   checkNativeTokenBalance,
   getCurrentAllowance,
-} from '@lit-protocol/ability-erc20-approval';
+} from '@lit-protocol/vincent-ability-erc20-approval';
 
-import { bundledVincentAbility as uniswapBundledAbility } from '@lit-protocol/ability-uniswap-swap';
+import { bundledVincentAbility as uniswapBundledAbility } from '@lit-protocol/vincent-ability-uniswap-swap';
 
 import {
   disconnectVincentAbilityClients,
@@ -14,7 +14,7 @@ import {
 } from '@lit-protocol/vincent-app-sdk/abilityClient';
 import { ethers } from 'ethers';
 import type { PermissionData } from '@lit-protocol/vincent-contracts-sdk';
-import { validateAbilityExecutionAndGetPolicies } from '@lit-protocol/vincent-contracts-sdk';
+import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 
 import {
   BASE_PUBLIC_CLIENT,
@@ -46,6 +46,13 @@ import { privateKeyToAccount } from 'viem/accounts';
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
+
+const contractClient = getClient({
+  signer: new ethers.Wallet(
+    TEST_APP_MANAGER_PRIVATE_KEY,
+    new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
+  ),
+});
 
 // Create a delegatee wallet for ability execution
 const getDelegateeWallet = () => {
@@ -262,16 +269,10 @@ describe('Uniswap Swap Ability E2E Tests', () => {
   });
 
   it('should validate the Delegatee has permission to execute the ERC20 Approval Ability with the Agent Wallet PKP', async () => {
-    const validationResult = await validateAbilityExecutionAndGetPolicies({
-      signer: new ethers.Wallet(
-        TEST_APP_MANAGER_PRIVATE_KEY,
-        new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
-      ),
-      args: {
-        delegateeAddress: TEST_APP_DELEGATEE_ACCOUNT.address,
-        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        abilityIpfsCid: TOOL_IPFS_IDS[0],
-      },
+    const validationResult = await contractClient.validateAbilityExecutionAndGetPolicies({
+      delegateeAddress: TEST_APP_DELEGATEE_ACCOUNT.address,
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      abilityIpfsCid: TOOL_IPFS_IDS[0],
     });
 
     expect(validationResult).toBeDefined();
@@ -282,16 +283,10 @@ describe('Uniswap Swap Ability E2E Tests', () => {
   });
 
   it('should validate the Delegatee has permission to execute the Uniswap Swap Ability with the Agent Wallet PKP', async () => {
-    const validationResult = await validateAbilityExecutionAndGetPolicies({
-      signer: new ethers.Wallet(
-        TEST_APP_MANAGER_PRIVATE_KEY,
-        new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
-      ),
-      args: {
-        delegateeAddress: TEST_APP_DELEGATEE_ACCOUNT.address,
-        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-        abilityIpfsCid: TOOL_IPFS_IDS[1],
-      },
+    const validationResult = await contractClient.validateAbilityExecutionAndGetPolicies({
+      delegateeAddress: TEST_APP_DELEGATEE_ACCOUNT.address,
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      abilityIpfsCid: TOOL_IPFS_IDS[1],
     });
 
     expect(validationResult).toBeDefined();
@@ -395,9 +390,10 @@ describe('Uniswap Swap Ability E2E Tests', () => {
     expect(precheckResult.result).not.toBeDefined();
 
     // The policy precheck should return the maxSpendingLimitInUsd and buyAmountInUsd
-    const policyPrecheckResult = (precheckResult.context?.policiesContext.allowedPolicies as any)?.[
-      '@lit-protocol/vincent-policy-spending-limit'
-    ]?.result as { maxSpendingLimitInUsd: number; buyAmountInUsd: number };
+    const policyPrecheckResult =
+      precheckResult.context?.policiesContext.allowedPolicies?.[
+        '@lit-protocol/vincent-policy-spending-limit'
+      ]?.result;
     expect(policyPrecheckResult).toBeDefined();
     // Max spending limit is padded to 8 decimals when returned from the policy
     expect(policyPrecheckResult?.maxSpendingLimitInUsd).toBe(

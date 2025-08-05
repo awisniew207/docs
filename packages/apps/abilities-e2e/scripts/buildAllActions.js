@@ -63,7 +63,7 @@ async function buildAllActions() {
     const entryPoint = path.join(fullPath, 'lit-action.ts');
     const outdir = path.join(GENERATED_DIR, actionDir);
 
-    if (actionDir.includes('ability')) {
+    if (actionDir.includes('abilities')) {
       abilities.push({ name: actionDir, entryPoint, outdir });
     } else {
       policies.push({ name: actionDir, entryPoint, outdir });
