@@ -1,11 +1,12 @@
-import { arrayify } from 'ethers/lib/utils';
+import { decode, encode } from 'cbor2';
+import { arrayify, hexlify } from 'ethers/lib/utils';
 
 import type {
+  AbilityWithPolicies,
   PermissionDataOnChain,
   PolicyWithParameters,
-  AbilityWithPolicies,
 } from '../internal/types/chain';
-import type { PermissionData } from '../types';
+import type { AbilityPolicyParameterData, PermissionData } from '../types';
 
 /**
  * Converts a policy parameters object to the flattened array format required by the contract
@@ -13,11 +14,9 @@ import type { PermissionData } from '../types';
  * @param permissionData { PermissionData } - Object containing the nested policy parameters
  * @returns The flattened array structure with abilityIpfsCids, policyIpfsCids, and policyParameterValues
  */
-export async function encodePermissionDataForChain(
+export function encodePermissionDataForChain(
   permissionData: PermissionData,
-): Promise<PermissionDataOnChain> {
-  const { encode } = await import('cbor2');
-
+): PermissionDataOnChain {
   const abilityIpfsCids: string[] = [];
   const policyIpfsCids: string[][] = [];
   const policyParameterValues: string[][] = [];
@@ -44,7 +43,7 @@ export async function encodePermissionDataForChain(
       const encodedParams = encode(policyParams, { collapseBigInts: false });
 
       // Convert the encoded bytes to a hex string for the contract
-      abilityPolicyParameterValues.push('0x' + Buffer.from(encodedParams).toString('hex'));
+      abilityPolicyParameterValues.push(hexlify(encodedParams));
     });
 
     policyIpfsCids.push(abilityPolicyIpfsCids);
@@ -64,18 +63,11 @@ export async function encodePermissionDataForChain(
  * @param policy - PolicyWithParameters object containing policyIpfsCid and encoded policyParameterValues
  * @returns The decoded policy parameters object, or undefined if no parameters are provided
  */
-export async function decodePolicyParametersFromChain(
+export function decodePolicyParametersFromChain(
   policy: PolicyWithParameters,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<{ [paramName: string]: any } | undefined> {
-  const { decode } = await import('cbor2');
-
+): { [paramName: string]: any } | undefined {
   const encodedParams = policy.policyParameterValues;
-
-  // Handle empty or invalid parameters - return undefined to omit this policy
-  if (!encodedParams || encodedParams === '0x') {
-    return undefined;
-  }
 
   try {
     const byteArray = arrayify(encodedParams);
@@ -92,25 +84,37 @@ export async function decodePolicyParametersFromChain(
  * @param abilitiesWithPolicies - Array of AbilityWithPolicies objects
  * @returns The nested policy parameters object. PolicyParameters have been decoded using `CBOR2`.
  */
-export async function decodePermissionDataFromChain(
+export function decodePermissionDataFromChain(
   abilitiesWithPolicies: AbilityWithPolicies[],
-): Promise<PermissionData> {
+): PermissionData {
   const permissionData: PermissionData = {};
 
   for (const ability of abilitiesWithPolicies) {
-    const { abilityIpfsCid } = ability;
-    permissionData[abilityIpfsCid] = {};
-
-    for (const policy of ability.policies) {
-      const { policyIpfsCid } = policy;
-      const decodedParams = await decodePolicyParametersFromChain(policy);
-
-      // Only include policies that have valid parameters i.e. Policies set by the user
-      if (decodedParams !== undefined) {
-        permissionData[abilityIpfsCid][policyIpfsCid] = decodedParams;
-      }
-    }
+    const { abilityIpfsCid, policies } = ability;
+    permissionData[abilityIpfsCid] = decodePolicyParametersForOneAbility({ policies });
   }
 
   return permissionData;
+}
+
+export function decodePolicyParametersForOneAbility({
+  policies,
+}: {
+  policies: PolicyWithParameters[];
+}) {
+  const policyParamsDict: AbilityPolicyParameterData = {};
+
+  for (const policy of policies) {
+    const { policyIpfsCid, policyParameterValues } = policy;
+
+    // Handle empty or invalid parameters - omit the policy from the returned object entirely; it was not enabled by the user
+    if (!policyParameterValues || policyParameterValues === '0x') {
+      continue;
+    }
+
+    // Otherwise, assume there are parameters (even if they might be `undefined` CBOR2) set by the user
+    policyParamsDict[policyIpfsCid] = decodePolicyParametersFromChain(policy);
+  }
+
+  return policyParamsDict;
 }

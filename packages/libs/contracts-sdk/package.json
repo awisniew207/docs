@@ -15,9 +15,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
-  },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.44.2",
     "@lit-protocol/auth-helpers": "^7.2.0",
