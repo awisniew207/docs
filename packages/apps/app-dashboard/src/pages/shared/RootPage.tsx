@@ -8,6 +8,7 @@ export default function RootPage() {
     <>
       <Helmet>
         <title>Vincent | Delegation Platform</title>
+        <link rel="preload" href="/vincent-main-logo.png" as="image" />
         <meta
           name="description"
           content="Vincent - Delegation Platform for user owned automation powered by Lit Protocol"

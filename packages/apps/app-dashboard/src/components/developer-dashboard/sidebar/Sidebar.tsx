@@ -23,7 +23,6 @@ import {
   SidebarHeader,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
@@ -100,7 +99,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     }
     if (
       path.startsWith('/developer/abilities') ||
-      path.includes('/abilityId/') ||
+      path.includes('/ability/') ||
       path.startsWith('/developer/create-ability')
     ) {
       initialExpanded.add('abilities');
@@ -112,7 +111,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     }
     if (
       path.startsWith('/developer/policies') ||
-      path.includes('/policyId/') ||
+      path.includes('/policy/') ||
       path.startsWith('/developer/create-policy')
     ) {
       initialExpanded.add('policies');
@@ -136,7 +135,8 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     if (route === '/developer/dashboard') {
       return location.pathname === '/developer/dashboard';
     }
-    return location.pathname.startsWith(route);
+    // Exact match or starts with route followed by a slash or end of string
+    return location.pathname === route || location.pathname.startsWith(route + '/');
   };
 
   const handleSignOut = async () => {
@@ -323,7 +323,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     return (
       <div className="ml-4 mt-1 space-y-1">
         {userAbilities.map((ability: Ability) => {
-          const abilityRoute = `/developer/abilityId/${encodeURIComponent(ability.packageName)}`;
+          const abilityRoute = `/developer/ability/${encodeURIComponent(ability.packageName)}`;
           const isAbilityActive = isActiveRoute(abilityRoute);
           const abilityVersions = activeAbilityVersions || [];
 
@@ -483,7 +483,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     return (
       <div className="ml-4 mt-1 space-y-1">
         {userPolicies.map((policy: Policy) => {
-          const policyRoute = `/developer/policyId/${encodeURIComponent(policy.packageName)}`;
+          const policyRoute = `/developer/policy/${encodeURIComponent(policy.packageName)}`;
           const isPolicyActive = isActiveRoute(policyRoute);
           const policyVersions = activePolicyVersions || [];
 
@@ -759,9 +759,6 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
 
       <SidebarContent className="px-4 py-6">
         <SidebarGroup className="space-y-4">
-          <SidebarGroupLabel className="px-3 text-sm font-semibold text-black uppercase tracking-wide">
-            Developer Abilities
-          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
               {mainMenuItems.map((item) => (

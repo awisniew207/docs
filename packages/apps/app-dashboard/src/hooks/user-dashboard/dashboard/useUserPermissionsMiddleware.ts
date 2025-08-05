@@ -24,13 +24,15 @@ export const useUserPermissionsMiddleware = ({
   });
 
   useEffect(() => {
-    // Early return if params are missing
+    // Early return if params are missing. Assme this to be loading though.
+    // If the auth info is malformed, it'll be caught by the authentication
+    // anyways.
     if (!pkpEthAddress) {
       setState({
         permittedApps: null,
         permittedAppVersions: {},
-        isLoading: false,
-        error: 'Missing pkpEthAddress',
+        isLoading: true,
+        error: null,
       });
       return;
     }

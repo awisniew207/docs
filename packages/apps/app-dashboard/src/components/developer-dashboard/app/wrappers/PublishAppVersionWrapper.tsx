@@ -198,6 +198,18 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
         return;
       }
 
+      // Check if we have any active (non-deleted) abilities
+      const activeAbilities = versionAbilities?.filter((ability) => !ability.isDeleted) || [];
+
+      if (activeAbilities.length === 0) {
+        setPublishResult({
+          success: false,
+          message:
+            'Cannot publish version without active abilities. Please add at least one ability or undelete existing abilities.',
+        });
+        return;
+      }
+
       // Check if any delegatees are already registered to other apps
       const delegatees = app.delegateeAddresses;
 
