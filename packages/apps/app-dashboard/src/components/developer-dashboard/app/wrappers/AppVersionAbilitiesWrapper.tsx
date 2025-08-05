@@ -82,7 +82,7 @@ export function AppVersionAbilitiesWrapper() {
     return <StatusMessage message={`Version ${versionId} not found`} type="error" />;
 
   const existingAbilityNames =
-    activeAbilities?.map((ability: AppVersionAbility) => ability.abilityPackageName) || [];
+    versionAbilities?.map((ability: AppVersionAbility) => ability.abilityPackageName) || [];
 
   const handleAbilityAdd = async (ability: Ability) => {
     await createAppVersionAbility({

@@ -51,7 +51,7 @@ export function UndeleteAppVersionAbilityButton({
       className="inline-flex items-center gap-2 px-4 py-2 border border-green-200 rounded-lg text-sm font-medium text-green-600 bg-white hover:bg-green-50 transition-colors relative z-10 !opacity-100 shadow-sm"
     >
       <ArchiveRestore className="h-4 w-4" />
-      Undelete App Version
+      Undelete Ability
     </button>
   );
 }
