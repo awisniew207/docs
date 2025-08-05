@@ -340,7 +340,9 @@ export async function identifySupportedPolicies(dependencies: Record<string, str
  * @param options Import options
  * @returns Package metadata
  */
-export async function importPackage(options: ImportPackageOptions): Promise<PackageMetadata> {
+export async function importPackage(
+  options: ImportPackageOptions,
+): Promise<PackageMetadata & Partial<PolicyInputUiData>> {
   const { packageName, version, type } = options;
   debugLog('Starting package import', { packageName, version, type });
 
