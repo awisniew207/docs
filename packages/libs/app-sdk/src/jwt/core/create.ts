@@ -1,4 +1,4 @@
-import { arrayify, splitSignature, toUtf8Bytes } from 'ethers/lib/utils';
+import { arrayify, splitSignature, toUtf8Bytes, hexlify } from 'ethers/lib/utils';
 
 import type {
   CreateAppUserJWTParams,
@@ -12,8 +12,8 @@ import type {
 import { VINCENT_JWT_API_VERSION } from '../constants';
 import { toBase64Url } from './utils/base64';
 
-const isHex = (s: string): s is `0x${string}` => /^0x[0-9a-fA-F]*$/.test(s);
-const ensureHex = (s: string): `0x${string}` => (isHex(s) ? s : (`0x${s}` as `0x${string}`));
+const ensureHex = (s: string): `0x${string}` =>
+  hexlify(s, { allowMissingPrefix: true }) as `0x${string}`;
 
 function createES256KSigner(wallet: JWTWalletSigner) {
   return async (data: string | Uint8Array): Promise<string> => {
