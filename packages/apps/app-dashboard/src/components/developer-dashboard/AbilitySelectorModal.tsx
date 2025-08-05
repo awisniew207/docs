@@ -90,7 +90,7 @@ const TOOL_GRID_COLUMNS: ColDef[] = [
     cellRenderer: (params: ICellRendererParams) => {
       return (
         <div className="flex items-center h-full">
-          <div className="text-sm text-gray-600" title={params.value}>
+          <div className="text-sm text-gray-600 dark:text-gray-300" title={params.value}>
             {params.value || 'No description available'}
           </div>
         </div>
@@ -142,7 +142,7 @@ export function AbilitySelectorModal({
   };
 
   const getRowClass = () => {
-    return 'cursor-pointer hover:bg-gray-50';
+    return 'cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-700';
   };
 
   return (
@@ -165,7 +165,7 @@ export function AbilitySelectorModal({
         </DialogHeader>
 
         <div className="flex-1 min-h-0">
-          <div className="ag-theme-alpine h-full w-full bg-white dark:bg-neutral-800">
+          <div className="ag-theme-alpine h-full w-full bg-white dark:bg-neutral-800 dark:[&_.ag-root-wrapper]:!bg-transparent dark:[&_.ag-header]:!bg-neutral-700 dark:[&_.ag-header-cell]:!bg-neutral-700 dark:[&_.ag-header-cell]:!text-white dark:[&_.ag-row]:!bg-neutral-800 dark:[&_.ag-cell]:!text-white dark:[&_.ag-row-hover]:!bg-neutral-700">
             <AgGridReact
               rowData={filteredAbilities}
               columnDefs={TOOL_GRID_COLUMNS}
@@ -181,7 +181,7 @@ export function AbilitySelectorModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t flex-shrink-0">
+        <div className="flex justify-end gap-2 pt-4 border-t dark:border-neutral-600 flex-shrink-0">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
