@@ -6,6 +6,18 @@ import { Logo } from '@/components/shared/ui/Logo';
 export function AppsDisplay({ apps }: { apps: App[] }) {
   const navigate = useNavigate();
 
+  const getDisplayStatus = (status: string | undefined): string => {
+    const normalizedStatus = status?.toLowerCase() || 'prod';
+    switch (normalizedStatus) {
+      case 'test':
+        return 'BETA';
+      case 'prod':
+        return 'LIVE';
+      default:
+        return normalizedStatus.toUpperCase();
+    }
+  };
+
   return (
     <div className="relative group">
       <div className="absolute inset-0 bg-black/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -14,10 +26,10 @@ export function AppsDisplay({ apps }: { apps: App[] }) {
         <div className="space-y-4">
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-gray-500">
-            <div className="col-span-6">Application</div>
-            <div className="col-span-2">Status</div>
-            <div className="col-span-2">Version</div>
-            <div className="col-span-2">Updated</div>
+            <div className="col-span-6 sm:col-span-5">Application</div>
+            <div className="col-span-3 sm:col-span-2">Status</div>
+            <div className="col-span-3 sm:col-span-2">Version</div>
+            <div className="hidden sm:block sm:col-span-3">Updated</div>
           </div>
 
           {/* Table Rows */}
@@ -29,7 +41,7 @@ export function AppsDisplay({ apps }: { apps: App[] }) {
                 onClick={() => navigate(`/explorer/appId/${app.appId}`)}
               >
                 {/* Application Info */}
-                <div className="col-span-6 flex items-center gap-3">
+                <div className="col-span-6 sm:col-span-5 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg overflow-hidden bg-black/5 border border-black/5 flex items-center justify-center flex-shrink-0">
                     <Logo
                       logo={app.logo}
@@ -46,14 +58,14 @@ export function AppsDisplay({ apps }: { apps: App[] }) {
                 </div>
 
                 {/* Status */}
-                <div className="col-span-2 flex items-center">
+                <div className="col-span-3 sm:col-span-2 flex items-center">
                   <span className="px-3 py-1 rounded-full text-xs font-medium border border-orange-500 !bg-orange-50 !text-orange-700">
-                    {app.deploymentStatus?.toUpperCase() || 'PROD'}
+                    {getDisplayStatus(app.deploymentStatus)}
                   </span>
                 </div>
 
                 {/* Version */}
-                <div className="col-span-2 flex items-center">
+                <div className="col-span-3 sm:col-span-2 flex items-center">
                   <div className="flex items-center gap-1">
                     <Tag className="w-3 h-3 text-black/40" />
                     <span className="text-sm text-black">v{app.activeVersion}</span>
@@ -61,7 +73,7 @@ export function AppsDisplay({ apps }: { apps: App[] }) {
                 </div>
 
                 {/* Updated */}
-                <div className="col-span-2 flex items-center">
+                <div className="hidden sm:flex sm:col-span-3 items-center">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-black/40" />
                     <span className="text-sm text-gray-600">

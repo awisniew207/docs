@@ -40,9 +40,18 @@ export function AbilityInfoView({ appVersionAbility, ability }: AbilityInfoViewP
               <p className="text-base font-light text-black/90">
                 {ability.title || ability.packageName}
               </p>
-              <p className="text-xs text-gray-500">
-                {ability.packageName} v{ability.activeVersion}
-              </p>
+              <a
+                href={`https://www.npmjs.com/package/${ability.packageName}/v/${ability.activeVersion}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-75 transition-opacity"
+                title={`View ${ability.packageName} v${ability.activeVersion} on npm`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="w-5 h-5 flex items-center justify-center">
+                  <img src="/npm.png" alt="npm" className="w-full h-full object-contain" />
+                </div>
+              </a>
               {ability.description && (
                 <p className="text-sm text-gray-600 mt-1 leading-relaxed">{ability.description}</p>
               )}

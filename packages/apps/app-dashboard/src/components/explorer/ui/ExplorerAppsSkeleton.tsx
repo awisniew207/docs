@@ -10,18 +10,12 @@ export function ExplorerAppsSkeleton() {
 
         {/* Hero Section Skeleton */}
         <div className="relative bg-white/40 backdrop-blur-xl border border-black/10 rounded-2xl p-12">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1">
-              <div className="mb-6">
-                <Skeleton className="h-8 w-48 rounded-full" />
-              </div>
-              <Skeleton className="h-16 w-96 mb-6" />
-              <Skeleton className="h-4 w-80" />
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-6">
+              <Skeleton className="h-8 w-48 rounded-full" />
             </div>
-
-            <div className="relative">
-              <Skeleton className="w-72 h-72 rounded-3xl" />
-            </div>
+            <Skeleton className="h-16 w-96 mb-6" />
+            <Skeleton className="h-4 w-80" />
           </div>
         </div>
 

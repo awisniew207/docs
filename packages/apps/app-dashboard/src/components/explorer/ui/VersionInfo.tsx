@@ -28,16 +28,16 @@ export function VersionInfo({ app, versions, versionAbilities }: VersionInfoProp
               </div>
 
               <div className="flex-shrink-0">
-                <TabsList className="bg-black/5 border border-black/5 rounded-full p-1 bg-transparent h-auto">
+                <TabsList className="bg-black/5 border border-black/5 rounded-full p-1 h-auto">
                   <TabsTrigger
                     value="active"
-                    className="text-gray-500 hover:text-black data-[state=active]:text-black data-[state=active]:bg-white/40 rounded-full px-6 py-2 text-sm font-medium border-0 bg-transparent h-auto transition-all duration-300 focus:outline-none"
+                    className="!text-gray-600 hover:!text-black data-[state=active]:!text-black data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-black/10 rounded-full px-6 py-2 text-sm font-medium border-0 bg-transparent h-auto transition-all duration-300 focus:outline-none"
                   >
                     Active Version
                   </TabsTrigger>
                   <TabsTrigger
                     value="all"
-                    className="text-gray-500 hover:text-black data-[state=active]:text-black data-[state=active]:bg-white/40 rounded-full px-6 py-2 text-sm font-medium border-0 bg-transparent h-auto transition-all duration-300 focus:outline-none"
+                    className="!text-gray-600 hover:!text-black data-[state=active]:!text-black data-[state=active]:!bg-white data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-black/10 rounded-full px-6 py-2 text-sm font-medium border-0 bg-transparent h-auto transition-all duration-300 focus:outline-none"
                   >
                     All Versions
                   </TabsTrigger>

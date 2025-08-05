@@ -14,7 +14,7 @@ export function Header({ showBackButton = false }: HeaderProps) {
       <div className="relative bg-white/40 backdrop-blur-xl border border-black/10 rounded-2xl p-2 hover:border-black/20 transition-all duration-500">
         <div className="flex items-center justify-between">
           {/* Left side: Navigation */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Back Button (conditional) */}
             {showBackButton && (
               <button
@@ -27,55 +27,61 @@ export function Header({ showBackButton = false }: HeaderProps) {
             )}
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => navigate('/explorer/apps')}
-                className="group/tab flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-black/90 font-medium text-sm transition-all duration-300 hover:scale-105"
+                className={`group/tab flex items-center gap-1 sm:gap-2 ${showBackButton ? 'px-2 sm:px-4' : 'px-4'} py-2 rounded-xl text-white bg-black/90 font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105`}
               >
                 <Layers className="w-4 h-4" />
-                Apps
+                <span className={showBackButton ? 'hidden sm:inline' : ''}>Apps</span>
               </button>
 
               <button
                 disabled
-                className="group/tab relative flex items-center gap-2 px-4 py-2 rounded-xl text-black/40 opacity-60 cursor-not-allowed font-medium text-sm"
+                className={`group/tab relative flex items-center gap-1 sm:gap-2 ${showBackButton ? 'px-2 sm:px-4' : 'px-4'} py-2 rounded-xl text-black/40 opacity-60 cursor-not-allowed font-medium text-xs sm:text-sm`}
               >
                 <Wrench className="w-4 h-4" />
-                Abilities
+                <span className={showBackButton ? 'hidden sm:inline' : ''}>Abilities</span>
                 <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-md">
-                  Coming Soon
+                  <span className={showBackButton ? 'hidden lg:inline' : 'hidden sm:inline'}>
+                    Coming Soon
+                  </span>
+                  <span className={showBackButton ? 'sm:hidden lg:hidden' : 'sm:hidden'}>Soon</span>
                 </div>
               </button>
 
               <button
                 disabled
-                className="group/tab relative flex items-center gap-2 px-4 py-2 rounded-xl text-black/40 opacity-60 cursor-not-allowed font-medium text-sm"
+                className={`group/tab relative flex items-center gap-1 sm:gap-2 ${showBackButton ? 'px-2 sm:px-4' : 'px-4'} py-2 rounded-xl text-black/40 opacity-60 cursor-not-allowed font-medium text-xs sm:text-sm`}
               >
                 <Shield className="w-4 h-4" />
-                Policies
+                <span className={showBackButton ? 'hidden sm:inline' : ''}>Policies</span>
                 <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-md">
-                  Coming Soon
+                  <span className={showBackButton ? 'hidden lg:inline' : 'hidden sm:inline'}>
+                    Coming Soon
+                  </span>
+                  <span className={showBackButton ? 'sm:hidden lg:hidden' : 'sm:hidden'}>Soon</span>
                 </div>
               </button>
             </div>
           </div>
 
           {/* Right side: Quick Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => navigate('/user/dashboard')}
-              className="group/action flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-white hover:bg-black/90 font-medium text-sm transition-all duration-300 hover:scale-105"
+              onClick={() => navigate('/user/apps')}
+              className={`group/action flex items-center gap-1 sm:gap-2 ${showBackButton ? 'px-1.5 sm:px-4' : 'px-2 sm:px-4'} py-2 rounded-xl bg-black text-white hover:bg-black/90 font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105`}
             >
               <TrendingUp className="w-4 h-4" />
-              <span className="hidden sm:inline">Earn</span>
+              <span className={showBackButton ? 'hidden sm:inline' : ''}>Earn</span>
             </button>
 
             <button
               onClick={() => navigate('/developer/dashboard')}
-              className="group/action flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-white hover:bg-black/90 font-medium text-sm transition-all duration-300 hover:scale-105"
+              className={`group/action flex items-center gap-1 sm:gap-2 ${showBackButton ? 'px-1.5 sm:px-4' : 'px-2 sm:px-4'} py-2 rounded-xl bg-black text-white hover:bg-black/90 font-medium text-xs sm:text-sm transition-all duration-300 hover:scale-105`}
             >
               <Code className="w-4 h-4" />
-              <span className="hidden sm:inline">Build</span>
+              <span className={showBackButton ? 'hidden sm:inline' : ''}>Build</span>
             </button>
           </div>
         </div>

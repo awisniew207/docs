@@ -14,6 +14,18 @@ export function AppHeader({
 }) {
   const navigate = useNavigate();
 
+  const getDisplayStatus = (status: string | undefined): string => {
+    const normalizedStatus = status?.toLowerCase() || 'prod';
+    switch (normalizedStatus) {
+      case 'test':
+        return 'BETA';
+      case 'prod':
+        return 'LIVE';
+      default:
+        return normalizedStatus.toUpperCase();
+    }
+  };
+
   return (
     <div className="relative group">
       <div className="absolute inset-0 bg-black/5 rounded-2xl blur-xl opacity-0 transition-all duration-700"></div>
@@ -37,9 +49,11 @@ export function AppHeader({
               <h1 className="text-3xl sm:text-4xl font-light text-black tracking-tight transition-colors duration-500">
                 {app.name}
               </h1>
-              <span className="px-4 py-1.5 rounded-full text-xs font-medium text-black/90 border border-orange-500 !bg-orange-50 !text-orange-700 backdrop-blur-sm transition-all duration-300">
-                {app.deploymentStatus?.toUpperCase()}
-              </span>
+              <div className="inline-flex">
+                <span className="border border-orange-500 !bg-orange-50 !text-orange-700 text-xs font-medium leading-none py-1 px-1 rounded sm:px-4 sm:py-1.5 sm:rounded-full">
+                  {getDisplayStatus(app.deploymentStatus)}
+                </span>
+              </div>
             </div>
             <p className="text-gray-600 text-base leading-relaxed transition-colors duration-500">
               {app.description}
@@ -50,7 +64,7 @@ export function AppHeader({
               <div className="flex items-center gap-2 group/stat">
                 <Activity className="w-4 h-4 text-black/40 group-hover/stat:text-black/60 transition-colors duration-300" />
                 <span className="text-sm text-gray-500 group-hover/stat:text-gray-600 transition-colors duration-300">
-                  {app.deploymentStatus?.toUpperCase()}
+                  {getDisplayStatus(app.deploymentStatus)}
                 </span>
               </div>
               <div className="flex items-center gap-2 group/stat">

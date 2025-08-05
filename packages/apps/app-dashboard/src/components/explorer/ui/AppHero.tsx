@@ -15,16 +15,16 @@ export function AppHero({ apps }: { apps: App[] }) {
             </div>
           </div>
           <h1 className="text-5xl sm:text-6xl font-light text-black mb-6 leading-tight">
-            Delegate your
+            Automate your
             <br />
             <span className="relative">
-              success
+              Web3 interactions
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-black/5 rounded-full opacity-50"></div>
             </span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl leading-relaxed">
-            Discover applications that work autonomously on your behalf, giving you more time to
-            focus on what matters most.
+            Vincent applications work autonomously on your behalf, operating within the guidelines
+            you set.
           </p>
         </div>
       </div>

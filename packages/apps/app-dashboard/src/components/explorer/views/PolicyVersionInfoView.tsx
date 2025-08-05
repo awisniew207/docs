@@ -25,9 +25,17 @@ export function PolicyVersionInfoView({ policy }: PolicyVersionInfoViewProps) {
           </div>
           <div className="flex-1">
             <p className="text-base font-light text-black/90">{policy.title}</p>
-            <p className="text-xs text-gray-500">
-              {policy.packageName} v{policy.activeVersion}
-            </p>
+            <a
+              href={`https://www.npmjs.com/package/${policy.packageName}/v/${policy.activeVersion}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-75 transition-opacity inline-block"
+              title={`View ${policy.packageName} v${policy.activeVersion} on npm`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <img src="/npm.png" alt="npm" className="w-full h-full object-contain" />
+              </div>
+            </a>
           </div>
         </div>
 

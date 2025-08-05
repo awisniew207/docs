@@ -29,7 +29,7 @@ export const AppCard = ({ app }: AppCardProps) => {
                 {app.name}
               </h3>
               {app.deploymentStatus && (
-                <span className="px-2 py-1 rounded-full text-xs font-medium border border-orange-500 !bg-orange-50 !text-orange-700 backdrop-blur-sm">
+                <span className="px-1 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium border border-orange-500 !bg-orange-50 !text-orange-700 backdrop-blur-sm">
                   {app.deploymentStatus.toUpperCase()}
                 </span>
               )}
