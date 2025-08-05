@@ -1,0 +1,11 @@
+/packages/apps/app-dashboard
+/packages/apps/abilities-e2e
+/packages/apps/ability-aave
+/packages/apps/ability-debridge
+/packages/apps/ability-erc20-approval
+/packages/apps/ability-evm-transaction-signer
+/packages/apps/ability-morpho
+/packages/apps/ability-uniswap-swap
+/packages/apps/policy-contract-whitelist
+/packages/apps/policy-send-counter
+/packages/apps/policy-spending-limit
