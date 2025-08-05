@@ -18,10 +18,7 @@ export async function verifyES256KSignature({ decoded }: { decoded: AnyVincentJW
     const r = signatureBytes.slice(0, 32);
     const s = signatureBytes.slice(32, 64);
 
-    const publicKeyHex = decoded.payload.publicKey.startsWith('0x')
-      ? decoded.payload.publicKey
-      : `0x${decoded.payload.publicKey}`;
-    const publicKeyBytes = arrayify(publicKeyHex);
+    const publicKeyBytes = arrayify(decoded.payload.publicKey, { allowMissingPrefix: true });
 
     // PKPEthersWallet.signMessage() adds Ethereum prefix, so we need to add it here too
     const ethPrefixedMessage = '\x19Ethereum Signed Message:\n' + data.length + data;
