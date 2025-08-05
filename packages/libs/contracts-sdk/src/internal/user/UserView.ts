@@ -1,10 +1,6 @@
 import type { BigNumber } from 'ethers';
 
-import type {
-  PermissionData,
-  AbilityPolicyParameterData,
-  ValidateAbilityExecutionAndGetPoliciesResult,
-} from '../../types';
+import type { PermissionData, ValidateAbilityExecutionAndGetPoliciesResult } from '../../types';
 import type { AbilityWithPolicies, AbilityExecutionValidation } from '../types/chain';
 import type {
   GetAllRegisteredAgentPkpsOptions,
@@ -18,7 +14,7 @@ import { decodeContractError } from '../../utils';
 import { getPkpEthAddress, getPkpTokenId } from '../../utils/pkpInfo';
 import {
   decodePermissionDataFromChain,
-  decodePolicyParametersFromChain,
+  decodePolicyParametersForOneAbility,
 } from '../../utils/policyParams';
 
 export async function getAllRegisteredAgentPkpEthAddresses(
@@ -135,12 +131,8 @@ export async function validateAbilityExecutionAndGetPolicies(
         abilityIpfsCid,
       );
 
-    const decodedPolicies: AbilityPolicyParameterData = {};
-
-    for (const policy of validationResult.policies) {
-      const policyIpfsCid = policy.policyIpfsCid;
-      decodedPolicies[policyIpfsCid] = decodePolicyParametersFromChain(policy);
-    }
+    const { policies } = validationResult;
+    const decodedPolicies = decodePolicyParametersForOneAbility({ policies });
 
     return {
       ...validationResult,
