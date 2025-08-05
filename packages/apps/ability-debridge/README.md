@@ -38,7 +38,6 @@ const bridgeParams = {
   sourceToken: '0x0000000000000000000000000000000000000000', // Native ETH
   destinationToken: '0x0000000000000000000000000000000000000000', // Native ETH
   amount: ethers.utils.parseEther('0.1').toString(), // 0.1 ETH in wei
-  recipientAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD7e',
   operation: 'BRIDGE',
   slippageBps: 100, // 1% slippage
 };
@@ -81,7 +80,6 @@ if (precheckRes.success) {
 | `sourceToken`      | `string` | ✅       | Source token address (use zero address for native token)                   |
 | `destinationToken` | `string` | ✅       | Destination token address (use zero address for native token)              |
 | `amount`           | `string` | ✅       | Amount in base units (wei for ETH, smallest unit for tokens)               |
-| `recipientAddress` | `string` | ✅       | Recipient address on destination chain                                     |
 | `operation`        | `string` | ✅       | `BRIDGE` for direct transfers, `BRIDGE_AND_SWAP` for cross-asset transfers |
 | `slippageBps`      | `number` | ❌       | Slippage tolerance in basis points (default: 100 = 1%)                     |
 

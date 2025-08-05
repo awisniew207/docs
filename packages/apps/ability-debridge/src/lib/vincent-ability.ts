@@ -39,15 +39,8 @@ export const vincentAbility = createVincentAbility({
     const logPrefix = '[@lit-protocol/vincent-ability-debridge/precheck]';
     console.log(`${logPrefix} Starting precheck with params:`, abilityParams);
 
-    const {
-      sourceChain,
-      destinationChain,
-      sourceToken,
-      destinationToken,
-      amount,
-      recipientAddress,
-      rpcUrl,
-    } = abilityParams;
+    const { sourceChain, destinationChain, sourceToken, destinationToken, amount, rpcUrl } =
+      abilityParams;
 
     try {
       // Validate chain IDs
@@ -67,11 +60,6 @@ export const vincentAbility = createVincentAbility({
       if (!validateAddress(destinationToken)) {
         return fail({
           error: `Invalid destination token address: ${destinationToken}`,
-        });
-      }
-      if (!validateAddress(recipientAddress)) {
-        return fail({
-          error: `Invalid recipient address: ${recipientAddress}`,
         });
       }
 
@@ -193,14 +181,7 @@ export const vincentAbility = createVincentAbility({
     const logPrefix = '[@lit-protocol/vincent-ability-debridge/execute]';
     console.log(`${logPrefix} Starting execution with params:`, abilityParams);
 
-    const {
-      sourceChain,
-      destinationChain,
-      sourceToken,
-      destinationToken,
-      amount,
-      recipientAddress,
-    } = abilityParams;
+    const { sourceChain, destinationChain, sourceToken, destinationToken, amount } = abilityParams;
 
     try {
       // Get PKP info
@@ -254,9 +235,9 @@ export const vincentAbility = createVincentAbility({
         srcChainTokenInAmount: amount,
         dstChainId: destinationChain,
         dstChainTokenOut: destinationToken,
-        dstChainTokenOutRecipient: recipientAddress,
+        dstChainTokenOutRecipient: pkpAddress,
         srcChainOrderAuthorityAddress: pkpAddress,
-        dstChainOrderAuthorityAddress: recipientAddress,
+        dstChainOrderAuthorityAddress: pkpAddress,
         affiliateFeePercent: '0',
         prependOperatingExpenses: 'true',
       };

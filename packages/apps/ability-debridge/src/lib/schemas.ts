@@ -30,10 +30,6 @@ export const abilityParamsSchema = z.object({
     .regex(/^\d+(\.\d+)?$/, 'Invalid amount format')
     .refine((val) => parseFloat(val) > 0, 'Amount must be greater than 0')
     .describe("Amount to bridge in token units (e.g., '1000000000000000000' for 1 ETH)"),
-  recipientAddress: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address format')
-    .describe('Recipient address on destination chain'),
   operation: z
     .enum([Operations.BRIDGE, Operations.BRIDGE_AND_SWAP])
     .describe("Operation type: 'BRIDGE' for simple bridge, 'BRIDGE_AND_SWAP' for bridge with swap"),
