@@ -9,7 +9,7 @@ title: Creating Vincent Apps
   <p class="box-title info-box-title">
     <span class="box-icon info-icon">Info</span> Note
   </p>
-  <p>In this guide, you'll create and register your first Vincent App using the <a href="https://dashboard.heyvincent.ai/">Vincent App Dashboard</a>. You’ll select from existing Vincent Abilities and Policies, configure your App metadata, and register the App Delegatees whom are authorized to execute your App's Abilities.</p>
+  <p>In this guide, you'll create and register your first Vincent App using the <a href="https://dashboard.heyvincent.ai/">Vincent App Dashboard</a>. You’ll select from existing Vincent Abilities, optionally enable their supported Vincent Policies, configure your App's details, and register the App Delegatees whom are authorized to execute your App's Abilities.</p>
   <p>If you're unfamiliar with what a Vincent App is, checkout the <a href="./Getting-Started.md">Getting Started</a> guide to learn more.</p>
 </div>
 
@@ -31,21 +31,6 @@ A Vincent App is composed of four key elements:
    - Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Ability.
 
 # Registering Your Vincent App
-
-<div class="box info-box">
-  <p class="box-title info-box-title">
-    <span class="box-icon info-icon">Info</span> Before registering your Vincent App
-  </p>
-  <p>Registering an App requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href="https://chronicle-yellowstone-faucet.getlit.dev/">this faucet</a> to get the Lit test tokens used to pay for registering your App.</p>
-</div>
-
-Once you've selected your Vincent Abilities and Policies, you'll need to register your App using the [Vincent Dashboard](https://dashboard.heyvincent.ai/).
-
-> **Note:** When you register your App, you'll be creating the first App Version that Users can permit their delegation for. App Versions are immutable meaning you can't change the Abilities or Policies associated with an App Version once it's been published.
->
-> To make changes to the Abilities and Policies your App uses, you'll need to create a new App Version.
->
-> Learn more about App Versioning in [this guide](./Upgrading-Apps.md#how-app-versioning-works).
 
 ## Authenticating with the Vincent Dashboard
 
@@ -118,6 +103,8 @@ After filling in your App's details and clicking the `Create App` button, you'll
 In Vincent, App Versions are immutable once published and made available to your Vincent App Users to delegate to. This is a security feature that ensures Vincent App Users always know exactly which Vincent Abilities they've consented to delegate to your App, and they can never be changed without the App User consenting to a new version of your App.
 
 So each App Version's Vincent Abilities are locked in, and you'll need to create and publish a new version of your App to add or remove Abilities.
+
+> **Note:** Learn more about App Versioning and upgrading your App in the [Upgrading Vincent Apps](./Upgrading-Apps.md) guide.
 
 ![App Created](../images/vincent-dashboard-created-app.png)
 
