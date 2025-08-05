@@ -78,7 +78,7 @@ export function AppHeader({
               }
               className="group px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-medium flex items-center gap-2 hover:scale-105 transition-all duration-300"
             >
-              Launch App
+              Permit App
               <ExternalLink className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </button>
           )}
