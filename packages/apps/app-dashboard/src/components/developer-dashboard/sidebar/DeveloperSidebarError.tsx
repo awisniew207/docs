@@ -18,7 +18,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -80,9 +79,6 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
 
       <SidebarContent className="px-4 py-6">
         <SidebarGroup className="space-y-4">
-          <SidebarGroupLabel className="px-3 text-sm font-semibold text-black uppercase tracking-wide">
-            Developer Abilities
-          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
               {/* Dashboard */}

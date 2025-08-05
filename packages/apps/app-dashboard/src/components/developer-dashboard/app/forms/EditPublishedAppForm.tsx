@@ -46,6 +46,7 @@ export const EditPublishedAppSchema = z
     activeVersion,
   })
   .required()
+  .partial({ logo: true })
   .strict();
 
 export type EditPublishedAppFormData = z.infer<typeof EditPublishedAppSchema>;

@@ -46,7 +46,7 @@ export function PermittedAppsPage({ apps }: PermittedAppsPageProps) {
         {apps.map((app) => (
           <Card
             key={app.appId}
-            className={`py-0 gap-0 backdrop-blur-xl ${themeStyles.cardBg} border ${themeStyles.cardBorder} ${themeStyles.cardHoverBorder} cursor-pointer transition-all duration-200 hover:shadow-lg`}
+            className={`py-0 gap-0 backdrop-blur-xl ${themeStyles.mainCard} border ${themeStyles.cardBorder} ${themeStyles.cardHoverBorder} cursor-pointer transition-all duration-200 hover:shadow-lg`}
             onClick={() => handleAppClick(app.appId.toString())}
             style={{ height: 'fit-content' }}
           >

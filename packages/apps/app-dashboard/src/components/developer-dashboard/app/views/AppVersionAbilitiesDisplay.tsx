@@ -5,7 +5,10 @@ interface AppVersionAbilitiesDisplayProps {
 }
 
 export function AppVersionAbilitiesDisplay({ abilities }: AppVersionAbilitiesDisplayProps) {
-  if (abilities.length === 0) {
+  // Filter out deleted abilities
+  const activeAbilities = abilities.filter((ability) => !ability.isDeleted);
+
+  if (activeAbilities.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="text-gray-400 text-lg mb-2">📦</div>
@@ -16,7 +19,7 @@ export function AppVersionAbilitiesDisplay({ abilities }: AppVersionAbilitiesDis
 
   return (
     <div className="space-y-3">
-      {abilities.map((ability: AppVersionAbility) => (
+      {activeAbilities.map((ability: AppVersionAbility) => (
         <div key={ability.abilityPackageName} className="p-4 bg-gray-50 rounded-lg border">
           <div className="flex justify-between items-start">
             <div className="flex-1">

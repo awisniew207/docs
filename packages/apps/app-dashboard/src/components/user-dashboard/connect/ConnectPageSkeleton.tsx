@@ -13,10 +13,10 @@ export function ConnectPageSkeleton() {
       baseColor={isDark ? '#1f2937' : '#f3f4f6'}
       highlightColor={isDark ? '#374151' : '#e5e7eb'}
     >
-      <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg}`}>
+      <div className={`w-full transition-colors duration-500 ${themeStyles.bg} sm:p-4`}>
         {/* Main Card Container */}
         <div
-          className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
+          className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl`}
         >
           {/* Header Skeleton */}
           <div className={`px-3 sm:px-6 py-4 border-b ${themeStyles.cardBorder}`}>
