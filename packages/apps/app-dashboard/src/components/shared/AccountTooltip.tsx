@@ -17,7 +17,13 @@ interface AccountTooltipProps {
 export function AccountTooltip({ theme }: AccountTooltipProps) {
   const { authInfo } = useReadAuthInfo();
   const [isOpen, setIsOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Close tooltip when component mounts/remounts (like when sidebar opens)
   useEffect(() => {
@@ -26,8 +32,10 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
 
   // Close tooltip when clicking outside on mobile
   useEffect(() => {
+    if (!isClient) return;
+
     const handleClickOutside = (event: MouseEvent): void => {
-      if (typeof window !== 'undefined' && window.innerWidth < 768 && isOpen) {
+      if (window.innerWidth < 768 && isOpen) {
         // Check if click is outside the tooltip button AND the tooltip content
         const target = event.target as Element;
         const isOutsideButton = tooltipRef.current && !tooltipRef.current.contains(target);
@@ -47,10 +55,10 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
     }
 
     return undefined;
-  }, [isOpen]);
+  }, [isOpen, isClient]);
 
   const handleCopyEthAddress = async () => {
-    if (authInfo?.agentPKP?.ethAddress) {
+    if (authInfo?.agentPKP?.ethAddress && isClient) {
       try {
         await navigator.clipboard.writeText(authInfo.agentPKP.ethAddress);
       } catch (err) {
@@ -60,7 +68,7 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
   };
 
   const formatAuthInfo = () => {
-    if (!authInfo) return '';
+    if (!authInfo || !isClient) return '';
     return `Sign-In Type: ${authInfo.type}\nAuthenticated: ${new Date(authInfo.authenticatedAt).toLocaleString()}${authInfo.value ? `\nValue: ${authInfo.value}` : ''}`;
   };
 
@@ -78,7 +86,8 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
         open={isOpen}
         onOpenChange={(open): void => {
           // Only allow tooltip to open on desktop via hover, or mobile via click
-          if (typeof window !== 'undefined' && window.innerWidth < 768) {
+          if (!isClient) return;
+          if (window.innerWidth < 768) {
             // On mobile, only manual control
             return;
           }
@@ -92,7 +101,7 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
               e.stopPropagation();
               e.preventDefault();
               // Only toggle on mobile
-              if (typeof window !== 'undefined' && window.innerWidth < 768) {
+              if (isClient && window.innerWidth < 768) {
                 setIsOpen(!isOpen);
               }
             }}
