@@ -170,7 +170,7 @@ The return type of the `execute` function depends on whether all evaluated Polic
 
 If one of the Policies returns a deny response, or an error occurs during the execution of the Ability's logic, the `execute` function will return a failure result with the structure of the Ability's Zod schema: `ExecuteFailSchema`.
 
-Additionally, Vincent Policies have an optional `commit` function (as covered in the [How Vincent Policies Work](#how-the-ability-client-sdk-works) section), which is executed for each Policy that has defined a `commit` function after the Ability's logic is executed successfully. If one of the `commit` functions were to fail during execution or return a deny response, the `execute` function will return a failure result.
+Additionally, Vincent Policies have an optional `commit` function (as covered in the [How Vincent Policies Work](#how-the-vincent-ability-client-works) section), which is executed for each Policy that has defined a `commit` function after the Ability's logic is executed successfully. If one of the `commit` functions were to fail during execution or return a deny response, the `execute` function will return a failure result.
 
 If all evaluated Policies permit execution, the Ability's execution is successful, and all the Policy `commit` functions are executed successfully, the `execute` function will return a success result with the structure of the Ability's Zod schema: `ExecuteSuccessSchema`.
 

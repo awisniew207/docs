@@ -95,12 +95,12 @@ Where:
   - `allow`: A boolean indicating if the Vincent Ability execution is allowed to proceed, and all evaluated Vincent Policies returned `allow` results
   - `allowedPolicies`: An object containing the results and `commit` functions for each Vincent Policy that permitted ability execution
     - `[policyPackageName]`: An object where the key is the package name of the Vincent Policy, and the value is an object containing the result of the policy's `evaluate` function and the policy's `commit` function if it exists
-      - `result`: An object will details describing why the policy has permitted ability execution. This will have the shape of the Vincent Policy's [evalAllowResultSchema](./Creating-Policies.md#evalallowresultschema)
+      - `result`: An object will details describing why the policy has permitted ability execution. This will have the shape of the Vincent Policy's [evalAllowResultSchema](../Policy-Developers/Creating-Policies.md#evalallowresultschema)
       - `commit`: An optional function for each evaluated Vincent Policy that allows the policy to update any state it depends on to make it's decisions
-        - The parameter object passed to the `commit` function is defined by each Vincent Policy's [commitParamsSchema](./Creating-Policies.md#commitparamsschema), and the return value is defined by the policy's [commitAllowResultSchema](./Creating-Policies.md#commitallowresultschema) or [commitDenyResultSchema](./Creating-Policies.md#commitdenyresultschema)
+        - The parameter object passed to the `commit` function is defined by each Vincent Policy's [commitParamsSchema](../Policy-Developers/Creating-Policies.md#commitparamsschema), and the return value is defined by the policy's [commitAllowResultSchema](../Policy-Developers/Creating-Policies.md#commitallowresultschema) or [commitDenyResultSchema](../Policy-Developers/Creating-Policies.md#commitdenyresultschema)
   - `deniedPolicy`: An object containing the first Vincent Policy that denied the Vincent Ability execution
     - `policyPackageName`: The package name of the Vincent Policy that denied the Vincent Ability execution
-    - `result`: The result of the `evaluate` function of the Vincent Policy that denied the Vincent Ability execution, will have the shape of the Vincent Policy's [evalDenyResultSchema](./Creating-Policies.md#evaldenyresultschema)
+    - `result`: The result of the `evaluate` function of the Vincent Policy that denied the Vincent Ability execution, will have the shape of the Vincent Policy's [evalDenyResultSchema](../Policy-Developers/Creating-Policies.md#evaldenyresultschema)
 - `succeed`: A helper method for returning a `success` result from your ability's `precheck` and `execute` functions
 - `fail`: A helper method for returning a `fail` result from your ability's `precheck` and `execute` functions
 
@@ -145,7 +145,7 @@ To add support for Vincent Policies to your ability, you need to create Vincent 
 
 Our example Vincent Ability supports a Vincent spending limit policy that has the following schema for the parameters it's expecting to be given by the executing Vincent Ability:
 
-> **Note** The following code is an excerpt from the [Create a Vincent Policy](./Creating-Policies.md#userparamsschema) guide.
+> **Note** The following code is an excerpt from the [Create a Vincent Policy](../Policy-Developers/Creating-Policies.md#userparamsschema) guide.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
@@ -474,7 +474,7 @@ The `policiesContext` object contains a property called `allowedPolicies` that i
 
 > **Note:** The following interface isn't the actual interface used by the Vincent Ability SDK, it's just a simplified example of what the `policiesContext` object looks like for reference.
 >
-> The [`evalAllowResultSchema`](./Creating-Policies.md#evalallowresultschema) and [`commitParamsSchema`](./Creating-Policies.md#commitparamsschema) are Zod schemas specified by the Vincent Policy package.
+> The [`evalAllowResultSchema`](../Policy-Developers/Creating-Policies.md#evalallowresultschema) and [`commitParamsSchema`](../Policy-Developers/Creating-Policies.md#commitparamsschema) are Zod schemas specified by the Vincent Policy package.
 
 ```typescript
 interface PoliciesContext {
