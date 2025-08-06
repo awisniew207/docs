@@ -1,5 +1,4 @@
 ---
-category: Official Policies
 title: Contract Whitelist
 ---
 

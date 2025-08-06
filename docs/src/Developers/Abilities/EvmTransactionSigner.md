@@ -1,5 +1,4 @@
 ---
-category: Official Abilities
 title: EVM Transaction Signer
 ---
 
