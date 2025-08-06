@@ -58,9 +58,9 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
             Vincent (Early Access) — Now Live! 🚀
           </DialogTitle>
           <DialogDescription className={`text-base ${theme.textMuted} leading-relaxed`}>
-            Welcome to the next wave of user-owned finance and agent-led automation. Starting today,
-            anyone can use Vincent to interact with on-chain agents that are constantly working for
-            you based on the guardrails you set.
+            Vincent introduces the next wave of user-owned finance and agent-driven automation for
+            Web3. Today, anyone can use Vincent to automate interactions with a range of DeFi
+            applications, starting with Morpho Vaults.
           </DialogDescription>
         </DialogHeader>
 
@@ -80,8 +80,8 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
               >
                 Morpho
               </a>{' '}
-              vaults. To get started, deposit at least $50 of USDC on Base mainnet, then connect
-              and activate the application.
+              vaults. To get started, deposit at least $50 of USDC on Base mainnet, then connect and
+              activate the application.
             </p>
           </div>
 
