@@ -7,10 +7,12 @@ const execAsync = util.promisify(exec);
 
 import { mkdtemp, mkdir } from 'node:fs/promises';
 
-import { remove, readJSON } from 'fs-extra';
+import fs from 'fs-extra';
 import * as tar from 'tar';
 
 import { Policy, PolicyVersion } from './mongo/policy';
+
+const { remove, readJSON } = fs;
 
 // Module-level verbose logging control
 // const ENABLE_VERBOSE_LOGGING = process.env.VINCENT_VERBOSE_LOGGING === 'true' || false;
