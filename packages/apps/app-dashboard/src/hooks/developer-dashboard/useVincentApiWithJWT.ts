@@ -13,7 +13,7 @@ type StoredJWT = {
 };
 
 const JWT_STORAGE_KEY = 'platformUserJWT';
-const EXPECTED_AUDIENCE = 'registry.heyvincent.ai';
+const EXPECTED_AUDIENCE = 'staging.registry.heyvincent.ai';
 
 /**
  * Get current JWT token for request headers using PKP wallet - returns null if invalid
