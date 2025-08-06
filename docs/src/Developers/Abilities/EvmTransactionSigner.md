@@ -10,7 +10,7 @@ This Vincent Ability also supports the [Contract Whitelist Policy](../Policies/C
 
 ## Key Features
 
-- **Secure Transaction Signing**: Signs transactions using Vincent Agent Wallets within Lit Protocol's secure Trusted Execution Environment
+- **Secure Transaction Signing**: Signs transactions using Vincent Agent Wallets within a secure Trusted Execution Environment
 - **Full Transaction Support**: Handles all EVM transaction types including legacy, EIP-2930, and EIP-1559
 - **Policy Integration**: Supports the Contract Whitelist Policy for restricting what transactions can be signed
 
@@ -33,13 +33,13 @@ The EVM Transaction Signer Ability is built using the [Vincent Ability SDK](../A
 Depending on your role in the Vincent Ecosystem, you'll be interacting with this Ability in different ways. Click on the link below that matches your role to see how to get started:
 
 - **Vincent App Developers**: If you're building a Vincent App that needs to sign transactions, go [here](#adding-the-policy-to-your-vincent-app).
-- **Vincent App Delegatees**: If you're executing this ability on behalf of users, go [here](#executing-the-ability-as-a-delegatee).
+- **Vincent App Delegatees**: If you're executing this ability on behalf of Vincent App Users, go [here](#executing-the-ability-as-a-delegatee).
 
 ## Adding the Policy to your Vincent App
 
 When defining your Vincent App, you select which Abilities you want to be able to execute on behalf of your users. If you want to enable your App Delegatees to be able to sign transactions on behalf of your Vincent App Users, allowing them to interact with contracts that don't have an explicit Vincent Ability made for interacting with them, you can add this Ability to your App.
 
-Adding Abilities to your Vincent App is done using the Vincent App management interface, or while creating the App. Visit the [Create Vincent App](../App-Developers/Create-App.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Developers/Update-App.md) guide to learn how to add Abilities to an existing App.
+Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/), or while creating the App. Visit the [Create Vincent App](../App-Developers/Create-App.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Developers/Update-App.md) guide to learn how to add Abilities to an existing App.
 
 ## Executing the Ability as a Vincent App Delegatee
 
@@ -47,9 +47,25 @@ Vincent App Users configure the Policies that govern Ability execution while con
 
 ### Executing the `precheck` Function
 
-To execute this Ability on behalf of a Vincent App User, you'll need to create the complete EVM transaction object (which must contain all required properties such as `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and gas pricing) you want the user's Agent Wallet to sign, and serialize it into a hex string. The Ability expects this serialized transaction as the only parameter, and is required to execute the `precheck` function.
+This Ability's `precheck` function is used to check if the provided unsigned serialized transaction is valid in structure and contains all the required fields to sign the transaction for submission to the blockchain network.
 
-To execute the Ability's `precheck` function, you'll need to:
+Before executing the `precheck` function, you'll need to create the complete EVM transaction object (which must contain all required properties such as `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and gas pricing) you want the user's Agent Wallet to sign, and serialize it into a hex string.
+
+The Ability expects this serialized transaction as the only parameter, and is required to execute the `precheck` function:
+
+```typescript
+{
+  /**
+   * The serialized transaction to be evaluated and signed.
+   * This is the transaction object serialized into a hex string.
+   * The transaction object must contain all required properties such as
+   * `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and gas pricing.
+   */
+  serializedTransaction: string;
+}
+```
+
+To execute `precheck`, you'll need to:
 
 - Create an instance of the `VincentAbilityClient` using the `getVincentAbilityClient` function (imported from `@lit-protocol/vincent-app-sdk/abilityClient`)
   - Pass in the Ability's `bundledVincentAbility` object (imported from `@lit-protocol/vincent-ability-evm-transaction-signer`)
@@ -99,6 +115,8 @@ if (precheckResult.success) {
 }
 ```
 
+#### Precheck Success Response
+
 A successful `precheck` response will contain the deserialized unsigned transaction object, which you can use to inspect the validated transaction details before signing:
 
 ```typescript
@@ -116,6 +134,19 @@ A successful `precheck` response will contain the deserialized unsigned transact
     maxPriorityFeePerGas?: string;
     maxFeePerGas?: string;
   }
+}
+```
+
+#### Precheck Failure Response
+
+A failure `precheck` response will contain:
+
+```typescript
+{
+  /**
+   * A string containing the error message if the precheck failed.
+   */
+  error: string;
 }
 ```
 
@@ -143,11 +174,19 @@ if (executeResult.success) {
 }
 ```
 
+#### Execute Success Response
+
 A successful `execute` response will contain the signed transaction hex and the deserialized signed transaction object, which you can use to inspect the signed transaction details before broadcasting the signed transaction:
 
 ```typescript
 {
-  signedTransaction: string; // The signed transaction ready for broadcast
+  /**
+   * The signed transaction ready for broadcast.
+   */
+  signedTransaction: string;
+  /**
+   * The deserialized signed transaction object.
+   */
   deserializedSignedTransaction: {
     hash?: string;
     to: string;
@@ -168,3 +207,22 @@ A successful `execute` response will contain the signed transaction hex and the 
   }
 }
 ```
+
+#### Execute Failure Response
+
+A failure `execute` response will contain:
+
+```typescript
+{
+  /**
+   * A string containing the error message if the execution failed.
+   */
+  error: string;
+}
+```
+
+## Important Considerations
+
+### A complete transaction object is required
+
+Both the `precheck` and `execute` functions require a complete unsigned serialized transaction to be provided. This Ability does not handle the `nonce` or gas related fields, so you'll need to provide these values in the transaction object you're serializing.
