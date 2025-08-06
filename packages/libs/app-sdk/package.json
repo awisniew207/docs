@@ -52,9 +52,9 @@
     "typecheck": "./scripts/precommit-check.sh"
   },
   "dependencies": {
-    "@lit-protocol/auth-helpers": "^7.0.9",
-    "@lit-protocol/constants": "^7.0.8",
-    "@lit-protocol/lit-node-client": "^7.0.8",
+    "@lit-protocol/auth-helpers": "^7.2.3",
+    "@lit-protocol/constants": "^7.2.3",
+    "@lit-protocol/lit-node-client": "^7.2.3",
     "@lit-protocol/vincent-ability-sdk": "workspace:*",
     "@lit-protocol/vincent-contracts-sdk": "workspace:*",
     "@noble/secp256k1": "^2.2.3",
@@ -68,8 +68,8 @@
     "*.md"
   ],
   "devDependencies": {
-    "@lit-protocol/pkp-ethers": "^7.2.0",
-    "@lit-protocol/types": "^7.0.8",
+    "@lit-protocol/pkp-ethers": "^7.2.3",
+    "@lit-protocol/types": "^7.2.3",
     "@types/express": "^5.0.1",
     "chokidar-cli": "^3.0.0",
     "live-server": "^1.2.2",
