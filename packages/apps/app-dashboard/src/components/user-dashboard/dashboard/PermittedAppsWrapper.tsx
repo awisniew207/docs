@@ -1,16 +1,27 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PermittedAppsPage } from './PermittedAppsPage';
 import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/useUserPermissionsMiddleware';
+import { useFetchVincentYieldPerms } from '@/hooks/user-dashboard/dashboard/useFetchVincentYieldPerms';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { PermittedAppsSkeleton } from './PermittedAppsSkeleton';
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
 import { GeneralErrorScreen } from '@/components/user-dashboard/connect/GeneralErrorScreen';
+import { VincentYieldModal } from '../landing/VincentYieldModal';
 
 export function PermittedAppsWrapper() {
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
 
   const pkpEthAddress = authInfo?.agentPKP?.ethAddress || '';
+  const [showVincentYieldModal, setShowVincentYieldModal] = useState(false);
+  const [hasUserDismissedModal, setHasUserDismissedModal] = useState(false);
+
+  // Check Vincent Yield permissions
+  const {
+    result: hasVincentYieldPerms,
+    isLoading: vincentYieldLoading,
+    error: vincentYieldError,
+  } = useFetchVincentYieldPerms({ pkpEthAddress });
 
   // Fetch apps from on-chain
   const {
@@ -64,7 +75,7 @@ export function PermittedAppsWrapper() {
   }
 
   // Handle errors
-  if (appsError || UserPermissionsError) {
+  if (appsError || UserPermissionsError || vincentYieldError) {
     return (
       <GeneralErrorScreen errorDetails={appsError || UserPermissionsError || 'An error occurred'} />
     );
@@ -77,5 +88,27 @@ export function PermittedAppsWrapper() {
     );
   }
 
-  return <PermittedAppsPage apps={filteredApps} />;
+  if (
+    isUserAuthed &&
+    !vincentYieldLoading &&
+    !hasVincentYieldPerms &&
+    !showVincentYieldModal &&
+    !hasUserDismissedModal
+  ) {
+    setShowVincentYieldModal(true);
+  }
+
+  return (
+    <>
+      <PermittedAppsPage apps={filteredApps} />
+      <VincentYieldModal
+        isOpen={showVincentYieldModal}
+        onClose={() => {
+          setShowVincentYieldModal(false);
+          setHasUserDismissedModal(true);
+        }}
+        agentPkpAddress={pkpEthAddress}
+      />
+    </>
+  );
 }
