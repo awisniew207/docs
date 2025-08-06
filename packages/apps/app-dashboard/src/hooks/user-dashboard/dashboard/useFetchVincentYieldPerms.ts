@@ -1,8 +1,7 @@
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { readOnlySigner } from '@/utils/developer-dashboard/readOnlySigner';
+import { env } from '@/config/env';
 import { useEffect, useState } from 'react';
-
-// 5731522461
 
 type UseFetchUserPermissionsProps = {
   pkpEthAddress: string;
@@ -13,8 +12,6 @@ type UseFetchUserPermissionsReturn = {
   isLoading: boolean;
   error: string | null;
 };
-
-const VINCENT_YIELD_APPID = 5731522461;
 
 export function useFetchVincentYieldPerms({
   pkpEthAddress,
@@ -43,7 +40,7 @@ export function useFetchVincentYieldPerms({
           offset: '0', // TODO: Make this configurable?
         });
 
-        const hasPermission = permittedAppIds.includes(VINCENT_YIELD_APPID);
+        const hasPermission = permittedAppIds.includes(env.VITE_VINCENT_YIELD_APPID);
         setState({
           result: hasPermission,
           isLoading: false,

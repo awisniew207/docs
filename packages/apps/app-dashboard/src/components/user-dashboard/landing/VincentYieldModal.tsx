@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/shared/ui/button';
 import { Copy, RefreshCw, ExternalLink } from 'lucide-react';
 import { useFetchUsdcBalance } from '@/hooks/user-dashboard/dashboard/useFetchUsdcBalance';
+import { env } from '@/config/env';
 import { theme } from '../connect/ui/theme';
 
 interface VincentYieldModalProps {
@@ -16,8 +17,6 @@ interface VincentYieldModalProps {
   onClose: () => void;
   agentPkpAddress: string;
 }
-
-const VINCENT_YIELD_APPID = '2353287477';
 
 export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentYieldModalProps) {
   const [copied, setCopied] = useState(false);
@@ -34,7 +33,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
 
   const handleGetStarted = () => {
     window.open(
-      `https://dashboard.heyvincent.ai/user/appId/${VINCENT_YIELD_APPID}/connect?redirectUri=${encodeURIComponent('https://yield.heyvincent.ai')}`,
+      `https://dashboard.heyvincent.ai/user/appId/${env.VITE_VINCENT_YIELD_APPID}/connect?redirectUri=${encodeURIComponent('https://yield.heyvincent.ai')}`,
       '_blank',
     );
   };
@@ -52,7 +51,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className={`w-full max-w-2xl ${theme.mainCard} border ${theme.mainCardBorder} max-h-[80vh] overflow-y-auto`}
+        className={`w-full max-w-2xl ${theme.mainCard} border ${theme.mainCardBorder} max-h-[80vh] overflow-y-auto font-[system-ui,Avenir,Helvetica,Arial,sans-serif]`}
       >
         <DialogHeader className="pb-6">
           <DialogTitle className={`text-2xl font-bold ${theme.text} mb-2`}>

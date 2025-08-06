@@ -31,5 +31,6 @@ export const env = createEnv({
     VITE_GAS_BUFFER_DIVISOR: z.coerce.number(),
     VITE_DOMAIN: z.string().optional(),
     VITE_ENV: z.enum(['development', 'production', 'test']).default('development').optional(),
+    VITE_VINCENT_YIELD_APPID: z.coerce.number(),
   },
 });
