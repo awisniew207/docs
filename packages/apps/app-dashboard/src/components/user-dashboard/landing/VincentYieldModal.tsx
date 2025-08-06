@@ -58,9 +58,9 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
             Vincent (Early Access) — Now Live! 🚀
           </DialogTitle>
           <DialogDescription className={`text-base ${theme.textMuted} leading-relaxed`}>
-            Welcome to the next wave of user-owned finance and agentic automation. Starting today,
-            anyone can join Vincent and use agents that are constantly working for you, backed by
-            decentralized keys, on-chain guardrails, and a growing ecosystem.
+            Welcome to the next wave of user-owned finance and agent-led automation. Starting today,
+            anyone can use Vincent to interact with on-chain agents that are constantly working for
+            you based on the guardrails you set.
           </DialogDescription>
         </DialogHeader>
 
@@ -70,8 +70,18 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
               Try <span className="text-orange-600">Vincent Yield</span> to Get Started
             </h3>
             <p className={`text-sm ${theme.textMuted} leading-relaxed`}>
-              Deposit at least $50 of USDC on the Base mainnet, then connect and activate the
-              application to have them automatically routed to the highest-yield pools.
+              Yincent Yield allows you to have your funds automatically routed into the
+              highest-yielding{' '}
+              <a
+                href="https://morpho.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="!text-orange-600 hover:underline"
+              >
+                Morpho
+              </a>{' '}
+              vaults. To get started, deposit at least $50 of USDC on the Base mainnet, then connect
+              and activate the application.
             </p>
           </div>
 
