@@ -33,7 +33,7 @@
       },
       "ui:description": "Use chain IDs as keys. Each chain ID maps to a set of contract addresses.",
       "additionalProperties": {
-        "ui:description": "Use contract addresses as keys. Each contract has an array of function selectors.",
+        "ui:description": "Use contract addresses as keys. Each contract maps to an array of function selectors, which may include specific selectors and/or a wildcard '*' to grant permission for all functions on that contract.",
         "additionalProperties": {
           "functionSelectors": {
             "ui:widget": "textarea",

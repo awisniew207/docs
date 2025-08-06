@@ -274,7 +274,7 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
                       {authInfo.agentPKP?.ethAddress && (
                         <div className="flex items-center gap-2 pt-2 border-t ${theme.cardBorder}">
                           <div className="flex-1 min-w-0">
-                            <div className="${theme.textMuted}">Agent PKP:</div>
+                            <div className="${theme.textMuted}">Agent Wallet:</div>
                             <div className="font-mono text-xs ${theme.text} truncate">
                               {authInfo.agentPKP.ethAddress}
                             </div>
