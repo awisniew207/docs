@@ -190,7 +190,7 @@ Before deploying, you'll need to create the following two files in the root of y
 
 # Integration with messaging APIs or LLM clients remotely
 
-To integrate with either [OpenAI API](https://platform.openai.com/docs/guides/abilities-remote-mcp) or [Anthropic API](https://docs.anthropic.com/en/docs/agents-and-abilities/mcp-connector), or LLM clients that connect to public MCPs, you'll have to make your MCP server publicly accessible using the HTTP transport.
+To integrate with either [OpenAI API](https://platform.openai.com/docs/guides/tools) or [Anthropic API](https://docs.anthropic.com/en/docs/agents-and-tools/mcp-connector), or LLM clients that connect to public MCPs, you'll have to make your MCP server publicly accessible using the HTTP transport.
 
 You can host your MCP server in any provider you want, such as [Heroku](https://www.heroku.com/) or [Render](https://render.com/).
 Another option is using [ngrok](https://ngrok.com/) to expose your local process. Running `ngrok http 300` (adjusting the port if needed) will give you the public endpoint to reach your MCP.

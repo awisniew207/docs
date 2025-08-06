@@ -41,7 +41,7 @@ In addition to the payload, the JWT also includes:
 - `signature`: A signature from the User’s Agent Wallet proving the JWT was signed using their Agent Wallet
 - `data`: The raw, unsigned payload string used during signing
 
-> **Note:** To access these claims, use [decodeVincentJWTFromUri](#decodevincentjwt) in your frontend.
+> **Note:** To access these claims, use [decodeVincentJWTFromUri](#decodevincentjwtfromuri) in your frontend.
 
 ## Authentication Flow
 
@@ -105,7 +105,7 @@ The `getWebAuthClient` takes an object as an argument with the following propert
 - `appId`: The ID of your Vincent App.
   - This ID can be found on your [Vincent App Dashboard](https://dashboard.heyvincent.ai/):
 
-![Vincent App Dashboard](../images/vincent-app-dashboard.png)
+![Vincent App Dashboard](../images/vincent-dashboard-app-id.png)
 
 # Handling Connect Flow
 
