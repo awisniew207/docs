@@ -8,7 +8,7 @@
     "vault-search": "tsx examples/vault-search.ts"
   },
   "dependencies": {
-    "@lit-protocol/constants": "^7.2.0",
+    "@lit-protocol/constants": "^7.2.3",
     "@lit-protocol/vincent-scaffold-sdk": "^1.1.6",
     "@lit-protocol/vincent-ability-sdk": "workspace:*",
     "ethers": "^5.8.0",
