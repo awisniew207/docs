@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
+import { env } from '@/config/env';
 import { ethers } from 'ethers';
 
 // USDC contract address on Base network
 const USDC_CONTRACT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-
-// Base network RPC URL
-const BASE_RPC_URL = 'https://mainnet.base.org';
 
 // Standard ERC20 ABI for balanceOf function
 const ERC20_ABI = [
@@ -54,7 +52,7 @@ export const useFetchUsdcBalance = ({ address }: UseUSDCBalanceProps): UseUSDCBa
 
     try {
       // Create provider for Base network
-      const provider = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
+      const provider = new ethers.providers.JsonRpcProvider(env.VITE_VINCENT_BASE_RPC);
 
       // Create contract instance
       const usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, ERC20_ABI, provider);
