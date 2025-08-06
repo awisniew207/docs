@@ -80,7 +80,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
               >
                 Morpho
               </a>{' '}
-              vaults. To get started, deposit at least $50 of USDC on the Base mainnet, then connect
+              vaults. To get started, deposit at least $50 of USDC on Base mainnet, then connect
               and activate the application.
             </p>
           </div>
