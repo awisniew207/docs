@@ -43,6 +43,29 @@ Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](h
 
 ## Executing the Ability as a Vincent App Delegatee
 
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
+  </p>
+  <p>To learn more about executing Vincent Abilities, see the <a href="../App-Agent-Developers/Executing-Abilities.md">Executing Abilities</a> guide.</p>
+</div>
+
+### Prerequisites
+
+Before executing an ERC20 approval, the following conditions must be met. You can use the Ability's `precheck` function to check if these conditions are met, or you can check them manually.
+
+#### Gas Balance
+
+The Vincent App User's Agent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the approval transaction gas fees.
+
+#### Valid Token Contract
+
+The specified token address must be a valid ERC20 contract on the target network that implements the standard `approve` function.
+
+#### Network Configuration
+
+The RPC URL must be valid and accessible for the specified chain ID, and the network must support ERC20 token operations.
+
 ### Executing the `precheck` Function
 
 This Ability's `precheck` function is used to check if the Agent Wallet has a non-zero native token balance for gas fees, and if the spender already has sufficient allowance for the requested amount.

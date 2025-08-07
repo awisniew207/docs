@@ -43,7 +43,32 @@ Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](h
 
 ## Executing the Ability as a Vincent App Delegatee
 
-Vincent App Users configure the Policies that govern Ability execution while consenting to the Vincent App. If the Vincent App you're a Delegatee for has enabled the Contract Whitelist Policy for this Ability, then what contracts and functions that can be called will be restricted to what the Vincent App User has whitelisted. To learn more about how the Policy works, and how it affects your execution of this Ability, see the [Contract Whitelist Policy](../Policies/ContractWhitelist.md) documentation.
+Vincent App Users configure the Policies that govern Ability execution while consenting to the Vincent App.
+
+If the Vincent App you're a Delegatee for has enabled the Contract Whitelist Policy for this Ability, then what contracts and functions that can be called will be restricted to what the Vincent App User has whitelisted. To learn more about how the Policy works, and how it affects your execution of this Ability, see the [Contract Whitelist Policy](../Policies/ContractWhitelist.md) documentation.
+
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
+  </p>
+  <p>To learn more about executing Vincent Abilities, see the <a href="../App-Agent-Developers/Executing-Abilities.md">Executing Abilities</a> guide.</p>
+</div>
+
+### Prerequisites
+
+Before executing an EVM transaction signature, the following conditions must be met. You can use the Ability's `precheck` function to check if these conditions are met, or you can check them manually.
+
+#### Complete Transaction Object
+
+You must provide a complete EVM transaction object with all required fields including `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and appropriate gas pricing (`gasPrice` for legacy transactions, or `maxFeePerGas` and `maxPriorityFeePerGas` for EIP-1559 transactions).
+
+#### Gas Balance
+
+The Vincent App User's Agent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the transaction gas fees specified in the transaction object.
+
+#### Policy Compliance
+
+If the Vincent App User has enabled the [Contract Whitelist Policy](../Policies/ContractWhitelist.md), the transaction must target a whitelisted contract and function. The transaction will be rejected if it attempts to interact with non-whitelisted contracts or functions.
 
 ### Executing the `precheck` Function
 
