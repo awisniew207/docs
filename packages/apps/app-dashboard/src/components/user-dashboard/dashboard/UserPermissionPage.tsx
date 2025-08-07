@@ -82,31 +82,35 @@ export function AppPermissionPage({
     });
 
     if (allValid) {
-      if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
+      if (
+        !readAuthInfo.authInfo?.userPKP ||
+        !readAuthInfo.authInfo?.agentPKP ||
+        !readAuthInfo.sessionSigs
+      ) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setLocalStatus(null);
         return;
       }
 
       setLocalStatus('Initializing account...');
-      const agentPkpWallet = new PKPEthersWallet({
+      const userPkpWallet = new PKPEthersWallet({
         controllerSessionSigs: readAuthInfo.sessionSigs,
         pkpPubKey: readAuthInfo.authInfo.userPKP.publicKey,
         litNodeClient: litNodeClient,
       });
-      await agentPkpWallet.init();
+      await userPkpWallet.init();
 
       // We should do this in case there was ever an error doing this previously
       setLocalStatus('Adding permitted actions...');
       await addPermittedActions({
-        wallet: agentPkpWallet,
-        agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
+        wallet: userPkpWallet,
+        agentPKPTokenId: readAuthInfo.authInfo.agentPKP.tokenId,
         abilityIpfsCids: Object.keys(formData),
       });
 
       try {
         setLocalStatus('Setting ability policy parameters...');
-        const client = getClient({ signer: agentPkpWallet });
+        const client = getClient({ signer: userPkpWallet });
         await client.setAbilityPolicyParameters({
           pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
           appId: Number(connectInfoMap.app.appId),
