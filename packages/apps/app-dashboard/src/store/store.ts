@@ -7,7 +7,7 @@ import { env } from '@/config/env';
 const { VITE_ENV } = env;
 
 const BASE_URL =
-  VITE_ENV === 'development'
+  VITE_ENV === 'staging'
     ? `https://staging.registry.heyvincent.ai`
     : `https://registry.heyvincent.ai`;
 

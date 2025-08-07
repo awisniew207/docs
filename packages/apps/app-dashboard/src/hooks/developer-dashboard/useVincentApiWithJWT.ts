@@ -14,7 +14,7 @@ type StoredJWT = {
 
 const JWT_STORAGE_KEY = 'platformUserJWT';
 const EXPECTED_AUDIENCE =
-  VITE_ENV === 'development'
+  VITE_ENV === 'staging'
     ? `https://staging.registry.heyvincent.ai`
     : `https://registry.heyvincent.ai`;
 
