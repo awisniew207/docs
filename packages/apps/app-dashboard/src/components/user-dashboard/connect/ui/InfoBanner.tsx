@@ -1,10 +1,11 @@
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { theme } from './theme';
+import { ReactNode } from 'react';
 
 interface InfoBannerProps {
   type?: 'warning' | 'success';
   title?: string;
-  message?: string;
+  message?: string | ReactNode;
 }
 
 export function InfoBanner({
@@ -23,7 +24,7 @@ export function InfoBanner({
         <Icon className={`w-5 h-5 ${iconClass}`} />
         <div>
           <p className={`text-sm font-medium ${theme.text}`}>{title}</p>
-          <p className={`text-xs ${theme.textMuted} mt-1`}>{message}</p>
+          <div className={`text-xs ${theme.textMuted} mt-1`}>{message}</div>
         </div>
       </div>
     </div>

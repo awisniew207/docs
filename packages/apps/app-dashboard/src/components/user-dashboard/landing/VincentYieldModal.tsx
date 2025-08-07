@@ -7,16 +7,19 @@ import {
   DialogTitle,
 } from '@/components/shared/ui/dialog';
 import { Button } from '@/components/shared/ui/button';
-import { Copy, RefreshCw, ExternalLink } from 'lucide-react';
+import { Copy, RefreshCw } from 'lucide-react';
 import { useFetchUsdcBalance } from '@/hooks/user-dashboard/dashboard/useFetchUsdcBalance';
 import { env } from '@/config/env';
 import { theme } from '../connect/ui/theme';
+import QRCode from 'react-qr-code';
 
 interface VincentYieldModalProps {
   isOpen: boolean;
   onClose: () => void;
   agentPkpAddress: string;
 }
+
+const MINIMUM_DEPOSIT = 50;
 
 export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentYieldModalProps) {
   const [copied, setCopied] = useState(false);
@@ -30,6 +33,10 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
   } = useFetchUsdcBalance({
     address: agentPkpAddress,
   });
+
+  const currentBalance = parseFloat(balanceFormatted || '0');
+  const progressPercentage = (currentBalance / MINIMUM_DEPOSIT) * 100;
+  const amountNeeded = Math.max(0, MINIMUM_DEPOSIT - currentBalance);
 
   const handleGetStarted = () => {
     window.open(
@@ -50,126 +57,174 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        button[class*="absolute top-4 right-4"] {
+          opacity: 0.15 !important;
+        }
+        button[class*="absolute top-4 right-4"]:hover {
+          opacity: 0.4 !important;
+        }
+      `}</style>
       <DialogContent
-        className={`w-full max-w-2xl ${theme.mainCard} border ${theme.mainCardBorder} max-h-[80vh] overflow-y-auto font-[system-ui,Avenir,Helvetica,Arial,sans-serif]`}
+        className={`w-full !max-w-4xl !rounded-none ${theme.mainCard} border ${theme.mainCardBorder}`}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className="pb-6">
-          <DialogTitle className={`text-2xl font-bold ${theme.text} mb-2`}>
-            Vincent (Early Access) — Now Live! 🚀
+        <DialogHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
+          <DialogTitle className={`text-3xl font-medium tracking-tight ${theme.text} mb-2`}>
+            Welcome to Vincent
           </DialogTitle>
-          <DialogDescription className={`text-base ${theme.textMuted} leading-relaxed`}>
-            Vincent introduces the next wave of user-owned finance and agent-driven automation for
-            Web3. Today, anyone can use Vincent to automate interactions with a range of DeFi
-            applications, starting with Morpho Vaults.
+          <div
+            className="text-sm uppercase tracking-widest font-medium mb-4"
+            style={{ color: '#ff722c' }}
+          >
+            EARLY ACCESS
+          </div>
+          <DialogDescription
+            className={`text-lg ${theme.textMuted} leading-relaxed font-normal text-center`}
+          >
+            Vincent powers the next wave of user-owned finance and agent-driven automation for Web3.
+            <br />
+            Deposit at least 50 USDC to get started with Vincent Yield:
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <div className={`p-6 rounded-xl ${theme.cardBg} border ${theme.cardBorder}`}>
-            <h3 className={`text-xl font-semibold ${theme.text} mb-4`}>
-              Try <span className="text-orange-600">Vincent Yield</span> to Get Started
-            </h3>
-            <p className={`text-sm ${theme.textMuted} leading-relaxed`}>
-              Yincent Yield allows you to have your funds automatically routed into the
-              highest-yielding{' '}
-              <a
-                href="https://morpho.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="!text-orange-600 hover:underline"
-              >
-                Morpho
-              </a>{' '}
-              vaults. To get started, deposit at least $50 of USDC on Base mainnet, then connect and
-              activate the application.
-            </p>
-          </div>
-
-          {/* Agent Address Section */}
+        <div className="space-y-8 pt-2">
           <div>
-            <h4 className={`text-lg font-semibold ${theme.text} mb-3`}>Your Agent Address</h4>
-            <div
-              className={`flex items-center gap-3 p-4 ${theme.itemBg} border ${theme.cardBorder} rounded-lg`}
-            >
-              <code className={`flex-1 text-sm font-mono break-all ${theme.text}`}>
-                {agentPkpAddress}
-              </code>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopyAddress}
-                className={`flex items-center gap-2 shrink-0 ${theme.itemBg} ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
-              >
-                <Copy className="h-4 w-4" />
-                {copied ? 'Copied!' : 'Copy'}
-              </Button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 bg-gray-400"></div>
+              <h4 className={`text-sm ${theme.textMuted} font-medium`}>
+                Your Vincent Wallet Address
+              </h4>
             </div>
 
-            {/* Balance and BaseScan link */}
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex items-center gap-2">
-                <span className={`text-sm ${theme.textMuted}`}>Balance:</span>
-                {balanceLoading ? (
-                  <span className={`text-sm ${theme.textMuted}`}>Loading...</span>
-                ) : balanceError ? (
-                  <button
-                    onClick={refetchBalance}
-                    className="text-sm text-red-500 hover:text-red-700 underline"
-                  >
-                    Error - retry
-                  </button>
-                ) : (
-                  <>
-                    <span className="text-sm font-mono font-medium text-green-600 dark:text-green-400">
-                      ${balanceFormatted || '0.00'} USDC
-                    </span>
+            {/* QR Code centered above address */}
+            <div className="flex justify-center mb-4">
+              <div className="p-2 bg-orange-50/60 dark:bg-orange-900/25">
+                <div className="w-24 h-24 flex items-center justify-center relative">
+                  <QRCode
+                    value={agentPkpAddress}
+                    size={96}
+                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                    viewBox={`0 0 96 96`}
+                    level="H"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-white rounded-full p-1 w-6 h-6 flex items-center justify-center shadow-sm">
+                      <img
+                        src="/orange-v-logo.svg"
+                        alt="Vincent V"
+                        className="w-4 h-4 object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Agent Address below QR code */}
+            <div className="flex justify-center">
+              <div className="flex items-center gap-3 px-2 py-1 bg-orange-50/60 dark:bg-orange-900/25">
+                <code
+                  className={`flex-1 text-xs font-mono font-normal whitespace-nowrap ${theme.text} tracking-wide text-center`}
+                >
+                  {agentPkpAddress}
+                </code>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyAddress}
+                  className={`flex items-center gap-1 shrink-0 bg-orange-50/60 hover:bg-orange-100/60 text-black border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal text-xs px-2 py-1`}
+                  style={{ borderRadius: '0px' }}
+                >
+                  <Copy className="h-2.5 w-2.5" />
+                  {copied ? 'Copied' : 'Copy Address'}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex-1 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className={`text-sm ${theme.textMuted} font-medium`}>Balance</div>
+                  {balanceLoading ? (
+                    <div className="p-1">
+                      <RefreshCw className="h-3 w-3 text-orange-500 animate-spin" />
+                    </div>
+                  ) : !balanceError ? (
                     <button
                       onClick={refetchBalance}
-                      className={`p-1 hover:${theme.itemHoverBg} rounded ${theme.textMuted} hover:${theme.text}`}
+                      className={`p-1 hover:${theme.itemHoverBg} ${theme.textMuted} hover:${theme.text} transition-all duration-200`}
                       title="Refresh balance"
                     >
                       <RefreshCw className="h-3 w-3" />
                     </button>
-                  </>
-                )}
-              </div>
-              <a
-                href={`https://basescan.org/address/${agentPkpAddress}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-xs ${theme.linkColor} flex items-center gap-1`}
-              >
-                View on BaseScan <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-          </div>
+                  ) : null}
+                  {balanceError && (
+                    <button
+                      onClick={refetchBalance}
+                      className="text-sm text-red-500 hover:text-red-400 font-normal transition-colors"
+                    >
+                      Error - Retry
+                    </button>
+                  )}
+                </div>
 
-          {/* Instructions */}
-          <div>
-            <h4 className={`text-lg font-semibold ${theme.text} mb-3`}>How to Deposit</h4>
-            <ol className={`list-decimal list-inside space-y-2 text-sm ${theme.textMuted} ml-2`}>
-              <li>Copy the agent address above</li>
-              <li>Open your wallet (MetaMask, Coinbase Wallet, etc.)</li>
-              <li>Switch to Base network</li>
-              <li>Send USDC to the copied address</li>
-              <li>Activate the application</li>
-            </ol>
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className={theme.textMuted}>
+                      ${balanceFormatted || '0.00'} / $50.00 USDC
+                    </span>
+                    {currentBalance < MINIMUM_DEPOSIT && (
+                      <span style={{ color: '#ff722c' }}>${amountNeeded.toFixed(2)} needed</span>
+                    )}
+                  </div>
+                  <div className="h-1.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                    <div
+                      className="h-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${Math.min(progressPercentage, 100)}%`,
+                        backgroundColor: currentBalance >= MINIMUM_DEPOSIT ? '#fbbf24' : '#ff722c',
+                        ...(currentBalance >= MINIMUM_DEPOSIT && {
+                          backgroundImage:
+                            'linear-gradient(90deg, #fbbf24 0%, #ffffff60 50%, #fbbf24 100%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 2s linear infinite',
+                        }),
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-8 border-t border-gray-100 dark:border-white/10">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className={`${theme.itemBg} ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
-          >
-            Close
-          </Button>
+        <div className="flex justify-center pt-8 border-t border-gray-200 dark:border-gray-700">
           <Button
             onClick={handleGetStarted}
-            className="bg-orange-600 hover:bg-orange-700 text-white font-medium"
+            disabled={!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT}
+            className={`px-12 py-3 font-normal tracking-wide transition-all duration-200 border text-white ${
+              !balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT
+                ? 'bg-gray-100 dark:bg-gray-800 !text-gray-400 border-gray-200 dark:border-gray-700 cursor-not-allowed'
+                : ''
+            }`}
+            style={{
+              borderRadius: '0px',
+              ...(!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT
+                ? {}
+                : {
+                    backgroundColor: '#ff722c',
+                    borderColor: '#ff722c',
+                  }),
+            }}
           >
-            Get Started
+            Activate Vincent Yield
           </Button>
         </div>
       </DialogContent>
