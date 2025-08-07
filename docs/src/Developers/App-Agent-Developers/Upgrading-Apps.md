@@ -134,7 +134,7 @@ As the App Manager, versioning gives you control over your App’s configuration
 
 ## Next Steps
 
-- Checkout how to [Authenticate your Users with Vincent](../App-Agent-Developers/Authenticating-Users.md) to get Users to started delegating to your Vincent App.
+- Checkout how to [Authenticate your Users with Vincent](./Auth-Users.md) to get Users to started delegating to your Vincent App.
 - Dive into how to [Execute Vincent Abilities](../App-Agent-Developers/Executing-Abilities.md) and start executing Vincent Abilities on behalf of your Users.
 - Learn how to [Create a Vincent Ability](../Ability-Developers/Getting-Started.md) to add new functionality to your App.
 - Learn how to [Create a Vincent Policy](../Policy-Developers/Getting-Started.md) to add new governance rules to your App's Abilities.
