@@ -70,7 +70,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
         }
       `}</style>
       <DialogContent
-        className={`w-full !max-w-4xl !rounded-none ${theme.mainCard} border ${theme.mainCardBorder}`}
+        className={`w-full max-w-[calc(100%-1rem)] sm:max-w-2xl lg:!max-w-4xl !rounded-none ${theme.mainCard} border ${theme.mainCardBorder}`}
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
@@ -138,7 +138,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
                   variant="outline"
                   size="sm"
                   onClick={handleCopyAddress}
-                  className={`flex items-center gap-1 shrink-0 bg-orange-50/60 hover:bg-orange-100/60 text-black border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal text-xs px-2 py-1`}
+                  className={`flex items-center gap-1 shrink-0 bg-orange-50/60 hover:bg-orange-100/60 ${theme.text} border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal text-xs px-2 py-1`}
                   style={{ borderRadius: '0px' }}
                 >
                   <Copy className="h-2.5 w-2.5" />
