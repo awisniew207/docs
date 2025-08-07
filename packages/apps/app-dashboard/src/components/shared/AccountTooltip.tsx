@@ -123,7 +123,7 @@ export function AccountTooltip({ theme }: AccountTooltipProps) {
                         theme.cardBg && theme.cardBorder ? 'text-gray-600' : 'text-gray-300'
                       }
                     >
-                      Agent Wallet:
+                      Vincent Wallet Address:
                     </div>
                     <div
                       className={`font-mono text-xs break-all ${theme.cardBg && theme.cardBorder ? 'text-black' : 'text-white'}`}

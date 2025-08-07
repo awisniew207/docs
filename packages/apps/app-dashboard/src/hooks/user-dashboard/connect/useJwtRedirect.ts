@@ -42,7 +42,7 @@ export const useJwtRedirect = ({ readAuthInfo }: UseJwtRedirectProps) => {
       setError(null);
       setRedirectUrl(null);
       try {
-        setLoadingStatus('Initializing Agent Wallet');
+        setLoadingStatus('Initializing Vincent Wallet');
         const agentPkpWallet = new PKPEthersWallet({
           controllerSessionSigs: readAuthInfo.sessionSigs,
           pkpPubKey: readAuthInfo.authInfo.agentPKP.publicKey,

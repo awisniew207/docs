@@ -30,7 +30,7 @@ export const env = createEnv({
     VITE_JWT_EXPIRATION_MINUTES: z.coerce.number(),
     VITE_GAS_BUFFER_DIVISOR: z.coerce.number(),
     VITE_DOMAIN: z.string().optional(),
-    VITE_ENV: z.enum(['development', 'production', 'test']).default('development').optional(),
+    VITE_ENV: z.enum(['staging', 'production']).default('staging').optional(),
     VITE_VINCENT_YIELD_APPID: z.coerce.number(),
     VITE_VINCENT_BASE_RPC: z.string(),
   },

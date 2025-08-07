@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { Edit, Plus, Trash2 } from 'lucide-react';
 import { PublishAppVersionWrapper } from '../PublishAppVersionWrapper';
-import MutationButtonStates from '@/components/shared/ui/MutationButtonStates';
 
 interface AppVersionUnpublishedButtonsProps {
   appId: number;
@@ -18,36 +16,6 @@ export function AppVersionUnpublishedButtons({
   isAppPublished,
 }: AppVersionUnpublishedButtonsProps) {
   const navigate = useNavigate();
-
-  // Mutations for enable/disable
-  const [enableAppVersion, { isLoading: isEnabling, error: enableAppVersionError }] =
-    vincentApiClient.useEnableAppVersionMutation();
-  const [disableAppVersion, { isLoading: isDisabling, error: disableAppVersionError }] =
-    vincentApiClient.useDisableAppVersionMutation();
-
-  const onEnableVersion = () => {
-    enableAppVersion({
-      appId: Number(appId),
-      version: Number(versionId),
-    });
-  };
-
-  const onDisableVersion = () => {
-    disableAppVersion({
-      appId: Number(appId),
-      version: Number(versionId),
-    });
-  };
-
-  const isLoading = isEnabling || isDisabling;
-
-  if (enableAppVersionError || disableAppVersionError) {
-    const errorMessage =
-      (enableAppVersionError as any)?.message ||
-      (disableAppVersionError as any)?.message ||
-      'Failed to update app version.';
-    return <MutationButtonStates type="error" errorMessage={errorMessage} />;
-  }
 
   return (
     <div className="flex flex-wrap gap-3">
@@ -67,34 +35,6 @@ export function AppVersionUnpublishedButtons({
         >
           <Plus className="h-4 w-4" />
           Manage Abilities
-        </button>
-      )}
-      {/* Enable/Disable buttons */}
-      {isVersionEnabled ? (
-        <button
-          onClick={onDisableVersion}
-          disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 dark:border-red-500/30 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isDisabling ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-700"></div>
-          ) : (
-            <PowerOff className="h-4 w-4" />
-          )}
-          {isDisabling ? 'Disabling...' : 'Disable Version'}
-        </button>
-      ) : (
-        <button
-          onClick={onEnableVersion}
-          disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-green-300 dark:border-green-500/30 rounded-lg text-sm font-medium text-green-700 dark:text-green-400 bg-white dark:bg-neutral-800 hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isEnabling ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-700"></div>
-          ) : (
-            <Power className="h-4 w-4" />
-          )}
-          {isEnabling ? 'Enabling...' : 'Enable Version'}
         </button>
       )}
       <button
