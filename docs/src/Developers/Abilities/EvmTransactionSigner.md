@@ -134,9 +134,18 @@ const precheckResult = await abilityClient.precheck(
 
 if (precheckResult.success) {
   const { deserializedUnsignedTransaction } = precheckResult.result;
-  // Use the deserialized transaction
+  console.log('Transaction validated:', deserializedUnsignedTransaction);
 } else {
-  // Inspect the precheckResult to see why the transaction signature was denied
+  // Handle different types of failures
+  if (precheckResult.runtimeError) {
+    console.error('Runtime error:', precheckResult.runtimeError);
+  }
+  if (precheckResult.schemaValidationError) {
+    console.error('Schema validation error:', precheckResult.schemaValidationError);
+  }
+  if (precheckResult.result) {
+    console.error('Transaction validation failed:', precheckResult.result.error);
+  }
 }
 ```
 
@@ -193,9 +202,19 @@ const executeResult = await abilityClient.execute(
 
 if (executeResult.success) {
   const { signedTransaction, deserializedSignedTransaction } = executeResult.result;
-  // Use the signed transaction
+  console.log('Transaction signed successfully:', signedTransaction);
+  console.log('Transaction details:', deserializedSignedTransaction);
 } else {
-  // Inspect the executeResult to see why the transaction signature was denied
+  // Handle different types of failures
+  if (executeResult.runtimeError) {
+    console.error('Runtime error:', executeResult.runtimeError);
+  }
+  if (executeResult.schemaValidationError) {
+    console.error('Schema validation error:', executeResult.schemaValidationError);
+  }
+  if (executeResult.result) {
+    console.error('Transaction signing failed:', executeResult.result.error);
+  }
 }
 ```
 

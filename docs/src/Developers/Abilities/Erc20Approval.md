@@ -143,13 +143,22 @@ const precheckResult = await abilityClient.precheck(approvalParams, {
 if (precheckResult.success) {
   const { alreadyApproved, currentAllowance } = precheckResult.result;
   if (alreadyApproved) {
-    // The spender already has sufficient allowance
     console.log('Already approved with allowance:', currentAllowance);
   } else {
-    // Proceed to execute the approval
+    console.log('Current allowance:', currentAllowance);
+    console.log('Approval needed, proceed to execute');
   }
 } else {
-  // Inspect the precheckResult to see why the transaction signature was denied
+  // Handle different types of failures
+  if (precheckResult.runtimeError) {
+    console.error('Runtime error:', precheckResult.runtimeError);
+  }
+  if (precheckResult.schemaValidationError) {
+    console.error('Schema validation error:', precheckResult.schemaValidationError);
+  }
+  if (precheckResult.result) {
+    console.error('ERC20 approval precheck failed:', precheckResult.result.reason);
+  }
 }
 ```
 
@@ -200,16 +209,22 @@ if (executeResult.success) {
     executeResult.result;
 
   if (approvalTxHash) {
-    // A new approval transaction was created
     console.log('Approval transaction:', approvalTxHash);
+    console.log('Approved amount:', approvedAmount);
   } else {
-    // Existing approval was sufficient
-    console.log('Used existing approval');
+    console.log('Used existing approval, amount:', approvedAmount);
   }
-
-  console.log('Approved amount:', approvedAmount);
 } else {
-  // Inspect the executeResult to see why the approval transaction signature failed
+  // Handle different types of failures
+  if (executeResult.runtimeError) {
+    console.error('Runtime error:', executeResult.runtimeError);
+  }
+  if (executeResult.schemaValidationError) {
+    console.error('Schema validation error:', executeResult.schemaValidationError);
+  }
+  if (executeResult.result) {
+    console.error('ERC20 approval execution failed:', executeResult.result.error);
+  }
 }
 ```
 

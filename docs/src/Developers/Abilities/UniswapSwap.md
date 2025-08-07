@@ -75,7 +75,7 @@ If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md)
 
 #### Token & Gas Balances
 
-The Agent Wallet must have sufficient balance of the input token to perform the swap, and sufficient native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees.
+The Vincent App User's Agent Wallet must have sufficient balance of the input token to perform the swap, and sufficient native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees.
 
 #### Uniswap V3 Pool Existence
 
@@ -167,10 +167,18 @@ const precheckResult = await abilityClient.precheck(swapParams, {
 });
 
 if (precheckResult.success) {
-  // All prerequisites are met, can proceed to execute
   console.log('Swap precheck passed, ready to execute');
 } else {
-  // Inspect the precheckResult to see why the swap was denied
+  // Handle different types of failures
+  if (precheckResult.runtimeError) {
+    console.error('Runtime error:', precheckResult.runtimeError);
+  }
+  if (precheckResult.schemaValidationError) {
+    console.error('Schema validation error:', precheckResult.schemaValidationError);
+  }
+  if (precheckResult.result) {
+    console.error('Swap precheck failed:', precheckResult.result.reason);
+  }
 }
 ```
 
@@ -211,7 +219,19 @@ if (executeResult.success) {
     console.log('Spending limit tracking transaction:', spendTxHash);
   }
 } else {
-  // Inspect the executeResult to see why the swap failed
+  // Handle different types of failures
+  if (executeResult.runtimeError) {
+    console.error('Runtime error:', executeResult.runtimeError);
+  }
+  if (executeResult.schemaValidationError) {
+    console.error('Schema validation error:', executeResult.schemaValidationError);
+  }
+  if (executeResult.result) {
+    console.error('Swap execution failed:', executeResult.result.reason);
+    if (executeResult.result.spendingLimitCommitFail) {
+      console.error('Spending limit commit failed:', executeResult.result.spendingLimitCommitFail);
+    }
+  }
 }
 ```
 
