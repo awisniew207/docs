@@ -40,7 +40,7 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 When defining your Vincent App, you select which Abilities you want to be able to execute on behalf of your users. If you want to enable your App Delegatees to be able to sign transactions on behalf of your Vincent App Users, allowing them to interact with contracts that don't have an explicit Vincent Ability made for interacting with them, you can add this Ability to your App.
 
-Adding Abilities to your Vincent App is done using the Vincent App management interface, or while creating the App. Visit the [Create Vincent App](../App-Developers/Create-App.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Developers/Update-App.md) guide to learn how to add Abilities to an existing App.
+Adding Abilities to your Vincent App is done using the Vincent App management interface, or while creating the App. Visit the [Creating Vincent Apps](../App-Agent-Developers/Creating-Apps.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Vincent Apps](../App-Agent-Developers/Upgrading-Apps.md) guide to learn how to add Abilities to an existing App.
 
 ## Executing the Ability as a Vincent App Delegatee
 
