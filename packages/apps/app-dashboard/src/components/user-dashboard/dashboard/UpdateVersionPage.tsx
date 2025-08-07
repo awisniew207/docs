@@ -73,7 +73,11 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     });
 
     if (allValid) {
-      if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
+      if (
+        !readAuthInfo.authInfo?.userPKP ||
+        !readAuthInfo.authInfo?.agentPKP ||
+        !readAuthInfo.sessionSigs
+      ) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setLocalStatus(null);
         return;
@@ -90,7 +94,7 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
       setLocalStatus('Adding permitted actions...');
       await addPermittedActions({
         wallet: userPkpWallet,
-        agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
+        agentPKPTokenId: readAuthInfo.authInfo.agentPKP.tokenId,
         abilityIpfsCids: Object.keys(formData),
       });
 

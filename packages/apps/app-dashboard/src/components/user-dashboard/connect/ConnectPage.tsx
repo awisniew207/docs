@@ -67,7 +67,11 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
     });
 
     if (allValid) {
-      if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
+      if (
+        !readAuthInfo.authInfo?.agentPKP ||
+        !readAuthInfo.authInfo?.userPKP ||
+        !readAuthInfo.sessionSigs
+      ) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setIsConnectProcessing(false);
         return;
@@ -84,7 +88,7 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
 
       await addPermittedActions({
         wallet: userPkpWallet,
-        agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
+        agentPKPTokenId: readAuthInfo.authInfo.agentPKP.tokenId,
         abilityIpfsCids: Object.keys(formData),
       });
 
