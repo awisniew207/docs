@@ -68,50 +68,33 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
         button[class*="absolute top-4 right-4"]:hover {
           opacity: 0.4 !important;
         }
-        @media (max-width: 420px) {
-          [data-slot="dialog-content"] {
-            max-width: 98vw !important;
-            max-height: 98vh !important;
-            margin: 1vw !important;
-            padding: 1rem !important;
-          }
-          .ultra-compact-title {
-            font-size: 1.25rem !important;
-            line-height: 1.3 !important;
-            margin-bottom: 0.25rem !important;
-          }
-          .ultra-compact-desc {
-            font-size: 0.875rem !important;
-            line-height: 1.4 !important;
-          }
-          .ultra-compact-spacing {
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
-          }
-          .ultra-compact-gap {
-            gap: 0.5rem !important;
-          }
-        }
       `}</style>
       <DialogContent
-        className={`w-full max-w-[95vw] max-h-[95vh] sm:max-w-2xl sm:max-h-[90vh] lg:!max-w-4xl !rounded-none ${theme.mainCard} border ${theme.mainCardBorder} overflow-y-auto`}
+        className={`w-[99vw] max-w-none sm:w-full sm:max-w-2xl sm:max-h-[90vh] lg:!max-w-4xl !rounded-none ${theme.mainCard} border ${theme.mainCardBorder} overflow-y-auto`}
+        style={{ padding: 'clamp(0.5rem, 3vw, 1.5rem)' }}
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className="pb-3 sm:pb-4 md:pb-8 border-b border-gray-200 dark:border-gray-700 ultra-compact-spacing">
+        <DialogHeader className="pb-3 sm:pb-4 md:pb-8 border-b border-gray-200 dark:border-gray-700">
           <DialogTitle
-            className={`text-xl sm:text-2xl md:text-3xl font-medium tracking-tight ${theme.text} mb-1 sm:mb-2 ultra-compact-title`}
+            className={`font-medium tracking-tight ${theme.text} mb-1 sm:mb-2`}
+            style={{ fontSize: 'clamp(1rem, 6vw, 3rem)', lineHeight: '1.2' }}
           >
             Welcome to Vincent
           </DialogTitle>
           <div
-            className="text-sm uppercase tracking-widest font-medium mb-4"
-            style={{ color: '#ff722c' }}
+            className="uppercase tracking-widest font-medium mb-4"
+            style={{
+              color: '#ff722c',
+              fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)',
+              marginBottom: 'clamp(0.5rem, 2vw, 1rem)',
+            }}
           >
             EARLY ACCESS
           </div>
           <DialogDescription
-            className={`text-sm sm:text-base md:text-lg ${theme.textMuted} leading-relaxed font-normal text-center px-2 sm:px-0 ultra-compact-desc`}
+            className={`${theme.textMuted} leading-relaxed font-normal text-center px-[2vw] sm:px-0`}
+            style={{ fontSize: 'clamp(0.75rem, 4vw, 1.125rem)', lineHeight: '1.3' }}
           >
             Vincent powers the next wave of user-owned finance and agent-driven automation for Web3.
             <br className="hidden sm:block" />
@@ -120,41 +103,70 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 sm:space-y-4 md:space-y-8 pt-2 ultra-compact-gap">
+        <div
+          className="pt-2"
+          style={{ gap: 'clamp(0.5rem, 4vw, 2rem)', display: 'flex', flexDirection: 'column' }}
+        >
           <div>
-            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400"></div>
-              <h4 className={`text-xs sm:text-sm ${theme.textMuted} font-medium`}>
+            <div
+              className="flex items-center"
+              style={{
+                gap: 'clamp(0.25rem, 2vw, 0.75rem)',
+                marginBottom: 'clamp(0.5rem, 2vw, 1rem)',
+              }}
+            >
+              <div
+                className="bg-gray-400"
+                style={{
+                  width: 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                  height: 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                }}
+              ></div>
+              <h4
+                className={`${theme.textMuted} font-medium`}
+                style={{ fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)' }}
+              >
                 Your Vincent Wallet Address
               </h4>
             </div>
 
             {/* QR Code centered above address */}
-            <div className="flex justify-center mb-3 sm:mb-4">
-              <div className="p-1.5 sm:p-2 bg-orange-50/60 dark:bg-orange-900/25">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center relative">
+            <div
+              className="flex justify-center"
+              style={{ marginBottom: 'clamp(0.5rem, 2vw, 1rem)' }}
+            >
+              <div
+                className="bg-orange-50/60 dark:bg-orange-900/25"
+                style={{ padding: 'clamp(0.375rem, 2vw, 0.5rem)' }}
+              >
+                <div
+                  className="flex items-center justify-center relative"
+                  style={{ width: 'clamp(3rem, 18vw, 6rem)', height: 'clamp(3rem, 18vw, 6rem)' }}
+                >
                   <QRCode
                     value={agentPkpAddress}
-                    size={80}
-                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                    viewBox={`0 0 80 80`}
-                    level="H"
-                    className="sm:hidden"
-                  />
-                  <QRCode
-                    value={agentPkpAddress}
-                    size={96}
+                    size={Math.min(96, Math.max(64, window.innerWidth * 0.2))}
                     style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
                     viewBox={`0 0 96 96`}
                     level="H"
-                    className="hidden sm:block"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-white rounded-full p-0.5 sm:p-1 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center shadow-sm">
+                    <div
+                      className="bg-white rounded-full flex items-center justify-center shadow-sm"
+                      style={{
+                        padding: 'clamp(0.125rem, 1vw, 0.25rem)',
+                        width: 'clamp(1.25rem, 5vw, 1.5rem)',
+                        height: 'clamp(1.25rem, 5vw, 1.5rem)',
+                      }}
+                    >
                       <img
                         src="/orange-v-logo.svg"
                         alt="Vincent V"
-                        className="w-3 h-3 sm:w-4 sm:h-4 object-contain"
+                        className="object-contain"
+                        style={{
+                          width: 'clamp(0.75rem, 3vw, 1rem)',
+                          height: 'clamp(0.75rem, 3vw, 1rem)',
+                        }}
                       />
                     </div>
                   </div>
@@ -163,11 +175,21 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
             </div>
 
             {/* Agent Address below QR code */}
-            <div className="flex justify-center px-2">
-              <div className="flex items-center gap-2 sm:gap-3 px-1.5 sm:px-2 py-1 bg-orange-50/60 dark:bg-orange-900/25 max-w-full">
+            <div className="flex justify-center" style={{ padding: '0 2vw' }}>
+              <div
+                className="flex items-center bg-orange-50/60 dark:bg-orange-900/25 max-w-full py-1"
+                style={{
+                  gap: 'clamp(0.5rem, 2vw, 0.75rem)',
+                  padding: 'clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.5rem, 2vw, 0.75rem)',
+                }}
+              >
                 <code
-                  className={`flex-1 text-xs font-mono font-normal ${theme.text} tracking-wide text-center overflow-hidden text-ellipsis`}
-                  style={{ fontSize: 'clamp(0.6rem, 2.5vw, 0.75rem)' }}
+                  className={`flex-1 font-mono font-normal ${theme.text} text-center overflow-hidden`}
+                  style={{
+                    fontSize: 'clamp(0.5rem, 3vw, 0.75rem)',
+                    letterSpacing: 'clamp(-0.025em, 0vw, 0.025em)',
+                    wordBreak: 'break-all',
+                  }}
                 >
                   {agentPkpAddress}
                 </code>
@@ -175,12 +197,21 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
                   variant="outline"
                   size="sm"
                   onClick={handleCopyAddress}
-                  className={`flex items-center gap-1 shrink-0 bg-orange-50/60 hover:bg-orange-100/60 ${theme.text} border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal px-1.5 sm:px-2 py-1`}
-                  style={{ borderRadius: '0px', fontSize: 'clamp(0.6rem, 2.5vw, 0.75rem)' }}
+                  className={`flex items-center shrink-0 bg-orange-50/60 hover:bg-orange-100/60 ${theme.text} border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal py-1`}
+                  style={{
+                    borderRadius: '0px',
+                    fontSize: 'clamp(0.5rem, 2.8vw, 0.75rem)',
+                    gap: 'clamp(0.125rem, 1vw, 0.25rem)',
+                    padding: 'clamp(0.125rem, 1vw, 0.375rem) clamp(0.25rem, 2vw, 0.5rem)',
+                  }}
                 >
-                  <Copy className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
-                  <span className="hidden xs:inline">{copied ? 'Copied' : 'Copy Address'}</span>
-                  <span className="xs:hidden">{copied ? 'OK' : 'Copy'}</span>
+                  <Copy
+                    style={{
+                      width: 'clamp(0.375rem, 2.5vw, 0.625rem)',
+                      height: 'clamp(0.375rem, 2.5vw, 0.625rem)',
+                    }}
+                  />
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
                 </Button>
               </div>
             </div>
@@ -188,7 +219,12 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
             <div className="flex items-center justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex-1 space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className={`text-sm ${theme.textMuted} font-medium`}>Balance</div>
+                  <div
+                    className={`${theme.textMuted} font-medium`}
+                    style={{ fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)' }}
+                  >
+                    Balance
+                  </div>
                   {balanceLoading ? (
                     <div className="p-1">
                       <RefreshCw className="h-3 w-3 text-orange-500 animate-spin" />
@@ -205,7 +241,8 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
                   {balanceError && (
                     <button
                       onClick={refetchBalance}
-                      className="text-sm text-red-500 hover:text-red-400 font-normal transition-colors"
+                      className="text-red-500 hover:text-red-400 font-normal transition-colors"
+                      style={{ fontSize: 'clamp(0.75rem, 3vw, 0.875rem)' }}
                     >
                       Error - Retry
                     </button>
@@ -214,12 +251,19 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
 
                 {/* Progress Bar */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
+                  <div
+                    className="flex justify-between"
+                    style={{ fontSize: 'clamp(0.5rem, 3vw, 0.75rem)' }}
+                  >
                     <span className={theme.textMuted}>
                       ${balanceFormatted || '0.00'} / $50.00 USDC
                     </span>
                     {currentBalance < MINIMUM_DEPOSIT && (
-                      <span style={{ color: '#ff722c' }}>${amountNeeded.toFixed(2)} needed</span>
+                      <span
+                        style={{ color: '#ff722c', fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)' }}
+                      >
+                        ${amountNeeded.toFixed(2)} needed
+                      </span>
                     )}
                   </div>
                   <div className="h-1.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
@@ -247,13 +291,15 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
           <Button
             onClick={handleGetStarted}
             disabled={!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT}
-            className={`px-6 sm:px-12 py-2 sm:py-3 font-normal tracking-wide transition-all duration-200 border text-white text-sm sm:text-base ${
+            className={`font-normal tracking-wide transition-all duration-200 border text-white ${
               !balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT
                 ? 'bg-gray-100 dark:bg-gray-800 !text-gray-400 border-gray-200 dark:border-gray-700 cursor-not-allowed'
                 : ''
             }`}
             style={{
               borderRadius: '0px',
+              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(1.5rem, 6vw, 3rem)',
               ...(!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT
                 ? {}
                 : {
