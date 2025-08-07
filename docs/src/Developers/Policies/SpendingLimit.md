@@ -4,7 +4,7 @@ title: Spending Limit
 
 # Spending Limit
 
-The Spending Limit Policy enables Vincent App Users to set daily USD spending limits that restrict how much value Vincent Apps can spend on their behalf through transactions. This policy provides financial controls and risk management for DeFi operations by tracking and enforcing spending limits across all supported Vincent Abilities.
+The Spending Limit Policy enables Vincent App Users to set daily USD spending limits that restrict how much value Vincent Apps can spend on their behalf. This policy provides financial controls and risk management for DeFi operations by tracking and enforcing spending limits across all supported Vincent Abilities.
 
 ## Key Features
 
@@ -43,7 +43,7 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 ## Adding the Policy to your Vincent App
 
-Vincent Abilities determine which Vincent Policies they support. Your Vincent App can only enable this Policy for your users if a Vincent Ability your App uses has been configured to work with this Policy - Policies are per Ability, so one Ability supporting this Policy doesn't mean your App can enable this Policy for every Ability it uses.
+Your Vincent App can only enable this Policy for Abilities that have been specifically configured to support it. Each Ability must be individually configured—having one compatible Ability doesn't automatically enable this Policy for all Abilities in your App.
 
 If the Abilities your App uses have not been configured to support this Policy, you can contact the developers of those Abilities to request that they do so, or you can fork their code and [enable the Policy yourself](#supporting-the-policy-in-your-vincent-ability) (also see [this guide](../Ability-Developers/Getting-Started.md) to learn more about how to create your own Vincent Ability).
 

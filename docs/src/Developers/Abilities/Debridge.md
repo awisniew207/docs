@@ -4,7 +4,7 @@ title: deBridge
 
 # deBridge
 
-The deBridge Ability enables Vincent Apps to bridge tokens across multiple blockchains using the deBridge protocol on behalf of Vincent Users using their Vincent Agent Wallets. This allows Vincent Apps to facilitate cross-chain transfers without requiring users to manually approve each bridging transaction.
+The deBridge Ability enables Vincent Apps to bridge tokens across multiple blockchains using the deBridge protocol on behalf of Vincent Users. This allows Vincent Apps to facilitate cross-chain transfers without requiring users to manually approve each bridging transaction.
 
 ## Key Features
 
@@ -42,7 +42,7 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 ## Adding the Ability to your Vincent App
 
-When defining your Vincent App, you select which Abilities you want to be able to execute on behalf of your users. If you want to enable your App Delegatees to bridge tokens across chains on behalf of your Vincent App Users, you can add this Ability to your App.
+If you want to enable your App Delegatees to bridge tokens across chains on behalf of your Vincent App Users, you can add this Ability to your App.
 
 Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/). Visit the [Create Vincent App](../App-Agent-Developers/Creating-Apps.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Agent-Developers/Upgrading-Apps.md) guide to learn how to add Abilities to an existing App.
 

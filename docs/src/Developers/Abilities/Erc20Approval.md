@@ -4,7 +4,7 @@ title: ERC20 Approval
 
 # ERC20 Approval
 
-The ERC20 Approval Ability enables Vincent Apps to manage ERC20 token allowances on behalf of Vincent Users using their Vincent Agent Wallets. This is generally a prerequisite for many DeFi operations like swaps, lending, and liquidity provision.
+The ERC20 Approval Ability enables Vincent Apps to manage ERC20 token allowances on behalf of Vincent Users. This is generally a prerequisite for many DeFi operations like swaps, lending, and liquidity provision.
 
 ## Key Features
 
@@ -37,7 +37,7 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 ## Adding the Ability to your Vincent App
 
-When defining your Vincent App, you select which Abilities you want to be able to execute on behalf of your users. If you want to enable your App Delegatees to manage ERC20 token approvals on behalf of your Vincent App Users, you can add this Ability to your App.
+If you want to enable your App Delegatees to manage ERC20 token approvals on behalf of your Vincent App Users, you can add this Ability to your App.
 
 Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/). Visit the [Create Vincent App](../App-Agent-Developers/Creating-Apps.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Agent-Developers/Upgrading-Apps.md) guide to learn how to add Abilities to an existing App.
 

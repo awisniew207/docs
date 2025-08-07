@@ -267,6 +267,6 @@ A failure `execute` response will contain:
 
 ## Important Considerations
 
-### A complete transaction object is required
+### A Complete Transaction Object is Required
 
 Both the `precheck` and `execute` functions require a complete unsigned serialized transaction to be provided. This Ability does not handle the `nonce` or gas related fields, so you'll need to provide these values in the transaction object you're serializing.

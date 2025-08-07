@@ -4,7 +4,7 @@ title: Uniswap Swap
 
 # Uniswap Swap
 
-The Uniswap Swap Ability enables Vincent Apps to execute token swaps using Uniswap V3 on behalf of Vincent Users using their Vincent Agent Wallets. This allows Vincent Apps to utilize decentralized exchanges without requiring Vincent App Users having to manually approve each swap transaction.
+The Uniswap Swap Ability enables Vincent Apps to execute token swaps using Uniswap V3 on behalf of Vincent Users. This allows Vincent Apps to utilize decentralized exchanges without requiring Vincent App Users having to manually approve each swap transaction.
 
 This Vincent Ability also supports the [Spending Limit Policy](../Policies/SpendingLimit.md), which allows Vincent Users to restrict how much total value can be spent by the Vincent App.
 
@@ -46,13 +46,13 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 ## Adding the Ability to your Vincent App
 
-When defining your Vincent App, you select which Abilities you want to be able to execute on behalf of your users. If you want to enable your App Delegatees to execute token swaps on behalf of your Vincent App Users, you can add this Ability to your App.
+If you want to enable your App Delegatees to execute token swaps on behalf of your Vincent App Users, you can add this Ability to your App.
 
 Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/). Visit the [Create Vincent App](../App-Agent-Developers/Creating-Apps.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Agent-Developers/Upgrading-Apps.md) guide to learn how to add Abilities to an existing App.
 
 ## Executing the Ability as a Vincent App Delegatee
 
-Vincent App Users configure the Policies that govern Ability execution while consenting to the Vincent App.
+Vincent App Users configure the Policies that govern Ability execution while connecting to the Vincent App.
 
 If the Vincent App you're a Delegatee for has enabled the Spending Limit Policy for this Ability, then the total USD value that can be swapped will be restricted to what the Vincent App User has configured. To learn more about how the Policy works, and how it affects your execution of this Ability, see the [Spending Limit Policy](../Policies/SpendingLimit.md) documentation.
 

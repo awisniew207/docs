@@ -4,7 +4,7 @@ title: Morpho
 
 # Morpho
 
-The Morpho Ability enables Vincent Apps to interact with Morpho lending vaults on behalf of Vincent Users using their Vincent Agent Wallets. This allows Vincent Apps to provide yield-generating DeFi functionality through Morpho's lending markets, including depositing assets to earn yield, withdrawing funds, and managing vault positions.
+The Morpho Ability enables Vincent Apps to interact with Morpho lending vaults on behalf of Vincent Users. This allows Vincent Apps to provide yield-generating DeFi functionality through Morpho's lending markets, including depositing assets to earn yield, withdrawing funds, and managing vault positions.
 
 ## Key Features
 
@@ -23,7 +23,7 @@ The Morpho Ability is built using the [Vincent Ability SDK](../Ability-Developer
    - Verifies the vault exists using the built-in Morpho Vault client and retrieves asset information
    - For deposits, checks the Vincent App User's Agent Wallet's token balance and allowance
    - For withdrawals/redeems, checks the Vincent App User's Agent Wallet's has a vault share balance
-   - For withdrawals, converts the requested asset amount to required vault shares using ERC-4626 `convertToShares`
+   - For withdrawals, converts the requested asset amount to the required vault shares using ERC-4626 `convertToShares`
    - Estimates gas costs for the operation
    - Returns detailed validation results with current balance/shares
 
@@ -43,7 +43,7 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 ## Adding the Ability to your Vincent App
 
-When defining your Vincent App, you select which Abilities you want to be able to execute on behalf of your users. If you want to enable your App Delegatees to perform Morpho vault operations on behalf of your Vincent App Users, you can add this Ability to your App.
+If you want to enable your App Delegatees to perform Morpho vault operations on behalf of your Vincent App Users, you can add this Ability to your App.
 
 Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/). Visit the [Create Vincent App](../App-Agent-Developers/Creating-Apps.md) guide to learn more about how to add Abilities to your App during creation, or check out the [Upgrading Your App](../App-Agent-Developers/Upgrading-Apps.md) guide to learn how to add Abilities to an existing App.
 
