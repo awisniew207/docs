@@ -28,9 +28,9 @@ Apps can only execute the exact abilities you've approved, nothing more, nothing
 
 ## 🔐 Vincent Account
 
-Your account is your secure, multi-chain wallet that facilitates all Vincent-based interactions. Each Agent Wallet is represented by a [Programmable Key Pair (PKP)](https://developer.litprotocol.com/user-wallets/pkps/overview), a decentralized key pair managed by the Lit network.
+Your account is your secure, multi-chain wallet that facilitates all Vincent-based interactions. Each Vincent Wallet is represented by a [Programmable Key Pair (PKP)](https://developer.litprotocol.com/user-wallets/pkps/overview), a decentralized key pair managed by the Lit network.
 
-When you interact with a given Vincent app or agent, it will prompt you to delegate signing capabilities from your Agent Wallet to specific Vincent abilities. By delegating these signing capabilities, you enable the Vincent App to execute specific operations on your behalf within the guardrails you define using Vincent policies.
+When you interact with a given Vincent app or agent, it will prompt you to delegate signing capabilities from your Vincent Wallet to specific Vincent abilities. By delegating these signing capabilities, you enable the Vincent App to execute specific operations on your behalf within the guardrails you define using Vincent policies.
 
 ## Security
 
@@ -38,7 +38,7 @@ Learn about how the Vincent platform was designed to keep your assets and data s
 
 ### Key Management
 
-Your Vincent Agent Wallet is managed by Lit Protocol’s decentralized key management network. Secured by MPC-TSS and TEEs, Lit ensures that all key material remains non-custodial, confidential, and fully in your control.
+Your Vincent Wallet is managed by Lit Protocol’s decentralized key management network. Secured by MPC-TSS and TEEs, Lit ensures that all key material remains non-custodial, confidential, and fully in your control.
 
 1. MPC-TSS: Multi-party computation threshold signature schemes (MPC-TSS) split private keys into individual key shares collectively managed by the nodes in the Lit network. Keys never exist in their entirety and never leave the sealed and confidential hardware environment run by each Lit node operator.
 

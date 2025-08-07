@@ -13,6 +13,7 @@ module.exports = {
     'typedoc-plugin-extras',
     'typedoc-plugin-zod',
     './typedoc-remove-type-params-plugin.mjs',
+    './typedoc-folder-icon-plugin.mjs',
   ],
   highlightLanguages: ['ts', 'tsx', 'js', 'json', 'bash', 'yaml', 'dockerfile'],
   externalSymbolLinkMappings: {

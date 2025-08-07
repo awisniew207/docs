@@ -16,16 +16,16 @@ This guide walks you through the process of authenticating Vincent Users in your
 
 # Vincent JWT Overview
 
-At the end of the Vincent Connect flow, the User’s Agent Wallet signs a JWT and returns it as a URL parameter in the redirect URI. This JWT proves that:
+At the end of the Vincent Connect flow, the User’s Vincent Wallet signs a JWT and returns it as a URL parameter in the redirect URI. This JWT proves that:
 
-- The User has been authenticated using their Agent Wallet
+- The User has been authenticated using their Vincent Wallet
 - The User has granted your Vincent App permission to act on their behalf
 
 ## JWT Structure
 
 Each Vincent JWT contains the following claims in its payload:
 
-- `pkp`: An object representing the User’s Agent Wallet, including their ethAddress, publicKey, and tokenId
+- `pkp`: An object representing the User’s Vincent Wallet, including their ethAddress, publicKey, and tokenId
 - `app`: The Vincent App the JWT was issued for, including:
   - `id`: The App ID
   - `version`: The specific App Version the User has authorized
@@ -38,7 +38,7 @@ Each Vincent JWT contains the following claims in its payload:
 In addition to the payload, the JWT also includes:
 
 - `header`: Standard JWT header containing algorithm and type information
-- `signature`: A signature from the User’s Agent Wallet proving the JWT was signed using their Agent Wallet
+- `signature`: A signature from the User’s Vincent Wallet proving the JWT was signed using their Vincent Wallet
 - `data`: The raw, unsigned payload string used during signing
 
 > **Note:** To access these claims, use [decodeVincentJWTFromUri](#decodevincentjwtfromuri) in your frontend.
@@ -80,7 +80,7 @@ Extracts and verifies the Vincent connect JWT returned in the URL after a user c
 
 This method performs full validation, including:
 
-- Verifying that the JWT was signed by the Vincent User’s Agent Wallet
+- Verifying that the JWT was signed by the Vincent User’s Vincent Wallet
 - Ensuring the JWT has not expired
 - Confirming the JWT was issued specifically for your App, by checking that the redirect URI that received the JWT from the Vincent Connect Page is included in the JWT's audience claim
 

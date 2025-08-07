@@ -26,9 +26,9 @@ A Vincent App is composed of four key elements:
 
 3. **Vincent App Delegatees**: Ethereum addresses authorized by your App to execute Abilities on behalf of Vincent Users.
 
-4. **Vincent Agent Wallets**: Non-custodial wallets that enable secure, automated interactions between your Vincent App and its Users.
+4. **Vincent Wallets**: Non-custodial wallets that enable secure, automated interactions between your Vincent App and its Users.
 
-   - Each Agent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Ability.
+   - Each Vincent Wallet is powered by Lit Protocol's [Programmable Key Pairs (PKPs)](https://developer.litprotocol.com/user-wallets/pkps/overview), allowing Users to retain full control over their keys and assets while delegating narrowly scoped signing permissions specific to each Vincent Ability.
 
 # Registering Your Vincent App
 
@@ -56,7 +56,7 @@ After clicking the `Create an app` button, you'll be directed to a form to defin
 
 ### App Name
 
-The name will be used to identify your App within the Vincent ecosystem, and will be displayed to your users when they're consenting to delegate their Vincent Agent Wallets to your App.
+The name will be used to identify your App within the Vincent ecosystem, and will be displayed to your users when they're consenting to delegate their Vincent Wallets to your App.
 
 ### Contact Email
 
@@ -64,19 +64,19 @@ This is an email address your Vincent App Users can use to get in contact with y
 
 ### App Description
 
-This description will be shown to your Vincent App Users when they are asked to delegate their Vincent Agent Wallets to your App. Clearly explain what your App will do on their behalf. For example, if your App helps optimize yield on user deposits, include details such as the expected ROI, which protocols your App interacts with, and any other important information your users should know before granting access.
+This description will be shown to your Vincent App Users when they are asked to delegate their Vincent Wallets to your App. Clearly explain what your App will do on their behalf. For example, if your App helps optimize yield on user deposits, include details such as the expected ROI, which protocols your App interacts with, and any other important information your users should know before granting access.
 
 ### App User URL
 
-This URL is displayed to the Vincent User when they're consenting to delegate their Vincent Agent Wallets to your App. Generally this should be the homepage of your App's website, or a page where users can learn more about your App and what it's offering to do on their behalf.
+This URL is displayed to the Vincent User when they're consenting to delegate their Vincent Wallets to your App. Generally this should be the homepage of your App's website, or a page where users can learn more about your App and what it's offering to do on their behalf.
 
 ### App Logo
 
-The logo is displayed to your users when they're consenting to delegate their Vincent Agent Wallets to your App.
+The logo is displayed to your users when they're consenting to delegate their Vincent Wallets to your App.
 
 ### Redirect URIs
 
-When Vincent Users authenticate with Vincent and give consent to your Vincent App, they'll be given a Json Web Token (JWT) that contains information like their Agent Wallet ETH address, and the version of your App they've consented to delegate to.
+When Vincent Users authenticate with Vincent and give consent to your Vincent App, they'll be given a Json Web Token (JWT) that contains information like their Vincent Wallet ETH address, and the version of your App they've consented to delegate to.
 
 <div class="box info-box">
   <p class="box-title info-box-title">
@@ -101,7 +101,7 @@ This setting will be used to filter the Apps displayed in the Vincent App Regist
 
 # Adding Vincent Abilities to your App
 
-After filling in your App's details and clicking the `Create App` button, you'll be redirected to the Vincent App Ability management screen for your App's current version where you can add the [Vincent Abilities](../Ability-Developers/Getting-Started.md) that allow your App to perform actions on behalf of the Vincent App Users that have delegated access to their Vincent Agent Wallets to your App.
+After filling in your App's details and clicking the `Create App` button, you'll be redirected to the Vincent App Ability management screen for your App's current version where you can add the [Vincent Abilities](../Ability-Developers/Getting-Started.md) that allow your App to perform actions on behalf of the Vincent App Users that have delegated access to their Vincent Wallets to your App.
 
 ## Adding Abilities to the App Version
 
@@ -133,7 +133,7 @@ For example, we've added the `@lit-protocol/vincent-ability-uniswap-swap` Abilit
 
 Clicking the NPM logo for the Policy will take us to the Policy's NPM package page, where we can see that the Policy allows Vincent App Users to configure a maximum daily spending limit for the Ability.
 
-So when a Vincent App User is delegating access to their Vincent Agent Wallet to your App to execute the `@lit-protocol/vincent-ability-uniswap-swap` Ability, they'll be able to configure a maximum daily spending limit that restricts how much USD your App is permitted to swap on their behalf using the Ability.
+So when a Vincent App User is delegating access to their Vincent Wallet to your App to execute the `@lit-protocol/vincent-ability-uniswap-swap` Ability, they'll be able to configure a maximum daily spending limit that restricts how much USD your App is permitted to swap on their behalf using the Ability.
 
 # Publishing your App Version
 

@@ -1,5 +1,4 @@
 ---
-category: Official Policies
 title: Contract Whitelist
 ---
 
@@ -34,7 +33,7 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 
 - **Vincent App Managers**: If you've created or are creating a Vincent App and you want to enable this Policy for your users to govern the execution of Vincent Abilities, go [here](#adding-the-policy-to-your-vincent-app).
 - **Vincent App Delegatees**: If you are a delegatee of a Vincent App that has a Vincent Ability enabled that supports this Policy, go [here](#executing-a-vincent-ability-that-supports-this-policy).
-- **Vincent Ability Developers**: If you've create or are creating a Vincent Ability and you want to support this Policy, go [here](#supporting-the-policy-in-your-vincent-ability).
+- **Vincent Ability Developers**: If you've create or are creating a Vincent Ability and you want to support this Policy, go [here](#supporting-this-policy-in-your-vincent-ability).
 
 ## Adding the Policy to your Vincent App
 
@@ -48,24 +47,11 @@ If you are a Delegatee to a Vincent App that has a Vincent Ability enabled that 
 
 ### What's Whitelisted
 
-Vincent Users set what contracts and functions are whitelisted per chain using the Policy parameters that are stored in the Vincent Registry contract. The users are able to update the whitelist at will, so you cannot rely on what contracts and functions are whitelisted for each chain when you execute an Ability on behalf of your users.
+Vincent App Users set what contracts and functions are whitelisted per chain using the Policy parameters that are stored in the Vincent Registry contract. The Vincent App Users are able to update the whitelist at will, so you cannot rely on what contracts and functions are whitelisted for each chain when you execute an Ability on behalf of your users.
 
 ### Checking Against the Whitelist
 
 When you execute an Ability's `precheck` function, and the Vincent User has enabled this Policy for the Ability, the `precheck` function of this Policy will also execute. This Policy's `precheck` function will perform the same validation as the actual execution of the Policy, which will parse the transaction and check the `chainId`, `to` address, and function selector against the whitelist.
-
-#### Deny Response
-
-If the contract and function you're trying to interact with on the Vincent User's behalf is not whitelisted, the `precheck` function will return Deny Response with the structure:
-
-```typescript
-{
-  reason: string;            // Why the transaction was denied
-  chainId?: number;          // The chain ID (if available)
-  contractAddress?: string;  // The contract address (if available)
-  functionSelector?: string; // The function selector (if available)
-}
-```
 
 #### Allow Response
 
@@ -85,7 +71,20 @@ The `wildcardUsed` field indicates whether the function was allowed via wildcard
 - `true`: Function was allowed via wildcard
 - `false`: Function was explicitly whitelisted
 
-## Supporting the Policy in your Vincent Ability
+#### Deny Response
+
+If the contract and function you're trying to interact with on the Vincent User's behalf is not whitelisted, the `precheck` function will return Deny Response with the structure:
+
+```typescript
+{
+  reason: string;            // Why the transaction was denied
+  chainId?: number;          // The chain ID (if available)
+  contractAddress?: string;  // The contract address (if available)
+  functionSelector?: string; // The function selector (if available)
+}
+```
+
+## Supporting this Policy in your Vincent Ability
 
 If you'd like to provide the users of your Vincent Ability with the ability to restrict what contracts and functions Vincent Apps can interact with on their behalf, you can start by installing the `@lit-protocol/vincent-policy-contract-whitelist` package:
 
