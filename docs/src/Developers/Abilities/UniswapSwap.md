@@ -10,7 +10,7 @@ This Vincent Ability also supports the [Spending Limit Policy](../Policies/Spend
 
 ## Key Features
 
-- **Secure Token Swapping**: Executes Uniswap V3 swaps using Vincent Agent Wallets within Lit Protocol's secure Trusted Execution Environment
+- **Secure Token Swapping**: Executes Uniswap V3 swaps using Vincent Wallets within Lit Protocol's secure Trusted Execution Environment
 - **Comprehensive Pre-swap Validation**: Verifies token balances, allowances, pool existence, and gas fees before execution
 - **Spending Limit Integration**: Enforces spending limits through optional Vincent Policy integration to protect Vincent App Users from unintended spending
 - **Multi-chain Support**: Works on any EVM-compatible network supported by Uniswap V3
@@ -69,13 +69,13 @@ Before executing a Uniswap swap, the following conditions must be met. You can u
 
 #### ERC20 Token Approval
 
-The Vincent App User's Agent Wallet must have approved the Uniswap V3 Router to spend the input token.
+The Vincent App User's Vincent Wallet must have approved the Uniswap V3 Router to spend the input token.
 
-If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the Vincent Agent Wallet.
+If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the App User's Vincent Wallet.
 
 #### Token & Gas Balances
 
-The Vincent App User's Agent Wallet must have sufficient balance of the input token to perform the swap, and sufficient native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees.
+The Vincent App User's Vincent Wallet must have sufficient balance of the input token to perform the swap, and sufficient native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees.
 
 #### Uniswap V3 Pool Existence
 
@@ -163,7 +163,7 @@ const swapParams = {
 };
 
 const precheckResult = await abilityClient.precheck(swapParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (precheckResult.success) {
@@ -208,7 +208,7 @@ The `execute` function expects the same parameters as the `precheck` function, a
 
 ```typescript
 const executeResult = await abilityClient.execute(swapParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (executeResult.success) {
@@ -295,8 +295,8 @@ The Ability works on networks supported by the [@uniswap/sdk-core](https://www.n
 
 Common failure scenarios include:
 
-- **Insufficient ERC20 Token Balance**: The Agent Wallet doesn't have enough of the input token
-- **Insufficient Native Token Balance**: The Agent Wallet doesn't have enough native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees
+- **Insufficient ERC20 Token Balance**: The Vincent Wallet doesn't have enough of the input token
+- **Insufficient Native Token Balance**: The Vincent Wallet doesn't have enough native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees
 - **Missing ERC20 Token Approval**: The Uniswap router doesn't have permission to spend the input token
 - **No Uniswap Pool**: No Uniswap pool exists for the specified token pair
 - **Spending Limit Exceeded**: The swap would exceed the configured spending limit

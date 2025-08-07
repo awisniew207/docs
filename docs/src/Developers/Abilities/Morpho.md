@@ -8,7 +8,7 @@ The Morpho Ability enables Vincent Apps to interact with Morpho lending vaults o
 
 ## Key Features
 
-- **Yield Vault Operations**: Supports deposit, withdraw, and redeem operations with Morpho's ERC-4626 compliant vaults using Vincent Agent Wallets within a secure Trusted Execution Environment
+- **Yield Vault Operations**: Supports deposit, withdraw, and redeem operations with Morpho's ERC-4626 compliant vaults using Vincent Wallets within a secure Trusted Execution Environment
 - **Multi-Chain Support**: Works across multiple networks where Morpho vaults are deployed including Ethereum, Base, Arbitrum, Optimism, and Polygon
 - **Comprehensive Vault Discovery**: Utilizes the Morpho Vault API to discover and filter vaults by asset, chain, APY, TVL, and other criteria
 - **Gas Sponsorship**: Optional integration with Alchemy's gas sponsorship for gasless transactions via EIP-7702
@@ -21,8 +21,8 @@ The Morpho Ability is built using the [Vincent Ability SDK](../Ability-Developer
 
    - Validates operation type, vault address, and amount format
    - Verifies the vault exists using the built-in Morpho Vault client and retrieves asset information
-   - For deposits, checks the Vincent App User's Agent Wallet's token balance and allowance
-   - For withdrawals/redeems, checks the Vincent App User's Agent Wallet's has a vault share balance
+   - For deposits, checks the Vincent App User's Vincent Wallet's token balance and allowance
+   - For withdrawals/redeems, checks the Vincent App User's Vincent Wallet's has a vault share balance
    - For withdrawals, converts the requested asset amount to the required vault shares using ERC-4626 `convertToShares`
    - Estimates gas costs for the operation
    - Returns detailed validation results with current balance/shares
@@ -62,13 +62,13 @@ Before executing Morpho vault operations, the following conditions must be met. 
 
 #### Native Token Balance for Gas Fees
 
-The Vincent App User's Agent Wallet must have enough native tokens (ETH, MATIC, etc.) to cover the transaction gas fees for the Morpho operation.
+The Vincent App User's Vincent Wallet must have enough native tokens (ETH, MATIC, etc.) to cover the transaction gas fees for the Morpho operation.
 
 #### ERC20 Token Approval
 
-For deposit operations, the Vincent App User's Agent Wallet must have approved the Morpho vault contract to spend the underlying tokens.
+For deposit operations, the Vincent App User's Vincent Wallet must have approved the Morpho vault contract to spend the underlying tokens.
 
-If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the Vincent Agent Wallet.
+If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the App User's Vincent Wallet.
 
 #### Operation-Specific Requirements
 
@@ -76,20 +76,20 @@ Each Morpho operation has specific validation requirements that are checked duri
 
 **Deposit Operation:**
 
-- The Vincent App User's Agent Wallet must have sufficient balance of the underlying token (e.g., USDC, WETH)
+- The Vincent App User's Vincent Wallet must have sufficient balance of the underlying token (e.g., USDC, WETH)
 - Morpho vault contract must be approved to spend the required token amount
 - Both balance and allowance must be greater than or equal to the deposit amount
 
 **Withdraw Operation:**
 
-- The Vincent App User's Agent Wallet must have vault shares deposited in the Morpho vault
-- The Agent Wallet must have sufficient vault shares to cover the withdrawal amount (converted from asset amount to shares)
+- The Vincent App User's Vincent Wallet must have vault shares deposited in the Morpho vault
+- The Vincent Wallet must have sufficient vault shares to cover the withdrawal amount (converted from asset amount to shares)
 - The vault must have sufficient liquidity to fulfill the withdrawal
 
 **Redeem Operation:**
 
-- The Vincent App User's Agent Wallet must have vault shares in the specified Morpho vault
-- The Agent Wallet must have sufficient vault share balance to cover the redeem amount
+- The Vincent App User's Vincent Wallet must have vault shares in the specified Morpho vault
+- The Vincent Wallet must have sufficient vault share balance to cover the redeem amount
 - The vault must have sufficient underlying assets to exchange for the redeemed shares
 
 ### Executing the `precheck` Function
@@ -165,7 +165,7 @@ const morphoParams = {
 };
 
 const precheckResult = await abilityClient.precheck(morphoParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (precheckResult.success) {
@@ -259,7 +259,7 @@ const executeParams = {
 };
 
 const executeResult = await abilityClient.execute(executeParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (executeResult.success) {
@@ -357,7 +357,7 @@ The `amount` parameter should be specified in human-readable format (e.g., "100.
 
 When using Alchemy gas sponsorship:
 
-- Transactions are gasless for the Vincent App User's Agent Wallet
+- Transactions are gasless for the Vincent App User's Vincent Wallet
 - Requires valid Alchemy API key and policy ID
 - Uses EIP-7702 for gasless transactions
 

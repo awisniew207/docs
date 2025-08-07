@@ -26,7 +26,7 @@ The Vincent App SDK exports a function called `getVincentAbilityClient` that cre
    - Validates Ability parameters and evaluates Policies registered by the User for your App
      - **Note:** Execution of the Ability's logic will **not** happen unless all of the registered Policies permit execution
    - Executes the `commit` function of any Policies that have defined a `commit` function
-     - **Note:** Policy `commit` functions give each Policy the opportunity to update any state they depend on for their policy logic after the Ability has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Ability has successfully transferred funds from the User's Agent Wallet)
+     - **Note:** Policy `commit` functions give each Policy the opportunity to update any state they depend on for their policy logic after the Ability has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Ability has successfully transferred funds from the User's Vincent Wallet)
    - Returns the execution results of both the Ability and any evaluated Policies
 
 # Creating a Ability Client
@@ -81,7 +81,7 @@ const precheckResult = await abilityClient.precheck({
     amount: 100,
   },
   context: {
-    // The ETH address of the App User's Agent Wallet you are executing the Ability on behalf of
+    // The ETH address of the App User's Vincent Wallet you are executing the Ability on behalf of
     delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',
   },
 });
@@ -99,7 +99,7 @@ The `precheck` function takes two arguments:
    - `rpcUrl`: An optional parameter to override the default RPC URL used to communicate with the Lit Protocol network
      - This RPC URL is used to fetch the on-chain data about your Vincent App, what App Version (if any) the Vincent User has authorized, and the on-chain Policy parameters configured by the User for your App
      - Most developers do **not** need to provide this property, and the default RPC URL should be used
-   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the App User's Agent Wallet you'll be executing the Ability on behalf of
+   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the App User's Vincent Wallet you'll be executing the Ability on behalf of
 
 ## Precheck Results
 
@@ -147,7 +147,7 @@ const executeResult = await abilityClient.execute({
     amount: 100,
   },
   context: {
-    // The ETH address of the Agent Wallet you are executing the Ability on behalf of
+    // The ETH address of the Vincent Wallet you are executing the Ability on behalf of
     delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',
   },
 });
@@ -162,7 +162,7 @@ The `execute` function takes two arguments similar to the `precheck` function:
 > If for whatever reason the type inference is not working, check the Ability's documentation for the expected input parameters
 
 2. An object that contains:
-   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the Vincent User's Agent Wallet you'll be executing the Ability on behalf of
+   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the Vincent User's Vincent Wallet you'll be executing the Ability on behalf of
 
 ## Execute Results
 

@@ -293,7 +293,7 @@ Spending limits are enforced over a continuous 24-hour lookback window from the 
 
 ### Gas Considerations
 
-The Policy commit phase requires a transaction on the [Lit Chronicle Yellowstone blockchain](https://developer.litprotocol.com/connecting-to-a-lit-network/lit-blockchains/chronicle-yellowstone) to record the spent amount of USD in the Spending Limit contract. The Vincent App User's Agent Wallet must have sufficient Lit test tokens to pay for the gas fee of the spending update transaction.
+The Policy commit phase requires a transaction on the [Lit Chronicle Yellowstone blockchain](https://developer.litprotocol.com/connecting-to-a-lit-network/lit-blockchains/chronicle-yellowstone) to record the spent amount of USD in the Spending Limit contract. The Vincent App User's Vincent Wallet must have sufficient Lit test tokens to pay for the gas fee of the spending update transaction.
 
 Lit test tokens can be obtained from the [Lit Testnet Faucet](https://chronicle-yellowstone-faucet.getlit.dev/).
 

@@ -8,7 +8,7 @@ The Aave Ability enables Vincent Apps to interact with the Aave V3 lending proto
 
 ## Key Features
 
-- **Comprehensive DeFi Operations**: Supports all core Aave V3 operations (supply, withdraw, borrow, repay) using Vincent Agent Wallets within a Trusted Execution Environment
+- **Comprehensive DeFi Operations**: Supports all core Aave V3 operations (supply, withdraw, borrow, repay) using Vincent Wallets within a Trusted Execution Environment
 - **Multi-Chain Support**: Works across multiple networks where Aave V3 is deployed including Ethereum, Polygon, Arbitrum, Optimism, Base, and many more
 - **Intelligent Validation**: Performs comprehensive precheck validation including balance checks, allowance verification, and borrowing capacity analysis
 
@@ -60,13 +60,13 @@ Before executing Aave operations, the following conditions must be met. You can 
 
 #### Native Token Balance for Gas Fees
 
-The Vincent App User's Agent Wallet must have enough native tokens (ETH, MATIC, etc.) to cover the transaction gas fees for the Aave operation.
+The Vincent App User's Vincent Wallet must have enough native tokens (ETH, MATIC, etc.) to cover the transaction gas fees for the Aave operation.
 
 #### ERC20 Token Approval
 
-For supply and repay operations, the Vincent App User's Agent Wallet must have approved the Aave Pool contract to spend the tokens.
+For supply and repay operations, the Vincent App User's Vincent Wallet must have approved the Aave Pool contract to spend the tokens.
 
-If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the Vincent Agent Wallet.
+If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the Vincent Wallet.
 
 #### Operation-Specific Requirements
 
@@ -74,25 +74,25 @@ Each Aave operation has specific validation requirements that are checked during
 
 **Supply Operation:**
 
-- Agent Wallet must have sufficient token balance to cover the supply amount
+- Vincent Wallet must have sufficient token balance to cover the supply amount
 - Aave Pool contract must be approved to spend the required token amount
 - Both balance and allowance must be greater than or equal to the supply amount
 
 **Withdraw Operation:**
 
-- The Vincent App User's Agent Wallet must have collateral deposited in the Aave protocol
+- The Vincent App User's Vincent Wallet must have collateral deposited in the Aave protocol
 - The withdrawal must not compromise the account's health factor
 - Sufficient `aToken` balance (Aave deposit receipts) to cover the withdrawal
 
 **Borrow Operation:**
 
-- The Vincent App User's Agent Wallet must have sufficient borrowing capacity based on deposited collateral
+- The Vincent App User's Vincent Wallet must have sufficient borrowing capacity based on deposited collateral
 - Interest rate mode must be specified (`1` for Stable Rate, `2` for Variable Rate)
 - The borrow amount must not exceed available borrowing capacity
 
 **Repay Operation:**
 
-- The Vincent App User's Agent Wallet must have sufficient token balance to cover the repayment amount
+- The Vincent App User's Vincent Wallet must have sufficient token balance to cover the repayment amount
 - Aave Pool contract must be approved to spend the repayment tokens
 - Outstanding debt must exist for the specified asset and interest rate mode
 
@@ -160,7 +160,7 @@ const aaveParams = {
 };
 
 const precheckResult = await abilityClient.precheck(aaveParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (precheckResult.success) {
@@ -258,7 +258,7 @@ const executeParams = {
 };
 
 const executeResult = await abilityClient.execute(executeParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (executeResult.success) {
@@ -379,7 +379,7 @@ The precheck function provides gas estimation, but actual gas usage may vary dep
 
 Monitor your health factor when borrowing. A health factor below 1.0 triggers liquidation.
 
-**Important**: The Vincent Aave Ability does not validate health factor during the precheck phase. While the ability fetches the Vincent App User's Agent Wallet's account data (including health factor), it only validates borrowing capacity and does not proactively check if a borrow operation would result in an unhealthy position. Health factor validation occurs at the Aave protocol level during transaction execution, and may result in failed transactions.
+**Important**: The Vincent Aave Ability does not validate health factor during the precheck phase. While the ability fetches the Vincent App User's Vincent Wallet's account data (including health factor), it only validates borrowing capacity and does not proactively check if a borrow operation would result in an unhealthy position. Health factor validation occurs at the Aave protocol level during transaction execution, and may result in failed transactions.
 
 ## Error Handling
 

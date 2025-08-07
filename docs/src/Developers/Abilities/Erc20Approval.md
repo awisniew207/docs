@@ -8,9 +8,9 @@ The ERC20 Approval Ability enables Vincent Apps to manage ERC20 token allowances
 
 ## Key Features
 
-- **Secure Transaction Signing**: Signs ERC20 Approval transaction using Vincent Agent Wallets within a secure Trusted Execution Environment
+- **Secure Transaction Signing**: Signs ERC20 Approval transaction using Vincent Wallets within a secure Trusted Execution Environment
 - **Intelligent Allowance Checking**: Automatically checks existing allowances to avoid unnecessary transactions
-- **Gas Balance Verification**: Ensures the Agent Wallet has some native tokens to pay for gas fees
+- **Gas Balance Verification**: Ensures the Vincent Wallet has some native tokens to pay for gas fees
 
 ## How It Works
 
@@ -56,7 +56,7 @@ Before executing an ERC20 approval, the following conditions must be met. You ca
 
 #### Gas Balance
 
-The Vincent App User's Agent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the approval transaction gas fees.
+The Vincent App User's Vincent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the approval transaction gas fees.
 
 #### Valid Token Contract
 
@@ -68,7 +68,7 @@ The RPC URL must be valid and accessible for the specified chain ID, and the net
 
 ### Executing the `precheck` Function
 
-This Ability's `precheck` function is used to check if the Agent Wallet has a non-zero native token balance for gas fees, and if the spender already has sufficient allowance for the requested amount.
+This Ability's `precheck` function is used to check if the Vincent Wallet has a non-zero native token balance for gas fees, and if the spender already has sufficient allowance for the requested amount.
 
 Before executing the `precheck` function, you'll need to provide the following parameters for the ERC20 token approval transaction:
 
@@ -137,7 +137,7 @@ const approvalParams = {
 };
 
 const precheckResult = await abilityClient.precheck(approvalParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (precheckResult.success) {
@@ -201,7 +201,7 @@ The `execute` function expects the same parameters as the `precheck` function, a
 
 ```typescript
 const executeResult = await abilityClient.execute(approvalParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (executeResult.success) {
@@ -278,7 +278,7 @@ A failure `execute` response will contain:
 
 ### Gas Requirements
 
-The Vincent App User's Agent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the approval transaction gas fees. The precheck function will verify this and return an error if the balance is insufficient.
+The Vincent App User's Vincent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the approval transaction gas fees. The precheck function will verify this and return an error if the balance is insufficient.
 
 ### Approval Amounts
 

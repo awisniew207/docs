@@ -4,13 +4,13 @@ title: EVM Transaction Signer
 
 # EVM Transaction Signer
 
-The EVM Transaction Signer Ability enables Vincent Apps to sign Ethereum Virtual Machine (EVM) transactions on behalf of Vincent Users using their Vincent Agent Wallets. This enables Vincent Apps to interact with contracts even if there isn't an explicit Vincent Ability made for interacting with that contract.
+The EVM Transaction Signer Ability enables Vincent Apps to sign Ethereum Virtual Machine (EVM) transactions on behalf of Vincent Users using their Vincent Wallets. This enables Vincent Apps to interact with contracts even if there isn't an explicit Vincent Ability made for interacting with that contract.
 
 This Vincent Ability also supports the [Contract Whitelist Policy](../Policies/ContractWhitelist.md), which allows Vincent Users to restrict which contracts and functions can be called before this Ability signs transactions on their behalf.
 
 ## Key Features
 
-- **Secure Transaction Signing**: Signs transactions using Vincent Agent Wallets within a secure Trusted Execution Environment
+- **Secure Transaction Signing**: Signs transactions using Vincent Wallets within a secure Trusted Execution Environment
 - **Full Transaction Support**: Handles all EVM transaction types including legacy, EIP-2930, and EIP-1559
 - **Policy Integration**: Supports the Contract Whitelist Policy for restricting what transactions can be signed
 
@@ -25,7 +25,7 @@ The EVM Transaction Signer Ability is built using the [Vincent Ability SDK](../A
    - Returns the deserialized unsigned transaction for as confirmation
 
 2. **Execution Phase**: If permitted by the evaluated Policies, signs the serialized transaction
-   - Signs the transaction using the Vincent App User's Agent Wallet
+   - Signs the transaction using the Vincent App User's Vincent Wallet
    - Returns both the signed transaction hex string and the deserialized signed transaction object
 
 ## Getting Started
@@ -64,7 +64,7 @@ You must provide a complete EVM transaction object with all required fields incl
 
 #### Gas Balance
 
-The Vincent App User's Agent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the transaction gas fees specified in the transaction object.
+The Vincent App User's Vincent Wallet must have sufficient native tokens (ETH, MATIC, etc.) to pay for the transaction gas fees specified in the transaction object.
 
 #### Policy Compliance
 
@@ -74,7 +74,7 @@ If the Vincent App User has enabled the [Contract Whitelist Policy](../Policies/
 
 This Ability's `precheck` function is used to check if the provided unsigned serialized transaction is valid in structure and contains all the required fields to sign the transaction for submission to the blockchain network.
 
-Before executing the `precheck` function, you'll need to create the complete EVM transaction object (which must contain all required properties such as `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and gas pricing) you want the user's Agent Wallet to sign, and serialize it into a hex string.
+Before executing the `precheck` function, you'll need to create the complete EVM transaction object (which must contain all required properties such as `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and gas pricing) you want the user's Vincent Wallet to sign, and serialize it into a hex string.
 
 The Ability expects this serialized transaction as the only parameter, and is required to execute the `precheck` function:
 
@@ -95,9 +95,9 @@ To execute `precheck`, you'll need to:
 - Create an instance of the `VincentAbilityClient` using the `getVincentAbilityClient` function (imported from `@lit-protocol/vincent-app-sdk/abilityClient`)
   - Pass in the Ability's `bundledVincentAbility` object (imported from `@lit-protocol/vincent-ability-evm-transaction-signer`)
   - Pass in the `ethersSigner` you'll be using to sign the request to Lit with your Delegatee private key
-- Create the transaction object you want the Vincent App User's Agent Wallet to sign
+- Create the transaction object you want the Vincent App User's Vincent Wallet to sign
 - Serialize the transaction object into a hex string using `ethers.utils.serializeTransaction`
-- Call the `precheck` function on the `VincentAbilityClient` instance, passing in the serialized transaction and the Vincent App User's Agent Wallet address
+- Call the `precheck` function on the `VincentAbilityClient` instance, passing in the serialized transaction and the Vincent App User's Vincent Wallet address
 
 ```typescript
 import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
@@ -128,7 +128,7 @@ const precheckResult = await abilityClient.precheck(
     serializedTransaction: serializedTx,
   },
   {
-    delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address that will sign the transaction
+    delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address that will sign the transaction
   },
 );
 
@@ -196,7 +196,7 @@ const executeResult = await abilityClient.execute(
     serializedTransaction: serializedTx,
   },
   {
-    delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address that will sign the transaction
+    delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address that will sign the transaction
   },
 );
 

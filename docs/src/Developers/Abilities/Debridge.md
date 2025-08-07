@@ -8,7 +8,7 @@ The deBridge Ability enables Vincent Apps to bridge tokens across multiple block
 
 ## Key Features
 
-- **Secure Cross-Chain Bridging**: Bridges tokens across multiple EVM-compatible chains using Vincent Agent Wallets
+- **Secure Cross-Chain Bridging**: Bridges tokens across multiple EVM-compatible chains using Vincent Wallets
 - **Native and ERC-20 Token Support**: Supports both native tokens (ETH, MATIC, etc.) and ERC-20 tokens
 - **Automatic Quote Fetching**: Retrieves real-time quotes from deBridge API for accurate fee estimation
 - **Multi-Chain Support**: Works across Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, and Avalanche
@@ -61,17 +61,17 @@ Before executing the Ability, the following conditions must be met. You can use 
 
 #### Native/ERC20 Token Balance
 
-The Vincent App User's Agent Wallet must have sufficient balance of the source token to cover the bridge amount plus any protocol fees.
+The Vincent App User's Vincent Wallet must have sufficient balance of the source token to cover the bridge amount plus any protocol fees.
 
 #### Gas Balance
 
-The Agent Wallet must have sufficient native tokens on the source chain to pay for the bridge transaction gas fees.
+The Vincent Wallet must have sufficient native tokens on the source chain to pay for the bridge transaction gas fees.
 
 #### ERC-20 Token Approval
 
-For ERC-20 token transfers, the Vincent App User's Agent Wallet must have approved the deBridge contract to spend the source token.
+For ERC-20 token transfers, the Vincent App User's Vincent Wallet must have approved the deBridge contract to spend the source token.
 
-If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the Vincent Agent Wallet.
+If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the Vincent Wallet.
 
 ### Executing the `precheck` Function
 
@@ -151,7 +151,7 @@ const bridgeParams = {
 };
 
 const precheckResult = await abilityClient.precheck(bridgeParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (precheckResult.success) {
@@ -242,7 +242,7 @@ The `execute` function expects the same parameters as the `precheck` function, a
 
 ```typescript
 const executeResult = await abilityClient.execute(bridgeParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Agent Wallet address
+  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
 });
 
 if (executeResult.success) {
@@ -360,7 +360,7 @@ Bridge operations include protocol fees that are automatically deducted from the
 Common failure scenarios include:
 
 - **Invalid Chain IDs**: Source or destination chain not supported by deBridge
-- **Insufficient Balance**: The Vincent App User's Agent Wallet doesn't have enough source tokens
+- **Insufficient Balance**: The Vincent App User's Vincent Wallet doesn't have enough source tokens
 - **Missing Approval**: For ERC-20 tokens, insufficient allowance for deBridge contract
 - **Same Chain**: Source and destination chains cannot be the same
 - **API Issues**: deBridge API temporarily unavailable or returning errors
