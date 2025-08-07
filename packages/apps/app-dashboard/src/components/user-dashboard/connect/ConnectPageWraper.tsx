@@ -64,7 +64,12 @@ export function ConnectPageWrapper() {
     return <ConnectPageSkeleton />;
   }
 
-  if (isLoading || isProcessing || isPermittedLoading || versionDataLoading) {
+  if (isLoading || isProcessing || isPermittedLoading) {
+    return <ConnectPageSkeleton />;
+  }
+
+  // Wait for version data when we have a permitted version
+  if (userPermittedVersion && versionDataLoading) {
     return <ConnectPageSkeleton />;
   }
 
