@@ -49,6 +49,11 @@ export function ConnectPageWrapper() {
     },
   );
 
+  // Find active version data from existing app versions
+  const activeVersionData = data?.app?.activeVersion
+    ? data.versionsByApp[appId!]?.find((v) => v.version === data.app.activeVersion)
+    : undefined;
+
   // Early return if required params are missing
   if (!appId) {
     return <GeneralErrorScreen errorDetails="App ID was not provided" />;
@@ -89,7 +94,10 @@ export function ConnectPageWrapper() {
     const errorMessage =
       errors.length > 0
         ? errors.join(', ')
-        : (error ?? isPermittedError ?? 'An unknown error occurred');
+        : (error ??
+          isPermittedError ??
+          (versionDataError ? String(versionDataError) : undefined) ??
+          'An unknown error occurred');
     return <GeneralErrorScreen errorDetails={errorMessage} />;
   }
 
@@ -108,6 +116,7 @@ export function ConnectPageWrapper() {
         appData={data.app}
         version={userPermittedVersion}
         versionData={versionData}
+        activeVersionData={activeVersionData}
         redirectUri={redirectUri || undefined}
         readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
       />

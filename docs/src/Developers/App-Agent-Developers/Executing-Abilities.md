@@ -54,7 +54,7 @@ The two required parameters for the `getVincentAbilityClient` function are:
    - This ability definition is exported by the author of the Vincent Ability package and defines properties like the expected input parameters of the Ability, the Vincent Policies supported by the Ability, and the Ability's expected return values
    - The Ability Client handles wrapping this ability definition, providing you with a simple interface for executing the Ability, abstracting away the complexity of the Ability's implementation
 2. `ethersSigner`: An Ethers.js signer that will be used to sign the request to execute the Ability using the Lit Protocol network
-   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Ability for. You can see how to add a delegatee to your Vincent App [here](./Creating-Apps.md#adding-delegatees-to-your-app)
+   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Ability for. You can see how to add a delegatee to your Vincent App [here](./Creating-Apps.md#delegatee-addresses)
 
 # Executing the Ability Client's `precheck` function
 

@@ -4,7 +4,7 @@ import { createPlatformUserJWT, verifyVincentPlatformJWT } from '@lit-protocol/v
 import { initPkpSigner } from '@/utils/developer-dashboard/initPkpSigner';
 import { env } from '@/config/env';
 
-const { VITE_JWT_EXPIRATION_MINUTES } = env;
+const { VITE_ENV, VITE_JWT_EXPIRATION_MINUTES } = env;
 
 type StoredJWT = {
   token: string;
@@ -13,7 +13,8 @@ type StoredJWT = {
 };
 
 const JWT_STORAGE_KEY = 'platformUserJWT';
-const EXPECTED_AUDIENCE = 'registry.heyvincent.ai';
+const EXPECTED_AUDIENCE =
+  VITE_ENV === 'staging' ? `staging.registry.heyvincent.ai` : `registry.heyvincent.ai`;
 
 /**
  * Get current JWT token for request headers using PKP wallet - returns null if invalid

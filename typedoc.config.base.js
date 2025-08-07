@@ -15,6 +15,7 @@ module.exports = {
     './typedoc-remove-type-params-plugin.mjs',
     './typedoc-folder-icon-plugin.mjs',
   ],
+  highlightLanguages: ['ts', 'tsx', 'js', 'json', 'bash', 'yaml', 'dockerfile'],
   externalSymbolLinkMappings: {
     '@lit-protocol/types': {
       '*': 'https://v7-api-doc-lit-js-sdk.vercel.app/modules/types_src.html',

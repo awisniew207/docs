@@ -15,6 +15,7 @@ type ReturningUserConnectProps = {
   appData: App;
   version: number;
   versionData: AppVersion;
+  activeVersionData?: AppVersion;
   redirectUri?: string;
   readAuthInfo: UseReadAuthInfo;
 };
@@ -23,6 +24,7 @@ export function ReturningUserConnect({
   appData,
   version,
   versionData,
+  activeVersionData,
   redirectUri,
   readAuthInfo,
 }: ReturningUserConnectProps) {
@@ -76,7 +78,27 @@ export function ReturningUserConnect({
           {appData && <ConnectAppHeader app={appData} />}
 
           {/* Status Banner - Show appropriate status based on version state */}
-          {versionData && !versionData.enabled ? (
+          {versionData &&
+          !versionData.enabled &&
+          activeVersionData &&
+          !activeVersionData.enabled ? (
+            <InfoBanner
+              type="warning"
+              title="App Unavailable"
+              message={
+                <>
+                  Both your permitted version ({version}) and the app's active version (
+                  {appData.activeVersion}) have been disabled by the app developer.
+                  {appData.contactEmail && (
+                    <>
+                      {' '}
+                      Contact them at <span className="text-blue-400">{appData.contactEmail}</span>
+                    </>
+                  )}
+                </>
+              }
+            />
+          ) : versionData && !versionData.enabled ? (
             <InfoBanner
               type="warning"
               title="Version Disabled"
@@ -112,7 +134,65 @@ export function ReturningUserConnect({
 
                 <div className="space-y-3">
                   {/* Show different primary action based on version status */}
-                  {versionData && !versionData.enabled ? (
+                  {versionData &&
+                  !versionData.enabled &&
+                  activeVersionData &&
+                  !activeVersionData.enabled ? (
+                    /* Both versions disabled - Show contact options and back button */
+                    <>
+                      {appData.appUserUrl && (
+                        <ActionCard
+                          icon={
+                            <svg
+                              className="w-4 h-4 text-green-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          }
+                          iconBg="bg-green-500/20"
+                          title="Visit App Website"
+                          description=""
+                          onClick={() => window.open(appData.appUserUrl, '_blank')}
+                        />
+                      )}
+                      <ActionCard
+                        icon={
+                          <svg
+                            className="w-4 h-4 text-orange-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        }
+                        iconBg="bg-orange-500/20"
+                        title="Unpermit App"
+                        description=""
+                        onClick={() => navigate(`/user/appId/${appData.appId}`)}
+                      />
+                      <ActionCard
+                        icon={<ArrowRight className="w-4 h-4 text-gray-500 rotate-180" />}
+                        iconBg="bg-gray-500/20"
+                        title="Go Back"
+                        description=""
+                        onClick={() => navigate(-1)}
+                      />
+                    </>
+                  ) : versionData && !versionData.enabled ? (
                     /* Update Version Option - Primary action when version is disabled */
                     <ActionCard
                       icon={<RefreshCw className="w-4 h-4 text-orange-500" />}
@@ -132,7 +212,7 @@ export function ReturningUserConnect({
                     />
                   )}
 
-                  {/* Continue Option - Only show if version is enabled */}
+                  {/* Continue Option - Only show if version is enabled and not both versions disabled */}
                   {!(versionData && !versionData.enabled) && (
                     <ActionCard
                       icon={<ArrowRight className="w-4 h-4 text-green-500" />}

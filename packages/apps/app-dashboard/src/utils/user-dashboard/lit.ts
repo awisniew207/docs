@@ -22,8 +22,8 @@ import { env } from '@/config/env';
 
 const { VITE_ENV, VITE_STYTCH_PROJECT_ID } = env;
 
-export const DOMAIN = VITE_ENV === 'development' ? 'localhost:5173' : 'dashboard.heyvincent.ai';
-export const ORIGIN = VITE_ENV === 'development' ? `http://${DOMAIN}` : `https://${DOMAIN}`;
+export const DOMAIN = VITE_ENV === 'staging' ? 'localhost:5173' : 'dashboard.heyvincent.ai';
+export const ORIGIN = VITE_ENV === 'staging' ? `http://${DOMAIN}` : `https://${DOMAIN}`;
 
 export const SELECTED_LIT_NETWORK = LIT_NETWORK.Datil as LIT_NETWORKS_KEYS;
 

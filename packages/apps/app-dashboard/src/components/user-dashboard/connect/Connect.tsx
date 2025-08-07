@@ -159,7 +159,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
     if (authLoading) {
       currentMessage = 'Authenticating your credentials...';
     } else if (accountsLoading) {
-      currentMessage = 'Fetching your Agent Wallet...';
+      currentMessage = 'Fetching your Vincent Wallet...';
     } else if (sessionLoading) {
       currentMessage = 'Securing your session...';
     } else if (isProcessing) {

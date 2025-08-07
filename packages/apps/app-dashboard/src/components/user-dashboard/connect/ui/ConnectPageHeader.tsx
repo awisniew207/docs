@@ -84,7 +84,7 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
                 {authInfo.agentPKP?.ethAddress && (
                   <div className="flex items-start gap-2 pt-2 border-t border-gray-600">
                     <div className="flex-1 min-w-0">
-                      <div className="text-gray-300">Agent Wallet:</div>
+                      <div className="text-gray-300">Vincent Wallet Address:</div>
                       <div className="font-mono text-xs break-all">
                         {authInfo.agentPKP.ethAddress}
                       </div>

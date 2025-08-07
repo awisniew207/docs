@@ -2,6 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { reactClient } from '@lit-protocol/vincent-registry-sdk';
 import { getCurrentJwtTokenForStore } from '@/hooks/developer-dashboard/useVincentApiWithJWT';
+import { env } from '@/config/env';
+
+const { VITE_ENV } = env;
+
+const BASE_URL =
+  VITE_ENV === 'staging'
+    ? `https://staging.registry.heyvincent.ai`
+    : `https://registry.heyvincent.ai`;
 
 const { vincentApiClientReact, setBaseQueryFn }: any = reactClient;
 
@@ -45,7 +53,7 @@ const createWithPKPAuth = (baseQuery: any) => {
 };
 
 // Configure the base query function with PKP-based SIWE authentication
-setBaseQueryFn(createWithPKPAuth(fetchBaseQuery({ baseUrl: `https://registry.heyvincent.ai` })));
+setBaseQueryFn(createWithPKPAuth(fetchBaseQuery({ baseUrl: BASE_URL })));
 
 export const store = configureStore({
   reducer: {

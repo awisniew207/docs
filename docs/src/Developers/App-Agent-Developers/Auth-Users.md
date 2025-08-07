@@ -141,7 +141,7 @@ if (vincentAppClient.uriContainsVincentJWT()) {
 
 > **Note:** The `redirectUri` given to `redirectToConnectPage` is where the user will be sent with the signed Vincent JWT after completing the Vincent Connect flow.
 >
-> This **must** be one of the [Authorized Redirect URIs](Creating-Apps.md#authorized-redirect-uris) you've configured for your App.
+> This **must** be one of the [Authorized Redirect URIs](Creating-Apps.md#redirect-uris) you've configured for your App.
 
 ## Verifying the Vincent JWT on your backend
 
