@@ -7,7 +7,12 @@ import { Button } from '@/components/shared/ui/button';
 import { toggleTheme } from '@/lib/theme';
 import { useTheme } from '@/hooks/useTheme';
 
-export function BadRedirectUriError() {
+type BadRedirectUriErrorProps = {
+  redirectUri?: string;
+  authorizedUris?: string[];
+};
+
+export function BadRedirectUriError({ redirectUri, authorizedUris }: BadRedirectUriErrorProps) {
   const isDark = useTheme();
   const navigate = useNavigate();
 
@@ -65,6 +70,28 @@ export function BadRedirectUriError() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Redirect URI Info */}
+        {redirectUri && (
+          <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.cardBorder}`}>
+            <h3 className={`text-xs font-medium ${theme.text} mb-2`}>Requested Redirect URI</h3>
+            <p className={`text-xs ${theme.textMuted} font-mono break-all`}>{redirectUri}</p>
+          </div>
+        )}
+
+        {/* Authorized URIs */}
+        {authorizedUris && authorizedUris.length > 0 && (
+          <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.cardBorder}`}>
+            <h3 className={`text-xs font-medium ${theme.text} mb-2`}>Authorized Redirect URIs</h3>
+            <div className="space-y-1">
+              {authorizedUris.map((uri, index) => (
+                <p key={index} className={`text-xs ${theme.textMuted} font-mono break-all`}>
+                  {uri}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Options */}
         <div className="space-y-3">
