@@ -50,7 +50,6 @@ export function UnifiedConnectSkeleton({ mode }: UnifiedConnectSkeletonProps) {
             >
               <Skeleton width={32} height={32} />
               <Skeleton width={32} height={32} />
-              <Skeleton width={32} height={32} />
             </div>
           </div>
         </div>

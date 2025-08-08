@@ -70,64 +70,28 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
         }
       `}</style>
       <DialogContent
-        className={`w-[99vw] max-w-none sm:w-full sm:max-w-2xl sm:max-h-[90vh] lg:!max-w-4xl !rounded-none ${theme.mainCard} border ${theme.mainCardBorder} overflow-y-auto`}
-        style={{ padding: 'clamp(0.5rem, 3vw, 1.5rem)' }}
+        className={`w-[calc(100%-1rem)] max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden p-0`}
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className="pb-3 sm:pb-4 md:pb-8 border-b border-gray-200 dark:border-gray-700">
-          <DialogTitle
-            className={`font-medium tracking-tight ${theme.text} mb-1 sm:mb-2`}
-            style={{ fontSize: 'clamp(1rem, 6vw, 3rem)', lineHeight: '1.2' }}
-          >
+        <DialogHeader className={`px-3 sm:px-6 pt-4 pb-3 border-b ${theme.cardBorder}`}>
+          <DialogTitle className={`text-lg font-semibold ${theme.text} text-center`}>
             Welcome to Vincent
           </DialogTitle>
-          <div
-            className="uppercase tracking-widest font-medium mb-4"
-            style={{
-              color: '#ff722c',
-              fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)',
-              marginBottom: 'clamp(0.5rem, 2vw, 1rem)',
-            }}
-          >
+          <div className="text-xs uppercase tracking-widest font-medium text-orange-500 text-center mt-1">
             EARLY ACCESS
           </div>
-          <DialogDescription
-            className={`${theme.textMuted} leading-relaxed font-normal text-center px-[2vw] sm:px-0`}
-            style={{ fontSize: 'clamp(0.75rem, 4vw, 1.125rem)', lineHeight: '1.3' }}
-          >
+          <DialogDescription className={`${theme.textMuted} text-sm text-center mt-2`}>
             Vincent powers the next wave of user-owned finance and agent-driven automation for Web3.
-            <br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>Deposit at least 50 USDC to get started with Vincent
-            Yield:
+            Deposit at least 50 USDC <span className="text-orange-500">on Base Mainnet</span> to get
+            started with Vincent Yield.
           </DialogDescription>
         </DialogHeader>
 
-        <div
-          className="pt-2"
-          style={{ gap: 'clamp(0.5rem, 4vw, 2rem)', display: 'flex', flexDirection: 'column' }}
-        >
+        <div className="px-3 sm:px-4 pt-2 pb-4 sm:pb-6">
           <div>
-            <div
-              className="flex items-center"
-              style={{
-                gap: 'clamp(0.25rem, 2vw, 0.75rem)',
-                marginBottom: 'clamp(0.5rem, 2vw, 1rem)',
-              }}
-            >
-              <div
-                className="bg-gray-400"
-                style={{
-                  width: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  height: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                }}
-              ></div>
-              <h4
-                className={`${theme.textMuted} font-medium`}
-                style={{ fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)' }}
-              >
-                Your Vincent Wallet Address
-              </h4>
+            <div>
+              <h4 className={`${theme.textMuted} font-medium text-sm mb-3`}>Your Vincent Wallet</h4>
             </div>
 
             {/* QR Code centered above address */}
@@ -217,70 +181,87 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex-1 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`${theme.textMuted} font-medium`}
-                    style={{ fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)' }}
-                  >
-                    Balance
-                  </div>
-                  {balanceLoading ? (
-                    <div className="p-1">
-                      <RefreshCw className="h-3 w-3 text-orange-500 animate-spin" />
+            <div className="mt-6 sm:mt-8 pt-4 sm:pt-5 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`${theme.textMuted} font-medium`}
+                      style={{ fontSize: 'clamp(0.625rem, 3.5vw, 0.875rem)' }}
+                    >
+                      Balance
                     </div>
-                  ) : !balanceError ? (
-                    <button
-                      onClick={refetchBalance}
-                      className={`p-1 hover:${theme.itemHoverBg} ${theme.textMuted} hover:${theme.text} transition-all duration-200`}
-                      title="Refresh balance"
-                    >
-                      <RefreshCw className="h-3 w-3" />
-                    </button>
-                  ) : null}
-                  {balanceError && (
-                    <button
-                      onClick={refetchBalance}
-                      className="text-red-500 hover:text-red-400 font-normal transition-colors"
-                      style={{ fontSize: 'clamp(0.75rem, 3vw, 0.875rem)' }}
-                    >
-                      Error - Retry
-                    </button>
-                  )}
-                </div>
-
-                {/* Progress Bar */}
-                <div className="space-y-2">
-                  <div
-                    className="flex justify-between"
-                    style={{ fontSize: 'clamp(0.5rem, 3vw, 0.75rem)' }}
-                  >
-                    <span className={theme.textMuted}>
-                      ${balanceFormatted || '0.00'} / $50.00 USDC
-                    </span>
-                    {currentBalance < MINIMUM_DEPOSIT && (
-                      <span
-                        style={{ color: '#ff722c', fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)' }}
+                    {balanceLoading ? (
+                      <div className="p-1">
+                        <RefreshCw className="h-3 w-3 text-orange-500 animate-spin" />
+                      </div>
+                    ) : !balanceError ? (
+                      <button
+                        onClick={refetchBalance}
+                        className={`p-1 hover:${theme.itemHoverBg} ${theme.textMuted} hover:${theme.text} transition-all duration-200`}
+                        title="Refresh balance"
                       >
-                        ${amountNeeded.toFixed(2)} needed
-                      </span>
+                        <RefreshCw className="h-3 w-3" />
+                      </button>
+                    ) : null}
+                    {balanceError && (
+                      <button
+                        onClick={refetchBalance}
+                        className="text-red-500 hover:text-red-400 font-normal transition-colors"
+                        style={{ fontSize: 'clamp(0.75rem, 3vw, 0.875rem)' }}
+                      >
+                        Error - Retry
+                      </button>
                     )}
                   </div>
-                  <div className="h-1.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                    <div
-                      className="h-full transition-all duration-500 ease-out"
-                      style={{
-                        width: `${Math.min(progressPercentage, 100)}%`,
-                        backgroundColor: currentBalance >= MINIMUM_DEPOSIT ? '#fbbf24' : '#ff722c',
-                        ...(currentBalance >= MINIMUM_DEPOSIT && {
-                          backgroundImage:
-                            'linear-gradient(90deg, #fbbf24 0%, #ffffff60 50%, #fbbf24 100%)',
-                          backgroundSize: '200% 100%',
-                          animation: 'shimmer 2s linear infinite',
-                        }),
-                      }}
-                    />
+
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <img src="/usdc-coin-logo.svg" alt="USDC" className="w-7 h-7" />
+                      <img
+                        src="/base-logo.svg"
+                        alt="Base"
+                        className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-white ring-1 ring-white"
+                      />
+                    </div>
+
+                    {/* Progress Bar next to logo */}
+                    <div className="flex-1 space-y-2">
+                      <div
+                        className="flex justify-between"
+                        style={{ fontSize: 'clamp(0.5rem, 3vw, 0.75rem)' }}
+                      >
+                        <span className={theme.textMuted}>
+                          ${balanceFormatted || '0.00'} / $50.00 USDC
+                        </span>
+                        {currentBalance < MINIMUM_DEPOSIT && (
+                          <span
+                            style={{
+                              color: '#ff722c',
+                              fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                            }}
+                          >
+                            ${amountNeeded.toFixed(2)} needed
+                          </span>
+                        )}
+                      </div>
+                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                        <div
+                          className="h-full transition-all duration-500 ease-out"
+                          style={{
+                            width: `${Math.min(progressPercentage, 100)}%`,
+                            backgroundColor:
+                              currentBalance >= MINIMUM_DEPOSIT ? '#fbbf24' : '#ff722c',
+                            ...(currentBalance >= MINIMUM_DEPOSIT && {
+                              backgroundImage:
+                                'linear-gradient(90deg, #fbbf24 0%, #ffffff60 50%, #fbbf24 100%)',
+                              backgroundSize: '200% 100%',
+                              animation: 'shimmer 2s linear infinite',
+                            }),
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -288,7 +269,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
           </div>
         </div>
 
-        <div className="flex justify-center pt-3 sm:pt-4 md:pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-center pt-3 sm:pt-4 pb-4 sm:pb-6 border-t border-gray-200 dark:border-gray-700">
           <Button
             onClick={handleGetStarted}
             disabled={!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT}
@@ -298,14 +279,14 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
                 : ''
             }`}
             style={{
-              borderRadius: '0px',
+              borderRadius: '0.5rem',
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
               padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(1.5rem, 6vw, 3rem)',
               ...(!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT
                 ? {}
                 : {
-                    backgroundColor: '#ff722c',
-                    borderColor: '#ff722c',
+                    backgroundColor: '#e55a1a',
+                    borderColor: '#e55a1a',
                   }),
             }}
           >

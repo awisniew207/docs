@@ -38,7 +38,9 @@ export function BadRedirectUriError({ redirectUri, authorizedUris }: BadRedirect
               alt="Vincent by Lit Protocol"
               className="h-4 w-4 flex-shrink-0"
             />
-            <span className={`text-sm font-medium ${theme.text} truncate`}>Vincent Connect</span>
+            <span className={`text-sm font-medium ${theme.text} truncate mt-0.5`}>
+              Vincent Connect
+            </span>
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0">
             <Button

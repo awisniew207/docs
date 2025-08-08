@@ -27,7 +27,7 @@ export function AuthConnectScreen({ app, readAuthInfo }: AuthConnectScreenProps)
               alt="Vincent by Lit Protocol"
               className="h-4 w-4 transition-opacity"
             />
-            <span className={`text-sm font-medium ${theme.text}`}>Connect with Vincent</span>
+            <span className={`text-sm font-medium ${theme.text} mt-0.5`}>Vincent Connect</span>
           </div>
         </div>
       </div>

@@ -1,35 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import { Moon, Sun, LogOut, User, Copy } from 'lucide-react';
+import { useState } from 'react';
+import { Moon, Sun, LogOut, User, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/shared/ui/button';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/shared/ui/tooltip';
 import { AuthInfo, useClearAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { theme } from './theme';
-import { toggleTheme, isDarkMode } from '@/lib/theme';
+import { toggleTheme } from '@/lib/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ConnectPageHeaderProps {
   authInfo: AuthInfo;
 }
 
 export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
-  const isDark = isDarkMode();
+  const isDark = useTheme();
   const { clearAuthInfo } = useClearAuthInfo();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-  const tooltipRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
-        setIsTooltipOpen(false);
-      }
-    };
-
-    if (isTooltipOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isTooltipOpen]);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleSignOut = async () => {
     await clearAuthInfo();
@@ -40,18 +26,16 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
     if (authInfo.agentPKP?.ethAddress) {
       try {
         await navigator.clipboard.writeText(authInfo.agentPKP.ethAddress);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
       } catch (err) {
         console.error('Failed to copy eth address:', err);
       }
     }
   };
 
-  const toggleTooltip = () => {
-    setIsTooltipOpen(!isTooltipOpen);
-  };
-
   const formatAuthInfo = () => {
-    return `Sign-In Type: ${authInfo.type}\nAuthenticated: ${new Date(authInfo.authenticatedAt).toLocaleString()}${authInfo.userId ? `\nUser ID: ${authInfo.userId}` : ''}${authInfo.value ? `\nValue: ${authInfo.value}` : ''}`;
+    return `Sign-In Type: ${authInfo.type}\nAuthenticated: ${new Date(authInfo.authenticatedAt).toLocaleString()}`;
   };
 
   return (
@@ -63,52 +47,63 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
             alt="Vincent by Lit Protocol"
             className="h-4 w-4 flex-shrink-0"
           />
-          <span className={`text-sm font-medium ${theme.text} truncate`}>Vincent Connect</span>
+          <span className={`text-sm font-medium ${theme.text} truncate mt-0.5`}>
+            Vincent Connect
+          </span>
         </div>
         <div className="flex items-center gap-0.5 flex-shrink-0">
-          <div className="relative" ref={tooltipRef}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`${theme.text} hover:bg-white/10 px-2 sm:px-3`}
-              onClick={toggleTooltip}
-              onMouseEnter={() => setIsTooltipOpen(true)}
-              onMouseLeave={() => setIsTooltipOpen(false)}
+          <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`${theme.text} hover:bg-white/10 px-2 sm:px-3`}
+                onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+              >
+                <User className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              align="end"
+              className={`max-w-64 p-3 ${theme.mainCard} border ${theme.mainCardBorder} ${theme.text} shadow-lg`}
             >
-              <User className="w-4 h-4" />
-              <div className="hidden sm:block ml-1">Account</div>
-            </Button>
-            {isTooltipOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 px-3 py-2 bg-black text-white text-xs rounded-md whitespace-pre-line z-50 max-w-[calc(100vw-2rem)]">
-                <div className="mb-2 break-words">{formatAuthInfo()}</div>
+              <div className="space-y-2">
+                <div className={`text-xs whitespace-pre-line break-words ${theme.text}`}>
+                  {formatAuthInfo()}
+                </div>
                 {authInfo.agentPKP?.ethAddress && (
                   <div className="flex items-start gap-2 pt-2 border-t border-gray-600">
                     <div className="flex-1 min-w-0">
-                      <div className="text-gray-300">Vincent Wallet Address:</div>
+                      <div className="text-gray-500 dark:text-gray-300 text-xs">
+                        Vincent Wallet Address:
+                      </div>
                       <div className="font-mono text-xs break-all">
                         {authInfo.agentPKP.ethAddress}
                       </div>
                     </div>
                     <button
                       onClick={handleCopyEthAddress}
-                      className="p-1 hover:bg-gray-700 rounded transition-colors flex-shrink-0"
+                      className={`p-1 ${theme.itemHoverBg} rounded transition-colors flex-shrink-0 ${theme.text} ${
+                        isCopied ? 'text-green-500' : ''
+                      }`}
                     >
-                      <Copy className="w-3 h-3" />
+                      {isCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     </button>
                   </div>
                 )}
+                <div className="pt-2 border-t border-gray-600">
+                  <button
+                    onClick={handleSignOut}
+                    className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs ${theme.text} ${theme.itemHoverBg} rounded transition-colors`}
+                  >
+                    <LogOut className="w-3 h-3" />
+                    Sign out
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSignOut}
-            className={`${theme.text} hover:bg-white/10 px-2 sm:px-3`}
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden md:inline ml-1">Sign out</span>
-          </Button>
+            </TooltipContent>
+          </Tooltip>
           <Button
             variant="ghost"
             size="sm"

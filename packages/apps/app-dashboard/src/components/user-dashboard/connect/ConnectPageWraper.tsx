@@ -64,6 +64,16 @@ export function ConnectPageWrapper() {
   // Wait for data to load first (but don't require sessionSigs for unauthenticated users)
   else if (!data) {
     content = <UnifiedConnectSkeleton mode="auth" />;
+  }
+
+  // Check for redirect URI validation errors immediately after we have data (highest priority)
+  else if (isRedirectUriAuthorized === false && redirectUri) {
+    content = (
+      <BadRedirectUriError
+        redirectUri={redirectUri || undefined}
+        authorizedUris={data.app?.redirectUris}
+      />
+    );
   } else if (isLoading || isProcessing || isPermittedLoading) {
     // Check if we need auth skeleton or connect page skeleton
     const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
@@ -76,16 +86,6 @@ export function ConnectPageWrapper() {
     (isPermitted === true && userPermittedVersion && !versionData)
   ) {
     content = <UnifiedConnectSkeleton mode="consent" />;
-  }
-
-  // Check for redirect URI validation errors (only when redirectUri is provided but invalid)
-  else if (isRedirectUriAuthorized === false && redirectUri) {
-    content = (
-      <BadRedirectUriError
-        redirectUri={redirectUri || undefined}
-        authorizedUris={data.app?.redirectUris}
-      />
-    );
   } else {
     const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
 

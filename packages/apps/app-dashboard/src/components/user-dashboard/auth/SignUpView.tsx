@@ -40,9 +40,7 @@ const SignUpView: FC<SignUpViewProps> = ({
     </>
   );
 
-  const renderStytchView = () => (
-    <StatusMessage message={'Creating your account...'} type={'info'} />
-  );
+  const renderStytchView = () => <></>;
 
   const renderDefaultView = () => (
     <>

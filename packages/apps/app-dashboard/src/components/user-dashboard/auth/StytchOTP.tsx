@@ -47,19 +47,23 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
       return; // Don't update if exceeds limit
     }
 
-    setPhoneNumber(value);
     // If user pastes a full international number, extract parts
     if (value.startsWith('+')) {
       const foundCountry = countryCodes.find((country) => value.startsWith(country.code));
       if (foundCountry) {
         setCountryCode(foundCountry.code);
-        setPhoneNumber(value.slice(foundCountry.code.length));
+        const phoneOnly = value.slice(foundCountry.code.length);
+        setPhoneNumber(phoneOnly);
         setUserId(value);
       } else {
+        setPhoneNumber(value);
         setUserId(value);
       }
     } else {
-      setUserId(countryCode + value);
+      setPhoneNumber(value);
+      // Strip formatting characters for userId (only keep digits)
+      const digitsOnly = value.replace(/\D/g, '');
+      setUserId(countryCode + digitsOnly);
     }
   };
 
@@ -311,7 +315,7 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
             <form className="space-y-4 w-4/5" onSubmit={authenticate}>
               <div className="space-y-2">
                 <label htmlFor="code" className={`text-sm font-medium block ${theme.text}`}>
-                  Verification code
+                  Verification Code
                 </label>
                 <div className="relative">
                   <input

@@ -55,7 +55,7 @@ export function AuthenticationErrorScreen({ readAuthInfo }: AuthenticationErrorS
                   alt="Vincent"
                   className="h-4 cursor-pointer hover:opacity-80 transition-opacity"
                 />
-                <span className={`text-sm font-medium ${theme.text}`}>Vincent Connect</span>
+                <span className={`text-sm font-medium ${theme.text} mt-0.5`}>Vincent Connect</span>
               </Link>
             </div>
             <div className="flex items-center gap-0.5 flex-shrink-0">
