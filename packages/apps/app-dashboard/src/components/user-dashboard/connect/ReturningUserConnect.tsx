@@ -86,18 +86,7 @@ export function ReturningUserConnect({
           <InfoBanner
             type="warning"
             title="App Unavailable"
-            message={
-              <>
-                Both your permitted version ({version}) and the app's active version (
-                {appData.activeVersion}) have been disabled by the app developer.
-                {appData.contactEmail && (
-                  <>
-                    {' '}
-                    Contact them at <span className="text-blue-400">{appData.contactEmail}</span>
-                  </>
-                )}
-              </>
-            }
+            message={`Both your permitted version (${version}) and the app's active version (${appData.activeVersion}) have been disabled by the app developer.${appData.contactEmail ? ` Contact them at ${appData.contactEmail}` : ''}`}
           />
         ) : versionData && !versionData.enabled ? (
           <InfoBanner
@@ -114,7 +103,7 @@ export function ReturningUserConnect({
             />
             <InfoBanner
               title="Version Update Available"
-              message={`Your permitted version (${version}) is different from the app's active version (${appData.activeVersion}). Consider updating your permissions to access the latest features.`}
+              message={`You're using version ${version}, but the app has updated to version ${appData.activeVersion}. Update your permissions to access the latest features.`}
             />
           </>
         ) : (
@@ -193,7 +182,7 @@ export function ReturningUserConnect({
                 icon={<RefreshCw className="w-4 h-4 text-orange-500" />}
                 iconBg="bg-orange-500/20"
                 title="Update Version"
-                description="Update to the latest version to continue using this app"
+                description=""
                 onClick={handleUpdateVersion}
               />
             ) : (

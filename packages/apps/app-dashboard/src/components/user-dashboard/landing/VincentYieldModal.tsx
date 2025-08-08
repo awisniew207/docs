@@ -197,7 +197,8 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
                   variant="outline"
                   size="sm"
                   onClick={handleCopyAddress}
-                  className={`flex items-center shrink-0 bg-orange-50/60 hover:bg-orange-100/60 ${theme.text} border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal py-1`}
+                  tabIndex={-1}
+                  className={`flex items-center shrink-0 bg-orange-50/60 hover:bg-orange-100/60 ${theme.text} border border-orange-200/60 hover:border-orange-300/80 transition-all duration-200 font-normal py-1 focus:outline-none focus:ring-0`}
                   style={{
                     borderRadius: '0px',
                     fontSize: 'clamp(0.5rem, 2.8vw, 0.75rem)',

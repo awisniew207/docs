@@ -21,10 +21,23 @@ export function ConnectAppHeader({ app }: ConnectAppHeaderProps) {
         >
           <Logo logo={app.logo} alt={app.name} className="w-8 h-8 sm:w-10 sm:h-10" />
         </div>
-        <div className="flex-1 text-center sm:text-left">
-          <h2 className={`text-lg sm:text-xl font-bold ${theme.text}`}>{app.name}</h2>
+        <div className="flex-1 text-center sm:text-left min-w-0">
+          <h2 className={`text-lg sm:text-xl font-bold ${theme.text} break-words`}>{app.name}</h2>
           {app.description && (
-            <p className={`text-sm sm:text-base ${theme.textMuted} mt-1`}>{app.description}</p>
+            <p
+              className={`text-xs sm:text-sm ${theme.textMuted} mt-1`}
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                wordBreak: 'break-word',
+                maxWidth: '100%',
+              }}
+            >
+              {app.description}
+            </p>
           )}
         </div>
       </div>

@@ -240,7 +240,7 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
                   <label htmlFor="phone" className={`text-sm font-medium block ${theme.text}`}>
                     Phone Number
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <CountryCodeSelector
                       selectedCountryCode={countryCode}
                       onCountryCodeChange={(newCountryCode) => {

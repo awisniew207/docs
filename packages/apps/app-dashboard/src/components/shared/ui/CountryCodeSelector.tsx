@@ -59,7 +59,7 @@ export default function CountryCodeSelector({
         type="button"
         onClick={handleToggleDropdown}
         disabled={disabled}
-        className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text} flex items-center justify-between min-w-[140px] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text} flex items-center justify-between w-[80px] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span>
           {countryCodes.find((c) => c.code === selectedCountryCode)?.flag} {selectedCountryCode}

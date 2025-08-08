@@ -2,17 +2,13 @@ import { Card, CardContent } from '@/components/shared/ui/card';
 import { AlertTriangle, ArrowLeft, RefreshCw, Sun, Moon } from 'lucide-react';
 import { theme } from './ui/theme';
 import { ActionCard } from './ui/ActionCard';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/shared/ui/button';
-import { toggleTheme, isDarkMode } from '@/lib/theme';
+import { toggleTheme } from '@/lib/theme';
+import { useTheme } from '@/hooks/useTheme';
 
-type BadRedirectUriErrorProps = {
-  redirectUri?: string;
-  authorizedUris?: string[];
-};
-
-export function BadRedirectUriError({ redirectUri, authorizedUris }: BadRedirectUriErrorProps) {
-  const isDark = isDarkMode();
+export function BadRedirectUriError() {
+  const isDark = useTheme();
   const navigate = useNavigate();
 
   const handleGoBack = () => {
@@ -25,117 +21,70 @@ export function BadRedirectUriError({ redirectUri, authorizedUris }: BadRedirect
   };
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>
-      {/* Main Card Container */}
-      <div
-        className={`max-w-6xl mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
-      >
-        {/* Header */}
-        <div className={`px-6 py-4 border-b ${theme.cardBorder}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/" className="flex items-center">
-                <img
-                  src={isDark ? '/vincent-by-lit-white-logo.png' : '/vincent-by-lit-logo.png'}
-                  alt="Vincent by Lit Protocol"
-                  className="h-8 cursor-pointer hover:opacity-80 transition-opacity"
-                />
-              </Link>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className={`${theme.text} hover:bg-white/10`}
-              >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
-            </div>
+    <div
+      className={`w-full max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden relative z-10 origin-center`}
+    >
+      {/* Header */}
+      <div className={`px-3 sm:px-6 py-3 border-b ${theme.cardBorder}`}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <img
+              src={isDark ? '/logo-white.svg' : '/logo.svg'}
+              alt="Vincent by Lit Protocol"
+              className="h-4 w-4 flex-shrink-0"
+            />
+            <span className={`text-sm font-medium ${theme.text} truncate`}>Vincent Connect</span>
+          </div>
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className={`${theme.text} hover:bg-white/10 px-2 sm:px-3`}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
           </div>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="px-6 py-8 space-y-6">
-          {/* Error Details Card */}
-          <Card className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-red-500/20 rounded-lg">
-                    <AlertTriangle className="w-5 h-5 text-red-500" />
-                  </div>
-                  <div>
-                    <h2 className={`text-lg font-semibold ${theme.text}`}>
-                      Redirect URI Not Authorized
-                    </h2>
-                    <p className={`text-sm ${theme.textMuted} mt-1`}>
-                      The requested redirect URI is not in the app's authorized list.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Redirect URI Info */}
-                {redirectUri && (
-                  <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.cardBorder}`}>
-                    <h3 className={`text-sm font-medium ${theme.text} mb-2`}>
-                      Requested Redirect URI
-                    </h3>
-                    <p className={`text-sm ${theme.textMuted} font-mono break-all`}>
-                      {redirectUri}
-                    </p>
-                  </div>
-                )}
-
-                {/* Authorized URIs */}
-                {authorizedUris && authorizedUris.length > 0 && (
-                  <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.cardBorder}`}>
-                    <h3 className={`text-sm font-medium ${theme.text} mb-2`}>
-                      Authorized Redirect URIs
-                    </h3>
-                    <div className="space-y-1">
-                      {authorizedUris.map((uri, index) => (
-                        <p key={index} className={`text-sm ${theme.textMuted} font-mono break-all`}>
-                          {uri}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Options Card */}
-          <Card className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <h2 className={`text-lg font-semibold ${theme.text}`}>
-                  What would you like to do?
+      <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
+        {/* Error Details Card */}
+        <Card className={`${theme.cardBg} border ${theme.cardBorder}`}>
+          <CardContent className="p-3">
+            <div className="flex items-center space-x-3">
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+              <div>
+                <h2 className={`text-sm font-semibold ${theme.text}`}>
+                  Redirect URI Not Authorized
                 </h2>
-
-                <div className="space-y-3">
-                  {/* Go Back Option */}
-                  <ActionCard
-                    icon={<ArrowLeft className="w-4 h-4 text-blue-500" />}
-                    iconBg="bg-blue-500/20"
-                    title="Go Back"
-                    description="Return to the previous page"
-                    onClick={handleGoBack}
-                  />
-
-                  {/* Retry Option */}
-                  <ActionCard
-                    icon={<RefreshCw className="w-4 h-4 text-green-500" />}
-                    iconBg="bg-green-500/20"
-                    title="Try Again"
-                    description="Refresh the page and try again"
-                    onClick={handleRetry}
-                  />
-                </div>
+                <p className={`text-xs ${theme.textMuted} mt-0.5`}>
+                  The redirect URI is not authorized for this app.
+                </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Options */}
+        <div className="space-y-3">
+          {/* Go Back Option */}
+          <ActionCard
+            icon={<ArrowLeft className="w-4 h-4 text-gray-500" />}
+            iconBg="bg-gray-500/20"
+            title="Go Back"
+            description=""
+            onClick={handleGoBack}
+          />
+
+          {/* Retry Option */}
+          <ActionCard
+            icon={<RefreshCw className="w-4 h-4 text-orange-500" />}
+            iconBg="bg-orange-500/20"
+            title="Try Again"
+            description=""
+            onClick={handleRetry}
+          />
         </div>
       </div>
     </div>

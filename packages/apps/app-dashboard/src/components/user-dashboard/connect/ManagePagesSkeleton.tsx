@@ -3,7 +3,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { theme } from './ui/theme';
 import { isDarkMode } from '@/lib/theme';
 
-export function ConnectPageSkeleton() {
+export function ManagePagesSkeleton() {
   const isDark = isDarkMode();
 
   return (
@@ -15,17 +15,13 @@ export function ConnectPageSkeleton() {
       <div
         className={`w-full max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden relative z-10 origin-center`}
       >
-        {/* Header Skeleton - Same as AuthConnectScreenSkeleton */}
-        <div className={`px-3 sm:px-6 py-3 border-b ${theme.cardBorder}`}>
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <Skeleton width={16} height={16} />
-              <Skeleton height={16} width={120} />
-            </div>
-            <div className="flex items-center gap-0.5 flex-shrink-0">
-              <Skeleton width={32} height={32} />
-              <Skeleton width={32} height={32} />
-              <Skeleton width={32} height={32} />
+        {/* PageHeader Skeleton - icon + title + description */}
+        <div className={`px-3 sm:px-4 py-3 border-b ${theme.cardBorder}`}>
+          <div className="flex items-center gap-3">
+            <Skeleton circle width={40} height={40} className="flex-shrink-0" />
+            <div className="flex-1">
+              <Skeleton height={16} className="mb-1" style={{ width: '70%' }} />
+              <Skeleton height={12} style={{ width: '90%' }} />
             </div>
           </div>
         </div>
@@ -78,24 +74,26 @@ export function ConnectPageSkeleton() {
                   </div>
                 </div>
               </div>
-
-              {/* Action Buttons - Same pattern as auth method cards */}
-              <div
-                className={`w-full sm:w-3/4 md:w-3/4 lg:w-full py-3 px-4 flex items-center justify-center gap-3 ${theme.cardBg} border ${theme.cardBorder} rounded-lg`}
-              >
-                <Skeleton height={32} width={80} />
-                <Skeleton height={32} width={120} />
-              </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer Skeleton - Same as AuthConnectScreenSkeleton */}
-        <div
-          className={`px-3 sm:px-6 py-3 border-t ${theme.cardBorder} ${theme.cardBg} flex flex-col items-center gap-2`}
-        >
-          <Skeleton height={14} width={120} />
-          <Skeleton height={12} width={150} />
+          {/* Trust Warning Text */}
+          <div className="flex justify-center text-center">
+            <div className="w-full max-w-xs">
+              <Skeleton height={14} className="mb-1" style={{ width: '90%' }} />
+              <Skeleton height={14} style={{ width: '100%' }} />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            <div className="w-full sm:w-auto">
+              <Skeleton height={40} style={{ width: '100%', minWidth: '120px' }} />
+            </div>
+            <div className="w-full sm:w-auto">
+              <Skeleton height={40} style={{ width: '100%', minWidth: '140px' }} />
+            </div>
+          </div>
         </div>
       </div>
     </SkeletonTheme>

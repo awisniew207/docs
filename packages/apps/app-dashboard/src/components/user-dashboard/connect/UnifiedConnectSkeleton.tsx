@@ -166,9 +166,13 @@ export function UnifiedConnectSkeleton({ mode }: UnifiedConnectSkeletonProps) {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                      <Skeleton height={36} width={80} />
-                      <Skeleton height={36} width={160} />
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
+                      <div className="w-full sm:flex-1">
+                        <Skeleton height={36} />
+                      </div>
+                      <div className="w-full sm:flex-1">
+                        <Skeleton height={36} />
+                      </div>
                     </div>
                   </div>
                 </>
