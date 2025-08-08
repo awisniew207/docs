@@ -106,6 +106,15 @@ export function ConnectPageWrapper() {
             (versionDataError ? String(versionDataError) : undefined) ??
             'An unknown error occurred');
       content = <GeneralErrorScreen errorDetails={errorMessage} />;
+    }
+    // Check for unpublished app version BEFORE other permission checks
+    else if (appExists === true && activeVersionExists === false) {
+      content = (
+        <AppVersionNotInRegistryConnect
+          appData={data.app}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+        />
+      );
     } else if (isPermitted === true && userPermittedVersion && versionData) {
       content = (
         <ReturningUserConnect
@@ -114,13 +123,6 @@ export function ConnectPageWrapper() {
           versionData={versionData}
           activeVersionData={activeVersionData}
           redirectUri={redirectUri || undefined}
-          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
-        />
-      );
-    } else if (appExists === true && activeVersionExists === false && isPermitted === false) {
-      content = (
-        <AppVersionNotInRegistryConnect
-          appData={data.app}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
         />
       );
