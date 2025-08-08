@@ -4,13 +4,15 @@ import { ThemeType } from '../../user-dashboard/connect/ui/theme';
 
 interface CountryCodeSelectorProps {
   selectedCountryCode: string;
-  onCountryCodeChange: (countryCode: string) => void;
+  selectedCountryName?: string;
+  onCountryCodeChange: (countryCode: string, countryName?: string) => void;
   theme: ThemeType;
   disabled?: boolean;
 }
 
 export default function CountryCodeSelector({
   selectedCountryCode,
+  selectedCountryName,
   onCountryCodeChange,
   theme,
   disabled = false,
@@ -48,7 +50,7 @@ export default function CountryCodeSelector({
   };
 
   const handleCountrySelect = (country: CountryCode) => {
-    onCountryCodeChange(country.code);
+    onCountryCodeChange(country.code, country.name);
     setIsDropdownOpen(false);
   };
 
@@ -62,7 +64,11 @@ export default function CountryCodeSelector({
         className={`px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text} flex items-center justify-between w-[80px] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span>
-          {countryCodes.find((c) => c.code === selectedCountryCode)?.flag} {selectedCountryCode}
+          {selectedCountryName
+            ? countryCodes.find(
+                (c) => c.code === selectedCountryCode && c.name === selectedCountryName,
+              )?.flag
+            : countryCodes.find((c) => c.code === selectedCountryCode)?.flag}
         </span>
         <svg
           className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
@@ -84,9 +90,9 @@ export default function CountryCodeSelector({
             scrollbarColor: '#cbd5e1 transparent',
           }}
         >
-          {countryCodes.map((country, index) => (
+          {countryCodes.map((country) => (
             <button
-              key={`${country.code}-${index}`}
+              key={`${country.code}-${country.name}`}
               type="button"
               onClick={() => handleCountrySelect(country)}
               className={`w-full px-3 py-1.5 text-left hover:${theme.itemHoverBg} ${theme.text} flex items-center gap-2 transition-colors text-sm`}

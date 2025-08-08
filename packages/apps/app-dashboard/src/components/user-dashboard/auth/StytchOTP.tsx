@@ -35,23 +35,29 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [countryCode, setCountryCode] = useState<string>('+1');
+  const [countryName, setCountryName] = useState<string>('United States');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const stytchClient = useStytch();
   const { setAuthInfo } = useSetAuthInfo();
 
   // Handle phone number changes and combine with country code
   const handlePhoneChange = (value: string) => {
-    // Limit to 15 digits maximum (international standard)
+    // Remove non-digit characters for validation
     const digitsOnly = value.replace(/\D/g, '');
+    // ITU-T E.164 standard: max 15 digits excluding '+' prefix
     if (digitsOnly.length > 15) {
       return; // Don't update if exceeds limit
     }
 
     // If user pastes a full international number, extract parts
     if (value.startsWith('+')) {
-      const foundCountry = countryCodes.find((country) => value.startsWith(country.code));
+      // Find the longest matching country code to handle cases like +1 (US/Canada)
+      const foundCountry = countryCodes
+        .filter((country) => value.startsWith(country.code))
+        .sort((a, b) => b.code.length - a.code.length)[0];
       if (foundCountry) {
         setCountryCode(foundCountry.code);
+        setCountryName(foundCountry.name);
         const phoneOnly = value.slice(foundCountry.code.length);
         setPhoneNumber(phoneOnly);
         setUserId(value);
@@ -247,8 +253,10 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
                   <div className="flex gap-1">
                     <CountryCodeSelector
                       selectedCountryCode={countryCode}
-                      onCountryCodeChange={(newCountryCode) => {
+                      selectedCountryName={countryName}
+                      onCountryCodeChange={(newCountryCode, newCountryName) => {
                         setCountryCode(newCountryCode);
+                        setCountryName(newCountryName || 'United States');
                         setUserId(newCountryCode + phoneNumber);
                       }}
                       theme={theme}
