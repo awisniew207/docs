@@ -90,8 +90,8 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 <span className="text-sm font-medium text-green-800">Connected Wallet</span>
               </div>
-              <div className={`rounded p-2 border ${theme.cardBg} ${theme.cardBorder}`}>
-                <div className={`text-[10px] break-all text-center ${theme.text}`}>{address}</div>
+              <div className="rounded p-2 border bg-white border-green-300">
+                <div className="text-[10px] break-all text-center text-black">{address}</div>
               </div>
             </div>
           </div>
