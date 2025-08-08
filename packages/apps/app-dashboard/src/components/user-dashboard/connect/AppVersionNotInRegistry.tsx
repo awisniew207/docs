@@ -7,6 +7,7 @@ import { InfoBanner } from './ui/InfoBanner';
 import { useNavigate } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
+import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
 
 type AppVersionNotInRegistryConnectProps = {
   appData: App;
@@ -18,6 +19,7 @@ export function AppVersionNotInRegistryConnect({
   readAuthInfo,
 }: AppVersionNotInRegistryConnectProps) {
   const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
 
   const handleGoBack = () => {
     navigate(-1);
@@ -59,6 +61,7 @@ export function AppVersionNotInRegistryConnect({
               title="Go Back"
               description=""
               onClick={handleGoBack}
+              disabled={!canGoBack}
             />
 
             {/* Retry Option */}

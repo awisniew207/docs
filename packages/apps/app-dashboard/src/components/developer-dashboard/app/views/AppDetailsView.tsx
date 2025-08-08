@@ -67,6 +67,12 @@ export function AppDetailsView({
 
         {/* Publish Status Messages */}
         {isPublished && <StatusMessage message="This app is registered on-chain." type="info" />}
+        {!isPublished && (
+          <StatusMessage
+            message="This app is not published on-chain. Users cannot grant permissions until you publish it on-chain."
+            type="warning"
+          />
+        )}
         {!selectedApp.activeVersion && (
           <StatusMessage
             message="Your app doesn’t have an active App version yet. Set the active version in the App Management section below to allow users to grant permissions to your App."

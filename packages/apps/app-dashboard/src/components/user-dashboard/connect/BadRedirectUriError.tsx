@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/shared/ui/button';
 import { toggleTheme } from '@/lib/theme';
 import { useTheme } from '@/hooks/useTheme';
+import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
 
 type BadRedirectUriErrorProps = {
   redirectUri?: string;
@@ -15,6 +16,7 @@ type BadRedirectUriErrorProps = {
 export function BadRedirectUriError({ redirectUri, authorizedUris }: BadRedirectUriErrorProps) {
   const isDark = useTheme();
   const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
 
   const handleGoBack = () => {
     navigate(-1);
@@ -104,6 +106,7 @@ export function BadRedirectUriError({ redirectUri, authorizedUris }: BadRedirect
             title="Go Back"
             description=""
             onClick={handleGoBack}
+            disabled={!canGoBack}
           />
 
           {/* Retry Option */}

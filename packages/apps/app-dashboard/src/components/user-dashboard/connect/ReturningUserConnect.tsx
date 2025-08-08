@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App, AppVersion } from '@/types/developer-dashboard/appTypes';
 import { useState, useEffect } from 'react';
+import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
 
 type ReturningUserConnectProps = {
   appData: App;
@@ -29,6 +30,7 @@ export function ReturningUserConnect({
   readAuthInfo,
 }: ReturningUserConnectProps) {
   const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const [isContinueLoading, setIsContinueLoading] = useState(false);
   const { generateJWT, executeRedirect, isLoading, loadingStatus, error, redirectUrl } =
@@ -174,6 +176,7 @@ export function ReturningUserConnect({
                   title="Go Back"
                   description=""
                   onClick={() => navigate(-1)}
+                  disabled={!canGoBack}
                 />
               </>
             ) : versionData && !versionData.enabled ? (
