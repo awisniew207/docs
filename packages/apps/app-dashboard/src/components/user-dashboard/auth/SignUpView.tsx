@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
+import Loading from '@/components/shared/ui/Loading';
 
 interface SignUpViewProps {
   authMethodType: (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE];
@@ -39,7 +40,7 @@ const SignUpView: FC<SignUpViewProps> = ({
     </>
   );
 
-  const renderStytchView = () => <></>;
+  const renderStytchView = () => <Loading />;
 
   const renderDefaultView = () => (
     <>
