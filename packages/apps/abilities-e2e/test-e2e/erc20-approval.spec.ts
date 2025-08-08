@@ -430,8 +430,8 @@ describe('ERC20 Approval Ability E2E Tests', () => {
       {
         rpcUrl: BASE_RPC_URL,
         chainId: 8453,
-        spenderAddress: '0x2626664c2603336E57B271c5C0b26F421741e481',
-        tokenAddress: '0x4200000000000000000000000000000000000006',
+        spenderAddress: UNISWAP_V3_ROUTER_02_ADDRESS,
+        tokenAddress: WETH_ADDRESS,
         tokenDecimals: 18,
         tokenAmount: 0.0000088,
         alchemyGasSponsor: true,
