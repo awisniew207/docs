@@ -49,12 +49,14 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
       return; // Don't update if exceeds limit
     }
 
-    // If user pastes a full international number, extract parts
-    if (value.startsWith('+')) {
+    // If user pastes a full international number (not just typing), extract parts
+    if (value.startsWith('+') && value.length >= 8) {
+      // Only for pasted numbers, not typing
       // Find the longest matching country code to handle cases like +1 (US/Canada)
       const foundCountry = countryCodes
         .filter((country) => value.startsWith(country.code))
         .sort((a, b) => b.code.length - a.code.length)[0];
+
       if (foundCountry) {
         setCountryCode(foundCountry.code);
         setCountryName(foundCountry.name);
