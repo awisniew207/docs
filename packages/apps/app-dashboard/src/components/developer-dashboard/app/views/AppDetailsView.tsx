@@ -67,6 +67,12 @@ export function AppDetailsView({
 
         {/* Publish Status Messages */}
         {isPublished && <StatusMessage message="This app is registered on-chain." type="info" />}
+        {!selectedApp.activeVersion && (
+          <StatusMessage
+            message="Your app has no active version set. Users cannot grant permissions until you set an active version. You can set an active version by editing the app in the app management section below."
+            type="warning"
+          />
+        )}
 
         {/* App Management Actions */}
         <div className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-white/10 rounded-lg">
