@@ -61,11 +61,11 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
           <img
             src={isDark ? '/logo-white.svg' : '/logo.svg'}
             alt="Vincent by Lit Protocol"
-            className="h-4 flex-shrink-0"
+            className="h-4 w-4 flex-shrink-0"
           />
-          <span className={`text-sm font-medium ${theme.text} truncate`}>Connect with Vincent</span>
+          <span className={`text-sm font-medium ${theme.text} truncate`}>Vincent Connect</span>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-0.5 flex-shrink-0">
           <div className="relative" ref={tooltipRef}>
             <Button
               variant="ghost"
@@ -76,10 +76,10 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
               onMouseLeave={() => setIsTooltipOpen(false)}
             >
               <User className="w-4 h-4" />
-              <div className="hidden sm:block ml-2">My Account</div>
+              <div className="hidden sm:block ml-1">Account</div>
             </Button>
             {isTooltipOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 sm:w-auto px-3 py-2 bg-black text-white text-xs rounded-md whitespace-pre-line z-50 max-w-[calc(100vw-2rem)] sm:min-w-max">
+              <div className="absolute right-0 top-full mt-2 w-64 px-3 py-2 bg-black text-white text-xs rounded-md whitespace-pre-line z-50 max-w-[calc(100vw-2rem)]">
                 <div className="mb-2 break-words">{formatAuthInfo()}</div>
                 {authInfo.agentPKP?.ethAddress && (
                   <div className="flex items-start gap-2 pt-2 border-t border-gray-600">
@@ -107,7 +107,7 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
             className={`${theme.text} hover:bg-white/10 px-2 sm:px-3`}
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden md:inline ml-2">Sign out</span>
+            <span className="hidden md:inline ml-1">Sign out</span>
           </Button>
           <Button
             variant="ghost"

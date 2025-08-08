@@ -1,6 +1,5 @@
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { Card, CardContent } from '@/components/shared/ui/card';
 import { theme } from './ui/theme';
 import { isDarkMode } from '@/lib/theme';
 
@@ -12,106 +11,91 @@ export function ConnectPageSkeleton() {
       baseColor={isDark ? '#404040' : '#f3f4f6'}
       highlightColor={isDark ? '#737373' : '#e5e7eb'}
     >
-      <div className={`w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>
-        {/* Main Card Container */}
-        <div
-          className={`max-w-6xl mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl`}
-        >
-          {/* Header Skeleton */}
-          <div className={`px-3 sm:px-6 py-4 border-b ${theme.cardBorder}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <Skeleton circle width={32} height={32} />
-                <div className="flex-1 min-w-0">
-                  <Skeleton height={20} className="max-w-[200px]" />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Skeleton width={80} height={32} />
-                <Skeleton width={80} height={32} />
-                <Skeleton width={40} height={32} />
+      {/* Main Card Container - Same dimensions as AuthConnectScreenSkeleton */}
+      <div
+        className={`w-full max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden relative z-10 origin-center`}
+      >
+        {/* Header Skeleton - Same as AuthConnectScreenSkeleton */}
+        <div className={`px-3 sm:px-6 py-3 border-b ${theme.cardBorder}`}>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <Skeleton width={16} height={16} />
+              <Skeleton height={16} width={120} />
+            </div>
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+              <Skeleton width={32} height={32} />
+              <Skeleton width={32} height={32} />
+              <Skeleton width={32} height={32} />
+            </div>
+          </div>
+        </div>
+
+        <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
+          {/* App Header Skeleton - Same style as AuthConnectScreenSkeleton */}
+          <div className="rounded-xl p-2 sm:p-3">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Skeleton
+                width={56}
+                height={56}
+                className="sm:w-18 sm:h-18 rounded-2xl flex-shrink-0"
+              />
+              <div className="flex-1 text-center sm:text-left">
+                <Skeleton height={24} width={150} className="mb-1" />
+                <Skeleton height={16} width={200} />
               </div>
             </div>
           </div>
 
-          {/* Main Content Skeleton */}
-          <div className="px-3 sm:px-6 py-6 sm:py-8 space-y-6">
-            {/* App Header Skeleton */}
-            <div className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <Skeleton width={48} height={48} className="sm:w-16 sm:h-16" />
-                <div className="flex-1 text-center sm:text-left min-w-0">
-                  <Skeleton height={24} className="max-w-[250px] mx-auto sm:mx-0" />
-                  <Skeleton height={16} className="max-w-[300px] mx-auto sm:mx-0 mt-1" />
-                </div>
-              </div>
-            </div>
+          {/* Dividing line - Same as AuthConnectScreenSkeleton */}
+          <div className={`border-b ${theme.cardBorder}`}></div>
 
-            {/* Ability Accordion Skeleton */}
-            <Card className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}>
-              <CardContent className="p-0">
-                {/* Ability Header */}
-                <div className="p-3 sm:p-6 border-b border-gray-200/10">
-                  <div className="flex items-center gap-3">
-                    <Skeleton circle width={20} height={20} />
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <Skeleton circle width={40} height={40} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <Skeleton height={20} className="max-w-[200px]" />
-                          <Skeleton circle width={16} height={16} />
-                          <Skeleton circle width={16} height={16} />
-                        </div>
-                        <Skeleton height={14} className="max-w-[150px] mt-1" />
-                      </div>
-                    </div>
+          {/* Permission Cards - Similar dimensions to auth method cards */}
+          <div className="space-y-3">
+            <div className="flex flex-col items-center space-y-3">
+              {/* Permission card 1 - Same dimensions as auth method cards */}
+              <div
+                className={`w-full sm:w-3/4 md:w-3/4 lg:w-full py-3 px-4 flex items-center justify-between ${theme.cardBg} border ${theme.cardBorder} rounded-lg`}
+              >
+                <div className="flex items-center">
+                  <Skeleton circle width={20} height={20} className="mr-3 flex-shrink-0" />
+                  <div className="flex-1">
+                    <Skeleton height={14} width={120} />
+                    <Skeleton height={12} width={180} style={{ marginTop: 2 }} />
                   </div>
                 </div>
-                {/* Policy Content */}
-                <div className="p-3 sm:p-6 pt-4">
-                  <Skeleton height={16} className="max-w-[100px] mb-3" />
-                  <Card className={`${theme.itemBg} border ${theme.cardBorder}`}>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex items-start gap-3">
-                        <Skeleton circle width={32} height={32} className="self-start" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <Skeleton height={18} className="max-w-[150px]" />
-                            <Skeleton circle width={16} height={16} />
-                            <Skeleton circle width={16} height={16} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Description and Form - spans full width including under icon */}
-                      <div className="mt-2">
-                        <Skeleton height={14} className="max-w-full mb-3" />
-                        <div className="space-y-2">
-                          <Skeleton height={20} className="max-w-[120px]" />
-                          <Skeleton height={36} className="max-w-full" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons Skeleton (includes trust warning) */}
-            <div className="space-y-4">
-              {/* Trust Warning Skeleton */}
-              <div className="flex items-start gap-2 justify-center">
-                <Skeleton circle width={16} height={16} className="mt-0.5" />
-                <Skeleton height={14} className="max-w-[350px]" />
+                <Skeleton width={16} height={16} />
               </div>
 
-              {/* Buttons Skeleton */}
-              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                <Skeleton height={40} className="w-full sm:w-[100px]" />
-                <Skeleton height={40} className="w-full sm:w-[140px]" />
+              {/* Permission card 2 */}
+              <div
+                className={`w-full sm:w-3/4 md:w-3/4 lg:w-full py-3 px-4 flex items-center justify-between ${theme.cardBg} border ${theme.cardBorder} rounded-lg`}
+              >
+                <div className="flex items-center">
+                  <Skeleton circle width={20} height={20} className="mr-3 flex-shrink-0" />
+                  <div className="flex-1">
+                    <Skeleton height={14} width={100} />
+                    <Skeleton height={12} width={160} style={{ marginTop: 2 }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons - Same pattern as auth method cards */}
+              <div
+                className={`w-full sm:w-3/4 md:w-3/4 lg:w-full py-3 px-4 flex items-center justify-center gap-3 ${theme.cardBg} border ${theme.cardBorder} rounded-lg`}
+              >
+                <Skeleton height={32} width={80} />
+                <Skeleton height={32} width={120} />
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer Skeleton - Same as AuthConnectScreenSkeleton */}
+        <div
+          className={`px-3 sm:px-6 py-3 border-t ${theme.cardBorder} ${theme.cardBg} flex flex-col items-center gap-2`}
+        >
+          <Skeleton height={14} width={120} />
+          <Skeleton height={12} width={150} />
         </div>
       </div>
     </SkeletonTheme>
