@@ -10,7 +10,7 @@ import type { ContractClient, PermissionData } from '@lit-protocol/vincent-contr
 import { privateKeyToAccount } from 'viem/accounts';
 import * as util from 'node:util';
 import { createModularAccountV2Client } from '@account-kit/smart-contracts';
-import { LocalAccountSigner } from '@aa-sdk/core';
+import { LocalAccountSigner, SmartAccountClient } from '@aa-sdk/core';
 import { alchemy } from '@account-kit/infra';
 import { laUtils } from '@lit-protocol/vincent-scaffold-sdk/la-utils';
 
@@ -81,6 +81,7 @@ describe('ERC20 Approval Ability E2E Tests', () => {
 
   let TEST_CONFIG: TestConfig;
   let contractClient: ContractClient;
+  let smartAccountClient: SmartAccountClient;
 
   // Helper methods for common test behaviors
   const removeExistingApproval = async (delegatorPkpEthAddress: string) => {
@@ -167,18 +168,6 @@ describe('ERC20 Approval Ability E2E Tests', () => {
         console.log(
           `converting userOpHash ${result.result.approvalTxHash} to txHash via alchemy...`,
         );
-        const alchemyChain = laUtils.helpers.getAlchemyChainConfig(8453);
-
-        const smartAccountClient = await createModularAccountV2Client({
-          mode: '7702' as const,
-          transport: alchemy({ apiKey: ALCHEMY_GAS_SPONSOR_API_KEY }),
-          chain: alchemyChain,
-          // random signing wallet because this is just for converting the userOp hash to a tx hash
-          signer: LocalAccountSigner.privateKeyToAccountSigner(
-            ethers.Wallet.createRandom().privateKey as `0x${string}`,
-          ),
-          policyId: ALCHEMY_GAS_SPONSOR_POLICY_ID,
-        });
         const uoHash = result.result.approvalTxHash as `0x${string}`;
         txHash = await smartAccountClient.waitForUserOperationTransaction({
           hash: uoHash,
@@ -239,6 +228,19 @@ describe('ERC20 Approval Ability E2E Tests', () => {
         `ℹ️  App Manager has ${formatEther(appManagerLitTestTokenBalance)} Lit test tokens`,
       );
     }
+
+    const alchemyChain = laUtils.helpers.getAlchemyChainConfig(8453);
+
+    smartAccountClient = await createModularAccountV2Client({
+      mode: '7702' as const,
+      transport: alchemy({ apiKey: ALCHEMY_GAS_SPONSOR_API_KEY }),
+      chain: alchemyChain,
+      // random signing wallet because this is just for converting the userOp hash to a tx hash
+      signer: LocalAccountSigner.privateKeyToAccountSigner(
+        ethers.Wallet.createRandom().privateKey as `0x${string}`,
+      ),
+      policyId: ALCHEMY_GAS_SPONSOR_POLICY_ID,
+    });
   });
 
   it('should permit the ERC20 Approval Ability for the Agent Wallet PKP', async () => {
@@ -280,7 +282,7 @@ describe('ERC20 Approval Ability E2E Tests', () => {
     expect(Object.keys(validationResult.decodedPolicies)).toHaveLength(0);
   });
 
-  it.skip('should run precheck and indicate allowance status', async () => {
+  it('should run precheck and indicate allowance status', async () => {
     // Ensure approval is zero first so alreadyApproved=false
     await removeExistingApproval(TEST_CONFIG.userPkp!.ethAddress!);
 
@@ -311,7 +313,7 @@ describe('ERC20 Approval Ability E2E Tests', () => {
     expect(precheckResult.result!.currentAllowance).toBe('0');
   });
 
-  it.skip('should add a new approval without sponsorship', async () => {
+  it('should add a new approval without sponsorship', async () => {
     // Ensure existing approval is cleared
     await removeExistingApproval(TEST_CONFIG.userPkp!.ethAddress!);
 
@@ -335,7 +337,7 @@ describe('ERC20 Approval Ability E2E Tests', () => {
     expect(execResult.result.spenderAddress).toBe(UNISWAP_V3_ROUTER_02_ADDRESS);
   });
 
-  it.skip('should run precheck and indicate allowance status when there is already a valid approval', async () => {
+  it('should run precheck and indicate allowance status when there is already a valid approval', async () => {
     const client = getErc20ApprovalAbilityClient();
     const precheckResult = await client.precheck(
       {
@@ -363,7 +365,7 @@ describe('ERC20 Approval Ability E2E Tests', () => {
     expect(precheckResult.result!.currentAllowance).toBe('7700000000000');
   });
 
-  it.skip('should no-op without sponsorship when there is already a valid approval', async () => {
+  it('should no-op without sponsorship when there is already a valid approval', async () => {
     const client = getErc20ApprovalAbilityClient();
     const result = await client.execute(
       {
@@ -407,15 +409,21 @@ describe('ERC20 Approval Ability E2E Tests', () => {
       util.inspect(execResult, { depth: 10 }),
     );
 
-    // If sponsorship executed a transaction, we should have a tx hash (cannot strictly require
-    // one if Alchemy conditions vary, but typically will be present when changing allowance)
-    // When tokenAmount > 0 from 0, an approval tx is expected
-    // expect(execResult.result.approvalTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+    expect(execResult).toBeDefined();
+    expect(execResult.success).toBe(true);
+
+    // Check result object
+    expect(execResult.result).toBeDefined();
+    expect(typeof execResult.result.approvalTxHash).toBe('string');
+    expect(execResult.result.approvalTxHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+    expect(execResult.result.approvedAmount).toBe('8800000000000');
+    expect(execResult.result.tokenAddress).toBe(WETH_ADDRESS);
+    expect(execResult.result.tokenDecimals).toBe(18);
+    expect(execResult.result.spenderAddress).toBe(UNISWAP_V3_ROUTER_02_ADDRESS);
   });
 
-  it.skip('should no-op WITH Alchemy sponsorship when there is already a valid approval', async () => {
-    // Add approval to ensure it exists (sponsored)
-    await addApproval(TEST_CONFIG.userPkp!.ethAddress!, 0.0000088, true);
+  it('should no-op WITH Alchemy sponsorship when there is already a valid approval', async () => {
+    // Don't need to add approval because it already exists from above test
 
     const client = getErc20ApprovalAbilityClient();
     const result = await client.execute(
@@ -432,12 +440,23 @@ describe('ERC20 Approval Ability E2E Tests', () => {
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
     );
+    console.log(
+      '[should no-op WITH Alchemy sponsorship when there is already a valid approval]',
+      util.inspect(result, { depth: 10 }),
+    );
 
+    expect(result).toBeDefined();
     expect(result.success).toBe(true);
     if (!result.success) {
       throw new Error(result.runtimeError);
     }
-    // Should not need to send a transaction if allowance already matches requested amount
+
+    // Check result object
+    expect(result.result).toBeDefined();
     expect(result.result.approvalTxHash).toBeUndefined();
+    expect(result.result.approvedAmount).toBe('8800000000000');
+    expect(result.result.tokenAddress).toBe(WETH_ADDRESS);
+    expect(result.result.tokenDecimals).toBe(18);
+    expect(result.result.spenderAddress).toBe(UNISWAP_V3_ROUTER_02_ADDRESS);
   });
 });
