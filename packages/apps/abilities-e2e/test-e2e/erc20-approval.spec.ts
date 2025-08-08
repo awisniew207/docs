@@ -9,6 +9,10 @@ import { formatEther } from 'viem';
 import type { ContractClient, PermissionData } from '@lit-protocol/vincent-contracts-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import * as util from 'node:util';
+import { createModularAccountV2Client } from '@account-kit/smart-contracts';
+import { LocalAccountSigner } from '@aa-sdk/core';
+import { alchemy } from '@account-kit/infra';
+import { laUtils } from '@lit-protocol/vincent-scaffold-sdk/la-utils';
 
 import {
   BASE_PUBLIC_CLIENT,
@@ -157,10 +161,34 @@ describe('ERC20 Approval Ability E2E Tests', () => {
     expect(result.result.spenderAddress).toBe(UNISWAP_V3_ROUTER_02_ADDRESS);
 
     if (result.result.approvalTxHash) {
+      // Alchemy returns a userOp hash instead of a tx hash, so we have to interact with alchemy to get the tx hash
+      let txHash = result.result.approvalTxHash;
+      if (useAlchemySponsor) {
+        console.log(
+          `converting userOpHash ${result.result.approvalTxHash} to txHash via alchemy...`,
+        );
+        const alchemyChain = laUtils.helpers.getAlchemyChainConfig(8453);
+
+        const smartAccountClient = await createModularAccountV2Client({
+          mode: '7702' as const,
+          transport: alchemy({ apiKey: ALCHEMY_GAS_SPONSOR_API_KEY }),
+          chain: alchemyChain,
+          // random signing wallet because this is just for converting the userOp hash to a tx hash
+          signer: LocalAccountSigner.privateKeyToAccountSigner(
+            ethers.Wallet.createRandom().privateKey as `0x${string}`,
+          ),
+          policyId: ALCHEMY_GAS_SPONSOR_POLICY_ID,
+        });
+        const uoHash = result.result.approvalTxHash as `0x${string}`;
+        txHash = await smartAccountClient.waitForUserOperationTransaction({
+          hash: uoHash,
+        });
+      }
       console.log('waiting for approval tx to finalize', result.result.approvalTxHash);
       await BASE_PUBLIC_CLIENT.waitForTransactionReceipt({
-        hash: result.result.approvalTxHash as `0x${string}`,
+        hash: txHash as `0x${string}`,
       });
+
       console.log('approval TX is GTG! continuing');
     }
 
