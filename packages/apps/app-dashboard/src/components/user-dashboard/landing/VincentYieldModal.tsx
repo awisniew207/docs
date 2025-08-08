@@ -280,7 +280,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
             }`}
             style={{
               borderRadius: '0.5rem',
-              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
               padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(1.5rem, 6vw, 3rem)',
               ...(!balanceFormatted || parseFloat(balanceFormatted) < MINIMUM_DEPOSIT
                 ? {}
