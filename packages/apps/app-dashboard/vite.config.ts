@@ -14,9 +14,6 @@ export default defineConfig({
       project: 'vincent-dashboard',
     }),
   ],
-  server: {
-    allowedHosts: ['kairosv1.ngrok.dev'],
-  },
   define: {
     global: 'globalThis',
     'process.env': process.env,
