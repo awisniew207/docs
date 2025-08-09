@@ -9,6 +9,7 @@ import { AppUnpublishedButtons } from '../wrappers/ui/AppUnpublishedButtons';
 import { UndeleteAppButton } from '../wrappers/ui/UndeleteAppButton';
 import { CheckCircle, XCircle, Share } from 'lucide-react';
 import { ConnectPageModal } from '../../ui/ConnectPageModal';
+import { Link } from 'react-router-dom';
 
 interface AppDetailsViewProps {
   selectedApp: App;
@@ -67,11 +68,20 @@ export function AppDetailsView({
 
         {/* Publish Status Messages */}
         {isPublished && <StatusMessage message="This app is registered on-chain." type="info" />}
-        {!isPublished && (
-          <StatusMessage
-            message="This app is not published on-chain. Users cannot grant permissions until you publish it on-chain."
-            type="warning"
-          />
+        {!isPublished && selectedApp.activeVersion && (
+          <div className="flex items-center p-3 mb-4 rounded-lg text-sm leading-normal w-full transition-all min-h-[48px] opacity-100 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700/30">
+            <span className="ml-3 transition-opacity">
+              Your active App version ({selectedApp.activeVersion}) is not published, and users
+              cannot grant permissions to your App. Go{' '}
+              <Link
+                to={`/developer/appId/${selectedApp.appId}/version/${selectedApp.activeVersion}`}
+                className="underline hover:no-underline font-medium"
+              >
+                here
+              </Link>{' '}
+              to publish the App version on-chain.
+            </span>
+          </div>
         )}
         {!selectedApp.activeVersion && (
           <StatusMessage
