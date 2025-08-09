@@ -3,14 +3,18 @@
   "private": true,
   "version": "1.0.0",
   "dependencies": {
-    "@lit-protocol/vincent-app-sdk": "workspace:*",
-    "@lit-protocol/vincent-policy-contract-whitelist": "workspace:*",
-    "@lit-protocol/vincent-policy-spending-limit": "workspace:*",
+    "@aa-sdk/core": "^4.53.1",
+    "@account-kit/infra": "^4.53.1",
+    "@account-kit/smart-contracts": "^4.53.1",
     "@lit-protocol/vincent-ability-erc20-approval": "workspace:*",
+    "@lit-protocol/vincent-ability-evm-transaction-signer": "workspace:*",
     "@lit-protocol/vincent-ability-sdk": "workspace:*",
     "@lit-protocol/vincent-ability-uniswap-swap": "workspace:*",
-    "@lit-protocol/vincent-ability-evm-transaction-signer": "workspace:*",
+    "@lit-protocol/vincent-app-sdk": "workspace:*",
     "@lit-protocol/vincent-contracts-sdk": "workspace:*",
+    "@lit-protocol/vincent-policy-contract-whitelist": "workspace:*",
+    "@lit-protocol/vincent-policy-spending-limit": "workspace:*",
+    "@lit-protocol/vincent-scaffold-sdk": "^1.1.7",
     "esbuild": "^0.25.5",
     "esbuild-plugin-polyfill-node": "^0.3.0",
     "ethers": "5.8.0",
@@ -24,6 +28,6 @@
     "@lit-protocol/constants": "^7.2.3",
     "@lit-protocol/contracts-sdk": "^7.2.3",
     "@lit-protocol/lit-node-client": "^7.2.3",
-    "viem": "^2.28.0"
+    "viem": "2.29.2"
   }
 }
