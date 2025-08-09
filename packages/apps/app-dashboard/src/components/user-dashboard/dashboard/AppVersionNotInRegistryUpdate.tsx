@@ -7,6 +7,7 @@ import { ActionCard } from '@/components/user-dashboard/connect/ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
 import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
+import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
 
 type AppVersionNotInRegistryUpdateProps = {
   appData: App;
@@ -15,6 +16,7 @@ type AppVersionNotInRegistryUpdateProps = {
 
 export function AppVersionNotInRegistryUpdate({ appData }: AppVersionNotInRegistryUpdateProps) {
   const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
 
   const handleGoBack = () => {
     navigate(-1);
@@ -95,6 +97,7 @@ export function AppVersionNotInRegistryUpdate({ appData }: AppVersionNotInRegist
                     title="Go Back"
                     description="Return to the previous page"
                     onClick={handleGoBack}
+                    disabled={!canGoBack}
                   />
 
                   {/* Retry Option */}

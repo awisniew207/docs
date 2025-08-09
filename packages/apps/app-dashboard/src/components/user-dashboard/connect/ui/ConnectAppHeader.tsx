@@ -10,21 +10,34 @@ interface ConnectAppHeaderProps {
 export function ConnectAppHeader({ app }: ConnectAppHeaderProps) {
   return (
     <motion.div
-      className="rounded-xl p-4 sm:p-6"
+      className="rounded-xl p-2 sm:p-3"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4">
         <div
           className={`p-3 sm:p-4 rounded-2xl ${theme.iconBg} border ${theme.iconBorder} flex-shrink-0`}
         >
-          <Logo logo={app.logo} alt={app.name} className="w-10 h-10 sm:w-12 sm:h-12" />
+          <Logo logo={app.logo} alt={app.name} className="w-8 h-8 sm:w-10 sm:h-10" />
         </div>
-        <div className="flex-1 text-center sm:text-left">
-          <h2 className={`text-xl sm:text-2xl font-bold ${theme.text}`}>{app.name}</h2>
+        <div className="flex-1 text-center sm:text-left min-w-0">
+          <h2 className={`text-lg sm:text-xl font-bold ${theme.text} break-words`}>{app.name}</h2>
           {app.description && (
-            <p className={`text-base sm:text-lg ${theme.textMuted} mt-1`}>{app.description}</p>
+            <p
+              className={`text-xs sm:text-sm ${theme.textMuted} mt-1`}
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                wordBreak: 'break-word',
+                maxWidth: '100%',
+              }}
+            >
+              {app.description}
+            </p>
           )}
         </div>
       </div>

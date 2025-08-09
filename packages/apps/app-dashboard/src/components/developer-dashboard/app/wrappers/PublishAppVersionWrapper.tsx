@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { ethers } from 'ethers';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { AbilityVersion, PolicyVersion } from '@/types/developer-dashboard/appTypes';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -225,6 +226,15 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
       const client = getClient({ signer: pkpSigner });
 
       for (const delegatee of delegatees) {
+        // Validate that delegatee is a proper Ethereum address
+        if (!ethers.utils.isAddress(delegatee)) {
+          setPublishResult({
+            success: false,
+            message: `Invalid delegatee address: ${delegatee}. Please ensure all delegatee addresses are valid Ethereum addresses.`,
+          });
+          return;
+        }
+
         try {
           const existingApp = await client.getAppByDelegateeAddress({
             delegateeAddress: delegatee,

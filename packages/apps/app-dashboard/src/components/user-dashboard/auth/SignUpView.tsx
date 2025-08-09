@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
-import StatusMessage from '../connect/StatusMessage';
+import Loading from '@/components/shared/ui/Loading';
 
 interface SignUpViewProps {
   authMethodType: (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE];
@@ -40,9 +40,7 @@ const SignUpView: FC<SignUpViewProps> = ({
     </>
   );
 
-  const renderStytchView = () => (
-    <StatusMessage message={'Creating your account...'} type={'info'} />
-  );
+  const renderStytchView = () => <Loading />;
 
   const renderDefaultView = () => (
     <>

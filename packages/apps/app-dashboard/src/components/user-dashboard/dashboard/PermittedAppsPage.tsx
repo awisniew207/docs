@@ -3,7 +3,7 @@ import { App } from '@/types/developer-dashboard/appTypes';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
-import { ExternalLink, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 type PermittedAppsPageProps = {
   apps: App[];
@@ -36,16 +36,23 @@ export function PermittedAppsPage({ apps }: PermittedAppsPageProps) {
   }
 
   return (
-    <div className="w-full flex justify-start px-3 sm:px-6">
+    <div className="w-full flex justify-start px-3 sm:px-6 pt-6">
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {apps.map((app) => (
           <Card
             key={app.appId}
             className={`py-0 gap-0 backdrop-blur-xl ${theme.mainCard} border ${theme.cardBorder} ${theme.cardHoverBorder} cursor-pointer transition-all duration-200 hover:shadow-lg`}
             onClick={() => handleAppClick(app.appId.toString())}
-            style={{ height: 'fit-content' }}
+            style={{ height: '160px' }}
           >
-            <CardContent className="p-3">
+            <CardContent className="p-3 relative">
+              {/* Version Badge - Absolutely positioned */}
+              {app.activeVersion && (
+                <span className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                  v{app.activeVersion}
+                </span>
+              )}
+
               <div className="flex flex-col gap-2">
                 {/* Logo and Title Row */}
                 <div className="flex items-center gap-3">
@@ -59,25 +66,12 @@ export function PermittedAppsPage({ apps }: PermittedAppsPageProps) {
                   <div className="flex-1 min-w-0">
                     <h3 className={`font-semibold ${theme.text} truncate`}>{app.name}</h3>
                   </div>
-                  <ExternalLink className={`w-4 h-4 ${theme.textSubtle} flex-shrink-0`} />
                 </div>
 
                 {/* Description */}
                 {app.description && (
-                  <p className={`text-sm ${theme.textMuted} line-clamp-2`}>{app.description}</p>
+                  <p className={`text-sm ${theme.textMuted} line-clamp-3`}>{app.description}</p>
                 )}
-
-                {/* App ID and Version */}
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs ${theme.textSubtle}`}>App ID: {app.appId}</span>
-                  {app.activeVersion && (
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${theme.itemBg} ${theme.textMuted}`}
-                    >
-                      v{app.activeVersion}
-                    </span>
-                  )}
-                </div>
               </div>
             </CardContent>
           </Card>

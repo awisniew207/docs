@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { AbilityAccordion } from './AbilityAccordion';
 import { PolicyFormRef } from './PolicyForm';
-import { Card, CardContent } from '@/components/shared/ui/card';
 import { AbilityHeader } from './AbilityHeader';
 import { theme } from './theme';
 
@@ -70,18 +69,18 @@ export function AppsInfo({
                     // If no visible policies, render a simple card without accordion
                     if (visiblePolicies.length === 0) {
                       return (
-                        <Card
+                        <div
                           key={abilityKey}
-                          className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder}`}
+                          className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder} rounded-lg overflow-hidden`}
                         >
-                          <CardContent className="py-1 px-2 sm:py-1.5 sm:px-3">
+                          <div className="py-2 px-2 sm:py-2.5 sm:px-3">
                             <AbilityHeader
                               ability={ability}
                               abilityVersion={abilityVersion}
                               connectInfoMap={connectInfoMap}
                             />
-                          </CardContent>
-                        </Card>
+                          </div>
+                        </div>
                       );
                     }
 

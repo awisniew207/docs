@@ -46,9 +46,21 @@ export function AppVersionDetailView({
         </div>
       </div>
 
-      {/* Publish Status Message */}
+      {/* Publish Status Messages */}
       {isVersionPublished && (
         <StatusMessage message="This app version is registered on-chain." type="info" />
+      )}
+      {!app.activeVersion && (
+        <StatusMessage
+          message="Your app has no active version set. Users cannot grant permissions until you set an active version. You can set an active version by editing the app in the app management section."
+          type="warning"
+        />
+      )}
+      {!isVersionPublished && app.activeVersion === versionData.version && (
+        <StatusMessage
+          message="This is your app's active version but it's not published on-chain. Users cannot grant permissions until you publish this version on-chain."
+          type="warning"
+        />
       )}
 
       {/* Version Management Card */}

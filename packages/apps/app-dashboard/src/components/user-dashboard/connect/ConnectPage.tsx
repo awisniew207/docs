@@ -135,47 +135,47 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
   const error = jwtError || actionsError || localError;
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>
-      {/* Main Card Container */}
-      <div
-        className={`max-w-6xl mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
-      >
-        {/* Header */}
-        <ConnectPageHeader authInfo={readAuthInfo.authInfo!} />
+    <div
+      className={`max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden relative z-10 origin-center`}
+    >
+      {/* Header */}
+      <ConnectPageHeader authInfo={readAuthInfo.authInfo!} />
 
-        <div className="px-3 sm:px-6 py-6 sm:py-8 space-y-6">
-          {/* App Header */}
-          <ConnectAppHeader app={connectInfoMap.app} />
+      <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
+        {/* App Header */}
+        <ConnectAppHeader app={connectInfoMap.app} />
 
-          {/* Apps and Versions */}
-          <AppsInfo
-            connectInfoMap={connectInfoMap}
-            formData={formData}
-            onFormChange={handleFormChange}
-            onRegisterFormRef={registerFormRef}
-          />
+        {/* Dividing line */}
+        <div className={`border-b ${theme.cardBorder}`}></div>
 
-          {/* Status Card */}
-          <StatusCard
-            isLoading={isLoading}
-            loadingStatus={loadingStatus}
-            error={error || localError}
-            success={localSuccess}
-          />
+        {/* Apps and Versions */}
+        <AppsInfo
+          connectInfoMap={connectInfoMap}
+          formData={formData}
+          onFormChange={handleFormChange}
+          onRegisterFormRef={registerFormRef}
+        />
 
-          {/* Action Buttons */}
-          <ActionButtons
-            onDecline={handleDecline}
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            error={error || localError}
-            appName={connectInfoMap.app.name}
-          />
-        </div>
+        {/* Status Card */}
+        <StatusCard
+          isLoading={isLoading}
+          loadingStatus={loadingStatus}
+          error={error || localError}
+          success={localSuccess}
+        />
 
-        {/* Footer */}
-        <ConnectFooter />
+        {/* Action Buttons */}
+        <ActionButtons
+          onDecline={handleDecline}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          error={error || localError}
+          appName={connectInfoMap.app.name}
+        />
       </div>
+
+      {/* Footer */}
+      <ConnectFooter />
     </div>
   );
 }
