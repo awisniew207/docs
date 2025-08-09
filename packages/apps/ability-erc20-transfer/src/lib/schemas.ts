@@ -21,6 +21,20 @@ export const abilityParamsSchema = z.object({
     .string()
     .describe('The blockchain network where the erc20 token is deployed and be transferred'),
   rpcUrl: z.string().describe('RPC URL used for precheck validations'),
+  // Gas sponsorship parameters for EIP-7702
+  alchemyGasSponsor: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe("Whether to use Alchemy's gas sponsorship (EIP-7702)"),
+  alchemyGasSponsorApiKey: z
+    .string()
+    .optional()
+    .describe('Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)'),
+  alchemyGasSponsorPolicyId: z
+    .string()
+    .optional()
+    .describe('Alchemy gas policy ID for sponsorship (required if alchemyGasSponsor is true)'),
 });
 
 /**

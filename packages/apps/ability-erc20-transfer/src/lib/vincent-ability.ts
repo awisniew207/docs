@@ -4,7 +4,6 @@ import {
   supportedPoliciesForAbility,
 } from '@lit-protocol/vincent-ability-sdk';
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-send-counter';
-import { laUtils } from '@lit-protocol/vincent-scaffold-sdk';
 import { ethers } from 'ethers';
 
 import {
@@ -15,6 +14,7 @@ import {
   parseTokenAmount,
 } from './helpers';
 import { commitAllowedPolicies } from './helpers/commit-allowed-policies';
+import { executeOperation } from './helpers/execute-operation';
 import {
   executeFailSchema,
   executeSuccessSchema,
@@ -51,7 +51,15 @@ export const vincentAbility = createVincentAbility({
       abilityParams,
     });
 
-    const { to, amount, tokenAddress, rpcUrl } = abilityParams;
+    const {
+      to,
+      amount,
+      tokenAddress,
+      rpcUrl,
+      alchemyGasSponsor,
+      alchemyGasSponsorApiKey,
+      alchemyGasSponsorPolicyId,
+    } = abilityParams;
 
     // Validate recipient address
     if (!isValidAddress(to)) {
@@ -74,6 +82,14 @@ export const vincentAbility = createVincentAbility({
       return fail({
         error:
           '[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Invalid token contract address format',
+      });
+    }
+
+    // Validate EIP-7702 gas sponsorship
+    if (alchemyGasSponsor && (!alchemyGasSponsorApiKey || !alchemyGasSponsorPolicyId)) {
+      return fail({
+        error:
+          '[@lit-protocol/vincent-ability-morpho/precheck] Alchemy gas sponsor is enabled, but missing Alchemy API key or policy ID',
       });
     }
 
@@ -138,7 +154,15 @@ export const vincentAbility = createVincentAbility({
 
   execute: async ({ abilityParams }, { succeed, fail, delegation, policiesContext }) => {
     try {
-      const { to, amount, tokenAddress, chain } = abilityParams;
+      const {
+        to,
+        amount,
+        tokenAddress,
+        chain,
+        alchemyGasSponsor,
+        alchemyGasSponsorApiKey,
+        alchemyGasSponsorPolicyId,
+      } = abilityParams;
 
       console.log(
         '[@agentic-ai/vincent-ability-erc20-transfer/execute] 🚀 Executing ERC-20 Transfer Ability',
@@ -149,6 +173,13 @@ export const vincentAbility = createVincentAbility({
           chain,
         },
       );
+
+      if (alchemyGasSponsor && (!alchemyGasSponsorApiKey || !alchemyGasSponsorPolicyId)) {
+        return fail({
+          error:
+            '[@lit-protocol/vincent-ability-morpho/execute] Alchemy gas sponsor is enabled, but missing Alchemy API key or policy ID',
+        });
+      }
 
       let provider: ethers.providers.JsonRpcProvider;
       try {
@@ -200,6 +231,9 @@ export const vincentAbility = createVincentAbility({
         functionName: 'transfer',
         args: [to, tokenAmountInWei],
         chainId,
+        alchemyGasSponsor,
+        alchemyGasSponsorApiKey,
+        alchemyGasSponsorPolicyId,
       };
 
       console.log(
@@ -223,7 +257,7 @@ export const vincentAbility = createVincentAbility({
       );
 
       // Execute the ERC-20 transfer using laUtils
-      const txHash = await laUtils.transaction.handler.contractCall(contractCallData);
+      const txHash = await executeOperation(contractCallData);
 
       console.log(
         '[@agentic-ai/vincent-ability-erc20-transfer/execute] ✅ Contract call completed, txHash:',

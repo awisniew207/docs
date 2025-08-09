@@ -1,10 +1,12 @@
 # Vincent Ability ERC20 Transfer
 
-A Vincent Ability for secure ERC-20 token transfers with integrated policy-based governance, balance validation, and multi-network support.
+A Vincent Ability for secure ERC-20 token transfers with integrated policy-based governance, balance
+validation, and multi-network support.
 
 ## Overview
 
-The `erc20-transfer` ability enables secure ERC-20 token transfers through the Vincent Framework, providing:
+The `erc20-transfer` ability enables secure ERC-20 token transfers through the Vincent Framework,
+providing:
 
 - Secure transfers using PKP (Programmable Key Pair) wallets
 - Automatic token decimals detection
@@ -52,13 +54,16 @@ The `erc20-transfer` ability enables secure ERC-20 token transfers through the V
 
 All functions accept the following parameters:
 
-| Parameter      | Type     | Description                                               |
-| -------------- | -------- | --------------------------------------------------------- |
-| `rpcUrl`       | `string` | RPC URL used during precheck validations                  |
-| `chain`        | `string` | Chain name used during execute (e.g., 'base', 'ethereum') |
-| `to`           | `string` | Recipient address (0x...)                                 |
-| `tokenAddress` | `string` | ERC-20 token contract address (0x...)                     |
-| `amount`       | `string` | Amount in human-readable string (e.g., "1.23")            |
+| Parameter                   | Type      | Description                                                                   |
+| --------------------------- | --------- | ----------------------------------------------------------------------------- |
+| `rpcUrl`                    | `string`  | RPC URL used during precheck validations                                      |
+| `chain`                     | `string`  | Chain name used during execute (e.g., 'base', 'ethereum')                     |
+| `to`                        | `string`  | Recipient address (0x...)                                                     |
+| `tokenAddress`              | `string`  | ERC-20 token contract address (0x...)                                         |
+| `amount`                    | `string`  | Amount in human-readable string (e.g., "1.23")                                |
+| `alchemyGasSponsor`         | `boolean` | Whether to use Alchemy's gas sponsorship (EIP-7702)                           |
+| `alchemyGasSponsorApiKey`   | `string`  | Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)   |
+| `alchemyGasSponsorPolicyId` | `string`  | Alchemy gas policy ID for sponsorship (required if alchemyGasSponsor is true) |
 
 ## Usage Examples
 
@@ -186,10 +191,18 @@ The ability provides detailed error messages for various failure scenarios:
 ```typescript
 {
   txHash: "0x...",
-  to: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
-  amount: "10.50",
-  tokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-  timestamp: 1703123456789
+    to
+:
+  "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
+    amount
+:
+  "10.50",
+    tokenAddress
+:
+  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    timestamp
+:
+  1703123456789
 }
 ```
 
