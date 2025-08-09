@@ -33,7 +33,13 @@ export function ActionCard({
     <div
       onClick={isClickable ? onClick : undefined}
       className={`p-4 rounded-lg border ${theme.cardBorder} ${theme.itemBg} ${
-        isLoading ? 'opacity-75' : isClickable ? `${theme.itemHoverBg} cursor-pointer` : ''
+        isLoading
+          ? 'opacity-75'
+          : isClickable
+            ? `${theme.itemHoverBg} cursor-pointer`
+            : disabled
+              ? 'opacity-50 cursor-not-allowed'
+              : ''
       } transition-colors`}
     >
       {isLoading ? (

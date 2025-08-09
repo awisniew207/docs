@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/shared/ui/button';
-import { AlertCircle, Loader2, Shield } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { theme } from './theme';
 
 interface ActionButtonsProps {
@@ -21,11 +21,11 @@ export function ActionButtons({
   return (
     <div className="space-y-4">
       {/* Trust Warning */}
-      <div className="flex items-start gap-2 text-center justify-center">
-        <Shield className={`w-4 h-4 ${theme.textMuted} mt-0.5 flex-shrink-0`} />
+      <div className="flex justify-center text-center">
         <p className={`text-sm ${theme.textSubtle} leading-relaxed`}>
-          Make sure you trust <span className={`font-medium ${theme.text}`}>{appName}</span>. By
-          connecting, you may be sharing sensitive account permissions.
+          Make sure you trust <span className={`font-medium ${theme.text}`}>{appName}</span>.
+          <br />
+          By connecting, you may be sharing sensitive account permissions.
         </p>
       </div>
 

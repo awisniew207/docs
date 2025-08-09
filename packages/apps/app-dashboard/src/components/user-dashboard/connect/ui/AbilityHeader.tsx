@@ -32,7 +32,7 @@ export function AbilityHeader({ ability, abilityVersion, connectInfoMap }: Abili
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h4 className={`font-semibold ${theme.text}`}>
+          <h4 className={`text-sm font-semibold ${theme.text}`}>
             {connectInfoMap.abilitiesByPackageName[ability.abilityPackageName]?.title ||
               ability.abilityPackageName}
           </h4>
@@ -62,7 +62,7 @@ export function AbilityHeader({ ability, abilityVersion, connectInfoMap }: Abili
           )}
         </div>
         {connectInfoMap.abilitiesByPackageName[ability.abilityPackageName]?.description && (
-          <p className={`text-sm ${theme.textSubtle} mt-1`}>
+          <p className={`text-xs ${theme.textSubtle} mt-1`}>
             {connectInfoMap.abilitiesByPackageName[ability.abilityPackageName].description}
           </p>
         )}

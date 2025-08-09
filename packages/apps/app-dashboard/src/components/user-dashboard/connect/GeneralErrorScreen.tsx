@@ -6,6 +6,7 @@ import { ActionCard } from './ui/ActionCard';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/shared/ui/button';
 import { toggleTheme, isDarkMode } from '@/lib/theme';
+import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
 
 type GeneralErrorScreenProps = {
   errorDetails: string;
@@ -14,6 +15,7 @@ type GeneralErrorScreenProps = {
 export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
   const isDark = isDarkMode();
   const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
 
   const handleGoBack = () => {
     navigate(-1);
@@ -103,6 +105,7 @@ export function GeneralErrorScreen({ errorDetails }: GeneralErrorScreenProps) {
                     title="Go Back"
                     description="Return to the previous page"
                     onClick={handleGoBack}
+                    disabled={!canGoBack}
                   />
 
                   {/* Retry Option */}

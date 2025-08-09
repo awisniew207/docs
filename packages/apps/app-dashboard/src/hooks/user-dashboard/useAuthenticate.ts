@@ -31,19 +31,13 @@ export default function useAuthenticate() {
       setAuthMethod(result);
     } catch (err) {
       // Check if this is a user cancellation - if so, don't treat it as an error
-      if (err instanceof Error) {
-        const errorText = err.message;
-        if (
-          errorText.includes('timed out') ||
-          errorText.includes('not allowed') ||
-          errorText.includes('cancelled') ||
-          errorText.includes('privacy-considerations-client')
-        ) {
-          // User cancelled - silently ignore, don't set error state
-        } else {
-          setError(err as Error);
-        }
-      } else {
+      if (
+        !(err instanceof Error) ||
+        (!err.message.includes('timed out') &&
+          !err.message.includes('not allowed') &&
+          !err.message.includes('cancelled') &&
+          !err.message.includes('privacy-considerations-client'))
+      ) {
         setError(err as Error);
       }
     } finally {
@@ -89,7 +83,13 @@ export default function useAuthenticate() {
         const result: AuthMethod = await authenticateWithEthWallet(address, signMessage);
         setAuthMethod(result);
       } catch (err) {
-        setError(err as Error);
+        // Don't show error for user rejection - it's not really an error
+        if (
+          !(err instanceof Error) ||
+          (!err.message.includes('User rejected') && !err.message.includes('user rejected'))
+        ) {
+          setError(err as Error);
+        }
       } finally {
         setLoading(false);
       }

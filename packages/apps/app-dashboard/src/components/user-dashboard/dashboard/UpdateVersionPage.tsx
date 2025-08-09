@@ -142,61 +142,58 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
   const error = jwtError || actionsError;
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-500 ${theme.bg} sm:p-4`}>
-      {/* Main Card Container */}
-      <div
-        className={`max-w-6xl mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
-      >
-        {/* Page Header */}
-        <PageHeader
-          icon={
-            <svg
-              className="w-4 h-4 text-orange-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-              />
-            </svg>
-          }
-          title="Update App Version"
-          description="Review and update permissions for the latest version"
+    <div
+      className={`w-full max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden relative z-10 origin-center`}
+    >
+      {/* Page Header */}
+      <PageHeader
+        icon={
+          <svg
+            className="w-4 h-4 text-orange-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+            />
+          </svg>
+        }
+        title="Update App Version"
+        description="Review and update permissions for the latest version"
+      />
+
+      <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
+        {/* App Header */}
+        <ConnectAppHeader app={connectInfoMap.app} />
+
+        {/* Apps and Versions */}
+        <AppsInfo
+          connectInfoMap={connectInfoMap}
+          formData={formData}
+          onFormChange={handleFormChange}
+          onRegisterFormRef={registerFormRef}
         />
 
-        <div className="px-6 py-8 space-y-6">
-          {/* App Header */}
-          <ConnectAppHeader app={connectInfoMap.app} />
+        {/* Status Card */}
+        <StatusCard
+          isLoading={isLoading}
+          loadingStatus={loadingStatus}
+          error={error || localError}
+          success={localSuccess}
+        />
 
-          {/* Apps and Versions */}
-          <AppsInfo
-            connectInfoMap={connectInfoMap}
-            formData={formData}
-            onFormChange={handleFormChange}
-            onRegisterFormRef={registerFormRef}
-          />
-
-          {/* Status Card */}
-          <StatusCard
-            isLoading={isLoading}
-            loadingStatus={loadingStatus}
-            error={error || localError}
-            success={localSuccess}
-          />
-
-          {/* Action Buttons */}
-          <ActionButtons
-            onDecline={handleDecline}
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            error={error || localError}
-            appName={connectInfoMap.app.name}
-          />
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          onDecline={handleDecline}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          error={error || localError}
+          appName={connectInfoMap.app.name}
+        />
       </div>
     </div>
   );

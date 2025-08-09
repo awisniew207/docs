@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import { ConnectPageSkeleton } from '../connect/ConnectPageSkeleton';
+import { ManagePagesSkeleton } from '../connect/ManagePagesSkeleton';
 import { GeneralErrorScreen } from '../connect/GeneralErrorScreen';
 import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
@@ -37,7 +37,7 @@ export function UserPermissionWrapper() {
   });
 
   if (isProcessing) {
-    return <ConnectPageSkeleton />;
+    return <ManagePagesSkeleton />;
   }
 
   const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
@@ -48,7 +48,7 @@ export function UserPermissionWrapper() {
   }
 
   if (isLoading || isExistingDataLoading || permissionsLoading) {
-    return <ConnectPageSkeleton />;
+    return <ManagePagesSkeleton />;
   }
 
   // Check for redirect URI validation errors (only when redirectUri is provided but invalid)

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 import { UpdateVersionPage } from './UpdateVersionPage';
-import { ConnectPageSkeleton } from '@/components/user-dashboard/connect/ConnectPageSkeleton';
+import { ManagePagesSkeleton } from '../connect/ManagePagesSkeleton';
 import { GeneralErrorScreen } from '@/components/user-dashboard/connect/GeneralErrorScreen';
 import { AuthenticationErrorScreen } from '@/components/user-dashboard/connect/AuthenticationErrorScreen';
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
@@ -43,7 +43,7 @@ export function UpdateVersionPageWrapper() {
   }
 
   if (isLoading || isProcessing || isPermittedLoading) {
-    return <ConnectPageSkeleton />;
+    return <ManagePagesSkeleton />;
   }
 
   // Check for redirect URI validation errors (only when redirectUri is provided but invalid)
@@ -65,7 +65,7 @@ export function UpdateVersionPageWrapper() {
   }
 
   if (!data || !authInfo || !sessionSigs) {
-    return <ConnectPageSkeleton />;
+    return <ManagePagesSkeleton />;
   }
 
   if (appExists === true && activeVersionExists === false) {

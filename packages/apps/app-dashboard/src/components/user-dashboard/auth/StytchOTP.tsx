@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useStytch } from '@stytch/react';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { z } from 'zod';
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
 import StatusMessage from '../connect/StatusMessage';
+import { countryCodes } from '@/utils/user-dashboard/countryCodes';
+import CountryCodeSelector from '@/components/shared/ui/CountryCodeSelector';
+import validator from 'validator';
 
 interface StytchOTPProps {
   method: OtpMethod;
@@ -33,8 +34,51 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
   const [code, setCode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [countryCode, setCountryCode] = useState<string>('+1');
+  const [countryName, setCountryName] = useState<string>('United States');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
   const stytchClient = useStytch();
   const { setAuthInfo } = useSetAuthInfo();
+
+  // Handle phone number changes and combine with country code
+  const handlePhoneChange = (value: string) => {
+    // Remove non-digit characters for validation
+    const digitsOnly = value.replace(/\D/g, '');
+    // ITU-T E.164 standard: max 15 digits excluding '+' prefix
+    if (digitsOnly.length > 15) {
+      return; // Don't update if exceeds limit
+    }
+
+    // If user pastes a full international number (not just typing), extract parts
+    if (value.startsWith('+') && value.length >= 8) {
+      // Only for pasted numbers, not typing
+      // Find the longest matching country code to handle cases like +1 (US/Canada)
+      const foundCountry = countryCodes
+        .filter((country) => value.startsWith(country.code))
+        .sort((a, b) => b.code.length - a.code.length)[0];
+
+      if (foundCountry) {
+        setCountryCode(foundCountry.code);
+        setCountryName(foundCountry.name);
+        const phoneOnly = value.slice(foundCountry.code.length);
+        setPhoneNumber(phoneOnly);
+        setUserId(value);
+      } else {
+        setPhoneNumber(value);
+        setUserId(value);
+      }
+    } else {
+      setPhoneNumber(value);
+      // Strip formatting characters for userId (only keep digits)
+      const digitsOnly = value.replace(/\D/g, '');
+      setUserId(countryCode + digitsOnly);
+    }
+  };
+
+  const isInputValid =
+    method === 'email'
+      ? validator.isEmail(userId)
+      : phoneNumber.length >= 7 && phoneNumber.length <= 15; // 7-15 digits for phone number
 
   async function sendPasscode(event: any) {
     event.preventDefault();
@@ -172,47 +216,83 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
     <>
       {step === 'submit' && (
         <>
-          <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
-            Enter your {method}
-          </h1>
-          <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
-            A verification code will be sent to your {method}
-          </p>
-
           <div className="flex justify-center">
             <form className="space-y-4 w-4/5" onSubmit={sendPasscode}>
               {method === 'email' ? (
                 <div className="space-y-2">
                   <label htmlFor="email" className={`text-sm font-medium block ${theme.text}`}>
-                    Email address
+                    Email Address
                   </label>
-                  <input
-                    id="email"
-                    value={userId}
-                    onChange={(e) => setUserId(e.target.value)}
-                    type="email"
-                    name="email"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
-                    placeholder="your@email.com"
-                    autoComplete="email"
-                  />
+                  <div className="relative">
+                    <input
+                      id="email"
+                      value={userId}
+                      onChange={(e) => setUserId(e.target.value)}
+                      type="email"
+                      name="email"
+                      className={`w-full px-3 py-2 pr-16 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
+                      placeholder="your@email.com"
+                      autoComplete="email"
+                    />
+                    <button
+                      type="submit"
+                      disabled={loading || !isInputValid}
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 font-medium text-sm disabled:cursor-not-allowed transition-colors ${
+                        isInputValid && !loading
+                          ? 'text-orange-500 hover:text-orange-600'
+                          : `${theme.textMuted} opacity-50`
+                      }`}
+                    >
+                      {loading ? '...' : 'Submit'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <label htmlFor="phone" className={`text-sm font-medium block ${theme.text}`}>
-                    Phone number
+                    Phone Number
                   </label>
-                  <div className="phone-input-container">
-                    <PhoneInput
-                      id="phone"
-                      international
-                      defaultCountry="US"
-                      value={userId}
-                      onChange={(value) => setUserId(value || '')}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
-                      placeholder="+1 (555) 000-0000"
+                  <div className="flex gap-1">
+                    <CountryCodeSelector
+                      selectedCountryCode={countryCode}
+                      selectedCountryName={countryName}
+                      onCountryCodeChange={(newCountryCode, newCountryName) => {
+                        setCountryCode(newCountryCode);
+                        setCountryName(newCountryName || 'United States');
+                        setUserId(newCountryCode + phoneNumber);
+                      }}
+                      theme={theme}
+                      disabled={loading}
                     />
+
+                    {/* Phone Number Input */}
+                    <div className="relative flex-1">
+                      <input
+                        type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        name="phone"
+                        value={phoneNumber}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
+                        className={`w-full px-3 py-2 pr-16 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
+                        placeholder="(555) 000-0000"
+                      />
+                      <button
+                        type="submit"
+                        disabled={loading || !isInputValid}
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 font-medium text-sm disabled:cursor-not-allowed transition-colors z-10 ${
+                          isInputValid && !loading
+                            ? 'text-orange-500 hover:text-orange-600'
+                            : `${theme.textMuted} opacity-50`
+                        }`}
+                      >
+                        {loading ? '...' : 'Submit'}
+                      </button>
+                    </div>
                   </div>
+                  <p className={`text-xs ${theme.textMuted}`}>
+                    You can also paste a full international number (e.g., +14155552671)
+                  </p>
                 </div>
               )}
 
@@ -220,17 +300,17 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
 
               <div className="pt-2">
                 <Button
-                  type="submit"
-                  className={`${theme.accentBg} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                  disabled={loading}
-                >
-                  {loading ? 'Sending...' : 'Send code'}
-                </Button>
-
-                <Button
                   onClick={() => setView('default')}
-                  className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-colors mt-3`}
+                  className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-xl py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-all duration-200 hover:shadow-sm flex items-center justify-center gap-2`}
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                  </svg>
                   Back
                 </Button>
               </div>
@@ -241,49 +321,55 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
 
       {step === 'verify' && (
         <>
-          <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
-            Check your {method}
-          </h1>
-          <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
-            Enter the 6-digit verification code sent to {userId}
-          </p>
-
           <div className="flex justify-center">
             <form className="space-y-4 w-4/5" onSubmit={authenticate}>
               <div className="space-y-2">
                 <label htmlFor="code" className={`text-sm font-medium block ${theme.text}`}>
-                  Verification code
+                  Verification Code
                 </label>
-                <input
-                  id="code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]{6}"
-                  maxLength={6}
-                  name="code"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center tracking-widest text-lg ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
-                  placeholder="000000"
-                  autoComplete="one-time-code"
-                />
+                <div className="relative">
+                  <input
+                    id="code"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]{6}"
+                    maxLength={6}
+                    name="code"
+                    className={`w-full px-3 py-2 pr-16 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center tracking-widest text-lg ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
+                    placeholder="000000"
+                    autoComplete="one-time-code"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading || code.length !== 6}
+                    className={`absolute right-2 top-1/2 -translate-y-1/2 font-medium text-sm disabled:cursor-not-allowed transition-colors ${
+                      code.length === 6 && !loading
+                        ? 'text-orange-500 hover:text-orange-600'
+                        : `${theme.textMuted} opacity-50`
+                    }`}
+                  >
+                    {loading ? '...' : 'Submit'}
+                  </button>
+                </div>
               </div>
 
               {error && <StatusMessage message={error} type="error" />}
 
               <div className="pt-2">
                 <Button
-                  type="submit"
-                  className={`${theme.accentBg} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                  disabled={loading}
-                >
-                  {loading ? 'Verifying...' : 'Verify code'}
-                </Button>
-
-                <Button
                   onClick={() => setStep('submit')}
-                  className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-colors mt-3`}
+                  className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-xl py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-all duration-200 hover:shadow-sm flex items-center justify-center gap-2`}
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
                   Try again
                 </Button>
               </div>
