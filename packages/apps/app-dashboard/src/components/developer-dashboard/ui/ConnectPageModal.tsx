@@ -32,9 +32,10 @@ export function ConnectPageModal({
   const [selectedRedirectUri, setSelectedRedirectUri] = useState<string>('');
   const [copied, setCopied] = useState(false);
 
-  // Generate the connect page URL
+  // Generate the connect page URL using current origin
   const generateConnectUrl = (redirectUri: string): string => {
-    return `http://dashboard.heyvincent.ai/user/appId/${appId}/connect?redirectUri=${encodeURIComponent(redirectUri)}`;
+    const currentOrigin = window.location.origin;
+    return `${currentOrigin}/user/appId/${appId}/connect?redirectUri=${encodeURIComponent(redirectUri)}`;
   };
 
   const connectUrl = selectedRedirectUri ? generateConnectUrl(selectedRedirectUri) : '';

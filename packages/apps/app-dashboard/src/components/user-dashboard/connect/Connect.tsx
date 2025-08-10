@@ -84,8 +84,13 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   useEffect(() => {
     if (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      setStatusMessage(`Authentication Error: ${errorMessage}`);
-      setStatusType('error');
+      // Don't show error for user rejection - it's not really an error
+      if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
+        // User cancelled authentication - no action needed
+      } else {
+        setStatusMessage(`Authentication Error: ${errorMessage}`);
+        setStatusType('error');
+      }
     } else {
       setStatusMessage('');
     }

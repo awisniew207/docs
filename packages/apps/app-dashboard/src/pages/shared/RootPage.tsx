@@ -54,7 +54,7 @@ export default function RootPage() {
               delegated permissions
             </p>
             <p className="text-gray-500 text-xs sm:text-sm">
-              <strong>Earn:</strong> Control and delegate permissions to your applications
+              <strong>Earn:</strong> Automate DeFi without giving up control
             </p>
             <p className="text-gray-500 text-xs sm:text-sm">
               <strong>Explore:</strong> Discover applications, abilities, and policies in the

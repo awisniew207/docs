@@ -69,29 +69,20 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
       <div className="mt-4 p-4 bg-opacity-50 rounded-lg border border-opacity-20">
         <style>
           {`
-            .policy-form-${policy.ipfsCid} * {
-              color: rgb(17 24 39);
+            .policy-form-${policy.ipfsCid} {
+              color: rgb(17 24 39) !important;
             }
             
-            @media (prefers-color-scheme: dark) {
-              .policy-form-${policy.ipfsCid} * {
-                color: rgb(255 255 255 / 0.8);
-              }
-            }
-            
-            .dark .policy-form-${policy.ipfsCid} * {
+            .dark .policy-form-${policy.ipfsCid} {
               color: rgb(255 255 255 / 0.8) !important;
             }
             
             .policy-form-${policy.ipfsCid} label {
-              color: rgb(17 24 39);
-              font-weight: 500;
-              margin-bottom: 0.5rem;
+              color: inherit !important;
+              font-weight: 400;
+              font-size: 0.75rem;
+              margin-bottom: 0.25rem;
               display: block;
-            }
-            
-            .dark .policy-form-${policy.ipfsCid} label {
-              color: rgb(255 255 255 / 0.9);
             }
             
             .policy-form-${policy.ipfsCid} input,
@@ -101,8 +92,9 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
               border: 1px solid rgb(209 213 219);
               color: rgb(17 24 39);
               border-radius: 0.5rem;
-              padding: 0.75rem;
+              padding: 0.5rem;
               width: 100%;
+              font-size: 0.75rem;
               transition: all 0.2s ease;
             }
             
@@ -139,14 +131,30 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
               color: rgb(255 255 255 / 0.4);
             }
             
-            .policy-form-${policy.ipfsCid} .field-description {
-              color: rgb(107 114 128);
-              font-size: 0.875rem;
-              margin-top: 0.25rem;
+            .policy-form-${policy.ipfsCid} * {
+              font-size: 0.625rem !important;
             }
             
-            .dark .policy-form-${policy.ipfsCid} .field-description {
-              color: rgb(255 255 255 / 0.6);
+            .policy-form-${policy.ipfsCid} label {
+              font-size: 0.75rem !important;
+            }
+            
+            .policy-form-${policy.ipfsCid} input,
+            .policy-form-${policy.ipfsCid} textarea,
+            .policy-form-${policy.ipfsCid} select {
+              font-size: 0.75rem !important;
+            }
+            
+            .policy-form-${policy.ipfsCid} .field-description,
+            .policy-form-${policy.ipfsCid} .form-text,
+            .policy-form-${policy.ipfsCid} .help-text,
+            .policy-form-${policy.ipfsCid} .description,
+            .policy-form-${policy.ipfsCid} .field-help,
+            .policy-form-${policy.ipfsCid} small,
+            .policy-form-${policy.ipfsCid} .text-muted,
+            .policy-form-${policy.ipfsCid} p {
+              opacity: 0.7 !important;
+              font-size: 0.625rem !important;
             }
             
             .policy-form-${policy.ipfsCid} .field-error,

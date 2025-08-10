@@ -9,7 +9,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ icon, title, description }: PageHeaderProps) {
   return (
-    <div className={`px-6 py-4 border-b ${theme.cardBorder}`}>
+    <div className={`px-3 sm:px-4 py-3 border-b ${theme.cardBorder}`}>
       <div className="flex items-center gap-3">
         <div className="flex-shrink-0">
           <div
@@ -19,8 +19,8 @@ export function PageHeader({ icon, title, description }: PageHeaderProps) {
           </div>
         </div>
         <div>
-          <h1 className={`text-xl font-bold ${theme.text}`}>{title}</h1>
-          <p className={`text-sm ${theme.textMuted}`}>{description}</p>
+          <h1 className={`text-lg font-bold ${theme.text}`}>{title}</h1>
+          <p className={`text-xs ${theme.textMuted}`}>{description}</p>
         </div>
       </div>
     </div>

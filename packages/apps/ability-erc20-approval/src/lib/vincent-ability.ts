@@ -60,8 +60,17 @@ export const vincentAbility = createVincentAbility({
     console.log('Executing ERC20 Approval Ability');
 
     const { ethAddress, publicKey } = delegatorPkpInfo;
-    const { rpcUrl, chainId, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } =
-      abilityParams;
+    const {
+      rpcUrl,
+      chainId,
+      spenderAddress,
+      tokenAddress,
+      tokenDecimals,
+      tokenAmount,
+      alchemyGasSponsor,
+      alchemyGasSponsorApiKey,
+      alchemyGasSponsorPolicyId,
+    } = abilityParams;
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
@@ -108,6 +117,9 @@ export const vincentAbility = createVincentAbility({
       spenderAddress,
       tokenAmount: requiredAmount,
       tokenAddress,
+      alchemyGasSponsor,
+      alchemyGasSponsorApiKey,
+      alchemyGasSponsorPolicyId,
     });
 
     console.log('Ability execution successful', {
