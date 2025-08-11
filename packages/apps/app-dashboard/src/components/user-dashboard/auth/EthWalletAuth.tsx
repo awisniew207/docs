@@ -5,7 +5,6 @@ import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
 import StatusMessage from '../connect/StatusMessage';
-import Loading from '@/components/shared/ui/Loading';
 
 interface WalletAuthProps {
   authWithEthWallet: (
@@ -74,10 +73,6 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
       setError(errorMessage);
     }
   };
-
-  if (loading) {
-    return <Loading text="Please sign the message in your wallet" />;
-  }
 
   return (
     <>

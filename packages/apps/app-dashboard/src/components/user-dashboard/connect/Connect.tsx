@@ -162,7 +162,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
     let currentMessage = '';
     if (authLoading) {
-      currentMessage = 'Please sign the message in your wallet';
+      currentMessage = 'Authenticating...';
     } else if (accountsLoading) {
       currentMessage = 'Fetching your Vincent Wallet...';
     } else if (sessionLoading) {
