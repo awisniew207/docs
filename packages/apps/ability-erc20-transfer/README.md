@@ -54,16 +54,16 @@ providing:
 
 All functions accept the following parameters:
 
-| Parameter                   | Type      | Description                                                                   |
-| --------------------------- | --------- | ----------------------------------------------------------------------------- |
-| `rpcUrl`                    | `string`  | RPC URL used during precheck validations                                      |
-| `chain`                     | `string`  | Chain name used during execute (e.g., 'base', 'ethereum')                     |
-| `to`                        | `string`  | Recipient address (0x...)                                                     |
-| `tokenAddress`              | `string`  | ERC-20 token contract address (0x...)                                         |
-| `amount`                    | `string`  | Amount in human-readable string (e.g., "1.23")                                |
-| `alchemyGasSponsor`         | `boolean` | Whether to use Alchemy's gas sponsorship (EIP-7702)                           |
-| `alchemyGasSponsorApiKey`   | `string`  | Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)   |
-| `alchemyGasSponsorPolicyId` | `string`  | Alchemy gas policy ID for sponsorship (required if alchemyGasSponsor is true) |
+| Parameter                   | Type      | Description                                                                                                                                 |
+| --------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rpcUrl`                    | `string`  | RPC URL used during precheck validations                                                                                                    |
+| `chain`                     | `string`  | Lit [supported EVM chain name](https://developer.litprotocol.com/resources/supported-chains) used during execute (e.g., 'base', 'ethereum') |
+| `to`                        | `string`  | Recipient address (0x...)                                                                                                                   |
+| `tokenAddress`              | `string`  | ERC-20 token contract address (0x...)                                                                                                       |
+| `amount`                    | `string`  | Amount in human-readable string (e.g., "1.23")                                                                                              |
+| `alchemyGasSponsor`         | `boolean` | Whether to use Alchemy's gas sponsorship (EIP-7702)                                                                                         |
+| `alchemyGasSponsorApiKey`   | `string`  | Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)                                                                 |
+| `alchemyGasSponsorPolicyId` | `string`  | Alchemy gas policy ID for sponsorship (required if alchemyGasSponsor is true)                                                               |
 
 ## Usage Examples
 
@@ -117,10 +117,10 @@ const transferParams = {
 
 ### 2. Execute Phase
 
-- Connects to specified RPC endpoint
+- Connects to specified chain
 - Retrieves PKP public key from delegation context
 - Converts PKP public key to Ethereum address
-- Parses token amount using specified decimals
+- Parses token amount using retrieved number of decimals
 - Validates native balance for gas fees
 - Validates token balance for transfer amount
 - Executes ERC-20 transfer using `laUtils.transaction.handler.contractCall`
@@ -129,7 +129,7 @@ const transferParams = {
 
 ## Policy Integration
 
-The ability automatically integrates with the `send-counter-limit` policy:
+The ability automatically integrates with the `send-counter-limit` policy if enabled by the Vincent App User:
 
 - **Precheck**: Validates ability parameters
 - **Execute**: Performs the actual ERC-20 transfer
