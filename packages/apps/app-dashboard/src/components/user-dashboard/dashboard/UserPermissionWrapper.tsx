@@ -36,22 +36,38 @@ export function UserPermissionWrapper() {
     authorizedRedirectUris: data?.app?.redirectUris,
   });
 
-  if (isProcessing) {
-    return <ManagePagesSkeleton />;
-  }
-
+  // Wait for ALL critical data to load before making routing decisions
   const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
+
+  // Check if we have finished loading but got no data (invalid appId)
+  const hasFinishedLoadingButNoData = !isLoading && !data;
+
+  const isAllDataLoaded =
+    data &&
+    !isLoading &&
+    !isProcessing &&
+    // Only wait for permissions if user is authenticated
+    (isUserAuthed ? !isExistingDataLoading && !permissionsLoading : true);
+
+  // Authentication check - must be done before other business logic
   if (!isProcessing && !isUserAuthed) {
     return (
       <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
     );
   }
 
-  if (isLoading || isExistingDataLoading || permissionsLoading) {
+  // Check for invalid appId first (finished loading but no data OR has error)
+  if (hasFinishedLoadingButNoData || (isError && errors.length > 0)) {
+    const errorMessage =
+      isError && errors.length > 0 ? errors.join(', ') : `App with ID ${appId} not found`;
+    return <GeneralErrorScreen errorDetails={errorMessage} />;
+  }
+
+  if (!isAllDataLoaded) {
     return <ManagePagesSkeleton />;
   }
 
-  // Check for redirect URI validation errors (only when redirectUri is provided but invalid)
+  // Check for redirect URI validation errors (highest priority)
   if (isRedirectUriAuthorized === false && redirectUri) {
     return (
       <BadRedirectUriError
@@ -61,6 +77,7 @@ export function UserPermissionWrapper() {
     );
   }
 
+  // Check for any errors
   if (
     isError ||
     error ||
