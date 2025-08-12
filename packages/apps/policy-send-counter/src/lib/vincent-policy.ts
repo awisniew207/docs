@@ -232,8 +232,7 @@ export const vincentPolicy = createVincentPolicy({
 
     if (checkResponse.shouldReset) {
       console.log(
-        `[@lit-protocol/vincent-policy-send-counter-limit/commit] Resetting counter for ${ethAddress} due to time 
-      window expiration`,
+        `[@lit-protocol/vincent-policy-send-counter-limit/commit] Resetting counter for ${ethAddress} due to time window expiration`,
       );
       try {
         await resetSendCounter(ethAddress, delegatorPkpInfo.publicKey);

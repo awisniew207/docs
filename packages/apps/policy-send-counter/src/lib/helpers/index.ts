@@ -69,8 +69,9 @@ export async function checkSendLimit(
 
     // If time window has elapsed, user can send again (count effectively resets)
     if (timeWindowElapsed) {
-      console.log(`Time window elapsed for ${userAddress}, allowing
-     send (count will reset on next commit)`);
+      console.log(
+        `Time window elapsed for ${userAddress}, allowing send (count will reset on next commit)`,
+      );
       return {
         allowed: true,
         currentCount: 0, // Will be reset on next commit
@@ -109,8 +110,7 @@ export async function checkSendLimit(
  * @param pkpPublicKey - The PKP public key for signing
  */
 export async function resetSendCounter(userAddress: string, pkpPublicKey: string): Promise<string> {
-  console.log(`Resetting send counter for ${userAddress} on 
-  contract ${counterSignatures.address}`);
+  console.log(`Resetting send counter for ${userAddress} on contract ${counterSignatures.address}`);
 
   try {
     const provider = new ethers.providers.JsonRpcProvider(
