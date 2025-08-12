@@ -33,5 +33,6 @@ export const env = createEnv({
     VITE_ENV: z.enum(['staging', 'production']).default('staging').optional(),
     VITE_VINCENT_YIELD_APPID: z.coerce.number(),
     VITE_VINCENT_BASE_RPC: z.string(),
+    VITE_DASHBOARD_URL: z.string(),
   },
 });
