@@ -191,15 +191,7 @@ export const vincentAbility = createVincentAbility({
       console.log('[@agentic-ai/vincent-ability-erc20-transfer/execute] ⛓️ Using Chain:', chain);
 
       // Get PKP public key from delegation context
-      const pkpPublicKey = delegation.delegatorPkpInfo.publicKey;
-      if (!pkpPublicKey) {
-        throw new Error('PKP public key not available from delegation context');
-      }
-      const pkpAddress = ethers.utils.computeAddress(pkpPublicKey);
-      console.log(
-        '[@agentic-ai/vincent-ability-erc20-transfer/execute] 🔑 PKP wallet address:',
-        pkpAddress,
-      );
+      const { publicKey, ethAddress } = delegation.delegatorPkpInfo;
 
       // Get decimals
       const tokenDecimals = await erc20Contract.decimals();
@@ -218,8 +210,8 @@ export const vincentAbility = createVincentAbility({
       // Prepare contract call data for ERC-20 transfer
       const contractCallData = {
         provider,
-        pkpPublicKey,
-        callerAddress: pkpAddress,
+        pkpPublicKey: publicKey,
+        callerAddress: ethAddress,
         contractAddress: tokenAddress,
         abi: ERC20_ABI,
         functionName: 'transfer',

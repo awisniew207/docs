@@ -53,22 +53,16 @@ export const vincentPolicy = createVincentPolicy({
     const { ethAddress } = delegatorPkpInfo;
 
     try {
-      // Convert BigInt to number for helper function
-      const maxSendsNum = Number(maxSends);
-      const timeWindowSecondsNum = Number(timeWindowSeconds);
-
       // Check current send limit for the user
-      const limitCheck = await checkSendLimit(ethAddress, maxSendsNum, timeWindowSecondsNum);
+      const limitCheck = await checkSendLimit(ethAddress, maxSends, timeWindowSeconds);
 
       if (!limitCheck.allowed) {
         const denyResult = {
-          reason: `Send limit exceeded. Maximum ${Number(
-            maxSends,
-          )} sends per ${Number(timeWindowSeconds)} seconds. Try again in ${
+          reason: `Send limit exceeded. Maximum ${maxSends} sends per ${timeWindowSeconds} seconds. Try again in ${
             limitCheck.secondsUntilReset
           } seconds.`,
           currentCount: limitCheck.currentCount,
-          maxSends: Number(maxSends),
+          maxSends: maxSends,
           secondsUntilReset: limitCheck.secondsUntilReset || 0,
         };
 
@@ -85,7 +79,7 @@ export const vincentPolicy = createVincentPolicy({
         );
         console.log(
           '[@lit-protocol/vincent-policy-send-counter-limit/precheck] 🚫 Max sends:',
-          Number(maxSends),
+          maxSends,
         );
         console.log(
           '[@lit-protocol/vincent-policy-send-counter-limit/precheck] 🚫 Limit check result:',
@@ -104,10 +98,10 @@ export const vincentPolicy = createVincentPolicy({
       }
 
       const allowResult = {
+        maxSends,
+        timeWindowSeconds,
         currentCount: limitCheck.currentCount,
-        maxSends: Number(maxSends),
         remainingSends: limitCheck.remainingSends,
-        timeWindowSeconds: Number(timeWindowSeconds),
       };
 
       console.log('[SendLimitPolicy/precheck] ✅ POLICY PRECHECK ALLOWING REQUEST:');
@@ -116,7 +110,7 @@ export const vincentPolicy = createVincentPolicy({
         JSON.stringify(allowResult, null, 2),
       );
       console.log('[SendLimitPolicy/precheck] ✅ Current count:', limitCheck.currentCount);
-      console.log('[SendLimitPolicy/precheck] ✅ Max sends:', Number(maxSends));
+      console.log('[SendLimitPolicy/precheck] ✅ Max sends:', maxSends);
       console.log('[SendLimitPolicy/precheck] ✅ Remaining sends:', limitCheck.remainingSends);
 
       const allowResponse = allow(allowResult);
@@ -128,9 +122,9 @@ export const vincentPolicy = createVincentPolicy({
     } catch (error) {
       console.error('[SendLimitPolicy/precheck] Error in precheck:', error);
       return deny({
+        maxSends,
         reason: `Policy error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         currentCount: 0,
-        maxSends: Number(maxSends),
         secondsUntilReset: 0,
       });
     }
@@ -138,7 +132,7 @@ export const vincentPolicy = createVincentPolicy({
 
   evaluate: async (
     { abilityParams, userParams },
-    { allow, deny, appId, delegation: { delegatorPkpInfo } },
+    { allow, deny, delegation: { delegatorPkpInfo } },
   ) => {
     console.log(
       '[@lit-protocol/vincent-policy-send-counter-limit/evaluate] Evaluating send limit policy',
@@ -156,11 +150,7 @@ export const vincentPolicy = createVincentPolicy({
       { waitForResponse: true, name: 'checkSendLimit' },
       async () => {
         try {
-          // Convert BigInt to number for helper function
-          const maxSendsNum = Number(maxSends);
-          const timeWindowSecondsNum = Number(timeWindowSeconds);
-
-          const limitCheck = await checkSendLimit(ethAddress, maxSendsNum, timeWindowSecondsNum);
+          const limitCheck = await checkSendLimit(ethAddress, maxSends, timeWindowSeconds);
 
           return JSON.stringify({
             status: 'success',
@@ -178,11 +168,11 @@ export const vincentPolicy = createVincentPolicy({
     const parsedResponse = JSON.parse(checkSendResponse);
     if (parsedResponse.status === 'error') {
       return deny({
+        maxSends,
+        timeWindowSeconds,
         reason: `Error checking send limit: ${parsedResponse.error} (evaluate)`,
         currentCount: 0,
-        maxSends: Number(maxSends),
         secondsUntilReset: 0,
-        timeWindowSeconds: Number(timeWindowSeconds),
       });
     }
 
@@ -190,15 +180,11 @@ export const vincentPolicy = createVincentPolicy({
 
     if (!allowed) {
       return deny({
-        reason: `Send limit exceeded during evaluation. Maximum ${Number(
-          maxSends,
-        )} sends per ${Number(
-          timeWindowSeconds,
-        )} seconds. Try again in ${secondsUntilReset} seconds.`,
+        reason: `Send limit exceeded during evaluation. Maximum ${maxSends} sends per ${timeWindowSeconds} seconds. Try again in ${secondsUntilReset} seconds.`,
         currentCount,
-        maxSends: Number(maxSends),
+        maxSends,
+        timeWindowSeconds,
         secondsUntilReset: secondsUntilReset || 0,
-        timeWindowSeconds: Number(timeWindowSeconds),
       });
     }
 
@@ -213,9 +199,9 @@ export const vincentPolicy = createVincentPolicy({
 
     return allow({
       currentCount,
-      maxSends: Number(maxSends),
+      maxSends,
       remainingSends,
-      timeWindowSeconds: Number(timeWindowSeconds),
+      timeWindowSeconds,
     });
   },
 
@@ -228,7 +214,7 @@ export const vincentPolicy = createVincentPolicy({
     console.log('[@lit-protocol/vincent-policy-send-counter-limit/commit] 🚀 IM COMMITING!');
 
     // Check if we need to reset the counter first
-    const checkResponse = await checkSendLimit(ethAddress, maxSends, Number(timeWindowSeconds));
+    const checkResponse = await checkSendLimit(ethAddress, maxSends, timeWindowSeconds);
 
     if (checkResponse.shouldReset) {
       console.log(
@@ -273,7 +259,7 @@ export const vincentPolicy = createVincentPolicy({
       });
 
       const newCount = currentCount + 1;
-      const remainingSends = Number(maxSends) - newCount;
+      const remainingSends = maxSends - newCount;
 
       console.log(
         '[@lit-protocol/vincent-policy-send-counter-limit/commit] Policy commit successful',
@@ -300,7 +286,7 @@ export const vincentPolicy = createVincentPolicy({
       return allow({
         recorded: false,
         newCount: currentCount + 1,
-        remainingSends: Math.max(0, Number(maxSends) - currentCount - 1),
+        remainingSends: Math.max(0, maxSends - currentCount - 1),
       });
     }
   },

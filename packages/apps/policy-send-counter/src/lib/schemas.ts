@@ -19,16 +19,12 @@ export const abilityParamsSchema = z.object({
  */
 export const userParamsSchema = z.object({
   maxSends: z
-    .bigint()
-    .min(1n)
-    .max(100n)
-    .default(2n)
+    .number()
+    .positive()
     .describe('Maximum number of sends allowed within the configured time window.'),
   timeWindowSeconds: z
-    .bigint()
-    .min(1n)
-    .max(604800n)
-    .default(10n) // Default to 10 seconds for testing
+    .number()
+    .positive()
     .describe('Length of the counting window in seconds (e.g., 10 = 10 seconds).'),
 });
 
