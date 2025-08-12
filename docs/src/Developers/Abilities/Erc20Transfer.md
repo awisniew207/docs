@@ -34,7 +34,7 @@ the [Vincent Ability SDK](../Ability-Developers/Creating-Abilities.md) and opera
 - Uses the provided `chain` name to obtain an RPC via `Lit.Actions.getRpcUrl({ chain })`
 - Reads token `decimals` and parses the amount to smallest units
 - Commits allowed policies (e.g., rate-limiting) before the transfer
-- Calls `transfer(to, amount)` on the ERC-20 contract via laUtils and returns the `txHash`
+- Calls `transfer(to, amount)` on the ERC-20 contract via `laUtils` and returns the `txHash`
 
 ## Getting Started
 
@@ -195,7 +195,7 @@ Execute failure result:
   attempts to estimate gas and compare against the wallet's native balance.
 - Token Decimals: The ability reads `decimals` from the token contract; do not pass `tokenDecimals`.
 - Chains: The `chain` parameter is used to obtain an RPC during execution via
-  `Lit.Actions.getRpcUrl`. Use supported chain names (e.g., `base`, `ethereum`).
+  `Lit.Actions.getRpcUrl`. Use [supported EVM chain names](https://developer.litprotocol.com/resources/supported-chains) (e.g., `base`, `ethereum`).
 - Policies: The ability commits allowed policy updates before executing the transfer (e.g.,
   send-counter rate limiting).
 
