@@ -29,14 +29,14 @@ export async function executeOperation({
   alchemyGasSponsorPolicyId?: string;
 }): Promise<string> {
   console.log(
-    `[@lit-protocol/vincent-ability-morpho/executeMorphoOperation] Starting ${functionName} operation`,
+    `[@lit-protocol/vincent-ability-erc20-transfer/executeOperation] Starting ${functionName} operation`,
     { sponsored: !!alchemyGasSponsor },
   );
 
   // Use gas sponsorship if enabled and all required parameters are provided
   if (alchemyGasSponsor && alchemyGasSponsorApiKey && alchemyGasSponsorPolicyId) {
     console.log(
-      `[@lit-protocol/vincent-ability-morpho/executeMorphoOperation] Using EIP-7702 gas sponsorship`,
+      `[@lit-protocol/vincent-ability-erc20-transfer/executeOperation] Using EIP-7702 gas sponsorship`,
       { callerAddress, contractAddress, functionName, args, policyId: alchemyGasSponsorPolicyId },
     );
 
@@ -53,7 +53,7 @@ export async function executeOperation({
       });
     } catch (error) {
       console.error(
-        `[@lit-protocol/vincent-ability-morpho/executeMorphoOperation] EIP-7702 operation failed:`,
+        `[@lit-protocol/vincent-ability-erc20-transfer/executeOperation] EIP-7702 operation failed:`,
         error,
       );
       throw error;
@@ -61,7 +61,7 @@ export async function executeOperation({
   } else {
     // Use regular transaction without gas sponsorship
     console.log(
-      `[@lit-protocol/vincent-ability-morpho/executeMorphoOperation] Using regular transaction`,
+      `[@lit-protocol/vincent-ability-erc20-transfer/executeOperation] Using regular transaction`,
     );
 
     if (!provider) {
@@ -81,7 +81,7 @@ export async function executeOperation({
       });
     } catch (error) {
       console.error(
-        `[@lit-protocol/vincent-ability-morpho/executeMorphoOperation] Regular transaction failed:`,
+        `[@lit-protocol/vincent-ability-erc20-transfer/executeOperation] Regular transaction failed:`,
         error,
       );
       throw error;

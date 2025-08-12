@@ -89,7 +89,7 @@ export const vincentAbility = createVincentAbility({
     if (alchemyGasSponsor && (!alchemyGasSponsorApiKey || !alchemyGasSponsorPolicyId)) {
       return fail({
         error:
-          '[@lit-protocol/vincent-ability-morpho/precheck] Alchemy gas sponsor is enabled, but missing Alchemy API key or policy ID',
+          '[@lit-protocol/vincent-ability-erc20-transfer/precheck] Alchemy gas sponsor is enabled, but missing Alchemy API key or policy ID',
       });
     }
 
@@ -177,7 +177,7 @@ export const vincentAbility = createVincentAbility({
       if (alchemyGasSponsor && (!alchemyGasSponsorApiKey || !alchemyGasSponsorPolicyId)) {
         return fail({
           error:
-            '[@lit-protocol/vincent-ability-morpho/execute] Alchemy gas sponsor is enabled, but missing Alchemy API key or policy ID',
+            '[@lit-protocol/vincent-ability-erc20-transfer/execute] Alchemy gas sponsor is enabled, but missing Alchemy API key or policy ID',
         });
       }
 
