@@ -125,9 +125,9 @@ export const vincentAbility = createVincentAbility({
     // Estimate transfer gas and check there is enough
     const estimatedGas = await erc20Contract.estimateGas.transfer(to, amount);
     const nativeBalance = await provider.getBalance(pkpAddress);
-    if (nativeBalance.lt(estimatedGas)) {
+    if (!alchemyGasSponsor && nativeBalance.lt(estimatedGas)) {
       return fail({
-        error: `[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ In7702 on the approval abilitysufficient gas. Need ${estimatedGas.toString()} gas, but only have ${nativeBalance.toString()} gas`,
+        error: `[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Insufficient gas for ERC20 transfer. Need ${estimatedGas.toString()} gas, but only have ${nativeBalance.toString()} gas`,
       });
     }
 
