@@ -253,9 +253,6 @@ export const vincentPolicy = createVincentPolicy({
         contractAddress: counterSignatures.address,
         functionName: 'increment',
         args: [],
-        overrides: {
-          gasLimit: 100000,
-        },
       });
 
       const newCount = currentCount + 1;
