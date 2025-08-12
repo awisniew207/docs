@@ -54,42 +54,59 @@ export function ConnectPageWrapper() {
     ? data.versionsByApp[appId!]?.find((v) => v.version === data.app.activeVersion)
     : undefined;
 
+  // Wait for ALL critical data to load before making routing decisions
+  const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
+
+  // Check if we have finished loading but got no data (invalid appId)
+  const hasFinishedLoadingButNoData = !isLoading && !data;
+
+  const isAllDataLoaded =
+    data &&
+    !isLoading &&
+    !isProcessing &&
+    // Only wait for permissions if user is authenticated
+    (isUserAuthed ? !isPermittedLoading : true) &&
+    (!userPermittedVersion || !versionDataLoading);
+
+  // Now make routing decisions with complete information
   let content;
 
-  // Early return if required params are missing
-  if (!appId) {
-    content = <GeneralErrorScreen errorDetails="App ID was not provided" />;
-  }
-
-  // Wait for data to load first (but don't require sessionSigs for unauthenticated users)
-  else if (!data) {
-    content = <UnifiedConnectSkeleton mode="auth" />;
-  }
-
-  // Check for redirect URI validation errors immediately after we have data (highest priority)
-  else if (isRedirectUriAuthorized === false && redirectUri) {
+  // Check for invalid appId first (finished loading but no data OR has error)
+  if (hasFinishedLoadingButNoData || (isError && errors.length > 0)) {
+    const errorMessage =
+      isError && errors.length > 0 ? errors.join(', ') : `App with ID ${appId} not found`;
+    content = <GeneralErrorScreen errorDetails={errorMessage} />;
+  } else if (!isAllDataLoaded) {
+    content = <UnifiedConnectSkeleton mode={isUserAuthed ? 'consent' : 'auth'} />;
+  } else if (isRedirectUriAuthorized === false && redirectUri) {
     content = (
       <BadRedirectUriError
         redirectUri={redirectUri || undefined}
         authorizedUris={data.app?.redirectUris}
       />
     );
-  } else if (isLoading || isProcessing || isPermittedLoading) {
-    // Check if we need auth skeleton or connect page skeleton
-    const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
-    content = <UnifiedConnectSkeleton mode={isUserAuthed ? 'consent' : 'auth'} />;
   }
-
-  // Wait for version data when we have a permitted version OR when user is permitted but version data is loading
-  else if (
-    (userPermittedVersion && versionDataLoading) ||
-    (isPermitted === true && userPermittedVersion && !versionData)
-  ) {
-    content = <UnifiedConnectSkeleton mode="consent" />;
+  // Check for unpublished app version
+  else if (appExists === true && activeVersionExists === false && isPermitted !== true) {
+    content = (
+      <AppVersionNotInRegistryConnect
+        appData={data.app}
+        readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+      />
+    );
+  }
+  // Check for any errors
+  else if (isError || error || isPermittedError || versionDataError) {
+    const errorMessage =
+      errors.length > 0
+        ? errors.join(', ')
+        : (error ??
+          isPermittedError ??
+          (versionDataError ? String(versionDataError) : undefined) ??
+          'An unknown error occurred');
+    content = <GeneralErrorScreen errorDetails={errorMessage} />;
   } else {
-    const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
-
-    // Now that we have data, check authentication
+    // Check authentication
     if (!isUserAuthed) {
       content = (
         <AuthConnectScreen
@@ -97,25 +114,9 @@ export function ConnectPageWrapper() {
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
         />
       );
-    } else if (isError || error || isPermittedError || versionDataError) {
-      const errorMessage =
-        errors.length > 0
-          ? errors.join(', ')
-          : (error ??
-            isPermittedError ??
-            (versionDataError ? String(versionDataError) : undefined) ??
-            'An unknown error occurred');
-      content = <GeneralErrorScreen errorDetails={errorMessage} />;
     }
-    // Check for unpublished app version BEFORE other permission checks
-    else if (appExists === true && activeVersionExists === false) {
-      content = (
-        <AppVersionNotInRegistryConnect
-          appData={data.app}
-          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
-        />
-      );
-    } else if (isPermitted === true && userPermittedVersion && versionData) {
+    // Check for existing user permissions
+    else if (isPermitted === true && userPermittedVersion && versionData) {
       content = (
         <ReturningUserConnect
           appData={data.app}
@@ -126,7 +127,9 @@ export function ConnectPageWrapper() {
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
         />
       );
-    } else {
+    }
+    // Default to connect page
+    else {
       content = (
         <ConnectPage
           connectInfoMap={data}
