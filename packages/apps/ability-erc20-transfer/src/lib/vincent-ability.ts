@@ -6,13 +6,7 @@ import {
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-send-counter';
 import { ethers } from 'ethers';
 
-import {
-  ERC20_ABI,
-  getErc20Contract,
-  isValidAddress,
-  isValidAmount,
-  parseTokenAmount,
-} from './helpers';
+import { ERC20_ABI, getErc20Contract, isValidAddress, isValidAmount } from './helpers';
 import { commitAllowedPolicies } from './helpers/commit-allowed-policies';
 import { executeOperation } from './helpers/execute-operation';
 import {
@@ -105,7 +99,7 @@ export const vincentAbility = createVincentAbility({
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const erc20Contract = getErc20Contract(provider, tokenAddress);
     const tokenDecimals = await erc20Contract.decimals();
-    const tokenAmountInWei = parseTokenAmount(amount, tokenDecimals);
+    const tokenAmountInWei = ethers.utils.parseUnits(amount, tokenDecimals);
     const pkpAddress = delegatorPkpInfo.ethAddress;
     if (!pkpAddress) {
       return fail({
@@ -215,7 +209,7 @@ export const vincentAbility = createVincentAbility({
       );
 
       // Parse amount to token units using decimals
-      const tokenAmountInWei = parseTokenAmount(amount, tokenDecimals);
+      const tokenAmountInWei = ethers.utils.parseUnits(amount, tokenDecimals);
       console.log(
         '[@agentic-ai/vincent-ability-erc20-transfer/execute] 💰 Transfer amount:',
         ethers.utils.formatUnits(tokenAmountInWei, tokenDecimals),

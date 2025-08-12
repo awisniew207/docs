@@ -78,19 +78,6 @@ export function getErc20Contract(provider: ethers.providers.JsonRpcProvider, add
 }
 
 /**
- * Parse amount string to wei units for ERC-20 tokens
- * @param amount - Amount as string (e.g., "1.5")
- * @param decimals - Token decimals (default 18)
- * @returns Amount in wei as string
- */
-export function parseTokenAmount(amount: string, decimals = 18): string {
-  const amountFloat = parseFloat(amount);
-  const multiplier = Math.pow(10, decimals);
-  const weiAmount = Math.floor(amountFloat * multiplier);
-  return weiAmount.toString();
-}
-
-/**
  * Validate Ethereum address format
  * @param address - Address to validate
  * @returns True if valid, false otherwise
