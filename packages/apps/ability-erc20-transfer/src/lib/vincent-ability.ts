@@ -39,7 +39,7 @@ export const vincentAbility = createVincentAbility({
   executeSuccessSchema,
   executeFailSchema,
 
-  precheck: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
+  precheck: async ({ abilityParams }, { succeed, fail, delegation }) => {
     console.log('[@agentic-ai/vincent-ability-erc20-transfer/precheck] 🔍 Starting validation');
     console.log('[@agentic-ai/vincent-ability-erc20-transfer/precheck] 📋 params:', {
       abilityParams,
@@ -111,16 +111,8 @@ export const vincentAbility = createVincentAbility({
       tokenAmountInSmallestUnit.toString(),
     );
 
-    const pkpAddress = delegatorPkpInfo.ethAddress;
-    if (!pkpAddress) {
-      return fail({
-        error:
-          '[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ PKP public key not available',
-      });
-    }
-
     // Check token balance
-    const userBalance = await erc20Contract.balanceOf(pkpAddress);
+    const userBalance = await erc20Contract.balanceOf(delegation.delegatorPkpInfo.ethAddress);
     console.log(
       '[@agentic-ai/vincent-ability-erc20-transfer/precheck] 💰 User balance in smallest unit:',
       ethers.utils.formatUnits(userBalance, tokenDecimals),
@@ -139,7 +131,7 @@ export const vincentAbility = createVincentAbility({
       estimatedGas.toString(),
     );
 
-    const nativeBalance = await provider.getBalance(pkpAddress);
+    const nativeBalance = await provider.getBalance(delegation.delegatorPkpInfo.ethAddress);
     if (!alchemyGasSponsor && nativeBalance.lt(estimatedGas)) {
       return fail({
         error: `[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Insufficient gas for ERC20 transfer. Need ${estimatedGas.toString()} gas, but only have ${nativeBalance.toString()} gas`,
