@@ -177,6 +177,9 @@ importers:
       '@lit-protocol/vincent-ability-erc20-approval':
         specifier: workspace:*
         version: link:../ability-erc20-approval
+      '@lit-protocol/vincent-ability-erc20-transfer':
+        specifier: workspace:*
+        version: link:../ability-erc20-transfer
       '@lit-protocol/vincent-ability-evm-transaction-signer':
         specifier: workspace:*
         version: link:../ability-evm-transaction-signer
@@ -195,6 +198,9 @@ importers:
       '@lit-protocol/vincent-policy-contract-whitelist':
         specifier: workspace:*
         version: link:../policy-contract-whitelist
+      '@lit-protocol/vincent-policy-send-counter':
+        specifier: workspace:*
+        version: link:../policy-send-counter
       '@lit-protocol/vincent-policy-spending-limit':
         specifier: workspace:*
         version: link:../policy-spending-limit

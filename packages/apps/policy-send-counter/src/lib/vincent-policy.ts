@@ -242,11 +242,11 @@ export const vincentPolicy = createVincentPolicy({
         `[@lit-protocol/vincent-policy-send-counter-limit/commit] Calling incrementByAddress(${ethAddress}) on contract ${counterSignatures.address}`,
       );
 
-      const provider = await Lit.Actions.getRpcUrl({ chain: 'yellowstone' });
-
       // Call contract directly without Lit.Actions.runOnce wrapper
       const txHash = await laUtils.transaction.handler.contractCall({
-        provider,
+        provider: new ethers.providers.JsonRpcProvider(
+          await Lit.Actions.getRpcUrl({ chain: 'yellowstone' }),
+        ),
         pkpPublicKey: delegatorPkpInfo.publicKey,
         callerAddress: ethAddress,
         abi: [counterSignatures.methods.increment],
