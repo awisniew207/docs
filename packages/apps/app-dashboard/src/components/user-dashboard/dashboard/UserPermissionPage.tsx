@@ -135,6 +135,7 @@ export function AppPermissionPage({
         return;
       }
     } else {
+      setLocalError('Some of your permissions are not valid. Please check the form and try again.');
       setLocalStatus(null);
     }
   }, [
