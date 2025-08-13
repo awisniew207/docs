@@ -26,15 +26,8 @@ export const useUserPermissionsForApps = ({
 
   // Memoize PKPs with stable reference to prevent infinite re-renders
   const stablePKPs = useMemo(() => {
-    // Create a stable array based on PKP addresses
-    const sortedPKPs = [...agentPKPs].sort((a, b) => a.ethAddress.localeCompare(b.ethAddress));
-    return sortedPKPs;
-  }, [
-    agentPKPs
-      .map((pkp) => pkp.ethAddress)
-      .sort()
-      .join(','),
-  ]);
+    return [...agentPKPs].sort((a, b) => a.ethAddress.localeCompare(b.ethAddress));
+  }, [JSON.stringify(agentPKPs.map((pkp) => pkp.ethAddress).sort())]);
 
   useEffect(() => {
     // Early return if params are missing

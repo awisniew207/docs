@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { useUserPermissionsForApps } from '@/hooks/user-dashboard/dashboard/useUserPermissionsForApps';
-import { useAllAgentAppPermissions } from '@/hooks/user-dashboard/useAllAgentAppIds';
+import { useAllAgentApps } from '@/hooks/user-dashboard/useAllAgentApps';
 import { App } from '@/types/developer-dashboard/appTypes';
 
 interface UseSidebarDataProps {
@@ -28,16 +28,13 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
     permittedPKPs: agentAppPermissions,
     loading: agentPermissionsLoading,
     error: agentPermissionsError,
-  } = useAllAgentAppPermissions(userAddress);
+  } = useAllAgentApps(userAddress);
 
-  // Get unique agent PKPs
-  const allAgentPKPs = Array.from(
-    new Map(agentAppPermissions.map((p) => [p.pkp.ethAddress, p.pkp])).values(),
-  );
+  // Get agent PKPs from permissions
+  const allAgentPKPs = agentAppPermissions.map((p) => p.pkp);
 
   // Get permissions data for all agent PKPs
   const {
-    permittedApps,
     permittedAppVersions: permittedVersionsFromHook,
     isLoading: permissionsLoading,
     error: permissionsError,
@@ -49,15 +46,6 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
 
   // Fetch all data when permissions are ready
   useEffect(() => {
-    console.log(
-      '[useSidebarData] agentPermissionsLoading:',
-      agentPermissionsLoading,
-      'permissionsLoading:',
-      permissionsLoading,
-      'permittedApps:',
-      permittedApps,
-    );
-
     // Don't start if agent permissions or PKP permissions are still loading
     if (agentPermissionsLoading || permissionsLoading) {
       return;
@@ -78,7 +66,7 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
     }
 
     // If no permitted apps and we have confirmed agent permissions, we can finish early
-    if (permittedApps !== null && permittedApps.length === 0 && agentAppPermissions.length === 0) {
+    if (Object.keys(permittedVersionsFromHook).length === 0 && agentAppPermissions.length === 0) {
       console.log(
         '[useSidebarData] No permitted apps and no agent permissions, setting empty state and finishing loading',
       );
@@ -90,7 +78,7 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
     }
 
     // Don't proceed if we don't have real permitted apps data yet
-    if (permittedApps === null || permittedApps.length === 0) {
+    if (Object.keys(permittedVersionsFromHook).length === 0) {
       console.log('[useSidebarData] Waiting for permitted apps data, not proceeding...');
       return;
     }
@@ -105,7 +93,7 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
         setPermittedAppVersions(permittedVersionsFromHook || {});
 
         // If no permitted apps, we're done immediately
-        if (!permittedApps.length) {
+        if (Object.keys(permittedVersionsFromHook).length === 0) {
           setApps([]);
           setAppVersionsMap({});
           setIsLoading(false);
@@ -117,7 +105,9 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
         const allApps = appsResponse.data || [];
 
         // Filter apps based on permitted app IDs
-        const filteredApps = allApps.filter((app) => permittedApps.includes(app.appId));
+        const filteredApps = allApps.filter(
+          (app) => app.appId.toString() in permittedVersionsFromHook,
+        );
 
         setApps(filteredApps);
 
@@ -156,7 +146,6 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
     agentAppPermissions.length,
     permissionsLoading,
     permissionsError,
-    permittedApps,
     permittedVersionsFromHook,
   ]); // Dependencies from permissions hook
 

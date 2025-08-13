@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IRelayPKP } from '@lit-protocol/types';
 import { getAgentPKPs, AgentAppPermission } from '../../utils/user-dashboard/getAgentPKP';
 
-export function useAllAgentAppPermissions(userAddress: string | undefined) {
+export function useAllAgentApps(userAddress: string | undefined) {
   const [permittedPKPs, setPermittedPKPs] = useState<AgentAppPermission[]>([]);
   const [unpermittedPKPs, setUnpermittedPKPs] = useState<IRelayPKP[]>([]);
   const [loading, setLoading] = useState(false);

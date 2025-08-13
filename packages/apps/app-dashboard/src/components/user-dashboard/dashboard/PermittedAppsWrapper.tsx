@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { PermittedAppsPage } from './PermittedAppsPage';
-import { useAllAgentAppPermissions } from '@/hooks/user-dashboard/useAllAgentAppIds';
+import { useAllAgentApps } from '@/hooks/user-dashboard/useAllAgentApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { PermittedAppsSkeleton } from './PermittedAppsSkeleton';
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
@@ -22,7 +22,7 @@ export function PermittedAppsWrapper() {
     unpermittedPKPs,
     loading: permissionsLoading,
     error: permissionsError,
-  } = useAllAgentAppPermissions(userAddress);
+  } = useAllAgentApps(userAddress);
 
   // Check if Vincent Yield app is permitted
   const hasVincentYieldPerms = permittedPKPs.some((p) => p.appId === env.VITE_VINCENT_YIELD_APPID);
