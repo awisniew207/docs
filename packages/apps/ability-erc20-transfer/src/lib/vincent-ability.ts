@@ -98,8 +98,19 @@ export const vincentAbility = createVincentAbility({
     // Check if the sender has enough tokens
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const erc20Contract = getErc20Contract(provider, tokenAddress);
+
     const tokenDecimals = await erc20Contract.decimals();
-    const tokenAmountInWei = ethers.utils.parseUnits(amount, tokenDecimals);
+    console.log(
+      '[@agentic-ai/vincent-ability-erc20-transfer/precheck] 🔢 Using token decimals:',
+      tokenDecimals,
+    );
+
+    const tokenAmountInSmallestUnit = ethers.utils.parseUnits(amount, tokenDecimals);
+    console.log(
+      '[@agentic-ai/vincent-ability-erc20-transfer/precheck] 💰 Transfer amount in smallest unit:',
+      tokenAmountInSmallestUnit.toString(),
+    );
+
     const pkpAddress = delegatorPkpInfo.ethAddress;
     if (!pkpAddress) {
       return fail({
@@ -110,14 +121,24 @@ export const vincentAbility = createVincentAbility({
 
     // Check token balance
     const userBalance = await erc20Contract.balanceOf(pkpAddress);
-    if (userBalance.lt(tokenAmountInWei)) {
+    console.log(
+      '[@agentic-ai/vincent-ability-erc20-transfer/precheck] 💰 User balance in smallest unit:',
+      ethers.utils.formatUnits(userBalance, tokenDecimals),
+    );
+
+    if (userBalance.lt(tokenAmountInSmallestUnit)) {
       return fail({
-        error: `[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Insufficient token balance. Need ${ethers.utils.formatUnits(tokenAmountInWei, tokenDecimals)} tokens, but only have ${ethers.utils.formatUnits(userBalance, tokenDecimals)} tokens`,
+        error: `[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Insufficient token balance. Need ${ethers.utils.formatUnits(tokenAmountInSmallestUnit, tokenDecimals)} tokens, but only have ${ethers.utils.formatUnits(userBalance, tokenDecimals)} tokens`,
       });
     }
 
     // Estimate transfer gas and check there is enough
-    const estimatedGas = await erc20Contract.estimateGas.transfer(to, amount);
+    const estimatedGas = await erc20Contract.estimateGas.transfer(to, tokenAmountInSmallestUnit);
+    console.log(
+      '[@agentic-ai/vincent-ability-erc20-transfer/precheck] 💰 Estimated gas:',
+      estimatedGas.toString(),
+    );
+
     const nativeBalance = await provider.getBalance(pkpAddress);
     if (!alchemyGasSponsor && nativeBalance.lt(estimatedGas)) {
       return fail({
@@ -190,9 +211,6 @@ export const vincentAbility = createVincentAbility({
 
       console.log('[@agentic-ai/vincent-ability-erc20-transfer/execute] ⛓️ Using Chain:', chain);
 
-      // Get PKP public key from delegation context
-      const { publicKey, ethAddress } = delegation.delegatorPkpInfo;
-
       // Get decimals
       const tokenDecimals = await erc20Contract.decimals();
       console.log(
@@ -201,21 +219,21 @@ export const vincentAbility = createVincentAbility({
       );
 
       // Parse amount to token units using decimals
-      const tokenAmountInWei = ethers.utils.parseUnits(amount, tokenDecimals);
+      const tokenAmountInSmallestUnit = ethers.utils.parseUnits(amount, tokenDecimals);
       console.log(
-        '[@agentic-ai/vincent-ability-erc20-transfer/execute] 💰 Transfer amount:',
-        ethers.utils.formatUnits(tokenAmountInWei, tokenDecimals),
+        '[@agentic-ai/vincent-ability-erc20-transfer/execute] 💰 Transfer amount in smallest unit:',
+        tokenAmountInSmallestUnit.toString(),
       );
 
       // Prepare contract call data for ERC-20 transfer
       const contractCallData = {
         provider,
-        pkpPublicKey: publicKey,
-        callerAddress: ethAddress,
+        pkpPublicKey: delegation.delegatorPkpInfo.publicKey,
+        callerAddress: delegation.delegatorPkpInfo.ethAddress,
         contractAddress: tokenAddress,
         abi: ERC20_ABI,
         functionName: 'transfer',
-        args: [to, tokenAmountInWei],
+        args: [to, tokenAmountInSmallestUnit],
         chainId,
         alchemyGasSponsor,
         alchemyGasSponsorApiKey,
