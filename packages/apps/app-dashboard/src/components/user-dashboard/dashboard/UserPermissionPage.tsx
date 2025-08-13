@@ -61,7 +61,14 @@ export function AppPermissionPage({
     }
   }, [redirectUrl, localSuccess, executeRedirect]);
 
-  const { formData, handleFormChange } = useFormatUserPermissions(connectInfoMap, existingData);
+  const appIdString = connectInfoMap.app.appId.toString();
+  const permittedVersion = permittedAppVersions[appIdString];
+
+  const { formData, handleFormChange } = useFormatUserPermissions(
+    connectInfoMap,
+    existingData,
+    Number(permittedVersion),
+  );
 
   const {
     addPermittedActions,
@@ -69,10 +76,6 @@ export function AppPermissionPage({
     loadingStatus: actionsLoadingStatus,
     error: actionsError,
   } = useAddPermittedActions();
-
-  // Get the permitted version for this app
-  const appIdString = connectInfoMap.app.appId.toString();
-  const permittedVersion = permittedAppVersions[appIdString];
 
   const handleSubmit = useCallback(async () => {
     // Clear any previous local errors and success
