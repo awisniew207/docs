@@ -76,24 +76,3 @@ export const ERC20_ABI = [
 export function getErc20Contract(provider: ethers.providers.JsonRpcProvider, address: string) {
   return new ethers.Contract(address, ERC20_ABI, provider);
 }
-
-/**
- * Validate Ethereum address format
- * @param address - Address to validate
- * @returns True if valid, false otherwise
- */
-export function isValidAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
-/**
- * Validate amount format and ensure it's positive
- * @param amount - Amount string to validate
- * @returns True if valid, false otherwise
- */
-export function isValidAmount(amount: string): boolean {
-  if (!amount || typeof amount !== 'string') return false;
-  if (!/^\d*\.?\d+$/.test(amount)) return false;
-  const parsed = parseFloat(amount);
-  return !isNaN(parsed) && parsed > 0;
-}

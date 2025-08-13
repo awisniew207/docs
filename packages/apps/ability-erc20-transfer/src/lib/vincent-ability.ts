@@ -6,7 +6,7 @@ import {
 import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-send-counter';
 import { ethers } from 'ethers';
 
-import { ERC20_ABI, getErc20Contract, isValidAddress, isValidAmount } from './helpers';
+import { ERC20_ABI, getErc20Contract } from './helpers';
 import { commitAllowedPolicies } from './helpers/commit-allowed-policies';
 import { executeOperation } from './helpers/execute-operation';
 import {
@@ -54,30 +54,6 @@ export const vincentAbility = createVincentAbility({
       alchemyGasSponsorApiKey,
       alchemyGasSponsorPolicyId,
     } = abilityParams;
-
-    // Validate recipient address
-    if (!isValidAddress(to)) {
-      return fail({
-        error:
-          '[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Invalid recipient address format',
-      });
-    }
-
-    // Validate amount
-    if (!isValidAmount(amount)) {
-      return fail({
-        error:
-          '[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Invalid amount format or amount must be greater than 0',
-      });
-    }
-
-    // Validate token contract address
-    if (!isValidAddress(tokenAddress)) {
-      return fail({
-        error:
-          '[@agentic-ai/vincent-ability-erc20-transfer/precheck] ❌ Invalid token contract address format',
-      });
-    }
 
     // Validate EIP-7702 gas sponsorship
     if (alchemyGasSponsor && (!alchemyGasSponsorApiKey || !alchemyGasSponsorPolicyId)) {
