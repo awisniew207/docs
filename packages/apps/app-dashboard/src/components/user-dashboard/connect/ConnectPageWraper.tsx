@@ -7,6 +7,7 @@ import { AuthConnectScreen } from './AuthConnectScreen';
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useConnectMiddleware } from '@/hooks/user-dashboard/connect/useConnectMiddleware';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
+import { useAgentPKPForApp } from '@/hooks/user-dashboard/useAgentPKPForApp';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { ReturningUserConnect } from './ReturningUserConnect';
 import { AppVersionNotInRegistryConnect } from './AppVersionNotInRegistry';
@@ -16,6 +17,12 @@ export function ConnectPageWrapper() {
   const { appId } = useParams();
 
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
+  const {
+    agentPKP,
+    isLastUnpermittedPKP,
+    loading: agentPKPLoading,
+    error: agentPKPError,
+  } = useAgentPKPForApp(authInfo?.userPKP?.ethAddress, appId ? Number(appId) : undefined);
   const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
   const {
     isPermitted,
@@ -26,7 +33,7 @@ export function ConnectPageWrapper() {
     error: isPermittedError,
   } = useConnectMiddleware({
     appId: Number(appId),
-    pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
+    pkpEthAddress: agentPKP?.ethAddress || '',
     appData: data?.app,
   });
 
@@ -55,7 +62,7 @@ export function ConnectPageWrapper() {
     : undefined;
 
   // Wait for ALL critical data to load before making routing decisions
-  const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
+  const isUserAuthed = authInfo?.userPKP && agentPKP && sessionSigs;
 
   // Check if we have finished loading but got no data (invalid appId)
   const hasFinishedLoadingButNoData = !isLoading && !data;
@@ -64,6 +71,7 @@ export function ConnectPageWrapper() {
     data &&
     !isLoading &&
     !isProcessing &&
+    !agentPKPLoading &&
     // Only wait for permissions if user is authenticated
     (isUserAuthed ? !isPermittedLoading : true) &&
     (!userPermittedVersion || !versionDataLoading);
@@ -96,12 +104,13 @@ export function ConnectPageWrapper() {
     );
   }
   // Check for any errors
-  else if (isError || error || isPermittedError || versionDataError) {
+  else if (isError || error || isPermittedError || versionDataError || agentPKPError) {
     const errorMessage =
       errors.length > 0
         ? errors.join(', ')
         : (error ??
           isPermittedError ??
+          agentPKPError?.message ??
           (versionDataError ? String(versionDataError) : undefined) ??
           'An unknown error occurred');
     content = <GeneralErrorScreen errorDetails={errorMessage} />;
@@ -125,6 +134,7 @@ export function ConnectPageWrapper() {
           activeVersionData={activeVersionData}
           redirectUri={redirectUri || undefined}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          agentPKP={agentPKP}
         />
       );
     }
@@ -134,6 +144,8 @@ export function ConnectPageWrapper() {
         <ConnectPage
           connectInfoMap={data}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          agentPKP={agentPKP}
+          isLastUnpermittedPKP={isLastUnpermittedPKP}
         />
       );
     }

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
+import { IRelayPKP } from '@lit-protocol/types';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useConnectFormData } from '@/hooks/user-dashboard/connect/useConnectFormData';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
@@ -21,9 +22,14 @@ import { useEffect } from 'react';
 interface UpdateVersionPageProps {
   connectInfoMap: ConnectInfoMap;
   readAuthInfo: UseReadAuthInfo;
+  agentPKP: IRelayPKP;
 }
 
-export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersionPageProps) {
+export function UpdateVersionPage({
+  connectInfoMap,
+  readAuthInfo,
+  agentPKP,
+}: UpdateVersionPageProps) {
   const [localError, setLocalError] = useState<string | null>(null);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
@@ -41,7 +47,7 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     loadingStatus: jwtLoadingStatus,
     error: jwtError,
     redirectUrl,
-  } = useJwtRedirect({ readAuthInfo });
+  } = useJwtRedirect({ readAuthInfo, agentPKP });
 
   // Handle redirect when JWT is ready
   useEffect(() => {
@@ -73,11 +79,7 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     });
 
     if (allValid) {
-      if (
-        !readAuthInfo.authInfo?.userPKP ||
-        !readAuthInfo.authInfo?.agentPKP ||
-        !readAuthInfo.sessionSigs
-      ) {
+      if (!agentPKP || !readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setLocalStatus(null);
         return;
@@ -94,7 +96,7 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
       setLocalStatus('Adding permitted actions...');
       await addPermittedActions({
         wallet: userPkpWallet,
-        agentPKPTokenId: readAuthInfo.authInfo.agentPKP.tokenId,
+        agentPKPTokenId: agentPKP.tokenId,
         abilityIpfsCids: Object.keys(formData),
       });
 
@@ -102,7 +104,7 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
         setLocalStatus('Updating to new version...');
         const client = getClient({ signer: userPkpWallet });
         await client.permitApp({
-          pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+          pkpEthAddress: agentPKP.ethAddress,
           appId: Number(connectInfoMap.app.appId),
           appVersion: Number(connectInfoMap.app.activeVersion),
           permissionData: formData,

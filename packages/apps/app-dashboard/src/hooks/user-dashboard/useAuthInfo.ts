@@ -6,7 +6,6 @@ import { disconnectWeb3 } from '@lit-protocol/auth-browser';
 export interface AuthInfo {
   type: string;
   authenticatedAt: string;
-  agentPKP?: IRelayPKP;
   userPKP?: IRelayPKP;
   value?: string;
   userId?: string;

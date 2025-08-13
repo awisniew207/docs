@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/useUserPermissionsMiddleware';
+import { useUserPermissionsForApps } from '@/hooks/user-dashboard/dashboard/useUserPermissionsForApps';
+import { useAllAgentAppPermissions } from '@/hooks/user-dashboard/useAllAgentAppIds';
 import { App } from '@/types/developer-dashboard/appTypes';
 
 interface UseSidebarDataProps {
-  pkpEthAddress: string;
+  userAddress: string;
 }
 
 interface UseSidebarDataReturn {
@@ -15,20 +16,32 @@ interface UseSidebarDataReturn {
   error: string | null;
 }
 
-export function useSidebarData({ pkpEthAddress }: UseSidebarDataProps): UseSidebarDataReturn {
+export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebarDataReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [apps, setApps] = useState<App[]>([]);
   const [permittedAppVersions, setPermittedAppVersions] = useState<Record<string, string>>({});
   const [appVersionsMap, setAppVersionsMap] = useState<Record<string, any[]>>({});
   const [error, setError] = useState<string | null>(null);
 
-  // Get permissions data
+  // Get all agent app permissions to get the list of agent PKPs
+  const {
+    permittedPKPs: agentAppPermissions,
+    loading: agentPermissionsLoading,
+    error: agentPermissionsError,
+  } = useAllAgentAppPermissions(userAddress);
+
+  // Get unique agent PKPs
+  const allAgentPKPs = Array.from(
+    new Map(agentAppPermissions.map((p) => [p.pkp.ethAddress, p.pkp])).values(),
+  );
+
+  // Get permissions data for all agent PKPs
   const {
     permittedApps,
     permittedAppVersions: permittedVersionsFromHook,
     isLoading: permissionsLoading,
     error: permissionsError,
-  } = useUserPermissionsMiddleware({ pkpEthAddress });
+  } = useUserPermissionsForApps({ agentPKPs: allAgentPKPs });
 
   // Lazy queries
   const [triggerGetApps] = vincentApiClient.useLazyListAppsQuery();
@@ -36,20 +49,49 @@ export function useSidebarData({ pkpEthAddress }: UseSidebarDataProps): UseSideb
 
   // Fetch all data when permissions are ready
   useEffect(() => {
-    // Don't start if permissions are still loading
-    if (permissionsLoading) {
+    console.log(
+      '[useSidebarData] agentPermissionsLoading:',
+      agentPermissionsLoading,
+      'permissionsLoading:',
+      permissionsLoading,
+      'permittedApps:',
+      permittedApps,
+    );
+
+    // Don't start if agent permissions or PKP permissions are still loading
+    if (agentPermissionsLoading || permissionsLoading) {
+      return;
+    }
+
+    // Handle permissions errors
+    if (agentPermissionsError) {
+      setError(`Failed to load agent permissions: ${agentPermissionsError}`);
+      setIsLoading(false);
       return;
     }
 
     // Handle permissions error
-    if (permissionsError && permissionsError !== 'Missing pkpTokenId') {
+    if (permissionsError) {
       setError(`Failed to load permissions: ${permissionsError}`);
       setIsLoading(false);
       return;
     }
 
-    // Don't start if permissions haven't loaded yet (null means not loaded)
-    if (permittedApps === null) {
+    // If no permitted apps and we have confirmed agent permissions, we can finish early
+    if (permittedApps !== null && permittedApps.length === 0 && agentAppPermissions.length === 0) {
+      console.log(
+        '[useSidebarData] No permitted apps and no agent permissions, setting empty state and finishing loading',
+      );
+      setApps([]);
+      setPermittedAppVersions({});
+      setAppVersionsMap({});
+      setIsLoading(false);
+      return;
+    }
+
+    // Don't proceed if we don't have real permitted apps data yet
+    if (permittedApps === null || permittedApps.length === 0) {
+      console.log('[useSidebarData] Waiting for permitted apps data, not proceeding...');
       return;
     }
 
@@ -109,7 +151,14 @@ export function useSidebarData({ pkpEthAddress }: UseSidebarDataProps): UseSideb
     };
 
     fetchAllData();
-  }, [permissionsLoading, permissionsError, permittedApps, permittedVersionsFromHook]); // Dependencies from permissions hook
+  }, [
+    agentPermissionsLoading,
+    agentAppPermissions.length,
+    permissionsLoading,
+    permissionsError,
+    permittedApps,
+    permittedVersionsFromHook,
+  ]); // Dependencies from permissions hook
 
   return {
     apps,

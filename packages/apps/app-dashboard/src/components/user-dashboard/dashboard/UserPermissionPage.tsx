@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { getClient, PermissionData } from '@lit-protocol/vincent-contracts-sdk';
+import { IRelayPKP } from '@lit-protocol/types';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useFormatUserPermissions } from '@/hooks/user-dashboard/dashboard/useFormatUserPermissions';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
@@ -20,6 +21,7 @@ import { useEffect } from 'react';
 interface AppPermissionPageProps {
   connectInfoMap: ConnectInfoMap;
   readAuthInfo: UseReadAuthInfo;
+  agentPKP: IRelayPKP;
   existingData: PermissionData;
   permittedAppVersions: Record<string, string>;
 }
@@ -27,6 +29,7 @@ interface AppPermissionPageProps {
 export function AppPermissionPage({
   connectInfoMap,
   readAuthInfo,
+  agentPKP,
   existingData,
   permittedAppVersions,
 }: AppPermissionPageProps) {
@@ -46,7 +49,7 @@ export function AppPermissionPage({
     loadingStatus: jwtLoadingStatus,
     error: jwtError,
     redirectUrl,
-  } = useJwtRedirect({ readAuthInfo });
+  } = useJwtRedirect({ readAuthInfo, agentPKP });
 
   // Handle redirect when JWT is ready
   useEffect(() => {
@@ -82,11 +85,7 @@ export function AppPermissionPage({
     });
 
     if (allValid) {
-      if (
-        !readAuthInfo.authInfo?.userPKP ||
-        !readAuthInfo.authInfo?.agentPKP ||
-        !readAuthInfo.sessionSigs
-      ) {
+      if (!agentPKP || !readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setLocalStatus(null);
         return;
@@ -104,7 +103,7 @@ export function AppPermissionPage({
       setLocalStatus('Adding permitted actions...');
       await addPermittedActions({
         wallet: userPkpWallet,
-        agentPKPTokenId: readAuthInfo.authInfo.agentPKP.tokenId,
+        agentPKPTokenId: agentPKP.tokenId,
         abilityIpfsCids: Object.keys(formData),
       });
 
@@ -112,7 +111,7 @@ export function AppPermissionPage({
         setLocalStatus('Setting ability policy parameters...');
         const client = getClient({ signer: userPkpWallet });
         await client.setAbilityPolicyParameters({
-          pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+          pkpEthAddress: agentPKP.ethAddress,
           appId: Number(connectInfoMap.app.appId),
           appVersion: Number(permittedVersion),
           policyParams: formData,
@@ -170,16 +169,15 @@ export function AppPermissionPage({
 
       const client = getClient({ signer: agentPkpWallet });
       await client.unPermitApp({
-        pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+        pkpEthAddress: agentPKP.ethAddress,
         appId: Number(connectInfoMap.app.appId),
         appVersion: Number(permittedVersion),
       });
 
       setLocalStatus(null);
-      // Show success state for 3 seconds, then navigate to apps page
+      // Show success state until redirect
       setLocalSuccess('App unpermitted successfully!');
       setTimeout(() => {
-        setLocalSuccess(null);
         // Force the refresh for the sidebar to update
         window.location.href = `/user/apps`;
       }, 3000);
@@ -193,6 +191,8 @@ export function AppPermissionPage({
     formRefs.current[policyIpfsCid] = ref;
   }, []);
 
+  const isUnpermitting = localStatus === 'Unpermitting app...';
+  const isGranting = isJwtLoading || isActionsLoading || (!!localStatus && !isUnpermitting);
   const isLoading = isJwtLoading || isActionsLoading || !!localStatus || !!localSuccess;
   const loadingStatus = jwtLoadingStatus || actionsLoadingStatus || localStatus;
   const error = jwtError || actionsError;
@@ -248,6 +248,8 @@ export function AppPermissionPage({
           onUnpermit={handleUnpermit}
           onSubmit={handleSubmit}
           isLoading={isLoading}
+          isGranting={isGranting}
+          isUnpermitting={isUnpermitting}
           error={error || localError}
         />
       </div>
