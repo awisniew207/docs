@@ -62,7 +62,7 @@ export function ConnectPageWrapper() {
     : undefined;
 
   // Wait for ALL critical data to load before making routing decisions
-  const isUserAuthed = authInfo?.userPKP && agentPKP && sessionSigs;
+  const isUserAuthed = authInfo?.userPKP && sessionSigs;
 
   // Check if we have finished loading but got no data (invalid appId)
   const hasFinishedLoadingButNoData = !isLoading && !data;
@@ -71,9 +71,8 @@ export function ConnectPageWrapper() {
     data &&
     !isLoading &&
     !isProcessing &&
-    !agentPKPLoading &&
-    // Only wait for permissions if user is authenticated
-    (isUserAuthed ? !isPermittedLoading : true) &&
+    // Only wait for permissions and agent PKP if user is authenticated
+    (isUserAuthed ? !isPermittedLoading && !agentPKPLoading && agentPKP : true) &&
     (!userPermittedVersion || !versionDataLoading);
 
   // Now make routing decisions with complete information
@@ -134,7 +133,7 @@ export function ConnectPageWrapper() {
           activeVersionData={activeVersionData}
           redirectUri={redirectUri || undefined}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
-          agentPKP={agentPKP}
+          agentPKP={agentPKP!}
         />
       );
     }
@@ -144,7 +143,7 @@ export function ConnectPageWrapper() {
         <ConnectPage
           connectInfoMap={data}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
-          agentPKP={agentPKP}
+          agentPKP={agentPKP!}
           isLastUnpermittedPKP={isLastUnpermittedPKP}
         />
       );

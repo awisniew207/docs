@@ -47,7 +47,7 @@ export function UpdateVersionPageWrapper() {
   }
 
   // Wait for ALL critical data to load before making routing decisions
-  const isUserAuthed = authInfo?.userPKP && agentPKP && sessionSigs;
+  const isUserAuthed = authInfo?.userPKP && sessionSigs;
 
   // Check if we have finished loading but got no data (invalid appId)
   const hasFinishedLoadingButNoData = !isLoading && !data;
@@ -56,8 +56,8 @@ export function UpdateVersionPageWrapper() {
     data &&
     !isLoading &&
     !isProcessing &&
-    // Only wait for permissions if user is authenticated
-    (isUserAuthed ? !isPermittedLoading && !agentPKPLoading : true);
+    // Only wait for permissions and agent PKP if user is authenticated
+    (isUserAuthed ? !isPermittedLoading && !agentPKPLoading && agentPKP : true);
 
   // Authentication check - must be done before other business logic
   if (!isProcessing && !isUserAuthed) {

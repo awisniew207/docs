@@ -43,12 +43,13 @@ export function UserPermissionWrapper() {
     agentPKPs: agentPKP ? [agentPKP] : [],
   });
 
-  // Consider permissions still loading if we don't have agentPKP yet OR permissions data is empty
+  // Wait for permissions data to be loaded for this specific app
   const isPermissionsReady =
     agentPKP &&
     !permissionsLoading &&
     permittedAppVersions &&
-    Object.keys(permittedAppVersions).length > 0;
+    appId &&
+    appId in permittedAppVersions;
 
   const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
     authorizedRedirectUris: data?.app?.redirectUris,
