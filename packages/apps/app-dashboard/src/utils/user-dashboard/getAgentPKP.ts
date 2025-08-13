@@ -4,9 +4,13 @@ import { SELECTED_LIT_NETWORK } from './lit';
 import { readOnlySigner } from '../developer-dashboard/readOnlySigner';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 
-// Define the result type for getAgentPKPs function
-export type GetAgentPkpResult = {
-  permitted: Record<number, IRelayPKP[]>;
+export type AgentAppPermission = {
+  appId: number;
+  pkp: IRelayPKP;
+};
+
+export type GetAgentPKPsResult = {
+  permitted: AgentAppPermission[];
   unpermitted: IRelayPKP[];
 };
 
@@ -14,13 +18,13 @@ export type GetAgentPkpResult = {
  * Get Agent PKPs for a user address
  *
  * Finds all Agent PKPs owned by the user that are different from their current PKP.
- * Separates them into permitted (mapping appId to PKPs) and unpermitted PKPs.
+ * Separates them into permitted (flat array of app-PKP pairs) and unpermitted PKPs.
  *
  * @param userAddress The ETH address of the user's current PKP
- * @returns Promise<GetAgentPkpResult> Object containing permitted and unpermitted PKPs
+ * @returns Promise<GetAgentPKPsResult> Object containing permitted and unpermitted PKPs
  * @throws Error if there's an issue with the contract calls
  */
-export async function getAgentPKPs(userAddress: string): Promise<GetAgentPkpResult> {
+export async function getAgentPKPs(userAddress: string): Promise<GetAgentPKPsResult> {
   try {
     const pkpNftContract = getPkpNftContract(SELECTED_LIT_NETWORK);
 
@@ -59,36 +63,28 @@ export async function getAgentPKPs(userAddress: string): Promise<GetAgentPkpResu
 
     // For each agent PKP, fetch its appIds and categorize them
     const pkpPermissionPromises = agentPKPs.map(async (pkp) => {
-      try {
-        const client = getClient({ signer: readOnlySigner });
-        const appIds = await client.getAllPermittedAppIdsForPkp({
-          pkpEthAddress: pkp.ethAddress,
-          offset: '0',
-        });
+      const client = getClient({ signer: readOnlySigner });
+      const appIds = await client.getAllPermittedAppIdsForPkp({
+        pkpEthAddress: pkp.ethAddress,
+        offset: '0',
+      });
 
-        return { pkp, appIds };
-      } catch (error) {
-        // If we can't fetch appIds for this PKP, still return the PKP with empty appIds
-        return { pkp, appIds: [] };
-      }
+      return { pkp, appIds };
     });
 
     const results = await Promise.all(pkpPermissionPromises);
 
     // Separate into permitted and unpermitted
-    const permitted: Record<number, IRelayPKP[]> = {};
+    const permitted: AgentAppPermission[] = [];
     const unpermitted: IRelayPKP[] = [];
 
     for (const result of results) {
       const { pkp, appIds } = result;
 
       if (appIds.length > 0) {
-        // PKP has permitted apps - add to each appId's array
+        // PKP has permitted apps - add each app-PKP pair
         for (const appId of appIds) {
-          if (!permitted[appId]) {
-            permitted[appId] = [];
-          }
-          permitted[appId].push(pkp);
+          permitted.push({ appId, pkp });
         }
       } else {
         // PKP has no permitted apps yet
@@ -98,7 +94,7 @@ export async function getAgentPKPs(userAddress: string): Promise<GetAgentPkpResu
 
     const result = { permitted, unpermitted };
     console.log('[getAgentPKPs] Final result:', {
-      permittedApps: Object.keys(result.permitted).length,
+      permittedCount: result.permitted.length,
       unpermittedCount: result.unpermitted.length,
     });
 
@@ -109,7 +105,6 @@ export async function getAgentPKPs(userAddress: string): Promise<GetAgentPkpResu
 
     return result;
   } catch (error) {
-    // Rethrow with a more descriptive message if it's not already an Error
     if (error instanceof Error) {
       throw error;
     } else {
@@ -126,18 +121,18 @@ export async function getAgentPKPs(userAddress: string): Promise<GetAgentPkpResu
  * @returns Object with PKP and whether it's the last unpermitted PKP
  */
 export function getAgentPKPForApp(
-  agentPkpResult: GetAgentPkpResult,
+  agentPkpResult: GetAgentPKPsResult,
   appId: number,
 ): { pkp: IRelayPKP | null; isLastUnpermittedPKP: boolean } {
   // First check if there are PKPs for this app
-  const pkpsForApp = agentPkpResult.permitted[appId];
+  const pkpForApp = agentPkpResult.permitted.find((p) => p.appId === appId);
 
-  if (pkpsForApp && pkpsForApp.length > 0) {
+  if (pkpForApp) {
     console.log(
       `[getAgentPKPForApp] Found specific PKP for appId ${appId}:`,
-      pkpsForApp[0].ethAddress,
+      pkpForApp.pkp.ethAddress,
     );
-    return { pkp: pkpsForApp[0], isLastUnpermittedPKP: false };
+    return { pkp: pkpForApp.pkp, isLastUnpermittedPKP: false };
   }
 
   // If no specific PKP found, use the first unpermitted PKP for new connections
@@ -155,15 +150,4 @@ export function getAgentPKPForApp(
     `[getAgentPKPForApp] No PKP found for appId ${appId} and no unpermitted PKPs available`,
   );
   return { pkp: null, isLastUnpermittedPKP: false };
-}
-
-/**
- * Get all Agent PKPs that have permissions for a specific app ID
- * Returns all PKPs that can act on behalf of this app
- */
-export function getAllAgentPKPsForApp(
-  agentPkpResult: GetAgentPkpResult,
-  appId: number,
-): IRelayPKP[] {
-  return agentPkpResult.permitted[appId] || [];
 }

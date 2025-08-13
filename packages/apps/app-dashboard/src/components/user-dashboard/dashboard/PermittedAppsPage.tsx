@@ -4,7 +4,7 @@ import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
 import { Package, Info } from 'lucide-react';
-import { AgentAppPermission } from '@/hooks/user-dashboard/useAllAgentAppIds';
+import { AgentAppPermission } from '@/utils/user-dashboard/getAgentPKP';
 
 type PermittedAppsPageProps = {
   apps: App[];
@@ -13,15 +13,6 @@ type PermittedAppsPageProps = {
 
 export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProps) {
   const navigate = useNavigate();
-
-  // Create a mapping from appId to PKP eth address
-  const appIdToPkpAddress = permittedPKPs.reduce(
-    (acc, permission) => {
-      acc[permission.appId] = permission.pkp.ethAddress;
-      return acc;
-    },
-    {} as Record<number, string>,
-  );
 
   const handleAppClick = (appId: string) => {
     navigate(`/user/appId/${appId}`);
@@ -60,21 +51,26 @@ export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProp
               {/* Top right badges container */}
               <div className="absolute top-2 right-2 flex items-center gap-2">
                 {/* Agent PKP Info Icon */}
-                {appIdToPkpAddress[app.appId] && (
-                  <div
-                    className="group"
-                    onClick={(e) => e.stopPropagation()} // Prevent card click when clicking icon
-                  >
-                    <Info
-                      className={`w-4 h-4 ${theme.textMuted} hover:${theme.text} transition-colors cursor-help`}
-                    />
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-black text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 max-w-xs">
-                      Agent address: {appIdToPkpAddress[app.appId]}
-                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
-                    </div>
-                  </div>
-                )}
+                {(() => {
+                  const permission = permittedPKPs.find((p) => p.appId === app.appId);
+                  return (
+                    permission && (
+                      <div
+                        className="group"
+                        onClick={(e) => e.stopPropagation()} // Prevent card click when clicking icon
+                      >
+                        <Info
+                          className={`w-4 h-4 ${theme.textMuted} hover:${theme.text} transition-colors cursor-help`}
+                        />
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-black text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 max-w-xs">
+                          Agent address: {permission.pkp.ethAddress}
+                          <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
+                        </div>
+                      </div>
+                    )
+                  );
+                })()}
 
                 {/* Version Badge */}
                 {app.activeVersion && (

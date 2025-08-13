@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react';
 import { IRelayPKP } from '@lit-protocol/types';
-import { getAgentPKPs } from '../../utils/user-dashboard/getAgentPKP';
-
-export type AgentAppPermission = {
-  appId: number;
-  pkp: IRelayPKP;
-};
+import { getAgentPKPs, AgentAppPermission } from '../../utils/user-dashboard/getAgentPKP';
 
 export function useAllAgentAppPermissions(userAddress: string | undefined) {
   const [permittedPKPs, setPermittedPKPs] = useState<AgentAppPermission[]>([]);
@@ -27,17 +22,8 @@ export function useAllAgentAppPermissions(userAddress: string | undefined) {
     const fetchAllPermissions = async () => {
       try {
         const agentPkpResult = await getAgentPKPs(userAddress);
-        // Flatten the Record<number, IRelayPKP[]> into AgentAppPermission[]
-        const allPermissions: AgentAppPermission[] = [];
 
-        for (const [appId, pkps] of Object.entries(agentPkpResult.permitted)) {
-          const numericAppId = parseInt(appId);
-          pkps.forEach((pkp) => {
-            allPermissions.push({ appId: numericAppId, pkp });
-          });
-        }
-
-        setPermittedPKPs(allPermissions);
+        setPermittedPKPs(agentPkpResult.permitted);
         setUnpermittedPKPs(agentPkpResult.unpermitted);
       } catch (err) {
         setError(err as Error);
