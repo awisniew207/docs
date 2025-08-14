@@ -4,13 +4,13 @@ import { ConnectAppHeader } from '@/components/user-dashboard/connect/ui/Connect
 import { InfoBanner } from '@/components/user-dashboard/connect/ui/InfoBanner';
 import { ActionCard } from '@/components/user-dashboard/connect/ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
 
 type AppVersionNotInRegistryUpdateProps = {
   appData: App;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
 };
 
 export function AppVersionNotInRegistryUpdate({ appData }: AppVersionNotInRegistryUpdateProps) {

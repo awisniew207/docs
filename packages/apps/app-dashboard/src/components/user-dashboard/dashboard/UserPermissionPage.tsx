@@ -5,7 +5,7 @@ import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useFormatUserPermissions } from '@/hooks/user-dashboard/dashboard/useFormatUserPermissions';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { PolicyFormRef } from '../connect/ui/PolicyForm';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
 import { ConnectAppHeader } from '../connect/ui/ConnectAppHeader';
 import { PermittedAppInfo } from './ui/PermittedAppInfo';
@@ -20,7 +20,7 @@ import { useEffect } from 'react';
 
 interface AppPermissionPageProps {
   connectInfoMap: ConnectInfoMap;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
   agentPKP: IRelayPKP;
   existingData: PermissionData;
   permittedAppVersions: Record<string, string>;

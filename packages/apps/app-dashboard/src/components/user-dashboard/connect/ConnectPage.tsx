@@ -7,7 +7,7 @@ import { useConnectFormData } from '@/hooks/user-dashboard/connect/useConnectFor
 import { ConnectPageHeader } from './ui/ConnectPageHeader';
 import { theme } from './ui/theme';
 import { PolicyFormRef } from './ui/PolicyForm';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
 import { ConnectAppHeader } from './ui/ConnectAppHeader';
 import { AppsInfo } from './ui/AppInfo';
@@ -21,7 +21,7 @@ import { BigNumber } from 'ethers';
 
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
   agentPKP: IRelayPKP;
   isLastUnpermittedPKP: boolean;
 }

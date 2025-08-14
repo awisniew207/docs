@@ -8,7 +8,7 @@ import { ConnectFooter } from '../ui/Footer';
 import { InfoBanner } from './ui/InfoBanner';
 import { ActionCard } from './ui/ActionCard';
 import { useNavigate } from 'react-router-dom';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { App, AppVersion } from '@/types/developer-dashboard/appTypes';
 import { useState, useEffect } from 'react';
 import { useCanGoBack } from '@/hooks/user-dashboard/connect/useCanGoBack';
@@ -19,7 +19,7 @@ type ReturningUserConnectProps = {
   versionData: AppVersion;
   activeVersionData?: AppVersion;
   redirectUri?: string;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
   agentPKP: IRelayPKP;
 };
 
