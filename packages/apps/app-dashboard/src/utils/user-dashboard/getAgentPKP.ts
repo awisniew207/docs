@@ -1,4 +1,5 @@
 import { IRelayPKP } from '@lit-protocol/types';
+import { ethers } from 'ethers';
 import { getPkpNftContract } from './get-pkp-nft-contract';
 import { SELECTED_LIT_NETWORK } from './lit';
 import { readOnlySigner } from '../developer-dashboard/readOnlySigner';
@@ -42,10 +43,8 @@ export async function getAgentPKPs(userAddress: string): Promise<GetAgentPKPsRes
 
     // Then get all PKP data in parallel
     const pkpDataPromises = tokenIds.map(async (tokenId) => {
-      const [publicKey, ethAddress] = await Promise.all([
-        pkpNftContract.getPubkey(tokenId),
-        pkpNftContract.getEthAddress(tokenId),
-      ]);
+      const [publicKey] = await Promise.all([pkpNftContract.getPubkey(tokenId)]);
+      const ethAddress = ethers.utils.computeAddress(publicKey);
 
       return {
         tokenId: tokenId.toString(),
@@ -95,11 +94,8 @@ export async function getAgentPKPs(userAddress: string): Promise<GetAgentPKPsRes
     const result = { permitted, unpermitted };
     console.log('[getAgentPKPs] Final result:', {
       permittedCount: result.permitted.length,
-      unpermittedCount: result.unpermitted.length,
-    });
-
-    console.log('[getAgentPKPs] Final result:', {
       permitted: result.permitted,
+      unpermittedCount: result.unpermitted.length,
       unpermitted: result.unpermitted,
     });
 
