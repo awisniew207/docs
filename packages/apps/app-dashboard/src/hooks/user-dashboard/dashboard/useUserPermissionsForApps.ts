@@ -45,48 +45,37 @@ export const useUserPermissionsForApps = ({
       try {
         const client = getClient({ signer: readOnlySigner });
 
-        // Get permitted apps for all PKPs in parallel
-        const pkpAppsPromises = stablePKPs.map(async (pkp) => {
-          const userApps = await client.getAllPermittedAppIdsForPkp({
-            pkpEthAddress: pkp.ethAddress,
-            offset: '0',
-          });
-          return { pkp, userApps };
-        });
+        // Since each PKP has 1-to-1 mapping with an app, fetch app and version for each PKP
+        const results = await Promise.all(
+          stablePKPs.map(async (pkp) => {
+            const userApps = await client.getAllPermittedAppIdsForPkp({
+              pkpEthAddress: pkp.ethAddress,
+              offset: '0',
+            });
 
-        const pkpAppsResults = await Promise.all(pkpAppsPromises);
+            // Should only be one app per PKP, but handle the array safely
+            const appId = userApps[0];
+            if (!appId) return null;
 
-        // Flatten all app-PKP combinations and fetch versions in parallel
-        const allAppVersionPromises: Promise<{
-          appId: number;
-          version: any;
-          pkpAddress: string;
-        }>[] = [];
-        const allPermittedApps: number[] = [];
-
-        for (const { pkp, userApps } of pkpAppsResults) {
-          allPermittedApps.push(...userApps);
-
-          // Add version fetching promises for this PKP's apps
-          const versionPromises = userApps.map(async (appId) => {
             const version = await client.getPermittedAppVersionForPkp({
               pkpEthAddress: pkp.ethAddress,
               appId,
             });
-            return { appId, version, pkpAddress: pkp.ethAddress };
-          });
 
-          allAppVersionPromises.push(...versionPromises);
-        }
+            return { appId, version };
+          }),
+        );
 
-        // Fetch all versions in parallel
-        const allVersionResults = await Promise.all(allAppVersionPromises);
-
-        // Combine version results
+        // Filter out null results and extract data
+        const validResults = results.filter(
+          (result): result is { appId: number; version: number | null } => result !== null,
+        );
+        const allPermittedApps = validResults.map((result) => result.appId);
         const allAppVersions: Record<string, string> = {};
-        for (const { appId, version } of allVersionResults) {
+
+        validResults.forEach(({ appId, version }) => {
           allAppVersions[appId.toString()] = version?.toString() ?? '';
-        }
+        });
 
         setState({
           permittedApps: allPermittedApps,
