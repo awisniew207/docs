@@ -13,6 +13,13 @@ children:
 
 # Vincent Abilities Created by the Vincent Team
 
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Looking for More Flexibility?
+  </p>
+  <p>If you need to sign EVM transactions that aren't covered by a specific Vincent Ability, use the <a href="./EvmTransactionSigner.md">EVM Transaction Signer</a> to interact with any smart contract — even those without a dedicated Vincent Ability.</p>
+</div>
+
 | Ability                                             | Category      | Description                                                                                                                                 |
 | --------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Aave](./Aave.md)                                   | DeFi Protocol | Integrate with the Aave V3 lending protocol to supply, borrow, repay, and withdraw assets, unlocking a full suite of DeFi lending features. |
