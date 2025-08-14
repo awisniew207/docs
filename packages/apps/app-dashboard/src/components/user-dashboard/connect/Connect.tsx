@@ -9,8 +9,8 @@ import { registerWebAuthn, getSessionSigs } from '../../../utils/user-dashboard/
 import ConnectMethods from '../auth/ConnectMethods';
 import {
   useSetAuthInfo,
-  UseReadAuthInfo,
   useClearAuthInfo,
+  ReadAuthInfo,
 } from '../../../hooks/user-dashboard/useAuthInfo';
 
 import SignUpView from '../auth/SignUpView';
@@ -19,7 +19,7 @@ import Loading from '@/components/shared/ui/Loading';
 
 type ConnectViewProps = {
   theme: ThemeType;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
 };
 
 export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {

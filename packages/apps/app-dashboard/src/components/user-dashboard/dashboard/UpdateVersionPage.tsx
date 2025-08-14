@@ -5,7 +5,7 @@ import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useConnectFormData } from '@/hooks/user-dashboard/connect/useConnectFormData';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { PolicyFormRef } from '@/components/user-dashboard/connect/ui/PolicyForm';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
 import { ConnectAppHeader } from '@/components/user-dashboard/connect/ui/ConnectAppHeader';
 import { AppsInfo } from '@/components/user-dashboard/connect/ui/AppInfo';
@@ -21,7 +21,7 @@ import { useEffect } from 'react';
 
 interface UpdateVersionPageProps {
   connectInfoMap: ConnectInfoMap;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
   agentPKP: IRelayPKP;
 }
 

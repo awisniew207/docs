@@ -5,13 +5,13 @@ import { IRelayPKP } from '@lit-protocol/types';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { env } from '@/config/env';
-import { UseReadAuthInfo } from '../useAuthInfo';
+import { ReadAuthInfo } from '../useAuthInfo';
 import { useUrlRedirectUri } from './useUrlRedirectUri';
 
 const { VITE_JWT_EXPIRATION_MINUTES } = env;
 
 interface UseJwtRedirectProps {
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
   agentPKP: IRelayPKP;
 }
 
