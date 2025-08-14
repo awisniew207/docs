@@ -13,6 +13,7 @@ import { env } from '../../env';
 import { registerRoutes as registerAbilityRoutes } from './ability/routes';
 import { registerRoutes as registerAppRoutes } from './app/routes';
 import { registerRoutes as registerPolicyRoutes } from './policy/routes';
+import { registerRoutes as registerPaymentDBRoutes } from './paymentDB/routes';
 
 const { IS_DEVELOPMENT, CORS_ALLOWED_DOMAIN } = env;
 
@@ -46,10 +47,10 @@ export function registerRoutes(app: Express) {
   registerAppRoutes(app);
   registerAbilityRoutes(app);
   registerPolicyRoutes(app);
+  registerPaymentDBRoutes(app);
 
   // @ts-expect-error Error handler is abstract/generic
   app.use((err, _req, res, _next) => {
-     
     // format error
     res.status(err.status || 500).json({
       message: err.message,

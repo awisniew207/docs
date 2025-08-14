@@ -20,23 +20,6 @@ function generateRandomAppId(): number {
   return Math.floor(Math.random() * (10_000_000_000 - 1000)) + 1000;
 }
 
-async function addDelegateesToPaymentDB(delegateeAddresses: string[]): Promise<void> {
-  // hit the relayer server to add the delegatee addresses
-  const headers = {
-    'api-key': process.env.LIT_RELAYER_API_KEY!,
-    'payer-secret-key': process.env.LIT_PAYER_SECRET_KEY!,
-    'Content-Type': 'application/json',
-  };
-
-  const response = await fetch('https://datil-relayer.getlit.dev/add-users', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(delegateeAddresses),
-  });
-
-  console.debug('Relayer addUsers response', response);
-}
-
 export function registerRoutes(app: Express) {
   // List all apps
   app.get('/apps', async (req, res) => {
@@ -145,8 +128,6 @@ export function registerRoutes(app: Express) {
           return;
         }
 
-        await addDelegateesToPaymentDB(delegateeAddresses);
-
         res.status(201).json(appDef);
         return;
       });
@@ -163,10 +144,6 @@ export function registerRoutes(app: Express) {
       withApp(async (req, res) => {
         Object.assign(req.vincentApp, req.body);
         const updatedApp = await req.vincentApp.save();
-
-        if (req.body.delegateeAddresses) {
-          await addDelegateesToPaymentDB(req.body.delegateeAddresses);
-        }
 
         res.json(updatedApp);
         return;
