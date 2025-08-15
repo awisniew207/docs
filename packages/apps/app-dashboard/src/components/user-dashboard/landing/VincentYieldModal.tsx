@@ -14,14 +14,13 @@ import { theme } from '../connect/ui/theme';
 import QRCode from 'react-qr-code';
 
 interface VincentYieldModalProps {
-  isOpen: boolean;
   onClose: () => void;
   agentPkpAddress: string;
 }
 
 const MINIMUM_DEPOSIT = 50;
 
-export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentYieldModalProps) {
+export function VincentYieldModal({ onClose, agentPkpAddress }: VincentYieldModalProps) {
   const [copied, setCopied] = useState(false);
 
   // Fetch USDC balance for the PKP address
@@ -56,7 +55,7 @@ export function VincentYieldModal({ isOpen, onClose, agentPkpAddress }: VincentY
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <style>{`
         @keyframes shimmer {
           0% { background-position: -200% 0; }

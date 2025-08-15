@@ -1,6 +1,6 @@
 import { readOnlySigner } from '@/utils/developer-dashboard/readOnlySigner';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { IRelayPKP } from '@lit-protocol/types';
 
 export type UseUserPermissionsForAppsProps = {
@@ -24,14 +24,9 @@ export const useUserPermissionsForApps = ({
     error: null,
   });
 
-  // Memoize PKPs with stable reference to prevent infinite re-renders
-  const stablePKPs = useMemo(() => {
-    return [...agentPKPs].sort((a, b) => a.ethAddress.localeCompare(b.ethAddress));
-  }, [JSON.stringify(agentPKPs.map((pkp) => pkp.ethAddress).sort())]);
-
   useEffect(() => {
     // Early return if params are missing
-    if (!stablePKPs.length) {
+    if (!agentPKPs || !agentPKPs.length) {
       setState({
         permittedApps: [],
         permittedAppVersions: {},
@@ -47,7 +42,7 @@ export const useUserPermissionsForApps = ({
 
         // Since each PKP has 1-to-1 mapping with an app, fetch app and version for each PKP
         const results = await Promise.all(
-          stablePKPs.map(async (pkp) => {
+          agentPKPs.map(async (pkp) => {
             const userApps = await client.getAllPermittedAppIdsForPkp({
               pkpEthAddress: pkp.ethAddress,
               offset: '0',
@@ -94,7 +89,7 @@ export const useUserPermissionsForApps = ({
     };
 
     checkPermitted();
-  }, [stablePKPs]);
+  }, [agentPKPs.map((pkp) => pkp.ethAddress).join(',')]);
 
   return state;
 };
