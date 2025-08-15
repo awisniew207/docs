@@ -36,16 +36,7 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
     version: Number(versionId),
   });
 
-  const [
-    addDelegateesToPaymentDB,
-    {
-      isLoading: isAddingDelegatees,
-      isSuccess: isAddingDelegateesSuccess,
-      isError: isAddingDelegateesError,
-      data: addDelegateesToPaymentDBData,
-      error: addDelegateesToPaymentDBError,
-    },
-  ] = vincentApiClient.useAddDelegateesToPaymentDbMutation();
+  const [addDelegateesToPaymentDB] = vincentApiClient.useAddDelegateesToPaymentDbMutation();
 
   // Lazy queries for fetching ability and policy versions
   const [
