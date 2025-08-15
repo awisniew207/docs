@@ -50,7 +50,7 @@ export function UserPermissionButtons({
           >
             {isGranting && <Loader2 className="w-4 h-4 animate-spin" />}
             {error && <AlertCircle className="w-4 h-4" />}
-            {error ? 'Retry' : isGranting ? 'Processing...' : 'Grant Permissions'}
+            {error ? 'Retry' : isGranting ? 'Processing...' : 'Update Permissions'}
           </Button>
         </motion.div>
       </div>

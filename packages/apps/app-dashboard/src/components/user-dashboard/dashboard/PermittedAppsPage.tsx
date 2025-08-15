@@ -1,10 +1,12 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
-import { Package, Info } from 'lucide-react';
+import { Package, Info, Copy, Check } from 'lucide-react';
 import { AgentAppPermission } from '@/utils/user-dashboard/getAgentPKP';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shared/ui/tooltip';
 
 type PermittedAppsPageProps = {
   apps: App[];
@@ -13,9 +15,32 @@ type PermittedAppsPageProps = {
 
 export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProps) {
   const navigate = useNavigate();
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   const handleAppClick = (appId: string) => {
     navigate(`/user/appId/${appId}`);
+  };
+
+  const handleCopyAddress = async (address: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedAddress(address);
+      setTimeout(() => setCopiedAddress(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy address:', err);
+    }
+  };
+
+  const toggleTooltip = (address: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveTooltip(activeTooltip === address ? null : address);
+  };
+
+  const truncateAddress = (address: string) => {
+    if (address.length <= 10) return address;
+    return `${address.slice(0, 7)}...${address.slice(-5)}`;
   };
 
   if (apps.length === 0) {
@@ -55,18 +80,40 @@ export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProp
                   const permission = permittedPKPs.find((p) => p.appId === app.appId);
                   return (
                     permission && (
-                      <div
-                        className="group"
-                        onClick={(e) => e.stopPropagation()} // Prevent card click when clicking icon
-                      >
+                      <div className="relative">
                         <Info
-                          className={`w-4 h-4 ${theme.textMuted} hover:${theme.text} transition-colors cursor-help`}
+                          className={`w-4 h-4 ${theme.textMuted} hover:${theme.text} transition-colors cursor-pointer`}
+                          onClick={(e) => toggleTooltip(permission.pkp.ethAddress, e)}
                         />
                         {/* Tooltip */}
-                        <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-black text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 max-w-xs">
-                          Agent address: {permission.pkp.ethAddress}
-                          <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
-                        </div>
+                        {activeTooltip === permission.pkp.ethAddress && (
+                          <div className="absolute bottom-full right-0 mb-2 !bg-white border border-gray-200 !text-black shadow-lg text-xs rounded-lg pointer-events-auto z-10 w-40">
+                            <div className="p-2">
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-gray-600 text-[10px] mb-1">
+                                    Agent Address:
+                                  </div>
+                                  <div className="font-mono text-xs text-black">
+                                    {truncateAddress(permission.pkp.ethAddress)}
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) => handleCopyAddress(permission.pkp.ethAddress, e)}
+                                  className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+                                  title="Copy address"
+                                >
+                                  {copiedAddress === permission.pkp.ethAddress ? (
+                                    <Check className="w-3 h-3 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-3 h-3" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                          </div>
+                        )}
                       </div>
                     )
                   );

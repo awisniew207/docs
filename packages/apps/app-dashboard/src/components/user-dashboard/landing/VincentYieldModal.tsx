@@ -18,7 +18,6 @@ import QRCode from 'react-qr-code';
 import { env } from '@/config/env';
 
 interface VincentYieldModalProps {
-  isOpen: boolean;
   onClose: () => void;
   agentPKP: IRelayPKP;
   readAuthInfo: ReadAuthInfo;
@@ -27,7 +26,6 @@ interface VincentYieldModalProps {
 const MINIMUM_DEPOSIT = env.VITE_VINCENT_YIELD_MINIMUM_DEPOSIT;
 
 export function VincentYieldModal({
-  isOpen,
   onClose,
   agentPKP,
   readAuthInfo,
@@ -45,7 +43,7 @@ export function VincentYieldModal({
   });
 
   // Fetch yield strategy data
-  const { yieldData, isLoading: yieldLoading } = useFetchYieldData(isOpen);
+  const { yieldData, isLoading: yieldLoading } = useFetchYieldData(true);
 
   // Vincent Yield activation hook
   const {
@@ -82,7 +80,7 @@ export function VincentYieldModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <style>{`
         @keyframes shimmer {
           0% { background-position: -200% 0; }

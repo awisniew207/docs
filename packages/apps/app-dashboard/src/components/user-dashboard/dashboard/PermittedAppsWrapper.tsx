@@ -91,9 +91,8 @@ export function PermittedAppsWrapper() {
   return (
     <>
       <PermittedAppsPage apps={filteredApps} permittedPKPs={permittedPKPs} />
-      {firstUnpermittedPkp && (
+      {showVincentYieldModal && firstUnpermittedPkp && (
         <VincentYieldModal
-          isOpen={showVincentYieldModal}
           onClose={() => {
             setShowVincentYieldModal(false);
             setHasUserDismissedModal(true);
