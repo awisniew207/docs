@@ -372,7 +372,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/paymentDB/addDelegatees`,
           method: 'POST',
-          body: queryArg.body,
+          body: queryArg.addDelegateesToPaymentDb,
         }),
         invalidatesTags: ['PaymentDB'],
       }),
@@ -707,9 +707,7 @@ export type UndeletePolicyVersionApiArg = {
 export type AddDelegateesToPaymentDbApiResponse =
   /** status 200 OK - Delegatee addresses added to the payment DB contract via the relayer */ GenericResultMessage;
 export type AddDelegateesToPaymentDbApiArg = {
-  body: {
-    delegateeAddresses: string[];
-  };
+  addDelegateesToPaymentDb: AddDelegateesToPaymentDb;
 };
 export type App = {
   /** Timestamp when this was last modified */
@@ -1262,3 +1260,6 @@ export type PolicyVersionEdit = {
 };
 export type PolicyVersionList = PolicyVersion[];
 export type PolicyVersionListRead = PolicyVersionRead[];
+export type AddDelegateesToPaymentDb = {
+  delegateeAddresses: string[];
+};

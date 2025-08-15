@@ -4,6 +4,12 @@ import { z } from '../schemas/openApiZod';
 import { ErrorResponse, GenericResult, jwtAuth } from './baseRegistry';
 
 export function addToRegistry(registry: OpenAPIRegistry) {
+  const AddDelegateesToPaymentDB = registry.register(
+    'AddDelegateesToPaymentDB',
+    z.object({
+      delegateeAddresses: z.array(z.string()),
+    }),
+  );
   // POST /paymentDB/addDelegatees - Add delegatee addresses to the payment DB contract via the relayer
   registry.registerPath({
     method: 'post',
@@ -16,9 +22,7 @@ export function addToRegistry(registry: OpenAPIRegistry) {
       body: {
         content: {
           'application/json': {
-            schema: z.object({
-              delegateeAddresses: z.array(z.string()),
-            }),
+            schema: AddDelegateesToPaymentDB,
           },
         },
       },

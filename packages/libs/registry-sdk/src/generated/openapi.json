@@ -1278,6 +1278,20 @@
         ],
         "additionalProperties": false
       },
+      "AddDelegateesToPaymentDB": {
+        "type": "object",
+        "properties": {
+          "delegateeAddresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "delegateeAddresses"
+        ]
+      },
       "AppList": {
         "type": "array",
         "items": {
@@ -4093,18 +4107,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "delegateeAddresses": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "required": [
-                  "delegateeAddresses"
-                ]
+                "$ref": "#/components/schemas/AddDelegateesToPaymentDB"
               }
             }
           }
