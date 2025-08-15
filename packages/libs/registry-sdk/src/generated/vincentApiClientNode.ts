@@ -7,6 +7,7 @@ export const addTagTypes = [
   'AbilityVersion',
   'Policy',
   'PolicyVersion',
+  'PaymentDB',
 ] as const;
 const injectedRtkApi = api
   .enhanceEndpoints({
@@ -364,6 +365,17 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['PolicyVersion'],
       }),
+      addDelegateesToPaymentDb: build.mutation<
+        AddDelegateesToPaymentDbApiResponse,
+        AddDelegateesToPaymentDbApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/paymentDB/addDelegatees`,
+          method: 'POST',
+          body: queryArg.body,
+        }),
+        invalidatesTags: ['PaymentDB'],
+      }),
     }),
     overrideExisting: false,
   });
@@ -691,6 +703,13 @@ export type UndeletePolicyVersionApiArg = {
   packageName: string;
   /** NPM semver of the target policy version */
   version: string;
+};
+export type AddDelegateesToPaymentDbApiResponse =
+  /** status 200 OK - Delegatee addresses added to the payment DB contract via the relayer */ GenericResultMessage;
+export type AddDelegateesToPaymentDbApiArg = {
+  body: {
+    delegateeAddresses: string[];
+  };
 };
 export type App = {
   /** Timestamp when this was last modified */

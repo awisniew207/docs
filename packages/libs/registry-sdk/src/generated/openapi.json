@@ -4076,6 +4076,62 @@
           }
         }
       }
+    },
+    "/paymentDB/addDelegatees": {
+      "post": {
+        "tags": [
+          "PaymentDB"
+        ],
+        "summary": "Add delegatee addresses to the payment DB contract via the relayer",
+        "operationId": "addDelegateesToPaymentDB",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "delegateeAddresses": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "delegateeAddresses"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK - Delegatee addresses added to the payment DB contract via the relayer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResultMessage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
