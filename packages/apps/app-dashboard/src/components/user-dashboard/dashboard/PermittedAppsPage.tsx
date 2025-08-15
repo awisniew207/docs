@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
 import { Package, Info, Copy, Check } from 'lucide-react';
 import { AgentAppPermission } from '@/utils/user-dashboard/getAgentPKP';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shared/ui/tooltip';
 
 type PermittedAppsPageProps = {
   apps: App[];
