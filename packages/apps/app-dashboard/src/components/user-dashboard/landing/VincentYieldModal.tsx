@@ -49,7 +49,8 @@ export function VincentYieldModal({
   // Vincent Yield activation hook
   const {
     activateVincentYield,
-    isLoading: activationLoading,
+    isActivating,
+    isInitializing,
     error: activationError,
     loadingStatus,
   } = useVincentYieldActivation();
@@ -334,7 +335,7 @@ export function VincentYieldModal({
 
         <div className="flex flex-col items-center pt-3 sm:pt-4 pb-4 sm:pb-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
           {/* Loading status */}
-          {activationLoading && loadingStatus && (
+          {isActivating && loadingStatus && (
             <div className="flex items-center gap-2">
               <RefreshCw className="h-3 w-3 text-orange-500 animate-spin" />
               <span className={`${theme.textMuted} text-xs font-medium`}>{loadingStatus}</span>
@@ -351,12 +352,14 @@ export function VincentYieldModal({
             disabled={
               !balanceFormatted ||
               parseFloat(balanceFormatted) < MINIMUM_DEPOSIT ||
-              activationLoading
+              isActivating ||
+              isInitializing
             }
             className={`font-normal tracking-wide transition-all duration-200 border text-white ${
               !balanceFormatted ||
               parseFloat(balanceFormatted) < MINIMUM_DEPOSIT ||
-              activationLoading
+              isActivating ||
+              isInitializing
                 ? 'bg-gray-100 dark:bg-gray-800 !text-gray-400 border-gray-200 dark:border-gray-700 cursor-not-allowed'
                 : ''
             }`}
@@ -366,7 +369,8 @@ export function VincentYieldModal({
               padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(1.5rem, 6vw, 3rem)',
               ...(!balanceFormatted ||
               parseFloat(balanceFormatted) < MINIMUM_DEPOSIT ||
-              activationLoading
+              isActivating ||
+              isInitializing
                 ? {}
                 : {
                     backgroundColor: '#e55a1a',
@@ -374,7 +378,11 @@ export function VincentYieldModal({
                   }),
             }}
           >
-            {activationLoading ? 'Activating...' : 'Activate Vincent Yield'}
+            {isInitializing
+              ? 'Loading...'
+              : isActivating
+              ? 'Activating...'
+              : 'Activate Vincent Yield'}
           </Button>
         </div>
       </DialogContent>

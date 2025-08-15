@@ -91,15 +91,17 @@ export function PermittedAppsWrapper() {
   return (
     <>
       <PermittedAppsPage apps={filteredApps} permittedPKPs={permittedPKPs} />
-      <VincentYieldModal
-        isOpen={showVincentYieldModal}
-        onClose={() => {
-          setShowVincentYieldModal(false);
-          setHasUserDismissedModal(true);
-        }}
-        agentPKP={firstUnpermittedPkp!}
-        readAuthInfo={readAuthInfo}
-      />
+      {firstUnpermittedPkp && (
+        <VincentYieldModal
+          isOpen={showVincentYieldModal}
+          onClose={() => {
+            setShowVincentYieldModal(false);
+            setHasUserDismissedModal(true);
+          }}
+          agentPKP={firstUnpermittedPkp}
+          readAuthInfo={readAuthInfo}
+        />
+      )}
     </>
   );
 }

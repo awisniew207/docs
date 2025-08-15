@@ -224,6 +224,8 @@ export function AppPermissionPage({
         }
         title="Manage App Permissions"
         description="Review and modify your permissions for this app"
+        linkUrl={connectInfoMap.app.appUserUrl}
+        linkText="Open App"
       />
 
       <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
