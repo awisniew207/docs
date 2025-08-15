@@ -18,4 +18,3 @@ onlyBuiltDependencies:
   - utf-8-validate
 overrides:
   typescript: 5.8.3
-linkWorkspacePackages: true
