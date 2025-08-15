@@ -3,13 +3,15 @@ import { App } from '@/types/developer-dashboard/appTypes';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
-import { Package } from 'lucide-react';
+import { Package, Info } from 'lucide-react';
+import { AgentAppPermission } from '@/utils/user-dashboard/getAgentPKP';
 
 type PermittedAppsPageProps = {
   apps: App[];
+  permittedPKPs: AgentAppPermission[];
 };
 
-export function PermittedAppsPage({ apps }: PermittedAppsPageProps) {
+export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProps) {
   const navigate = useNavigate();
 
   const handleAppClick = (appId: string) => {
@@ -46,12 +48,37 @@ export function PermittedAppsPage({ apps }: PermittedAppsPageProps) {
             style={{ height: '160px' }}
           >
             <CardContent className="p-3 relative">
-              {/* Version Badge - Absolutely positioned */}
-              {app.activeVersion && (
-                <span className="absolute top-2 right-2 px-2 py-1 rounded text-xs bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
-                  v{app.activeVersion}
-                </span>
-              )}
+              {/* Top right badges container */}
+              <div className="absolute top-2 right-2 flex items-center gap-2">
+                {/* Agent PKP Info Icon */}
+                {(() => {
+                  const permission = permittedPKPs.find((p) => p.appId === app.appId);
+                  return (
+                    permission && (
+                      <div
+                        className="group"
+                        onClick={(e) => e.stopPropagation()} // Prevent card click when clicking icon
+                      >
+                        <Info
+                          className={`w-4 h-4 ${theme.textMuted} hover:${theme.text} transition-colors cursor-help`}
+                        />
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-black text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 max-w-xs">
+                          Agent address: {permission.pkp.ethAddress}
+                          <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
+                        </div>
+                      </div>
+                    )
+                  );
+                })()}
+
+                {/* Version Badge */}
+                {app.activeVersion && (
+                  <span className="px-2 py-1 rounded text-xs bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                    v{app.activeVersion}
+                  </span>
+                )}
+              </div>
 
               <div className="flex flex-col gap-2">
                 {/* Logo and Title Row */}

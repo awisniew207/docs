@@ -8,36 +8,55 @@ import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
 import { BadRedirectUriError } from '@/components/user-dashboard/connect/BadRedirectUriError';
 import { AppPermissionPage } from './UserPermissionPage';
 import { useFetchUserPermissions } from '@/hooks/user-dashboard/dashboard/useFetchUserPermissions';
-import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/useUserPermissionsMiddleware';
+import { useAgentPKPForApp } from '@/hooks/user-dashboard/useAgentPKPForApp';
+import { useUserPermissionsForApps } from '@/hooks/user-dashboard/dashboard/useUserPermissionsForApps';
 
 export function UserPermissionWrapper() {
   const { appId } = useParams();
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
   const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
+
+  const userAddress = authInfo?.userPKP?.ethAddress || '';
+
+  // Get agent PKP for this specific app
+  const {
+    agentPKP,
+    loading: agentPKPLoading,
+    error: agentPKPError,
+  } = useAgentPKPForApp(userAddress, appId ? Number(appId) : undefined);
+
   const {
     existingData,
     isLoading: isExistingDataLoading,
     error: isExistingDataError,
   } = useFetchUserPermissions({
     appId: Number(appId),
-    pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
+    pkpEthAddress: agentPKP?.ethAddress || '',
   });
 
-  // Get permitted app versions for this user
+  // Get permitted app versions for this user - only when we have the agentPKP
   const {
     permittedAppVersions,
     isLoading: permissionsLoading,
     error: permissionsError,
-  } = useUserPermissionsMiddleware({
-    pkpEthAddress: authInfo?.agentPKP?.ethAddress || '',
+  } = useUserPermissionsForApps({
+    agentPKPs: agentPKP ? [agentPKP] : [],
   });
+
+  // Wait for permissions data to be loaded for this specific app
+  const isPermissionsReady =
+    agentPKP &&
+    !permissionsLoading &&
+    permittedAppVersions &&
+    appId &&
+    appId in permittedAppVersions;
 
   const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
     authorizedRedirectUris: data?.app?.redirectUris,
   });
 
   // Wait for ALL critical data to load before making routing decisions
-  const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
+  const isUserAuthed = authInfo?.userPKP && sessionSigs;
 
   // Check if we have finished loading but got no data (invalid appId)
   const hasFinishedLoadingButNoData = !isLoading && !data;
@@ -47,7 +66,7 @@ export function UserPermissionWrapper() {
     !isLoading &&
     !isProcessing &&
     // Only wait for permissions if user is authenticated
-    (isUserAuthed ? !isExistingDataLoading && !permissionsLoading : true);
+    (isUserAuthed ? !isExistingDataLoading && !agentPKPLoading && isPermissionsReady : true);
 
   // Authentication check - must be done before other business logic
   if (!isProcessing && !isUserAuthed) {
@@ -82,12 +101,13 @@ export function UserPermissionWrapper() {
     isError ||
     error ||
     isExistingDataError ||
+    agentPKPError ||
     (permissionsError && permissionsError !== 'Missing pkpTokenId')
   ) {
     const errorMessage =
       errors.length > 0
         ? errors.join(', ')
-        : (error ?? permissionsError ?? 'An unknown error occurred');
+        : String(error ?? agentPKPError ?? permissionsError ?? 'An unknown error occurred');
     return <GeneralErrorScreen errorDetails={errorMessage} />;
   }
 
@@ -95,6 +115,7 @@ export function UserPermissionWrapper() {
     <AppPermissionPage
       connectInfoMap={data}
       readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+      agentPKP={agentPKP!}
       existingData={existingData}
       permittedAppVersions={permittedAppVersions || {}}
     />
