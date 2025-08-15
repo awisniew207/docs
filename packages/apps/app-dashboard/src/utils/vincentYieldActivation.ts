@@ -44,12 +44,6 @@ export function useVincentYieldActivation(): UseVincentYieldActivationReturn {
           throw new Error('Missing authentication information. Please try refreshing the page.');
         }
 
-        // Wait for connect info to load
-        if (connectInfo.isLoading) {
-          setLoadingStatus('Loading app information...');
-          return;
-        }
-
         if (connectInfo.isError || !connectInfo.data.app.activeVersion) {
           throw new Error('Failed to fetch Vincent Yield app information');
         }
@@ -144,7 +138,7 @@ export function useVincentYieldActivation(): UseVincentYieldActivationReturn {
           audience: ['https://yield.heyvincent.ai'],
           app: {
             id: env.VITE_VINCENT_YIELD_APPID, // Use env app ID consistently
-            version: activeVersion, // Hardcoded to version 6
+            version: activeVersion,
           },
           authentication: {
             type: readAuthInfo.authInfo.type,

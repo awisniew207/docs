@@ -15,6 +15,7 @@ import { useFetchYieldData } from '@/hooks/user-dashboard/yield/useFetchYieldDat
 import { useVincentYieldActivation } from '@/utils/vincentYieldActivation';
 import { theme } from '../connect/ui/theme';
 import QRCode from 'react-qr-code';
+import { env } from '@/config/env';
 
 interface VincentYieldModalProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ interface VincentYieldModalProps {
   readAuthInfo: ReadAuthInfo;
 }
 
-const MINIMUM_DEPOSIT = 0;
+const MINIMUM_DEPOSIT = env.VITE_VINCENT_YIELD_MINIMUM_DEPOSIT;
 
 export function VincentYieldModal({
   isOpen,
@@ -95,7 +96,7 @@ export function VincentYieldModal({
         }
       `}</style>
       <DialogContent
-        className={`w-[calc(100%-1rem)] max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden p-0`}
+            className={`w-[calc(100%-1rem)] max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden p-0`}
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
@@ -296,7 +297,7 @@ export function VincentYieldModal({
                         style={{ fontSize: 'clamp(0.5rem, 3vw, 0.75rem)' }}
                       >
                         <span className={theme.textMuted}>
-                          ${balanceFormatted || '0.00'} / $50.00 USDC
+                          ${balanceFormatted || '0.00'} / ${MINIMUM_DEPOSIT}.00 USDC
                         </span>
                         {currentBalance < MINIMUM_DEPOSIT && (
                           <span
@@ -333,7 +334,14 @@ export function VincentYieldModal({
           </div>
         </div>
 
-        <div className="flex flex-col items-center pt-3 sm:pt-4 pb-4 sm:pb-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        <div className="flex flex-col items-center pt-3 sm:pt-4 pb-4 sm:pb-6 border-t border-gray-200 dark:border-gray-700 space-y-3">
+          {/* Authorization note */}
+          <div className="text-center px-4">
+            <p className={`${theme.textMuted} text-[10px]`}>
+              <span className="font-medium">Note:</span> You're authorizing this agent to use Morpho on your behalf
+            </p>
+          </div>
+
           {/* Loading status */}
           {isActivating && loadingStatus && (
             <div className="flex items-center gap-2">
