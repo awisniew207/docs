@@ -10,7 +10,8 @@ import { VincentYieldModal } from '../landing/VincentYieldModal';
 import { env } from '@/config/env';
 
 export function PermittedAppsWrapper() {
-  const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
+  const readAuthInfo = useReadAuthInfo();
+  const { authInfo, sessionSigs, isProcessing, error } = readAuthInfo;
 
   const userAddress = authInfo?.userPKP?.ethAddress || '';
   const [showVincentYieldModal, setShowVincentYieldModal] = useState(false);
@@ -50,9 +51,7 @@ export function PermittedAppsWrapper() {
 
   // Handle auth errors early
   if (error) {
-    return (
-      <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
-    );
+    return <AuthenticationErrorScreen readAuthInfo={readAuthInfo} />;
   }
 
   // Handle missing auth or user address
@@ -73,9 +72,7 @@ export function PermittedAppsWrapper() {
 
   const isUserAuthed = authInfo?.userPKP && sessionSigs;
   if (!isUserAuthed) {
-    return (
-      <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
-    );
+    return <AuthenticationErrorScreen readAuthInfo={readAuthInfo} />;
   }
 
   // Use first unpermitted PKP for Vincent Yield modal (if any exist)
@@ -94,13 +91,14 @@ export function PermittedAppsWrapper() {
   return (
     <>
       <PermittedAppsPage apps={filteredApps} permittedPKPs={permittedPKPs} />
-      {showVincentYieldModal && (
+      {showVincentYieldModal && firstUnpermittedPkp && (
         <VincentYieldModal
           onClose={() => {
             setShowVincentYieldModal(false);
             setHasUserDismissedModal(true);
           }}
-          agentPkpAddress={firstUnpermittedPkp?.ethAddress || ''}
+          agentPKP={firstUnpermittedPkp}
+          readAuthInfo={readAuthInfo}
         />
       )}
     </>

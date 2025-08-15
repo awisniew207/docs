@@ -11,7 +11,7 @@ export interface AuthInfo {
   userId?: string;
 }
 
-export interface UseReadAuthInfo {
+export interface ReadAuthInfo {
   authInfo: AuthInfo | null;
   sessionSigs: SessionSigs | null;
   isProcessing: boolean;
@@ -30,7 +30,7 @@ const AUTH_INFO_KEY = 'lit-auth-info';
  * Hook to retrieve authentication info from localStorage
  * @returns The authentication info stored in localStorage
  */
-export const useReadAuthInfo = (): UseReadAuthInfo => {
+export const useReadAuthInfo = (): ReadAuthInfo => {
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>(null);
   const [sessionSigs, setSessionSigs] = useState<SessionSigs | null>(null);
   const [isProcessing, setIsProcessing] = useState(true);

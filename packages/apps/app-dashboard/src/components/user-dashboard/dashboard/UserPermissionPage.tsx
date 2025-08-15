@@ -5,7 +5,7 @@ import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useFormatUserPermissions } from '@/hooks/user-dashboard/dashboard/useFormatUserPermissions';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { PolicyFormRef } from '../connect/ui/PolicyForm';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
 import { ConnectAppHeader } from '../connect/ui/ConnectAppHeader';
 import { PermittedAppInfo } from './ui/PermittedAppInfo';
@@ -20,7 +20,7 @@ import { useEffect } from 'react';
 
 interface AppPermissionPageProps {
   connectInfoMap: ConnectInfoMap;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
   agentPKP: IRelayPKP;
   existingData: PermissionData;
   permittedAppVersions: Record<string, string>;
@@ -224,6 +224,8 @@ export function AppPermissionPage({
         }
         title="Manage App Permissions"
         description="Review and modify your permissions for this app"
+        linkUrl={connectInfoMap.app.appUserUrl}
+        linkText="Open App"
       />
 
       <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
