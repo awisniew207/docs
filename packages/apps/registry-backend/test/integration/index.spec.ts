@@ -8,7 +8,6 @@ import './app.spec';
 import './appVersionAbility.spec';
 import './supportedPolicies.spec';
 import './authorization.spec';
-import './paymentDB.spec';
 
 // This empty test ensures that the file is recognized as a test file
 describe('Integration Test Suite', () => {

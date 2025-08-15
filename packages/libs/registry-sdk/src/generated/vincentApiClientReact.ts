@@ -7,7 +7,6 @@ export const addTagTypes = [
   'AbilityVersion',
   'Policy',
   'PolicyVersion',
-  'PaymentDB',
 ] as const;
 const injectedRtkApi = api
   .enhanceEndpoints({
@@ -166,6 +165,15 @@ const injectedRtkApi = api
           body: queryArg.appSetActiveVersion,
         }),
         invalidatesTags: ['App'],
+      }),
+      sponsorDelegateesPayment: build.mutation<
+        SponsorDelegateesPaymentApiResponse,
+        SponsorDelegateesPaymentApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/app/${encodeURIComponent(String(queryArg.appId))}/sponsorDelegateesPayment`,
+          method: 'POST',
+        }),
       }),
       listAllAbilities: build.query<ListAllAbilitiesApiResponse, ListAllAbilitiesApiArg>({
         query: () => ({ url: `/abilities` }),
@@ -365,17 +373,6 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ['PolicyVersion'],
       }),
-      addDelegateesToPaymentDb: build.mutation<
-        AddDelegateesToPaymentDbApiResponse,
-        AddDelegateesToPaymentDbApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/paymentDB/addDelegatees`,
-          method: 'POST',
-          body: queryArg.addDelegateesToPaymentDb,
-        }),
-        invalidatesTags: ['PaymentDB'],
-      }),
     }),
     overrideExisting: false,
   });
@@ -528,6 +525,12 @@ export type SetAppActiveVersionApiArg = {
   appId: number;
   /** The version to set as active */
   appSetActiveVersion: AppSetActiveVersion;
+};
+export type SponsorDelegateesPaymentApiResponse =
+  /** status 200 OK - Current app delegatee addresses are sponsored for LIT chain usage costs */ GenericResultMessage;
+export type SponsorDelegateesPaymentApiArg = {
+  /** ID of the target application */
+  appId: number;
 };
 export type ListAllAbilitiesApiResponse = /** status 200 Successful operation */ AbilityListRead;
 export type ListAllAbilitiesApiArg = void;
@@ -703,11 +706,6 @@ export type UndeletePolicyVersionApiArg = {
   packageName: string;
   /** NPM semver of the target policy version */
   version: string;
-};
-export type AddDelegateesToPaymentDbApiResponse =
-  /** status 200 OK - Delegatee addresses added to the payment DB contract via the relayer */ GenericResultMessage;
-export type AddDelegateesToPaymentDbApiArg = {
-  addDelegateesToPaymentDb: AddDelegateesToPaymentDb;
 };
 export type App = {
   /** Timestamp when this was last modified */
@@ -1260,9 +1258,6 @@ export type PolicyVersionEdit = {
 };
 export type PolicyVersionList = PolicyVersion[];
 export type PolicyVersionListRead = PolicyVersionRead[];
-export type AddDelegateesToPaymentDb = {
-  delegateeAddresses: string[];
-};
 export const {
   useListAppsQuery,
   useLazyListAppsQuery,
@@ -1289,6 +1284,7 @@ export const {
   useUndeleteAppVersionMutation,
   useUndeleteAppVersionAbilityMutation,
   useSetAppActiveVersionMutation,
+  useSponsorDelegateesPaymentMutation,
   useListAllAbilitiesQuery,
   useLazyListAllAbilitiesQuery,
   useCreateAbilityMutation,
@@ -1323,5 +1319,4 @@ export const {
   useChangePolicyOwnerMutation,
   useUndeletePolicyMutation,
   useUndeletePolicyVersionMutation,
-  useAddDelegateesToPaymentDbMutation,
 } = injectedRtkApi;

@@ -1278,20 +1278,6 @@
         ],
         "additionalProperties": false
       },
-      "AddDelegateesToPaymentDB": {
-        "type": "object",
-        "properties": {
-          "delegateeAddresses": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "delegateeAddresses"
-        ]
-      },
       "AppList": {
         "type": "array",
         "items": {
@@ -2575,6 +2561,51 @@
           },
           "422": {
             "description": "Validation exception"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/{appId}/sponsorDelegateesPayment": {
+      "post": {
+        "summary": "Sponsor LIT chain usage costs for app delegatee addresses ",
+        "operationId": "sponsorDelegateesPayment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "ID of the target application",
+            "example": 132,
+            "name": "appId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Current app delegatee addresses are sponsored for LIT chain usage costs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResultMessage"
+                }
+              }
+            }
           },
           "default": {
             "description": "Unexpected error",
@@ -4077,51 +4108,6 @@
           },
           "422": {
             "description": "Validation exception"
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paymentDB/addDelegatees": {
-      "post": {
-        "tags": [
-          "PaymentDB"
-        ],
-        "summary": "Add delegatee addresses to the payment DB contract via the relayer",
-        "operationId": "addDelegateesToPaymentDB",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddDelegateesToPaymentDB"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK - Delegatee addresses added to the payment DB contract via the relayer",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericResultMessage"
-                }
-              }
-            }
           },
           "default": {
             "description": "Unexpected error",
