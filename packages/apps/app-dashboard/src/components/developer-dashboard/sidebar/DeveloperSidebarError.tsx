@@ -9,7 +9,6 @@ import {
   LogOut,
   AlertTriangle,
   ExternalLink,
-  Copy,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -53,15 +52,6 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
     window.location.reload();
   };
 
-  const handleCopyEthAddress = async () => {
-    if (authInfo?.userPKP?.ethAddress) {
-      try {
-        await navigator.clipboard.writeText(authInfo.userPKP.ethAddress);
-      } catch (err) {
-        console.error('Failed to copy eth address:', err);
-      }
-    }
-  };
 
   const formatAuthInfo = () => {
     if (!authInfo) return '';
@@ -270,23 +260,7 @@ export function DeveloperSidebarError({ error }: DeveloperSidebarErrorProps) {
                     className={`${theme.cardBg} ${theme.cardBorder} ${theme.text} max-w-sm`}
                   >
                     <div className="whitespace-pre-line text-xs">
-                      <div className="mb-2">{formatAuthInfo()}</div>
-                      {authInfo.userPKP?.ethAddress && (
-                        <div className="flex items-center gap-2 pt-2 border-t ${theme.cardBorder}">
-                          <div className="flex-1 min-w-0">
-                            <div className="${theme.textMuted}">Vincent Wallet Address:</div>
-                            <div className="font-mono text-xs ${theme.text} truncate">
-                              {authInfo.userPKP.ethAddress}
-                            </div>
-                          </div>
-                          <button
-                            onClick={handleCopyEthAddress}
-                            className={`p-1 ${theme.itemHoverBg} rounded transition-colors flex-shrink-0`}
-                          >
-                            <Copy className="w-3 h-3" />
-                          </button>
-                        </div>
-                      )}
+                      <div>{formatAuthInfo()}</div>
                     </div>
                   </TooltipContent>
                 )}
