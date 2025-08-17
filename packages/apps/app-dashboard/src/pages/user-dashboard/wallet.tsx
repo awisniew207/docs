@@ -5,7 +5,6 @@ import { WithdrawFormSkeleton } from '@/components/user-dashboard/withdraw/Withd
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { useAuthGuard } from '@/hooks/user-dashboard/connect/useAuthGuard';
 import { useAgentPKPForApp } from '@/hooks/user-dashboard/useAgentPKPForApp';
-import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 export function Wallet() {
   const { appId } = useParams();
@@ -24,7 +23,7 @@ export function Wallet() {
           <title>Vincent | Wallet</title>
           <meta name="description" content="Vincent Wallet Dashboard" />
         </Helmet>
-        <div className={`w-full h-full flex items-center justify-center ${theme.bg}`}>
+        <div className="w-full h-full flex items-center justify-center">
           <WithdrawFormSkeleton />
         </div>
       </>
@@ -37,7 +36,7 @@ export function Wallet() {
         <title>Vincent | Wallet</title>
         <meta name="description" content="Your Vincent wallet dashboard" />
       </Helmet>
-      <div className={`w-full h-full flex items-center justify-center ${theme.bg}`}>
+      <div className="w-full h-full flex items-center justify-center">
         <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP} userPKP={authInfo.userPKP} />
       </div>
     </>

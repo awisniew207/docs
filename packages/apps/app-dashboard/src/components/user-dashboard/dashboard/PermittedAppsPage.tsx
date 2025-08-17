@@ -4,7 +4,7 @@ import { App } from '@/types/developer-dashboard/appTypes';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { Card, CardContent } from '@/components/shared/ui/card';
 import { Logo } from '@/components/shared/ui/Logo';
-import { Package, Info, Copy, Check } from 'lucide-react';
+import { Package, Info, Copy, Check, Wallet } from 'lucide-react';
 import { AgentAppPermission } from '@/utils/user-dashboard/getAgentPKP';
 
 type PermittedAppsPageProps = {
@@ -19,6 +19,11 @@ export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProp
 
   const handleAppClick = (appId: string) => {
     navigate(`/user/appId/${appId}`);
+  };
+
+  const handleWalletClick = (appId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/user/appId/${appId}/wallet`);
   };
 
   const handleCopyAddress = async (address: string, e: React.MouseEvent) => {
@@ -74,6 +79,12 @@ export function PermittedAppsPage({ apps, permittedPKPs }: PermittedAppsPageProp
             <CardContent className="p-3 relative">
               {/* Top right badges container */}
               <div className="absolute top-2 right-2 flex items-center gap-2">
+                {/* Wallet Icon */}
+                <Wallet
+                  className={`w-4 h-4 ${theme.textMuted} hover:${theme.text} transition-colors cursor-pointer`}
+                  onClick={(e) => handleWalletClick(app.appId.toString(), e)}
+                />
+
                 {/* Agent PKP Info Icon */}
                 {(() => {
                   const permission = permittedPKPs.find((p) => p.appId === app.appId);

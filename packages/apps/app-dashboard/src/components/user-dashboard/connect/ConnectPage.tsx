@@ -119,6 +119,7 @@ export function ConnectPage({
 
         // Show success state for 3 seconds, then redirect
         setLocalSuccess('Permissions granted successfully!');
+        setIsConnectProcessing(false);
         setTimeout(async () => {
           setLocalSuccess(null);
           await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
