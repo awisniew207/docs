@@ -24,7 +24,7 @@ export function Wallet() {
           <title>Vincent | Wallet</title>
           <meta name="description" content="Vincent Wallet Dashboard" />
         </Helmet>
-        <div className={`w-full h-full flex items-center justify-center ${theme.bg}`}>
+        <div className="w-full h-full flex items-center justify-center">
           <WithdrawFormSkeleton />
         </div>
       </>
@@ -37,7 +37,7 @@ export function Wallet() {
         <title>Vincent | Wallet</title>
         <meta name="description" content="Your Vincent wallet dashboard" />
       </Helmet>
-      <div className={`w-full h-full flex items-center justify-center ${theme.bg}`}>
+      <div className="w-full h-full flex items-center justify-center">
         <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP} userPKP={authInfo.userPKP} />
       </div>
     </>

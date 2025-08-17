@@ -11,7 +11,7 @@ export default function RootPage() {
         <title>Vincent | Delegation Platform</title>
         <meta
           name="description"
-          content="Vincent - Delegation Platform for user owned automation powered by Lit Protocol"
+          content="Vincent - Delegation Platform for user owned automation secured by Lit Protocol"
         />
       </Helmet>
       <div className="flex flex-col min-h-screen bg-white text-center p-3 sm:p-5 font-sans relative overflow-x-hidden">
@@ -59,8 +59,10 @@ export default function RootPage() {
 
         {/* Footer */}
         <div className="px-3 sm:px-6 py-2 flex flex-col items-center gap-2 mt-auto">
+          <div className="flex flex-col items-center gap-1 text-sm font-normal">
+            <span className="text-black text-base font-semibold">Securing Autonomy</span>
+          </div>
           <div className="flex items-center gap-2 text-sm font-normal text-gray-500">
-            <span>Powered by</span>
             <a
               href="https://litprotocol.com"
               target="_blank"
@@ -91,32 +93,32 @@ export default function RootPage() {
               </svg>
             </a>
           </div>
-          <div className="flex items-center gap-1 text-sm font-normal text-gray-500">
+          <div className="flex items-center gap-1 text-sm font-normal text-black">
             <a
               href="https://t.me/+aa73FAF9Vp82ZjJh"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
               Help
             </a>
-            <span className="font-normal text-gray-500"> / </span>
+            <span className="font-normal text-black"> / </span>
             <a
               href="https://www.litprotocol.com/legal/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
               Privacy
             </a>
-            <span className="font-normal text-gray-500"> / </span>
+            <span className="font-normal text-black"> / </span>
             <a
               href="https://www.litprotocol.com/legal/terms-of-service"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
               Terms
