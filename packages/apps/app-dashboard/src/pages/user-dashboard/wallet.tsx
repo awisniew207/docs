@@ -5,7 +5,6 @@ import { WithdrawFormSkeleton } from '@/components/user-dashboard/withdraw/Withd
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { useAuthGuard } from '@/hooks/user-dashboard/connect/useAuthGuard';
 import { useAgentPKPForApp } from '@/hooks/user-dashboard/useAgentPKPForApp';
-import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 export function Wallet() {
   const { appId } = useParams();
