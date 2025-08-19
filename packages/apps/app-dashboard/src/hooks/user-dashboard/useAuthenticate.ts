@@ -5,6 +5,7 @@ import {
   authenticateWithStytch,
   authenticateWithEthWallet,
 } from '@/utils/user-dashboard/lit';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 
 export default function useAuthenticate() {
   const [authMethod, setAuthMethod] = useState<AuthMethod>();
@@ -21,13 +22,22 @@ export default function useAuthenticate() {
   /**
    * Authenticate with WebAuthn credential
    */
-  const authWithWebAuthn = useCallback(async (): Promise<void> => {
+  const authWithWebAuthn = useCallback(async (vincentYieldInfo: ConnectInfoMap): Promise<void> => {
     setLoading(true);
     setError(undefined);
     setAuthMethod(undefined);
 
     try {
-      const result: AuthMethod = await authenticateWithWebAuthn();
+      // Wait for Vincent Yield data to be ready if needed
+      while (
+        vincentYieldInfo &&
+        (Object.keys(vincentYieldInfo.supportedPoliciesByAbilityVersion || {}).length === 0 ||
+          Object.keys(vincentYieldInfo.abilityVersionsByAppVersionAbility || {}).length === 0)
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      const result: AuthMethod = await authenticateWithWebAuthn(vincentYieldInfo);
       setAuthMethod(result);
     } catch (err) {
       // Check if this is a user cancellation - if so, don't treat it as an error

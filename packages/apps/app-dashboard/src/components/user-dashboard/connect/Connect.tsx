@@ -3,15 +3,13 @@ import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs } from '@lit-protocol/types';
 import { ThemeType } from './ui/theme';
 
-import useAuthenticate from '../../../hooks/user-dashboard/useAuthenticate';
-import useAccounts from '../../../hooks/user-dashboard/useAccounts';
-import { registerWebAuthn, getSessionSigs } from '../../../utils/user-dashboard/lit';
+import useAuthenticate from '@/hooks/user-dashboard/useAuthenticate';
+import useAccounts from '@/hooks/user-dashboard/useAccounts';
+import { registerWebAuthn, getSessionSigs } from '@/utils/user-dashboard/lit';
+import { useSetAuthInfo, useClearAuthInfo, ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import ConnectMethods from '../auth/ConnectMethods';
-import {
-  useSetAuthInfo,
-  useClearAuthInfo,
-  ReadAuthInfo,
-} from '../../../hooks/user-dashboard/useAuthInfo';
+import { env } from '@/config/env';
 
 import SignUpView from '../auth/SignUpView';
 import StatusMessage from './StatusMessage';
@@ -30,6 +28,9 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
   const [sessionError, setSessionError] = useState<Error>();
+
+  // Vincent Yield connect info
+  const connectInfo = useConnectInfo(String(env.VITE_VINCENT_YIELD_APPID));
 
   // Status message state
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -67,7 +68,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // Account handling
   const {
-    fetchAccounts,
+    fetchOrMintAccounts,
     setuserPKP,
     userPKP,
     accounts,
@@ -124,10 +125,12 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // If user is authenticated, fetch accounts
   useEffect(() => {
-    if (authMethod) {
-      fetchAccounts(authMethod);
+    if (authMethod && connectInfo.data) {
+      if (!connectInfo.isLoading && connectInfo.data) {
+        fetchOrMintAccounts(authMethod, connectInfo.data);
+      }
     }
-  }, [authMethod, fetchAccounts]);
+  }, [authMethod, fetchOrMintAccounts, connectInfo.data, connectInfo.isLoading]);
 
   // If user is authenticated and has accounts, select the first one
   useEffect(() => {
@@ -150,7 +153,17 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
     let currentMessage = '';
     if (authLoading) {
-      currentMessage = 'Authenticating...';
+      // Check if we need Vincent Yield data during auth
+      const isConnectDataReady =
+        !connectInfo.isLoading &&
+        Object.keys(connectInfo.data?.supportedPoliciesByAbilityVersion || {}).length > 0 &&
+        Object.keys(connectInfo.data?.abilityVersionsByAppVersionAbility || {}).length > 0;
+
+      if (isConnectDataReady) {
+        currentMessage = 'Authenticating...';
+      } else {
+        currentMessage = 'Loading Vincent Yield data...';
+      }
     } else if (accountsLoading) {
       currentMessage = 'Fetching your Vincent Wallet...';
     } else if (sessionLoading) {
@@ -171,7 +184,15 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
       }, 200);
       return () => clearTimeout(timer);
     }
-  }, [authLoading, accountsLoading, sessionLoading, isProcessing, loadingMessage]);
+  }, [
+    authLoading,
+    accountsLoading,
+    sessionLoading,
+    isProcessing,
+    loadingMessage,
+    connectInfo.isLoading,
+    connectInfo.data,
+  ]);
 
   // ------ CLEANUP ------
 
@@ -229,7 +250,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
             authMethod.authMethodType as (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE]
           }
           handleRegisterWithWebAuthn={handleRegisterWithWebAuthn}
-          authWithWebAuthn={authWithWebAuthn}
+          authWithWebAuthn={() => authWithWebAuthn(connectInfo.data)}
           theme={theme}
         />
       );
@@ -238,7 +259,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
     // Initial authentication state - show connect methods
     return (
       <ConnectMethods
-        authWithWebAuthn={authWithWebAuthn}
+        authWithWebAuthn={() => authWithWebAuthn(connectInfo.data)}
         authWithStytch={authWithStytch}
         authWithEthWallet={authWithEthWallet}
         registerWithWebAuthn={handleRegisterWithWebAuthn}

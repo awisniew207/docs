@@ -1,14 +1,11 @@
 import { useState, useCallback } from 'react';
-import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { createAppUserJWT } from '@lit-protocol/vincent-app-sdk/jwt';
 import { IRelayPKP } from '@lit-protocol/types';
 import { ReadAuthInfo } from '@/hooks/user-dashboard';
 import { env } from '@/config/env';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { litNodeClient, mintPKPToExistingPKP } from '@/utils/user-dashboard/lit';
+import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { useConnectInfo } from '@/hooks/user-dashboard/connect/useConnectInfo';
-import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
-import { BigNumber } from 'ethers';
 
 const VINCENT_YIELD_APPID = Number(env.VITE_VINCENT_YIELD_APPID);
 
@@ -31,7 +28,6 @@ export function useVincentYieldActivation(): UseVincentYieldActivationReturn {
   const [error, setError] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
   const connectInfo = useConnectInfo(String(VINCENT_YIELD_APPID));
-  const { addPermittedActions } = useAddPermittedActions();
 
   const activateVincentYield = useCallback(
     async ({ agentPKP, readAuthInfo }: { agentPKP: IRelayPKP; readAuthInfo: ReadAuthInfo }) => {
@@ -48,73 +44,8 @@ export function useVincentYieldActivation(): UseVincentYieldActivationReturn {
           throw new Error('Failed to fetch Vincent Yield app information');
         }
 
-        const {
-          app,
-          supportedPoliciesByAbilityVersion,
-          abilityVersionsByAppVersionAbility,
-          appVersionAbilitiesByAppVersion,
-        } = connectInfo.data;
+        const { app } = connectInfo.data;
         const activeVersion = app.activeVersion!;
-        const versionKey = `${VINCENT_YIELD_APPID}-${activeVersion}`;
-
-        // Get app version abilities for this version
-        const appVersionAbilities = appVersionAbilitiesByAppVersion[versionKey] || [];
-
-        setLoadingStatus('Initializing signer...');
-
-        // Create user PKP wallet
-        const userPkpWallet = new PKPEthersWallet({
-          controllerSessionSigs: readAuthInfo.sessionSigs,
-          pkpPubKey: readAuthInfo.authInfo.userPKP.publicKey,
-          litNodeClient: litNodeClient,
-        });
-        await userPkpWallet.init();
-
-        // Build permission data using the same pattern as ConnectPage
-        const permissionData: Record<string, any> = {};
-
-        appVersionAbilities.forEach((ability) => {
-          const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
-          const policies = supportedPoliciesByAbilityVersion[abilityKey] || [];
-          const abilityVersions = abilityVersionsByAppVersionAbility[abilityKey] || [];
-          const abilityVersion = abilityVersions[0];
-
-          if (abilityVersion) {
-            permissionData[abilityVersion.ipfsCid] = {};
-
-            // Add all policies with empty default values (same as ConnectPage initial state)
-            policies.forEach((policy) => {
-              permissionData[abilityVersion.ipfsCid][policy.ipfsCid] = {};
-            });
-          }
-        });
-
-        setLoadingStatus('Adding abilities...');
-        await addPermittedActions({
-          wallet: userPkpWallet,
-          agentPKPTokenId: agentPKP.tokenId,
-          abilityIpfsCids: Object.keys(permissionData),
-        });
-
-        setLoadingStatus('Permitting the application...');
-
-        console.log(permissionData);
-
-        // Get the client and permit the Vincent Yield app
-        const client = getClient({ signer: userPkpWallet });
-        await client.permitApp({
-          pkpEthAddress: agentPKP.ethAddress,
-          appId: env.VITE_VINCENT_YIELD_APPID,
-          appVersion: activeVersion,
-          permissionData,
-        });
-
-        // Mint a new agent PKP after permitting (same as ConnectPage)
-        const tokenIdString = BigNumber.from(readAuthInfo.authInfo.userPKP.tokenId).toHexString();
-        await mintPKPToExistingPKP({
-          ...readAuthInfo.authInfo.userPKP,
-          tokenId: tokenIdString,
-        });
 
         setLoadingStatus('Generating authentication...');
 
@@ -200,7 +131,7 @@ export function useVincentYieldActivation(): UseVincentYieldActivationReturn {
         throw err;
       }
     },
-    [connectInfo, addPermittedActions],
+    [connectInfo],
   );
 
   return {

@@ -20,13 +20,9 @@ export function PermittedAppsWrapper() {
   // Fetch all agent app permissions
   const {
     permittedPKPs,
-    unpermittedPKPs,
     loading: permissionsLoading,
     error: permissionsError,
   } = useAllAgentApps(userAddress);
-
-  // Check if Vincent Yield app is permitted
-  const hasVincentYieldPerms = permittedPKPs.some((p) => p.appId === env.VITE_VINCENT_YIELD_APPID);
 
   // Fetch all apps from the API
   const {
@@ -75,29 +71,25 @@ export function PermittedAppsWrapper() {
     return <AuthenticationErrorScreen readAuthInfo={readAuthInfo} />;
   }
 
-  // Use first unpermitted PKP for Vincent Yield modal (if any exist)
-  const firstUnpermittedPkp = unpermittedPKPs.length > 0 ? unpermittedPKPs[0] : null;
+  // Find the agent PKP that's permitted for Vincent Yield
+  const vincentYieldPKP = permittedPKPs.find(
+    (pkp) => pkp.appId === Number(env.VITE_VINCENT_YIELD_APPID),
+  );
 
-  if (
-    isUserAuthed &&
-    !hasVincentYieldPerms &&
-    !showVincentYieldModal &&
-    !hasUserDismissedModal &&
-    firstUnpermittedPkp
-  ) {
+  if (isUserAuthed && !showVincentYieldModal && !hasUserDismissedModal && vincentYieldPKP) {
     setShowVincentYieldModal(true);
   }
 
   return (
     <>
       <PermittedAppsPage apps={filteredApps} permittedPKPs={permittedPKPs} />
-      {showVincentYieldModal && firstUnpermittedPkp && (
+      {showVincentYieldModal && vincentYieldPKP && (
         <VincentYieldModal
           onClose={() => {
             setShowVincentYieldModal(false);
             setHasUserDismissedModal(true);
           }}
-          agentPKP={firstUnpermittedPkp}
+          agentPKP={vincentYieldPKP.pkp}
           readAuthInfo={readAuthInfo}
         />
       )}

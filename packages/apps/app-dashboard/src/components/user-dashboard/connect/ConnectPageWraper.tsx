@@ -19,7 +19,6 @@ export function ConnectPageWrapper() {
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
   const {
     agentPKP,
-    isLastUnpermittedPKP,
     loading: agentPKPLoading,
     error: agentPKPError,
   } = useAgentPKPForApp(authInfo?.userPKP?.ethAddress, appId ? Number(appId) : undefined);
@@ -143,8 +142,6 @@ export function ConnectPageWrapper() {
         <ConnectPage
           connectInfoMap={data}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
-          agentPKP={agentPKP!}
-          isLastUnpermittedPKP={isLastUnpermittedPKP}
         />
       );
     }

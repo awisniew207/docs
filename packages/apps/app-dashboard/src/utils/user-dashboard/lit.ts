@@ -19,6 +19,9 @@ import { ethers } from 'ethers';
 import { getPkpNftContract } from './get-pkp-nft-contract';
 import { addPayee } from './addPayee';
 import { env } from '@/config/env';
+import { addVincentYieldToAgentPKP } from './addVincentYield';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
+import { getAgentPKPs } from './getAgentPKP';
 
 const { VITE_ENV, VITE_STYTCH_PROJECT_ID } = env;
 
@@ -181,8 +184,7 @@ export async function registerWebAuthn(displayName: string): Promise<IRelayPKP> 
     console.warn('Failed to add payee', err);
   }
 
-  // Mint a new PKP to be controlled by the new user PKP
-  // We'll still mint this, but we won't return it
+  // Mint agent PKP controlled by the user PKP
   await mintPKPToExistingPKP(newUserPKP);
 
   return newUserPKP;
@@ -191,9 +193,45 @@ export async function registerWebAuthn(displayName: string): Promise<IRelayPKP> 
 /**
  * Get auth method object by authenticating with a WebAuthn credential
  */
-export async function authenticateWithWebAuthn(): Promise<AuthMethod> {
+export async function authenticateWithWebAuthn(
+  vincentYieldInfo: ConnectInfoMap,
+): Promise<AuthMethod> {
   const webAuthnProvider = getWebAuthnProvider();
-  return await webAuthnProvider.authenticate();
+  const authMethod = await webAuthnProvider.authenticate();
+
+  // Get user PKP associated with this auth method
+  const userPKPs = await getPKPs(authMethod);
+  const userPKP = userPKPs[0];
+
+  // Get the agent PKPs owned by the user
+  const agentPKPs = await getAgentPKPs(userPKP.ethAddress);
+
+  // Get the first agent PKP (could be unpermitted with appId -1 or a permitted one)
+  if (agentPKPs.length === 0) {
+    throw new Error('No agent PKP found for user');
+  }
+
+  const agentPKP = agentPKPs[0].pkp;
+
+  // If we have exactly one agent PKP with appId -1, it means we need to add VY to it
+  if (agentPKPs.length === 1 && agentPKPs[0].appId === -1 && vincentYieldInfo?.app?.activeVersion) {
+    console.log('Vincent Yield not yet permitted, adding it now...');
+    const sessionSigs = await getSessionSigs({ pkpPublicKey: userPKP.publicKey, authMethod });
+
+    // Add Vincent Yield and wait for it to complete
+    await addVincentYieldToAgentPKP({
+      userPKP,
+      agentPKP,
+      sessionSigs,
+      connectInfoData: vincentYieldInfo,
+    });
+
+    console.log('Vincent Yield permission has been added');
+  } else {
+    console.log('Vincent Yield already permitted or multiple agent PKPs exist');
+  }
+
+  return authMethod;
 }
 
 /**
@@ -244,18 +282,37 @@ export async function getSessionSigs({
 }
 
 /**
- * Fetch PKPs associated with given auth method, minting one if none exist
+ * Fetch PKPs associated with given auth method
  */
-export async function getOrMintPKPs(authMethod: AuthMethod): Promise<IRelayPKP[]> {
+export async function getPKPs(authMethod: AuthMethod): Promise<IRelayPKP[]> {
   const provider = getAuthenticatedProvider(authMethod);
-  let allPKPs = await provider.fetchPKPsThroughRelayer(authMethod);
-  if (allPKPs.length === 0 && authMethod.authMethodType !== AUTH_METHOD_TYPE.WebAuthn) {
-    const newPKP = await mintPKP(authMethod);
-    await mintPKPToExistingPKP(newPKP);
-    allPKPs = await provider.fetchPKPsThroughRelayer(authMethod);
+  return await provider.fetchPKPsThroughRelayer(authMethod);
+}
+
+/**
+ * Mint PKPs for given auth method with Vincent Yield setup
+ */
+export async function mintPKPs(
+  authMethod: AuthMethod,
+  vincentYieldInfo: ConnectInfoMap,
+): Promise<IRelayPKP[]> {
+  if (authMethod.authMethodType === AUTH_METHOD_TYPE.WebAuthn) {
+    throw new Error('WebAuthn PKPs should be minted through registerWebAuthn');
   }
 
-  return allPKPs;
+  const userPKP = await mintPKP(authMethod);
+  const sessionSigs = await getSessionSigs({ pkpPublicKey: userPKP.publicKey, authMethod });
+  const agentPKP = await mintPKPToExistingPKP(userPKP);
+
+  await addVincentYieldToAgentPKP({
+    userPKP,
+    agentPKP,
+    sessionSigs,
+    connectInfoData: vincentYieldInfo,
+  });
+
+  const provider = getAuthenticatedProvider(authMethod);
+  return await provider.fetchPKPsThroughRelayer(authMethod);
 }
 
 /**
