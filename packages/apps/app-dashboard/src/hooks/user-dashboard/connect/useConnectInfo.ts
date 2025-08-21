@@ -28,7 +28,7 @@ export type ConnectInfoState = {
   data: ConnectInfoMap;
 };
 
-export const useConnectInfo = (appId: string): ConnectInfoState => {
+export const useConnectInfo = (appId: string, versionsToFetch?: number[]): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
 
   // Reset completion state when app changes
@@ -92,7 +92,12 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
         // Step 1: Fetch version abilities
         const versionAbilitiesData: Record<string, AppVersionAbility[]> = {};
 
-        for (const version of appVersions) {
+        // Only fetch abilities for specified versions or just the active version
+        const versionsToProcess = versionsToFetch
+          ? appVersions.filter((v) => versionsToFetch.includes(v.version))
+          : appVersions.filter((v) => v.version === app?.activeVersion);
+
+        for (const version of versionsToProcess) {
           const result = await triggerListAppVersionAbilities({
             appId: Number(appId),
             version: Number(version.version),

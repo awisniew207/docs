@@ -58,6 +58,18 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
     }
   }, [redirectUrl, localSuccess, executeRedirect]);
 
+  // Generate JWT when agentPKP is set and permissions are granted
+  useEffect(() => {
+    if (agentPKP && localSuccess === 'Permissions granted successfully!') {
+      const timer = setTimeout(async () => {
+        setLocalSuccess(null);
+        await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [agentPKP, localSuccess, generateJWT, connectInfoMap.app]);
+
   const handleSubmit = useCallback(async () => {
     // Clear any previous local errors
     setLocalError(null);
@@ -111,11 +123,9 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
 
         // Show success state for 3 seconds, then redirect
         setLocalSuccess('Permissions granted successfully!');
+        console.log('agentPKP:', agentPKP);
         setIsConnectProcessing(false);
-        setTimeout(async () => {
-          setLocalSuccess(null);
-          await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
-        }, 3000);
+        // JWT generation moved to useEffect that depends on agentPKP
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
         setIsConnectProcessing(false);

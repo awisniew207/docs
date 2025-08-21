@@ -36,6 +36,9 @@ export function ConnectPageWrapper() {
     appData: data?.app,
   });
 
+  // When there's no agentPKP, override the permissions loading state
+  const actualIsPermittedLoading = !agentPKP && !agentPKPLoading ? false : isPermittedLoading;
+
   const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
     authorizedRedirectUris: data?.app?.redirectUris,
   });
@@ -70,9 +73,24 @@ export function ConnectPageWrapper() {
     data &&
     !isLoading &&
     !isProcessing &&
-    // Only wait for permissions and agent PKP if user is authenticated
-    (isUserAuthed ? !isPermittedLoading && !agentPKPLoading && agentPKP : true) &&
+    // Only wait for permissions and agent PKP loading if user is authenticated
+    (isUserAuthed ? !actualIsPermittedLoading && !agentPKPLoading : true) &&
     (!userPermittedVersion || !versionDataLoading);
+
+  // Debug logging for no PKPs case
+  if (authInfo?.userPKP && !agentPKP && !agentPKPLoading) {
+    console.log('[ConnectPageWrapper] Debug - No agent PKP found:', {
+      data: !!data,
+      isLoading,
+      isProcessing,
+      isUserAuthed,
+      isPermittedLoading,
+      agentPKPLoading,
+      userPermittedVersion,
+      versionDataLoading,
+      isAllDataLoaded,
+    });
+  }
 
   // Now make routing decisions with complete information
   let content;

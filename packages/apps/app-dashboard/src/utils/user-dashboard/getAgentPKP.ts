@@ -95,7 +95,6 @@ export async function getAgentPKPs(userAddress: string): Promise<AgentAppPermiss
     console.log('[getAgentPKPs] Final result:', {
       permittedCount: permitted.length,
       permitted: permitted,
-      hadUnpermittedFallback: permitted.length === 1 && permitted[0].appId === -1,
     });
 
     return permitted;

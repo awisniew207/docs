@@ -1,40 +1,32 @@
 import { useCallback, useState } from 'react';
 import { AuthMethod } from '@lit-protocol/types';
-import { getPKPs, mintPKPs, mintPKP } from '../../utils/user-dashboard/lit';
+import { getOrMintUserPkp, mintPKP } from '../../utils/user-dashboard/lit';
 import { IRelayPKP } from '@lit-protocol/types';
-import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 
 export default function useAccounts() {
   const [accounts, setAccounts] = useState<IRelayPKP[]>([]);
   const [userPKP, setuserPKP] = useState<IRelayPKP>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
+
   /**
-   * Fetch PKPs tied to given auth method, minting if none exist
+   * Fetch PKPs tied to given auth method
    */
-  const fetchOrMintAccounts = useCallback(
-    async (authMethod: AuthMethod, vincentYieldInfo: ConnectInfoMap): Promise<void> => {
-      setLoading(true);
-      setError(undefined);
-      try {
-        let myPKPs = await getPKPs(authMethod);
-
-        if (myPKPs.length === 0) {
-          myPKPs = await mintPKPs(authMethod, vincentYieldInfo);
-        }
-
-        setAccounts(myPKPs);
-        if (myPKPs.length === 1) {
-          setuserPKP(myPKPs[0]);
-        }
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
+  const fetchOrMintAccounts = useCallback(async (authMethod: AuthMethod): Promise<void> => {
+    setLoading(true);
+    setError(undefined);
+    try {
+      const myPKPs = await getOrMintUserPkp(authMethod);
+      setAccounts(myPKPs);
+      if (myPKPs.length === 1) {
+        setuserPKP(myPKPs[0]);
       }
-    },
-    [],
-  );
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   /**
    * Mint a new PKP for current auth method

@@ -7,6 +7,7 @@ import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
 import { GeneralErrorScreen } from '@/components/user-dashboard/connect/GeneralErrorScreen';
 import { VincentYieldModal } from '../landing/VincentYieldModal';
+import { ConnectToVincentYieldModal } from '../landing/ConnectToVincentYieldModal';
 import { env } from '@/config/env';
 
 export function PermittedAppsWrapper() {
@@ -16,6 +17,7 @@ export function PermittedAppsWrapper() {
   const userAddress = authInfo?.userPKP?.ethAddress || '';
   const [showVincentYieldModal, setShowVincentYieldModal] = useState(false);
   const [hasUserDismissedModal, setHasUserDismissedModal] = useState(false);
+  const [showConnectModal, setShowConnectModal] = useState(false);
 
   // Fetch all agent app permissions
   const {
@@ -76,22 +78,38 @@ export function PermittedAppsWrapper() {
     (pkp) => pkp.appId === Number(env.VITE_VINCENT_YIELD_APPID),
   );
 
-  if (isUserAuthed && !showVincentYieldModal && !hasUserDismissedModal && vincentYieldPKP) {
+  // Find PKPs with appId = -1 (unconnected PKPs)
+  const unconnectedPKP = permittedPKPs.find((pkp) => pkp.appId === -1);
+
+  // Show Vincent Yield modal when user has no Vincent Yield PKP
+  if (isUserAuthed && !showVincentYieldModal && !hasUserDismissedModal && !vincentYieldPKP) {
     setShowVincentYieldModal(true);
+  }
+
+  // Show connect modal for unconnected PKPs (but not when there are no PKPs at all)
+  if (
+    isUserAuthed &&
+    !showConnectModal &&
+    unconnectedPKP &&
+    !vincentYieldPKP &&
+    permittedPKPs.length > 0
+  ) {
+    setShowConnectModal(true);
   }
 
   return (
     <>
       <PermittedAppsPage apps={filteredApps} permittedPKPs={permittedPKPs} />
-      {showVincentYieldModal && vincentYieldPKP && (
+      {showVincentYieldModal && !vincentYieldPKP && (
         <VincentYieldModal
           onClose={() => {
             setShowVincentYieldModal(false);
             setHasUserDismissedModal(true);
           }}
-          agentPKP={vincentYieldPKP.pkp}
-          readAuthInfo={readAuthInfo}
         />
+      )}
+      {showConnectModal && unconnectedPKP && (
+        <ConnectToVincentYieldModal agentPKP={unconnectedPKP.pkp} />
       )}
     </>
   );
