@@ -189,8 +189,7 @@ export async function registerWebAuthn(displayName: string): Promise<IRelayPKP> 
  */
 export async function authenticateWithWebAuthn(): Promise<AuthMethod> {
   const webAuthnProvider = getWebAuthnProvider();
-  const authMethod = await webAuthnProvider.authenticate();
-  return authMethod;
+  return await webAuthnProvider.authenticate();
 }
 
 /**

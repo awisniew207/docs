@@ -77,21 +77,6 @@ export function ConnectPageWrapper() {
     (isUserAuthed ? !actualIsPermittedLoading && !agentPKPLoading : true) &&
     (!userPermittedVersion || !versionDataLoading);
 
-  // Debug logging for no PKPs case
-  if (authInfo?.userPKP && !agentPKP && !agentPKPLoading) {
-    console.log('[ConnectPageWrapper] Debug - No agent PKP found:', {
-      data: !!data,
-      isLoading,
-      isProcessing,
-      isUserAuthed,
-      isPermittedLoading,
-      agentPKPLoading,
-      userPermittedVersion,
-      versionDataLoading,
-      isAllDataLoaded,
-    });
-  }
-
   // Now make routing decisions with complete information
   let content;
 
