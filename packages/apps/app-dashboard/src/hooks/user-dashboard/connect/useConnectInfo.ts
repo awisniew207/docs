@@ -31,7 +31,7 @@ export type ConnectInfoState = {
 export const useConnectInfo = (
   appId: string, 
   versionsToFetch?: number[], 
-  useActiveVersion: boolean = true
+  useActiveVersion = true
 ): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
   const [currentlyFetchingVersions, setCurrentlyFetchingVersions] = useState<string>('');
