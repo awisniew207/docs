@@ -659,7 +659,10 @@ contract VincentAppFacetTest is Test {
         VincentUserViewFacet.PkpPermittedApps[] memory permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0);
         assertEq(permittedAppsResults.length, 1);
         assertEq(permittedAppsResults[0].permittedApps.length, 1);
+        assertEq(permittedAppsResults[0].pkpTokenId, PKP_TOKEN_ID_1);
         assertEq(permittedAppsResults[0].permittedApps[0].appId, newAppId);
+        assertEq(permittedAppsResults[0].permittedApps[0].version, newAppVersion);
+        assertTrue(permittedAppsResults[0].permittedApps[0].versionEnabled);
 
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
@@ -671,6 +674,7 @@ contract VincentAppFacetTest is Test {
         // Verify deleted app is filtered out from getPermittedAppsForPkps
         permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0);
         assertEq(permittedAppsResults.length, 1);
+        assertEq(permittedAppsResults[0].pkpTokenId, PKP_TOKEN_ID_1);
         assertEq(permittedAppsResults[0].permittedApps.length, 0); // Deleted app should not appear
     }
 
