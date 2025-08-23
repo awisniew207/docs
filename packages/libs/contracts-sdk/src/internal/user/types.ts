@@ -1,4 +1,5 @@
-import { BigNumber } from 'ethers';
+import type { BigNumber } from 'ethers';
+
 import type {
   GetAllPermittedAppIdsForPkpParams,
   GetAllRegisteredAgentPkpsParams,
