@@ -222,7 +222,7 @@ contract VincentDiamond {
         selectors[3] = VincentUserViewFacet.validateAbilityExecutionAndGetPolicies.selector;
         selectors[4] = VincentUserViewFacet.getAllAbilitiesAndPoliciesForApp.selector;
         selectors[5] = VincentUserViewFacet.getPermittedAppsForPkps.selector;
-        selectors[6] = VincentUserViewFacet.getLastPermittedAppVersion.selector;
+        selectors[6] = VincentUserViewFacet.getLastPermittedAppVersionForPkp.selector;
         selectors[7] = VincentUserViewFacet.getUnpermittedAppsForPkps.selector;
         selectors[8] = bytes4(keccak256("AGENT_PAGE_SIZE()"));
         return selectors;
