@@ -178,8 +178,9 @@ contract VincentUserViewFacet is VincentBase {
     }
 
     /**
-     * @notice This function is deprecated, use getPermittedAppsForPkps instead
-     * @dev Gets all app IDs that have permissions for a specific PKP token, excluding deleted apps, with pagination support
+     * @notice DEPRECATED: Use {getPermittedAppsForPkps} instead. This function will be removed in future releases.
+     * @dev Gets all app IDs that have permissions for a specific PKP token, excluding deleted apps, with pagination support.
+     * @dev Migration guidance: Replace calls to this function with {getPermittedAppsForPkps}, which returns both app IDs and their permitted versions for a PKP token. Update your code to handle the new return type and logic as needed.
      * @param pkpTokenId The PKP token ID
      * @param offset The offset of the first app ID to retrieve
      * @return An array of app IDs that have permissions for the PKP token and haven't been deleted
