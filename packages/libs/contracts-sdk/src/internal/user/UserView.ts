@@ -1,12 +1,17 @@
 import type { BigNumber } from 'ethers';
 
-import type { PermissionData, ValidateAbilityExecutionAndGetPoliciesResult } from '../../types';
+import type {
+  PermissionData,
+  ValidateAbilityExecutionAndGetPoliciesResult,
+  PkpPermittedApps,
+} from '../../types';
 import type { AbilityWithPolicies, AbilityExecutionValidation } from '../types/chain';
 import type {
   GetAllRegisteredAgentPkpsOptions,
   GetPermittedAppVersionForPkpOptions,
   GetAllPermittedAppIdsForPkpOptions,
   GetAllAbilitiesAndPoliciesForAppOptions,
+  GetPermittedAppsForPkpsOptions,
   ValidateAbilityExecutionAndGetPoliciesOptions,
 } from './types.ts';
 
@@ -87,6 +92,52 @@ export async function getAllPermittedAppIdsForPkp(
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Permitted App IDs For PKP: ${decodedError}`);
+  }
+}
+
+interface ContractPkpPermittedApps {
+  pkpTokenId: BigNumber;
+  permittedApps: {
+    appId: number;
+    version: number;
+    versionEnabled: boolean;
+  }[];
+}
+
+export async function getPermittedAppsForPkps(
+  params: GetPermittedAppsForPkpsOptions,
+): Promise<PkpPermittedApps[]> {
+  const {
+    contract,
+    args: { pkpEthAddresses, offset },
+  } = params;
+
+  try {
+    // Convert PKP ETH addresses to token IDs
+    const pkpTokenIds: BigNumber[] = [];
+    for (const pkpEthAddress of pkpEthAddresses) {
+      const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
+      pkpTokenIds.push(pkpTokenId);
+    }
+
+    // Call the contract method with token IDs
+    const results: ContractPkpPermittedApps[] = await contract.getPermittedAppsForPkps(
+      pkpTokenIds,
+      offset,
+    );
+
+    // Convert BigNumber token IDs back to strings for the response
+    return results.map((result: ContractPkpPermittedApps) => ({
+      pkpTokenId: result.pkpTokenId.toString(),
+      permittedApps: result.permittedApps.map((app) => ({
+        appId: app.appId,
+        version: app.version,
+        versionEnabled: app.versionEnabled,
+      })),
+    }));
+  } catch (error: unknown) {
+    const decodedError = decodeContractError(error, contract);
+    throw new Error(`Failed to Get Permitted Apps For PKPs: ${decodedError}`);
   }
 }
 

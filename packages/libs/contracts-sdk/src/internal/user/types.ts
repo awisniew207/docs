@@ -3,6 +3,7 @@ import type {
   GetAllRegisteredAgentPkpsParams,
   GetAllAbilitiesAndPoliciesForAppParams,
   GetPermittedAppVersionForPkpParams,
+  GetPermittedAppsForPkpsParams,
   PermitAppParams,
   SetAbilityPolicyParametersParams,
   UnPermitAppParams,
@@ -75,6 +76,15 @@ export interface GetAllPermittedAppIdsForPkpOptions extends BaseOptions {
  * */
 export interface GetAllAbilitiesAndPoliciesForAppOptions extends BaseOptions {
   args: GetAllAbilitiesAndPoliciesForAppParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface GetPermittedAppsForPkpsOptions extends BaseOptions {
+  args: GetPermittedAppsForPkpsParams;
 }
 
 /**
