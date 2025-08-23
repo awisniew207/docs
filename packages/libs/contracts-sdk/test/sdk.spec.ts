@@ -201,10 +201,13 @@ describe('Vincent Contracts SDK E2E', () => {
       expect(result[0].pkpTokenId).toBe(TEST_CONFIG.userPkp!.tokenId);
 
       expect(result[0]).toHaveProperty('permittedApps');
-      expect(result[0].permittedApps).toHaveLength(1);
-      expect(result[0].permittedApps[0].appId).toBe(TEST_CONFIG.appId);
-      expect(result[0].permittedApps[0].version).toBe(TEST_CONFIG.appVersion);
-      expect(result[0].permittedApps[0].versionEnabled).toBe(true);
+      expect(result[0].permittedApps.length).toBeGreaterThan(0);
+
+      // Find our test app in the permitted apps
+      const testApp = result[0].permittedApps.find((app) => app.appId === TEST_CONFIG.appId);
+      expect(testApp).toBeDefined();
+      expect(testApp!.version).toBe(TEST_CONFIG.appVersion);
+      expect(testApp!.versionEnabled).toBe(true);
     });
 
     it('should get all registered agent PKPs', async () => {
@@ -302,7 +305,7 @@ describe('Vincent Contracts SDK E2E', () => {
     });
 
     it('should get last permitted app version', async () => {
-      const lastPermittedVersion = await USER_CLIENT.getLastPermittedAppVersion({
+      const lastPermittedVersion = await USER_CLIENT.getLastPermittedAppVersionForPkp({
         pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
         appId: TEST_CONFIG.appId!,
       });

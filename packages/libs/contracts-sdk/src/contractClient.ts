@@ -37,7 +37,7 @@ import {
   getAllAbilitiesAndPoliciesForApp as _getAllAbilitiesAndPoliciesForApp,
   validateAbilityExecutionAndGetPolicies as _validateAbilityExecutionAndGetPolicies,
   getPermittedAppsForPkps as _getPermittedAppsForPkps,
-  getLastPermittedAppVersion as _getLastPermittedAppVersion,
+  getLastPermittedAppVersionForPkp as _getLastPermittedAppVersionForPkp,
   getUnpermittedAppsForPkps as _getUnpermittedAppsForPkps,
 } from './internal/user/UserView';
 import { createContract } from './utils';
@@ -91,7 +91,8 @@ export function clientFromContract({ contract }: { contract: Contract }): Contra
       _getAllAbilitiesAndPoliciesForApp({ contract, args: params }),
     validateAbilityExecutionAndGetPolicies: (params) =>
       _validateAbilityExecutionAndGetPolicies({ contract, args: params }),
-    getLastPermittedAppVersion: (params) => _getLastPermittedAppVersion({ contract, args: params }),
+    getLastPermittedAppVersionForPkp: (params) =>
+      _getLastPermittedAppVersionForPkp({ contract, args: params }),
     getUnpermittedAppsForPkps: (params) => _getUnpermittedAppsForPkps({ contract, args: params }),
   };
 }

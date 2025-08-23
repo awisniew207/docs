@@ -194,7 +194,7 @@ export async function validateAbilityExecutionAndGetPolicies(
   }
 }
 
-export async function getLastPermittedAppVersion(
+export async function getLastPermittedAppVersionForPkp(
   params: GetLastPermittedAppVersionOptions,
 ): Promise<number | null> {
   const {
@@ -205,7 +205,7 @@ export async function getLastPermittedAppVersion(
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const lastPermittedVersion: number = await contract.getLastPermittedAppVersion(
+    const lastPermittedVersion: number = await contract.getLastPermittedAppVersionForPkp(
       pkpTokenId,
       appId,
     );

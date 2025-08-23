@@ -110,7 +110,7 @@
   },
   {
     "type": "function",
-    "name": "getLastPermittedAppVersion",
+    "name": "getLastPermittedAppVersionForPkp",
     "inputs": [
       {
         "name": "pkpTokenId",

@@ -427,8 +427,8 @@ contract VincentUserFacetTest is Test {
         assertEq(permittedAppsResults[0].permittedApps[0].version, newAppVersion_2);
         assertTrue(permittedAppsResults[0].permittedApps[0].versionEnabled);
 
-        // Test getLastPermittedAppVersion for unpermitted app
-        uint24 lastPermittedVersion = vincentUserViewFacet.getLastPermittedAppVersion(PKP_TOKEN_ID_1, newAppId_1);
+        // Test getLastPermittedAppVersionForPkp for unpermitted app
+        uint24 lastPermittedVersion = vincentUserViewFacet.getLastPermittedAppVersionForPkp(PKP_TOKEN_ID_1, newAppId_1);
         assertEq(lastPermittedVersion, newAppVersion_1, "Last permitted version should be stored");
 
         // Test getUnpermittedAppsForPkps should show the unpermitted app

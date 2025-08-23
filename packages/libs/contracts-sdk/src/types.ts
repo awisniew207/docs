@@ -28,7 +28,7 @@ import type {
   getAllPermittedAppIdsForPkp as _getAllPermittedAppIdsForPkp,
   getAllRegisteredAgentPkpEthAddresses as _getAllRegisteredAgentPkpEthAddresses,
   getAllAbilitiesAndPoliciesForApp as _getAllAbilitiesAndPoliciesForApp,
-  getLastPermittedAppVersion as _getLastPermittedAppVersion,
+  getLastPermittedAppVersionForPkp as _getLastPermittedAppVersionForPkp,
   getPermittedAppVersionForPkp as _getPermittedAppVersionForPkp,
   getPermittedAppsForPkps as _getPermittedAppsForPkps,
   getUnpermittedAppsForPkps as _getUnpermittedAppsForPkps,
@@ -535,9 +535,9 @@ export interface ContractClient {
    *
    * @returns The last permitted app version, or null if never permitted
    */
-  getLastPermittedAppVersion(
+  getLastPermittedAppVersionForPkp(
     params: GetLastPermittedAppVersionParams,
-  ): ReturnType<typeof _getLastPermittedAppVersion>;
+  ): ReturnType<typeof _getLastPermittedAppVersionForPkp>;
 
   /** Get unpermitted apps for multiple PKPs with their last permitted versions
    *

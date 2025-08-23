@@ -163,7 +163,7 @@ contract VincentUserFacet is VincentBase {
             .remove(pkpTokenId);
 
         // Store the version as last permitted before removing (for potential re-permitting)
-        // Note: We already verified this version is currently permitted at line 155-157
+        // This handles existing permitted Apps before the lastPermittedVersion tracking was added
         us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermittedVersion[appId] = appVersion;
 
         // Remove the App Version from the User's Permitted App Versions

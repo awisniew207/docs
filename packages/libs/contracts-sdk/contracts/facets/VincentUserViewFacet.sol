@@ -202,6 +202,31 @@ contract VincentUserViewFacet is VincentBase {
     }
 
     /**
+     * @notice Gets the last permitted app version for a specific app and PKP token
+     * @dev Returns the last version that was permitted before unpermitting, or 0 if never permitted
+     * @param pkpTokenId The PKP token ID
+     * @param appId The app ID
+     * @return The last permitted app version
+     */
+    function getLastPermittedAppVersionForPkp(uint256 pkpTokenId, uint40 appId)
+        external
+        view
+        returns (uint24)
+    {
+        // Check for invalid PKP token ID and app ID
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        if (appId == 0) {
+            revert InvalidAppId();
+        }
+
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
+        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermittedVersion[appId];
+    }
+
+    /**
      * @notice DEPRECATED: Use {getPermittedAppsForPkps} instead. This function will be removed in future releases.
      * @dev Gets all app IDs that have permissions for a specific PKP token, excluding deleted apps, with pagination support.
      * @dev Migration guidance: Replace calls to this function with {getPermittedAppsForPkps}, which returns both app IDs and their permitted versions for a PKP token. Update your code to handle the new return type and logic as needed.
@@ -482,31 +507,6 @@ contract VincentUserViewFacet is VincentBase {
         }
 
         return validation;
-    }
-
-    /**
-     * @notice Gets the last permitted app version for a specific app and PKP token
-     * @dev Returns the last version that was permitted before unpermitting, or 0 if never permitted
-     * @param pkpTokenId The PKP token ID
-     * @param appId The app ID
-     * @return The last permitted app version
-     */
-    function getLastPermittedAppVersion(uint256 pkpTokenId, uint40 appId)
-        external
-        view
-        returns (uint24)
-    {
-        // Check for invalid PKP token ID and app ID
-        if (pkpTokenId == 0) {
-            revert InvalidPkpTokenId();
-        }
-
-        if (appId == 0) {
-            revert InvalidAppId();
-        }
-
-        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermittedVersion[appId];
     }
 
     /**

@@ -194,14 +194,7 @@ library LibVincentUserFacet {
     error NotAllRegisteredAbilitiesProvided(uint40 appId, uint24 appVersion);
 
     /**
-     * @notice Error thrown when an app version is not registered
-     * @param appId The ID of the app
-     * @param appVersion The version of the app
-     */
-    error AppVersionNotRegistered(uint40 appId, uint24 appVersion);
-
-    /**
-     * @notice Error thrown when an app has never been permitted for a PKP
+     * @notice Error thrown when an app has never been permitted for a PKP, but the user is trying to re-permit it
      * @param pkpTokenId The token ID of the PKP
      * @param appId The ID of the app
      * @param appVersion The version of the app
