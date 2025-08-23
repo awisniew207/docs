@@ -133,8 +133,6 @@ describe('Vincent Contracts SDK E2E', () => {
     });
 
     it('should get all apps by manager', async () => {
-      const provider = new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL);
-      const appManagerSigner = new ethers.Wallet(TEST_APP_MANAGER_PRIVATE_KEY, provider);
       const result = await APP_CLIENT.getAppsByManagerAddress({
         managerAddress: APP_MANAGER_SIGNER.address,
         offset: '0',
