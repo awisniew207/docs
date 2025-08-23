@@ -506,7 +506,7 @@ contract VincentUserViewFacet is VincentBase {
         }
 
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
-        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermitted[appId];
+        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermittedVersion[appId];
     }
 
     /**
@@ -589,7 +589,7 @@ contract VincentUserViewFacet is VincentBase {
             uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
             if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
                 if (currentIndex >= offset) {
-                    uint24 lastPermittedVersion = agentStorage.lastPermitted[appId];
+                    uint24 lastPermittedVersion = agentStorage.lastPermittedVersion[appId];
                     bool enabled = lastPermittedVersion > 0 ? 
                         as_.appIdToApp[appId].appVersions[getAppVersionIndex(lastPermittedVersion)].enabled : false;
                     

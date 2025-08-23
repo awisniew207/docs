@@ -76,7 +76,7 @@ library VincentUserStorage {
         // Set of all App IDs that have ever been permitted (complete historical record, contains unpermitted apps too)
         EnumerableSet.UintSet allPermittedApps;
         // App ID -> Last Permitted App Version (for re-permitting unpermitted apps)
-        mapping(uint40 => uint24) lastPermitted;
+        mapping(uint40 => uint24) lastPermittedVersion;
     }
 
     struct UserStorage {

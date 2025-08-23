@@ -121,7 +121,7 @@ contract VincentUserFacet is VincentBase {
         agentStorage.permittedAppVersion[appId] = appVersion;
         
         // Store this version as the last permitted version for potential re-permitting
-        agentStorage.lastPermitted[appId] = appVersion;
+        agentStorage.lastPermittedVersion[appId] = appVersion;
 
         // Add pkpTokenId to the User's registered agent PKPs
         // .add will not add the PKP Token ID again if it is already registered
@@ -164,7 +164,7 @@ contract VincentUserFacet is VincentBase {
 
         // Store the version as last permitted before removing (for potential re-permitting)
         // Note: We already verified this version is currently permitted at line 155-157
-        us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermitted[appId] = appVersion;
+        us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermittedVersion[appId] = appVersion;
 
         // Remove the App Version from the User's Permitted App Versions
         us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId] = 0;
@@ -209,8 +209,8 @@ contract VincentUserFacet is VincentBase {
         // Get the last permitted version
         // Note: lastPermittedVersion should never be 0 here because:
         // - If app is currently permitted, we already reverted above
-        // - If app was unpermitted, unPermitAppVersion sets lastPermitted
-        uint24 lastPermittedVersion = agentStorage.lastPermitted[appId];
+        // - If app was unpermitted, unPermitAppVersion sets lastPermittedVersion
+        uint24 lastPermittedVersion = agentStorage.lastPermittedVersion[appId];
         
         // Check if the last permitted version is still enabled
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
