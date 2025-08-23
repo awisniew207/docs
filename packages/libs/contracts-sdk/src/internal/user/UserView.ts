@@ -13,6 +13,7 @@ import type {
   GetAllAbilitiesAndPoliciesForAppOptions,
   GetPermittedAppsForPkpsOptions,
   ValidateAbilityExecutionAndGetPoliciesOptions,
+  ContractPkpPermittedApps,
 } from './types.ts';
 
 import { decodeContractError } from '../../utils';
@@ -93,15 +94,6 @@ export async function getAllPermittedAppIdsForPkp(
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get All Permitted App IDs For PKP: ${decodedError}`);
   }
-}
-
-interface ContractPkpPermittedApps {
-  pkpTokenId: BigNumber;
-  permittedApps: {
-    appId: number;
-    version: number;
-    versionEnabled: boolean;
-  }[];
 }
 
 export async function getPermittedAppsForPkps(
