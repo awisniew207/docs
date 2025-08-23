@@ -199,12 +199,13 @@ describe('Vincent Contracts SDK E2E', () => {
       });
       expect(result).toHaveLength(1);
       expect(result[0]).toHaveProperty('pkpTokenId');
+      expect(result[0].pkpTokenId).toBe(TEST_CONFIG.userPkp!.tokenId);
+
       expect(result[0]).toHaveProperty('permittedApps');
-      // Find our test app in the results
-      const testApp = result[0].permittedApps.find((app) => app.appId === TEST_CONFIG.appId);
-      expect(testApp).toBeDefined();
-      expect(testApp?.version).toBe(TEST_CONFIG.appVersion);
-      expect(testApp?.versionEnabled).toBe(true);
+      expect(result[0].permittedApps).toHaveLength(1);
+      expect(result[0].permittedApps[0].appId).toBe(TEST_CONFIG.appId);
+      expect(result[0].permittedApps[0].version).toBe(TEST_CONFIG.appVersion);
+      expect(result[0].permittedApps[0].versionEnabled).toBe(true);
     });
 
     it('should get all registered agent PKPs', async () => {
