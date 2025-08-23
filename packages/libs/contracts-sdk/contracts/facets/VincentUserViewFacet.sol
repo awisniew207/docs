@@ -104,6 +104,19 @@ contract VincentUserViewFacet is VincentBase {
     }
 
     /**
+     * @notice Represents unpermitted app information for a PKP
+     * @dev Contains app ID, last permitted version, and whether that version is enabled
+     * @param appId The ID of the unpermitted app
+     * @param previousPermittedVersion The last permitted version before unpermitting
+     * @param versionEnabled Whether the previous permitted version is currently enabled
+     */
+    struct UnpermittedApp {
+        uint40 appId;
+        uint24 previousPermittedVersion;
+        bool versionEnabled;
+    }
+
+    /**
      * @notice Represents the result for a single PKP's permitted app data
      * @dev Contains currently permitted apps with their version details
      * @param pkpTokenId The PKP token ID
@@ -112,6 +125,17 @@ contract VincentUserViewFacet is VincentBase {
     struct PkpPermittedApps {
         uint256 pkpTokenId;
         PermittedApp[] permittedApps;
+    }
+
+    /**
+     * @notice Represents the result for a single PKP's unpermitted app data
+     * @dev Contains previously permitted apps that are now unpermitted
+     * @param pkpTokenId The PKP token ID
+     * @param unpermittedApps Array of unpermitted apps with their last permitted version details
+     */
+    struct PkpUnpermittedApps {
+        uint256 pkpTokenId;
+        UnpermittedApp[] unpermittedApps;
     }
 
     /**
@@ -458,6 +482,127 @@ contract VincentUserViewFacet is VincentBase {
         }
 
         return validation;
+    }
+
+    /**
+     * @notice Gets the last permitted app version for a specific app and PKP token
+     * @dev Returns the last version that was permitted before unpermitting, or 0 if never permitted
+     * @param pkpTokenId The PKP token ID
+     * @param appId The app ID
+     * @return The last permitted app version
+     */
+    function getLastPermittedAppVersion(uint256 pkpTokenId, uint40 appId)
+        external
+        view
+        returns (uint24)
+    {
+        // Check for invalid PKP token ID and app ID
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        if (appId == 0) {
+            revert InvalidAppId();
+        }
+
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
+        return us_.agentPkpTokenIdToAgentStorage[pkpTokenId].lastPermitted[appId];
+    }
+
+    /**
+     * @notice Retrieves unpermitted apps for multiple PKPs with pagination
+     * @dev Returns apps that are in allPermittedApps but not in permittedApps (previously permitted, now unpermitted)
+     * @dev NOTE: This function uses an internal helper function to avoid Solidity's 
+     *      "stack too deep" compilation error that occurs when too many local variables are in scope
+     * @param pkpTokenIds Array of PKP token IDs to query
+     * @param offset The offset of the first app to retrieve for each PKP
+     * @return results Array of PkpUnpermittedApps structs containing unpermitted app data
+     */
+    function getUnpermittedAppsForPkps(
+        uint256[] memory pkpTokenIds,
+        uint256 offset
+    )
+        public
+        view
+        returns (PkpUnpermittedApps[] memory results)
+    {
+        results = new PkpUnpermittedApps[](pkpTokenIds.length);
+
+        for (uint256 i = 0; i < pkpTokenIds.length; i++) {
+            results[i] = _getUnpermittedAppsForSinglePkp(pkpTokenIds[i], offset);
+        }
+    }
+
+    /**
+     * @dev Internal function to get unpermitted apps for a single PKP
+     * @param pkpTokenId The PKP token ID to query
+     * @param offset The offset for pagination
+     * @return result PkpUnpermittedApps struct containing unpermitted app data
+     */
+    function _getUnpermittedAppsForSinglePkp(
+        uint256 pkpTokenId,
+        uint256 offset
+    )
+        internal
+        view
+        returns (PkpUnpermittedApps memory result)
+    {
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        
+        result.pkpTokenId = pkpTokenId;
+        
+        VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
+        uint256 allAppCount = agentStorage.allPermittedApps.length();
+
+        // Count unpermitted apps first
+        uint256 unpermittedCount = 0;
+        for (uint256 j = 0; j < allAppCount; j++) {
+            uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
+            if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
+                unpermittedCount++;
+            }
+        }
+
+        // Apply pagination to determine result size
+        if (offset >= unpermittedCount) {
+            result.unpermittedApps = new UnpermittedApp[](0);
+            return result;
+        }
+
+        uint256 end = offset + AGENT_PAGE_SIZE;
+        if (end > unpermittedCount) {
+            end = unpermittedCount;
+        }
+        uint256 resultCount = end - offset;
+        result.unpermittedApps = new UnpermittedApp[](resultCount);
+
+        // Fill result array with paginated data
+        uint256 currentIndex = 0;
+        uint256 resultIndex = 0;
+        
+        for (uint256 j = 0; j < allAppCount && resultIndex < resultCount; j++) {
+            uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
+            if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
+                if (currentIndex >= offset) {
+                    uint24 lastPermittedVersion = agentStorage.lastPermitted[appId];
+                    bool enabled = lastPermittedVersion > 0 ? 
+                        as_.appIdToApp[appId].appVersions[getAppVersionIndex(lastPermittedVersion)].enabled : false;
+                    
+                    result.unpermittedApps[resultIndex] = UnpermittedApp({
+                        appId: appId,
+                        previousPermittedVersion: lastPermittedVersion,
+                        versionEnabled: enabled
+                    });
+                    resultIndex++;
+                }
+                currentIndex++;
+            }
+        }
     }
 
     /**

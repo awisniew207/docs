@@ -426,6 +426,38 @@ contract VincentUserFacetTest is Test {
         assertEq(permittedAppsResults[0].permittedApps[0].appId, newAppId_2);
         assertEq(permittedAppsResults[0].permittedApps[0].version, newAppVersion_2);
         assertTrue(permittedAppsResults[0].permittedApps[0].versionEnabled);
+
+        // Test getLastPermittedAppVersion for unpermitted app
+        uint24 lastPermittedVersion = vincentUserViewFacet.getLastPermittedAppVersion(PKP_TOKEN_ID_1, newAppId_1);
+        assertEq(lastPermittedVersion, newAppVersion_1, "Last permitted version should be stored");
+
+        // Test getUnpermittedAppsForPkps should show the unpermitted app
+        VincentUserViewFacet.PkpUnpermittedApps[] memory unpermittedAppsResults = vincentUserViewFacet.getUnpermittedAppsForPkps(pkpTokenIds, 0);
+        assertEq(unpermittedAppsResults.length, 1);
+        assertEq(unpermittedAppsResults[0].pkpTokenId, PKP_TOKEN_ID_1);
+        assertEq(unpermittedAppsResults[0].unpermittedApps.length, 1); // App 1 is unpermitted
+        assertEq(unpermittedAppsResults[0].unpermittedApps[0].appId, newAppId_1);
+        assertEq(unpermittedAppsResults[0].unpermittedApps[0].previousPermittedVersion, newAppVersion_1);
+        assertTrue(unpermittedAppsResults[0].unpermittedApps[0].versionEnabled);
+
+        // Test rePermitApp to re-permit App 1
+        vm.startPrank(APP_USER_FRANK);
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentUserFacet.AppVersionRePermitted(PKP_TOKEN_ID_1, newAppId_1, newAppVersion_1);
+        vincentUserFacet.rePermitApp(PKP_TOKEN_ID_1, newAppId_1);
+        vm.stopPrank();
+
+        // Verify App 1 is permitted again with the same version
+        permittedAppVersion = vincentUserViewFacet.getPermittedAppVersionForPkp(PKP_TOKEN_ID_1, newAppId_1);
+        assertEq(permittedAppVersion, newAppVersion_1, "App should be re-permitted with last version");
+
+        // Verify both apps are now permitted
+        permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0);
+        assertEq(permittedAppsResults[0].permittedApps.length, 2, "Both apps should be permitted again");
+
+        // Verify no apps are unpermitted now
+        unpermittedAppsResults = vincentUserViewFacet.getUnpermittedAppsForPkps(pkpTokenIds, 0);
+        assertEq(unpermittedAppsResults[0].unpermittedApps.length, 0, "No apps should be unpermitted");
     }
 
     function testSetAbilityPolicyParameters_AbilityPolicyNotRegisteredForAppVersion() public {
