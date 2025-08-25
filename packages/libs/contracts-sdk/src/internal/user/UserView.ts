@@ -101,7 +101,7 @@ export async function getPermittedAppsForPkps(
 ): Promise<PkpPermittedApps[]> {
   const {
     contract,
-    args: { pkpEthAddresses, offset },
+    args: { pkpEthAddresses, offset, pageSize },
   } = params;
 
   try {
@@ -116,6 +116,7 @@ export async function getPermittedAppsForPkps(
     const results: ContractPkpPermittedApps[] = await contract.getPermittedAppsForPkps(
       pkpTokenIds,
       offset,
+      pageSize,
     );
 
     // Convert BigNumber token IDs back to strings for the response

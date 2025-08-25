@@ -287,6 +287,7 @@ export interface PkpPermittedApps {
 export interface GetPermittedAppsForPkpsParams {
   pkpEthAddresses: string[];
   offset: string;
+  pageSize: string;
 }
 
 /**

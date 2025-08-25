@@ -239,13 +239,15 @@ contract VincentUserViewFacet is VincentBase {
      * @dev Takes an array of PKP token IDs and returns currently permitted apps with their version details
      * @param pkpTokenIds Array of PKP token IDs to query
      * @param offset The offset of the first app to retrieve for each PKP
+     * @param pageSize The maximum number of apps to return per PKP
      * @return results Array of PkpPermittedApps structs containing permitted app data
      */
     function getPermittedAppsForPkps(
         uint256[] memory pkpTokenIds, 
-        uint256 offset
+        uint256 offset,
+        uint256 pageSize
     )
-        public 
+        external 
         view 
         returns (PkpPermittedApps[] memory results) 
     {
@@ -286,7 +288,7 @@ contract VincentUserViewFacet is VincentBase {
 
             // Apply pagination
             uint256 start = offset;
-            uint256 end = offset + AGENT_PAGE_SIZE;
+            uint256 end = offset + pageSize;
             if (start >= permittedCount) {
                 // Offset beyond available permitted apps
                 results[i].permittedApps = new PermittedApp[](0);

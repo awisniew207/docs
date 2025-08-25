@@ -194,6 +194,7 @@ describe('Vincent Contracts SDK E2E', () => {
       const result = await USER_CLIENT.getPermittedAppsForPkps({
         pkpEthAddresses: [TEST_CONFIG.userPkp!.ethAddress!],
         offset: '0',
+        pageSize: '10',
       });
       expect(result).toHaveLength(1);
       expect(result[0]).toHaveProperty('pkpTokenId');
@@ -275,6 +276,7 @@ describe('Vincent Contracts SDK E2E', () => {
       const result = await USER_CLIENT.getPermittedAppsForPkps({
         pkpEthAddresses: [TEST_CONFIG.userPkp!.ethAddress!],
         offset: '0',
+        pageSize: '10',
       });
       expect(result).toHaveLength(1);
       // Should not find our test app in the results
