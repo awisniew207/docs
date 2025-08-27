@@ -28,7 +28,7 @@ This ability can be used in Vincent apps to interact with Morpho vaults:
 
 ```typescript
 import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
-import { bundledVincentAbility } from '@lit-protocol/vincent-ability-morpho';
+import { bundledVincentAbility, MorphoOperation } from '@lit-protocol/vincent-ability-morpho';
 
 // One of delegatee signers from your app's Vincent Dashboard
 const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY');
@@ -41,9 +41,9 @@ const abilityClient = getVincentAbilityClient({
 const delegatorPkpEthAddress = '0x09182301238'; // The delegator PKP Eth Address
 
 const abilityParams = {
-  operation: 'deposit', // 'deposit', 'withdraw', or 'redeem'
+  operation: MorphoOperation.DEPOSIT, // 'approve', 'deposit', or 'redeem'
   vaultAddress: '0x1234...', // The Morpho vault address
-  amount: '1.0', // Amount to deposit/withdraw/redeem
+  amount: '100000', // Amount to approve/withdraw/redeem
   chain: 'base', // The chain where the vault is deployed
 };
 
@@ -66,7 +66,7 @@ if (precheckResult.success === true) {
 
 Before executing vault operations, ensure that:
 
-1. The user has approved the vault to spend their tokens (for deposits). You can use the Vincent Ability ERC20 Approval to handle token approvals
+1. The user has approved the vault to spend their tokens (for deposits). You can use the MorphoOperation.APPROVE to handle token approvals
 2. The user has sufficient balance of the required tokens
 3. The user has delegated permission to the Vincent app to execute operations
 
@@ -76,22 +76,22 @@ Note: The ability can subsidize gas for the user using Alchemy. If not doing so,
 
 The ability supports the following operations on Morpho vaults:
 
+- **APPROVE** - Approve a Morpho vault to take your assets on deposit
 - **DEPOSIT** - Deposit assets into a Morpho vault to earn yield
-- **WITHDRAW** - Withdraw assets from a Morpho vault
 - **REDEEM** - Redeem vault shares for underlying assets
 
 ## Parameters
 
-| Parameter                   | Type                                  | Required | Description                                                                                      |
-| --------------------------- | ------------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `operation`                 | `"deposit" \| "withdraw" \| "redeem"` | ✅       | The vault operation to perform                                                                   |
-| `vaultAddress`              | `string`                              | ✅       | Morpho vault contract address (0x format)                                                        |
-| `amount`                    | `string`                              | ✅       | Amount as string in units, no decimal places (assets for deposit or withdraw, shares for redeem) |
-| `chain`                     | `string`                              | ✅       | Chain identifier (e.g., "base")                                                                  |
-| `rpcUrl`                    | `string`                              | ❌       | Custom RPC URL (for precheck validation)                                                         |
-| `alchemyGasSponsor`         | `boolean`                             | ❌       | Whether to use Alchemy's gas sponsorship (EIP-7702)                                              |
-| `alchemyGasSponsorApiKey`   | `string`                              | ❌       | Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)                      |
-| `alchemyGasSponsorPolicyId` | `string`                              | ❌       | Alchemy gas policy ID for sponsorship (required if alchemyGasSponsor is true)                    |
+| Parameter                   | Type                                 | Required | Description                                                                                      |
+| --------------------------- | ------------------------------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `operation`                 | `"approve" \| "deposit" \| "redeem"` | ✅       | The vault operation to perform                                                                   |
+| `vaultAddress`              | `string`                             | ✅       | Morpho vault contract address (0x format)                                                        |
+| `amount`                    | `string`                             | ✅       | Amount as string in units, no decimal places (assets for deposit or withdraw, shares for redeem) |
+| `chain`                     | `string`                             | ✅       | Chain identifier (e.g., "base")                                                                  |
+| `rpcUrl`                    | `string`                             | ❌       | Custom RPC URL (for precheck validation)                                                         |
+| `alchemyGasSponsor`         | `boolean`                            | ❌       | Whether to use Alchemy's gas sponsorship (EIP-7702)                                              |
+| `alchemyGasSponsorApiKey`   | `string`                             | ❌       | Alchemy API key for gas sponsorship (required if alchemyGasSponsor is true)                      |
+| `alchemyGasSponsorPolicyId` | `string`                             | ❌       | Alchemy gas policy ID for sponsorship (required if alchemyGasSponsor is true)                    |
 
 ## Supported Networks
 
