@@ -452,7 +452,7 @@ contract VincentUserFacetTest is Test {
         assertEq(permittedAppVersion, newAppVersion_1, "App should be re-permitted with last version");
 
         // Verify both apps are now permitted
-        permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0);
+        permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0, 10);
         assertEq(permittedAppsResults[0].permittedApps.length, 2, "Both apps should be permitted again");
 
         // Verify no apps are unpermitted now
