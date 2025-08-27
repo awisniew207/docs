@@ -1,11 +1,8 @@
 {
   "name": "@lit-protocol/vincent-ability-morpho",
-  "version": "0.1.0",
+  "version": "0.1.19-mma",
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "vault-search": "tsx examples/vault-search.ts"
   },
   "dependencies": {
     "@lit-protocol/vincent-scaffold-sdk": "^1.1.7",
