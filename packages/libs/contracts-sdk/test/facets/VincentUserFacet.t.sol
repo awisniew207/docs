@@ -235,6 +235,24 @@ contract VincentUserFacetTest is Test {
         assertEq(permittedAppsResults[1].permittedApps[0].appId, newAppId_3);
         assertEq(permittedAppsResults[1].permittedApps[0].version, newAppVersion_3);
         assertTrue(permittedAppsResults[1].permittedApps[0].versionEnabled);
+        
+        // Test pagination - page size 1
+        VincentUserViewFacet.PkpPermittedApps[] memory page1 = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0, 1);
+        assertEq(page1[0].permittedApps.length, 1); // PKP 1 gets first app
+        assertEq(page1[0].permittedApps[0].appId, newAppId_1);
+        assertEq(page1[1].permittedApps.length, 1); // PKP 2 gets first app
+        assertEq(page1[1].permittedApps[0].appId, newAppId_3);
+        
+        // Test pagination - offset 1
+        VincentUserViewFacet.PkpPermittedApps[] memory page2 = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 1, 1);
+        assertEq(page2[0].permittedApps.length, 1); // PKP 1 gets second app
+        assertEq(page2[0].permittedApps[0].appId, newAppId_2);
+        assertEq(page2[1].permittedApps.length, 0); // PKP 2 has no more apps
+        
+        // Test pagination - offset beyond all apps
+        VincentUserViewFacet.PkpPermittedApps[] memory emptyPage = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 5, 10);
+        assertEq(emptyPage[0].permittedApps.length, 0); // PKP 1 empty
+        assertEq(emptyPage[1].permittedApps.length, 0); // PKP 2 empty
 
         // Check the Ability and Policies for App 1 Version 1 for PKP 1 (Frank)
         VincentUserViewFacet.AbilityWithPolicies[] memory abilitiesWithPolicies = vincentUserViewFacet.getAllAbilitiesAndPoliciesForApp(PKP_TOKEN_ID_1, newAppId_1);

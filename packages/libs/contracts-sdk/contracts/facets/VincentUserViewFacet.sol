@@ -305,7 +305,7 @@ contract VincentUserViewFacet is VincentBase {
 
         results = new PkpPermittedApps[](pkpTokenIds.length);
 
-        for (uint256 i = 0; i < pkpTokenIds.length; i++) {
+        for (uint256 i; i < pkpTokenIds.length; i++) {
             uint256 pkpTokenId = pkpTokenIds[i];
 
             if (pkpTokenId == 0) {
@@ -318,9 +318,9 @@ contract VincentUserViewFacet is VincentBase {
 
             // Count non-deleted permitted apps
             PermittedApp[] memory tempPermittedApps = new PermittedApp[](appCount);
-            uint256 permittedCount = 0;
+            uint256 permittedCount;
 
-            for (uint256 j = 0; j < appCount; j++) {
+            for (uint256 j; j < appCount; j++) {
                 uint40 appId = uint40(permittedApps.at(j));
                 if (!as_.appIdToApp[appId].isDeleted) {
                     // Get version details for the permitted app
@@ -336,20 +336,15 @@ contract VincentUserViewFacet is VincentBase {
             }
 
             // Apply pagination
-            uint256 start = offset;
-            uint256 end = offset + pageSize;
-            if (start >= permittedCount) {
-                // Offset beyond available permitted apps
-                results[i].permittedApps = new PermittedApp[](0);
-            } else {
-                if (end > permittedCount) {
-                    end = permittedCount;
-                }
-                uint256 resultCount = end - start;
-                results[i].permittedApps = new PermittedApp[](resultCount);
-                for (uint256 k = 0; k < resultCount; k++) {
-                    results[i].permittedApps[k] = tempPermittedApps[start + k];
-                }
+            uint256 resultCount;
+            if (offset < permittedCount) {
+                uint256 end = offset + pageSize > permittedCount ? permittedCount : offset + pageSize;
+                resultCount = end - offset;
+            }
+            
+            results[i].permittedApps = new PermittedApp[](resultCount);
+            for (uint256 k; k < resultCount; k++) {
+                results[i].permittedApps[k] = tempPermittedApps[offset + k];
             }
 
             results[i].pkpTokenId = pkpTokenId;
