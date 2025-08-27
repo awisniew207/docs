@@ -507,8 +507,6 @@ contract VincentUserViewFacet is VincentBase {
     /**
      * @notice Retrieves unpermitted apps for multiple PKPs with pagination
      * @dev Returns apps that are in allPermittedApps but not in permittedApps (previously permitted, now unpermitted)
-     * @dev NOTE: This function uses an internal helper function to avoid Solidity's 
-     *      "stack too deep" compilation error that occurs when too many local variables are in scope
      * @param pkpTokenIds Array of PKP token IDs to query
      * @param offset The offset of the first app to retrieve for each PKP
      * @return results Array of PkpUnpermittedApps structs containing unpermitted app data
@@ -521,71 +519,56 @@ contract VincentUserViewFacet is VincentBase {
         view
         returns (PkpUnpermittedApps[] memory results)
     {
-        results = new PkpUnpermittedApps[](pkpTokenIds.length);
-
-        for (uint256 i = 0; i < pkpTokenIds.length; i++) {
-            results[i] = _getUnpermittedAppsForSinglePkp(pkpTokenIds[i], offset);
-        }
-    }
-
-    /**
-     * @dev Internal function to get unpermitted apps for a single PKP
-     * @param pkpTokenId The PKP token ID to query
-     * @param offset The offset for pagination
-     * @return result PkpUnpermittedApps struct containing unpermitted app data
-     */
-    function _getUnpermittedAppsForSinglePkp(
-        uint256 pkpTokenId,
-        uint256 offset
-    )
-        internal
-        view
-        returns (PkpUnpermittedApps memory result)
-    {
-        if (pkpTokenId == 0) {
-            revert InvalidPkpTokenId();
-        }
-
         VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         
-        result.pkpTokenId = pkpTokenId;
-        
-        VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
-        uint256 allAppCount = agentStorage.allPermittedApps.length();
+        results = new PkpUnpermittedApps[](pkpTokenIds.length);
 
-        // First pass: collect all unpermitted apps
-        UnpermittedApp[] memory tempUnpermittedApps = new UnpermittedApp[](allAppCount);
-        uint256 unpermittedCount = 0;
-        
-        for (uint256 j; j < allAppCount; j++) {
-            uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
-            if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
-                uint24 lastPermittedVersion = agentStorage.lastPermittedVersion[appId];
-                bool enabled = lastPermittedVersion > 0 ? 
-                    as_.appIdToApp[appId].appVersions[getAppVersionIndex(lastPermittedVersion)].enabled : false;
-                
-                tempUnpermittedApps[unpermittedCount] = UnpermittedApp({
-                    appId: appId,
-                    previousPermittedVersion: lastPermittedVersion,
-                    versionEnabled: enabled
-                });
-                unpermittedCount++;
+        for (uint256 i; i < pkpTokenIds.length; i++) {
+            uint256 pkpTokenId = pkpTokenIds[i];
+            
+            if (pkpTokenId == 0) {
+                revert InvalidPkpTokenId();
+            }
+
+            results[i].pkpTokenId = pkpTokenId;
+            
+            VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
+            uint256 allAppCount = agentStorage.allPermittedApps.length();
+
+            // Collect all unpermitted apps
+            UnpermittedApp[] memory tempUnpermittedApps = new UnpermittedApp[](allAppCount);
+            uint256 unpermittedCount;
+            
+            for (uint256 j; j < allAppCount; j++) {
+                uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
+                if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
+                    uint24 lastPermittedVersion = agentStorage.lastPermittedVersion[appId];
+                    bool enabled = as_.appIdToApp[appId].appVersions[getAppVersionIndex(lastPermittedVersion)].enabled;
+                    
+                    tempUnpermittedApps[unpermittedCount] = UnpermittedApp({
+                        appId: appId,
+                        previousPermittedVersion: lastPermittedVersion,
+                        versionEnabled: enabled
+                    });
+                    unpermittedCount++;
+                }
+            }
+
+            // Apply pagination
+            uint256 resultCount;
+            if (offset < unpermittedCount) {
+                uint256 end = offset + AGENT_PAGE_SIZE > unpermittedCount ? unpermittedCount : offset + AGENT_PAGE_SIZE;
+                resultCount = end - offset;
+            }
+            
+            results[i].unpermittedApps = new UnpermittedApp[](resultCount);
+            for (uint256 k; k < resultCount; k++) {
+                results[i].unpermittedApps[k] = tempUnpermittedApps[offset + k];
             }
         }
-
-        // Apply pagination
-        uint256 resultCount;
-        if (offset < unpermittedCount) {
-            uint256 end = offset + AGENT_PAGE_SIZE > unpermittedCount ? unpermittedCount : offset + AGENT_PAGE_SIZE;
-            resultCount = end - offset;
-        }
-        
-        result.unpermittedApps = new UnpermittedApp[](resultCount);
-        for (uint256 k; k < resultCount; k++) {
-            result.unpermittedApps[k] = tempUnpermittedApps[offset + k];
-        }
     }
+
 
     /**
      * @dev Internal function to get an ability with its policies and parameters
