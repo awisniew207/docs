@@ -105,21 +105,18 @@ export async function getPermittedAppsForPkps(
   } = params;
 
   try {
-    // Convert PKP ETH addresses to token IDs
     const pkpTokenIds: BigNumber[] = [];
     for (const pkpEthAddress of pkpEthAddresses) {
       const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
       pkpTokenIds.push(pkpTokenId);
     }
 
-    // Call the contract method with token IDs
     const results: ContractPkpPermittedApps[] = await contract.getPermittedAppsForPkps(
       pkpTokenIds,
       offset,
       pageSize,
     );
 
-    // Convert BigNumber token IDs back to strings for the response
     return results.map((result: ContractPkpPermittedApps) => ({
       pkpTokenId: result.pkpTokenId.toString(),
       permittedApps: result.permittedApps.map((app) => ({
