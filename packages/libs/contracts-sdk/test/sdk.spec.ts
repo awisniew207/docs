@@ -158,10 +158,11 @@ describe('Vincent Contracts SDK E2E', () => {
             maxDailySpendingLimitInUsdCents: '10000',
             tokenAddress: '0x4200000000000000000000000000000000000006',
           },
-          [ABILITY_POLICIES[1][1]]: {
-            maxDailySpendingLimitInUsdCents: '10000',
-            tokenAddress: '0x4200000000000000000000000000000000000006',
-          },
+          // Omitting to test partial policies allowance are permitted
+          // [ABILITY_POLICIES[1][1]]: {
+          //   maxDailySpendingLimitInUsdCents: '10000',
+          //   tokenAddress: '0x4200000000000000000000000000000000000006',
+          // },
         },
       };
       const result = await USER_CLIENT.permitApp({
@@ -236,9 +237,9 @@ describe('Vincent Contracts SDK E2E', () => {
         appId: TEST_CONFIG.appId!,
         appVersion: TEST_CONFIG.appVersion!,
         policyParams: {
-          [ABILITY_IPFS_CIDS[0]]: {
-            [ABILITY_POLICIES[0][0]]: {
-              maxDailySpendingLimitInUsdCents: '15000',
+          [ABILITY_IPFS_CIDS[1]]: {
+            [ABILITY_POLICIES[1][1]]: {
+              maxDailySpendingLimitInUsdCents: '10000',
               tokenAddress: '0x4200000000000000000000000000000000000006',
             },
           },
