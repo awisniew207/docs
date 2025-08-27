@@ -554,49 +554,36 @@ contract VincentUserViewFacet is VincentBase {
         VincentUserStorage.AgentStorage storage agentStorage = us_.agentPkpTokenIdToAgentStorage[pkpTokenId];
         uint256 allAppCount = agentStorage.allPermittedApps.length();
 
-        // Count unpermitted apps first
+        // First pass: collect all unpermitted apps
+        UnpermittedApp[] memory tempUnpermittedApps = new UnpermittedApp[](allAppCount);
         uint256 unpermittedCount = 0;
-        for (uint256 j = 0; j < allAppCount; j++) {
+        
+        for (uint256 j; j < allAppCount; j++) {
             uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
             if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
+                uint24 lastPermittedVersion = agentStorage.lastPermittedVersion[appId];
+                bool enabled = lastPermittedVersion > 0 ? 
+                    as_.appIdToApp[appId].appVersions[getAppVersionIndex(lastPermittedVersion)].enabled : false;
+                
+                tempUnpermittedApps[unpermittedCount] = UnpermittedApp({
+                    appId: appId,
+                    previousPermittedVersion: lastPermittedVersion,
+                    versionEnabled: enabled
+                });
                 unpermittedCount++;
             }
         }
 
-        // Apply pagination to determine result size
-        if (offset >= unpermittedCount) {
-            result.unpermittedApps = new UnpermittedApp[](0);
-            return result;
+        // Apply pagination
+        uint256 resultCount;
+        if (offset < unpermittedCount) {
+            uint256 end = offset + AGENT_PAGE_SIZE > unpermittedCount ? unpermittedCount : offset + AGENT_PAGE_SIZE;
+            resultCount = end - offset;
         }
-
-        uint256 end = offset + AGENT_PAGE_SIZE;
-        if (end > unpermittedCount) {
-            end = unpermittedCount;
-        }
-        uint256 resultCount = end - offset;
-        result.unpermittedApps = new UnpermittedApp[](resultCount);
-
-        // Fill result array with paginated data
-        uint256 currentIndex = 0;
-        uint256 resultIndex = 0;
         
-        for (uint256 j = 0; j < allAppCount && resultIndex < resultCount; j++) {
-            uint40 appId = uint40(agentStorage.allPermittedApps.at(j));
-            if (!agentStorage.permittedApps.contains(appId) && !as_.appIdToApp[appId].isDeleted) {
-                if (currentIndex >= offset) {
-                    uint24 lastPermittedVersion = agentStorage.lastPermittedVersion[appId];
-                    bool enabled = lastPermittedVersion > 0 ? 
-                        as_.appIdToApp[appId].appVersions[getAppVersionIndex(lastPermittedVersion)].enabled : false;
-                    
-                    result.unpermittedApps[resultIndex] = UnpermittedApp({
-                        appId: appId,
-                        previousPermittedVersion: lastPermittedVersion,
-                        versionEnabled: enabled
-                    });
-                    resultIndex++;
-                }
-                currentIndex++;
-            }
+        result.unpermittedApps = new UnpermittedApp[](resultCount);
+        for (uint256 k; k < resultCount; k++) {
+            result.unpermittedApps[k] = tempUnpermittedApps[offset + k];
         }
     }
 
