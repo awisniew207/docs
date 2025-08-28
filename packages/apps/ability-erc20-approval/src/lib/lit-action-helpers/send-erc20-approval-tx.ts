@@ -37,7 +37,6 @@ export const sendErc20ApprovalTx = async ({
   });
 
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  // Convert bigint to ethers.BigNumber for proper encoding
 
   const functionName = 'approve';
   const args = [spenderAddress, tokenAmount];
