@@ -3,15 +3,11 @@ import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
 import { SessionSigs } from '@lit-protocol/types';
 import { ThemeType } from './ui/theme';
 
-import useAuthenticate from '../../../hooks/user-dashboard/useAuthenticate';
-import useAccounts from '../../../hooks/user-dashboard/useAccounts';
-import { registerWebAuthn, getSessionSigs } from '../../../utils/user-dashboard/lit';
+import useAuthenticate from '@/hooks/user-dashboard/useAuthenticate';
+import useAccounts from '@/hooks/user-dashboard/useAccounts';
+import { registerWebAuthn, getSessionSigs } from '@/utils/user-dashboard/lit';
+import { useSetAuthInfo, useClearAuthInfo, ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import ConnectMethods from '../auth/ConnectMethods';
-import {
-  useSetAuthInfo,
-  useClearAuthInfo,
-  ReadAuthInfo,
-} from '../../../hooks/user-dashboard/useAuthInfo';
 
 import SignUpView from '../auth/SignUpView';
 import StatusMessage from './StatusMessage';
@@ -67,7 +63,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // Account handling
   const {
-    fetchAccounts,
+    fetchOrMintAccounts,
     setuserPKP,
     userPKP,
     accounts,
@@ -125,9 +121,9 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   // If user is authenticated, fetch accounts
   useEffect(() => {
     if (authMethod) {
-      fetchAccounts(authMethod);
+      fetchOrMintAccounts(authMethod);
     }
-  }, [authMethod, fetchAccounts]);
+  }, [authMethod, fetchOrMintAccounts]);
 
   // If user is authenticated and has accounts, select the first one
   useEffect(() => {
