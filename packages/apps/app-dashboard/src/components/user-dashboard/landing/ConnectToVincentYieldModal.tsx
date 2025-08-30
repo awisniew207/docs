@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/shared/ui/button';
 import { theme } from '../connect/ui/theme';
 import { AlertCircle, ArrowRight } from 'lucide-react';
+import { env } from '@/config/env'
 
 interface ConnectToVincentYieldModalProps {
   agentPKP: IRelayPKP;
@@ -21,7 +22,7 @@ export function ConnectToVincentYieldModal({ agentPKP }: ConnectToVincentYieldMo
   const handleConnect = () => {
     setIsRedirecting(true);
     const redirectUri = encodeURIComponent('https://yield.heyvincent.ai');
-    const connectUrl = `${window.location.origin}/user/appId/2353287477/connect?redirectUri=${redirectUri}`;
+    const connectUrl = `${window.location.origin}/user/appId/${env.VITE_VINCENT_YIELD_APPID}/connect?redirectUri=${redirectUri}`;
     window.location.href = connectUrl;
   };
 
