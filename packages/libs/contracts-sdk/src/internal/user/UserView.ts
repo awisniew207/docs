@@ -15,8 +15,8 @@ import type {
   ValidateAbilityExecutionAndGetPoliciesOptions,
   ContractPkpPermittedApps,
 } from './types.ts';
-import { DEFAULT_PAGE_SIZE } from '../../constants';
 
+import { DEFAULT_PAGE_SIZE } from '../../constants';
 import { decodeContractError } from '../../utils';
 import { getPkpEthAddress, getPkpTokenId } from '../../utils/pkpInfo';
 import {
