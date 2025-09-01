@@ -227,6 +227,23 @@ describe('Vincent Contracts SDK E2E', () => {
       expect(allPermittedAppIds).toContain(TEST_CONFIG.appId);
     });
 
+    it('should get permitted apps using the getPermittedAppsForPkps method', async () => {
+      const result = await USER_CLIENT.getPermittedAppsForPkps({
+        pkpEthAddresses: [TEST_CONFIG.userPkp!.ethAddress!],
+        offset: '0',
+        pageSize: '10',
+      });
+      expect(result).toHaveLength(1);
+      expect(result[0]).toHaveProperty('pkpTokenId');
+      expect(result[0].pkpTokenId).toBe(TEST_CONFIG.userPkp!.tokenId);
+
+      expect(result[0]).toHaveProperty('permittedApps');
+      expect(result[0].permittedApps).toHaveLength(1);
+      expect(result[0].permittedApps[0].appId).toBe(TEST_CONFIG.appId);
+      expect(result[0].permittedApps[0].version).toBe(TEST_CONFIG.appVersion);
+      expect(result[0].permittedApps[0].versionEnabled).toBe(true);
+    });
+
     it('should get all registered agent PKPs', async () => {
       const PAGE_SIZE = 50;
       let offset = 0;
@@ -335,15 +352,16 @@ describe('Vincent Contracts SDK E2E', () => {
         appVersion: TEST_CONFIG.appVersion!,
       });
       expect(unpermitResult).toHaveProperty('txHash');
-      // Verify app is excluded from getAllPermittedAppIdsForPkp
-      const result = await USER_CLIENT.getAllPermittedAppIdsForPkp({
-        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      // Verify app is excluded from getPermittedAppsForPkps
+      const result = await USER_CLIENT.getPermittedAppsForPkps({
+        pkpEthAddresses: [TEST_CONFIG.userPkp!.ethAddress!],
         offset: '0',
+        // pageSize: '10',
       });
       console.log('(should unpermit app and verify exclusion from results) result', result);
       expect(result).toHaveLength(0);
       // Should not find our test app in the results
-      const testApp = result.find((app) => app === TEST_CONFIG.appId);
+      const testApp = result[0].permittedApps.find((app) => app.appId === TEST_CONFIG.appId);
       expect(testApp).toBeUndefined();
     });
   });

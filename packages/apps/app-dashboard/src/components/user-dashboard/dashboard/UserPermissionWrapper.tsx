@@ -49,9 +49,9 @@ export function UserPermissionWrapper() {
   // Use useConnectInfo with the useActiveVersion flag set to false
   // This will make it wait for versionsToFetch instead of using activeVersion
   const { isLoading, isError, errors, data } = useConnectInfo(
-    appId || '', 
+    appId || '',
     versionsToFetch,
-    false // Don't use activeVersion, wait for permitted version
+    false, // Don't use activeVersion, wait for permitted version
   );
 
   // Wait for permissions data to be loaded for this specific app

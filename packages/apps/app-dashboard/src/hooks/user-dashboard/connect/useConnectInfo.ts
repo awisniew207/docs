@@ -29,9 +29,9 @@ export type ConnectInfoState = {
 };
 
 export const useConnectInfo = (
-  appId: string, 
-  versionsToFetch?: number[], 
-  useActiveVersion = true
+  appId: string,
+  versionsToFetch?: number[],
+  useActiveVersion = true,
 ): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
   const [currentlyFetchingVersions, setCurrentlyFetchingVersions] = useState<string>('');
@@ -97,7 +97,7 @@ export const useConnectInfo = (
 
     // Determine what versions we'll be fetching
     const targetVersionsKey = JSON.stringify(versionsToFetch || [app?.activeVersion]);
-    
+
     // Check if we're already fetching or have fetched these versions
     if (currentlyFetchingVersions === targetVersionsKey) {
       return;
@@ -208,7 +208,14 @@ export const useConnectInfo = (
     };
 
     fetchAllData();
-  }, [appVersions?.length, appId, app?.appId, JSON.stringify(versionsToFetch), useActiveVersion, currentlyFetchingVersions]);
+  }, [
+    appVersions?.length,
+    appId,
+    app?.appId,
+    JSON.stringify(versionsToFetch),
+    useActiveVersion,
+    currentlyFetchingVersions,
+  ]);
 
   // Construct ConnectInfoMap from available data
   const connectInfoMap = useMemo((): ConnectInfoMap => {

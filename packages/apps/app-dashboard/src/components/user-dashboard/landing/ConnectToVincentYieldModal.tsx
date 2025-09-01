@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/shared/ui/button';
 import { theme } from '../connect/ui/theme';
 import { AlertCircle, ArrowRight } from 'lucide-react';
-import { env } from '@/config/env'
+import { env } from '@/config/env';
 
 interface ConnectToVincentYieldModalProps {
   agentPKP: IRelayPKP;
