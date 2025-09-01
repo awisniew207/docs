@@ -4,8 +4,8 @@ import { z } from 'zod';
  * Morpho Vault operation types
  */
 export enum MorphoOperation {
+  APPROVE = 'approve',
   DEPOSIT = 'deposit',
-  WITHDRAW = 'withdraw',
   REDEEM = 'redeem',
 }
 
@@ -15,16 +15,17 @@ export enum MorphoOperation {
 export const abilityParamsSchema = z.object({
   operation: z
     .nativeEnum(MorphoOperation)
-    .describe('The Morpho Vault operation to perform (deposit, withdraw, redeem)'),
+    .describe('The Morpho Vault operation to perform (approve, deposit, redeem)'),
   vaultAddress: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid vault address')
     .describe('The address of the Morpho Vault contract'),
   amount: z
     .string()
-    .regex(/^\d*\.?\d+$/, 'Invalid amount format')
-    .refine((val) => parseFloat(val) > 0, 'Amount must be greater than 0')
-    .describe('The amount of tokens to deposit/withdraw/redeem, as a string'),
+    .regex(/^\d+$/, 'Invalid amount format')
+    .describe(
+      'The amount of tokens to approve/deposit/redeem, as a string without decimal point. Ex: 2123456 for 2.123456 USDC (6 decimals)',
+    ),
   chain: z.string().describe('The blockchain network where the vault is deployed'),
   rpcUrl: z.string().optional().describe('RPC URL used for precheck validations'),
   // Gas sponsorship parameters for EIP-7702
@@ -50,13 +51,19 @@ export const precheckSuccessSchema = z.object({
   operationValid: z.boolean().describe('Whether the requested operation is valid'),
   vaultValid: z.boolean().describe('Whether the specified vault address is valid'),
   amountValid: z.boolean().describe('Whether the specified amount is valid'),
-  userBalance: z.string().optional().describe("The user's current balance of the underlying asset"),
+  userBalance: z
+    .string()
+    .describe(
+      "The user's current balance of the underlying asset without decimal point. Ex: 2123456 for 2.123456 USDC (6 decimals)",
+    ),
   allowance: z
     .string()
     .optional()
-    .describe('The current allowance approved for the vault contract'),
+    .describe(
+      'The current allowance approved for the vault contract without decimal point. Ex: 2123456 for 2.123456 USDC (6 decimals)',
+    ),
   vaultShares: z.string().optional().describe("The user's current balance of vault shares"),
-  estimatedGas: z.number().optional().describe('Estimated gas cost for the operation'),
+  estimatedGas: z.string().describe('Estimated gas cost for the operation in wei'),
 });
 
 /**
@@ -70,13 +77,13 @@ export const precheckFailSchema = z.object({
  * Execute success result schema
  */
 export const executeSuccessSchema = z.object({
-  txHash: z.string().describe('The transaction hash of the executed operation'),
-  operation: z
-    .nativeEnum(MorphoOperation)
-    .describe('The type of Morpho operation that was executed'),
+  txHash: z.string().describe('The transaction or user op hash of the executed operation'),
   vaultAddress: z.string().describe('The address of the vault involved in the operation'),
-  amount: z.string().describe('The amount of tokens involved in the operation'),
-  timestamp: z.number().describe('The Unix timestamp when the operation was executed'),
+  amount: z
+    .string()
+    .describe(
+      'The amount of tokens involved in the operation without decimal point. Ex: 2123456 for 2.123456 USDC (6 decimals)',
+    ),
 });
 
 /**

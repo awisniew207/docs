@@ -29,17 +29,19 @@ export const vincentAbility = createVincentAbility({
 
   precheck: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
     const { ethAddress } = delegatorPkpInfo;
-    const { rpcUrl, spenderAddress, tokenAddress, tokenDecimals, tokenAmount } = abilityParams;
+    const { alchemyGasSponsor, rpcUrl, spenderAddress, tokenAddress, tokenAmount } = abilityParams;
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
-    const hasNativeTokenBalance = await checkNativeTokenBalance({
-      provider,
-      pkpEthAddress: ethAddress,
-    });
+    if (!alchemyGasSponsor) {
+      const hasNativeTokenBalance = await checkNativeTokenBalance({
+        provider,
+        pkpEthAddress: ethAddress,
+      });
 
-    if (!hasNativeTokenBalance) {
-      return fail({ noNativeTokenBalance: true });
+      if (!hasNativeTokenBalance) {
+        return fail({ noNativeTokenBalance: true });
+      }
     }
 
     const currentAllowance = await getCurrentAllowance({
@@ -49,10 +51,10 @@ export const vincentAbility = createVincentAbility({
       spender: spenderAddress,
     });
 
-    const requiredAmount = ethers.utils.parseUnits(tokenAmount.toString(), tokenDecimals);
+    const requiredAmount = ethers.BigNumber.from(tokenAmount);
 
     return succeed({
-      alreadyApproved: currentAllowance == requiredAmount.toBigInt(),
+      alreadyApproved: currentAllowance.eq(requiredAmount),
       currentAllowance: currentAllowance.toString(),
     });
   },
@@ -65,7 +67,6 @@ export const vincentAbility = createVincentAbility({
       chainId,
       spenderAddress,
       tokenAddress,
-      tokenDecimals,
       tokenAmount,
       alchemyGasSponsor,
       alchemyGasSponsorApiKey,
@@ -85,28 +86,22 @@ export const vincentAbility = createVincentAbility({
       owner: ethAddress,
       spender: spenderAddress,
     });
-    const requiredAmount = ethers.utils
-      .parseUnits(tokenAmount.toString(), tokenDecimals)
-      .toBigInt();
+    const requiredAmount = ethers.BigNumber.from(tokenAmount);
 
     console.log(
-      `currentAllowance: ${currentAllowance} >= requiredAmount: ${requiredAmount} (execute)`,
+      `Execute: currentAllowance: ${currentAllowance.toString()} - requiredAmount: ${requiredAmount.toString()}`,
     );
 
-    if (currentAllowance === requiredAmount) {
-      console.log('Ability execution successful', {
+    if (currentAllowance.eq(requiredAmount)) {
+      const result = {
         approvedAmount: currentAllowance.toString(),
         spenderAddress,
         tokenAddress,
-        tokenDecimals: parseInt(tokenDecimals.toString()),
-      });
+      };
 
-      return succeed({
-        approvedAmount: currentAllowance.toString(),
-        tokenAddress,
-        tokenDecimals: parseInt(tokenDecimals.toString()),
-        spenderAddress,
-      });
+      console.log('Ability execution successful', result);
+
+      return succeed(result);
     }
 
     const approvalTxHash = await sendErc20ApprovalTx({
@@ -122,20 +117,15 @@ export const vincentAbility = createVincentAbility({
       alchemyGasSponsorPolicyId,
     });
 
-    console.log('Ability execution successful', {
+    const result = {
       approvalTxHash,
       approvedAmount: requiredAmount.toString(),
       spenderAddress,
       tokenAddress,
-      tokenDecimals: parseInt(tokenDecimals.toString()),
-    });
+    };
 
-    return succeed({
-      approvalTxHash,
-      approvedAmount: requiredAmount.toString(),
-      tokenAddress,
-      tokenDecimals: parseInt(tokenDecimals.toString()),
-      spenderAddress,
-    });
+    console.log('Ability execution successful', result);
+
+    return succeed(result);
   },
 });

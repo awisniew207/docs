@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
 import { IRelayPKP } from '@lit-protocol/types';
 import { getAgentPKPs, getAgentPKPForApp } from '../../utils/user-dashboard/getAgentPKP';
+import { env } from '@/config/env';
 
 export function useAgentPKPForApp(userAddress: string | undefined, appId: number | undefined) {
   const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
-  const [isLastUnpermittedPKP, setIsLastUnpermittedPKP] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!userAddress || appId === undefined) {
       setAgentPKP(null);
-      setIsLastUnpermittedPKP(false);
       setError(null);
       return;
     }
@@ -21,14 +20,24 @@ export function useAgentPKPForApp(userAddress: string | undefined, appId: number
 
     const fetchAgentPKP = async () => {
       try {
-        const agentPkpResult = await getAgentPKPs(userAddress);
-        const { pkp, isLastUnpermittedPKP: isLast } = getAgentPKPForApp(agentPkpResult, appId);
+        const agentPKPs = await getAgentPKPs(userAddress);
+
+        // Check if this is Vincent Yield and we have unpermitted fallback
+        if (appId === Number(env.VITE_VINCENT_YIELD_APPID)) {
+          // hadUnpermittedFallback is true when there's only one PKP with appId = -1
+          const hadUnpermittedFallback = agentPKPs.length === 1 && agentPKPs[0].appId === -1;
+          if (hadUnpermittedFallback) {
+            setAgentPKP(agentPKPs[0].pkp);
+            setLoading(false);
+            return;
+          }
+        }
+
+        const pkp = getAgentPKPForApp(agentPKPs, appId);
         setAgentPKP(pkp);
-        setIsLastUnpermittedPKP(isLast);
       } catch (err) {
         setError(err as Error);
         setAgentPKP(null);
-        setIsLastUnpermittedPKP(false);
       } finally {
         setLoading(false);
       }
@@ -37,5 +46,5 @@ export function useAgentPKPForApp(userAddress: string | undefined, appId: number
     fetchAgentPKP();
   }, [userAddress, appId]);
 
-  return { agentPKP, isLastUnpermittedPKP, loading, error };
+  return { agentPKP, loading, error };
 }

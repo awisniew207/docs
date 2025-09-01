@@ -22,20 +22,14 @@ import { BigNumber } from 'ethers';
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
   readAuthInfo: ReadAuthInfo;
-  agentPKP: IRelayPKP;
-  isLastUnpermittedPKP: boolean;
 }
 
-export function ConnectPage({
-  connectInfoMap,
-  readAuthInfo,
-  agentPKP,
-  isLastUnpermittedPKP,
-}: ConnectPageProps) {
+export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) {
   const navigate = useNavigate();
   const [localError, setLocalError] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const [isConnectProcessing, setIsConnectProcessing] = useState(false);
+  const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
 
   const { formData, handleFormChange } = useConnectFormData(connectInfoMap);
@@ -64,6 +58,18 @@ export function ConnectPage({
     }
   }, [redirectUrl, localSuccess, executeRedirect]);
 
+  // Generate JWT when agentPKP is set and permissions are granted
+  useEffect(() => {
+    if (agentPKP && localSuccess === 'Permissions granted successfully!') {
+      const timer = setTimeout(async () => {
+        setLocalSuccess(null);
+        await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [agentPKP, localSuccess, generateJWT, connectInfoMap.app]);
+
   const handleSubmit = useCallback(async () => {
     // Clear any previous local errors
     setLocalError(null);
@@ -76,7 +82,7 @@ export function ConnectPage({
     });
 
     if (allValid) {
-      if (!agentPKP || !readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
+      if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setIsConnectProcessing(false);
         return;
@@ -90,6 +96,13 @@ export function ConnectPage({
         litNodeClient: litNodeClient,
       });
       await userPkpWallet.init();
+
+      const tokenIdString = BigNumber.from(readAuthInfo.authInfo.userPKP.tokenId).toHexString();
+      const agentPKP = await mintPKPToExistingPKP({
+        ...readAuthInfo.authInfo.userPKP,
+        tokenId: tokenIdString,
+      });
+      setAgentPKP(agentPKP);
 
       await addPermittedActions({
         wallet: userPkpWallet,
@@ -108,22 +121,11 @@ export function ConnectPage({
 
         setIsConnectProcessing(false);
 
-        // If this was the last unpermitted PKP, mint a new one for future apps
-        if (isLastUnpermittedPKP) {
-          const tokenIdString = BigNumber.from(readAuthInfo.authInfo.userPKP.tokenId).toHexString();
-          await mintPKPToExistingPKP({
-            ...readAuthInfo.authInfo.userPKP,
-            tokenId: tokenIdString,
-          });
-        }
-
         // Show success state for 3 seconds, then redirect
         setLocalSuccess('Permissions granted successfully!');
+        console.log('agentPKP:', agentPKP);
         setIsConnectProcessing(false);
-        setTimeout(async () => {
-          setLocalSuccess(null);
-          await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!); // ! since this will be valid. Only optional in the schema doc for init creation.
-        }, 3000);
+        // JWT generation moved to useEffect that depends on agentPKP
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
         setIsConnectProcessing(false);

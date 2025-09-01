@@ -19,7 +19,7 @@ export const sendErc20ApprovalTx = async ({
   pkpEthAddress: string;
   pkpPublicKey: string;
   spenderAddress: string;
-  tokenAmount: bigint;
+  tokenAmount: ethers.BigNumber;
   tokenAddress: string;
   alchemyGasSponsor: boolean;
   alchemyGasSponsorApiKey?: string;
@@ -37,11 +37,9 @@ export const sendErc20ApprovalTx = async ({
   });
 
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  // Convert bigint to ethers.BigNumber for proper encoding
-  const tokenAmountBN = ethers.BigNumber.from(tokenAmount.toString());
 
   const functionName = 'approve';
-  const args = [spenderAddress, tokenAmountBN];
+  const args = [spenderAddress, tokenAmount];
 
   if (alchemyGasSponsor) {
     console.log('Alchemy gas sponsor is enabled');

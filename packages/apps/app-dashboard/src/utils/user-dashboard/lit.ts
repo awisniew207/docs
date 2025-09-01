@@ -169,23 +169,19 @@ export async function registerWebAuthn(displayName: string): Promise<IRelayPKP> 
   ) {
     throw new Error('Minting failed: Invalid response data');
   }
-  const newUserPKP: IRelayPKP = {
+  const userPKP: IRelayPKP = {
     tokenId: userResponse.pkpTokenId,
     publicKey: userResponse.pkpPublicKey,
     ethAddress: userResponse.pkpEthAddress,
   };
 
   try {
-    await addPayee(newUserPKP.ethAddress);
+    await addPayee(userPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
   }
 
-  // Mint a new PKP to be controlled by the new user PKP
-  // We'll still mint this, but we won't return it
-  await mintPKPToExistingPKP(newUserPKP);
-
-  return newUserPKP;
+  return userPKP;
 }
 
 /**
@@ -246,12 +242,11 @@ export async function getSessionSigs({
 /**
  * Fetch PKPs associated with given auth method, minting one if none exist
  */
-export async function getOrMintPKPs(authMethod: AuthMethod): Promise<IRelayPKP[]> {
+export async function getOrMintUserPkp(authMethod: AuthMethod): Promise<IRelayPKP[]> {
   const provider = getAuthenticatedProvider(authMethod);
   let allPKPs = await provider.fetchPKPsThroughRelayer(authMethod);
   if (allPKPs.length === 0 && authMethod.authMethodType !== AUTH_METHOD_TYPE.WebAuthn) {
-    const newPKP = await mintPKP(authMethod);
-    await mintPKPToExistingPKP(newPKP);
+    await mintPKP(authMethod);
     allPKPs = await provider.fetchPKPsThroughRelayer(authMethod);
   }
 

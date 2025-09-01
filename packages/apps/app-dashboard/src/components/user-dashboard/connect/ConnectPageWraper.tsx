@@ -19,7 +19,6 @@ export function ConnectPageWrapper() {
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
   const {
     agentPKP,
-    isLastUnpermittedPKP,
     loading: agentPKPLoading,
     error: agentPKPError,
   } = useAgentPKPForApp(authInfo?.userPKP?.ethAddress, appId ? Number(appId) : undefined);
@@ -36,6 +35,9 @@ export function ConnectPageWrapper() {
     pkpEthAddress: agentPKP?.ethAddress || '',
     appData: data?.app,
   });
+
+  // When there's no agentPKP, override the permissions loading state
+  const actualIsPermittedLoading = !agentPKP && !agentPKPLoading ? false : isPermittedLoading;
 
   const { result: isRedirectUriAuthorized, redirectUri } = useUriPrecheck({
     authorizedRedirectUris: data?.app?.redirectUris,
@@ -71,8 +73,8 @@ export function ConnectPageWrapper() {
     data &&
     !isLoading &&
     !isProcessing &&
-    // Only wait for permissions and agent PKP if user is authenticated
-    (isUserAuthed ? !isPermittedLoading && !agentPKPLoading && agentPKP : true) &&
+    // Only wait for permissions and agent PKP loading if user is authenticated
+    (isUserAuthed ? !actualIsPermittedLoading && !agentPKPLoading : true) &&
     (!userPermittedVersion || !versionDataLoading);
 
   // Now make routing decisions with complete information
@@ -143,8 +145,6 @@ export function ConnectPageWrapper() {
         <ConnectPage
           connectInfoMap={data}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
-          agentPKP={agentPKP!}
-          isLastUnpermittedPKP={isLastUnpermittedPKP}
         />
       );
     }

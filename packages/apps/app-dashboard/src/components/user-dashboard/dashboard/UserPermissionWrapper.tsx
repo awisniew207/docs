@@ -14,7 +14,6 @@ import { useUserPermissionsForApps } from '@/hooks/user-dashboard/dashboard/useU
 export function UserPermissionWrapper() {
   const { appId } = useParams();
   const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
-  const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
 
   const userAddress = authInfo?.userPKP?.ethAddress || '';
 
@@ -42,6 +41,18 @@ export function UserPermissionWrapper() {
   } = useUserPermissionsForApps({
     agentPKPs: agentPKP ? [agentPKP] : [],
   });
+
+  // Extract the permitted version for this specific app
+  const permittedVersion = appId && permittedAppVersions ? permittedAppVersions[appId] : undefined;
+  const versionsToFetch = permittedVersion ? [parseInt(permittedVersion)] : undefined;
+
+  // Use useConnectInfo with the useActiveVersion flag set to false
+  // This will make it wait for versionsToFetch instead of using activeVersion
+  const { isLoading, isError, errors, data } = useConnectInfo(
+    appId || '',
+    versionsToFetch,
+    false, // Don't use activeVersion, wait for permitted version
+  );
 
   // Wait for permissions data to be loaded for this specific app
   const isPermissionsReady =

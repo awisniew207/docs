@@ -12,7 +12,7 @@ const { VITE_JWT_EXPIRATION_MINUTES } = env;
 
 interface UseJwtRedirectProps {
   readAuthInfo: ReadAuthInfo;
-  agentPKP: IRelayPKP;
+  agentPKP: IRelayPKP | null;
 }
 
 export const useJwtRedirect = ({ readAuthInfo, agentPKP }: UseJwtRedirectProps) => {
@@ -25,8 +25,8 @@ export const useJwtRedirect = ({ readAuthInfo, agentPKP }: UseJwtRedirectProps) 
   // Generate JWT for redirection
   const generateJWT = useCallback(
     async (app: App, appVersion: number) => {
-      if (!readAuthInfo.authInfo || !readAuthInfo.sessionSigs || !app.redirectUris) {
-        setError('Cannot generate JWT: missing authentication information');
+      if (!readAuthInfo.authInfo || !readAuthInfo.sessionSigs || !app.redirectUris || !agentPKP) {
+        setError('Cannot generate JWT: missing authentication information or agent PKP');
         return;
       }
 
@@ -74,7 +74,7 @@ export const useJwtRedirect = ({ readAuthInfo, agentPKP }: UseJwtRedirectProps) 
         return;
       }
     },
-    [readAuthInfo, redirectUri],
+    [readAuthInfo, redirectUri, agentPKP],
   );
 
   const executeRedirect = useCallback(() => {

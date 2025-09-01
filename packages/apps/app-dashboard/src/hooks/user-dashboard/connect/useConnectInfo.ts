@@ -28,12 +28,18 @@ export type ConnectInfoState = {
   data: ConnectInfoMap;
 };
 
-export const useConnectInfo = (appId: string): ConnectInfoState => {
+export const useConnectInfo = (
+  appId: string,
+  versionsToFetch?: number[],
+  useActiveVersion = true,
+): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
+  const [currentlyFetchingVersions, setCurrentlyFetchingVersions] = useState<string>('');
 
   // Reset completion state when app changes
   useEffect(() => {
     setIsDataFetchingComplete(false);
+    setCurrentlyFetchingVersions('');
   }, [appId]);
 
   const {
@@ -78,21 +84,38 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
       return;
     }
 
+    // If we're not using active version and versionsToFetch is not provided, wait
+    if (!useActiveVersion && !versionsToFetch) {
+      return;
+    }
+
     if (!app || !appVersions || appVersions.length === 0) {
       // Only mark as complete if we have a valid appId but no data AND queries are done
       setIsDataFetchingComplete(true);
       return;
     }
 
-    // Reset completion state when starting fetch
+    // Determine what versions we'll be fetching
+    const targetVersionsKey = JSON.stringify(versionsToFetch || [app?.activeVersion]);
+
+    // Check if we're already fetching or have fetched these versions
+    if (currentlyFetchingVersions === targetVersionsKey) {
+      return;
+    }
     setIsDataFetchingComplete(false);
+    setCurrentlyFetchingVersions(targetVersionsKey);
 
     const fetchAllData = async () => {
       try {
         // Step 1: Fetch version abilities
         const versionAbilitiesData: Record<string, AppVersionAbility[]> = {};
 
-        for (const version of appVersions) {
+        // Only fetch abilities for specified versions or just the active version
+        const versionsToProcess = versionsToFetch
+          ? appVersions.filter((v) => versionsToFetch.includes(v.version))
+          : appVersions.filter((v) => v.version === app?.activeVersion);
+
+        for (const version of versionsToProcess) {
           const result = await triggerListAppVersionAbilities({
             appId: Number(appId),
             version: Number(version.version),
@@ -185,7 +208,14 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
     };
 
     fetchAllData();
-  }, [appVersions?.length, appId, app?.appId]);
+  }, [
+    appVersions?.length,
+    appId,
+    app?.appId,
+    JSON.stringify(versionsToFetch),
+    useActiveVersion,
+    currentlyFetchingVersions,
+  ]);
 
   // Construct ConnectInfoMap from available data
   const connectInfoMap = useMemo((): ConnectInfoMap => {
@@ -258,7 +288,7 @@ export const useConnectInfo = (appId: string): ConnectInfoState => {
   ]);
 
   return {
-    isLoading: !isDataFetchingComplete,
+    isLoading: !isDataFetchingComplete || (!useActiveVersion && !versionsToFetch),
     isError:
       appError ||
       appVersionsError ||
