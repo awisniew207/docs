@@ -15,6 +15,7 @@ import type {
   ValidateAbilityExecutionAndGetPoliciesOptions,
   ContractPkpPermittedApps,
 } from './types.ts';
+import { DEFAULT_PAGE_SIZE } from '../../constants';
 
 import { decodeContractError } from '../../utils';
 import { getPkpEthAddress, getPkpTokenId } from '../../utils/pkpInfo';
@@ -101,7 +102,7 @@ export async function getPermittedAppsForPkps(
 ): Promise<PkpPermittedApps[]> {
   const {
     contract,
-    args: { pkpEthAddresses, offset, pageSize },
+    args: { pkpEthAddresses, offset, pageSize = DEFAULT_PAGE_SIZE },
   } = params;
 
   try {
