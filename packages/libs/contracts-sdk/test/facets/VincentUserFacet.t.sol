@@ -508,6 +508,16 @@ contract VincentUserFacetTest is Test {
         permittedAppVersion = vincentUserViewFacet.getPermittedAppVersionForPkp(PKP_TOKEN_ID_1, newAppId_1);
         assertEq(permittedAppVersion, newAppVersion_1, "App should be re-permitted with last version");
 
+        // Verify initial policy parameters
+        VincentUserViewFacet.AbilityWithPolicies[] memory abilitiesWithPolicies = vincentUserViewFacet.getAllAbilitiesAndPoliciesForApp(
+            PKP_TOKEN_ID_1,
+            newAppId_1
+        );
+        assertEq(abilitiesWithPolicies.length, 2);
+        assertEq(abilitiesWithPolicies[0].policies.length, 1);
+        assertEq(abilitiesWithPolicies[0].policies[0].policyParameterValues, POLICY_PARAMETER_VALUES_1);
+        assertEq(abilitiesWithPolicies[1].policies.length, 0);
+
         // Verify only App 1 is permitted again (App 2 remains unpermitted)
         permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0, 10);
         assertEq(permittedAppsResults[0].permittedApps.length, 1, "Only App 1 should be permitted again");
