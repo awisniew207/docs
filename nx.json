@@ -76,10 +76,7 @@
       "projectChangelogs": true
     },
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many --target=build --all",
-      "versionActionsOptions": {
-        "skipLockFileUpdate": true
-      }
+      "preVersionCommand": "pnpm dlx nx run-many --target=build --all"
     }
   },
   "targetDefaults": {
