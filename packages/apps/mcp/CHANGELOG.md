@@ -1,3 +1,10 @@
+# 1.0.0 (2025-09-03)
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.0.1
+- Updated mcp-sdk to 1.0.0
+
 ## 1.0.0-0 (2025-08-05)
 
 ### ⚠️ Breaking Changes
