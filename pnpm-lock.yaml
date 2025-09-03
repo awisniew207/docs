@@ -240,7 +240,7 @@ importers:
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       viem:
         specifier: 2.29.2
         version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
@@ -484,7 +484,7 @@ importers:
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       esbuild:
         specifier: ^0.19.12
         version: 0.19.12
@@ -526,13 +526,13 @@ importers:
         version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/misc':
         specifier: ^7.2.3
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/pkp-ethers':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/types':
         specifier: ^7.2.3
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -911,13 +911,13 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@lit-protocol/vincent-app-sdk':
-        specifier: ^2.0.0
-        version: 2.0.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: 2.0.0
+        version: 2.0.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-contracts-sdk':
-        specifier: ^1.0.1
+        specifier: 1.0.1
         version: 1.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-registry-sdk':
-        specifier: ^4.1.0
+        specifier: 4.1.0
         version: 4.1.0(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
       '@t3-oss/env-core':
         specifier: ^0.13.6
@@ -1061,7 +1061,7 @@ importers:
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-ability-sdk':
         specifier: workspace:*
         version: link:../ability-sdk
@@ -1083,7 +1083,7 @@ importers:
     devDependencies:
       '@lit-protocol/pkp-ethers':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/types':
         specifier: ^7.2.3
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -1138,10 +1138,10 @@ importers:
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/pkp-ethers':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@openzeppelin/contracts':
         specifier: 5.3.0
         version: 5.3.0
@@ -1168,7 +1168,7 @@ importers:
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/lit-node-client':
         specifier: ^7.2.3
-        version: 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+        version: 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/types':
         specifier: ^7.2.3
         version: 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -5747,7 +5747,6 @@ packages:
 
   bun@1.2.16:
     resolution: {integrity: sha512-sjZH6rr1P6yu44+XPA8r+ZojwmK9Kbz9lO6KAA/4HRIupdpC31k7b93crLBm19wEYmd6f2+3+57/7tbOcmHbGg==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -14295,7 +14294,7 @@ snapshots:
       '@lit-protocol/contracts-sdk': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/core': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/crypto': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client-nodejs': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/logger': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/misc': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -14305,7 +14304,7 @@ snapshots:
       '@lit-protocol/uint8arrays': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/wasm': 7.2.3
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       base64url: 3.0.1
       bech32: 2.0.0
@@ -14388,7 +14387,7 @@ snapshots:
       - ethers
       - supports-color
 
-  '@lit-protocol/lit-node-client@7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
+  '@lit-protocol/lit-node-client@7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abstract-provider': 5.7.0
       '@lit-protocol/access-control-conditions': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -14407,7 +14406,7 @@ snapshots:
       '@lit-protocol/uint8arrays': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/wasm': 7.2.3
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       bech32: 2.0.0
       cross-fetch: 3.1.8
@@ -14523,7 +14522,7 @@ snapshots:
     dependencies:
       tslib: 1.14.1
 
-  '@lit-protocol/pkp-base@7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
+  '@lit-protocol/pkp-base@7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abstract-provider': 5.7.0
       '@lit-protocol/access-control-conditions': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -14533,7 +14532,7 @@ snapshots:
       '@lit-protocol/contracts-sdk': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/core': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/crypto': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client-nodejs': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/logger': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/misc': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -14543,7 +14542,7 @@ snapshots:
       '@lit-protocol/uint8arrays': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/wasm': 7.2.3
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       bech32: 2.0.0
       cross-fetch: 3.1.8
@@ -14587,7 +14586,7 @@ snapshots:
       - uploadthing
       - utf-8-validate
 
-  '@lit-protocol/pkp-ethers@7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
+  '@lit-protocol/pkp-ethers@7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abstract-provider': 5.7.0
       '@lit-protocol/access-control-conditions': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -14597,19 +14596,19 @@ snapshots:
       '@lit-protocol/contracts-sdk': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/core': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/crypto': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client-nodejs': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/logger': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/misc': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/misc-browser': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/nacl': 7.2.3
-      '@lit-protocol/pkp-base': 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@lit-protocol/pkp-base': 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/types': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/uint8arrays': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/wasm': 7.2.3
       '@metamask/eth-sig-util': 5.0.2
       '@openagenda/verror': 3.1.4
-      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ajv: 8.17.1
       bech32: 2.0.0
       cross-fetch: 3.1.8
@@ -14706,11 +14705,11 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@lit-protocol/vincent-app-sdk@2.0.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-app-sdk@2.0.0(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@lit-protocol/auth-helpers': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@lit-protocol/constants': 7.2.3(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@lit-protocol/lit-node-client': 7.2.3(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-ability-sdk': 2.0.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-contracts-sdk': 1.0.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@noble/secp256k1': 2.3.0
@@ -18298,7 +18297,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@walletconnect/ethereum-provider@2.9.2(@walletconnect/modal@2.7.0(@types/react@19.1.8)(react@19.1.0))(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@walletconnect/ethereum-provider@2.9.2(@walletconnect/modal@2.7.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       '@walletconnect/jsonrpc-http-connection': 1.0.8
       '@walletconnect/jsonrpc-provider': 1.0.14
