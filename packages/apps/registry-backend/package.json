@@ -1,6 +1,6 @@
 {
   "name": "@lit-protocol/registry-backend",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "scripts": {
     "prebuild": "node scripts/copy-api-html.js",
@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "@lit-protocol/flags": "^2.1.0",
-    "@lit-protocol/vincent-app-sdk": "^2.0.0",
-    "@lit-protocol/vincent-contracts-sdk": "^1.0.1",
+    "@lit-protocol/vincent-app-sdk": "^2.0.1",
+    "@lit-protocol/vincent-contracts-sdk": "^1.1.0",
     "@lit-protocol/vincent-registry-sdk": "^4.1.0",
     "@t3-oss/env-core": "^0.13.6",
     "cors": "^2.8.5",
@@ -48,6 +48,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.0",
+    "@types/normalize-package-data": "^2.4.4",
     "@types/semver": "^7.7.0",
     "bun": "^1.2.5",
     "ethers": "5.8.0",

@@ -1,3 +1,9 @@
+# 1.0.0 (2025-09-03)
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.0.1
+
 ## 1.0.0-0 (2025-08-05)
 
 ### 🩹 Fixes

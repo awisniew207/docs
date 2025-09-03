@@ -362,7 +362,6 @@ describe('Vincent Contracts SDK E2E', () => {
         // pageSize: '10',
       });
       console.log('(should unpermit app and verify exclusion from results) result', result);
-      expect(result).toHaveLength(0);
       // Should not find our test app in the results
       const testApp = result[0].permittedApps.find((app) => app.appId === TEST_CONFIG.appId);
       expect(testApp).toBeUndefined();

@@ -1,3 +1,22 @@
+## 1.1.0 (2025-09-03)
+
+### 🚀 Features
+
+- CHANGELOG: ([4f01765b](https://github.com/LIT-Protocol/Vincent/commit/4f01765b))
+
+  1. Added new flags for update-contracts for dev | prod env and fixed the Makefile to handle dev deployments
+  2. Added function selectors for new App, User, UserFacet functions
+  3. Removed the temp function that allows the contract owner to assign all the apps of a manager to a new address. See PR for more info
+  4. Updated the Dev Vincent contract address in the SDK to be used in getTestClient
+  5. Updated the dev and prod contracts to use all the latest functions we added
+
+- Add getPermittedAppsForPkps method which returns the permitted App ID and App version for an array of provided PKP token IDs ([a3a03eda](https://github.com/LIT-Protocol/Vincent/commit/a3a03eda))
+
+### ❤️ Thank You
+
+- Adarsh-Kumar28
+- Wyatt Barnes @spacesailor24
+
 # 1.0.1 (2025-08-05)
 
 ### 🩹 Fixes
