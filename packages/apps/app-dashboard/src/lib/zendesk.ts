@@ -12,7 +12,7 @@ export function initZendesk() {
           '*': 'Help'
         },
         mobile: {
-          labelVisible: true
+          labelVisible: false
         }
       }
     }
