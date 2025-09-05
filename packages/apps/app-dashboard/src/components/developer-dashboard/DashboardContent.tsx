@@ -185,7 +185,7 @@ export function DashboardContent({
           onClick={() => window.open('https://t.me/+vZWoA5k8jGoxZGEx', '_blank')}
         >
           <MessageCircle className="h-4 w-4 mr-2" />
-          Help & Feedback
+          Feedback
         </Button>
       </div>
     </div>
