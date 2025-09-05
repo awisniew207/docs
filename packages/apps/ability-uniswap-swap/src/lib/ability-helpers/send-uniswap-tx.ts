@@ -15,26 +15,24 @@ declare const Lit: {
   };
 };
 
-export const sendUniswapTxWithRoute = async ({
+export const sendUniswapTx = async ({
   rpcUrl,
   chainId,
   pkpEthAddress,
   pkpPublicKey,
-  route,
+  uniswapTxData,
 }: {
   rpcUrl: string;
   chainId: number;
-  pkpEthAddress: `0x${string}`;
+  pkpEthAddress: string;
   pkpPublicKey: string;
-  route: {
+  uniswapTxData: {
     to: string;
     calldata: string;
     estimatedGasUsed: string;
   };
-}): Promise<`0x${string}`> => {
-  console.log(
-    'Estimating gas for Swap transaction using pre-computed route (sendUniswapTxWithRoute)',
-  );
+}): Promise<string> => {
+  console.log('Estimating gas for Swap transaction using pre-computed route (sendUniswapTx)');
 
   const uniswapRpcProvider = new ethers.providers.StaticJsonRpcProvider(rpcUrl);
 
@@ -42,18 +40,18 @@ export const sendUniswapTxWithRoute = async ({
     { waitForResponse: true, name: 'Uniswap swap tx gas estimation with pre-computed route' },
     async () => {
       try {
-        console.log('Using pre-computed Uniswap route for swap (sendUniswapTxWithRoute)');
+        console.log('Using pre-computed Uniswap route for swap (sendUniswapTx)');
 
         // Use getGasParams helper which handles block/feeData fetching and applies 50% buffer
         const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await getGasParams(
           uniswapRpcProvider,
-          ethers.BigNumber.from(route.estimatedGasUsed),
+          ethers.BigNumber.from(uniswapTxData.estimatedGasUsed),
         );
 
-        console.log('Swap transaction details with pre-computed route (sendUniswapTxWithRoute)', {
-          to: route.to,
-          calldata: route.calldata,
-          routeEstimatedGas: route.estimatedGasUsed,
+        console.log('Swap transaction details with pre-computed route (sendUniswapTx)', {
+          to: uniswapTxData.to,
+          calldata: uniswapTxData.calldata,
+          routeEstimatedGas: uniswapTxData.estimatedGasUsed,
           adjustedGasLimit: estimatedGas.toString(),
           maxPriorityFeePerGas: `${ethers.utils.formatUnits(maxPriorityFeePerGas, 'gwei')} gwei`,
           maxFeePerGas: `${ethers.utils.formatUnits(maxFeePerGas, 'gwei')} gwei`,
@@ -62,8 +60,8 @@ export const sendUniswapTxWithRoute = async ({
         return JSON.stringify({
           status: 'success',
           partialSwapTx: {
-            to: route.to,
-            data: route.calldata,
+            to: uniswapTxData.to,
+            data: uniswapTxData.calldata,
             gasLimit: estimatedGas.toString(),
             maxFeePerGas: maxFeePerGas.toString(),
             maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
@@ -82,7 +80,7 @@ export const sendUniswapTxWithRoute = async ({
   const parsedPartialSwapTxResponse = JSON.parse(partialSwapTxResponse);
   if (parsedPartialSwapTxResponse.status === 'error') {
     throw new Error(
-      `Error getting transaction data for swap: ${parsedPartialSwapTxResponse.error} (sendUniswapTxWithRoute)`,
+      `Error getting transaction data for swap: ${parsedPartialSwapTxResponse.error} (sendUniswapTx)`,
     );
   }
   const { partialSwapTx } = parsedPartialSwapTxResponse;
@@ -98,7 +96,7 @@ export const sendUniswapTxWithRoute = async ({
     chainId,
     type: 2,
   };
-  console.log('Unsigned swap transaction object with pre-computed route (sendUniswapTxWithRoute)', {
+  console.log('Unsigned swap transaction object with pre-computed route (sendUniswapTx)', {
     ...unsignedSwapTx,
     value: unsignedSwapTx.value.toString(),
     gasLimit: unsignedSwapTx.gasLimit.toString(),
@@ -108,7 +106,7 @@ export const sendUniswapTxWithRoute = async ({
 
   const signedSwapTx = await signTx(pkpPublicKey, unsignedSwapTx, 'spendingLimitSig');
 
-  console.log(`Broadcasting swap transaction with pre-computed route (sendUniswapTxWithRoute)`);
+  console.log(`Broadcasting swap transaction with pre-computed route (sendUniswapTx)`);
   const swapTxResponse = await Lit.Actions.runOnce(
     { waitForResponse: true, name: 'swapTxSender' },
     async () => {
@@ -130,13 +128,11 @@ export const sendUniswapTxWithRoute = async ({
   const parsedSwapTxResponse = JSON.parse(swapTxResponse);
   if (parsedSwapTxResponse.status === 'error') {
     throw new Error(
-      `Error broadcasting swap transaction: ${parsedSwapTxResponse.error} (sendUniswapTxWithRoute)`,
+      `Error broadcasting swap transaction: ${parsedSwapTxResponse.error} (sendUniswapTx)`,
     );
   }
   const { txHash } = parsedSwapTxResponse;
-  console.log(
-    `Swap transaction broadcasted with pre-computed route (sendUniswapTxWithRoute): ${txHash}`,
-  );
+  console.log(`Swap transaction broadcasted with pre-computed route (sendUniswapTx): ${txHash}`);
 
   return txHash;
 };
