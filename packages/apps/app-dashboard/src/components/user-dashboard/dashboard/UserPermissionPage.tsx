@@ -66,14 +66,6 @@ export function AppPermissionPage({
   const { formData, handleFormChange, selectedPolicies, handlePolicySelectionChange } =
     useFormatUserPermissions(connectInfoMap, existingData, Number(permittedVersion));
 
-  // Console logs for debugging
-  useEffect(() => {
-    console.log('[UserPermissionPage] Initialized with:');
-    console.log('[UserPermissionPage] existingData:', existingData);
-    console.log('[UserPermissionPage] formData:', formData);
-    console.log('[UserPermissionPage] selectedPolicies:', selectedPolicies);
-  }, [existingData, formData, selectedPolicies]);
-
   const {
     addPermittedActions,
     isLoading: isActionsLoading,
@@ -82,10 +74,11 @@ export function AppPermissionPage({
   } = useAddPermittedActions();
 
   const handleSubmit = useCallback(async () => {
-    console.log('[UserPermissionPage] Starting submission with:');
-    console.log('[UserPermissionPage] formData:', formData);
-    console.log('[UserPermissionPage] selectedPolicies:', selectedPolicies);
-    console.log('[UserPermissionPage] existingData:', existingData);
+    console.log('[UserPermissionPage] Starting submission', {
+      formData,
+      selectedPolicies,
+      existingData
+    });
 
     // Clear any previous local errors and success
     setLocalError(null);
@@ -154,10 +147,6 @@ export function AppPermissionPage({
           }
         }
       });
-
-      console.log('[UserPermissionPage] Built parameters:');
-      console.log('[UserPermissionPage] policyParams:', JSON.stringify(policyParams, null, 2));
-      console.log('[UserPermissionPage] deletePermissionData:', deletePermissionData);
 
       // We should do this in case there was ever an error doing this previously
       setLocalStatus('Adding permitted actions...');
