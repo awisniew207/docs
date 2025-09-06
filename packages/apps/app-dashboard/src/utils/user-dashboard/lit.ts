@@ -179,6 +179,7 @@ export async function registerWebAuthn(displayName: string): Promise<IRelayPKP> 
     await addPayee(userPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
+    throw err;
   }
 
   return userPKP;
@@ -311,6 +312,7 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
     await addPayee(newPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
+    throw err;
   }
 
   return newPKP;

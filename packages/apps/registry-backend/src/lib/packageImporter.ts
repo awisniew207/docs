@@ -16,7 +16,7 @@ const { remove, readJSON } = fs;
 
 // Module-level verbose logging control
 // const ENABLE_VERBOSE_LOGGING = process.env.VINCENT_VERBOSE_LOGGING === 'true' || false;
-const ENABLE_VERBOSE_LOGGING = false;
+const ENABLE_VERBOSE_LOGGING = true;
 
 /**
  * Debug logging utility
