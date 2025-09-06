@@ -48,7 +48,7 @@ export function ConnectFooter() {
           className={`font-medium no-underline hover:opacity-80 transition-colors ${theme.text} !text-current`}
           style={{ textDecoration: 'none', fontStyle: 'normal' }}
         >
-          Help
+          Support
         </a>
         <span className={`font-medium ${theme.text}`}> / </span>
         <a

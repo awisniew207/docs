@@ -104,7 +104,7 @@ export default function RootPage() {
               className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
-              Help
+              Support
             </a>
             <span className="font-normal text-black"> / </span>
             <a

@@ -148,7 +148,7 @@ export function ExplorerLandingPage() {
               className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
-              Help
+              Support
             </a>
             <span className="font-normal text-gray-500"> / </span>
             <a

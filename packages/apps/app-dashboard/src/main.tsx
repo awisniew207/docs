@@ -5,11 +5,15 @@ import { BrowserRouter, useRoutes } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import { initializeTheme } from '@/lib/theme';
+import { initZendesk } from '@/lib/zendesk';
 
 import './index.css';
 
 // Initialize theme before React renders
 initializeTheme();
+
+// Initialize Zendesk support widget
+initZendesk();
 
 Sentry.init({
   dsn: 'https://e2a7f8b83a3eb071263ddf054cb33e91@o4509482456842240.ingest.us.sentry.io/4509638895075328',
