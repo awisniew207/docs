@@ -1,11 +1,11 @@
 import { env } from '@/config/env';
 
-const { VITE_LIT_PAYER_SECRET_KEY } = env;
+const { VITE_LIT_PAYER_SECRET_KEY, VITE_LIT_RELAY_API_KEY } = env;
 
 export async function addPayee(ethAddress: string) {
   try {
     const headers = {
-      'api-key': 'test-api-key',
+      'api-key': VITE_LIT_RELAY_API_KEY,
       'payer-secret-key': VITE_LIT_PAYER_SECRET_KEY,
       'Content-Type': 'application/json',
     };
