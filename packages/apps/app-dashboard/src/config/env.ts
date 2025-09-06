@@ -27,6 +27,7 @@ export const env = createEnv({
     VITE_STYTCH_PROJECT_ID: z.string(),
     VITE_WALLETCONNECT_PROJECT_ID: z.string(),
     VITE_LIT_PAYER_SECRET_KEY: z.string(),
+    VITE_LIT_RELAY_API_KEY: z.string(),
     VITE_JWT_EXPIRATION_MINUTES: z.coerce.number(),
     VITE_GAS_BUFFER_DIVISOR: z.coerce.number(),
     VITE_DOMAIN: z.string().optional(),

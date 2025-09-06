@@ -89,7 +89,6 @@ export function registerRoutes(app: Express) {
             res.status(201).json(savedAbility);
             return;
           } catch (error: any) {
-             
             if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
               res.status(409).json({
                 message: `The ability ${packageInfo.name} is already in the Vincent Registry.`,
@@ -183,7 +182,6 @@ export function registerRoutes(app: Express) {
             res.status(201).json(savedVersion);
             return;
           } catch (error: any) {
-             
             if (error.code === 11000 && error.keyPattern && error.keyPattern.packageName) {
               res.status(409).json({
                 message: `The ability ${packageInfo.name}@${packageInfo.version} is already in the Vincent Registry.`,
