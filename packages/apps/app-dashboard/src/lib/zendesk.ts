@@ -1,8 +1,34 @@
+declare global {
+  interface ZendeskSettings {
+    webWidget?: {
+      color?: { theme?: string };
+      launcher?: {
+        label?: Record<string, string>;
+        mobile?: { labelVisible?: boolean };
+      };
+    };
+  }
+
+  type ZE = {
+    // Common calls you use
+    (command: 'webWidget', action: 'hide' | 'show'): void;
+    (command: 'webWidget:on', event: string, handler: (...args: unknown[]) => void): void;
+
+    // Fallback so other calls don’t error during compile
+    (...args: unknown[]): void;
+  };
+
+  interface Window {
+    zE?: ZE;
+    zESettings?: ZendeskSettings;
+  }
+}
+
 export function initZendesk() {
   if (document.getElementById('ze-snippet')) return;
 
   // Configure widget settings before loading
-  (window as any).zESettings = {
+  window.zESettings = {
     webWidget: {
       color: { 
         theme: '#ea580c'
@@ -44,11 +70,11 @@ export function initZendesk() {
   // Apply additional styling after widget loads
   script.onload = () => {
     setTimeout(() => {
-      if ((window as any).zE) {
+      if (window.zE) {
         // Hide and show to refresh widget styling
-        (window as any).zE('webWidget', 'hide');
+        window.zE('webWidget', 'hide');
         setTimeout(() => {
-          (window as any).zE('webWidget', 'show');
+          window.zE?.('webWidget', 'show');
         }, 100);
       }
     }, 500);
