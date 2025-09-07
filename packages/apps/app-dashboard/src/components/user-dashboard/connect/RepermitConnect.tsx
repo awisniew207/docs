@@ -101,7 +101,7 @@ export function RepermitConnect({ appData, previouslyPermittedPKP, readAuthInfo 
           <InfoBanner
             type="blue"
             title="Previously Connected"
-            message="You've previously connected to this app. Re-permitting will restore your previous permissions and app version."
+            message="You've previously connected to this app. Re-permitting will restore your previous permissions."
           />
         </div>
 
