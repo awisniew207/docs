@@ -22,29 +22,37 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
 
     const fetchAgentPKP = async () => {
       try {
-        const agentPKPs = await getAgentPkps(userAddress);
+        const { permitted, unpermitted } = await getAgentPkps(userAddress);
 
         // Check if this is Vincent Yield and we have unpermitted fallback
         if (appId === Number(env.VITE_VINCENT_YIELD_APPID)) {
           // hadUnpermittedFallback is true when there's only one PKP with appId = -1
-          const hadUnpermittedFallback = agentPKPs.length === 1 && agentPKPs[0].appId === -1;
+          const hadUnpermittedFallback = permitted.length === 1 && permitted[0].appId === -1;
           if (hadUnpermittedFallback) {
-            setAgentPKP(agentPKPs[0].pkp);
+            setAgentPKP(permitted[0].pkp);
             setPermittedVersion(null);
             setLoading(false);
             return;
           }
         }
 
-        // Find the permission entry for this specific app
-        const appPermission = agentPKPs.find((p) => p.appId === appId);
+        // Find the permission entry for this specific app in permitted list
+        const appPermission = permitted.find((p) => p.appId === appId);
 
         if (appPermission) {
           setAgentPKP(appPermission.pkp);
           setPermittedVersion(appPermission.permittedVersion);
         } else {
-          setAgentPKP(null);
-          setPermittedVersion(null);
+          // Check if this app was previously permitted and return that PKP for reuse
+          const previousPermission = unpermitted.find((p) => p.appId === appId);
+          if (previousPermission) {
+            // Return the PKP that was previously permitted so ConnectPage can reuse it
+            setAgentPKP(previousPermission.pkp);
+            setPermittedVersion(null);
+          } else {
+            setAgentPKP(null);
+            setPermittedVersion(null);
+          }
         }
       } catch (err) {
         setError(err as Error);

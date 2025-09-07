@@ -12,6 +12,7 @@ import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-
 import { ReturningUserConnect } from './ReturningUserConnect';
 import { AppVersionNotInRegistryConnect } from './AppVersionNotInRegistry';
 import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
+import { RepermitConnect } from './RepermitConnect';
 
 export function ConnectPageWrapper() {
   const { appId } = useParams();
@@ -138,6 +139,17 @@ export function ConnectPageWrapper() {
           redirectUri={redirectUri || undefined}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
           agentPKP={agentPKP!}
+        />
+      );
+    }
+    // Check for previously permitted PKP (unpermitted but has PKP)
+    else if (agentPKP && !isPermitted) {
+      content = (
+        <RepermitConnect
+          appData={data.app}
+          previouslyPermittedPKP={agentPKP}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          redirectUri={redirectUri || undefined}
         />
       );
     }

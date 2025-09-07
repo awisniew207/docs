@@ -1,8 +1,8 @@
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import { theme } from './theme';
 
 interface InfoBannerProps {
-  type?: 'warning' | 'success' | 'orange';
+  type?: 'warning' | 'success' | 'orange' | 'blue';
   title?: string;
   message?: string;
 }
@@ -14,10 +14,14 @@ export function InfoBanner({
 }: InfoBannerProps) {
   const isSuccess = type === 'success';
   const isOrange = type === 'orange';
-  const Icon = isSuccess || isOrange ? CheckCircle : AlertTriangle;
+  const isBlue = type === 'blue';
+  const Icon = isSuccess || isOrange ? CheckCircle : isBlue ? Info : AlertTriangle;
 
   let bgClass, iconClass;
-  if (isOrange) {
+  if (isBlue) {
+    bgClass = 'bg-blue-50 border-blue-300 dark:bg-blue-500/10 dark:border-blue-500/30';
+    iconClass = 'text-blue-700 dark:text-blue-400';
+  } else if (isOrange) {
     bgClass = 'bg-orange-50 border-orange-300 dark:bg-orange-500/10 dark:border-orange-500/30';
     iconClass = 'text-orange-700 dark:text-orange-400';
   } else if (isSuccess) {
