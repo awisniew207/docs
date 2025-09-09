@@ -1,5 +1,5 @@
 ---
-title: Creating Vincent Abilities
+title: How Abilities Work
 ---
 
 # How a Vincent Ability Works
