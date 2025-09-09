@@ -1,10 +1,9 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { ConnectPageHeader } from './ui/ConnectPageHeader';
 import { ConnectAppHeader } from './ui/ConnectAppHeader';
-import { ActionCard } from './ui/ActionCard';
+import { ActionButtons } from './ui/ActionButtons';
 import { ConnectFooter } from '../ui/Footer';
 import { theme } from './ui/theme';
 import { InfoBanner } from './ui/InfoBanner';
@@ -23,11 +22,13 @@ export function AppUnavailableConnect({
 }: AppUnavailableConnectProps) {
   const navigate = useNavigate();
 
-  const handleGoBack = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
+  const handleVisitApp = useCallback(() => {
+    if (appData.appUserUrl) {
+      window.open(appData.appUserUrl, '_blank');
+    }
+  }, [appData.appUserUrl]);
 
-  const handleUnpermit = useCallback(() => {
+  const handleManagePermissions = useCallback(() => {
     navigate(`/user/appId/${appData.appId}`);
   }, [navigate, appData.appId]);
 
@@ -54,62 +55,16 @@ export function AppUnavailableConnect({
           />
         </div>
 
-        {/* Options */}
-        <div className="space-y-3">
-          <div className="space-y-2">
-            {appData.appUserUrl && (
-              <ActionCard
-                icon={
-                  <svg
-                    className="w-4 h-4 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    />
-                  </svg>
-                }
-                iconBg="bg-green-500/20"
-                title="Visit App Website"
-                description=""
-                onClick={() => window.open(appData.appUserUrl, '_blank')}
-              />
-            )}
-            <ActionCard
-              icon={
-                <svg
-                  className="w-4 h-4 text-orange-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              }
-              iconBg="bg-orange-500/20"
-              title="Unpermit App"
-              description=""
-              onClick={handleUnpermit}
-            />
-            <ActionCard
-              icon={<ArrowRight className="w-4 h-4 text-gray-500 rotate-180" />}
-              iconBg="bg-gray-500/20"
-              title="Go Back"
-              description=""
-              onClick={handleGoBack}
-            />
-          </div>
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          onDecline={handleVisitApp}
+          onSubmit={handleManagePermissions}
+          isLoading={false}
+          error={null}
+          appName={appData.name}
+          submitText="Manage Permissions"
+          declineText="Visit App"
+        />
       </div>
 
       {/* Footer */}
