@@ -9,25 +9,31 @@ export type AgentAppPermission = {
   appId: number;
   pkp: IRelayPKP;
   permittedVersion: number | null;
+  versionEnabled?: boolean;
+};
+
+export type AgentPkpsResult = {
+  permitted: AgentAppPermission[];
+  unpermitted: AgentAppPermission[];
 };
 
 /**
  * Get Agent PKPs for a user address
  *
  * Finds all Agent PKPs owned by the user that are different from their current PKP.
- * Returns permitted agent PKPs as a flat array of app-PKP pairs.
+ * Returns both currently permitted and previously permitted (unpermitted) agent PKPs.
  *
  * @param userAddress The ETH address of the user's current PKP
- * @returns Promise<AgentAppPermission[]> Array of permitted agent PKPs
+ * @returns Promise<AgentPkpsResult> Object containing permitted and unpermitted agent PKPs
  * @throws Error if there's an issue with the contract calls
  */
-export async function getAgentPkps(userAddress: string): Promise<AgentAppPermission[]> {
+export async function getAgentPkps(userAddress: string): Promise<AgentPkpsResult> {
   try {
     const pkpNftContract = getPkpNftContract(SELECTED_LIT_NETWORK);
 
     const balance = await pkpNftContract.balanceOf(userAddress);
     if (balance.toNumber() === 0) {
-      return [];
+      return { permitted: [], unpermitted: [] };
     }
 
     // Get all token IDs in parallel first
@@ -56,16 +62,22 @@ export async function getAgentPkps(userAddress: string): Promise<AgentAppPermiss
       (pkp) => pkp.ethAddress.toLowerCase() !== userAddress.toLowerCase(),
     );
 
-    // Fetch all permitted apps for all agent PKPs in a single call
+    // Fetch both permitted and unpermitted apps for all agent PKPs
     const client = getClient({ signer: readOnlySigner });
     const pkpEthAddresses = agentPKPs.map((pkp) => pkp.ethAddress);
 
-    const permittedAppsArray = await client.getPermittedAppsForPkps({
-      pkpEthAddresses,
-      offset: '0',
-    });
+    const [permittedAppsArray, unpermittedAppsArray] = await Promise.all([
+      client.getPermittedAppsForPkps({
+        pkpEthAddresses,
+        offset: '0',
+      }),
+      client.getUnpermittedAppsForPkps({
+        pkpEthAddresses,
+        offset: '0',
+      }),
+    ]);
 
-    // Convert the array results to our format
+    // Convert the permitted apps results to our format
     const pkpToPermittedAppsMap = new Map<
       string,
       Array<{ appId: number; version: number | null }>
@@ -82,31 +94,54 @@ export async function getAgentPkps(userAddress: string): Promise<AgentAppPermiss
       }
     }
 
-    const results = agentPKPs.map((pkp) => ({
-      pkp,
-      appsWithVersions: pkpToPermittedAppsMap.get(pkp.ethAddress) || [],
-    }));
+    // Convert the unpermitted apps results to our format
+    const pkpToUnpermittedAppsMap = new Map<
+      string,
+      Array<{ appId: number; previousPermittedVersion: number | null; versionEnabled: boolean }>
+    >();
+    for (const pkpUnpermittedApps of unpermittedAppsArray) {
+      // Find the PKP by matching tokenId
+      const pkp = agentPKPs.find((p) => p.tokenId === pkpUnpermittedApps.pkpTokenId);
+      if (pkp) {
+        const appsWithVersions = pkpUnpermittedApps.unpermittedApps.map((app) => ({
+          appId: app.appId,
+          previousPermittedVersion: app.previousPermittedVersion,
+          versionEnabled: app.versionEnabled,
+        }));
+        pkpToUnpermittedAppsMap.set(pkp.ethAddress, appsWithVersions);
+      }
+    }
 
     const permitted: AgentAppPermission[] = [];
+    const unpermitted: AgentAppPermission[] = [];
     let unpermittedAgentPKP: IRelayPKP | null = null;
 
-    for (const result of results) {
-      const { pkp, appsWithVersions } = result;
+    for (const pkp of agentPKPs) {
+      const permittedApps = pkpToPermittedAppsMap.get(pkp.ethAddress) || [];
+      const unpermittedApps = pkpToUnpermittedAppsMap.get(pkp.ethAddress) || [];
 
-      if (appsWithVersions.length > 0) {
-        // PKP has permitted apps - add each app-PKP pair with version
-        for (const app of appsWithVersions) {
-          permitted.push({
-            appId: app.appId,
-            pkp,
-            permittedVersion: app.version,
-          });
-        }
-      } else {
-        // Store the first unpermitted agent PKP we find
-        if (!unpermittedAgentPKP) {
-          unpermittedAgentPKP = pkp;
-        }
+      // Add permitted apps
+      for (const app of permittedApps) {
+        permitted.push({
+          appId: app.appId,
+          pkp,
+          permittedVersion: app.version,
+        });
+      }
+
+      // Add unpermitted apps (previously permitted)
+      for (const app of unpermittedApps) {
+        unpermitted.push({
+          appId: app.appId,
+          pkp,
+          permittedVersion: app.previousPermittedVersion,
+          versionEnabled: app.versionEnabled,
+        });
+      }
+
+      // Track PKPs with no apps at all
+      if (permittedApps.length === 0 && unpermittedApps.length === 0 && !unpermittedAgentPKP) {
+        unpermittedAgentPKP = pkp;
       }
     }
 
@@ -121,10 +156,12 @@ export async function getAgentPkps(userAddress: string): Promise<AgentAppPermiss
 
     console.log('[getAgentPkps] Final result:', {
       permittedCount: permitted.length,
+      unpermittedCount: unpermitted.length,
       permitted: permitted,
+      unpermitted: unpermitted,
     });
 
-    return permitted;
+    return { permitted, unpermitted };
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -132,30 +169,4 @@ export async function getAgentPkps(userAddress: string): Promise<AgentAppPermiss
       throw new Error(`Failed to get Agent PKPs: ${error}`);
     }
   }
-}
-
-/**
- * Get the Agent PKP for a specific app ID
- *
- * @param agentPKPs Result from getAgentPkps
- * @param appId The app ID to get the PKP for
- * @returns The PKP for the app, or null if not found
- */
-export function getAgentPKPForApp(
-  agentPKPs: AgentAppPermission[],
-  appId: number,
-): IRelayPKP | null {
-  // Check if there are PKPs for this app
-  const pkpForApp = agentPKPs.find((p) => p.appId === appId);
-
-  if (pkpForApp) {
-    console.log(
-      `[getAgentPKPForApp] Found specific PKP for appId ${appId}:`,
-      pkpForApp.pkp.ethAddress,
-    );
-    return pkpForApp.pkp;
-  }
-
-  console.log(`[getAgentPKPForApp] No PKP found for appId ${appId}`);
-  return null;
 }

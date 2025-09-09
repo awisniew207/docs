@@ -18,9 +18,9 @@ export function useAllAgentApps(userAddress: string | undefined) {
 
     const fetchAllPermissions = async () => {
       try {
-        const agentPKPs = await getAgentPkps(userAddress);
+        const { permitted } = await getAgentPkps(userAddress);
 
-        setPermittedPKPs(agentPKPs);
+        setPermittedPKPs(permitted);
       } catch (err) {
         setError(err as Error);
         setPermittedPKPs([]);

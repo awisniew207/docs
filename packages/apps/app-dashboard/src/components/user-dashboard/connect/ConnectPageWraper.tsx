@@ -12,6 +12,9 @@ import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-
 import { ReturningUserConnect } from './ReturningUserConnect';
 import { AppVersionNotInRegistryConnect } from './AppVersionNotInRegistry';
 import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
+import { RepermitConnect } from './RepermitConnect';
+import { DisabledVersionConnect } from './DisabledVersionConnect';
+import { AppUnavailableConnect } from './AppUnavailableConnect';
 
 export function ConnectPageWrapper() {
   const { appId } = useParams();
@@ -20,9 +23,11 @@ export function ConnectPageWrapper() {
   const {
     agentPKP,
     permittedVersion,
+    versionEnabled,
     loading: agentPKPLoading,
     error: agentPKPError,
   } = useAgentPkpForApp(authInfo?.userPKP?.ethAddress, appId ? Number(appId) : undefined);
+
   const { isLoading, isError, errors, data } = useConnectInfo(appId || '');
   const {
     appExists,
@@ -138,6 +143,37 @@ export function ConnectPageWrapper() {
           redirectUri={redirectUri || undefined}
           readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
           agentPKP={agentPKP!}
+        />
+      );
+    }
+    // Check if both user's version and active version are disabled - app is unavailable
+    else if (agentPKP && !isPermitted && versionEnabled === false && activeVersionData && !activeVersionData.enabled) {
+      content = (
+        <AppUnavailableConnect
+          appData={data.app}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          activeVersion={data.app?.activeVersion}
+        />
+      );
+    }
+    // Check for previously permitted PKP with disabled version (but active version is available)
+    else if (agentPKP && !isPermitted && versionEnabled === false) {
+      content = (
+        <DisabledVersionConnect
+          appData={data.app}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          connectInfoMap={data}
+        />
+      );
+    }
+    // Check for previously permitted PKP (unpermitted but has PKP - either enabled version or current active version)
+    else if (agentPKP && !isPermitted) {
+      content = (
+        <RepermitConnect
+          appData={data.app}
+          previouslyPermittedPKP={agentPKP}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          redirectUri={redirectUri || undefined}
         />
       );
     }

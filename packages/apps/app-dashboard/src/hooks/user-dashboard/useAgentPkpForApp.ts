@@ -6,6 +6,7 @@ import { env } from '@/config/env';
 export function useAgentPkpForApp(userAddress: string | undefined, appId: number | undefined) {
   const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
   const [permittedVersion, setPermittedVersion] = useState<number | null>(null);
+  const [versionEnabled, setVersionEnabled] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -13,6 +14,7 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
     if (!userAddress || appId === undefined) {
       setAgentPKP(null);
       setPermittedVersion(null);
+      setVersionEnabled(null);
       setError(null);
       return;
     }
@@ -22,34 +24,47 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
 
     const fetchAgentPKP = async () => {
       try {
-        const agentPKPs = await getAgentPkps(userAddress);
+        const { permitted, unpermitted } = await getAgentPkps(userAddress);
 
         // Check if this is Vincent Yield and we have unpermitted fallback
         if (appId === Number(env.VITE_VINCENT_YIELD_APPID)) {
           // hadUnpermittedFallback is true when there's only one PKP with appId = -1
-          const hadUnpermittedFallback = agentPKPs.length === 1 && agentPKPs[0].appId === -1;
+          const hadUnpermittedFallback = permitted.length === 1 && permitted[0].appId === -1;
           if (hadUnpermittedFallback) {
-            setAgentPKP(agentPKPs[0].pkp);
+            setAgentPKP(permitted[0].pkp);
             setPermittedVersion(null);
+            setVersionEnabled(null);
             setLoading(false);
             return;
           }
         }
 
-        // Find the permission entry for this specific app
-        const appPermission = agentPKPs.find((p) => p.appId === appId);
+        // Find the permission entry for this specific app in permitted list
+        const appPermission = permitted.find((p) => p.appId === appId);
 
         if (appPermission) {
           setAgentPKP(appPermission.pkp);
           setPermittedVersion(appPermission.permittedVersion);
+          setVersionEnabled(null); // For permitted apps, versionEnabled is not relevant
         } else {
-          setAgentPKP(null);
-          setPermittedVersion(null);
+          // Check if this app was previously permitted and return that PKP for reuse
+          const previousPermission = unpermitted.find((p) => p.appId === appId);
+          if (previousPermission) {
+            // Return the PKP that was previously permitted so ConnectPage can reuse it
+            setAgentPKP(previousPermission.pkp);
+            setPermittedVersion(null);
+            setVersionEnabled(previousPermission.versionEnabled ?? null);
+          } else {
+            setAgentPKP(null);
+            setPermittedVersion(null);
+            setVersionEnabled(null);
+          }
         }
       } catch (err) {
         setError(err as Error);
         setAgentPKP(null);
         setPermittedVersion(null);
+        setVersionEnabled(null);
       } finally {
         setLoading(false);
       }
@@ -58,5 +73,5 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
     fetchAgentPKP();
   }, [userAddress, appId]);
 
-  return { agentPKP, permittedVersion, loading, error };
+  return { agentPKP, permittedVersion, versionEnabled, loading, error };
 }
