@@ -1,6 +1,9 @@
 ---
 category: Developers
 title: Ability Developers
+children:
+  - ./Creating-Abilities.md
+  - ./AI-Ability-Development.md
 ---
 
 # What is a Vincent Ability?
@@ -9,7 +12,7 @@ A Vincent Ability is a function built using [Lit Actions](https://developer.litp
 
 ## Getting Started
 
-To begin developing Vincent Abilities, you can use the **[Vincent Ability Policy Starter Template](https://github.com/LIT-Protocol/vincent-scaffold-sdk)**. This template provides a complete development environment with pre-built examples, end-to-end testing frameworks, and development workflows for creating and testing Vincent Abilities and Policies.
+To begin developing Vincent Abilities, you can use the **[Vincent Starter Kit](https://github.com/LIT-Protocol/vincent-starter-kit/tree/main)**. This example repository provides a complete development environment with pre-built examples, an end-to-end testing framework, and development workflows for creating and testing Vincent Abilities and Policies.
 
 ## Key Capabilities of Vincent Abilities
 

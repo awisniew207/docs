@@ -1,6 +1,8 @@
 ---
 category: Developers
 title: Policy Developers
+children:
+  - ./Creating-Policies.md
 ---
 
 # What is a Vincent Policy?

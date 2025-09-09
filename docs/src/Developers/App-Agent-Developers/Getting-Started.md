@@ -1,6 +1,12 @@
 ---
 category: Developers
 title: App & Agent Developers
+children:
+  - ./Creating-Apps.md
+  - ./Upgrading-Apps.md
+  - ./Auth-Users.md
+  - ./Executing-Abilities.md
+  - ./MCP.md
 ---
 
 # What is a Vincent App?

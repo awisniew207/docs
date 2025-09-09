@@ -1,5 +1,4 @@
 ---
-category: Developers
 title: AI Ability Development
 ---
 

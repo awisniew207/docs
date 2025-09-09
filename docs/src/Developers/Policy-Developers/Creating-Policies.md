@@ -1,5 +1,4 @@
 ---
-category: Developers
 title: Creating Vincent Policies
 ---
 
