@@ -161,10 +161,10 @@ From the root of the repository, run the following command to copy the `ability-
         <span class="box-icon info-icon">Info</span> Note
     </p>
     <p>
-        The following uses `rsync` to copy the `ability-native-send` package to a new package, but excludes the `node_modules` and `dist` directories.
+        The following uses <code>rsync</code> to copy the <code>ability-native-send</code> package to a new package, but excludes the <code>node_modules</code> and <code>dist</code> directories.
     </p>
     <p>
-        If you don't have `rsync` installed, you can simply manually copy the `ability-native-send` package to a new package, and delete the `node_modules` and `dist` directories.
+        If you don't have <code>rsync</code> installed, you can simply manually copy the <code>ability-native-send</code> package to a new package, and delete the <code>node_modules</code> and <code>dist</code> directories.
     </p>
 </div>
 
@@ -297,6 +297,9 @@ Here's a brief overview of an Ability's structure:
   <p>
     For a complete guide on implementing abilities, see
     <a href="./Creating-Abilities.md">How Abilities Work</a>.
+  </p>
+  <p>
+    Checkout the <a href="../Abilities/Overview.md">Official Vincent Abilities</a> for reference on how to implement your own Vincent Ability.
   </p>
 </div>
 
