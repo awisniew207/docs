@@ -2,6 +2,7 @@
 category: Developers
 title: Ability Developers
 children:
+  - ./Quick-Start.md
   - ./Creating-Abilities.md
   - ./AI-Ability-Development.md
 ---
