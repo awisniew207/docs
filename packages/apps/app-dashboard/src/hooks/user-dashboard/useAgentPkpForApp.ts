@@ -6,6 +6,7 @@ import { env } from '@/config/env';
 export function useAgentPkpForApp(userAddress: string | undefined, appId: number | undefined) {
   const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
   const [permittedVersion, setPermittedVersion] = useState<number | null>(null);
+  const [versionEnabled, setVersionEnabled] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -13,6 +14,7 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
     if (!userAddress || appId === undefined) {
       setAgentPKP(null);
       setPermittedVersion(null);
+      setVersionEnabled(null);
       setError(null);
       return;
     }
@@ -31,6 +33,7 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
           if (hadUnpermittedFallback) {
             setAgentPKP(permitted[0].pkp);
             setPermittedVersion(null);
+            setVersionEnabled(null);
             setLoading(false);
             return;
           }
@@ -42,6 +45,7 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
         if (appPermission) {
           setAgentPKP(appPermission.pkp);
           setPermittedVersion(appPermission.permittedVersion);
+          setVersionEnabled(null); // For permitted apps, versionEnabled is not relevant
         } else {
           // Check if this app was previously permitted and return that PKP for reuse
           const previousPermission = unpermitted.find((p) => p.appId === appId);
@@ -49,15 +53,18 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
             // Return the PKP that was previously permitted so ConnectPage can reuse it
             setAgentPKP(previousPermission.pkp);
             setPermittedVersion(null);
+            setVersionEnabled(previousPermission.versionEnabled ?? null);
           } else {
             setAgentPKP(null);
             setPermittedVersion(null);
+            setVersionEnabled(null);
           }
         }
       } catch (err) {
         setError(err as Error);
         setAgentPKP(null);
         setPermittedVersion(null);
+        setVersionEnabled(null);
       } finally {
         setLoading(false);
       }
@@ -66,5 +73,5 @@ export function useAgentPkpForApp(userAddress: string | undefined, appId: number
     fetchAgentPKP();
   }, [userAddress, appId]);
 
-  return { agentPKP, permittedVersion, loading, error };
+  return { agentPKP, permittedVersion, versionEnabled, loading, error };
 }

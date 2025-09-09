@@ -9,6 +9,7 @@ export type AgentAppPermission = {
   appId: number;
   pkp: IRelayPKP;
   permittedVersion: number | null;
+  versionEnabled?: boolean;
 };
 
 export type AgentPkpsResult = {
@@ -96,7 +97,7 @@ export async function getAgentPkps(userAddress: string): Promise<AgentPkpsResult
     // Convert the unpermitted apps results to our format
     const pkpToUnpermittedAppsMap = new Map<
       string,
-      Array<{ appId: number; previousPermittedVersion: number | null }>
+      Array<{ appId: number; previousPermittedVersion: number | null; versionEnabled: boolean }>
     >();
     for (const pkpUnpermittedApps of unpermittedAppsArray) {
       // Find the PKP by matching tokenId
@@ -105,6 +106,7 @@ export async function getAgentPkps(userAddress: string): Promise<AgentPkpsResult
         const appsWithVersions = pkpUnpermittedApps.unpermittedApps.map((app) => ({
           appId: app.appId,
           previousPermittedVersion: app.previousPermittedVersion,
+          versionEnabled: app.versionEnabled,
         }));
         pkpToUnpermittedAppsMap.set(pkp.ethAddress, appsWithVersions);
       }
@@ -133,6 +135,7 @@ export async function getAgentPkps(userAddress: string): Promise<AgentPkpsResult
           appId: app.appId,
           pkp,
           permittedVersion: app.previousPermittedVersion,
+          versionEnabled: app.versionEnabled,
         });
       }
 

@@ -9,6 +9,7 @@ interface ActionButtonsProps {
   onSubmit: () => void;
   isLoading?: boolean;
   error?: string | null;
+  submitText?: string;
 }
 
 export function ActionButtons({
@@ -17,6 +18,7 @@ export function ActionButtons({
   onSubmit,
   isLoading = false,
   error,
+  submitText = 'Grant Permissions',
 }: ActionButtonsProps) {
   return (
     <div className="space-y-4">
@@ -57,7 +59,7 @@ export function ActionButtons({
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
             {error && <AlertCircle className="w-4 h-4" />}
-            {error ? 'Retry' : isLoading ? 'Processing...' : 'Grant Permissions'}
+            {error ? 'Retry' : isLoading ? 'Processing...' : submitText}
           </Button>
         </motion.div>
       </div>

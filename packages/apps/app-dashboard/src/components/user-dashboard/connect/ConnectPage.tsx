@@ -22,9 +22,10 @@ import { BigNumber } from 'ethers';
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
   readAuthInfo: ReadAuthInfo;
+  previouslyPermittedPKP?: IRelayPKP | null;
 }
 
-export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) {
+export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedPKP }: ConnectPageProps) {
   const navigate = useNavigate();
   const [localError, setLocalError] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
@@ -64,7 +65,7 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
       const timer = setTimeout(async () => {
         setLocalSuccess(null);
         await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!);
-      }, 3000);
+      }, 1000);
       return () => clearTimeout(timer);
     }
     return undefined;
@@ -97,11 +98,20 @@ export function ConnectPage({ connectInfoMap, readAuthInfo }: ConnectPageProps) 
       });
       await userPkpWallet.init();
 
-      const tokenIdString = BigNumber.from(readAuthInfo.authInfo.userPKP.tokenId).toHexString();
-      const agentPKP = await mintPKPToExistingPKP({
-        ...readAuthInfo.authInfo.userPKP,
-        tokenId: tokenIdString,
-      });
+      let agentPKP: IRelayPKP;
+      if (previouslyPermittedPKP) {
+        // Reuse the previously permitted PKP
+        agentPKP = previouslyPermittedPKP;
+        console.log('Reusing previously permitted PKP:', agentPKP.ethAddress);
+      } else {
+        // Mint a new PKP
+        const tokenIdString = BigNumber.from(readAuthInfo.authInfo.userPKP.tokenId).toHexString();
+        agentPKP = await mintPKPToExistingPKP({
+          ...readAuthInfo.authInfo.userPKP,
+          tokenId: tokenIdString,
+        });
+        console.log('Minted new PKP:', agentPKP.ethAddress);
+      }
       setAgentPKP(agentPKP);
 
       await addPermittedActions({

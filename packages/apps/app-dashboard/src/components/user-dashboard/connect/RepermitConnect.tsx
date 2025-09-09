@@ -5,6 +5,7 @@ import { IRelayPKP } from '@lit-protocol/types';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { ConnectPageHeader } from './ui/ConnectPageHeader';
 import { ConnectAppHeader } from './ui/ConnectAppHeader';
 import { StatusCard } from './ui/StatusCard';
@@ -27,19 +28,35 @@ export function RepermitConnect({ appData, previouslyPermittedPKP, readAuthInfo 
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const [isConnectProcessing, setIsConnectProcessing] = useState(false);
 
-  // Handle page refresh when repermitting is successful
+  const {
+    generateJWT,
+    executeRedirect,
+    isLoading: isJwtLoading,
+    loadingStatus: jwtLoadingStatus,
+    error: jwtError,
+    redirectUrl,
+  } = useJwtRedirect({ readAuthInfo, agentPKP: previouslyPermittedPKP });
+
+  // Handle redirect when JWT is ready
+  useEffect(() => {
+    if (redirectUrl && localSuccess !== 'Success! Redirecting to app...') {
+      setLocalSuccess('Success! Redirecting to app...');
+      setTimeout(() => {
+        executeRedirect();
+      }, 2000);
+    }
+  }, [redirectUrl, localSuccess, executeRedirect]);
+
+  // Generate JWT when re-permitting is successful
   useEffect(() => {
     if (localSuccess === 'App re-permitted successfully!') {
-      const timer = setTimeout(() => {
-        setLocalSuccess('Success! Refreshing...');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }, 2000);
+      const timer = setTimeout(async () => {
+        await generateJWT(appData, appData.activeVersion!);
+      }, 1000);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [localSuccess]);
+  }, [localSuccess, generateJWT, appData]);
 
   const handleSubmit = useCallback(async () => {
     setLocalError(null);
@@ -78,9 +95,11 @@ export function RepermitConnect({ appData, previouslyPermittedPKP, readAuthInfo 
     navigate(-1);
   }, [navigate]);
 
-  const isLoading = isConnectProcessing || !!localSuccess;
-  const loadingStatus = isConnectProcessing ? 'Re-permitting app...' : localSuccess || null;
-  const error = localError;
+  const isLoading = isJwtLoading || isConnectProcessing || !!localSuccess;
+  const loadingStatus = 
+    jwtLoadingStatus || 
+    (isConnectProcessing ? 'Re-permitting app...' : localSuccess || null);
+  const error = jwtError || localError;
 
   return (
     <div
