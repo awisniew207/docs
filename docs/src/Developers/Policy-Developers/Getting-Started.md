@@ -2,6 +2,7 @@
 category: Developers
 title: Policy Developers
 children:
+  - ./Quick-Start.md
   - ./Creating-Policies.md
 ---
 

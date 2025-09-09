@@ -6,7 +6,7 @@ title: Quick Start
 
 The [Vincent Starter Kit](https://github.com/LIT-Protocol/vincent-starter-kit/tree/main) is a complete example repository for Vincent Ability and Policy authors. This monorepo template provides a complete development environment with pre-built examples, an end-to-end testing framework, and development workflows for creating, deploying, and testing Vincent Abilities.
 
-This guide will walk you through setting up the Vincent Starter Kit, understanding its structure, and running your first Vincent Ability.
+This guide will walk you through setting up the Vincent Starter Kit, understanding its structure, and writing your first Vincent Ability.
 
 ## Prerequisites
 
@@ -104,7 +104,7 @@ This script will:
 
 1. Build the example Ability and Policy
 2. Deploy their code to IPFS via Pinata
-3. Ensure the Ability and Policy were build correctly and successfully deployed to IPFS
+3. Ensure the Ability and Policy were built correctly and successfully deployed to IPFS
 4. Run the end-to-end tests that execute the Ability and Policy using the Vincent system
 
 After running this script, if you see the following output, then you know your copy of the Starter Kit is properly configured and ready for you to start developing your own Vincent Abilities:
@@ -243,7 +243,41 @@ Update all references to the package name:
 }
 ```
 
-#### 4. Update the Vincent Ability Implementation
+#### 4. Run `pnpm install`
+
+After updating the `package.json` and `project.json` files, run:
+
+```bash
+pnpm install
+```
+
+This ensures your new package is properly linked in the monorepo, and all dependencies are installed.
+
+#### 5. Update Schema Definitions
+
+**File:** `packages/my-ability/src/lib/schemas.ts`
+
+This file contains the Zod schemas that define:
+
+- Any known error constants
+- Input parameters for your Ability's `precheck` and `execute` functions (`abilityParamsSchema`)
+- Success/failure schemas for `precheck` and `execute` functions
+
+Update these schemas to match your Ability's implementation.
+
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
+  </p>
+  <p>
+    While <code>abilityParamsSchema</code> is used to define the input parameters for both the <code>precheck</code> and <code>execute</code> functions, these functions are not inherently required to use the same parameters.
+  </p>
+  <p>
+    You can mark a parameter as <code>.optional()</code> in your schema and check for its presence in either function, throwing an error if it's not present when required.
+  </p>
+</div>
+
+#### 6. Update the Vincent Ability Implementation
 
 **File:** `packages/my-ability/src/lib/vincent-ability.ts`
 
@@ -328,13 +362,13 @@ export const vincentAbility = createVincentAbility({
 });
 ```
 
-#### 5. Update the Main Index File
+#### 7. Update the Main Index File
 
 **File:** `packages/my-ability/src/index.ts`
 
 - Update the comment to reflect your ability name
 
-#### 6. Update Jest Configuration
+#### 8. Update Jest Configuration
 
 **File:** `packages/my-ability/jest.config.js`
 
@@ -347,31 +381,7 @@ module.exports = {
 };
 ```
 
-#### 7. Update Schema Definitions
-
-**File:** `packages/my-ability/src/lib/schemas.ts`
-
-This file contains the Zod schemas that define:
-
-- Any known error constants
-- Input parameters for your Ability's `precheck` and `execute` functions (`abilityParamsSchema`)
-- Success/failure schemas for `precheck` and `execute` functions
-
-Update these schemas to match your Ability's implementation.
-
-<div class="box info-box">
-  <p class="box-title info-box-title">
-    <span class="box-icon info-icon">Info</span> Note
-  </p>
-  <p>
-    While <code>abilityParamsSchema</code> is used to define the input parameters for both the <code>precheck</code> and <code>execute</code> functions, these functions are not inherently required to use the same parameters.
-  </p>
-  <p>
-    You can mark a parameter as <code>.optional()</code> in your schema and check for its presence in either function, throwing an error if it's not present when required.
-  </p>
-</div>
-
-#### 8. Register Your Package with Nx
+#### 10. Register Your Package with Nx
 
 After making all the file changes, you need to update the workspace configuration to include your new package:
 
@@ -388,7 +398,7 @@ After making all the file changes, you need to update the workspace configuratio
 }
 ```
 
-#### 9. Install Dependencies
+#### 11. Install Dependencies
 
 After all the above updates, run:
 
@@ -398,7 +408,7 @@ pnpm install
 
 This ensures your new package is properly linked in the monorepo.
 
-#### 10. Build Your Ability
+#### 11. Build Your Ability
 
 After installing dependencies, build your Ability package with:
 
@@ -427,8 +437,6 @@ If you see the following output, then your Ability package has been built succes
 > pnpm node ./scripts/bundle-vincent-ability/esbuild.js
 
 ./src/lib
-(node:44744) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
 ✅ lit-action.js
 - 4.2232 MB (in decimal)
 - 4.0276 MB (in binary)
