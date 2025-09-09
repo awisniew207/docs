@@ -14,6 +14,7 @@ import { AppVersionNotInRegistryConnect } from './AppVersionNotInRegistry';
 import { useUriPrecheck } from '@/hooks/user-dashboard/connect/useUriPrecheck';
 import { RepermitConnect } from './RepermitConnect';
 import { DisabledVersionConnect } from './DisabledVersionConnect';
+import { AppUnavailableConnect } from './AppUnavailableConnect';
 
 export function ConnectPageWrapper() {
   const { appId } = useParams();
@@ -145,7 +146,17 @@ export function ConnectPageWrapper() {
         />
       );
     }
-    // Check for previously permitted PKP with disabled version
+    // Check if both user's version and active version are disabled - app is unavailable
+    else if (agentPKP && !isPermitted && versionEnabled === false && activeVersionData && !activeVersionData.enabled) {
+      content = (
+        <AppUnavailableConnect
+          appData={data.app}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          activeVersion={data.app?.activeVersion}
+        />
+      );
+    }
+    // Check for previously permitted PKP with disabled version (but active version is available)
     else if (agentPKP && !isPermitted && versionEnabled === false) {
       content = (
         <DisabledVersionConnect
