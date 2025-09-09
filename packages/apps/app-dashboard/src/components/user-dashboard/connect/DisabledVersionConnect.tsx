@@ -9,11 +9,12 @@ import { theme } from './ui/theme';
 import { InfoBanner } from './ui/InfoBanner';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { ConnectPage } from './ConnectPage';
+import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 
 interface DisabledVersionConnectProps {
   appData: App;
   readAuthInfo: ReadAuthInfo;
-  connectInfoMap: any; // Same type as ConnectPage expects
+  connectInfoMap: ConnectInfoMap;
 }
 
 export function DisabledVersionConnect({ 
