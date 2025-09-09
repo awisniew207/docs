@@ -4,7 +4,6 @@ title: Ability Developers
 children:
   - ./Quick-Start.md
   - ./Creating-Abilities.md
-  - ./AI-Ability-Development.md
 ---
 
 # What is a Vincent Ability?
