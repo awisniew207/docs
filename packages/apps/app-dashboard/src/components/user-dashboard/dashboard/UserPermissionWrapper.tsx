@@ -92,7 +92,7 @@ export function UserPermissionWrapper() {
   }
 
   // Check for any errors
-  if (isError || error || isExistingDataError || agentPKPError || false) {
+  if (isError || error || isExistingDataError || agentPKPError) {
     const errorMessage =
       errors.length > 0
         ? errors.join(', ')
