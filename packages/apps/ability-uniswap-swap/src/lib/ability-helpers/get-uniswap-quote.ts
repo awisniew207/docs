@@ -1,154 +1,101 @@
-import { CHAIN_TO_ADDRESSES_MAP } from '@uniswap/sdk-core';
+import { Token, CurrencyAmount, TradeType, Percent } from '@uniswap/sdk-core';
+import { AlphaRouter, SwapType, SwapRoute } from '@uniswap/smart-order-router';
 import { ethers } from 'ethers';
 
-const UNISWAP_V3_QUOTER_INTERFACE = new ethers.utils.Interface([
-  'function quoteExactInputSingle((address tokenIn, address tokenOut, uint256 amountIn, uint24 fee, uint160 sqrtPriceLimitX96)) external returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)',
-]);
-
-export const getUniswapQuote = async ({
+export async function getUniswapQuote({
   rpcUrl,
-  chainId,
   tokenInAddress,
-  tokenInDecimals,
   tokenInAmount,
   tokenOutAddress,
-  tokenOutDecimals,
+  recipient,
+  slippageTolerance,
 }: {
   rpcUrl: string;
-  chainId: number;
   tokenInAddress: string;
-  tokenInDecimals: number;
-  tokenInAmount: number;
+  tokenInAmount: string;
   tokenOutAddress: string;
-  tokenOutDecimals: number;
-}): Promise<{
-  bestQuote: ethers.BigNumber;
-  bestFee: number;
-  amountOutMin: ethers.BigNumber;
-}> => {
-  console.log('Getting Uniswap Quote (getUniswapQuote)', {
-    rpcUrl,
-    chainId,
-    tokenInAddress,
-    tokenInDecimals,
-    tokenInAmount,
-    tokenOutAddress,
-    tokenOutDecimals,
-  });
+  recipient: string;
+  slippageTolerance?: number;
+}): Promise<SwapRoute> {
+  const activeTimeouts = new Set<NodeJS.Timeout>();
+  const realSetTimeout = global.setTimeout;
+  const realClearTimeout = global.clearTimeout;
 
-  const chainAddressMap = CHAIN_TO_ADDRESSES_MAP[chainId as keyof typeof CHAIN_TO_ADDRESSES_MAP];
-  if (chainAddressMap === undefined)
-    throw new Error(`Unsupported chainId: ${chainId} (getUniswapQuote)`);
-  if (chainAddressMap.quoterAddress === undefined)
-    throw new Error(`No Uniswap V3 Quoter Address found for chainId: ${chainId} (getUniswapQuote)`);
-  const quoterAddress = chainAddressMap.quoterAddress as `0x${string}`;
-  console.log(`Using Quoter Address: ${quoterAddress} (getUniswapQuote)`);
+  global.setTimeout = ((fn: (...args: unknown[]) => void, ms?: number, ...args: unknown[]) => {
+    const id = realSetTimeout(fn, ms as number, ...args);
+    activeTimeouts.add(id);
+    return id;
+  }) as typeof setTimeout;
 
-  const uniswapRpcProvider = new ethers.providers.StaticJsonRpcProvider(rpcUrl);
+  global.clearTimeout = ((id: NodeJS.Timeout) => {
+    activeTimeouts.delete(id);
+    return realClearTimeout(id);
+  }) as typeof clearTimeout;
 
-  const formattedTokenInAmount = ethers.utils.parseUnits(tokenInAmount.toString(), tokenInDecimals);
-  console.log('Amount conversion:', {
-    original: tokenInAmount,
-    decimals: tokenInDecimals,
-    wei: formattedTokenInAmount.toString(),
-    formatted: ethers.utils.formatUnits(formattedTokenInAmount, tokenInDecimals),
-  });
+  const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl);
+  const [network, tokenInDecimals, tokenOutDecimals] = await Promise.all([
+    provider.getNetwork(),
+    new ethers.Contract(
+      tokenInAddress,
+      ['function decimals() view returns (uint8)'],
+      provider,
+    ).decimals(),
+    new ethers.Contract(
+      tokenOutAddress,
+      ['function decimals() view returns (uint8)'],
+      provider,
+    ).decimals(),
+  ]);
+  const chainId = network.chainId;
 
-  let bestQuote = null;
-  let bestFee = null;
-
-  const feeTiers = [3000, 500]; // Supported fee tiers (0.3% and 0.05%)
-  for (const fee of feeTiers) {
-    try {
-      const quoteParams = {
-        tokenIn: tokenInAddress,
-        tokenOut: tokenOutAddress,
-        amountIn: formattedTokenInAmount.toString(),
-        fee,
-        sqrtPriceLimitX96: 0,
-      };
-
-      console.log(`Attempting quote with fee tier ${fee / 10000}% (getUniswapQuote)`);
-      console.log('Quote parameters (getUniswapQuote):', quoteParams);
-
-      const quote = await uniswapRpcProvider.call({
-        to: quoterAddress,
-        data: UNISWAP_V3_QUOTER_INTERFACE.encodeFunctionData('quoteExactInputSingle', [
-          quoteParams,
-        ]),
-      });
-      console.log('Raw quote response (getUniswapQuote):', quote);
-
-      const [amountOut] = UNISWAP_V3_QUOTER_INTERFACE.decodeFunctionResult(
-        'quoteExactInputSingle',
-        quote,
-      );
-
-      const currentQuote = ethers.BigNumber.from(amountOut);
-      if (currentQuote.isZero()) {
-        console.log(`Quote is 0 for fee tier ${fee / 10000}% - skipping (getUniswapQuote)`);
-        continue;
-      }
-
-      const formattedQuote = ethers.utils.formatUnits(currentQuote, tokenOutDecimals);
-      console.log(`Quote for fee tier ${fee / 10000}% (getUniswapQuote):`, {
-        raw: currentQuote.toString(),
-        formatted: formattedQuote,
-      });
-
-      if (!bestQuote || currentQuote.gt(bestQuote)) {
-        bestQuote = currentQuote;
-        bestFee = fee;
-        console.log(
-          `New best quote found with fee tier ${fee / 10000}% (getUniswapQuote): ${formattedQuote}`,
-        );
-      }
-    } catch (error: unknown) {
-      const err = error as { reason?: string; message?: string; code?: string };
-
-      // Check if this is an ethers contract error with expected properties
-      if ('reason' in err && 'message' in err && 'code' in err) {
-        if (err.reason === 'Unexpected error') {
-          console.log(
-            `Unexpected error thrown, probably no pool found for fee tier ${fee / 10000}% (getUniswapQuote)`,
-            err,
-          );
-        } else {
-          console.log(`Quoter call failed for fee tier ${fee / 10000}% (getUniswapQuote)`, {
-            message: err.message,
-            reason: err.reason,
-            code: err.code,
-          });
-        }
-
-        continue;
-      } else {
-        throw error;
-      }
-    }
-  }
-
-  if (!bestQuote || !bestFee) {
-    throw new Error(
-      'Failed to get quote from Uniswap V3. No valid pool found for this token pair or quote returned 0 (getUniswapQuote)',
+  const router = new AlphaRouter({ chainId, provider });
+  try {
+    const tokenIn = new Token(chainId, tokenInAddress, tokenInDecimals);
+    const tokenOut = new Token(chainId, tokenOutAddress, tokenOutDecimals);
+    const amountIn = CurrencyAmount.fromRawAmount(
+      tokenIn,
+      ethers.utils.parseUnits(tokenInAmount.toString(), tokenInDecimals).toString(),
     );
+    // User provides slippage in basis points (e.g., 50 for 0.5%, 100 for 1%)
+    // Default to 50 basis points (0.5%) if not provided
+    const slippage = new Percent(slippageTolerance ?? 50, 10_000);
+
+    console.log('Amount conversion:', {
+      original: tokenInAmount,
+      decimals: tokenInDecimals,
+      wei: amountIn.quotient.toString(),
+      formatted: amountIn.toExact(),
+    });
+
+    console.log('Getting route from AlphaRouter...');
+    const routeResult = await router.route(amountIn, tokenOut, TradeType.EXACT_INPUT, {
+      recipient,
+      slippageTolerance: slippage,
+      deadline: Math.floor(Date.now() / 1000 + 1800),
+      type: SwapType.SWAP_ROUTER_02,
+    });
+
+    if (!routeResult || !routeResult.quote) {
+      throw new Error('Failed to get quote from Uniswap (no route)');
+    }
+    console.log('AlphaRouter completed successfully');
+    return routeResult;
+  } finally {
+    console.log('Performing cleanup of AlphaRouter resources...');
+
+    provider.removeAllListeners();
+
+    // Clear any timers created during this call
+    console.log(`Clearing ${activeTimeouts.size} timeouts`);
+    for (const id of Array.from(activeTimeouts)) {
+      realClearTimeout(id);
+    }
+    activeTimeouts.clear();
+
+    // Restore globals to avoid side effects
+    global.setTimeout = realSetTimeout;
+    global.clearTimeout = realClearTimeout;
+
+    console.log('AlphaRouter cleanup completed');
   }
-
-  // Calculate minimum output with 0.5% slippage tolerance
-  const slippageTolerance = 0.005;
-  const amountOutMin = bestQuote.mul(1000 - slippageTolerance * 1000).div(1000);
-  console.log('Final quote details:', {
-    bestFee: `${bestFee / 10000}%`,
-    bestQuote: {
-      raw: bestQuote.toString(),
-      formatted: ethers.utils.formatUnits(bestQuote, tokenOutDecimals),
-    },
-    minimumOutput: {
-      raw: amountOutMin.toString(),
-      formatted: ethers.utils.formatUnits(amountOutMin, tokenOutDecimals),
-    },
-    slippageTolerance: `${slippageTolerance * 100}%`,
-  });
-
-  return { bestQuote, bestFee, amountOutMin };
-};
+}
