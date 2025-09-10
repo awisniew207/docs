@@ -3,7 +3,6 @@ import { bundledVincentAbility as erc20BundledAbility } from '@lit-protocol/vinc
 
 import {
   bundledVincentAbility as uniswapBundledAbility,
-  getUniswapQuote,
   type PrepareSignedUniswapQuote,
   getSignedUniswapQuote,
 } from '@lit-protocol/vincent-ability-uniswap-swap';
@@ -22,7 +21,6 @@ import {
   BASE_RPC_URL,
   checkShouldMintAndFundPkp,
   DATIL_PUBLIC_CLIENT,
-  ETH_RPC_URL,
   getTestConfig,
   TEST_APP_DELEGATEE_ACCOUNT,
   TEST_APP_DELEGATEE_PRIVATE_KEY,
@@ -56,6 +54,8 @@ const SWAP_TOKEN_IN_DECIMALS = 18;
 // const SWAP_TOKEN_OUT_DECIMALS = 6;
 const SWAP_TOKEN_OUT_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
 const SWAP_TOKEN_OUT_DECIMALS = 18;
+// const SWAP_TOKEN_OUT_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
+// const SWAP_TOKEN_OUT_DECIMALS = 18;
 
 const RPC_URL = BASE_RPC_URL;
 const CHAIN_ID = 8453;
@@ -108,8 +108,9 @@ const addNewApproval = async (
       chainId: CHAIN_ID,
       spenderAddress,
       tokenAddress: SWAP_TOKEN_IN_ADDRESS,
-      tokenDecimals: SWAP_TOKEN_IN_DECIMALS,
-      tokenAmount,
+      tokenAmount: ethers.utils
+        .parseUnits(tokenAmount.toString(), SWAP_TOKEN_IN_DECIMALS)
+        .toString(),
       alchemyGasSponsor: false,
     },
     {
@@ -131,7 +132,6 @@ const addNewApproval = async (
   }
 
   expect(erc20ApprovalExecutionResult.result.tokenAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-  expect(erc20ApprovalExecutionResult.result.tokenDecimals).toBe(SWAP_TOKEN_IN_DECIMALS);
   expect(erc20ApprovalExecutionResult.result.spenderAddress).toBe(spenderAddress);
 
   if (erc20ApprovalExecutionResult.result.approvalTxHash) {
@@ -348,8 +348,9 @@ describe('Uniswap Swap Ability E2E Tests', () => {
         chainId: CHAIN_ID,
         spenderAddress: erc20SpenderAddress,
         tokenAddress: SWAP_TOKEN_IN_ADDRESS,
-        tokenDecimals: SWAP_TOKEN_IN_DECIMALS,
-        tokenAmount: SWAP_AMOUNT,
+        tokenAmount: ethers.utils
+          .parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS)
+          .toString(),
         alchemyGasSponsor: false,
       },
       {
