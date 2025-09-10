@@ -77,7 +77,7 @@ export function AppPermissionPage({
     console.log('[UserPermissionPage] Starting submission', {
       formData,
       selectedPolicies,
-      existingData
+      existingData,
     });
 
     // Clear any previous local errors and success
@@ -147,6 +147,23 @@ export function AppPermissionPage({
           }
         }
       });
+
+      // Check if there are any meaningful changes to make
+      const hasPolicyUpdates = Object.keys(policyParams).some(
+        (abilityId) => Object.keys(policyParams[abilityId]).length > 0,
+      );
+      const hasDeletions = Object.keys(deletePermissionData).some(
+        (abilityId) => deletePermissionData[abilityId].length > 0,
+      );
+
+      if (!hasPolicyUpdates && !hasDeletions) {
+        setLocalStatus(null);
+        setLocalSuccess('Permissions are up to date.');
+        setTimeout(() => {
+          setLocalSuccess(null);
+        }, 3000);
+        return;
+      }
 
       // We should do this in case there was ever an error doing this previously
       setLocalStatus('Adding permitted actions...');
