@@ -390,7 +390,7 @@ module.exports = {
 };
 ```
 
-#### 9. Register Your Package with Nx
+#### 8. Register Your Package with Nx
 
 After making all the file changes, you need to update the workspace configuration to include your new package:
 
@@ -407,7 +407,7 @@ After making all the file changes, you need to update the workspace configuratio
 }
 ```
 
-#### 10. Install Dependencies
+#### 9. Install Dependencies
 
 After all the above updates, run:
 
