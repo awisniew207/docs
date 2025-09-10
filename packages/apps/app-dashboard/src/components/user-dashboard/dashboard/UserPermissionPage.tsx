@@ -148,15 +148,23 @@ export function AppPermissionPage({
         }
       });
 
-      // Check if there are any meaningful changes to make
-      const hasPolicyUpdates = Object.keys(policyParams).some(
-        (abilityId) => Object.keys(policyParams[abilityId]).length > 0,
-      );
-      const hasDeletions = Object.keys(deletePermissionData).some(
-        (abilityId) => deletePermissionData[abilityId].length > 0,
-      );
+      const currentStateJson = JSON.stringify({ formData, selectedPolicies });
+      const initialStateJson = JSON.stringify({
+        formData: existingData || {},
+        selectedPolicies: Object.fromEntries(
+          Object.keys(selectedPolicies).map((policyId) => [
+            policyId,
+            // A policy was initially selected if it exists in existingData
+            Object.keys(existingData || {}).some(
+              (abilityId) => existingData?.[abilityId]?.[policyId] !== undefined,
+            ),
+          ]),
+        ),
+      });
 
-      if (!hasPolicyUpdates && !hasDeletions) {
+      const hasAnyChanges = currentStateJson !== initialStateJson;
+
+      if (!hasAnyChanges) {
         setLocalStatus(null);
         setLocalSuccess('Permissions are up to date.');
         setTimeout(() => {
