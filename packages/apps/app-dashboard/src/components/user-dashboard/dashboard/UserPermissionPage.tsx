@@ -77,7 +77,7 @@ export function AppPermissionPage({
     console.log('[UserPermissionPage] Starting submission', {
       formData,
       selectedPolicies,
-      existingData
+      existingData,
     });
 
     // Clear any previous local errors and success
@@ -147,6 +147,31 @@ export function AppPermissionPage({
           }
         }
       });
+
+      const currentStateJson = JSON.stringify({ formData, selectedPolicies });
+      const initialStateJson = JSON.stringify({
+        formData: existingData || {},
+        selectedPolicies: Object.fromEntries(
+          Object.keys(selectedPolicies).map((policyId) => [
+            policyId,
+            // A policy was initially selected if it exists in existingData
+            Object.keys(existingData || {}).some(
+              (abilityId) => existingData?.[abilityId]?.[policyId] !== undefined,
+            ),
+          ]),
+        ),
+      });
+
+      const hasAnyChanges = currentStateJson !== initialStateJson;
+
+      if (!hasAnyChanges) {
+        setLocalStatus(null);
+        setLocalSuccess('Permissions are up to date.');
+        setTimeout(() => {
+          setLocalSuccess(null);
+        }, 3000);
+        return;
+      }
 
       // We should do this in case there was ever an error doing this previously
       setLocalStatus('Adding permitted actions...');
