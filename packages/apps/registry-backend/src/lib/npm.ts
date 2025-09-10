@@ -62,6 +62,7 @@ export async function getPackageInfo({
   try {
     const packument = await getPackument(packageName);
 
+    // @ts-expect-error no types for this pkg
     const targetVersion = packument.versions[version];
 
     if (!targetVersion) {
