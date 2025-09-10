@@ -1,11 +1,27 @@
 ---
 category: Developers
 title: Policy Developers
+children:
+  - ./Quick-Start.md
+  - ./Creating-Policies.md
 ---
 
 # What is a Vincent Policy?
 
 A Vincent Policy is a function built using [Lit Actions](https://developer.litprotocol.com/sdk/serverless-signing/overview) and is a programmable guardrail for [Vincent Ability](../Ability-Developers/Getting-Started.md) executions. These policies have user-configurable parameters and determine whether a Vincent App can execute specific Vincent Abilities on behalf of a Vincent App User, ensuring that autonomous agents and Vincent Apps operate strictly within user-defined boundaries.
+
+## Getting Started
+
+Ready to build your first Vincent Policy? The [Quick Start Guide](./Quick-Start.md) walks you through the [Vincent Starter Kit](https://github.com/LIT-Protocol/vincent-starter-kit/tree/main) which provides a complete development environment with pre-built examples, an end-to-end testing framework, and development workflows for creating and testing Vincent Abilities and Policies.
+
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> New to Vincent?
+  </p>
+  <p>
+    If you're unfamiliar with Vincent concepts, check out the <a href="../../Concepts.md">Key Concepts Overview</a> to understand how Abilities, Policies, and Apps work together.
+  </p>
+</div>
 
 ## Key Capabilities of Vincent Policies
 
