@@ -3,10 +3,10 @@ import { LIT_NETWORK } from '@lit-protocol/constants';
 import { ethers } from 'ethers';
 import deterministicJsonStringify from 'json-stable-stringify';
 
-import { getSignedUniswapQuote } from '../src/lib/prepare/get-signed-uniswap-quote';
-import { BASE_RPC_URL, TEST_APP_DELEGATEE_SIGNER } from './helpers/test-variables';
-import { QuoteParams } from '../src';
-import VincentPrepareMetadata from '../src/generated/vincent-prepare-metadata.json';
+import { getSignedUniswapQuote } from '../../src/lib/prepare/get-signed-uniswap-quote';
+import { BASE_RPC_URL, TEST_APP_DELEGATEE_SIGNER } from '../helpers/test-variables';
+import { QuoteParams } from '../../src';
+import VincentPrepareMetadata from '../../src/generated/vincent-prepare-metadata.json';
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
