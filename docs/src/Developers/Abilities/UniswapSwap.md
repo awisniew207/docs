@@ -6,34 +6,38 @@ title: Uniswap Swap
 
 The Uniswap Swap Ability enables Vincent Apps to execute token swaps using Uniswap V3 on behalf of Vincent Users. This allows Vincent Apps to utilize decentralized exchanges without requiring Vincent App Users having to manually approve each swap transaction.
 
-This Vincent Ability also supports the [Spending Limit Policy](../Policies/SpendingLimit.md), which allows Vincent Users to restrict how much total value can be spent by the Vincent App.
-
 ## Key Features
 
 - **Secure Token Swapping**: Executes Uniswap V3 swaps using Vincent Wallets within Lit Protocol's secure Trusted Execution Environment
+- **Multi-hop Route Optimization**: Uses Uniswap's Alpha Router to find optimal swap paths through multiple pools
 - **Comprehensive Pre-swap Validation**: Verifies token balances, allowances, pool existence, and gas fees before execution
-- **Spending Limit Integration**: Enforces spending limits through optional Vincent Policy integration to protect Vincent App Users from unintended spending
 - **Multi-chain Support**: Works on any EVM-compatible network supported by Uniswap V3
 
 ## How It Works
 
-The Uniswap Swap Ability is built using the [Vincent Ability SDK](../Ability-Developers/Creating-Abilities.md) and operates in two phases:
+The Uniswap Swap Ability is built using the [Vincent Ability SDK](../Ability-Developers/Creating-Abilities.md) and operates in three phases:
 
-1. **Precheck Phase**: Validates all prerequisites for the swap
-   - Verifies the user has a non-zero native token balance for gas fees
-   - Validates that the Uniswap router has adequate allowance to spend the input ERC20 token
-   - Checks that the user has sufficient balance of the input ERC20 token
-   - Confirms that a Uniswap pool exists for the specified token pair
-   - Returns success if all validations pass
+1. **Quote Generation Phase**: Creates a signed swap quote using a dedicated PKP
 
-2. **Execution Phase**: Executes the ERC20 token swap and updates the Spending Limit Policy tracking if enabled by the Vincent App User
-   - If the Vincent App User has enabled the Spending Limit Policy:
-     - The USD value of the input ERC20 token amount is determined by first converting the token amount to its ETH equivalent, then using Chainlink's ETH/USD price feed to calculate the corresponding USD amount.
-     - The calculated USD amount is then provided to the Spending Limit Policy to be committed and update the total amount spent by the Vincent App on behalf of the Vincent App User
-     - If the Spending Limit Policy is successfully updated, and the spending limit has not been exceeded, the Swap Ability continues to execute
-     - However, if the Spending Limit Policy fails to update, or the spending limit is exceeded, the Swap Ability will return an error and the swap is not executed.
-   - The Uniswap V3 swap transaction is created, signed, and broadcasted to the blockchain network
-   - Returns both the Uniswap swap transaction hash and spending limit update transaction hash if the Spending Limit Policy is enabled
+- Uses Uniswap's Alpha Router to find the optimal swap route through multiple pools
+- Calculates expected output amounts, gas costs, and price impact
+- Signs the quote with a dedicated [Lit Protocol PKP](https://developer.litprotocol.com/user-wallets/pkps/overview)
+- Returns the tamper-proof signed quote containing all swap parameters
+
+2. **Precheck Phase**: Validates all prerequisites for the swap using the signed quote
+
+- Verifies the signed quote's authenticity using the dedicated PKP's signature
+- Validates the user has a non-zero native token balance for gas fees
+- Checks that the user has sufficient balance of the input ERC20 token
+- Confirms that the Uniswap router has adequate allowance to spend the input ERC20 token
+- Returns success if all validations pass
+
+3. **Execution Phase**: Executes the ERC20 token swap using the verified signed quote
+
+- Verifies the signed quote's authenticity using the dedicated PKP's signature
+- A transaction is created with the route from the signed quote, then signed using the Vincent App User's Agent Wallet
+- The signed Uniswap V3 swap transaction is broadcasted to the network
+- The Uniswap swap transaction hash is returned
 
 ## Getting Started
 
@@ -50,24 +54,57 @@ Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](h
 
 ## Executing the Ability as a Vincent App Delegatee
 
-Vincent App Users configure the Policies that govern Ability execution while connecting to the Vincent App.
-
-If the Vincent App you're a Delegatee for has enabled the Spending Limit Policy for this Ability, then the total USD value that can be swapped will be restricted to what the Vincent App User has configured. To learn more about how the Policy works, and how it affects your execution of this Ability, see the [Spending Limit Policy](../Policies/SpendingLimit.md) documentation.
-
-<div class="box info-box">
-  <p class="box-title info-box-title">
-    <span class="box-icon info-icon">Info</span> Note
-  </p>
-  <p>To learn more about executing Vincent Abilities, see the <a href="../App-Agent-Developers/Executing-Abilities.md">Executing Abilities</a> guide.</p>
-</div>
-
 ### Prerequisites
+
+### Step 1: Generate a Signed Swap Quote
+
+Before executing the `precheck` or `execute` functions, you must first generate a signed swap quote using the `getSignedUniswapQuote` function. This function uses Uniswap's Alpha Router to find the optimal swap path and signs it with a dedicated PKP to prevent tampering.
+
+```typescript
+import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import { getSignedUniswapQuote } from '@lit-protocol/vincent-ability-uniswap-swap';
+import { ethers } from 'ethers';
+
+// Initialize Lit Node Client
+const litNodeClient = new LitNodeClient({
+  litNetwork: 'datil',
+  debug: true,
+});
+await litNodeClient.connect();
+
+// Your delegatee signer (one of the delegatee signers for the Vincent App)
+const delegateeSigner = new ethers.Wallet('YOUR_DELEGATEE_PRIVATE_KEY', provider);
+
+// Generate the signed quote
+const signedUniswapQuote = await getSignedUniswapQuote({
+  quoteParams: {
+    rpcUrl: 'https://mainnet.base.org',
+    tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH on Base
+    tokenInAmount: '0.001',
+    tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+    recipient: delegatorPkpEthAddress, // The Vincent App User's Vincent Wallet address
+    slippageTolerance: 100, // Optional: 100 basis points = 1% (defaults to 50 basis points = 0.5%)
+  },
+  ethersSigner: delegateeSigner,
+  litNodeClient,
+});
+```
+
+The signed quote contains:
+
+- **quote**: The Uniswap route with transaction parameters, expected outputs, and gas estimates
+- **signature**: A signature of the quote data from the dedicated PKP ensuring the quote hasn't been tampered with
+- **dataSigned**: The message hash that was signed by the PKP
+- **signerPublicKey**: The public key of the PKP that signed the quote
+- **signerEthAddress**: The Ethereum address of the PKP that signed the quote
+
+### Step 2: Execute the `precheck` Function
 
 Before executing a Uniswap swap, the following conditions must be met. You can use the Ability's `precheck` function to check if these conditions are met, or you can check them manually.
 
 #### ERC20 Token Approval
 
-The Vincent App User's Vincent Wallet must have approved the Uniswap V3 Router to spend the input token.
+The Vincent App User's Vincent Wallet must have approved the Uniswap V3 Router to spend sufficient amount of the input token.
 
 If your Vincent App has enabled the [ERC20 Approval Ability](./Erc20Approval.md), you can use it to handle submitting the approval transaction using the App User's Vincent Wallet.
 
@@ -77,66 +114,29 @@ The Vincent App User's Vincent Wallet must have sufficient balance of the input 
 
 #### Uniswap V3 Pool Existence
 
-A Uniswap V3 pool must exist for the specified token pair on the target network.
+A valid signed Uniswap quote created by this Ability's `getSignedUniswapQuote` function which will have a valid route with a valid Uniswap V3 pool for the specified token pair on the target network.
 
-### Executing the `precheck` Function
+This Ability's `precheck` function validates all prerequisites for executing a Uniswap swap using the signed quote, without actually performing the swap.
 
-This Ability's `precheck` function validates all prerequisites for executing a Uniswap swap without actually performing the swap. The specific validation checks were covered in the [How It Works](#how-it-works) section.
-
-Before executing the `precheck` function, you'll need to provide the following parameters for the Uniswap swap:
+The `precheck` function requires the following parameters:
 
 ```typescript
 {
   /**
-   * An Ethereum Mainnet RPC Endpoint.
-   * This is used to check USD <> ETH prices via Chainlink.
-   */
-  ethRpcUrl: string;
-  /**
-   * An RPC endpoint for any chain that is supported by the @uniswap/sdk-core package.
-   * Must work for the chain specified in chainIdForUniswap.
+   * An RPC endpoint for the chain where the swap will be executed.
    */
   rpcUrlForUniswap: string;
   /**
-   * The chain ID to execute the transaction on.
-   * For example: 8453 for Base.
+   * The signed Uniswap quote generated from Step 1.
    */
-  chainIdForUniswap: number;
-  /**
-   * ERC20 Token address to sell.
-   * For example 0x4200000000000000000000000000000000000006 for WETH on Base.
-   */
-  tokenInAddress: string;
-  /**
-   * ERC20 Token to sell decimals.
-   * For example 18 for WETH on Base.
-   */
-  tokenInDecimals: number;
-  /**
-   * Amount of token to sell.
-   * For example 0.00001 for 0.00001 WETH. Must be greater than 0.
-   */
-  tokenInAmount: number;
-  /**
-   * ERC20 Token address to buy.
-   * For example 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 for USDC on Base.
-   */
-  tokenOutAddress: string;
-  /**
-   * ERC20 Token to buy decimals.
-   * For example 6 for USDC on Base.
-   */
-  tokenOutDecimals: number;
+  signedUniswapQuote: {
+    quote: UniswapQuote;
+    signature: string;
+  }
 }
 ```
 
-To execute `precheck`, you'll need to:
-
-- Create an instance of the `VincentAbilityClient` using the `getVincentAbilityClient` function (imported from `@lit-protocol/vincent-app-sdk/abilityClient`)
-  - Pass in the Ability's `bundledVincentAbility` object (imported from `@lit-protocol/vincent-ability-uniswap-swap`)
-  - Pass in the `ethersSigner` you'll be using to sign the request to Lit with your Delegatee private key
-- Prepare the required parameters to call the `precheck` function
-- Use the `VincentAbilityClient` instance to call the `precheck` function
+To execute `precheck`:
 
 ```typescript
 import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
@@ -144,25 +144,23 @@ import { bundledVincentAbility } from '@lit-protocol/vincent-ability-uniswap-swa
 
 // Create ability client
 const abilityClient = getVincentAbilityClient({
-  bundledVincentAbility: bundledVincentAbility,
-  ethersSigner: yourEthersSigner,
+  bundledVincentAbility,
+  ethersSigner: delegateeSigner,
 });
 
-// Prepare swap parameters
-const swapParams = {
-  ethRpcUrl: 'https://eth.llamarpc.com', // Ethereum mainnet RPC for price data
-  rpcUrlForUniswap: 'https://mainnet.base.org', // Base RPC for swap execution
-  chainIdForUniswap: 8453, // Base chain ID
-  tokenInAddress: '0x4200000000000000000000000000000000000006', // WETH on Base
-  tokenInDecimals: 18,
-  tokenInAmount: 0.001, // 0.001 WETH
-  tokenOutAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
-  tokenOutDecimals: 6,
-};
-
-const precheckResult = await abilityClient.precheck(swapParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
-});
+// Run precheck with the signed quote
+const precheckResult = await abilityClient.precheck(
+  {
+    rpcUrlForUniswap: 'https://mainnet.base.org',
+    signedUniswapQuote: {
+      quote: signedUniswapQuote.quote,
+      signature: signedUniswapQuote.signature,
+    },
+  },
+  {
+    delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
+  },
+);
 
 if (precheckResult.success) {
   console.log('Swap precheck passed, ready to execute');
@@ -198,16 +196,25 @@ A failure `precheck` response will contain:
 }
 ```
 
-### Executing the `execute` Function
+### Step 3: Execute the `execute` Function
 
-This Ability's `execute` function performs the actual Uniswap swap and updates the Spending Limit Policy tracking if enabled by the Vincent App User.
+This Ability's `execute` function performs the actual Uniswap swap using the signed quote.
 
 The `execute` function expects the same parameters as the `precheck` function, and can be executed using the same `VincentAbilityClient` instance:
 
 ```typescript
-const executeResult = await abilityClient.execute(swapParams, {
-  delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
-});
+const executeResult = await abilityClient.execute(
+  {
+    rpcUrlForUniswap: 'https://mainnet.base.org',
+    signedUniswapQuote: {
+      quote: signedUniswapQuote.quote,
+      signature: signedUniswapQuote.signature,
+    },
+  },
+  {
+    delegatorPkpEthAddress: '0x...', // The Vincent App User's Vincent Wallet address
+  },
+);
 
 if (executeResult.success) {
   const { swapTxHash, spendTxHash } = executeResult.result;
@@ -243,11 +250,6 @@ A successful `execute` response will contain:
    * The hash of the Uniswap swap transaction
    */
   swapTxHash: string;
-  /**
-   * The hash of the transaction recording the amount spent in the Spending Limit Policy.
-   * Will be undefined if no spending limit policy is configured.
-   */
-  spendTxHash?: string;
 }
 ```
 
@@ -262,39 +264,29 @@ A failure `execute` response will contain:
    * missing allowance, or non-existent pool.
    */
   reason?: string;
-  /**
-   * Details about spending limit policy commit failures, if applicable.
-   */
-  spendingLimitCommitFail?: {
-    runtimeError?: string;
-    schemaValidationError?: any;
-    structuredCommitFailureReason?: any;
-  };
 }
 ```
 
 ## Important Considerations
 
-### Spending Limit Policy Integration
-
-When the Spending Limit Policy is configured for this Ability, the swap amount will be converted to USD and tracked against the Vincent App User's spending limit for your Vincent App. The policy commit occurs before the swap to ensure spending is tracked before the swap transaction is executed, even if the swap transaction fails.
-
-Although this approach can still lead to inconsistencies in Spending Limit tracking (for example, if the spend is recorded but the swap transaction fails and no tokens are swapped), it is safer to record the spend and have the swap fail than to allow a swap to occur without recording the spend. The latter scenario could result in the Vincent App exceeding the user's spending limit.
-
 ### Price Impact and Slippage
 
-This Ability uses a fixed `0.5%` slippage tolerance for all swaps. For large swaps, consider the potential price impact on the token pair, as the `0.5%` slippage protection may not be sufficient for trades that significantly move the market.
+The Ability uses a default slippage tolerance of 0.5% (50 basis points). The delegatee can override this by passing the optional `slippageTolerance` parameter when calling `getSignedUniswapQuote`. The slippage is specified in basis points (e.g., 50 for 0.5%, 100 for 1%, 500 for 5%). The signed quote includes slippage protection built into the route calculation. For large swaps, the Alpha Router will automatically account for price impact across multiple pools to find the best execution path.
 
 ### Network Support
 
-The Ability works on networks supported by the [@uniswap/sdk-core](https://www.npmjs.com/package/@uniswap/sdk-core) package where Uniswap V3 is deployed. Ensure the `chainIdForUniswap` corresponds to one of the [supported networks](https://github.com/Uniswap/sdks/blob/main/sdks/sdk-core/src/chains.ts).
+The Ability works on networks supported by the [@uniswap/sdk-core](https://www.npmjs.com/package/@uniswap/sdk-core) package where Uniswap V3 is deployed. Ensure that the `rpcUrl` provided to `getSignedUniswapQuote` corresponds to one of the [supported networks](https://github.com/Uniswap/sdks/blob/main/sdks/sdk-core/src/chains.ts).
 
 ## Error Handling
 
 Common failure scenarios include:
 
+- **Invalid Signed Quote**: The provided quote signature is invalid or the quote has been tampered with
+- **Expired Quote**: The signed quote is too old and the market conditions have changed significantly
 - **Insufficient ERC20 Token Balance**: The Vincent Wallet doesn't have enough of the input token
 - **Insufficient Native Token Balance**: The Vincent Wallet doesn't have enough native tokens (ETH, MATIC, etc.) to pay for the swap transaction gas fees
 - **Missing ERC20 Token Approval**: The Uniswap router doesn't have permission to spend the input token
-- **No Uniswap Pool**: No Uniswap pool exists for the specified token pair
-- **Spending Limit Exceeded**: The swap would exceed the configured spending limit
+
+## Complete Example
+
+For a complete working example showing the full workflow from quote generation to swap execution, including ERC20 approvals, see the [swap.spec.ts](https://github.com/LIT-Protocol/Vincent/blob/main/packages/apps/abilities-e2e/test-e2e/swap.spec.ts) end-to-end test in the abilities-e2e package.
