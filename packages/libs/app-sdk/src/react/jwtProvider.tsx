@@ -4,9 +4,9 @@ import React, { createContext, useCallback, useContext, useMemo, useState, useEf
 
 import type { IRelayPKP } from '@lit-protocol/types';
 
-import type { AppInfo, AuthenticationInfo } from '../jwt/types';
+import type { AppInfo, PKPAuthenticationMethod } from '../jwt/types';
 
-import { verify } from '../jwt';
+import { verifyVincentAppUserJWT } from '../jwt';
 import { useVincentWebAuthClient } from './useVincentWebAuthClient';
 
 /**
@@ -17,7 +17,7 @@ import { useVincentWebAuthClient } from './useVincentWebAuthClient';
  */
 export interface AuthInfo {
   app: AppInfo;
-  authentication: AuthenticationInfo;
+  authentication: PKPAuthenticationMethod;
   jwt: string;
   pkp: IRelayPKP;
 }
@@ -34,6 +34,29 @@ function jwtContextNotInitialized() {
   throw new Error('JwtContext must be used within an JwtProvider');
 }
 
+/**
+ * React Context that exposes JWT authentication state and actions for Vincent apps.
+ *
+ * This context carries a value of type `JwtContextType` with:
+ * - `authInfo`: `AuthInfo | null` — Authenticated user/application information or `null` when not authenticated.
+ * - `loading`: `boolean` — Indicates whether an authentication operation (login/logout/validation) is in progress.
+ * - `connect(redirectUri: string)`: Redirects the user to the Vincent consent page to initiate authentication.
+ * - `loginWithJwt()`: Attempts to retrieve and validate a JWT from Vincent dashboard.
+ * - `logOut()`: Removes the stored JWT and resets the authentication state.
+ *
+ * The provider component `JwtProvider` must wrap your component tree for this context to be available and for
+ * `useJwtContext` to work in your components.
+ *
+ * @example
+ * ```tsx
+ * <JwtProvider appId={123}>
+ *   <App />
+ * </JwtProvider>
+ * ```
+ *
+ * @see JwtProvider
+ * @see useJwtContext
+ */
 export const JwtContext = createContext<JwtContextType>({
   authInfo: null,
   loading: false,
@@ -51,7 +74,7 @@ export const JwtContext = createContext<JwtContextType>({
  *
  * @example
  * ```tsx
- * import { useJwtContext } from '@lit-protocol/vincent-sdk';
+ * import { useJwtContext } from '@lit-protocol/vincent-app-sdk/react';
  *
  * function AuthenticatedComponent() {
  *   const { authInfo, loading, loginWithJwt, logOut } = useJwtContext();
@@ -78,6 +101,9 @@ export const JwtContext = createContext<JwtContextType>({
  * ```
  *
  * @returns The JWT context containing authentication state and methods
+ *
+ * @see JwtContext
+ * @see JwtProvider
  */
 export function useJwtContext(): JwtContextType {
   return useContext(JwtContext);
@@ -116,7 +142,7 @@ interface JwtProviderProps {
  *
  * @example
  * ```tsx
- * import { JwtProvider } from '@lit-protocol/vincent-sdk';
+ * import { JwtProvider } from '@lit-protocol/vincent-app-sdk/react';
  *
  * function App() {
  *   return (
@@ -156,6 +182,9 @@ interface JwtProviderProps {
  * @param props.appId - Your Vincent App Id
  * @param props.storage - Optional custom storage implementation (defaults to localStorage)
  * @param props.storageKeyBuilder - Optional function to customize the storage key for JWT tokens
+ *
+ * @see JwtContext
+ * @see useJwtContext
  */
 export const JwtProvider = ({
   children,
@@ -195,7 +224,7 @@ export const JwtProvider = ({
 
   const getJwt = useCallback(async () => {
     if (vincentWebAppClient.uriContainsVincentJWT()) {
-      const jwtResult = vincentWebAppClient.decodeVincentJWT(window.location.origin);
+      const jwtResult = await vincentWebAppClient.decodeVincentJWTFromUri(window.location.origin);
 
       if (!jwtResult) {
         return null;
@@ -213,7 +242,7 @@ export const JwtProvider = ({
       return null;
     }
 
-    const decodedJWT = verify({
+    const decodedJWT = await verifyVincentAppUserJWT({
       expectedAudience: window.location.origin,
       jwt: existingJwtStr,
       requiredAppId: appId,

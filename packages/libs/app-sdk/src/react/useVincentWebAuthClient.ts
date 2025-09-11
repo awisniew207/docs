@@ -14,7 +14,7 @@ import { getWebAuthClient } from '../webAuthClient';
  *
  * @example
  * ```typescript
- * import { useVincentWebAuthClient } from '@lit-protocol/vincent-sdk';
+ * import { useVincentWebAuthClient } from '@lit-protocol/vincent-app-sdk/react';
  *
  * function MyComponent() {
  *   // Create a memoized Vincent Web App client
