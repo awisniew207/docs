@@ -78,23 +78,8 @@ const iconComponents = {
   info: LoadingIcon,
 } as const;
 
-// Function to check if message is a trusted withdrawal message that can contain HTML
-const isTrustedWithdrawalMessage = (message: string): boolean => {
-  // Only allow HTML for specific withdrawal confirmation messages
-  const trustedPatterns = [
-    /^.+ withdrawal confirmed!&nbsp;&nbsp;<a href="https:\/\/[^"]+\/tx\/0x[a-fA-F0-9]{64}" target="_blank" rel="noopener noreferrer" class="text-black underline">View transaction<\/a>$/,
-    /^Transaction may have failed\.&nbsp;&nbsp;<a href="https:\/\/[^"]+\/tx\/0x[a-fA-F0-9]{64}" target="_blank" rel="noopener noreferrer" class="text-black underline">Check on explorer<\/a>$/,
-    /^Ready to send .+ to 0x[a-fA-F0-9]{4}\.\.\.[a-fA-F0-9]{4}\.<br\/>Estimated gas cost: .+$/,
-  ];
-
-  return trustedPatterns.some((pattern) => pattern.test(message));
-};
-
 const StatusMessage = ({ message, type = 'info' }: StatusMessageProps) => {
   if (!message) return <></>;
-
-  const shouldRenderAsHTML = isTrustedWithdrawalMessage(message);
-
   // Simple lookup for status styles
   const statusStyles = statusClasses[type];
 
@@ -110,14 +95,7 @@ const StatusMessage = ({ message, type = 'info' }: StatusMessageProps) => {
       >
         <IconComponent className={statusStyles.icon} />
       </div>
-      {shouldRenderAsHTML ? (
-        <span
-          className="ml-3 transition-opacity flex-1 break-words"
-          dangerouslySetInnerHTML={{ __html: message }}
-        />
-      ) : (
-        <span className="ml-3 transition-opacity flex-1 break-words">{message}</span>
-      )}
+      <span className="ml-3 transition-opacity flex-1 break-words">{message}</span>
     </div>
   );
 };

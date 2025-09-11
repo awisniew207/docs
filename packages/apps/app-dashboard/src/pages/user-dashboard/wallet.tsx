@@ -37,7 +37,7 @@ export function Wallet() {
         <meta name="description" content="Your Vincent wallet dashboard" />
       </Helmet>
       <div className="w-full h-full flex items-center justify-center">
-        <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP} userPKP={authInfo.userPKP} />
+        <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP} />
       </div>
     </>
   );
