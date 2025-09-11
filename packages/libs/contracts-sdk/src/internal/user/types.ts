@@ -1,9 +1,15 @@
+import type { BigNumber } from 'ethers';
+
 import type {
   GetAllPermittedAppIdsForPkpParams,
   GetAllRegisteredAgentPkpsParams,
   GetAllAbilitiesAndPoliciesForAppParams,
+  GetLastPermittedAppVersionParams,
   GetPermittedAppVersionForPkpParams,
+  GetPermittedAppsForPkpsParams,
+  GetUnpermittedAppsForPkpsParams,
   PermitAppParams,
+  RePermitAppParams,
   SetAbilityPolicyParametersParams,
   UnPermitAppParams,
   ValidateAbilityExecutionAndGetPoliciesParams,
@@ -26,6 +32,15 @@ export interface PermitAppOptions extends BaseWritableOptions {
  * */
 export interface UnPermitAppOptions extends BaseWritableOptions {
   args: UnPermitAppParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface RePermitAppOptions extends BaseWritableOptions {
+  args: RePermitAppParams;
 }
 
 /**
@@ -82,6 +97,61 @@ export interface GetAllAbilitiesAndPoliciesForAppOptions extends BaseOptions {
  * @inline
  * @expand
  * */
+export interface GetPermittedAppsForPkpsOptions extends BaseOptions {
+  args: GetPermittedAppsForPkpsParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
 export interface ValidateAbilityExecutionAndGetPoliciesOptions extends BaseOptions {
   args: ValidateAbilityExecutionAndGetPoliciesParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface GetLastPermittedAppVersionOptions extends BaseOptions {
+  args: GetLastPermittedAppVersionParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface GetUnpermittedAppsForPkpsOptions extends BaseOptions {
+  args: GetUnpermittedAppsForPkpsParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface ContractPkpPermittedApps {
+  pkpTokenId: BigNumber;
+  permittedApps: {
+    appId: number;
+    version: number;
+    versionEnabled: boolean;
+  }[];
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface ContractPkpUnpermittedApps {
+  pkpTokenId: BigNumber;
+  unpermittedApps: {
+    appId: number;
+    previousPermittedVersion: number;
+    versionEnabled: boolean;
+  }[];
 }

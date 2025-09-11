@@ -1,50 +1,76 @@
 import { decode, encode } from 'cbor2';
-import { arrayify } from 'ethers/lib/utils';
+import { arrayify, hexlify } from 'ethers/lib/utils';
 
 import type {
+  AbilityWithPolicies,
   PermissionDataOnChain,
   PolicyWithParameters,
-  AbilityWithPolicies,
 } from '../internal/types/chain';
-import type { PermissionData } from '../types';
+import type { AbilityPolicyParameterData, PermissionData, DeletePermissionData } from '../types';
 
 /**
  * Converts a policy parameters object to the flattened array format required by the contract
  *
+ * - If deletePermissionData contains an ability key that also exists in permissionData, an error is thrown.
+ * - For abilities present only in deletePermissionData, the encoder will include those policy CIDs with a
+ *   parameter value of '0x' to signal deletion on-chain.
+ *
  * @param permissionData { PermissionData } - Object containing the nested policy parameters
+ * @param deletePermissionData { DeletePermissionData } - Map of ability -> policy CIDs to delete
  * @returns The flattened array structure with abilityIpfsCids, policyIpfsCids, and policyParameterValues
  */
 export function encodePermissionDataForChain(
-  permissionData: PermissionData,
+  permissionData?: PermissionData,
+  deletePermissionData?: DeletePermissionData,
 ): PermissionDataOnChain {
   const abilityIpfsCids: string[] = [];
   const policyIpfsCids: string[][] = [];
   const policyParameterValues: string[][] = [];
 
-  Object.keys(permissionData).forEach((abilityIpfsCid) => {
+  // Validate: if any ability key exists both in permissionData and deletePermissionData, throw
+  const safePermissionData = permissionData ?? {};
+  if (deletePermissionData) {
+    for (const abilityIpfsCid of Object.keys(deletePermissionData)) {
+      if (safePermissionData[abilityIpfsCid]) {
+        throw new Error(
+          `deletePermissionData contains ability ${abilityIpfsCid} which also exists in permissionData. Please separate updates and deletes by ability.`,
+        );
+      }
+    }
+  }
+
+  const abilityKeys = [
+    ...Object.keys(safePermissionData),
+    ...(deletePermissionData ? Object.keys(deletePermissionData) : []),
+  ];
+
+  abilityKeys.forEach((abilityIpfsCid) => {
     // Each ability needs matching-length arrays of policy IPFS CIDs and their parameter values
-    // If the user hasn't enabled a policy, the ability object won't even have a property for that policy's CID
-
-    // However, a policy may be enabled but have no parameters (headless policy)
-    // In that case, we expect to encode `undefined` as the policy's value using CBOR2 (0xf7)
-
     abilityIpfsCids.push(abilityIpfsCid);
 
-    const abilityPolicies = permissionData[abilityIpfsCid];
+    const abilityPolicies = safePermissionData[abilityIpfsCid];
+    const policiesToDelete = deletePermissionData?.[abilityIpfsCid];
+
     const abilityPolicyIpfsCids: string[] = [];
     const abilityPolicyParameterValues: string[] = [];
 
-    // Iterate through each policy for this ability
-    Object.keys(abilityPolicies).forEach((policyIpfsCid) => {
-      abilityPolicyIpfsCids.push(policyIpfsCid);
+    if (abilityPolicies) {
+      // Iterate through each policy for this ability to set/update
+      Object.keys(abilityPolicies).forEach((policyIpfsCid) => {
+        abilityPolicyIpfsCids.push(policyIpfsCid);
+        const policyParams = abilityPolicies[policyIpfsCid];
+        const encodedParams = encode(policyParams, { collapseBigInts: false });
 
-      // Encode the policy parameters using CBOR2
-      const policyParams = abilityPolicies[policyIpfsCid];
-      const encodedParams = encode(policyParams, { collapseBigInts: false });
-
-      // Convert the encoded bytes to a hex string for the contract
-      abilityPolicyParameterValues.push('0x' + Buffer.from(encodedParams).toString('hex'));
-    });
+        // Convert the encoded bytes to a hex string for the contract
+        abilityPolicyParameterValues.push(hexlify(encodedParams));
+      });
+    } else if (policiesToDelete && policiesToDelete.length > 0) {
+      // Deletion-only for this ability: supply CIDs and 0x as encoded params
+      for (const policyIpfsCid of policiesToDelete) {
+        abilityPolicyIpfsCids.push(policyIpfsCid);
+        abilityPolicyParameterValues.push('0x');
+      }
+    }
 
     policyIpfsCids.push(abilityPolicyIpfsCids);
     policyParameterValues.push(abilityPolicyParameterValues);
@@ -65,16 +91,17 @@ export function encodePermissionDataForChain(
  */
 export function decodePolicyParametersFromChain(
   policy: PolicyWithParameters,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): { [paramName: string]: any } | undefined {
   const encodedParams = policy.policyParameterValues;
 
-  if (encodedParams && encodedParams.length > 0) {
-    // arrayify() has no Buffer dep, validates well-formed, and handles leading `0x`
+  try {
     const byteArray = arrayify(encodedParams);
-    return decode(byteArray);
+    return decode(byteArray) as { [paramName: string]: any };
+  } catch (error: unknown) {
+    console.error('Error decoding policy parameters:', error);
+    throw error;
   }
-
-  return undefined;
 }
 
 /**
@@ -89,14 +116,31 @@ export function decodePermissionDataFromChain(
   const permissionData: PermissionData = {};
 
   for (const ability of abilitiesWithPolicies) {
-    const { abilityIpfsCid } = ability;
-    permissionData[abilityIpfsCid] = {};
-
-    for (const policy of ability.policies) {
-      const { policyIpfsCid } = policy;
-      permissionData[abilityIpfsCid][policyIpfsCid] = decodePolicyParametersFromChain(policy);
-    }
+    const { abilityIpfsCid, policies } = ability;
+    permissionData[abilityIpfsCid] = decodePolicyParametersForOneAbility({ policies });
   }
 
   return permissionData;
+}
+
+export function decodePolicyParametersForOneAbility({
+  policies,
+}: {
+  policies: PolicyWithParameters[];
+}) {
+  const policyParamsDict: AbilityPolicyParameterData = {};
+
+  for (const policy of policies) {
+    const { policyIpfsCid, policyParameterValues } = policy;
+
+    // Handle empty or invalid parameters - omit the policy from the returned object entirely; it was not enabled by the user
+    if (!policyParameterValues || policyParameterValues === '0x') {
+      continue;
+    }
+
+    // Otherwise, assume there are parameters (even if they might be `undefined` CBOR2) set by the user
+    policyParamsDict[policyIpfsCid] = decodePolicyParametersFromChain(policy);
+  }
+
+  return policyParamsDict;
 }

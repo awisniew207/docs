@@ -1,6 +1,12 @@
 ---
 category: Developers
 title: App & Agent Developers
+children:
+  - ./Creating-Apps.md
+  - ./Upgrading-Apps.md
+  - ./Auth-Users.md
+  - ./Executing-Abilities.md
+  - ./MCP.md
 ---
 
 # What is a Vincent App?
@@ -38,5 +44,5 @@ Vincent Apps enable secure, policy governed automation on behalf of Vincent User
 - Check out the [Creating a Vincent App](./Creating-Apps.md) guide to get started
 - Learn how to [Authenticate Vincent Users](./Auth-Users.md) in your frontend app
 - See how to [execute Vincent Abilities](./Executing-Abilities.md) on behalf of your App Users
-- Checkout the official [Automated Dollar-cost-averaging](https://demo.heyvincent.ai/) Vincent demo and explore it's [source code](https://github.com/LIT-Protocol/vincent-dca)
+- Checkout the official [Vincent Yield Maximizer](https://yield.heyvincent.ai/) Vincent App
 - Join the [Vincent community](https://t.me/c/2038294753/3289) for support and collaboration

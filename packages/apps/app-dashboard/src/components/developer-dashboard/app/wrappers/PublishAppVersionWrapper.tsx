@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { ethers } from 'ethers';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { AbilityVersion, PolicyVersion } from '@/types/developer-dashboard/appTypes';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -34,6 +35,8 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
     appId: Number(appId),
     version: Number(versionId),
   });
+
+  const [sponsorDelegateesPayment] = vincentApiClient.useSponsorDelegateesPaymentMutation();
 
   // Lazy queries for fetching ability and policy versions
   const [
@@ -198,6 +201,18 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
         return;
       }
 
+      // Check if we have any active (non-deleted) abilities
+      const activeAbilities = versionAbilities?.filter((ability) => !ability.isDeleted) || [];
+
+      if (activeAbilities.length === 0) {
+        setPublishResult({
+          success: false,
+          message:
+            'Cannot publish version without active abilities. Please add at least one ability or undelete existing abilities.',
+        });
+        return;
+      }
+
       // Check if any delegatees are already registered to other apps
       const delegatees = app.delegateeAddresses;
 
@@ -213,6 +228,15 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
       const client = getClient({ signer: pkpSigner });
 
       for (const delegatee of delegatees) {
+        // Validate that delegatee is a proper Ethereum address
+        if (!ethers.utils.isAddress(delegatee)) {
+          setPublishResult({
+            success: false,
+            message: `Invalid delegatee address: ${delegatee}. Please ensure all delegatee addresses are valid Ethereum addresses.`,
+          });
+          return;
+        }
+
         try {
           const existingApp = await client.getAppByDelegateeAddress({
             delegateeAddress: delegatee,
@@ -232,6 +256,9 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
           }
         }
       }
+
+      // Add the delegatee addresses to the Payment DB contract on the backend, with our master address as the payer
+      await sponsorDelegateesPayment({ appId: Number(appId) });
 
       if (!isAppPublished) {
         // App not registered - use registerApp (first-time registration)

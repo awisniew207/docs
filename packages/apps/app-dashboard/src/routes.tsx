@@ -3,7 +3,6 @@ import AppLayout from '@/layout/developer-dashboard/AppLayout';
 import UserDashboardLayout from '@/layout/user-dashboard/UserDashboardLayout';
 import UserLayoutWithSidebar from '@/layout/user-dashboard/UserLayoutWithSidebar';
 import { AppProviders, UserProviders } from './providers';
-import ThemeProvider from '@/providers/ThemeProvider';
 import { wrap } from '@/utils/shared/components';
 
 import { Dashboard } from './pages/developer-dashboard';
@@ -53,6 +52,10 @@ import {
   DeletePolicyVersionWrapper,
 } from './components/developer-dashboard/policy/wrappers';
 
+import { AppExploreWrapper } from './components/explorer/wrappers/AppExploreWrapper';
+import { AppInfoWrapper } from './components/explorer/wrappers/AppInfoWrapper';
+import { ExplorerLandingPage } from './pages/explorer/ExplorerLandingPage';
+
 import { Wallet } from './pages/user-dashboard/wallet';
 import { UserPermissionWrapper } from './components/user-dashboard/dashboard/UserPermissionWrapper';
 import { ConnectPageWrapper } from './components/user-dashboard/connect/ConnectPageWraper';
@@ -69,14 +72,10 @@ const UserLayoutWithSidebarAndProviders = wrap(
   [...UserProviders, UserLayoutWithSidebar],
 );
 
-// Minimal provider wrapper for root page - only needs ThemeProvider for ConnectFooter
-// TODO: We'll need this everywhere eventually. Just keeping it simple for now.
-const RootPageWithProviders = wrap(RootPage, [ThemeProvider]);
-
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <RootPageWithProviders />,
+    element: <RootPage />,
   },
   {
     element: <AppLayoutWithProviders />,
@@ -234,11 +233,23 @@ const routes: RouteObject[] = [
     ],
   },
   {
+    path: '/explorer',
+    element: <ExplorerLandingPage />,
+  },
+  {
     element: <UserDashboardLayoutWithProviders />,
     children: [
       {
         path: '/user/appId/:appId/connect',
         element: <ConnectPageWrapper />,
+      },
+      {
+        path: '/explorer/apps',
+        element: <AppExploreWrapper />,
+      },
+      {
+        path: '/explorer/appId/:appId',
+        element: <AppInfoWrapper />,
       },
     ],
   },
@@ -262,7 +273,7 @@ const routes: RouteObject[] = [
             element: <PermittedAppsWrapper />,
           },
           {
-            path: 'wallet',
+            path: 'appId/:appId/wallet',
             element: <Wallet />,
           },
         ],

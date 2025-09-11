@@ -3,7 +3,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/shared/ui/form';
 import { Button } from '@/components/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/shared/ui/card';
 import { SelectField, TextField } from '../../form-fields';
 import { Policy, PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
@@ -87,21 +93,21 @@ export function DeletePolicyVersionForm({
     }));
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto dark:bg-neutral-800 dark:border-white/10">
       <CardHeader>
-        <CardTitle className="text-red-600">Delete Policy Version</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-red-600 dark:text-red-400">Delete Policy Version</CardTitle>
+        <CardDescription className="text-gray-600 dark:text-white/60">
           Please make sure you're absolutely certain you want to delete this policy version.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-sm text-red-800 mb-2">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-lg p-4">
+              <p className="text-sm text-red-800 dark:text-red-200 mb-2">
                 To confirm deletion, please type the following exactly:
               </p>
-              <code className="bg-red-100 px-2 py-1 rounded text-sm font-mono text-red-900">
+              <code className="bg-red-100 dark:bg-red-800/20 px-2 py-1 rounded text-sm font-mono text-red-900 dark:text-red-200">
                 {expectedConfirmation}
               </code>
             </div>
@@ -117,7 +123,7 @@ export function DeletePolicyVersionForm({
 
             {version === policy.activeVersion && (
               <div className="space-y-4">
-                <div className="text-sm text-red-500">
+                <div className="text-sm text-red-500 dark:text-red-400">
                   This is the active version of the policy. Please choose a new active version
                   before deleting this one.
                 </div>

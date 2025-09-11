@@ -1,6 +1,7 @@
 import type {
   PermitAppOptions,
   UnPermitAppOptions,
+  RePermitAppOptions,
   SetAbilityPolicyParametersOptions,
 } from './types';
 
@@ -85,19 +86,50 @@ export async function unPermitApp({
   }
 }
 
-export async function setAbilityPolicyParameters(
-  params: SetAbilityPolicyParametersOptions,
-): Promise<{ txHash: string }> {
+export async function rePermitApp(params: RePermitAppOptions): Promise<{ txHash: string }> {
   const {
     contract,
-    args: { appId, appVersion, pkpEthAddress, policyParams },
+    args: { pkpEthAddress, appId },
     overrides,
   } = params;
 
   try {
     const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
 
-    const flattenedParams = encodePermissionDataForChain(policyParams);
+    const adjustedOverrides = await gasAdjustedOverrides(
+      contract,
+      'rePermitApp',
+      [pkpTokenId, appId],
+      overrides,
+    );
+
+    const tx = await contract.rePermitApp(pkpTokenId, appId, {
+      ...adjustedOverrides,
+    });
+    await tx.wait();
+
+    return {
+      txHash: tx.hash,
+    };
+  } catch (error: unknown) {
+    const decodedError = decodeContractError(error, contract);
+    throw new Error(`Failed to Re-Permit App: ${decodedError}`);
+  }
+}
+
+export async function setAbilityPolicyParameters(
+  params: SetAbilityPolicyParametersOptions,
+): Promise<{ txHash: string }> {
+  const {
+    contract,
+    args: { appId, appVersion, pkpEthAddress, policyParams, deletePermissionData },
+    overrides,
+  } = params;
+
+  try {
+    const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
+
+    const flattenedParams = encodePermissionDataForChain(policyParams, deletePermissionData);
 
     const adjustedOverrides = await gasAdjustedOverrides(
       contract,

@@ -1,9 +1,186 @@
+## 2.0.1 (2025-09-03)
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.0.1
+- Updated contracts-sdk to 1.1.0
+
+# 2.0.0 (2025-08-05)
+
+### 🚀 Features
+
+- Bug fix in app-sdk that kept a policy's allow result from being returned ([11325427](https://github.com/LIT-Protocol/Vincent/commit/11325427))
+- ### Implement supported Vincent Ability API range ([14f0ece1](https://github.com/LIT-Protocol/Vincent/commit/14f0ece1))
+
+  Added basic Ability API handling to ensure abilities & policies are only used by compatible abilities and policies, and with the correct version of the vincentAbilityClient / app-sdk
+  - Added a new jsParam when VincentAbilityClient calls an ability, `vincentAbilityApiVersion`
+  - LIT action wrappers for abilities + policies compare `vincentAbilityApiVersion` to match the major semver range the handler was built with from the ability-sdk
+  - vincentAbilityHandler() is responsible for passing along the value when it evaluates supported policies
+
+### 🩹 Fixes
+
+- ### Fix ability failure response cases ([e2be50d9](https://github.com/LIT-Protocol/Vincent/commit/e2be50d9))
+  - Ensures that policy denial disables checking the ability result against its fail schema in the abilityClient, because it will always be undefined :)
+  - Ensures that `context` is returned in the response from the abilityClient.execute() method in cases where the ability response was a runtime or schemaValidationError
+
+### ⚠️ Breaking Changes
+
+- Add support for CBOR2 encoded policy parameters using the new vincent-contracts-sdk ([868c6c2a](https://github.com/LIT-Protocol/Vincent/commit/868c6c2a))
+- ### Add support for explicit `schemaValidationError` ([337a4bde](https://github.com/LIT-Protocol/Vincent/commit/337a4bde))
+  - Previously, a failure to validate either input or results of lifecycle method would result in `result: { zodError }` being returned
+  - Now, `result` will be `undefined` and there will be an explicit `schemaValidationError` in the result of the ability / policy
+
+  ```typescript
+  export interface SchemaValidationError {
+    zodError: ZodError<unknown>; // The result of `zod.safeParse().error`
+    phase: string; // Policies: `precheck`|`evaluate`|`commit` - Abilities: `precheck` | `execute`
+    stage: string; // `input` | `output`
+  }
+  ```
+
+- ### `error` is now `runtimeError` and can only be set by `throw ...` ([337a4bde](https://github.com/LIT-Protocol/Vincent/commit/337a4bde))
+  - Previously, if you had not defined a `deny` or `fail` schema, you could call `deny()` or `fail()` with a string
+  - That string would end up in the ability/policy response as the `error` property instead of `result`
+  - This was problematic because there was no consistent way to identify _un-handled_ error vs. _explicitly returned fail/deny results_
+  - If you don't define a deny or fail schema, you can no longer call those methods with a string.
+  - `error` is now `runtimeError`, and is _only_ set if a lifecycle method `throw`s an Error - in that case it will be the `message` property of the error
+  - If you want to be able to return simple errors in your _result_, you can define a simple deny or fail schema like `z.object({ error: z.string() }`
+
+- ### Create vincentAbilityClient namespace ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+
+  Previously, `getVincentAbilityClient()` and `disconnectVincentAbilityClients()` were exported from the root of the `vincent-app-sdk` package.
+  These methods, along with several other methods are now exported from the `@lit-protocol/app-sdk/abilityClient` namespace
+
+  ```typescript
+  import {
+    getVincentAbilityClient,
+    disconnectVincentAbilityClients,
+    isAbilityResponseFailure,
+    isAbilityResponseRuntimeFailure,
+    isAbilityResponseSchemaValidationFailure,
+    isAbilityResponseSuccess,
+  } from '@lit-protocol/app-sdk/abilityClient';
+  ```
+
+- #### Standardized `app` property on on JWT payload to be a number instead of a string. ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+- #### Renamed `consent page` to `delegation auth page` ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+- #### Move utils exports to `@lit-protocol/vincent-app-sdk/utils` ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+- #### Moved jwt exports to `@lit-protocol/vincent-app-sdk/jwt` ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+  - Enhanced typedocs for all methods and removed type aliases for core functions
+
+- #### Move `VincentWebAppClient` exports to `@lit-protocol/vincent-app-sdk/webAppClient` ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+  - Renamed `VincentWebAppClient` to `WebAuthClient`
+  - Renamed `VincentAppClientConfig` to `WebAuthClientConfig`
+  - Renamed `RedirectToVincentConsentPageParams` to `RedirectToVincentDelegationPageParams`
+  - Renamed `redirectToConsentPage()` to `redirectToDelegationAuthPage()`
+  - Renamed `getVincentWebAppClient()` to `getWebAuthClient()`
+
+- #### Move express-authentication-middleware exports to `@lit-protocol/vincent-app-sdk/expressMiddleware` ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+  - Removed `ExpressAuthHelpers` interface - its types are now directly exported from the `expressMiddleware` package sub-path
+
+- #### Moved abilityClient exports to `@lit-protocol/vincent-app-sdk/abilityClient` ([b94ca569](https://github.com/LIT-Protocol/Vincent/commit/b94ca569))
+- ### Update express middleware to support non-app-specific JWTs ([9dd1cd26](https://github.com/LIT-Protocol/Vincent/commit/9dd1cd26))
+  - Replaced individual function exports of `authenticatedRequestHandler()` and `getAuthenticateUserExpressHandler()` with a single `createVincentUserMiddleware()` function
+
+  #### createVincentUserMiddleware({ allowedAudience, userKey, requiredAppId? }) -> { middleware(), handler() }
+  - You can now configure the property on `req` where the vincent user JWT data will be placed using `userKey`
+  - You can now configure the authentication middleware to throw if `requiredAppId` does not match a specific appId you provide
+  - `allowedAudience` behaviour remains unchanged
+  - See example usage on the API docs for the package @ http://docs.heyvincent.ai
+
+  ```
+
+  ```
+
+- ### Support JWTs that are not app-specific ([0553a934](https://github.com/LIT-Protocol/Vincent/commit/0553a934))
+
+  This release adds support for general authentication JWTs that are not tied to a specific app. This is a breaking change that requires updates to code that uses the JWT validation functions.
+
+  #### API Changes
+  - `verify` and `decode` functions now accept object parameters instead of separate parameters
+    - Their return values are strongly typed based on whether `requiredAppId` is provided.
+    - They throw if `requiredAppId` is provided but the jwt is either not app-specific or the app id on the token doesn't match the `requiredAppId`
+  - `appId` type changed from `string` to `number` in WebAuthClient configuration
+  - WebAuthClient now throws an error if the `appId` it was configured with isn't in the JWT it decodes
+
+  #### New Functions
+  - `isGeneralJWT`: Type guard to check if a JWT is Vincent JWT that has no app associated
+  - `isAppSpecificJWT`: Type guard to check if a JWT is a vincent JWT that is app-specific
+  - `assertIsVincentJWT`: Assertion function to validate if a decoded JWT is a valid Vincent JWT
+  - `getAppInfo`: Convenience method that returns the app ID and version from an app-specific JWT's payload
+  - `getPKPInfo`: Convenience method that returns PKP information from any Vincent JWT's payload
+
+  #### New Types
+  - `VincentJWT`: Interface for a decoded Vincent JWT without app-specific details (general authentication)
+  - `VincentJWTAppSpecific`: Interface for a decoded app-specific Vincent JWT
+  - `BaseVincentJWTPayload`: Payload that contains always-present properties on all Vincent JWTs
+  - `VincentAppSpecificJWTPayload`: Extends VincentJWTPayload with app-specific information
+
+- ## JWT Refactor ([c21bc3c3](https://github.com/LIT-Protocol/Vincent/commit/c21bc3c3))
+
+  #### Refactored our JWT structure, composition, and verification logic.
+  - Removed dependency on `did-jwt`; since we are signing using EIP-191 compliant signatures, the presence of `did:ethr` was misleading.
+  - Added support for Delegatee JWTs
+
+  #### We now support 3 types of JWT:
+  - `VincentJWTAppUser`
+    - `role` claim in the JWT payload is `app-user`
+    - Contains PKP info
+    - Is app-specific
+    - Is provided to app end-users, so that they can authenticate with services that are provided by individual Vincent Apps
+  - `VincentJWTPlatformUser`
+    - `role` claim in the JWT payload is `platform-user`
+    - Contains PKP info
+    - Used to authenticate with Vincent platform services (e.g. the registry backend)
+    - Is not app-specific
+    - The Vincent dashboard uses these for App owners and Ability & Policy authors
+  - `VincentJWTDelegatee`
+    - `role` claim in the JWT payload is `app-delegatee`
+    - Does not contain PKP info; delegatees are not PKP-backed
+    - Is not app-specific
+    - Used to authenticate with services that require proof that they are being used by a specific delegatee who has permissions to act on behalf of a delegator (app user) account.
+
+  ### API Changes
+  - Many classes and interfaces were renamed to clearly indicate which type of JWT that they apply to.
+  - Added `publicKey` to the `payload` of all JWTs for signature verification convenience
+  - `iss` and `sub` are now raw hex-formatted ethers addresses, without `did:ethr` prefixes
+  - JWT verification has been converted to be an async process, and explicit verify methods have been defined for each type of JWT
+    - `verifyVincentAppUserJWT()`
+    - `verifyVincentPlatformJWT()`
+    - `verifyVincentDelegateeJWT()`
+  - Type-guard functions have also been added to help identify the kind of JWT you are using and provide type-safe references to those JWTs, but for most use-cases you will probably just use the type-specific `verify` methods.
+    - `isVincentJWTAppSpecific()`
+    - `isVincentPlatformJWT()`
+    - `isVincentJWTDelegatee()`
+    - `isAnyVincentJWT()`
+  - Added accessor helper functions to facilitate easy, type-safe access to properties on supported JWTs
+    - `getRole()` - All Vincent JWTs
+    - `getPublicKey()` - All Vincent JWTs
+    - `getIssuerAddress()` - All Vincent JWTs
+    - `getAudience()` - All Vincent JWTs
+    - `getSubjectAddress()` - Only for `VincentJWTDelegatee`
+    - `getAppInfo()` - Only for `VincentJWTAppUser`
+    - `getPKPInfo()` - Only for `VincentJWTAppUser` or `VincentJWTPlatformUser`
+    - `getAuthentication()` - Only for `VincentJWTAppUser` or `VincentJWTPlatformUser`
+  - `decode` has been renamed to `decodeVincentJWT()`;
+    - You probably want to use the type-specific `verify` methods instead of calling decode directly, unless you're absolutely sure that you've already verified the JWT and are positive it hasn't expired!
+    - This function returns an `AnyVincentJWT` type which you must narrow using type-guard functions.
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.0.0
+- Updated contracts-sdk to 2.0.0
+
+### ❤️ Thank You
+
+- Daryl Collins
+- Wyatt Barnes @spacesailor24
+
 ## 1.0.2 (2025-07-08)
 
 ### 🩹 Fixes
 
 - #### VincentAbilityClient Precheck fixes ([8da32df2](https://github.com/LIT-Protocol/Vincent/commit/8da32df2))
-
   - Fix a case where deny results from `precheck()` were not correctly bubbled to the caller
   - Fixed incorrect return type shape - `error` is a sibling of `result` in the policiesContext- Ensured `error` is bubbled up to the caller when provided
 

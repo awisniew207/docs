@@ -16,7 +16,6 @@ This guide will walk you through the process of using the Ability Client to exec
 The Vincent App SDK exports a function called `getVincentAbilityClient` that creates a wrapper around the Vincent Ability you'd like to execute on behalf of an App User. This function returns an instance of the Ability Client with two methods that are used to execute the Ability:
 
 1. **Precheck**: Executes the Vincent Ability's `precheck` function to provide quick and cost-free feedback on whether the Ability execution is likely to succeed. This function also:
-
    - Validates the Ability parameters you provide against the Vincent Ability's requirements
    - Evaluates the `precheck` function for any Vincent Policies the User has configured for your App
      - **Note:** Execution of the Ability's `precheck` logic will **not** happen unless all of the registered Vincent Policies pass their prechecks
@@ -26,7 +25,7 @@ The Vincent App SDK exports a function called `getVincentAbilityClient` that cre
    - Validates Ability parameters and evaluates Policies registered by the User for your App
      - **Note:** Execution of the Ability's logic will **not** happen unless all of the registered Policies permit execution
    - Executes the `commit` function of any Policies that have defined a `commit` function
-     - **Note:** Policy `commit` functions give each Policy the opportunity to update any state they depend on for their policy logic after the Ability has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Ability has successfully transferred funds from the User's Agent Wallet)
+     - **Note:** Policy `commit` functions give each Policy the opportunity to update any state they depend on for their policy logic after the Ability has executed successfully (e.g. a spending limit policy would update the amount the App has spent on behalf of the Vincent User after the Ability has successfully transferred funds from the User's Vincent Wallet)
    - Returns the execution results of both the Ability and any evaluated Policies
 
 # Creating a Ability Client
@@ -54,7 +53,7 @@ The two required parameters for the `getVincentAbilityClient` function are:
    - This ability definition is exported by the author of the Vincent Ability package and defines properties like the expected input parameters of the Ability, the Vincent Policies supported by the Ability, and the Ability's expected return values
    - The Ability Client handles wrapping this ability definition, providing you with a simple interface for executing the Ability, abstracting away the complexity of the Ability's implementation
 2. `ethersSigner`: An Ethers.js signer that will be used to sign the request to execute the Ability using the Lit Protocol network
-   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Ability for. You can see how to add a delegatee to your Vincent App [here](./Creating-Apps.md#adding-delegatees-to-your-app)
+   - **Note:** The corresponding Ethereum address of the signer **must** be added as a delegatee for the Vincent App you are executing the Ability for. You can see how to add a delegatee to your Vincent App [here](./Creating-Apps.md#delegatee-addresses)
 
 # Executing the Ability Client's `precheck` function
 
@@ -81,7 +80,7 @@ const precheckResult = await abilityClient.precheck({
     amount: 100,
   },
   context: {
-    // The ETH address of the App User's Agent Wallet you are executing the Ability on behalf of
+    // The ETH address of the App User's Vincent Wallet you are executing the Ability on behalf of
     delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',
   },
 });
@@ -99,7 +98,7 @@ The `precheck` function takes two arguments:
    - `rpcUrl`: An optional parameter to override the default RPC URL used to communicate with the Lit Protocol network
      - This RPC URL is used to fetch the on-chain data about your Vincent App, what App Version (if any) the Vincent User has authorized, and the on-chain Policy parameters configured by the User for your App
      - Most developers do **not** need to provide this property, and the default RPC URL should be used
-   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the App User's Agent Wallet you'll be executing the Ability on behalf of
+   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the App User's Vincent Wallet you'll be executing the Ability on behalf of
 
 ## Precheck Results
 
@@ -147,7 +146,7 @@ const executeResult = await abilityClient.execute({
     amount: 100,
   },
   context: {
-    // The ETH address of the Agent Wallet you are executing the Ability on behalf of
+    // The ETH address of the Vincent Wallet you are executing the Ability on behalf of
     delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',
   },
 });
@@ -162,7 +161,7 @@ The `execute` function takes two arguments similar to the `precheck` function:
 > If for whatever reason the type inference is not working, check the Ability's documentation for the expected input parameters
 
 2. An object that contains:
-   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the Vincent User's Agent Wallet you'll be executing the Ability on behalf of
+   - `delegatorPkpEthAddress`: A required parameter that is the Ethereum address of the Vincent User's Vincent Wallet you'll be executing the Ability on behalf of
 
 ## Execute Results
 
@@ -170,7 +169,7 @@ The return type of the `execute` function depends on whether all evaluated Polic
 
 If one of the Policies returns a deny response, or an error occurs during the execution of the Ability's logic, the `execute` function will return a failure result with the structure of the Ability's Zod schema: `ExecuteFailSchema`.
 
-Additionally, Vincent Policies have an optional `commit` function (as covered in the [How Vincent Policies Work](#how-the-ability-client-sdk-works) section), which is executed for each Policy that has defined a `commit` function after the Ability's logic is executed successfully. If one of the `commit` functions were to fail during execution or return a deny response, the `execute` function will return a failure result.
+Additionally, Vincent Policies have an optional `commit` function (as covered in the [How Vincent Policies Work](#how-the-vincent-ability-client-works) section), which is executed for each Policy that has defined a `commit` function after the Ability's logic is executed successfully. If one of the `commit` functions were to fail during execution or return a deny response, the `execute` function will return a failure result.
 
 If all evaluated Policies permit execution, the Ability's execution is successful, and all the Policy `commit` functions are executed successfully, the `execute` function will return a success result with the structure of the Ability's Zod schema: `ExecuteSuccessSchema`.
 

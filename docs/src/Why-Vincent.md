@@ -4,10 +4,19 @@ title: Why Vincent?
 
 # Start Here
 
-Vincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.
+Vincent is an open-source framework powered by [Lit Protocol](https://litprotocol.com/) that empowers developers to create automated, user-controlled AI agents. With Vincent, you can build agents that automate the execution of operations across crypto networks, traditional finance (TradFi), and e-commerce platforms—all while ensuring users retain full control over their assets and data. Powered by Lit’s decentralized [key management network](https://developer.litprotocol.com/resources/how-it-works) and smart contracts, Vincent is your gateway to the future of the automated, User-Owned Web.˛
 
-[Demo](https://demo.heyvincent.ai/) |
-[Source Code](https://github.com/LIT-Protocol/vincent-dca/tree/main)
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Checkout the Vincent Yield Maximizer
+  </p>
+  <p>This Vincent App helps you earn more yield on your USDC by automatically moving your funds into the highest-yielding Morpho vault.</p>
+  <p>
+    <a href="https://yield.heyvincent.ai/" class="button">
+      Try the Vincent Yield Maximizer
+    </a>
+  </p>
+</div>
 
 ## Why Vincent?
 

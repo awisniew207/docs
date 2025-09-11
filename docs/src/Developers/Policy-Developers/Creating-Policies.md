@@ -1,5 +1,4 @@
 ---
-category: Developers
 title: Creating Vincent Policies
 ---
 
@@ -123,10 +122,9 @@ Where:
 - `delegation`:
   - `delegateeAddress`: The Ethereum address of the Vincent Ability executor
   - `delegatorPkpInfo`:
-    <!-- TODO: Add link to Vincent Agent Wallet docs -->
-    - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet
-    - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet
-    - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet
+    - `tokenId`: The token ID of the Vincent App User's Vincent Wallet
+    - `ethAddress`: The Ethereum address of the App User's Vincent Wallet
+    - `publicKey`: The public key of the App User's Vincent Wallet
 - `allow`: A helper method for returning an `allow` result from your policy's `precheck`, `evaluate`, and `commit` functions
 - `deny`: A helper method for returning a `deny` result from your policy's `precheck`, `evaluate`, and `commit` functions
 

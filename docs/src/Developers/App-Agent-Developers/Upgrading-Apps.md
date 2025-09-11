@@ -9,7 +9,7 @@ Vincent Apps are versioned to guarantee trust and transparency. Once a Vincent A
 
 ### Why This Matters
 
-Vincent Users don’t just delegate to your App, they delegate to a specific App Version. This Version defines the exact set of Abilities and Policies that your App can execute on their behalf, and can never be changed. This gives your Users confidence that the set of Abilities they've authorized, and are governing with their configured Policies, will never change without their explicit consent.
+Vincent Users don’t just delegate to your App, they delegate to a specific App Version. This Version defines the exact set of Abilities and Policies that your App can execute on their behalf, and can never be changed. This gives your Users confidence that the set of Abilities they've authorized, and the guardrails they've configured with Policies, will never change without their explicit consent.
 
 # When Should You Create a New Version?
 
@@ -26,87 +26,92 @@ There are some parts of your Vincent App that you can change without creating a 
 - The App Delegatees that are authorized to execute your App's Abilities for all App Versions
 - The authorized redirect URIs Users can be redirected to after they've authorized your App via the Vincent Connect page
 - The current Deployment Status of your App
+- App details like the name, description, and logo
 
 # How App Versioning Works
 
-Each Version of your App is stored on-chain in the Vincent App Registry smart contract, with no ability to modify the Version once it's been published to the Registry.
+Each App Version includes a finite list of Vincent Abilities the App can execute on behalf of Users that authorize the App Version, as well as the enabled Vincent Policies for each Ability that are used to govern the execution of the Abilities.
 
-Each App Version includes:
+App Versions have a two step flow before they're available to be delegated to by your Vincent App Users:
 
-- A finite list of Vincent Abilities the App can execute on behalf of Users that authorize the App Version
-- Each Policy that's available to be used with the App's selected Abilities, along with the Policy parameters that Users can configure
-
-> **Note:** Once published, App Versions cannot be modified. If you need to make any changes, you'll need to publish a new Version.
+1. **Create the App Version** - Covered further in the [Creating a New Version](#creating-a-new-version) section, this step initializes a new App Version off-chain, allowing you to specify the Vincent Abilities and their enabled Policies to be used by the Version.
+   - While the Version is saved only in the Vincent off-chain database, you are able to make changes to it's associated Abilities and enabled Policies.
+2. **Publish the App Version** - This step registers the App Version on-chain in the Vincent App Registry, making it available to be set as your Vincent App's currently active App Version, so your Vincent App Users can start delegating to it.
+   - Once published, the App Version is immutable and it's set of Abilities and Policies cannot be modified. If you need to make any changes, you'll need to create and publish a new Version.
 
 # Creating a New Version
-
-<div class="box info-box">
-  <p class="box-title info-box-title">
-    <span class="box-icon info-icon">Info</span> Before creating a new App Version
-  </p>
-  <p>Creating a new App Version requires that you have tokens on Lit Protocol's Yellowstone blockchain to pay for gas. You can use <a href="https://chronicle-yellowstone-faucet.getlit.dev/">this faucet</a> to get the Lit test tokens used to pay for creating the new App Version.</p>
-</div>
 
 To publish a new version of your App:
 
 1. Navigate to the [Vincent App Dashboard](https://dashboard.heyvincent.ai/)
-2. Select your App from the list
-3. Click the `Manage Ability Policies` button:
+2. Select the `App Details` menu item from the side bar menu
+3. Click the `Create App Version` button:
 
-![Manage Ability Policies Button](../images/manage-ability-policies-button.png)
+![Create App Version Button](../images/vincent-dashboard-app-dashboard-registered.png)
 
-You will then be shown the following screen which displays:
+This will display a form prompting you to describe what's changing in this new App Version. The details you provide here will be displayed to your Vincent App Users the next time they sign into your App using Vincent, so be descriptive and clear about what's changing so your users feel informed and confident in permitting delegation to the new App Version.
 
-- The current Abilities configured for your App
-- The Policies that are available to be used with each Ability
-- Each Policy parameter that can be configured by the User for each Policy:
+## Adding Abilities to the App Version
 
-![Manage Ability Policies Page](../images/manage-ability-policies-page.png)
+After submitting the form, you'll be redirected to the App Version dashboard where you can add the Vincent Abilities you'd like to enable for this App Version, as well as configure which Vincent Policies are enabled for each Ability.
 
-After updating the Abilities and Policies for your App, you'll need to click the `Publish New Version` button to publish the Version on-chain. This will prompt you to sign a transaction with your connected Vincent App Manager wallet.
+When you're finished configuring the App Version, navigate back to the App Version dashboard by clicking the new version number menu item in the side bar menu.
 
-After it's published, your new App Version will be immediately available for Vincent Users to authorize/upgrade to the next time they visit your App’s Vincent Connect Page.
+When you're ready, click the `Publish App Version` button to register this new App Version on-chain, making it available to set as your Vincent App's currently active App Version.
 
-# Managing App Versions
+# Setting the Active App Version
 
-Also on the Vincent App Overview page, you'll see an `Advanced Functions` button:
+After publishing a new App Version, it's not immediately set as your Vincent App's currently active App Version. This means existing Vincent App Users who've authorized a previous App Version will not be prompted to upgrade to the new version the next time they sign into your App using Vincent. Additionally, new Vincent App Users will always be permitting the version set as the active App Version.
 
-![Advanced Functions Button](../images/advanced-functions-button.png)
+So to prompt existing App Users to upgrade to the new version, and have new App Users permit the new version by default, you'll need to set the new version as your Vincent App's currently active App Version. This is done on your App's Dashboard which you can navigate to by clicking the `App Details` menu item in the side bar menu.
 
-Clicking this button will navigate you to the advanced settings for your App, including the option to manage your App Versions:
+On the App Dashboard, click the `Edit App` button to open a form where you can update the App's details, including the currently active App Version at the bottom of the form.
 
-![Manage App Versions](../images/manage-app-versions.png)
+![Edit App Form](../images/vincent-dashboard-edit-app-form.png)
 
-After clicking the `Manage Versions` button, you'll be given the option to select from your App Versions. You can see which Version are currently enabled, and which are disabled:
+Select the new version you just published, and click the `Update App` button to save the changes, and the new version you published will be set as your Vincent App's currently active App Version.
 
-![Enable App Version Dialog](../images/enable-app-version-dialog.png)
+# Enable/Disable App Versions
 
-Select the App Version you'd like to enable or disable, and click the `Enable Version` or `Disable Version` button to toggle the Version's status. This will prompt you to sign a transaction with your connected Vincent App Manager wallet to update the App's status in the on-chain App Registry.
+After publishing new App Versions and updating the App's active Version, you may want to disable previous App Versions to force your Vincent App Users to upgrade to newer versions.
 
-## What Does it Mean to Enable/Disable an App Version?
+This can be done by navigating to each App Version's dashboard (by clicking the version number menu item in the side bar menu) and clicking the `Disable App Version` button.
 
-Enabled App Versions mean that new Users can authorize the corresponding set of Abilities and Policies to be executed on their behalf, and existing Users of the enabled Version can continue to authenticate with Vincent for your App.
+![Disable App Version Button](../images/vincent-dashboard-app-dashboard-disable-button.png)
 
-New Users will never be prompted to authorize disabled App Versions, and existing Users who've previously permitted a now disabled Version will either be prompted to update to the latest enabled Version, or will no longer be able to authenticate with Vincent for your App if there is no newer App Version to upgrade to:
+Clicking this button will:
 
-> **Note:** A disabled App Version will also prohibit your App Delegatees from executing the corresponding Abilities on behalf of your Users.
+- Immediately disable the App Version in the Vincent App Registry
+- Prevent your Vincent App Users who have permitted this version from using your Vincent App
+  - These Users will be prompted to upgrade to the latest enabled App Version to continue using your App
+- Prevent your Vincent App Delegatees from executing Vincent Abilities for any Users who have authorized only the disabled App Version
 
-![Disabled App Version Upgrade Dialog](../images/disabled-app-version-upgrade-dialog.png)
+Once an App Version is disabled, the button will change to `Enable App Version`. Clicking this will re-enable the App Version, allowing your Vincent App Users who are still on that version to use it again, and permitting your Vincent App Delegatees to execute Vincent Abilities for that version.
 
-The latest enabled App Version is always the version that new Users will be prompted to authorize when they visit your App’s Vincent Connect Page.
+## What Do Your Vincent App Users See When Changing App Versions?
 
-If you have multiple enabled App Versions, existing Users who've permitted previous Versions are still able to use those Versions up until the point you disable it.
+If you create a new App Version and don't publish it, or create one and publish it, your Vincent App Users will not be notified of the new version.
 
-However, those Users will be prompted to upgrade to the latest enabled App Version the next time they visit your App’s Vincent Connect Page:
+It's not until you set the new version as your Vincent App's currently active App Version that your existing Vincent App Users will be prompted to upgrade to the new version the next time they sign into your App using Vincent.
 
-![Upgrade App Version Dialog](../images/upgrade-app-version-dialog.png)
+Here is what your App User's will see the next time they sign into your App using Vincent:
+
+![New App Version Available](../images/vincent-dashboard-new-version-available.png)
+
+Because the App User in this screenshot has permitted an App Version that is still enabled, they're just notified that there is a new version available to upgrade to, but they are not forced to upgrade, and continue to use the version they've already permitted.
+
+If you disable the App Version an App User has permitted, they will be prompted to upgrade to the latest enabled App Version to continue using your App:
+
+![Disabled App Version Upgrade Dialog](../images/vincent-dashboard-must-upgrade-version.png)
+
+If you disable the active App Version, but there's still an enabled App Version available, your App Users will either continue as usual if they are on an enabled Version, or be prompted to upgrade to the latest enabled App Version to continue using your App.
 
 # Best Practices
 
-- **Clearly communicate changes** to your Users before publishing new versions, especially if you’re introducing new Abilities or modifying existing functionality.
+- **Clearly communicate changes** in the descriptions of new App Versions, be descriptive and clear about what's changing so your users feel informed and confident in permitting delegation to the new App Version.
 - **Incremental changes** can be better than large overhauls, it makes it easier for Users to understand what's changed.
 - **Keep old versions active** during testing to allow for safe rollout and rollback if needed.
-- **Use `DEV`, `TEST`, and `PROD` App modes** appropriately to manage expectations of the stability of your App and whether it's still undergoing development.
+- **Use `DEV`, `TEST`, and `PROD` Deployment Statuses** appropriately to manage expectations of the stability of your App and whether it's still undergoing development.
 
 # Wrapping Up
 
@@ -123,13 +128,13 @@ As the App Manager, versioning gives you control over your App’s configuration
 ### Key Takeaways:
 
 - Users delegate to specific App Versions, not your App in general
-- To make changes to Abilities or Policies, create a new App Version using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/)
+- To make changes to Abilities or their enabled Policies, create a new App Version using the [Vincent App Dashboard](https://dashboard.heyvincent.ai/)
 - You can enable/disable versions at any time to manage upgrades and deprecations
 - Only enabled App Versions can be authorized by Users and executed by your App Delegatees
 
 ## Next Steps
 
-- Checkout how to [Authenticate your Users with Vincent](../App-Agent-Developers/Authenticating-Users.md) to get Users to started delegating to your Vincent App.
+- Checkout how to [Authenticate your Users with Vincent](./Auth-Users.md) to get Users to started delegating to your Vincent App.
 - Dive into how to [Execute Vincent Abilities](../App-Agent-Developers/Executing-Abilities.md) and start executing Vincent Abilities on behalf of your Users.
 - Learn how to [Create a Vincent Ability](../Ability-Developers/Getting-Started.md) to add new functionality to your App.
 - Learn how to [Create a Vincent Policy](../Policy-Developers/Getting-Started.md) to add new governance rules to your App's Abilities.

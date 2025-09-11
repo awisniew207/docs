@@ -6,6 +6,7 @@ import { api, store } from './setup';
 const debug = createTestDebugger('supportedPolicies');
 
 // For backwards compatibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const verboseLog = (value: any) => {
   debug(value);
 };
@@ -44,7 +45,7 @@ describe('Supported Policies Integration Tests', () => {
     try {
       await store.dispatch(api.endpoints.deletePolicy.initiate({ packageName: policyPackageName }));
     } catch (error) {
-      // Ignore errors if the policy doesn't exist
+      console.error("Ignoring error deleting policy since it doesn't exist:", error);
     }
 
     // Delete the ability if it exists
@@ -53,7 +54,7 @@ describe('Supported Policies Integration Tests', () => {
         api.endpoints.deleteAbility.initiate({ packageName: abilityPackageName }),
       );
     } catch (error) {
-      // Ignore errors if the ability doesn't exist
+      console.error("Ignoring error deleting ability since it doesn't exist:", error);
     }
 
     // Reset the API cache
@@ -66,7 +67,7 @@ describe('Supported Policies Integration Tests', () => {
     try {
       await store.dispatch(api.endpoints.deletePolicy.initiate({ packageName: policyPackageName }));
     } catch (error) {
-      // Ignore errors if the policy doesn't exist
+      console.error("Ignoring error deleting policy since it doesn't exist:", error);
     }
 
     // Delete the ability if it exists
@@ -75,7 +76,7 @@ describe('Supported Policies Integration Tests', () => {
         api.endpoints.deleteAbility.initiate({ packageName: abilityPackageName }),
       );
     } catch (error) {
-      // Ignore errors if the ability doesn't exist
+      console.error("Ignoring error deleting ability since it doesn't exist:", error);
     }
 
     // Reset the API cache
@@ -174,7 +175,7 @@ describe('Supported Policies Integration Tests', () => {
           api.endpoints.deleteAbility.initiate({ packageName: abilityPackageName }),
         );
       } catch (error) {
-        // Ignore errors if the ability doesn't exist
+        console.error("Ignoring error deleting ability since it doesn't exist:", error);
       }
       store.dispatch(api.util.resetApiState());
 

@@ -1,9 +1,37 @@
+## 4.1.0 (2025-08-15)
+
+### 🚀 Features
+
+- ## Add gas sponsorship for LIT chain usage by delegatees ([3d693e16](https://github.com/LIT-Protocol/Vincent/commit/3d693e16))
+  - New endpoint added (`/app/{appId}/sponsorDelegateesPayment`) which sponsors gas usage on Yellowstone for all delegateeAddresses on the target app
+
+### ❤️ Thank You
+
+- Daryl Collins
+
+# 4.0.0 (2025-08-05)
+
+### 🚀 Features
+
+- ### Add logo support for abilities and policies ([6ef30e41](https://github.com/LIT-Protocol/Vincent/commit/6ef30e41))
+  - Added optional `logo` property to endpoint definitions for both abilities and policies during creationg and editing
+
+- Add new `setActiveVersion` endpoint definition to allow atomic setting of activeVersion on apps without using the general edit endpoint ([169b6a1e](https://github.com/LIT-Protocol/Vincent/commit/169b6a1e))
+
+### ⚠️ Breaking Changes
+
+- #### Replace SIWE auth with JWT auth ([e9a5b5be](https://github.com/LIT-Protocol/Vincent/commit/e9a5b5be))
+  - JWTs must be issued by Vincent JWT code (assumed linked to a valid Datil PKP) for this authentication
+
+### ❤️ Thank You
+
+- Daryl Collins
+
 ## 3.3.2 (2025-07-09)
 
 ### 🚀 Features
 
 - #### Add delegateeAddresses to Apps in the Registry ([1424ec10](https://github.com/LIT-Protocol/Vincent/commit/1424ec10))
-
   - Added arrays of delegateeAddresses to the app doc, as well as its creation and editing.
 
 ### ❤️ Thank You
@@ -15,7 +43,6 @@
 ### 🩹 Fixes
 
 - #### Minor schema improvements ([4e092830](https://github.com/LIT-Protocol/Vincent/commit/4e092830))
-
   - Added minimum lengths for App/Ability/Policy name/title and description/changes. Requirement of unique App `redirectUris`, and Ability title is required
   - Added `isDeleted` to all App/Ability/Policy objects
   - Exports `changeOwner` from the `baseSchemas`
@@ -29,7 +56,6 @@
 ### 🚀 Features
 
 - #### Support `deploymentStatus` for Abilities and Policies ([72a54eff](https://github.com/LIT-Protocol/Vincent/commit/72a54eff))
-
   - Defined `deploymentStatus` property for Ability and Policy. It defaults to `dev` for new entities.
 
 ### ❤️ Thank You
@@ -41,7 +67,6 @@
 ### 🚀 Features
 
 - ### Define undelete routes for deletable entities ([6812fa02](https://github.com/LIT-Protocol/Vincent/commit/6812fa02))
-
   - Added endpoint definitions to support undeletion of `App`, `AppVersion`, `AppVersionAbility`, `Ability`, `AbilityVersion, `Policy`, and `PolicyVersion`
 
 ### ❤️ Thank You
@@ -53,7 +78,6 @@
 ### 🚀 Features
 
 - ### Define new delete endpoints ([ad7c85e9](https://github.com/LIT-Protocol/Vincent/commit/ad7c85e9))
-
   - Defined delete endpoints for AppVersion, and AppAbilityVersion, PolicyVersion, and AbilityVersion
 
 ### ❤️ Thank You
@@ -65,7 +89,6 @@
 ### ⚠️ Breaking Changes
 
 - #### Add SIWE authentication ([e3d7c886](https://github.com/LIT-Protocol/Vincent/commit/e3d7c886))
-
   - Defined a new `siweAuth` securitySchema and applied it to all PUT, POST and DELETE endpoints
   - SIWE auth is a custom Authorization scheme, using the prefix `SIWE:`, but is considered an `apiKey` semantically for compatibility purposes
   - Implemented Metamask integration for getting SIWEs in the RapiDoc UI so we can still use it to test endpoints directly
@@ -76,13 +99,11 @@
   - Updated tooling in the registry-backend to use the RapiDoc code that is in the registry-sdk instead of in-lining its own inside the express route
 
   ### Define tags per endpoint to support automatic cache invalidation
-
   - Defined `tags` for all endpoints
   - The RTK query client will now automatically refetch data for any existing subscriptions when a mutation occurs
   - The tags are extremely simplistic, generic, and pessimistic. Basically, when an entity changes we reload all data for all entities of the same time. We will make this less pessimistic by using `.enhanceEndpoints` in a follow-up release.
 
   ### Internal
-
   - Added `debug` package and implemented trace logging that can be toggled on per module by setting the appropriate path in the DEBUG env var.
   - Replaced 'verboseLog()' functionality in the tests with usage of `debug()`
   - Added logging to middleware to help verify they are all functioning as expected
@@ -205,13 +226,11 @@
 
 - - Export ZOD schemas of doc definitions in ([d8a3755](https://github.com/LIT-Protocol/Vincent/commit/d8a3755))
 - ### Route Changes ([ca978e7](https://github.com/LIT-Protocol/Vincent/commit/ca978e7))
-
   - Removed route namespacing; all routes are now at the root instead of all nested under `/api/v1`
   - Add "list all apps" route `GET /apps`
   - Replace `toggle` with explicit `enable` and `disable` endpoints for appVersion
 
   #### Internal
-
   - Added chokidar watch task for `dev` auto-generate API on edit of `src/lib/**/*`
 
 ### ❤️ Thank You
@@ -227,7 +246,6 @@
   ### Features
 
   **REST API Client**
-
   - Added - Auto-generated TypeScript REST API client for Vincent services `vincentApiClient`
   - Provides type-safe HTTP client methods for all Vincent REST endpoints
     **OpenAPI Integration**

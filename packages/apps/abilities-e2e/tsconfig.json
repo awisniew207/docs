@@ -16,13 +16,19 @@
       "path": "../ability-erc20-approval"
     },
     {
-      "path": "../ability-transaction-signer"
+      "path": "../ability-erc20-transfer"
+    },
+    {
+      "path": "../ability-evm-transaction-signer"
     },
     {
       "path": "../policy-contract-whitelist"
     },
     {
       "path": "../policy-spending-limit"
+    },
+    {
+      "path": "../policy-send-counter"
     },
     {
       "path": "../../libs/app-sdk"

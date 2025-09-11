@@ -22,8 +22,8 @@ import { env } from '@/config/env';
 
 const { VITE_ENV, VITE_STYTCH_PROJECT_ID } = env;
 
-export const DOMAIN = VITE_ENV === 'development' ? 'localhost:5173' : 'dashboard.heyvincent.ai';
-export const ORIGIN = VITE_ENV === 'development' ? `http://${DOMAIN}` : `https://${DOMAIN}`;
+export const DOMAIN = VITE_ENV === 'staging' ? 'localhost:5173' : 'dashboard.heyvincent.ai';
+export const ORIGIN = VITE_ENV === 'staging' ? `http://${DOMAIN}` : `https://${DOMAIN}`;
 
 export const SELECTED_LIT_NETWORK = LIT_NETWORK.Datil as LIT_NETWORKS_KEYS;
 
@@ -169,23 +169,20 @@ export async function registerWebAuthn(displayName: string): Promise<IRelayPKP> 
   ) {
     throw new Error('Minting failed: Invalid response data');
   }
-  const newUserPKP: IRelayPKP = {
+  const userPKP: IRelayPKP = {
     tokenId: userResponse.pkpTokenId,
     publicKey: userResponse.pkpPublicKey,
     ethAddress: userResponse.pkpEthAddress,
   };
 
   try {
-    await addPayee(newUserPKP.ethAddress);
+    await addPayee(userPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
+    throw err;
   }
 
-  // Mint a new PKP to be controlled by the new user PKP
-  // We'll still mint this, but we won't return it
-  await mintPKPToExistingPKP(newUserPKP);
-
-  return newUserPKP;
+  return userPKP;
 }
 
 /**
@@ -246,12 +243,11 @@ export async function getSessionSigs({
 /**
  * Fetch PKPs associated with given auth method, minting one if none exist
  */
-export async function getOrMintPKPs(authMethod: AuthMethod): Promise<IRelayPKP[]> {
+export async function getOrMintUserPkp(authMethod: AuthMethod): Promise<IRelayPKP[]> {
   const provider = getAuthenticatedProvider(authMethod);
   let allPKPs = await provider.fetchPKPsThroughRelayer(authMethod);
   if (allPKPs.length === 0 && authMethod.authMethodType !== AUTH_METHOD_TYPE.WebAuthn) {
-    const newPKP = await mintPKP(authMethod);
-    await mintPKPToExistingPKP(newPKP);
+    await mintPKP(authMethod);
     allPKPs = await provider.fetchPKPsThroughRelayer(authMethod);
   }
 
@@ -316,6 +312,7 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
     await addPayee(newPKP.ethAddress);
   } catch (err) {
     console.warn('Failed to add payee', err);
+    throw err;
   }
 
   return newPKP;
@@ -350,7 +347,16 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
   );
 
   if (!agentMintResponse.ok) {
-    throw new Error('Failed to mint PKP to existing PKP');
+    const errorText = await agentMintResponse.text();
+    console.log('Full minting error response:', {
+      status: agentMintResponse.status,
+      statusText: agentMintResponse.statusText,
+      errorText,
+      requestBody,
+    });
+    throw new Error(
+      `Failed to mint PKP to existing PKP: ${agentMintResponse.status} ${agentMintResponse.statusText} - ${errorText}`,
+    );
   }
 
   const agentMintResponseJson = await agentMintResponse.json();
@@ -360,7 +366,9 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
   const txReceipt = await provider.waitForTransaction(agentMintResponseJson.requestId);
 
   if (txReceipt.status !== 1) {
-    throw new Error('Transaction failed');
+    throw new Error(
+      `Transaction failed with status: ${txReceipt.status}. Transaction hash: ${agentMintResponseJson.requestId}`,
+    );
   }
 
   // Get the token ID from the transaction logs
@@ -374,12 +382,16 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
   });
 
   if (!mintEvent) {
-    throw new Error('Failed to find PKPMinted event in transaction logs');
+    throw new Error(
+      `Failed to find PKPMinted event in transaction logs. Found ${txReceipt.logs.length} logs. Transaction hash: ${agentMintResponseJson.requestId}`,
+    );
   }
 
   const tokenId = pkpNft.interface.parseLog(mintEvent).args.tokenId;
   if (!tokenId) {
-    throw new Error('Token ID not found in mint event');
+    throw new Error(
+      `Token ID not found in mint event. Transaction hash: ${agentMintResponseJson.requestId}`,
+    );
   }
 
   // Get the public key and eth address from the PKP NFT contract

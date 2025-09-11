@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
+import LandingPartners from '../../components/shared/LandingPartners';
 
 export default function RootPage() {
   const navigate = useNavigate();
@@ -10,52 +11,61 @@ export default function RootPage() {
         <title>Vincent | Delegation Platform</title>
         <meta
           name="description"
-          content="Vincent - Delegation Platform for user owned automation powered by Lit Protocol"
+          content="Vincent - Delegation Platform for user owned automation secured by Lit Protocol"
         />
       </Helmet>
-      <div className="flex flex-col min-h-screen bg-white text-center p-3 sm:p-5 font-sans relative">
-        <main className="flex flex-col items-center flex-1 justify-center">
+      <div className="flex flex-col min-h-screen bg-white text-center p-3 sm:p-5 font-sans relative overflow-x-hidden">
+        <main className="flex flex-col items-center flex-1 justify-center pt-16 sm:pt-20">
           <img
             src="/vincent-main-logo.png"
             alt="Vincent by Lit Protocol - Delegation Platform for user owned automation"
-            className="max-w-[280px] sm:max-w-[400px] mb-3 sm:mb-5"
+            className="max-w-[320px] sm:max-w-[400px] mb-3 sm:mb-5"
+            width="400"
+            height="107"
+            style={{ aspectRatio: '2051/549', maxWidth: '100%', height: 'auto' }}
+            loading="eager"
+            decoding="sync"
+            fetchPriority="high"
           />
-          <p className="text-gray-600 mb-6 sm:mb-8 max-w-md text-sm sm:text-base px-2">
-            A permission delegation platform for automation.
-            <br />
-            Choose your path to get started.
+          <p className="text-gray-600 mb-6 sm:mb-8 max-w-md text-base sm:text-lg px-2">
+            The portal for intelligent finance.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
-            <button
-              onClick={() => navigate('/developer/dashboard')}
-              className="bg-gray-900 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-[20px] font-medium hover:bg-gray-800 transition-colors min-w-[140px] sm:min-w-[160px] text-sm sm:text-base"
-            >
-              Build
-            </button>
+          <div className="flex flex-col items-center gap-4 mb-4 sm:mb-8 max-w-sm mx-auto">
+            {/* Top button - Earn */}
             <button
               onClick={() => navigate('/user/apps')}
-              className="bg-transparent text-gray-900 px-5 sm:px-6 py-2.5 sm:py-3 rounded-[20px] font-medium border border-gray-900 hover:bg-gray-100 transition-colors min-w-[140px] sm:min-w-[160px] text-sm sm:text-base"
+              className="bg-orange-500 text-white px-8 py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors text-base min-w-28"
             >
               Earn
             </button>
+
+            {/* Bottom row - Build and Explore */}
+            <div className="flex gap-8">
+              <button
+                onClick={() => navigate('/developer/dashboard')}
+                className="bg-white text-gray-900 px-8 py-4 rounded-xl font-semibold border border-gray-900 hover:bg-gray-100 transition-colors text-base min-w-28"
+              >
+                Build
+              </button>
+              <button
+                onClick={() => navigate('/explorer')}
+                className="bg-white text-gray-900 px-8 py-4 rounded-xl font-semibold border border-gray-900 hover:bg-gray-100 transition-colors text-base min-w-28"
+              >
+                Explore
+              </button>
+            </div>
           </div>
 
-          <div className="text-center space-y-3 sm:space-y-4 px-2">
-            <p className="text-gray-500 text-xs sm:text-sm">
-              <strong>Build:</strong> Create and manage applications, abilities, and policies with
-              delegated permissions
-            </p>
-            <p className="text-gray-500 text-xs sm:text-sm">
-              <strong>Earn:</strong> Control and delegate permissions to your applications
-            </p>
-          </div>
+          <LandingPartners />
         </main>
 
         {/* Footer */}
-        <div className="px-3 sm:px-6 py-2 flex flex-col items-center gap-4 mt-auto">
+        <div className="px-3 sm:px-6 py-2 flex flex-col items-center gap-2 mt-auto">
+          <div className="flex flex-col items-center gap-1 text-sm font-normal">
+            <span className="text-black text-base font-semibold">Securing Autonomy</span>
+          </div>
           <div className="flex items-center gap-2 text-sm font-normal text-gray-500">
-            <span>Powered by</span>
             <a
               href="https://litprotocol.com"
               target="_blank"
@@ -80,38 +90,38 @@ export default function RootPage() {
                   fill="currentColor"
                 />
                 <path
-                  d="M53.2347 161.157V0.621826H0.160156V174.264C0.160143 181.242 1.53637 188.153 4.21006 194.599C6.88376 201.045 10.8024 206.9 15.7418 211.83C20.6811 216.76 26.5442 220.667 32.9954 223.328C39.4466 225.989 46.3593 227.352 53.3379 227.338L113.12 227.25V175.045H67.1225C63.4392 175.045 59.9068 173.582 57.3023 170.978C54.6978 168.373 53.2347 164.841 53.2347 161.157Z"
+                  d="M53.2347 161.157V0.621826H0.160156V174.264C0.160143 181.242 1.53637 188.153 4.21006 194.599C6.88376 201.045 10.8024 206.9 15.7418 211.83C20.6811 216.760 26.5442 220.667 32.9954 223.328C39.4466 225.989 46.3593 227.352 53.3379 227.338L113.12 227.25V175.045H67.1225C63.4392 175.045 59.9068 173.582 57.3023 170.978C54.6978 168.373 53.2347 164.841 53.2347 161.157Z"
                   fill="currentColor"
                 />
               </svg>
             </a>
           </div>
-          <div className="flex items-center gap-1 text-sm font-normal text-gray-500">
+          <div className="flex items-center gap-1 text-sm font-normal text-black">
             <a
               href="https://t.me/+aa73FAF9Vp82ZjJh"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
-              Help
+              Support
             </a>
-            <span className="font-normal text-gray-500"> / </span>
+            <span className="font-normal text-black"> / </span>
             <a
               href="https://www.litprotocol.com/legal/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
               Privacy
             </a>
-            <span className="font-normal text-gray-500"> / </span>
+            <span className="font-normal text-black"> / </span>
             <a
               href="https://www.litprotocol.com/legal/terms-of-service"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-gray-500"
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
               style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
             >
               Terms

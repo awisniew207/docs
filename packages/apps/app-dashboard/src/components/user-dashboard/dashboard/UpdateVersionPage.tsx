@@ -1,36 +1,71 @@
 import { useState, useCallback, useRef } from 'react';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
+import { IRelayPKP } from '@lit-protocol/types';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { useConnectFormData } from '@/hooks/user-dashboard/connect/useConnectFormData';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { PolicyFormRef } from '@/components/user-dashboard/connect/ui/PolicyForm';
-import { UseReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { useAddPermittedActions } from '@/hooks/user-dashboard/connect/useAddPermittedActions';
 import { ConnectAppHeader } from '@/components/user-dashboard/connect/ui/ConnectAppHeader';
 import { AppsInfo } from '@/components/user-dashboard/connect/ui/AppInfo';
 import { ActionButtons } from '@/components/user-dashboard/connect/ui/ActionButtons';
-import { InfoBanner } from '@/components/user-dashboard/connect/ui/InfoBanner';
 import { StatusCard } from '@/components/user-dashboard/connect/ui/StatusCard';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
-import { useTheme } from '@/providers/ThemeProvider';
 import { PageHeader } from './ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
+import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
+import { useUrlRedirectUri } from '@/hooks/user-dashboard/connect/useUrlRedirectUri';
+import { useEffect } from 'react';
 
 interface UpdateVersionPageProps {
   connectInfoMap: ConnectInfoMap;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
+  agentPKP: IRelayPKP;
 }
 
-export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersionPageProps) {
-  const { isDark } = useTheme();
+export function UpdateVersionPage({
+  connectInfoMap,
+  readAuthInfo,
+  agentPKP,
+}: UpdateVersionPageProps) {
   const [localError, setLocalError] = useState<string | null>(null);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
   const navigate = useNavigate();
 
-  const { formData, handleFormChange } = useConnectFormData(connectInfoMap);
+  // Check if there's a redirectUri in URL for redirect logic
+  const { redirectUri } = useUrlRedirectUri();
+
+  // JWT redirect logic for when there's a redirectUri
+  const {
+    generateJWT,
+    executeRedirect,
+    isLoading: isJwtLoading,
+    loadingStatus: jwtLoadingStatus,
+    error: jwtError,
+    redirectUrl,
+  } = useJwtRedirect({ readAuthInfo, agentPKP });
+
+  // Handle redirect when JWT is ready
+  useEffect(() => {
+    if (redirectUrl && !localSuccess) {
+      setLocalSuccess('Success! Redirecting to app...');
+      setTimeout(() => {
+        executeRedirect();
+      }, 2000);
+    }
+  }, [redirectUrl, localSuccess, executeRedirect]);
+
+  const {
+    formData,
+    selectedPolicies,
+    handleFormChange,
+    handlePolicySelectionChange,
+    getSelectedFormData,
+  } = useConnectFormData(connectInfoMap);
 
   const {
     addPermittedActions,
@@ -38,9 +73,6 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     loadingStatus: actionsLoadingStatus,
     error: actionsError,
   } = useAddPermittedActions();
-
-  // Use the theme function
-  const themeStyles = theme(isDark);
 
   const handleSubmit = useCallback(async () => {
     // Clear any previous local errors and success
@@ -53,13 +85,11 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     });
 
     if (allValid) {
-      if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
+      if (!agentPKP || !readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
         setLocalError('Missing authentication information. Please try refreshing the page.');
         setLocalStatus(null);
         return;
       }
-
-      console.log('formData', formData);
 
       setLocalStatus('Initializing account...');
       const userPkpWallet = new PKPEthersWallet({
@@ -69,29 +99,37 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
       });
       await userPkpWallet.init();
 
+      const selectedFormData = getSelectedFormData();
+
       setLocalStatus('Adding permitted actions...');
       await addPermittedActions({
         wallet: userPkpWallet,
-        agentPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
-        abilityIpfsCids: Object.keys(formData),
+        agentPKPTokenId: agentPKP.tokenId,
+        abilityIpfsCids: Object.keys(selectedFormData),
       });
 
       try {
         setLocalStatus('Updating to new version...');
         const client = getClient({ signer: userPkpWallet });
         await client.permitApp({
-          pkpEthAddress: readAuthInfo.authInfo.agentPKP!.ethAddress,
+          pkpEthAddress: agentPKP.ethAddress,
           appId: Number(connectInfoMap.app.appId),
           appVersion: Number(connectInfoMap.app.activeVersion),
-          permissionData: formData,
+          permissionData: selectedFormData,
         });
 
         setLocalStatus(null);
-        // Show success state for 3 seconds, then refresh to app page
+        // Show success state for 3 seconds, then redirect or reload
         setLocalSuccess('Version updated successfully!');
-        setTimeout(() => {
+        setTimeout(async () => {
           setLocalSuccess(null);
-          window.location.href = `/user/appId/${connectInfoMap.app.appId}`;
+          // Only generate JWT if there's a redirectUri (for app redirects)
+          if (redirectUri) {
+            await generateJWT(connectInfoMap.app, connectInfoMap.app.activeVersion!);
+          } else {
+            // Navigate to the app permissions page with full refresh to update sidebar
+            window.location.href = `/user/appId/${connectInfoMap.app.appId}`;
+          }
         }, 3000);
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to update version');
@@ -99,9 +137,10 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
         return;
       }
     } else {
+      setLocalError('Some of your permissions are not valid. Please check the form and try again.');
       setLocalStatus(null);
     }
-  }, [formData, readAuthInfo, addPermittedActions, connectInfoMap.app]);
+  }, [formData, readAuthInfo, addPermittedActions, connectInfoMap.app, generateJWT]);
 
   const handleDecline = useCallback(() => {
     navigate(`/user/appId/${connectInfoMap.app.appId}`);
@@ -111,74 +150,65 @@ export function UpdateVersionPage({ connectInfoMap, readAuthInfo }: UpdateVersio
     formRefs.current[policyIpfsCid] = ref;
   }, []);
 
-  const isLoading = isActionsLoading || !!localStatus || !!localSuccess;
-  const loadingStatus = actionsLoadingStatus || localStatus;
-  const error = actionsError;
+  const isLoading = isJwtLoading || isActionsLoading || !!localStatus || !!localSuccess;
+  const loadingStatus = jwtLoadingStatus || actionsLoadingStatus || localStatus;
+  const error = jwtError || actionsError;
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-500 ${themeStyles.bg} sm:p-4`}>
-      {/* Main Card Container */}
-      <div
-        className={`max-w-6xl mx-auto ${themeStyles.mainCard} border ${themeStyles.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden`}
-      >
-        {/* Page Header */}
-        <PageHeader
-          icon={
-            <svg
-              className="w-4 h-4 text-orange-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-              />
-            </svg>
-          }
-          title="Update App Version"
-          description="Review and update permissions for the latest version"
-          theme={themeStyles}
+    <div
+      className={`w-full max-w-md mx-auto ${theme.mainCard} border ${theme.mainCardBorder} rounded-2xl shadow-2xl overflow-hidden relative z-10 origin-center`}
+    >
+      {/* Page Header */}
+      <PageHeader
+        icon={
+          <svg
+            className="w-4 h-4 text-orange-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+            />
+          </svg>
+        }
+        title="Update App Version"
+        description="Review and update permissions for the latest version"
+      />
+
+      <div className="px-3 sm:px-4 py-6 sm:py-8 space-y-6">
+        {/* App Header */}
+        <ConnectAppHeader app={connectInfoMap.app} />
+
+        {/* Apps and Versions */}
+        <AppsInfo
+          connectInfoMap={connectInfoMap}
+          formData={formData}
+          onFormChange={handleFormChange}
+          onRegisterFormRef={registerFormRef}
+          selectedPolicies={selectedPolicies}
+          onPolicySelectionChange={handlePolicySelectionChange}
         />
 
-        <div className="px-6 py-8 space-y-6">
-          {/* Warning Banner */}
-          <InfoBanner theme={themeStyles} />
+        {/* Status Card */}
+        <StatusCard
+          isLoading={isLoading}
+          loadingStatus={loadingStatus}
+          error={error || localError}
+          success={localSuccess}
+        />
 
-          {/* App Header */}
-          <ConnectAppHeader app={connectInfoMap.app} theme={themeStyles} />
-
-          {/* Apps and Versions */}
-          <AppsInfo
-            connectInfoMap={connectInfoMap}
-            theme={themeStyles}
-            isDark={isDark}
-            formData={formData}
-            onFormChange={handleFormChange}
-            onRegisterFormRef={registerFormRef}
-          />
-
-          {/* Status Card */}
-          <StatusCard
-            theme={themeStyles}
-            isLoading={isLoading}
-            loadingStatus={loadingStatus}
-            error={error || localError}
-            success={localSuccess}
-          />
-
-          {/* Action Buttons */}
-          <ActionButtons
-            onDecline={handleDecline}
-            onSubmit={handleSubmit}
-            theme={themeStyles}
-            isLoading={isLoading}
-            error={error || localError}
-            appName={connectInfoMap.app.name}
-          />
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          onDecline={handleDecline}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          error={error || localError}
+          appName={connectInfoMap.app.name}
+        />
       </div>
     </div>
   );

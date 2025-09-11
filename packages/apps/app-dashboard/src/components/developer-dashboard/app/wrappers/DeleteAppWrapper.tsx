@@ -59,8 +59,10 @@ export function DeleteAppWrapper() {
       <div className="w-full max-w-2xl mx-auto">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900">Delete App</h1>
-            <p className="text-gray-600 mt-2">Delete "{app.name}" and all its data.</p>
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Delete App</h1>
+            <p className="text-gray-600 dark:text-white/60 mt-2">
+              Delete "{app.name}" and all its data.
+            </p>
           </div>
         </div>
       </div>

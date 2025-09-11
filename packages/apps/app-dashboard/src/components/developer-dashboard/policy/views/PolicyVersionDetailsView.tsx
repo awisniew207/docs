@@ -18,7 +18,7 @@ export function PolicyVersionDetailsView({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-gray-900">Version {version.version}</h1>
+            <h1 className="text-3xl font-bold text-neutral-800">Version {version.version}</h1>
             {version.version === policy.activeVersion && (
               <Badge className="bg-green-100 text-green-800 border-green-200">Active Version</Badge>
             )}
@@ -58,7 +58,7 @@ export function PolicyVersionDetailsView({
 
       {version.changes && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-medium text-neutral-800 mb-4 flex items-center gap-2">
             <GitCommit className="h-5 w-5" />
             Version Changes
           </h2>
@@ -67,20 +67,20 @@ export function PolicyVersionDetailsView({
       )}
 
       <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Version Details</h2>
+        <h2 className="text-lg font-medium text-neutral-800 mb-4">Version Details</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
             <dt className="text-sm font-medium text-gray-500">Package Name</dt>
-            <dd className="mt-1 text-sm text-gray-900 font-mono">{version.packageName}</dd>
+            <dd className="mt-1 text-sm text-neutral-800 font-mono">{version.packageName}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Version</dt>
-            <dd className="mt-1 text-sm text-gray-900 font-mono">{version.version}</dd>
+            <dd className="mt-1 text-sm text-neutral-800 font-mono">{version.version}</dd>
           </div>
           {version.ipfsCid && (
             <div className="sm:col-span-2">
               <dt className="text-sm font-medium text-gray-500">IPFS CID</dt>
-              <dd className="mt-1 text-xs text-gray-900 font-mono break-all bg-gray-50 p-2 rounded">
+              <dd className="mt-1 text-xs text-neutral-800 font-mono break-all bg-gray-50 p-2 rounded">
                 {version.ipfsCid}
               </dd>
             </div>
@@ -90,22 +90,22 @@ export function PolicyVersionDetailsView({
 
       {version.author && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-medium text-neutral-800 mb-4 flex items-center gap-2">
             <User className="h-5 w-5" />
             Author Information
           </h2>
           <div className="space-y-3">
             <div>
               <dt className="text-sm font-medium text-gray-500">Name</dt>
-              <dd className="mt-1 text-sm text-gray-900">{version.author.name}</dd>
+              <dd className="mt-1 text-sm text-neutral-800">{version.author.name}</dd>
             </div>
             {version.author.email && (
               <div>
                 <dt className="text-sm font-medium text-gray-500">Email</dt>
-                <dd className="mt-1 text-sm text-gray-900">
+                <dd className="mt-1 text-sm text-neutral-800">
                   <a
                     href={`mailto:${version.author.email}`}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                   >
                     {version.author.email}
                   </a>
@@ -120,7 +120,7 @@ export function PolicyVersionDetailsView({
                     href={version.author.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 inline-flex items-center gap-1"
                   >
                     {version.author.url}
                     <ExternalLink className="h-3 w-3" />
@@ -135,7 +135,7 @@ export function PolicyVersionDetailsView({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {version.repository && version.repository.length > 0 && (
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-medium text-neutral-800 mb-4 flex items-center gap-2">
               <Code className="h-5 w-5" />
               Repository
             </h2>
@@ -146,7 +146,7 @@ export function PolicyVersionDetailsView({
                     href={repo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-sm"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 inline-flex items-center gap-1 text-sm"
                   >
                     {repo}
                     <ExternalLink className="h-3 w-3" />
@@ -159,7 +159,7 @@ export function PolicyVersionDetailsView({
 
         {version.homepage && (
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-medium text-neutral-800 mb-4 flex items-center gap-2">
               <Globe className="h-5 w-5" />
               Homepage
             </h2>
@@ -167,7 +167,7 @@ export function PolicyVersionDetailsView({
               href={version.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-sm"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 inline-flex items-center gap-1 text-sm"
             >
               {version.homepage}
               <ExternalLink className="h-3 w-3" />
@@ -178,7 +178,7 @@ export function PolicyVersionDetailsView({
 
       {version.dependencies && version.dependencies.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-medium text-neutral-800 mb-4 flex items-center gap-2">
             <Package className="h-5 w-5" />
             Dependencies
           </h2>
@@ -186,7 +186,7 @@ export function PolicyVersionDetailsView({
             {version.dependencies.map((dep) => (
               <div
                 key={dep}
-                className="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded border"
+                className="text-sm text-neutral-800 font-mono bg-gray-50 px-3 py-2 rounded border"
               >
                 {dep}
               </div>
@@ -197,19 +197,19 @@ export function PolicyVersionDetailsView({
 
       {version.contributors && version.contributors.length > 0 && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-medium text-neutral-800 mb-4 flex items-center gap-2">
             <User className="h-5 w-5" />
             Contributors
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {version.contributors.map((contributor, index) => (
               <div key={index} className="border rounded-lg p-4">
-                <div className="font-medium text-gray-900">{contributor.name}</div>
+                <div className="font-medium text-neutral-800">{contributor.name}</div>
                 {contributor.email && (
                   <div className="text-sm text-gray-600 mt-1">
                     <a
                       href={`mailto:${contributor.email}`}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                     >
                       {contributor.email}
                     </a>
@@ -221,7 +221,7 @@ export function PolicyVersionDetailsView({
                       href={contributor.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+                      className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 inline-flex items-center gap-1"
                     >
                       {contributor.url}
                       <ExternalLink className="h-3 w-3" />

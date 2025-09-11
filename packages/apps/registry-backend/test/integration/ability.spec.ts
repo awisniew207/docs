@@ -6,6 +6,7 @@ import { api, store } from './setup';
 const debug = createTestDebugger('ability');
 
 // For backwards compatibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const verboseLog = (value: any) => {
   debug(value);
 };

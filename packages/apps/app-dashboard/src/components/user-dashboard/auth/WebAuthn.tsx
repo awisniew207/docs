@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
-import Loading from '@/components/shared/ui/Loading';
 import StatusMessage from '../connect/StatusMessage';
 import { PasskeyNameInput } from '@/components/shared/ui/PasskeyNameInput';
 
@@ -21,7 +20,8 @@ export default function WebAuthn({
   clearError,
   theme,
 }: WebAuthnProps) {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [registerLoading, setRegisterLoading] = useState<boolean>(false);
+  const [authLoading, setAuthLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [passkeyName, setPasskeyName] = useState<string>('Vincent Passkey');
   const { setAuthInfo } = useSetAuthInfo();
@@ -44,7 +44,7 @@ export default function WebAuthn({
       return;
     }
 
-    setLoading(true);
+    setRegisterLoading(true);
     setError('');
     try {
       await registerWithWebAuthn(passkeyName.trim());
@@ -73,11 +73,11 @@ export default function WebAuthn({
 
       setError(errorMessage);
     }
-    setLoading(false);
+    setRegisterLoading(false);
   }
 
   async function handleAuthenticate() {
-    setLoading(true);
+    setAuthLoading(true);
     setError('');
     try {
       await authWithWebAuthn();
@@ -115,28 +115,17 @@ export default function WebAuthn({
 
       setError(errorMessage);
     }
-    setLoading(false);
-  }
-
-  if (loading) {
-    return <Loading />;
+    setAuthLoading(false);
   }
 
   return (
     <>
-      <h1 className={`text-xl font-semibold text-center mb-2 ${theme.text}`}>
-        Passkey Authentication
-      </h1>
-      <p className={`text-sm text-center mb-6 ${theme.textMuted}`}>
-        Use passkeys for secure, passwordless connection
-      </p>
-
       <div className="flex justify-center">
         <div className="space-y-4 w-4/5">
           {registerWithWebAuthn && (
             <div className="space-y-2">
               <label className={`text-sm font-medium block ${theme.text}`}>
-                Passkey name
+                Passkey Name
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <PasskeyNameInput
@@ -147,35 +136,102 @@ export default function WebAuthn({
                 label=""
                 description=""
                 required={true}
+                theme={theme}
               />
             </div>
           )}
 
           {error && <StatusMessage message={error} type="error" />}
 
-          <div className="pt-2 space-y-3">
+          <div className="pt-2">
             {registerWithWebAuthn && (
               <Button
-                className={`${theme.accentBg} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`${theme.accentBg} rounded-xl py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-all duration-200 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
                 onClick={handleRegister}
-                disabled={loading || !passkeyName.trim()}
+                disabled={registerLoading || authLoading || !passkeyName.trim()}
               >
-                {loading ? 'Creating...' : 'Create new passkey'}
+                {registerLoading ? (
+                  <>
+                    <svg
+                      className="w-4 h-4 animate-spin"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
+                    </svg>
+                    Create new passkey
+                  </>
+                )}
               </Button>
             )}
 
             <Button
-              className={`${theme.accentBg} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`${theme.accentBg} rounded-xl py-3 px-4 w-full font-medium text-sm ${theme.accentHover} transition-all duration-200 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${registerWithWebAuthn ? 'mt-3' : ''}`}
               onClick={handleAuthenticate}
-              disabled={loading}
+              disabled={authLoading || registerLoading}
             >
-              {loading ? 'Signing in...' : 'Sign in with existing passkey'}
+              {authLoading ? (
+                <>
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
+                  </svg>
+                  Sign in with existing passkey
+                </>
+              )}
             </Button>
 
             <Button
               onClick={handleBackClick}
-              className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-lg py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-colors`}
+              className={`${theme.cardBg} ${theme.text} border ${theme.cardBorder} rounded-xl py-3 px-4 w-full font-medium text-sm ${theme.itemHoverBg} transition-all duration-200 hover:shadow-sm flex items-center justify-center gap-2 mt-3`}
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
               Back
             </Button>
           </div>

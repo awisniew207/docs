@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { AuthMethod } from '@lit-protocol/types';
-import { getOrMintPKPs, mintPKP } from '../../utils/user-dashboard/lit';
+import { getOrMintUserPkp, mintPKP } from '../../utils/user-dashboard/lit';
 import { IRelayPKP } from '@lit-protocol/types';
 
 export default function useAccounts() {
@@ -12,11 +12,11 @@ export default function useAccounts() {
   /**
    * Fetch PKPs tied to given auth method
    */
-  const fetchAccounts = useCallback(async (authMethod: AuthMethod): Promise<void> => {
+  const fetchOrMintAccounts = useCallback(async (authMethod: AuthMethod): Promise<void> => {
     setLoading(true);
     setError(undefined);
     try {
-      const myPKPs = await getOrMintPKPs(authMethod);
+      const myPKPs = await getOrMintUserPkp(authMethod);
       setAccounts(myPKPs);
       if (myPKPs.length === 1) {
         setuserPKP(myPKPs[0]);
@@ -46,7 +46,7 @@ export default function useAccounts() {
   }, []);
 
   return {
-    fetchAccounts,
+    fetchOrMintAccounts,
     createAccount,
     setuserPKP,
     accounts,

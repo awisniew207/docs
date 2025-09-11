@@ -36,14 +36,14 @@ export function SelectField({
     <div className="space-y-2">
       <Label>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </Label>
       <Controller
         name={name}
         control={control}
         render={({ field }) => (
           <Select value={field.value || ''} onValueChange={(value) => field.onChange(value)}>
-            <SelectTrigger className={error ? 'border-red-500' : ''}>
+            <SelectTrigger className={error ? 'border-red-500 dark:border-red-400' : ''}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -56,7 +56,7 @@ export function SelectField({
           </Select>
         )}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }

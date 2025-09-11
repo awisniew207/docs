@@ -1,19 +1,24 @@
 ---
-category: Developers
-title: Creating Vincent Abilities
+title: How Abilities Work
 ---
 
 # How a Vincent Ability Works
 
+<div class="box info-box">
+  <p class="box-title info-box-title">
+    <span class="box-icon info-icon">Info</span> Note
+  </p>
+  <p>Ensure that all the policies consumed by your ability are published on NPM</p>
+</div>
+
 A Vincent Ability consists of two main lifecycle methods executed in the following order:
 
 1. **Precheck**: Executed locally by the Vincent Ability executor, this function provides a best-effort check that the ability execution shouldn't fail
-
    - Before the execution of your ability's `precheck` function, the Vincent Ability SDK will execute the `precheck` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Ability's `precheck` function will be executed
-   - This function is where you'd perform checks such as validating the Vincent Agent Wallet has sufficient token balances, has the appropriate on-chain approvals to make token transfers, or anything else your ability can validate before executing the ability's logic
+   - This function is where you'd perform checks such as validating the Vincent Wallet has sufficient token balances, has the appropriate on-chain approvals to make token transfers, or anything else your ability can validate before executing the ability's logic
 
-2. **Execute**: Executed within the Lit Action environment, this function performs the actual ability logic and has the ability to sign data using the Vincent App User's Agent Wallet
+2. **Execute**: Executed within the Lit Action environment, this function performs the actual ability logic and has the ability to sign data using the Vincent App User's Vincent Wallet
    - Before the execution of your ability's `execute` function, the Vincent Ability SDK will execute the `evaluate` functions of the Vincent Policies
    - If all Vincent Policies return `allow` results, the Vincent Ability's `execute` function will be executed
    - This function is where you'd perform the actual ability logic, such as making token transfers, interacting with smart contracts, or anything else your ability needs to do to fulfill the ability's purpose
@@ -88,19 +93,19 @@ Where:
 - `delegation`:
   - `delegateeAddress`: The Ethereum address of the Vincent Ability executor
   - `delegatorPkpInfo`:
-    - `tokenId`: The token ID of the Vincent App User's Vincent Agent Wallet
-    - `ethAddress`: The Ethereum address of the Vincent App User's Vincent Agent Wallet
-    - `publicKey`: The public key of the Vincent App User's Vincent Agent Wallet
+    - `tokenId`: The token ID of the Vincent App User's Vincent Wallet
+    - `ethAddress`: The Ethereum address of the App User's Vincent Wallet
+    - `publicKey`: The public key of the App User's Vincent Wallet
 - `policiesContext`: An object containing the results of each evaluated Vincent Policy
   - `allow`: A boolean indicating if the Vincent Ability execution is allowed to proceed, and all evaluated Vincent Policies returned `allow` results
   - `allowedPolicies`: An object containing the results and `commit` functions for each Vincent Policy that permitted ability execution
     - `[policyPackageName]`: An object where the key is the package name of the Vincent Policy, and the value is an object containing the result of the policy's `evaluate` function and the policy's `commit` function if it exists
-      - `result`: An object will details describing why the policy has permitted ability execution. This will have the shape of the Vincent Policy's [evalAllowResultSchema](./Creating-Policies.md#evalallowresultschema)
+      - `result`: An object will details describing why the policy has permitted ability execution. This will have the shape of the Vincent Policy's [evalAllowResultSchema](../Policy-Developers/Creating-Policies.md#evalallowresultschema)
       - `commit`: An optional function for each evaluated Vincent Policy that allows the policy to update any state it depends on to make it's decisions
-        - The parameter object passed to the `commit` function is defined by each Vincent Policy's [commitParamsSchema](./Creating-Policies.md#commitparamsschema), and the return value is defined by the policy's [commitAllowResultSchema](./Creating-Policies.md#commitallowresultschema) or [commitDenyResultSchema](./Creating-Policies.md#commitdenyresultschema)
+        - The parameter object passed to the `commit` function is defined by each Vincent Policy's [commitParamsSchema](../Policy-Developers/Creating-Policies.md#commitparamsschema), and the return value is defined by the policy's [commitAllowResultSchema](../Policy-Developers/Creating-Policies.md#commitallowresultschema) or [commitDenyResultSchema](../Policy-Developers/Creating-Policies.md#commitdenyresultschema)
   - `deniedPolicy`: An object containing the first Vincent Policy that denied the Vincent Ability execution
     - `policyPackageName`: The package name of the Vincent Policy that denied the Vincent Ability execution
-    - `result`: The result of the `evaluate` function of the Vincent Policy that denied the Vincent Ability execution, will have the shape of the Vincent Policy's [evalDenyResultSchema](./Creating-Policies.md#evaldenyresultschema)
+    - `result`: The result of the `evaluate` function of the Vincent Policy that denied the Vincent Ability execution, will have the shape of the Vincent Policy's [evalDenyResultSchema](../Policy-Developers/Creating-Policies.md#evaldenyresultschema)
 - `succeed`: A helper method for returning a `success` result from your ability's `precheck` and `execute` functions
 - `fail`: A helper method for returning a `fail` result from your ability's `precheck` and `execute` functions
 
@@ -145,7 +150,7 @@ To add support for Vincent Policies to your ability, you need to create Vincent 
 
 Our example Vincent Ability supports a Vincent spending limit policy that has the following schema for the parameters it's expecting to be given by the executing Vincent Ability:
 
-> **Note** The following code is an excerpt from the [Create a Vincent Policy](./Creating-Policies.md#userparamsschema) guide.
+> **Note** The following code is an excerpt from the [Create a Vincent Policy](../Policy-Developers/Creating-Policies.md#userparamsschema) guide.
 
 ```typescript
 import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
@@ -223,7 +228,7 @@ Executing a Vincent Ability's `execute` function uses the Lit network, which cos
 
 Before executing your ability's `precheck` function, the Vincent Ability SDK will execute the `precheck` functions of any Vincent Policies registered by the Vincent User. If all policies return `allow` results, the Vincent Ability's `precheck` function will be executed.
 
-For our example token transfer ability, the `precheck` function checks both the Vincent User's Agent Wallet ERC20 token balance, as well as the native token balance to validate the Agent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
+For our example token transfer ability, the `precheck` function checks both the Vincent User's Vincent Wallet ERC20 token balance, as well as the native token balance to validate the Vincent Wallet has enough balance to perform the token transfer and pay for the gas fees of the transfer transaction.
 
 > **Note:** The code from the previous sections has been omitted for brevity. The full code example can be found in the [Wrapping Up](#wrapping-up) section at the end of this guide.
 
@@ -308,7 +313,7 @@ Two arguments are passed to your ability's `precheck` function by the Vincent Ab
 
 This Zod schema defines the structure of successful `precheck` results. What's included in the returned object is up to you, but ideally it includes details about why the `precheck` passed.
 
-The following schema returns useful information to the Vincent Ability executor about the current balances of the Agent Wallet, as well as the estimated gas cost of the transaction:
+The following schema returns useful information to the Vincent Ability executor about the current balances of the Vincent Wallet, as well as the estimated gas cost of the transaction:
 
 ```typescript
 import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
@@ -352,7 +357,7 @@ const vincentAbility = createVincentAbility({
 
 The `execute` function is the main logic of your Vincent Ability, executed within the Lit Action environment when the Vincent Ability executor wants to perform the actual ability operation on behalf of the Vincent App User.
 
-Unlike the `precheck` function which only validates feasibility, the `execute` function performs the actual work your ability is designed to do. Additionally, because the `execute` function is executed in the Lit Action environment, it has access to the full Lit Action capabilities, including the ability to sign transactions and data using the Vincent App User's Agent Wallet (for more information on what's available to you within the Lit Action environment see the Lit Protocol [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/overview) docs).
+Unlike the `precheck` function which only validates feasibility, the `execute` function performs the actual work your ability is designed to do. Additionally, because the `execute` function is executed in the Lit Action environment, it has access to the full Lit Action capabilities, including the ability to sign transactions and data using the Vincent App User's Vincent Wallet (for more information on what's available to you within the Lit Action environment see the Lit Protocol [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/overview) docs).
 
 > **Note** This [Lit Action](https://developer.litprotocol.com/sdk/serverless-signing/combining-signatures) doc page covers how to sign data with a PKP using the Ethers.js library within a Lit Action. Ethers.js is injected by Lit into the Lit Action runtime, so you don't need to import it to use it within your ability's `execute` function.
 
@@ -474,7 +479,7 @@ The `policiesContext` object contains a property called `allowedPolicies` that i
 
 > **Note:** The following interface isn't the actual interface used by the Vincent Ability SDK, it's just a simplified example of what the `policiesContext` object looks like for reference.
 >
-> The [`evalAllowResultSchema`](./Creating-Policies.md#evalallowresultschema) and [`commitParamsSchema`](./Creating-Policies.md#commitparamsschema) are Zod schemas specified by the Vincent Policy package.
+> The [`evalAllowResultSchema`](../Policy-Developers/Creating-Policies.md#evalallowresultschema) and [`commitParamsSchema`](../Policy-Developers/Creating-Policies.md#commitparamsschema) are Zod schemas specified by the Vincent Policy package.
 
 ```typescript
 interface PoliciesContext {

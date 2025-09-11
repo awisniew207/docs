@@ -165,6 +165,7 @@ export async function getVincentAppServer(
           appId,
           appVersion,
           signer: config.delegateeSigner,
+          offset: 0, // TODO: Make this configurable?
         });
 
         return {

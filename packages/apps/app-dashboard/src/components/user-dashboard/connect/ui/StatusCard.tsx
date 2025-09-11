@@ -1,16 +1,14 @@
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { ThemeType } from './theme';
+import { theme } from './theme';
 
 interface StatusCardProps {
-  theme: ThemeType;
   isLoading?: boolean;
   loadingStatus?: string | null;
   error?: string | null;
   success?: string | null;
 }
 
-export function StatusCard({ theme, isLoading, loadingStatus, error, success }: StatusCardProps) {
-  // Don't render if no status to show
+export function StatusCard({ isLoading, loadingStatus, error, success }: StatusCardProps) {
   if (!isLoading && !error && !success) {
     return null;
   }
@@ -45,7 +43,17 @@ export function StatusCard({ theme, isLoading, loadingStatus, error, success }: 
         <Icon className={`w-5 h-5 ${iconClass} ${isLoading && !success ? 'animate-spin' : ''}`} />
         <div className="flex-1 min-w-0">
           <p className={`text-sm font-medium ${theme.text}`}>{title}</p>
-          <p className={`text-xs ${theme.textMuted} mt-1 truncate`}>{message}</p>
+          <p
+            className={`text-xs ${theme.textMuted} mt-1`}
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {message}
+          </p>
         </div>
       </div>
     </div>

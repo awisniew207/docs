@@ -34,7 +34,7 @@ contract VincentAppFacet is VincentBase {
      * @notice Modifier to restrict function access to the app manager only
      * @param appId ID of the app
      */
-    modifier onlyAppManager(uint256 appId) {
+    modifier onlyAppManager(uint40 appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         if (as_.appIdToApp[appId].manager != msg.sender) revert LibVincentAppFacet.NotAppManager(appId, msg.sender);
         _;
@@ -47,8 +47,8 @@ contract VincentAppFacet is VincentBase {
      * @param delegatees List of addresses authorized to act on behalf of the app
      * @param versionAbilities Abilities and policies for the app version
      */
-    function registerApp(uint256 appId, address[] calldata delegatees, AppVersionAbilities calldata versionAbilities)
-        external returns (uint256 newAppVersion)
+    function registerApp(uint40 appId, address[] calldata delegatees, AppVersionAbilities calldata versionAbilities)
+        external returns (uint24 newAppVersion)
     {
         if (appId == 0) {
             revert LibVincentAppFacet.ZeroAppIdNotAllowed();
@@ -68,12 +68,12 @@ contract VincentAppFacet is VincentBase {
      * @param versionAbilities Abilities and policies for the app version
      * @return newAppVersion The version number of the newly registered app version
      */
-    function registerNextAppVersion(uint256 appId, AppVersionAbilities calldata versionAbilities)
+    function registerNextAppVersion(uint40 appId, AppVersionAbilities calldata versionAbilities)
         external
         appNotDeleted(appId)
         onlyAppManager(appId)
         onlyRegisteredApp(appId)
-        returns (uint256 newAppVersion)
+        returns (uint24 newAppVersion)
     {
         newAppVersion = _registerNextAppVersion(appId, versionAbilities);
 
@@ -87,7 +87,7 @@ contract VincentAppFacet is VincentBase {
      * @param appVersion Version number of the app to enable/disable
      * @param enabled Whether to enable (true) or disable (false) the app version
      */
-    function enableAppVersion(uint256 appId, uint256 appVersion, bool enabled)
+    function enableAppVersion(uint40 appId, uint24 appVersion, bool enabled)
         external
         appNotDeleted(appId)
         onlyAppManager(appId)
@@ -114,7 +114,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param delegatee Address of the delegatee to add
      */
-    function addDelegatee(uint256 appId, address delegatee)
+    function addDelegatee(uint40 appId, address delegatee)
         external
         appNotDeleted(appId)
         onlyAppManager(appId)
@@ -128,7 +128,7 @@ contract VincentAppFacet is VincentBase {
         }
 
         // Check if the delegatee is already registered to any app
-        uint256 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
+        uint40 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
         if (delegateeAppId != 0) {
             revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
         }
@@ -146,7 +146,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId ID of the app
      * @param delegatee Address of the delegatee to remove
      */
-    function removeDelegatee(uint256 appId, address delegatee)
+    function removeDelegatee(uint40 appId, address delegatee)
         external
         appNotDeleted(appId)
         onlyAppManager(appId)
@@ -165,11 +165,56 @@ contract VincentAppFacet is VincentBase {
     }
 
     /**
+     * @notice Replace all delegatees for an app with the provided array. Allows adding empty arrays effectively replacing all delegatees at once.
+     * @dev Only the app manager can set delegatees. This function removes all existing delegatees
+     *      and adds the new ones. Each delegatee can only be associated with one app at a time.
+     * @param appId ID of the app
+     * @param delegatees Array of addresses to set as delegatees
+     */
+    function setDelegatee(uint40 appId, address[] calldata delegatees)
+        external
+        appNotDeleted(appId)
+        onlyAppManager(appId)
+        onlyRegisteredApp(appId)
+    {
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentAppStorage.App storage app = as_.appIdToApp[appId];
+
+        address[] memory currentDelegatees = app.delegatees.values();
+        
+        // Remove all current delegatees
+        for (uint256 i = 0; i < currentDelegatees.length; i++) {
+            address currentDelegatee = currentDelegatees[i];
+            app.delegatees.remove(currentDelegatee);
+            as_.delegateeAddressToAppId[currentDelegatee] = 0;
+            emit LibVincentAppFacet.DelegateeRemoved(appId, currentDelegatee);
+        }
+
+        // Add new delegatees
+        for (uint256 i = 0; i < delegatees.length; i++) {
+            address delegatee = delegatees[i];
+            
+            if (delegatee == address(0)) {
+                revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
+            }
+
+            uint40 delegateeAppId = as_.delegateeAddressToAppId[delegatee];
+            if (delegateeAppId != 0) {
+                revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(delegateeAppId, delegatee);
+            }
+
+            app.delegatees.add(delegatee);
+            as_.delegateeAddressToAppId[delegatee] = appId;
+            emit LibVincentAppFacet.DelegateeAdded(appId, delegatee);
+        }
+    }
+
+    /**
      * @notice Delete an application by setting its isDeleted flag to true
      * @dev Only the app manager can delete an app
      * @param appId ID of the app to delete
      */
-    function deleteApp(uint256 appId) external appNotDeleted(appId) onlyAppManager(appId) onlyRegisteredApp(appId) {
+    function deleteApp(uint40 appId) external appNotDeleted(appId) onlyAppManager(appId) onlyRegisteredApp(appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
 
@@ -187,7 +232,7 @@ contract VincentAppFacet is VincentBase {
      * @dev Only the app manager can undelete an app
      * @param appId ID of the app to undelete
      */
-    function undeleteApp(uint256 appId) external onlyAppManager(appId) onlyRegisteredApp(appId) {
+    function undeleteApp(uint40 appId) external onlyAppManager(appId) onlyRegisteredApp(appId) {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
         VincentAppStorage.App storage app = as_.appIdToApp[appId];
 
@@ -205,7 +250,7 @@ contract VincentAppFacet is VincentBase {
      * @param appId The ID of the app to register
      * @param delegatees List of addresses authorized to act on behalf of the app
      */
-    function _registerApp(uint256 appId, address[] calldata delegatees) internal {
+    function _registerApp(uint40 appId, address[] calldata delegatees) internal {
         VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
 
         if (as_.appIdToApp[appId].manager != address(0)) {
@@ -226,7 +271,7 @@ contract VincentAppFacet is VincentBase {
                 revert LibVincentAppFacet.ZeroAddressDelegateeNotAllowed();
             }
 
-            uint256 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
+            uint40 existingAppId = as_.delegateeAddressToAppId[delegatees[i]];
             if (existingAppId != 0) {
                 revert LibVincentAppFacet.DelegateeAlreadyRegisteredToApp(existingAppId, delegatees[i]);
             }
@@ -249,9 +294,9 @@ contract VincentAppFacet is VincentBase {
      * @param versionAbilities An AppVersionAbilities struct containing the abilities, policies, and parameters for the new app version.
      * @return newAppVersion The newly created version number for the app.
      */
-    function _registerNextAppVersion(uint256 appId, AppVersionAbilities calldata versionAbilities)
+    function _registerNextAppVersion(uint40 appId, AppVersionAbilities calldata versionAbilities)
         internal
-        returns (uint256 newAppVersion)
+        returns (uint24 newAppVersion)
     {
         // Step 1: Check that at least one ability is provided
         if (versionAbilities.abilityIpfsCids.length == 0) {
@@ -274,7 +319,7 @@ contract VincentAppFacet is VincentBase {
 
         // Step 3: Create a new app version.
         app.appVersions.push();
-        newAppVersion = app.appVersions.length;
+        newAppVersion = uint24(app.appVersions.length);
 
         VincentAppStorage.AppVersion storage versionedApp = app.appVersions[getAppVersionIndex(newAppVersion)];
         versionedApp.enabled = true; // App versions are enabled by default

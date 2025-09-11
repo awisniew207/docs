@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+
 import { getErc20Contract } from '../helpers/getErc20Contract';
 
 export const getCurrentAllowance = async ({
@@ -11,8 +12,7 @@ export const getCurrentAllowance = async ({
   tokenAddress: string;
   owner: string;
   spender: string;
-}): Promise<bigint> => {
+}): Promise<ethers.BigNumber> => {
   const contract = getErc20Contract(tokenAddress, provider);
-  const allowance = await contract.allowance(owner, spender);
-  return allowance.toBigInt();
+  return await contract.allowance(owner, spender);
 };

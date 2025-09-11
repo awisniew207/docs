@@ -6,6 +6,7 @@ const path = require('path');
 let sourceFile;
 try {
   // Find the path to the package.json file of the installed package
+  // nx-ignore-next-line
   const packageJsonPath = require.resolve('@lit-protocol/vincent-registry-sdk/package.json');
   // Get the directory containing the package.json
   const packageDir = path.dirname(packageJsonPath);

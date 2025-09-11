@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { bundledVincentAbility } from '@lit-protocol/vincent-ability-transaction-signer';
+import { bundledVincentAbility } from '@lit-protocol/vincent-ability-evm-transaction-signer';
 import { vincentPolicyMetadata } from '@lit-protocol/vincent-policy-contract-whitelist';
 import {
   disconnectVincentAbilityClients,
@@ -111,7 +111,6 @@ describe('Contract Whitelist Ability E2E Tests', () => {
   let RAW_ERC20_TRANSFER_TRANSACTION_ON_ETH: RawTransaction;
 
   let SIGNED_ERC20_TRANSFER_TRANSACTION_ON_BASE: string;
-  let SIGNED_ERC20_TRANSFER_FROM_TRANSACTION_ON_BASE: string;
   let SIGNED_ERC20_TRANSFER_TRANSACTION_ON_ETH: string;
 
   // EIP-1559 transaction variables
@@ -844,8 +843,8 @@ describe('Contract Whitelist Ability E2E Tests', () => {
     // Verify policies context shows the transaction was denied
     const policiesContext = executeResult.context?.policiesContext;
     expect(policiesContext).toBeDefined();
-    expect(policiesContext!.allow).toBe(false);
-    expect(policiesContext!.evaluatedPolicies).toContain(
+    expect(policiesContext?.allow).toBe(false);
+    expect(policiesContext?.evaluatedPolicies).toContain(
       '@lit-protocol/vincent-policy-contract-whitelist',
     );
 

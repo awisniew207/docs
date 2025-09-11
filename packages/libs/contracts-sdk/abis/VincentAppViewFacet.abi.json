@@ -1,6 +1,19 @@
 [
   {
     "type": "function",
+    "name": "APP_PAGE_SIZE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getAppByDelegatee",
     "inputs": [
       {
@@ -17,8 +30,8 @@
         "components": [
           {
             "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint40",
+            "internalType": "uint40"
           },
           {
             "name": "isDeleted",
@@ -32,8 +45,8 @@
           },
           {
             "name": "latestVersion",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "delegatees",
@@ -51,8 +64,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ],
     "outputs": [
@@ -63,8 +76,8 @@
         "components": [
           {
             "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint40",
+            "internalType": "uint40"
           },
           {
             "name": "isDeleted",
@@ -78,8 +91,8 @@
           },
           {
             "name": "latestVersion",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "delegatees",
@@ -97,48 +110,16 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "version",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ],
     "outputs": [
-      {
-        "name": "app",
-        "type": "tuple",
-        "internalType": "struct VincentAppViewFacet.App",
-        "components": [
-          {
-            "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "isDeleted",
-            "type": "bool",
-            "internalType": "bool"
-          },
-          {
-            "name": "manager",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "latestVersion",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "delegatees",
-            "type": "address[]",
-            "internalType": "address[]"
-          }
-        ]
-      },
       {
         "name": "appVersion",
         "type": "tuple",
@@ -146,8 +127,8 @@
         "components": [
           {
             "name": "version",
-            "type": "uint256",
-            "internalType": "uint256"
+            "type": "uint24",
+            "internalType": "uint24"
           },
           {
             "name": "enabled",
@@ -189,86 +170,23 @@
         "name": "manager",
         "type": "address",
         "internalType": "address"
+      },
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "outputs": [
       {
-        "name": "appsWithVersions",
-        "type": "tuple[]",
-        "internalType": "struct VincentAppViewFacet.AppWithVersions[]",
-        "components": [
-          {
-            "name": "app",
-            "type": "tuple",
-            "internalType": "struct VincentAppViewFacet.App",
-            "components": [
-              {
-                "name": "id",
-                "type": "uint256",
-                "internalType": "uint256"
-              },
-              {
-                "name": "isDeleted",
-                "type": "bool",
-                "internalType": "bool"
-              },
-              {
-                "name": "manager",
-                "type": "address",
-                "internalType": "address"
-              },
-              {
-                "name": "latestVersion",
-                "type": "uint256",
-                "internalType": "uint256"
-              },
-              {
-                "name": "delegatees",
-                "type": "address[]",
-                "internalType": "address[]"
-              }
-            ]
-          },
-          {
-            "name": "versions",
-            "type": "tuple[]",
-            "internalType": "struct VincentAppViewFacet.AppVersion[]",
-            "components": [
-              {
-                "name": "version",
-                "type": "uint256",
-                "internalType": "uint256"
-              },
-              {
-                "name": "enabled",
-                "type": "bool",
-                "internalType": "bool"
-              },
-              {
-                "name": "delegatedAgentPkpTokenIds",
-                "type": "uint256[]",
-                "internalType": "uint256[]"
-              },
-              {
-                "name": "abilities",
-                "type": "tuple[]",
-                "internalType": "struct VincentAppViewFacet.Ability[]",
-                "components": [
-                  {
-                    "name": "abilityIpfsCid",
-                    "type": "string",
-                    "internalType": "string"
-                  },
-                  {
-                    "name": "policyIpfsCids",
-                    "type": "string[]",
-                    "internalType": "string[]"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+        "name": "appIds",
+        "type": "uint40[]",
+        "internalType": "uint40[]"
+      },
+      {
+        "name": "appVersionCounts",
+        "type": "uint24[]",
+        "internalType": "uint24[]"
       }
     ],
     "stateMutability": "view"
@@ -279,21 +197,16 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "version",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       },
       {
         "name": "offset",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "limit",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -313,8 +226,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -324,8 +237,8 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       }
     ]
   },
@@ -335,13 +248,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -351,13 +264,13 @@
     "inputs": [
       {
         "name": "appId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint40",
+        "internalType": "uint40"
       },
       {
         "name": "appVersion",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },
@@ -374,8 +287,19 @@
   },
   {
     "type": "error",
-    "name": "InvalidOffsetOrLimit",
-    "inputs": []
+    "name": "InvalidOffset",
+    "inputs": [
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalCount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",
@@ -385,6 +309,22 @@
         "name": "manager",
         "type": "address",
         "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NoDelegatedAgentPkpsFound",
+    "inputs": [
+      {
+        "name": "appId",
+        "type": "uint40",
+        "internalType": "uint40"
+      },
+      {
+        "name": "version",
+        "type": "uint24",
+        "internalType": "uint24"
       }
     ]
   },

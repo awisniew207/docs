@@ -1,11 +1,10 @@
 import { SessionSigs } from '@lit-protocol/types';
 import { AuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { create, verify } from '@lit-protocol/vincent-app-sdk/jwt';
-import type { JWTConfig } from '@lit-protocol/vincent-app-sdk/jwt';
+import { createPlatformUserJWT, verifyVincentPlatformJWT } from '@lit-protocol/vincent-app-sdk/jwt';
 import { initPkpSigner } from '@/utils/developer-dashboard/initPkpSigner';
 import { env } from '@/config/env';
 
-const { VITE_JWT_EXPIRATION_MINUTES } = env;
+const { VITE_ENV, VITE_JWT_EXPIRATION_MINUTES } = env;
 
 type StoredJWT = {
   token: string;
@@ -14,7 +13,8 @@ type StoredJWT = {
 };
 
 const JWT_STORAGE_KEY = 'platformUserJWT';
-const EXPECTED_AUDIENCE = 'staging.registry.heyvincent.ai';
+const EXPECTED_AUDIENCE =
+  VITE_ENV === 'staging' ? `staging.registry.heyvincent.ai` : `registry.heyvincent.ai`;
 
 /**
  * Get current JWT token for request headers using PKP wallet - returns null if invalid
@@ -23,11 +23,11 @@ export const getCurrentJwt = async (
   authInfo: AuthInfo,
   sessionSigs: SessionSigs,
 ): Promise<string | null> => {
-  if (!authInfo?.agentPKP?.ethAddress || !authInfo?.agentPKP || !sessionSigs) {
+  if (!authInfo?.userPKP?.ethAddress || !authInfo?.userPKP || !sessionSigs) {
     return null;
   }
 
-  const address = authInfo.agentPKP.ethAddress;
+  const address = authInfo.userPKP.ethAddress;
 
   // Check if stored token is still valid
   const stored = localStorage.getItem(JWT_STORAGE_KEY);
@@ -42,10 +42,9 @@ export const getCurrentJwt = async (
           localStorage.removeItem(JWT_STORAGE_KEY);
         } else if (Date.now() < data.expiresAt) {
           // Check if token is still valid
-          verify({
+          verifyVincentPlatformJWT({
             jwt: data.token,
             expectedAudience: EXPECTED_AUDIENCE,
-            requiredAppId: undefined,
           });
           return data.token;
         }
@@ -63,9 +62,10 @@ export const getCurrentJwt = async (
     const pkpWallet = await initPkpSigner({ authInfo, sessionSigs });
 
     // Create JWT configuration
-    const jwtConfig: JWTConfig = {
+    // Create JWT using app-SDK
+    const jwt = await createPlatformUserJWT({
       pkpWallet,
-      pkp: authInfo.agentPKP,
+      pkpInfo: authInfo.userPKP,
       payload: {
         name: 'Vincent Platform User',
       },
@@ -75,10 +75,7 @@ export const getCurrentJwt = async (
         type: authInfo.type,
         ...(authInfo.value ? { value: authInfo.value } : {}),
       },
-    };
-
-    // Create JWT using app-SDK
-    const jwt = await create(jwtConfig);
+    });
 
     const expiresAt = Date.now() + VITE_JWT_EXPIRATION_MINUTES * 60 * 1000;
     const storedData: StoredJWT = { token: jwt, address, expiresAt };
@@ -106,10 +103,9 @@ export const getCurrentJwtTokenForStore = async (): Promise<string | null> => {
 
     // Check if token is still valid
     if (Date.now() < data.expiresAt) {
-      verify({
+      verifyVincentPlatformJWT({
         jwt: data.token,
         expectedAudience: EXPECTED_AUDIENCE,
-        requiredAppId: undefined,
       });
       return data.token;
     }

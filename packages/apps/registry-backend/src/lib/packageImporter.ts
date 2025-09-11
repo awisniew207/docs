@@ -7,10 +7,12 @@ const execAsync = util.promisify(exec);
 
 import { mkdtemp, mkdir } from 'node:fs/promises';
 
-import { remove, readJSON } from 'fs-extra';
+import fs from 'fs-extra';
 import * as tar from 'tar';
 
 import { Policy, PolicyVersion } from './mongo/policy';
+
+const { remove, readJSON } = fs;
 
 // Module-level verbose logging control
 // const ENABLE_VERBOSE_LOGGING = process.env.VINCENT_VERBOSE_LOGGING === 'true' || false;
@@ -34,14 +36,12 @@ export interface PackageMetadata {
    * IPFS CID of the package
    */
   ipfsCid: string;
-
-  /**
-   * Additional metadata for policies
-   */
-  uiSchema?: Record<string, unknown>;
-  jsonSchema?: Record<string, unknown>;
 }
 
+export interface PolicyInputUiData {
+  uiSchema: Record<string, unknown>;
+  jsonSchema: Record<string, unknown>;
+}
 /**
  * Options for importing a package
  */
@@ -188,6 +188,54 @@ async function readPackageMetadata(
 }
 
 /**
+ * Reads metadata from a package
+ * @param packageDir Path to the extracted package
+ * @returns Policy uiSchema/JSONSchema data
+ */
+async function readPolicyInputUiSchema(packageDir: string): Promise<PolicyInputUiData> {
+  debugLog('Reading policy static data', { packageDir });
+
+  const uiSchemaFileName = 'inputUiSchema.json';
+  const filepath = path.join(packageDir, 'dist/src/', uiSchemaFileName);
+
+  debugLog('Metadata file path determined', {
+    metadataFileName: uiSchemaFileName,
+    metadataPath: filepath,
+  });
+
+  try {
+    debugLog('Reading uiSchema file');
+    const uiSchemaData: PolicyInputUiData = await readJSON(filepath, 'utf-8');
+    debugLog(`uiSchema file read successfully from ${filepath}`);
+
+    if (!uiSchemaData.uiSchema) {
+      debugLog(`Missing uiSchema in ${uiSchemaFileName}`, { uiSchemaData });
+      throw new Error(`Missing required property 'ipfsCid' in ${uiSchemaFileName}`);
+    }
+
+    if (!uiSchemaData.jsonSchema) {
+      debugLog('Missing jsonSchema in metadata', { uiSchemaData });
+      throw new Error(`Missing required property 'jsonSchema' in ${uiSchemaData}`);
+    }
+
+    debugLog('Package uiSchema validation successful', { uiSchemaData });
+    return uiSchemaData;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      debugLog('Metadata file not found', { metadataPath: filepath });
+      throw new Error(`Metadata file ${uiSchemaFileName} not found in package`);
+    }
+    debugLog('Failed to read or parse metadata', {
+      metadataPath: filepath,
+      error: (error as Error).message,
+    });
+    throw new Error(
+      `Failed to read metadata from ${uiSchemaFileName}: ${(error as Error).message}`,
+    );
+  }
+}
+
+/**
  * Identifies supported policies from dependencies
  * @param dependencies Dependencies object from package.json
  * @returns Object containing supportedPolicies and policiesNotInRegistry arrays
@@ -205,7 +253,9 @@ export async function identifySupportedPolicies(dependencies: Record<string, str
 
   // Filter out dependencies with non-explicit semvers
   const explicitDependencies = Object.entries(dependencies).filter(
-    ([_, version]) =>
+    (
+      [_, version], // eslint-disable-line @typescript-eslint/no-unused-vars
+    ) =>
       !version.startsWith('^') &&
       !version.startsWith('~') &&
       !version.includes('*') &&
@@ -292,7 +342,9 @@ export async function identifySupportedPolicies(dependencies: Record<string, str
  * @param options Import options
  * @returns Package metadata
  */
-export async function importPackage(options: ImportPackageOptions): Promise<PackageMetadata> {
+export async function importPackage(
+  options: ImportPackageOptions,
+): Promise<PackageMetadata & Partial<PolicyInputUiData>> {
   const { packageName, version, type } = options;
   debugLog('Starting package import', { packageName, version, type });
 
@@ -306,14 +358,30 @@ export async function importPackage(options: ImportPackageOptions): Promise<Pack
     // Read the metadata from the package
     const metadata = await readPackageMetadata(packageDir, type);
 
+    let uiSchemaData: PolicyInputUiData | undefined;
+
+    if (type === 'policy') {
+      uiSchemaData = await readPolicyInputUiSchema(packageDir);
+
+      debugLog('Package import completed successfully', {
+        packageName,
+        version,
+        type,
+        ipfsCid: metadata.ipfsCid,
+        uiSchemaData: uiSchemaData ? { ...uiSchemaData } : {},
+      });
+
+      return { ...metadata, ...(uiSchemaData ? { ...uiSchemaData } : {}) };
+    }
+
+    // Abilities just have basic metadata; ipfsCid
     debugLog('Package import completed successfully', {
       packageName,
       version,
       type,
       ipfsCid: metadata.ipfsCid,
     });
-
-    return metadata;
+    return { ...metadata };
   } catch (error) {
     debugLog('Package import failed', {
       packageName,

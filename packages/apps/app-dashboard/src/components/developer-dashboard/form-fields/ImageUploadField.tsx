@@ -82,7 +82,7 @@ export function ImageUploadField({
   const displayUrl =
     previewUrl ||
     (currentValue && !currentValue.startsWith('data:')
-      ? `data:image/jpeg;base64,${currentValue}`
+      ? `data:image/svg+xml;base64,${currentValue}`
       : currentValue) ||
     null;
 
@@ -94,12 +94,12 @@ export function ImageUploadField({
         <FormItem>
           <FormLabel>
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
           </FormLabel>
           <FormControl>
             <div className="space-y-4">
               {displayUrl && (
-                <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                <div className="relative w-32 h-32 border dark:border-white/20 rounded-lg overflow-hidden">
                   <img src={displayUrl} alt="Preview" className="w-full h-full object-cover" />
                   <Button
                     type="button"
@@ -116,20 +116,18 @@ export function ImageUploadField({
               <div className="space-y-2">
                 <input
                   type="file"
-                  accept="image/jpeg,image/jpg,image/gif"
+                  accept="image/svg+xml"
                   onChange={handleFileChange}
                   disabled={isUploading}
-                  className={`w-full px-2 py-1.5 text-sm border rounded-md border-gray-300 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 ${
+                  className={`w-full px-2 py-1.5 text-sm border rounded-md border-gray-300 dark:border-white/20 dark:bg-neutral-800 dark:text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-gray-50 dark:file:bg-white/10 file:text-gray-700 dark:file:text-white/80 hover:file:bg-gray-100 dark:hover:file:bg-white/20 ${
                     isUploading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 />
-                <div className="text-xs text-gray-600">
-                  Upload a square JPG, JPEG, or GIF image (max 100KB)
-                </div>
+                <div className="text-xs text-gray-600">Upload an SVG (max ~128KB)</div>
 
                 {isUploading && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600"></div>
+                  <div className="flex items-center space-x-2 text-xs text-gray-600 dark:text-white/60">
+                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600 dark:border-neutral-800/60"></div>
                     <span>Processing image...</span>
                   </div>
                 )}

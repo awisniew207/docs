@@ -40,13 +40,13 @@ export function PolicyCheckboxField({
     <div className="space-y-2">
       <Label>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </Label>
 
       {policies.length === 0 ? (
-        <div className="text-sm text-gray-500">No policies available</div>
+        <div className="text-sm text-gray-500 dark:text-white/40">No policies available</div>
       ) : (
-        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+        <div className="max-h-60 overflow-y-auto border dark:border-white/10 rounded-md p-3 space-y-3 dark:bg-neutral-800">
           {policies.map((policy) => (
             <div key={policy.packageName} className="flex items-start space-x-3">
               <Checkbox
@@ -63,7 +63,20 @@ export function PolicyCheckboxField({
                 >
                   {policy.title}
                 </label>
-                <p className="text-xs text-muted-foreground">{policy.packageName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-muted-foreground">{policy.packageName}</p>
+                  <a
+                    href={`https://www.npmjs.com/package/${policy.packageName}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-75 transition-opacity"
+                    title={`View ${policy.packageName} on npm`}
+                  >
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <img src="/npm.png" alt="npm" className="w-full h-full object-contain" />
+                    </div>
+                  </a>
+                </div>
                 {policy.description && (
                   <p className="text-xs text-muted-foreground">{policy.description}</p>
                 )}
@@ -74,12 +87,12 @@ export function PolicyCheckboxField({
       )}
 
       {currentValues.length > 0 && (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-white/60">
           Selected: {currentValues.length} of {policies.length} policies
         </div>
       )}
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }

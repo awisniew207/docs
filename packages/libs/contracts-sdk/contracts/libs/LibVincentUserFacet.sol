@@ -19,7 +19,7 @@ library LibVincentUserFacet {
      * @param appId The ID of the app being permitted
      * @param appVersion The version number of the app being permitted
      */
-    event AppVersionPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
+    event AppVersionPermitted(uint256 indexed pkpTokenId, uint40 indexed appId, uint24 indexed appVersion);
 
     /**
      * @notice Emitted when an app version permission is removed from a PKP
@@ -27,7 +27,15 @@ library LibVincentUserFacet {
      * @param appId The ID of the app being unpermitted
      * @param appVersion The version of the app being unpermitted
      */
-    event AppVersionUnPermitted(uint256 indexed pkpTokenId, uint256 indexed appId, uint256 indexed appVersion);
+    event AppVersionUnPermitted(uint256 indexed pkpTokenId, uint40 indexed appId, uint24 indexed appVersion);
+
+    /**
+     * @notice Emitted when an app version is re-permitted for a PKP
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app being re-permitted
+     * @param appVersion The version number of the app being re-permitted
+     */
+    event AppVersionRePermitted(uint256 indexed pkpTokenId, uint40 indexed appId, uint24 indexed appVersion);
 
     /**
      * @notice Emitted when an ability policy parameters are set
@@ -40,8 +48,8 @@ library LibVincentUserFacet {
      */
     event AbilityPolicyParametersSet(
         uint256 indexed pkpTokenId,
-        uint256 indexed appId,
-        uint256 indexed appVersion,
+        uint40 indexed appId,
+        uint24 indexed appVersion,
         bytes32 hashedAbilityIpfsCid,
         bytes32 hashedAbilityPolicyIpfsCid,
         bytes policyParameterValues
@@ -56,8 +64,8 @@ library LibVincentUserFacet {
      */
     event AbilityPolicyParametersRemoved(
         uint256 indexed pkpTokenId,
-        uint256 indexed appId,
-        uint256 indexed appVersion,
+        uint40 indexed appId,
+        uint24 indexed appVersion,
         bytes32 hashedAbilityIpfsCid
     );
 
@@ -74,7 +82,7 @@ library LibVincentUserFacet {
      * @param appId The ID of the app
      * @param appVersion The version of the app
      */
-    error AppVersionAlreadyPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+    error AppVersionAlreadyPermitted(uint256 pkpTokenId, uint40 appId, uint24 appVersion);
 
     /**
      * @notice Error thrown when an app version is not permitted for a PKP
@@ -82,14 +90,14 @@ library LibVincentUserFacet {
      * @param appId The ID of the app
      * @param appVersion The version of the app
      */
-    error AppVersionNotPermitted(uint256 pkpTokenId, uint256 appId, uint256 appVersion);
+    error AppVersionNotPermitted(uint256 pkpTokenId, uint40 appId, uint24 appVersion);
 
     /**
      * @notice Error thrown when an app version is not enabled
      * @param appId The ID of the app
      * @param appVersion The version of the app
      */
-    error AppVersionNotEnabled(uint256 appId, uint256 appVersion);
+    error AppVersionNotEnabled(uint40 appId, uint24 appVersion);
 
     /**
      * @notice Error thrown when ability and policy array lengths do not match
@@ -122,7 +130,7 @@ library LibVincentUserFacet {
      * @param appVersion The version of the app
      * @param abilityIpfsCid The IPFS CID of the ability
      */
-    error AbilityNotRegisteredForAppVersion(uint256 appId, uint256 appVersion, string abilityIpfsCid);
+    error AbilityNotRegisteredForAppVersion(uint40 appId, uint24 appVersion, string abilityIpfsCid);
 
     /**
      * @notice Error thrown when an ability policy is not registered for an app version
@@ -132,7 +140,7 @@ library LibVincentUserFacet {
      * @param abilityPolicyIpfsCid The IPFS CID of the ability policy
      */
     error AbilityPolicyNotRegisteredForAppVersion(
-        uint256 appId, uint256 appVersion, string abilityIpfsCid, string abilityPolicyIpfsCid
+        uint40 appId, uint24 appVersion, string abilityIpfsCid, string abilityPolicyIpfsCid
     );
 
     /**
@@ -141,7 +149,7 @@ library LibVincentUserFacet {
      * @param appVersion The version of the app
      * @param abilityIpfsCid The IPFS CID of the ability
      */
-    error DuplicateAbilityIpfsCid(uint256 appId, uint256 appVersion, string abilityIpfsCid);
+    error DuplicateAbilityIpfsCid(uint40 appId, uint24 appVersion, string abilityIpfsCid);
     
     /**
      * @notice Error thrown when a duplicate ability policy IPFS CID is provided
@@ -150,7 +158,7 @@ library LibVincentUserFacet {
      * @param abilityIpfsCid The IPFS CID of the ability
      * @param abilityPolicyIpfsCid The IPFS CID of the ability policy
      */
-    error DuplicateAbilityPolicyIpfsCid(uint256 appId, uint256 appVersion, string abilityIpfsCid, string abilityPolicyIpfsCid);
+    error DuplicateAbilityPolicyIpfsCid(uint40 appId, uint24 appVersion, string abilityIpfsCid, string abilityPolicyIpfsCid);
 
     /**
      * @notice Error thrown when invalid input is provided
@@ -183,5 +191,13 @@ library LibVincentUserFacet {
      * @param appId The ID of the app
      * @param appVersion The version of the app
      */
-    error NotAllRegisteredAbilitiesProvided(uint256 appId, uint256 appVersion);
+    error NotAllRegisteredAbilitiesProvided(uint40 appId, uint24 appVersion);
+
+    /**
+     * @notice Error thrown when an app has never been permitted for a PKP, but the user is trying to re-permit it
+     * @param pkpTokenId The token ID of the PKP
+     * @param appId The ID of the app
+     * @param appVersion The version of the app
+     */
+    error AppNeverPermitted(uint256 pkpTokenId, uint40 appId, uint24 appVersion);
 }

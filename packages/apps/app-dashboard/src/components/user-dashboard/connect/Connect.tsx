@@ -1,18 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { AUTH_METHOD_TYPE } from '@lit-protocol/constants';
-import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
+import { SessionSigs } from '@lit-protocol/types';
 import { ThemeType } from './ui/theme';
 
-import useAuthenticate from '../../../hooks/user-dashboard/useAuthenticate';
-import useAccounts from '../../../hooks/user-dashboard/useAccounts';
-import { registerWebAuthn, getSessionSigs } from '../../../utils/user-dashboard/lit';
+import useAuthenticate from '@/hooks/user-dashboard/useAuthenticate';
+import useAccounts from '@/hooks/user-dashboard/useAccounts';
+import { registerWebAuthn, getSessionSigs } from '@/utils/user-dashboard/lit';
+import { useSetAuthInfo, useClearAuthInfo, ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import ConnectMethods from '../auth/ConnectMethods';
-import { getAgentPKP } from '../../../utils/user-dashboard/getAgentPKP';
-import {
-  useSetAuthInfo,
-  UseReadAuthInfo,
-  useClearAuthInfo,
-} from '../../../hooks/user-dashboard/useAuthInfo';
 
 import SignUpView from '../auth/SignUpView';
 import StatusMessage from './StatusMessage';
@@ -20,7 +15,7 @@ import Loading from '@/components/shared/ui/Loading';
 
 type ConnectViewProps = {
   theme: ThemeType;
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
 };
 
 export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
@@ -30,7 +25,6 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
-  const [agentPKP, setAgentPKP] = useState<IRelayPKP>();
   const [sessionError, setSessionError] = useState<Error>();
 
   // Status message state
@@ -69,7 +63,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // Account handling
   const {
-    fetchAccounts,
+    fetchOrMintAccounts,
     setuserPKP,
     userPKP,
     accounts,
@@ -84,8 +78,13 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   useEffect(() => {
     if (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      setStatusMessage(`Authentication Error: ${errorMessage}`);
-      setStatusType('error');
+      // Don't show error for user rejection - it's not really an error
+      if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
+        // User cancelled authentication - no action needed
+      } else {
+        setStatusMessage(`Authentication Error: ${errorMessage}`);
+        setStatusType('error');
+      }
     } else {
       setStatusMessage('');
     }
@@ -112,29 +111,19 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
         authMethod,
       });
       setSessionSigs(sigs);
-
-      // After getting user PKP session sigs, try to get the agent PKP
-      try {
-        const agentPkpInfo = await getAgentPKP(userPKP.ethAddress);
-        setAgentPKP(agentPkpInfo);
-      } catch (agentError) {
-        console.error('Error handling Agent PKP:', agentError);
-        setStatusMessage(`Agent PKP Error: ${agentError}`);
-        setStatusType('error');
-      }
     } catch (err) {
       setSessionError(err as Error);
     } finally {
       setSessionLoading(false);
     }
-  }, [authMethod, userPKP, setSessionSigs, setAgentPKP, setSessionError, setSessionLoading]);
+  }, [authMethod, userPKP, setSessionSigs, setSessionError, setSessionLoading]);
 
   // If user is authenticated, fetch accounts
   useEffect(() => {
     if (authMethod) {
-      fetchAccounts(authMethod);
+      fetchOrMintAccounts(authMethod);
     }
-  }, [authMethod, fetchAccounts]);
+  }, [authMethod, fetchOrMintAccounts]);
 
   // If user is authenticated and has accounts, select the first one
   useEffect(() => {
@@ -157,9 +146,9 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
     let currentMessage = '';
     if (authLoading) {
-      currentMessage = 'Authenticating your credentials...';
+      currentMessage = 'Authenticating...';
     } else if (accountsLoading) {
-      currentMessage = 'Fetching your Agent Wallet...';
+      currentMessage = 'Fetching your Vincent Wallet...';
     } else if (sessionLoading) {
       currentMessage = 'Securing your session...';
     } else if (isProcessing) {
@@ -197,15 +186,14 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   const renderContent = () => {
     // Use the stable loading state
     if (isStableLoading) {
-      return <Loading />;
+      return <Loading text={loadingMessage} />;
     }
 
     // If authenticated with a new PKP and session sigs
-    if (userPKP && agentPKP && sessionSigs) {
+    if (userPKP && sessionSigs) {
       // Connect flow: save PKP info and refresh the page so ConnectPageWrapper can re-evaluate
       try {
         updateAuthInfo({
-          agentPKP,
           userPKP,
         });
       } catch (error) {
@@ -214,11 +202,11 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
         setStatusType('error');
       }
       window.location.reload();
-      return <Loading />;
+      return <Loading text="Finalizing authentication..." />;
     }
 
     // If we have validated session sigs from existing auth, show completion message
-    if (validatedSessionSigs && authInfo?.userPKP && authInfo?.agentPKP) {
+    if (validatedSessionSigs && authInfo?.userPKP) {
       return (
         <div className="text-center py-8">
           <h1 className={`text-lg font-semibold ${theme.text}`}>Authentication Complete</h1>

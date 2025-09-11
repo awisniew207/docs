@@ -1,19 +1,23 @@
 const statusClasses = {
   info: {
-    container: 'bg-blue-50 text-blue-700 border border-blue-200',
-    icon: 'text-blue-700',
+    container:
+      'bg-blue-50 dark:!bg-blue-900/30 text-blue-700 dark:!text-blue-300 border border-blue-200 dark:!border-blue-700/30',
+    icon: 'text-blue-700 dark:!text-blue-300',
   },
   warning: {
-    container: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
-    icon: 'text-yellow-700',
+    container:
+      'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700/30',
+    icon: 'text-yellow-700 dark:text-yellow-300',
   },
   success: {
-    container: 'bg-green-50 text-green-700 border border-green-200',
-    icon: 'text-green-700',
+    container:
+      'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700/30',
+    icon: 'text-green-700 dark:text-green-300',
   },
   error: {
-    container: 'bg-red-50 text-red-700 border border-red-200',
-    icon: 'text-red-700',
+    container:
+      'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700/30',
+    icon: 'text-red-700 dark:text-red-300',
   },
 };
 

@@ -2,24 +2,29 @@ import { motion } from 'framer-motion';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { AbilityAccordion } from './AbilityAccordion';
 import { PolicyFormRef } from './PolicyForm';
-import { ThemeType } from './theme';
+import { AbilityHeader } from './AbilityHeader';
+import { theme } from './theme';
 
 interface AppsAndVersionsProps {
   connectInfoMap: ConnectInfoMap;
-  theme: ThemeType;
-  isDark: boolean;
   formData: Record<string, any>;
   onFormChange: (abilityIpfsCid: string, policyIpfsCid: string, data: any) => void;
   onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
+  selectedPolicies: Record<string, boolean>;
+  onPolicySelectionChange: (
+    abilityIpfsCid: string,
+    policyIpfsCid: string,
+    selected: boolean,
+  ) => void;
 }
 
 export function AppsInfo({
   connectInfoMap,
-  theme,
-  isDark,
   formData,
   onFormChange,
   onRegisterFormRef,
+  selectedPolicies,
+  onPolicySelectionChange,
 }: AppsAndVersionsProps) {
   const appNames = Object.keys(connectInfoMap.versionsByApp);
 
@@ -40,7 +45,7 @@ export function AppsInfo({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: appIndex * 0.1 }}
-            className="space-y-4"
+            className="space-y-1"
           >
             {(() => {
               const versionKey = `${appName}-${activeVersion.version}`;
@@ -69,6 +74,25 @@ export function AppsInfo({
                       connectInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
                     const abilityVersion = abilityVersions[0];
 
+                    // If no visible policies, render a simple card without accordion
+                    if (visiblePolicies.length === 0) {
+                      return (
+                        <div
+                          key={abilityKey}
+                          className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder} rounded-lg overflow-hidden`}
+                        >
+                          <div className="py-2 px-2 sm:py-2.5 sm:px-3">
+                            <AbilityHeader
+                              ability={ability}
+                              abilityVersion={abilityVersion}
+                              connectInfoMap={connectInfoMap}
+                            />
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // If there are visible policies, render the accordion
                     return (
                       <AbilityAccordion
                         key={abilityKey}
@@ -76,13 +100,13 @@ export function AppsInfo({
                         abilityVersion={abilityVersion}
                         policies={visiblePolicies}
                         connectInfoMap={connectInfoMap}
-                        theme={theme}
-                        isDark={isDark}
                         formData={formData}
                         onFormChange={onFormChange}
                         onRegisterFormRef={onRegisterFormRef}
                         abilityIpfsCid={abilityVersion.ipfsCid}
                         defaultExpanded={false} // All abilities start closed
+                        selectedPolicies={selectedPolicies}
+                        onPolicySelectionChange={onPolicySelectionChange}
                       />
                     );
                   })}

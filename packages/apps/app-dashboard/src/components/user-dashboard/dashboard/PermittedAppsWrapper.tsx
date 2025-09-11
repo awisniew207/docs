@@ -1,25 +1,30 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PermittedAppsPage } from './PermittedAppsPage';
-import { useUserPermissionsMiddleware } from '@/hooks/user-dashboard/dashboard/useUserPermissionsMiddleware';
+import { useAllAgentApps } from '@/hooks/user-dashboard/useAllAgentApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
 import { PermittedAppsSkeleton } from './PermittedAppsSkeleton';
 import { useReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import { AuthenticationErrorScreen } from '../connect/AuthenticationErrorScreen';
 import { GeneralErrorScreen } from '@/components/user-dashboard/connect/GeneralErrorScreen';
+import { VincentYieldModal } from '../landing/VincentYieldModal';
+import { ConnectToVincentYieldModal } from '../landing/ConnectToVincentYieldModal';
+import { env } from '@/config/env';
 
 export function PermittedAppsWrapper() {
-  const { authInfo, sessionSigs, isProcessing, error } = useReadAuthInfo();
+  const readAuthInfo = useReadAuthInfo();
+  const { authInfo, sessionSigs, isProcessing, error } = readAuthInfo;
 
-  const pkpEthAddress = authInfo?.agentPKP?.ethAddress || '';
+  const userAddress = authInfo?.userPKP?.ethAddress || '';
+  const [showVincentYieldModal, setShowVincentYieldModal] = useState(false);
+  const [hasUserDismissedModal, setHasUserDismissedModal] = useState(false);
+  const [showConnectModal, setShowConnectModal] = useState(false);
 
-  // Fetch apps from on-chain
+  // Fetch all agent app permissions
   const {
-    permittedApps,
-    isLoading: permissionsLoading,
-    error: UserPermissionsError,
-  } = useUserPermissionsMiddleware({
-    pkpEthAddress,
-  });
+    permittedPKPs,
+    loading: permissionsLoading,
+    error: permissionsError,
+  } = useAllAgentApps(userAddress);
 
   // Fetch all apps from the API
   const {
@@ -29,12 +34,13 @@ export function PermittedAppsWrapper() {
     isSuccess: appsSuccess,
   } = vincentApiClient.useListAppsQuery();
 
-  // Filter apps based on permitted app IDs
+  // Filter apps based on agent app permissions
   const filteredApps = useMemo(() => {
-    if (!allApps || !permittedApps?.length) return [];
+    if (!allApps || !permittedPKPs.length) return [];
 
-    return allApps.filter((app) => permittedApps.includes(app.appId));
-  }, [allApps, permittedApps]);
+    const permittedAppIds = permittedPKPs.map((p) => p.appId);
+    return allApps.filter((app) => permittedAppIds.includes(app.appId));
+  }, [allApps, permittedPKPs]);
 
   // Show skeleton while auth is processing
   if (isProcessing) {
@@ -43,13 +49,11 @@ export function PermittedAppsWrapper() {
 
   // Handle auth errors early
   if (error) {
-    return (
-      <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
-    );
+    return <AuthenticationErrorScreen readAuthInfo={readAuthInfo} />;
   }
 
-  // Handle missing auth or PKP token
-  if (!pkpEthAddress) {
+  // Handle missing auth or user address
+  if (!userAddress) {
     return <PermittedAppsSkeleton />;
   }
 
@@ -58,24 +62,55 @@ export function PermittedAppsWrapper() {
     return <PermittedAppsSkeleton />;
   }
 
-  // Show skeleton if permissions haven't been loaded yet (null means not loaded)
-  if (permittedApps === null) {
-    return <PermittedAppsSkeleton />;
-  }
-
   // Handle errors
-  if (appsError || UserPermissionsError) {
-    return (
-      <GeneralErrorScreen errorDetails={appsError || UserPermissionsError || 'An error occurred'} />
-    );
+  if (appsError || permissionsError) {
+    const errorMessage = String(permissionsError || appsError || 'An error occurred');
+    return <GeneralErrorScreen errorDetails={errorMessage} />;
   }
 
-  const isUserAuthed = authInfo?.userPKP && authInfo?.agentPKP && sessionSigs;
+  const isUserAuthed = authInfo?.userPKP && sessionSigs;
   if (!isUserAuthed) {
-    return (
-      <AuthenticationErrorScreen readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }} />
-    );
+    return <AuthenticationErrorScreen readAuthInfo={readAuthInfo} />;
   }
 
-  return <PermittedAppsPage apps={filteredApps} />;
+  // Find the agent PKP that's permitted for Vincent Yield
+  const vincentYieldPKP = permittedPKPs.find(
+    (pkp) => pkp.appId === Number(env.VITE_VINCENT_YIELD_APPID),
+  );
+
+  // Find PKPs with appId = -1 (unconnected PKPs)
+  const unconnectedPKP = permittedPKPs.find((pkp) => pkp.appId === -1);
+
+  // Show Vincent Yield modal when user has no Vincent Yield PKP
+  if (isUserAuthed && !showVincentYieldModal && !hasUserDismissedModal && !vincentYieldPKP) {
+    setShowVincentYieldModal(true);
+  }
+
+  // Show connect modal for unconnected PKPs (but not when there are no PKPs at all)
+  if (
+    isUserAuthed &&
+    !showConnectModal &&
+    unconnectedPKP &&
+    !vincentYieldPKP &&
+    permittedPKPs.length > 0
+  ) {
+    setShowConnectModal(true);
+  }
+
+  return (
+    <>
+      <PermittedAppsPage apps={filteredApps} permittedPKPs={permittedPKPs} />
+      {showVincentYieldModal && !vincentYieldPKP && (
+        <VincentYieldModal
+          onClose={() => {
+            setShowVincentYieldModal(false);
+            setHasUserDismissedModal(true);
+          }}
+        />
+      )}
+      {showConnectModal && unconnectedPKP && (
+        <ConnectToVincentYieldModal agentPKP={unconnectedPKP.pkp} />
+      )}
+    </>
+  );
 }

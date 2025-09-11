@@ -1,33 +1,35 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/shared/ui/button';
-import { AlertCircle, Loader2, Shield } from 'lucide-react';
-import { ThemeType } from './theme';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { theme } from './theme';
 
 interface ActionButtonsProps {
-  theme: ThemeType;
   appName: string;
-  onDecline?: () => void;
+  onDecline: () => void;
   onSubmit: () => void;
   isLoading?: boolean;
   error?: string | null;
+  submitText?: string;
+  declineText?: string;
 }
 
 export function ActionButtons({
-  theme,
   appName,
   onDecline,
   onSubmit,
   isLoading = false,
   error,
+  submitText = 'Grant Permissions',
+  declineText = 'Decline',
 }: ActionButtonsProps) {
   return (
     <div className="space-y-4">
       {/* Trust Warning */}
-      <div className="flex items-start gap-2 text-center justify-center">
-        <Shield className={`w-4 h-4 ${theme.textMuted} mt-0.5 flex-shrink-0`} />
+      <div className="flex justify-center text-center">
         <p className={`text-sm ${theme.textSubtle} leading-relaxed`}>
-          Make sure you trust <span className={`font-medium ${theme.text}`}>{appName}</span>. By
-          connecting, you may be sharing sensitive account permissions.
+          Make sure you trust <span className={`font-medium ${theme.text}`}>{appName}</span>.
+          <br />
+          By connecting, you may be sharing sensitive account permissions.
         </p>
       </div>
 
@@ -44,7 +46,7 @@ export function ActionButtons({
             className={`w-full sm:w-auto px-6 py-2 border ${theme.cardBorder} ${theme.text} hover:bg-red-500/10 hover:text-red-400 hover:border-red-400/30`}
             disabled={isLoading}
           >
-            Decline
+            {declineText}
           </Button>
         </motion.div>
         <motion.div
@@ -59,7 +61,7 @@ export function ActionButtons({
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
             {error && <AlertCircle className="w-4 h-4" />}
-            {error ? 'Retry' : isLoading ? 'Processing...' : 'Grant Permissions'}
+            {error ? 'Retry' : isLoading ? 'Processing...' : submitText}
           </Button>
         </motion.div>
       </div>

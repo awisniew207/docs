@@ -90,8 +90,8 @@ export function PolicyList({
             onClick={() => onPolicySelection(policy)}
             className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all duration-200 ease-in-out focus:outline-none ${
               selectedPolicy?.packageName === policy.packageName
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-500 hover:bg-gray-50'
+                ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
+                : 'text-gray-500 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/10'
             }`}
             style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
             aria-label={`Select policy ${policy.title}`}
@@ -124,7 +124,7 @@ export function PolicyList({
                           hasVersionsError
                             ? 'text-gray-400 cursor-not-allowed'
                             : selectedPolicyView === policyItem.id
-                              ? 'bg-blue-50 text-blue-700 font-medium'
+                              ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
                               : 'text-gray-700 hover:bg-gray-50'
                         }`}
                         style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
@@ -172,7 +172,7 @@ export function PolicyList({
                                   subMenuItem.disabled
                                     ? 'text-gray-400 cursor-not-allowed'
                                     : selectedPolicyView === subMenuItem.id
-                                      ? 'bg-blue-50 text-blue-700 font-medium'
+                                      ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
                                       : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                                 style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
@@ -197,7 +197,7 @@ export function PolicyList({
                     onClick={() => handlePolicyViewNavigation(policyItem.id)}
                     className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-all duration-200 ease-in-out text-sm focus:outline-none ${
                       selectedPolicyView === policyItem.id
-                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        ? 'bg-gray-100 dark:bg-neutral-800 text-neutral-800 dark:text-white font-medium'
                         : 'text-gray-600 hover:bg-gray-50'
                     }`}
                     style={{ border: 'none', outline: 'none', boxShadow: 'none' }}

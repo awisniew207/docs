@@ -32,9 +32,10 @@ export function ConnectPageModal({
   const [selectedRedirectUri, setSelectedRedirectUri] = useState<string>('');
   const [copied, setCopied] = useState(false);
 
-  // Generate the connect page URL
+  // Generate the connect page URL using current origin
   const generateConnectUrl = (redirectUri: string): string => {
-    return `http://dashboard.heyvincent.ai/user/appId/${appId}/connect?redirectUri=${encodeURIComponent(redirectUri)}`;
+    const currentOrigin = window.location.origin;
+    return `${currentOrigin}/user/appId/${appId}/connect?redirectUri=${encodeURIComponent(redirectUri)}`;
   };
 
   const connectUrl = selectedRedirectUri ? generateConnectUrl(selectedRedirectUri) : '';
@@ -66,7 +67,7 @@ export function ConnectPageModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-full max-w-2xl bg-white">
+      <DialogContent className="w-full max-w-2xl bg-white dark:bg-neutral-800 overflow-hidden">
         <DialogHeader>
           <DialogTitle>View Connect Page</DialogTitle>
           <DialogDescription>
@@ -75,22 +76,29 @@ export function ConnectPageModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-hidden">
           <div>
-            <label htmlFor="redirectUri" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="redirectUri"
+              className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2"
+            >
               Select Redirect URI
             </label>
             {redirectUris.length > 0 ? (
               <div className="flex items-center gap-3">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <Select value={selectedRedirectUri} onValueChange={setSelectedRedirectUri}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a redirect URI..." />
+                    <SelectTrigger className="w-full max-w-full overflow-hidden">
+                      <div className="truncate">
+                        <SelectValue placeholder="Choose a redirect URI..." />
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       {redirectUris.map((uri) => (
-                        <SelectItem key={uri} value={uri}>
-                          {uri}
+                        <SelectItem key={uri} value={uri} className="break-all">
+                          <span className="truncate" title={uri}>
+                            {uri}
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -101,14 +109,14 @@ export function ConnectPageModal({
                     <Button
                       variant="outline"
                       onClick={handleCopy}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 flex-shrink-0"
                     >
                       <Copy className="h-4 w-4" />
                       {copied ? 'Copied!' : 'Copy Link'}
                     </Button>
                     <Button
                       onClick={handleOpenDirectly}
-                      className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white"
+                      className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white flex-shrink-0"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Open Page
@@ -117,7 +125,7 @@ export function ConnectPageModal({
                 )}
               </div>
             ) : (
-              <div className="text-sm text-gray-500 p-4 bg-gray-50 rounded-lg">
+              <div className="text-sm text-gray-500 dark:text-white/40 p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
                 No redirect URIs configured. Please add redirect URIs to your app settings first.
               </div>
             )}

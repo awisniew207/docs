@@ -1,19 +1,21 @@
 import { useCallback, useState } from 'react';
-import { create } from '@lit-protocol/vincent-app-sdk/jwt';
+import { createAppUserJWT } from '@lit-protocol/vincent-app-sdk/jwt';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
+import { IRelayPKP } from '@lit-protocol/types';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { env } from '@/config/env';
-import { UseReadAuthInfo } from '../useAuthInfo';
+import { ReadAuthInfo } from '../useAuthInfo';
 import { useUrlRedirectUri } from './useUrlRedirectUri';
 
 const { VITE_JWT_EXPIRATION_MINUTES } = env;
 
 interface UseJwtRedirectProps {
-  readAuthInfo: UseReadAuthInfo;
+  readAuthInfo: ReadAuthInfo;
+  agentPKP: IRelayPKP | null;
 }
 
-export const useJwtRedirect = ({ readAuthInfo }: UseJwtRedirectProps) => {
+export const useJwtRedirect = ({ readAuthInfo, agentPKP }: UseJwtRedirectProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,13 +25,8 @@ export const useJwtRedirect = ({ readAuthInfo }: UseJwtRedirectProps) => {
   // Generate JWT for redirection
   const generateJWT = useCallback(
     async (app: App, appVersion: number) => {
-      if (
-        !readAuthInfo.authInfo ||
-        !readAuthInfo.authInfo.agentPKP ||
-        !readAuthInfo.sessionSigs ||
-        !app.redirectUris
-      ) {
-        setError('Cannot generate JWT: missing authentication information');
+      if (!readAuthInfo.authInfo || !readAuthInfo.sessionSigs || !app.redirectUris || !agentPKP) {
+        setError('Cannot generate JWT: missing authentication information or agent PKP');
         return;
       }
 
@@ -42,19 +39,18 @@ export const useJwtRedirect = ({ readAuthInfo }: UseJwtRedirectProps) => {
       setError(null);
       setRedirectUrl(null);
       try {
-        setLoadingStatus('Initializing Agent Wallet');
+        setLoadingStatus('Initializing Vincent Wallet');
         const agentPkpWallet = new PKPEthersWallet({
           controllerSessionSigs: readAuthInfo.sessionSigs,
-          pkpPubKey: readAuthInfo.authInfo.agentPKP.publicKey,
+          pkpPubKey: agentPKP.publicKey,
           litNodeClient: litNodeClient,
         });
         await agentPkpWallet.init();
 
         setLoadingStatus('Signing JWT Token');
-        const jwt = await create({
+        const jwt = await createAppUserJWT({
           pkpWallet: agentPkpWallet,
-          pkp: readAuthInfo.authInfo.agentPKP,
-          payload: {},
+          pkpInfo: agentPKP,
           expiresInMinutes: VITE_JWT_EXPIRATION_MINUTES,
           audience: app.redirectUris,
           app: {
@@ -78,7 +74,7 @@ export const useJwtRedirect = ({ readAuthInfo }: UseJwtRedirectProps) => {
         return;
       }
     },
-    [readAuthInfo, redirectUri],
+    [readAuthInfo, redirectUri, agentPKP],
   );
 
   const executeRedirect = useCallback(() => {

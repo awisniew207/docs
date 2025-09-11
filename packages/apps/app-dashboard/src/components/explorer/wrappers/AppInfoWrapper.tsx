@@ -1,0 +1,106 @@
+import { useParams } from 'react-router';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import { AppInfoView } from '../views/AppInfoView';
+import { ExplorerAppIdSkeleton } from '../ui/ExplorerAppIdSkeleton';
+import { ExplorerErrorPage } from '../ui/ExplorerErrorPage';
+
+export function AppInfoWrapper() {
+  const { appId } = useParams<{ appId: string }>();
+
+  // Fetch app data
+  const {
+    data: app,
+    isLoading,
+    isError,
+  } = vincentApiClient.useGetAppQuery({ appId: Number(appId) });
+
+  // Fetch app versions
+  const {
+    data: versions,
+    isLoading: versionsLoading,
+    isError: versionsError,
+  } = vincentApiClient.useGetAppVersionsQuery({ appId: Number(appId) });
+
+  // Fetch version abilities
+  const {
+    data: versionAbilities,
+    isLoading: versionAbilitysLoading,
+    isError: versionAbilitysError,
+  } = vincentApiClient.useListAppVersionAbilitiesQuery(
+    {
+      appId: Number(appId),
+      version: app?.activeVersion || 0,
+    },
+    {
+      skip: !app?.activeVersion,
+    },
+  );
+
+  if (isLoading || versionsLoading || versionAbilitysLoading) return <ExplorerAppIdSkeleton />;
+
+  // Handle main app loading error
+  if (isError) {
+    return (
+      <ExplorerErrorPage
+        title="Failed to Load App"
+        message="We couldn't load the application details. This might be due to a network issue or the app may no longer exist."
+        showBackButton={true}
+      />
+    );
+  }
+
+  // Handle versions loading error
+  if (versionsError) {
+    return (
+      <ExplorerErrorPage
+        title="Failed to Load App Versions"
+        message="We couldn't load the version history for this application."
+        showBackButton={true}
+      />
+    );
+  }
+
+  // Handle version abilities loading error
+  if (versionAbilitysError) {
+    return (
+      <ExplorerErrorPage
+        title="Failed to Load Version Abilities"
+        message="We couldn't load the capabilities for this app version."
+        showBackButton={true}
+      />
+    );
+  }
+
+  // Handle missing data
+  if (!app) {
+    return (
+      <ExplorerErrorPage
+        title="App Not Found"
+        message={`Application ${appId} could not be found. It may have been removed or the ID is incorrect.`}
+        showBackButton={true}
+      />
+    );
+  }
+
+  if (!versions) {
+    return (
+      <ExplorerErrorPage
+        title="No Versions Available"
+        message="This application has no version information available."
+        showBackButton={true}
+      />
+    );
+  }
+
+  if (!versionAbilities) {
+    return (
+      <ExplorerErrorPage
+        title="Version Capabilities Unavailable"
+        message="The capabilities for this app version are not available."
+        showBackButton={true}
+      />
+    );
+  }
+
+  return <AppInfoView app={app} versions={versions} versionAbilities={versionAbilities} />;
+}

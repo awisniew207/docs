@@ -77,8 +77,10 @@ export function CreatePolicyVersionWrapper() {
       <div className="w-full max-w-2xl mx-auto">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900">Create New Version</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">
+              Create New Version
+            </h1>
+            <p className="text-gray-600 dark:text-white/60 mt-2">
               Create a new version of your policy with updated features
             </p>
           </div>

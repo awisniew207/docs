@@ -1,7 +1,7 @@
 import type { BigNumber } from 'ethers';
 
-import type { App, AppVersion, AppWithVersions } from '../../types';
-import type { AppChain, AppVersionChain, AppWithVersionsChain } from '../types/chain';
+import type { App, AppVersion } from '../../types';
+import type { AppChain, AppVersionChain } from '../types/chain';
 import type {
   GetAppByDelegateeOptions,
   GetAppByIdOptions,
@@ -10,7 +10,6 @@ import type {
   GetDelegatedPkpEthAddressesOptions,
 } from './types.ts';
 
-import { DEFAULT_PAGE_SIZE } from '../../constants';
 import { decodeContractError } from '../../utils';
 import { getPkpEthAddress } from '../../utils/pkpInfo';
 
@@ -26,8 +25,8 @@ export async function getAppById(params: GetAppByIdOptions): Promise<App | null>
     const { delegatees, ...app } = chainApp;
     return {
       ...app,
-      id: app.id.toNumber(),
-      latestVersion: app.latestVersion.toNumber(),
+      id: app.id,
+      latestVersion: app.latestVersion,
       delegateeAddresses: delegatees,
     };
   } catch (error: unknown) {
@@ -42,6 +41,28 @@ export async function getAppById(params: GetAppByIdOptions): Promise<App | null>
   }
 }
 
+export async function getAppIdByDelegatee(
+  params: GetAppByDelegateeOptions,
+): Promise<number | null> {
+  const {
+    args: { delegateeAddress },
+    contract,
+  } = params;
+
+  try {
+    const app = await contract.getAppByDelegatee(delegateeAddress);
+    return app.id;
+  } catch (error: unknown) {
+    const decodedError = error instanceof Error ? error.message : String(error);
+
+    if (decodedError.includes('DelegateeNotRegistered')) {
+      return null;
+    }
+
+    throw new Error(`Failed to Get App ID By Delegatee: ${decodedError}`);
+  }
+}
+
 export async function getAppVersion(
   params: GetAppVersionOptions,
 ): Promise<{ appVersion: AppVersion } | null> {
@@ -51,10 +72,19 @@ export async function getAppVersion(
   } = params;
 
   try {
-    const [, appVersion]: [never, AppVersionChain] = await contract.getAppVersion(appId, version);
+    const appVersion: AppVersionChain = await contract.getAppVersion(appId, version);
+
+    const convertedAppVersion: AppVersion = {
+      version: appVersion.version,
+      enabled: appVersion.enabled,
+      abilities: appVersion.abilities.map((ability) => ({
+        abilityIpfsCid: ability.abilityIpfsCid,
+        policyIpfsCids: ability.policyIpfsCids,
+      })),
+    };
 
     return {
-      appVersion: { ...appVersion, version: appVersion.version.toNumber() },
+      appVersion: convertedAppVersion,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -73,32 +103,19 @@ export async function getAppVersion(
 
 export async function getAppsByManagerAddress(
   params: GetAppsByManagerOptions,
-): Promise<AppWithVersions[]> {
+): Promise<{ id: number; versionCount: number }[]> {
   const {
-    args: { managerAddress },
+    args: { managerAddress, offset },
     contract,
   } = params;
 
   try {
-    const appsWithVersions: AppWithVersionsChain[] =
-      await contract.getAppsByManager(managerAddress);
+    const [appIds, appVersionCounts] = await contract.getAppsByManager(managerAddress, offset);
 
-    return appsWithVersions.map(({ app: appChain, versions }) => {
-      const { delegatees, ...app } = appChain;
-      return {
-        app: {
-          ...app,
-          delegateeAddresses: delegatees,
-          id: app.id.toNumber(),
-          latestVersion: app.latestVersion.toNumber(),
-        },
-        versions: versions.map(({ enabled, abilities, version: appVersion }) => ({
-          version: appVersion.toNumber(),
-          enabled: enabled,
-          abilities,
-        })),
-      };
-    });
+    return appIds.map((id: number, idx: number) => ({
+      id,
+      versionCount: appVersionCounts[idx],
+    }));
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
 
@@ -126,8 +143,8 @@ export async function getAppByDelegateeAddress(
     return {
       ...app,
       delegateeAddresses: delegatees,
-      id: app.id.toNumber(),
-      latestVersion: app.latestVersion.toNumber(),
+      id: app.id,
+      latestVersion: app.latestVersion,
     };
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
@@ -145,7 +162,7 @@ export async function getDelegatedPkpEthAddresses(
   params: GetDelegatedPkpEthAddressesOptions,
 ): Promise<string[]> {
   const {
-    args: { appId, pageOpts, version },
+    args: { appId, offset, version },
     contract,
   } = params;
 
@@ -153,8 +170,7 @@ export async function getDelegatedPkpEthAddresses(
     const delegatedAgentPkpTokenIds: BigNumber[] = await contract.getDelegatedAgentPkpTokenIds(
       appId,
       version,
-      pageOpts?.offset || 0,
-      pageOpts?.limit || DEFAULT_PAGE_SIZE,
+      offset,
     );
 
     const delegatedAgentPkpEthAddresses: string[] = [];

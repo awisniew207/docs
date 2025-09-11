@@ -12,19 +12,30 @@ export const abilityParamsSchema = z.object({
     .describe(
       'The spender address to approve. For example 0x2626664c2603336E57B271c5C0b26F421741e481 for the Uniswap v3 Swap Router contract on Base.',
     ),
-
   tokenAddress: z
     .string()
     .describe(
       'ERC20 Token address to approve. For example 0x4200000000000000000000000000000000000006 for WETH on Base.',
     ),
-  tokenDecimals: z
-    .number()
-    .describe('ERC20 Token to approve decimals. For example 18 for WETH on Base.'),
   tokenAmount: z
-    .number()
-    .gte(0, 'tokenAmount cannot be a negative number')
-    .describe('Amount of tokenIn to approve. For example 0.00001 for 0.00001 WETH.'),
+    .string()
+    .regex(/^\d+$/, 'Invalid amount format')
+    .describe(
+      'The amount of tokens to approve/deposit/redeem, as a string without decimal point. Ex: 2123456 for 2.123456 USDC (6 decimals)',
+    ),
+  alchemyGasSponsor: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe('Whether to use Alchemy gas sponsorship for the transaction.'),
+  alchemyGasSponsorApiKey: z
+    .string()
+    .optional()
+    .describe('The API key for Alchemy gas sponsorship.'),
+  alchemyGasSponsorPolicyId: z
+    .string()
+    .optional()
+    .describe('The policy ID for Alchemy gas sponsorship.'),
 });
 
 export const precheckSuccessSchema = z.object({
@@ -45,22 +56,16 @@ export const precheckFailSchema = z.object({
 });
 
 export const executeSuccessSchema = z.object({
-  // Transaction hash if a new approval was created, undefined if existing approval was used
   approvalTxHash: z
     .string()
     .optional()
     .describe(
       'Transaction hash if a new approval was created, undefined if existing approval was used',
     ),
-  // The approved amount that is now active (either from existing or new approval)
   approvedAmount: z
     .string()
     .describe('The approved amount that is now active (either from existing or new approval)'),
-  // The token address that was approved
   tokenAddress: z.string().describe('The token address that was approved'),
-  // The token decimals that was approved
-  tokenDecimals: z.number().describe('The token decimals that was approved'),
-  // The spender address that was approved
   spenderAddress: z.string().describe('The spender address that was approved'),
 });
 

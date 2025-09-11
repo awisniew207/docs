@@ -3,14 +3,15 @@ import { SidebarSkeleton } from './SidebarSkeleton';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { useSidebarData } from '@/hooks/user-dashboard/sidebar/useSidebarData';
+import { useAllAgentApps } from '@/hooks/user-dashboard/useAllAgentApps';
 import { SidebarError } from './SidebarError';
 
 export function SidebarWrapper() {
   const { authInfo, isProcessing, error } = useReadAuthInfo();
-  const pkpEthAddress = authInfo?.agentPKP?.ethAddress || '';
+  const userAddress = authInfo?.userPKP?.ethAddress || '';
 
   // Early return if required params are missing
-  if (!pkpEthAddress && !isProcessing) {
+  if (!userAddress && !isProcessing) {
     return <SidebarSkeleton />;
   }
 
@@ -24,14 +25,31 @@ export function SidebarWrapper() {
     return <StatusMessage message="Authentication failed" type="error" />;
   }
 
-  // Now we have stable pkpTokenId, so we can call the consolidated hook
-  return <SidebarWithData pkpEthAddress={pkpEthAddress} />;
+  // Now we have stable userAddress, so we can call the consolidated hook
+  return <SidebarWithData userAddress={userAddress} />;
 }
 
-function SidebarWithData({ pkpEthAddress }: { pkpEthAddress: string }) {
-  const { apps, permittedAppVersions, appVersionsMap, isLoading, error } = useSidebarData({
-    pkpEthAddress,
+function SidebarWithData({ userAddress }: { userAddress: string }) {
+  // Get agent app permissions first
+  const {
+    permittedPKPs: agentAppPermissions,
+    loading: permissionsLoading,
+    error: permissionsError,
+  } = useAllAgentApps(userAddress);
+
+  // Get app details and versions based on those permissions
+  const {
+    apps,
+    permittedAppVersions,
+    appVersionsMap,
+    isLoading: appsLoading,
+    error: appsError,
+  } = useSidebarData({
+    agentAppPermissions,
   });
+
+  const isLoading = permissionsLoading || appsLoading;
+  const error = permissionsError?.message || appsError;
 
   // Show skeleton while data is loading
   if (isLoading) {

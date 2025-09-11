@@ -1,12 +1,13 @@
 import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Package, Wallet, Loader2, Sun, Moon, LogOut, TriangleAlert } from 'lucide-react';
-import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '../connect/ui/theme';
+import { Package, Loader2, Sun, Moon, LogOut, TriangleAlert } from 'lucide-react';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
+import { toggleTheme } from '@/lib/theme';
+import { useTheme } from '@/hooks/useTheme';
 import { App } from '@/types/developer-dashboard/appTypes';
 import { SidebarLogo } from './SidebarLogo';
 import { useClearAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
-import { AccountTooltip } from './AccountTooltip';
+import { AccountTooltip } from '@/components/shared/AccountTooltip';
 import {
   Sidebar,
   SidebarContent,
@@ -139,11 +140,10 @@ export function AppSidebar({
   appVersionsMap = {},
   isLoadingApps = false,
 }: AppSidebarProps) {
-  const { isDark, toggleTheme } = useTheme();
-  const themeStyles = theme(isDark);
   const location = useLocation();
   const navigate = useNavigate();
   const { clearAuthInfo } = useClearAuthInfo();
+  const isDark = useTheme();
 
   const menuItems = getMainMenuItems(apps, isLoadingApps, permittedAppVersions, appVersionsMap);
 
@@ -166,9 +166,9 @@ export function AppSidebar({
         <div className="flex items-center px-6 py-4 h-full">
           <Link to="/" className="flex items-center">
             <img
-              src={isDark ? '/vincent-by-lit-white-logo.png' : '/vincent-by-lit-logo.png'}
+              src={isDark ? '/vincent-main-logo-white.png' : '/vincent-main-logo.png'}
               alt="Vincent by Lit Protocol"
-              className="h-8 object-contain cursor-pointer hover:opacity-80 transition-opacity"
+              className="h-6 object-contain cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>
         </div>
@@ -187,18 +187,18 @@ export function AppSidebar({
                         isActive={isActiveRoute(item.route)}
                         className={`h-10 px-3 rounded-lg transition-all duration-200 ${
                           isActiveRoute(item.route)
-                            ? `${themeStyles.itemBg} text-orange-500 font-semibold`
-                            : `${themeStyles.text} ${themeStyles.itemHoverBg}`
+                            ? `${theme.itemBg} text-orange-500 font-semibold`
+                            : `${theme.text} ${theme.itemHoverBg}`
                         }`}
                       >
                         <Link to={item.route} className="flex items-center gap-3">
                           <div
-                            className={`${isActiveRoute(item.route) ? 'text-orange-500' : themeStyles.textMuted} [&>svg]:!w-5 [&>svg]:!h-5`}
+                            className={`${isActiveRoute(item.route) ? 'text-orange-500' : theme.textMuted} [&>svg]:!w-5 [&>svg]:!h-5`}
                           >
                             {item.icon}
                           </div>
                           <span
-                            className={`font-medium ${isActiveRoute(item.route) ? 'text-orange-500' : themeStyles.text}`}
+                            className={`font-medium ${isActiveRoute(item.route) ? 'text-orange-500' : theme.text}`}
                           >
                             {item.label}
                           </span>
@@ -211,18 +211,18 @@ export function AppSidebar({
                           isActive={isActiveRoute(item.route)}
                           className={`h-10 px-3 rounded-lg transition-all duration-200 cursor-pointer ${
                             isActiveRoute(item.route)
-                              ? `${themeStyles.itemBg} text-orange-500 font-semibold`
-                              : `${themeStyles.text} ${themeStyles.itemHoverBg}`
+                              ? `${theme.itemBg} text-orange-500 font-semibold`
+                              : `${theme.text} ${theme.itemHoverBg}`
                           }`}
                         >
                           <Link to={item.route} className="flex items-center gap-3 w-full">
                             <div
-                              className={`${isActiveRoute(item.route) ? 'text-orange-500' : themeStyles.textMuted} [&>svg]:!w-5 [&>svg]:!h-5`}
+                              className={`${isActiveRoute(item.route) ? 'text-orange-500' : theme.textMuted} [&>svg]:!w-5 [&>svg]:!h-5`}
                             >
                               {item.icon}
                             </div>
                             <span
-                              className={`font-medium ${isActiveRoute(item.route) ? 'text-orange-500' : themeStyles.text}`}
+                              className={`font-medium ${isActiveRoute(item.route) ? 'text-orange-500' : theme.text}`}
                             >
                               {item.label}
                             </span>
@@ -248,7 +248,7 @@ export function AppSidebar({
                                         onClick={() => handleWarningClick(child.id)}
                                       />
                                       <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover/triangle:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                        <div className="bg-gray-900 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap shadow-lg">
+                                        <div className="bg-neutral-900 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap shadow-lg">
                                           {child.warningType === 'yellow' && (
                                             <>
                                               <div className="font-medium">
@@ -312,18 +312,18 @@ export function AppSidebar({
                                   isActive={isActiveRoute(child.route)}
                                   className={`h-10 px-3 rounded-md transition-all duration-200 ${
                                     isActiveRoute(child.route)
-                                      ? `${themeStyles.itemBg} text-orange-500 font-medium`
-                                      : `${themeStyles.textMuted} ${themeStyles.itemHoverBg}`
+                                      ? `${theme.itemBg} text-orange-500 font-medium`
+                                      : `${theme.textMuted} ${theme.itemHoverBg}`
                                   }`}
                                 >
                                   <Link to={child.route} className="flex items-center gap-2">
                                     <div
-                                      className={`${isActiveRoute(child.route) ? 'text-orange-500' : themeStyles.textMuted} [&>svg]:!w-5 [&>svg]:!h-5`}
+                                      className={`${isActiveRoute(child.route) ? 'text-orange-500' : theme.textMuted} [&>svg]:!w-5 [&>svg]:!h-5`}
                                     >
                                       {child.icon}
                                     </div>
                                     <span
-                                      className={`text-sm ${isActiveRoute(child.route) ? `text-orange-500 font-medium` : themeStyles.textMuted}`}
+                                      className={`text-sm ${isActiveRoute(child.route) ? `text-orange-500 font-medium` : theme.textMuted}`}
                                     >
                                       {child.label}
                                     </span>
@@ -348,48 +348,22 @@ export function AppSidebar({
       <SidebarFooter className="border-t border-sidebar-border">
         <div className="p-4 space-y-2">
           <SidebarMenu>
-            {/* Wallet */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={isActiveRoute('/user/wallet')}
-                className={`h-10 px-3 rounded-lg transition-all duration-200 ${
-                  isActiveRoute('/user/wallet')
-                    ? `${themeStyles.itemBg} text-orange-500 font-semibold`
-                    : `${themeStyles.text} ${themeStyles.itemHoverBg}`
-                }`}
-              >
-                <Link to="/user/wallet" className="flex items-center gap-3">
-                  <div
-                    className={`${isActiveRoute('/user/wallet') ? 'text-orange-500' : themeStyles.textMuted}`}
-                  >
-                    <Wallet className="h-4 w-4" />
-                  </div>
-                  <span
-                    className={`font-medium ${isActiveRoute('/user/wallet') ? 'text-orange-500' : themeStyles.text}`}
-                  >
-                    Wallet
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
             {/* My Account with tooltip */}
             <SidebarMenuItem>
-              <AccountTooltip />
+              <AccountTooltip theme={theme} />
             </SidebarMenuItem>
 
             {/* Sign Out */}
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={handleSignOut}
-                className={`h-10 px-3 rounded-lg transition-all duration-200 ${themeStyles.text} ${themeStyles.itemHoverBg}`}
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={themeStyles.textMuted}>
+                  <div className={theme.textMuted}>
                     <LogOut className="h-4 w-4" />
                   </div>
-                  <span className={`font-medium ${themeStyles.text}`}>Sign out</span>
+                  <span className={`font-medium ${theme.text}`}>Sign out</span>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -402,13 +376,13 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={toggleTheme}
-                className={`h-10 px-3 rounded-lg transition-all duration-200 ${themeStyles.text} ${themeStyles.itemHoverBg}`}
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={themeStyles.textMuted}>
+                  <div className={theme.textMuted}>
                     {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                   </div>
-                  <span className={`font-medium ${themeStyles.text}`}>
+                  <span className={`font-medium ${theme.text}`}>
                     {isDark ? 'Light mode' : 'Dark mode'}
                   </span>
                 </div>

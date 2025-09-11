@@ -1,25 +1,29 @@
 import { Helmet } from 'react-helmet-async';
-import WithdrawForm from '@/components/user-dashboard/withdraw/WithdrawForm';
+import { useParams } from 'react-router';
+import { WithdrawForm } from '@/components/user-dashboard/withdraw/WithdrawForm';
 import { WithdrawFormSkeleton } from '@/components/user-dashboard/withdraw/WithdrawFormSkeleton';
 import useReadAuthInfo from '@/hooks/user-dashboard/useAuthInfo';
 import { useAuthGuard } from '@/hooks/user-dashboard/connect/useAuthGuard';
-import { useTheme } from '@/providers/ThemeProvider';
-import { theme } from '@/components/user-dashboard/connect/ui/theme';
+import { useAgentPkpForApp } from '@/hooks/user-dashboard/useAgentPkpForApp';
 
 export function Wallet() {
-  const { isDark } = useTheme();
-  const themeStyles = theme(isDark);
+  const { appId } = useParams();
   const { authInfo, sessionSigs } = useReadAuthInfo();
   const authGuardElement = useAuthGuard();
 
-  if (authGuardElement || !authInfo?.userPKP || !authInfo?.agentPKP || !sessionSigs) {
+  const { agentPKP, loading: agentPKPLoading } = useAgentPkpForApp(
+    authInfo?.userPKP?.ethAddress,
+    appId ? Number(appId) : undefined,
+  );
+
+  if (authGuardElement || !authInfo?.userPKP || !sessionSigs || agentPKPLoading || !agentPKP) {
     return (
       <>
         <Helmet>
           <title>Vincent | Wallet</title>
           <meta name="description" content="Vincent Wallet Dashboard" />
         </Helmet>
-        <div className={`w-full h-full flex items-center justify-center ${themeStyles.bg}`}>
+        <div className="w-full h-full flex items-center justify-center">
           <WithdrawFormSkeleton />
         </div>
       </>
@@ -32,12 +36,8 @@ export function Wallet() {
         <title>Vincent | Wallet</title>
         <meta name="description" content="Your Vincent wallet dashboard" />
       </Helmet>
-      <div className={`w-full h-full flex items-center justify-center ${themeStyles.bg}`}>
-        <WithdrawForm
-          sessionSigs={sessionSigs}
-          agentPKP={authInfo.agentPKP}
-          userPKP={authInfo.userPKP}
-        />
+      <div className="w-full h-full flex items-center justify-center">
+        <WithdrawForm sessionSigs={sessionSigs} agentPKP={agentPKP} userPKP={authInfo.userPKP} />
       </div>
     </>
   );

@@ -20,9 +20,9 @@ contract VincentAppFacetTest is Test {
     uint256 constant PKP_TOKEN_ID_1 = 1;
     uint256 constant PKP_TOKEN_ID_2 = 2;
 
-    string constant TOOL_IPFS_CID_1 = "QmAbility1";
-    string constant TOOL_IPFS_CID_2 = "QmAbility2";
-    string constant TOOL_IPFS_CID_3 = "QmAbility3";
+    string constant ABILITY_IPFS_CID_1 = "QmAbility1";
+    string constant ABILITY_IPFS_CID_2 = "QmAbility2";
+    string constant ABILITY_IPFS_CID_3 = "QmAbility3";
 
     string constant POLICY_IPFS_CID_1 = "QmPolicy1";
     string constant POLICY_IPFS_CID_2 = "QmPolicy2";
@@ -71,14 +71,14 @@ contract VincentAppFacetTest is Test {
         vm.expectEmit(true, true, true, true);
         emit LibVincentAppFacet.NewAppRegistered(1, APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
-        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(TOOL_IPFS_CID_1)));
+        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(ABILITY_IPFS_CID_1)));
         vm.expectEmit(true, true, true, true);
-        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(TOOL_IPFS_CID_2)));
+        emit LibVincentAppFacet.NewLitActionRegistered(keccak256(abi.encodePacked(ABILITY_IPFS_CID_2)));
         vm.expectEmit(true, true, true, true);
         emit LibVincentAppFacet.NewAppVersionRegistered(1, 1, APP_MANAGER_ALICE);
         
-        uint256 newAppId = 1;
-        uint256 newAppVersion = _registerBasicApp(newAppId);
+        uint40 newAppId = 1;
+        uint24 newAppVersion = _registerBasicApp(newAppId);
 
         VincentAppViewFacet.App memory app = vincentAppViewFacet.getAppById(newAppId);
         assertEq(app.id, newAppId);
@@ -89,7 +89,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -102,28 +102,18 @@ contract VincentAppFacetTest is Test {
         assertEq(appVersion.delegatedAgentPkpTokenIds.length, 0);
         assertEq(appVersion.abilities.length, 2);
 
-        assertEq(appVersion.abilities[0].abilityIpfsCid, TOOL_IPFS_CID_1);
+        assertEq(appVersion.abilities[0].abilityIpfsCid, ABILITY_IPFS_CID_1);
         assertEq(appVersion.abilities[0].policyIpfsCids.length, 1);
         assertEq(appVersion.abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
 
-        assertEq(appVersion.abilities[1].abilityIpfsCid, TOOL_IPFS_CID_2);
+        assertEq(appVersion.abilities[1].abilityIpfsCid, ABILITY_IPFS_CID_2);
         assertEq(appVersion.abilities[1].policyIpfsCids.length, 0);
 
-        VincentAppViewFacet.AppWithVersions[] memory apps = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE);
-        assertEq(apps.length, 1);
-        assertEq(apps[0].app.id, newAppId);
-        assertFalse(apps[0].app.isDeleted);
-        assertEq(apps[0].app.manager, APP_MANAGER_ALICE);
-        assertEq(apps[0].app.latestVersion, newAppVersion);
-        assertEq(apps[0].versions.length, 1);
-        assertEq(apps[0].versions[0].version, newAppVersion);
-        assertTrue(apps[0].versions[0].enabled);
-        assertEq(apps[0].versions[0].abilities.length, 2);
-        assertEq(apps[0].versions[0].abilities[0].abilityIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(apps[0].versions[0].abilities[0].policyIpfsCids.length, 1);
-        assertEq(apps[0].versions[0].abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
-        assertEq(apps[0].versions[0].abilities[1].abilityIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(apps[0].versions[0].abilities[1].policyIpfsCids.length, 0);
+        (uint40[] memory appIds, uint24[] memory appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
+        assertEq(appIds.length, 1);
+        assertEq(appIds[0], newAppId);
+        assertEq(appVersionCounts.length, 1);
+        assertEq(appVersionCounts[0], newAppVersion);
 
         /**
          * Now testing registering the next version of the app
@@ -132,9 +122,9 @@ contract VincentAppFacetTest is Test {
         VincentAppFacet.AppVersionAbilities memory versionAbilities_newAppVersion;
         versionAbilities_newAppVersion.abilityIpfsCids = new string[](3);
 
-        versionAbilities_newAppVersion.abilityIpfsCids[0] = TOOL_IPFS_CID_1;
-        versionAbilities_newAppVersion.abilityIpfsCids[1] = TOOL_IPFS_CID_2;
-        versionAbilities_newAppVersion.abilityIpfsCids[2] = TOOL_IPFS_CID_3;
+        versionAbilities_newAppVersion.abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        versionAbilities_newAppVersion.abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
+        versionAbilities_newAppVersion.abilityIpfsCids[2] = ABILITY_IPFS_CID_3;
 
         versionAbilities_newAppVersion.abilityPolicies = new string[][](3);
 
@@ -162,7 +152,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees.length, 1);
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -175,54 +165,30 @@ contract VincentAppFacetTest is Test {
         assertEq(appVersion.delegatedAgentPkpTokenIds.length, 0);
         assertEq(appVersion.abilities.length, 3);
 
-        assertEq(appVersion.abilities[0].abilityIpfsCid, TOOL_IPFS_CID_1);
+        assertEq(appVersion.abilities[0].abilityIpfsCid, ABILITY_IPFS_CID_1);
         assertEq(appVersion.abilities[0].policyIpfsCids.length, 1);
         assertEq(appVersion.abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
 
-        assertEq(appVersion.abilities[1].abilityIpfsCid, TOOL_IPFS_CID_2);
+        assertEq(appVersion.abilities[1].abilityIpfsCid, ABILITY_IPFS_CID_2);
         assertEq(appVersion.abilities[1].policyIpfsCids.length, 0);
 
-        assertEq(appVersion.abilities[2].abilityIpfsCid, TOOL_IPFS_CID_3);
+        assertEq(appVersion.abilities[2].abilityIpfsCid, ABILITY_IPFS_CID_3);
         assertEq(appVersion.abilities[2].policyIpfsCids.length, 3);
         assertEq(appVersion.abilities[2].policyIpfsCids[0], POLICY_IPFS_CID_1);
         assertEq(appVersion.abilities[2].policyIpfsCids[1], POLICY_IPFS_CID_2);
         assertEq(appVersion.abilities[2].policyIpfsCids[2], POLICY_IPFS_CID_3);
 
-        apps = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE);
-        assertEq(apps.length, 1);
-        assertEq(apps[0].app.id, newAppId);
-        assertFalse(apps[0].app.isDeleted);
-        assertEq(apps[0].app.manager, APP_MANAGER_ALICE);
-        assertEq(apps[0].app.latestVersion, newAppVersion);
-        assertEq(apps[0].app.delegatees.length, 1);
-        assertEq(apps[0].app.delegatees[0], APP_DELEGATEE_CHARLIE);
+        (appIds, appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
+        assertEq(appIds.length, 1);
+        assertEq(appIds[0], newAppId);
+        assertEq(appVersionCounts.length, 1);
+        assertEq(appVersionCounts[0], newAppVersion);
 
-        assertEq(apps[0].versions.length, 2);
-        assertEq(apps[0].versions[0].version, 1);
-        assertTrue(apps[0].versions[0].enabled);
-        assertEq(apps[0].versions[0].abilities.length, 2);
-        assertEq(apps[0].versions[0].abilities[0].abilityIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(apps[0].versions[0].abilities[0].policyIpfsCids.length, 1);
-        assertEq(apps[0].versions[0].abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
-
-        assertEq(apps[0].versions[0].abilities[1].abilityIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(apps[0].versions[0].abilities[1].policyIpfsCids.length, 0);
-
-        assertEq(apps[0].versions[1].version, newAppVersion);
-        assertTrue(apps[0].versions[1].enabled);
-        assertEq(apps[0].versions[1].abilities.length, 3);
-        assertEq(apps[0].versions[1].abilities[0].abilityIpfsCid, TOOL_IPFS_CID_1);
-        assertEq(apps[0].versions[1].abilities[0].policyIpfsCids.length, 1);
-        assertEq(apps[0].versions[1].abilities[0].policyIpfsCids[0], POLICY_IPFS_CID_1);
-
-        assertEq(apps[0].versions[1].abilities[1].abilityIpfsCid, TOOL_IPFS_CID_2);
-        assertEq(apps[0].versions[1].abilities[1].policyIpfsCids.length, 0);
-
-        assertEq(apps[0].versions[1].abilities[2].abilityIpfsCid, TOOL_IPFS_CID_3);
-        assertEq(apps[0].versions[1].abilities[2].policyIpfsCids.length, 3);
-        assertEq(apps[0].versions[1].abilities[2].policyIpfsCids[0], POLICY_IPFS_CID_1);
-        assertEq(apps[0].versions[1].abilities[2].policyIpfsCids[1], POLICY_IPFS_CID_2);
-        assertEq(apps[0].versions[1].abilities[2].policyIpfsCids[2], POLICY_IPFS_CID_3);
+        (appIds, appVersionCounts) = vincentAppViewFacet.getAppsByManager(APP_MANAGER_ALICE, 0);
+        assertEq(appIds.length, 1);
+        assertEq(appIds[0], newAppId);
+        assertEq(appVersionCounts.length, 1);
+        assertEq(appVersionCounts[0], newAppVersion);
 
         app = vincentAppViewFacet.getAppByDelegatee(APP_DELEGATEE_CHARLIE);
         assertEq(app.id, newAppId);
@@ -234,8 +200,8 @@ contract VincentAppFacetTest is Test {
     }
 
     function testEnableAppVersion() public {
-        uint256 newAppId = 1;
-        uint256 newAppVersion = _registerBasicApp(newAppId);
+        uint40 newAppId = 1;
+        uint24 newAppVersion = _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
@@ -252,7 +218,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -277,7 +243,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees.length, 1);
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -290,8 +256,8 @@ contract VincentAppFacetTest is Test {
     }
 
     function testAddAndRemoveDelegatee() public {
-        uint256 newAppId = 1;
-        uint256 newAppVersion = _registerBasicApp(newAppId);
+        uint40 newAppId = 1;
+        uint24 newAppVersion = _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
@@ -309,7 +275,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[1], APP_DELEGATEE_DAVID);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -335,7 +301,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees.length, 1);
         assertEq(app.delegatees[0], APP_DELEGATEE_DAVID);
 
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertFalse(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -347,9 +313,57 @@ contract VincentAppFacetTest is Test {
         assertTrue(appVersion.enabled);
     }
 
+    function testSetDelegatee() public {
+        uint40 newAppId = 1;
+        _registerBasicApp(newAppId);
+
+        VincentAppViewFacet.App memory app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 1);
+        assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
+
+        vm.startPrank(APP_MANAGER_ALICE);
+        
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentAppFacet.DelegateeRemoved(newAppId, APP_DELEGATEE_CHARLIE);
+        
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentAppFacet.DelegateeAdded(newAppId, APP_DELEGATEE_EVE);
+        
+        address[] memory newDelegatees = new address[](1);
+        newDelegatees[0] = APP_DELEGATEE_EVE;
+        vincentAppFacet.setDelegatee(newAppId, newDelegatees);
+        vm.stopPrank();
+
+        app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 1);
+        assertEq(app.delegatees[0], APP_DELEGATEE_EVE);
+    }
+
+    function testSetDelegatee_RemoveAllDelegatees() public {
+        uint40 newAppId = 1;
+        _registerBasicApp(newAppId);
+
+        VincentAppViewFacet.App memory app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 1);
+        assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
+
+        vm.startPrank(APP_MANAGER_ALICE);
+        
+        vm.expectEmit(true, true, true, true);
+        emit LibVincentAppFacet.DelegateeRemoved(newAppId, APP_DELEGATEE_CHARLIE);
+        
+        address[] memory emptyDelegatees = new address[](0);
+        vincentAppFacet.setDelegatee(newAppId, emptyDelegatees);
+        vm.stopPrank();
+
+        // Verify that no delegatees remain
+        app = vincentAppViewFacet.getAppById(newAppId);
+        assertEq(app.delegatees.length, 0);
+    }
+
     function testDeleteApp() public {
-        uint256 newAppId = 1;
-        uint256 newAppVersion = _registerBasicApp(newAppId);
+        uint40 newAppId = 1;
+        uint24 newAppVersion = _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
@@ -366,7 +380,7 @@ contract VincentAppFacetTest is Test {
         assertEq(app.delegatees[0], APP_DELEGATEE_CHARLIE);
 
         VincentAppViewFacet.AppVersion memory appVersion;
-        (app, appVersion) = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
+        appVersion = vincentAppViewFacet.getAppVersion(newAppId, newAppVersion);
         assertEq(app.id, newAppId);
         assertTrue(app.isDeleted);
         assertEq(app.manager, APP_MANAGER_ALICE);
@@ -382,7 +396,7 @@ contract VincentAppFacetTest is Test {
      * ######################### registerNextAppVersion ERROR CASES #########################
      */
     function testRegisterNextAppVersion_AppHasBeenDeleted() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
@@ -395,7 +409,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testRegisterNextAppVersion_NotAppManager() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_DELEGATEE_CHARLIE);
@@ -421,7 +435,7 @@ contract VincentAppFacetTest is Test {
      * ######################### enableAppVersion ERROR CASES #########################
      */
     function testEnableAppVersion_AppHasBeenDeleted() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
         
         vm.startPrank(APP_MANAGER_ALICE);
@@ -429,17 +443,17 @@ contract VincentAppFacetTest is Test {
         
         vm.expectRevert(abi.encodeWithSelector(VincentBase.AppHasBeenDeleted.selector, newAppId));
 
-        vincentAppFacet.enableAppVersion(newAppId, newAppId, false);
+        vincentAppFacet.enableAppVersion(newAppId, 1, false);
     }
 
     function testEnableAppVersion_NotAppManager() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_DELEGATEE_CHARLIE);
         vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.NotAppManager.selector, newAppId, APP_DELEGATEE_CHARLIE));
 
-        vincentAppFacet.enableAppVersion(newAppId, newAppId, false);
+        vincentAppFacet.enableAppVersion(newAppId, 1, false);
     }
 
     /**
@@ -453,20 +467,20 @@ contract VincentAppFacetTest is Test {
     }
 
     function testEnableAppVersion_AppVersionAlreadyInRequestedState() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
-        vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.AppVersionAlreadyInRequestedState.selector, newAppId, newAppId, true));
+        vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.AppVersionAlreadyInRequestedState.selector, newAppId, 1, true));
 
-        vincentAppFacet.enableAppVersion(newAppId, newAppId, true);
+        vincentAppFacet.enableAppVersion(newAppId, 1, true);
     }
 
     /**
      * ######################### addDelegatee ERROR CASES #########################
      */
     function testAddDelegatee_AppHasBeenDeleted() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
         
         vm.startPrank(APP_MANAGER_ALICE);
@@ -477,7 +491,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testAddDelegatee_NotAppManager() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_DELEGATEE_CHARLIE);
@@ -496,7 +510,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testAddDelegatee_ZeroAddressDelegatee() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
@@ -505,7 +519,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testAddDelegatee_DelegateeAlreadyRegistered() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
@@ -513,11 +527,32 @@ contract VincentAppFacetTest is Test {
         vincentAppFacet.addDelegatee(newAppId, APP_DELEGATEE_CHARLIE);
     }
 
+    function testSetDelegatee_DelegateeAlreadyRegistered() public {
+        // Create first app with Charlie
+        uint40 appId1 = 1;
+        _registerBasicApp(appId1);
+        
+        // Create second app with David
+        uint40 appId2 = 2;
+        address[] memory delegatees = new address[](1);
+        delegatees[0] = APP_DELEGATEE_DAVID;
+        _registerApp(appId2, delegatees, _createBasicVersionAbilities());
+        
+        vm.startPrank(APP_MANAGER_ALICE);
+        vm.expectRevert(abi.encodeWithSelector(LibVincentAppFacet.DelegateeAlreadyRegisteredToApp.selector, appId1, APP_DELEGATEE_CHARLIE));
+        
+        // Try to add Charlie (from app1) to app2
+        address[] memory newDelegatees = new address[](1);
+        newDelegatees[0] = APP_DELEGATEE_CHARLIE;
+        vincentAppFacet.setDelegatee(appId2, newDelegatees);
+        vm.stopPrank();
+    }
+
     /**
      * ######################### removeDelegatee ERROR CASES #########################
      */
     function testRemoveDelegatee_AppHasBeenDeleted() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
         
         vm.startPrank(APP_MANAGER_ALICE);
@@ -528,7 +563,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testRemoveDelegatee_NotAppManager() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_DELEGATEE_CHARLIE);
@@ -547,7 +582,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testRemoveDelegatee_DelegateeNotRegistered() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_MANAGER_ALICE);
@@ -559,7 +594,7 @@ contract VincentAppFacetTest is Test {
      * ######################### deleteApp ERROR CASES #########################
      */
     function testDeleteApp_AppHasBeenDeleted() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
         
         vm.startPrank(APP_MANAGER_ALICE);
@@ -570,7 +605,7 @@ contract VincentAppFacetTest is Test {
     }
 
     function testDeleteApp_NotAppManager() public {
-        uint256 newAppId = 1;
+        uint40 newAppId = 1;
         _registerBasicApp(newAppId);
 
         vm.startPrank(APP_DELEGATEE_CHARLIE);
@@ -589,13 +624,13 @@ contract VincentAppFacetTest is Test {
     }
 
     function testDeleteApp_AppVersionHasDelegatedAgents() public {
-        uint256 newAppId = 1;
-        uint256 newAppVersion = _registerBasicApp(newAppId);
+        uint40 newAppId = 1;
+        uint24 newAppVersion = _registerBasicApp(newAppId);
 
         // Create arrays for all registered abilities
         string[] memory abilityIpfsCids = new string[](2);
-        abilityIpfsCids[0] = TOOL_IPFS_CID_1;
-        abilityIpfsCids[1] = TOOL_IPFS_CID_2;
+        abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
 
         string[][] memory policyIpfsCids = new string[][](2);
         policyIpfsCids[0] = new string[](1);
@@ -617,6 +652,17 @@ contract VincentAppFacetTest is Test {
             policyParameterValues
         );
         vm.stopPrank();
+
+        // Verify app is permitted before deletion
+        uint256[] memory pkpTokenIds = new uint256[](1);
+        pkpTokenIds[0] = PKP_TOKEN_ID_1;
+        VincentUserViewFacet.PkpPermittedApps[] memory permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0, 10);
+        assertEq(permittedAppsResults.length, 1);
+        assertEq(permittedAppsResults[0].permittedApps.length, 1);
+        assertEq(permittedAppsResults[0].pkpTokenId, PKP_TOKEN_ID_1);
+        assertEq(permittedAppsResults[0].permittedApps[0].appId, newAppId);
+        assertEq(permittedAppsResults[0].permittedApps[0].version, newAppVersion);
+        assertTrue(permittedAppsResults[0].permittedApps[0].versionEnabled);
 
         vm.startPrank(APP_MANAGER_ALICE);
         vm.expectEmit(true, true, true, true);
@@ -624,16 +670,22 @@ contract VincentAppFacetTest is Test {
         vincentAppFacet.deleteApp(newAppId);
 
         assertEq(vincentAppViewFacet.getAppById(newAppId).isDeleted, true);
+
+        // Verify deleted app is filtered out from getPermittedAppsForPkps
+        permittedAppsResults = vincentUserViewFacet.getPermittedAppsForPkps(pkpTokenIds, 0, 10);
+        assertEq(permittedAppsResults.length, 1);
+        assertEq(permittedAppsResults[0].pkpTokenId, PKP_TOKEN_ID_1);
+        assertEq(permittedAppsResults[0].permittedApps.length, 0); // Deleted app should not appear
     }
 
     function test_fetchDelegatedAgentPkpTokenIds() public {
-        uint256 newAppId = 1;
-        uint256 newAppVersion = _registerBasicApp(newAppId);
+        uint40 newAppId = 1;
+        uint24 newAppVersion = _registerBasicApp(newAppId);
 
         // Create arrays for all registered abilities
         string[] memory abilityIpfsCids = new string[](2);
-        abilityIpfsCids[0] = TOOL_IPFS_CID_1;
-        abilityIpfsCids[1] = TOOL_IPFS_CID_2;
+        abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
 
         string[][] memory policyIpfsCids = new string[][](2);
         policyIpfsCids[0] = new string[](1);
@@ -656,41 +708,40 @@ contract VincentAppFacetTest is Test {
         );
         vm.stopPrank();
 
-        uint256[] memory delegatedAgentPkpTokenIds = vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 0, 1);
+        uint256[] memory delegatedAgentPkpTokenIds = vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 0);
         assertEq(delegatedAgentPkpTokenIds.length, 1);
         assertEq(delegatedAgentPkpTokenIds[0], PKP_TOKEN_ID_1);
 
-        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.InvalidOffsetOrLimit.selector));
-        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1, 1);
-
-        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.InvalidOffsetOrLimit.selector));
-        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 0, 2);
-
-        vm.expectRevert(abi.encodeWithSelector(VincentAppViewFacet.InvalidOffsetOrLimit.selector));
-        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1, 0);
+        vm.expectRevert(abi.encodeWithSelector(VincentBase.InvalidOffset.selector, 1, 1));
+        vincentAppViewFacet.getDelegatedAgentPkpTokenIds(newAppId, newAppVersion, 1);
     }
 
     function _registerApp(
-        uint256 appId,
+        uint40 appId,
         address[] memory delegatees,
         VincentAppFacet.AppVersionAbilities memory versionAbilities
-    ) private returns (uint256) {
+    ) private returns (uint24) {
         vm.startPrank(APP_MANAGER_ALICE);
-        uint256 newAppVersion = vincentAppFacet.registerApp(appId, delegatees, versionAbilities);
+        uint24 newAppVersion = vincentAppFacet.registerApp(appId, delegatees, versionAbilities);
         vm.stopPrank();
 
         return newAppVersion;
     }
 
-    function _registerBasicApp(uint256 appId) private returns (uint256 newAppVersion) {
+    function _registerBasicApp(uint40 appId) private returns (uint24 newAppVersion) {
         address[] memory delegatees = new address[](1);
         delegatees[0] = APP_DELEGATEE_CHARLIE;
 
+        newAppVersion = _registerApp(appId, delegatees, _createBasicVersionAbilities());
+        assertEq(newAppVersion, 1);
+    }
+
+    function _createBasicVersionAbilities() private pure returns (VincentAppFacet.AppVersionAbilities memory) {
         VincentAppFacet.AppVersionAbilities memory versionAbilities;
         versionAbilities.abilityIpfsCids = new string[](2);
 
-        versionAbilities.abilityIpfsCids[0] = TOOL_IPFS_CID_1;
-        versionAbilities.abilityIpfsCids[1] = TOOL_IPFS_CID_2;
+        versionAbilities.abilityIpfsCids[0] = ABILITY_IPFS_CID_1;
+        versionAbilities.abilityIpfsCids[1] = ABILITY_IPFS_CID_2;
 
         versionAbilities.abilityPolicies = new string[][](2);
 
@@ -699,8 +750,6 @@ contract VincentAppFacetTest is Test {
 
         versionAbilities.abilityPolicies[1] = new string[](0);
 
-        newAppVersion = _registerApp(appId, delegatees, versionAbilities);
-
-        assertEq(newAppVersion, 1);
+        return versionAbilities;
     }
 }

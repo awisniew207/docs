@@ -19,7 +19,10 @@
       "path": "./packages/apps/ability-erc20-approval"
     },
     {
-      "path": "./packages/apps/ability-transaction-signer"
+      "path": "./packages/apps/ability-erc20-transfer"
+    },
+    {
+      "path": "./packages/apps/ability-evm-transaction-signer"
     },
     {
       "path": "./packages/apps/app-dashboard"
@@ -44,6 +47,18 @@
     },
     {
       "path": "./packages/apps/mcp"
+    },
+    {
+      "path": "./packages/apps/ability-morpho"
+    },
+    {
+      "path": "./packages/apps/ability-aave"
+    },
+    {
+      "path": "./packages/apps/ability-debridge"
+    },
+    {
+      "path": "./packages/apps/policy-send-counter"
     }
   ]
 }

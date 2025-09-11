@@ -1,4 +1,4 @@
-import { useMemo, forwardRef, useImperativeHandle, useRef } from 'react';
+import { useMemo, forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
 import { RJSFSchema, UiSchema, createSchemaUtils } from '@rjsf/utils';
 import Form from '@rjsf/shadcn';
 import validator from '@rjsf/validator-ajv8';
@@ -8,7 +8,6 @@ import { PolicyVersion } from '@/types/developer-dashboard/appTypes';
 
 interface PolicyFormProps {
   policy: PolicyVersion;
-  isDark: boolean;
   formData: Record<string, any>;
   onFormChange: (policyIpfsCid: string, data: any) => void;
 }
@@ -18,7 +17,7 @@ export interface PolicyFormRef {
 }
 
 export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
-  ({ policy, isDark, formData, onFormChange }, ref) => {
+  ({ policy, formData, onFormChange }, ref) => {
     const formRef = useRef<any>(null);
 
     const resolvedSchema = useMemo(() => {
@@ -53,6 +52,22 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
       }
     }, [policy.parameters?.jsonSchema, policy.parameters?.uiSchema, policy.ipfsCid]);
 
+    // Initialize form with undefined values for all fields
+    useEffect(() => {
+      if (
+        resolvedSchema?.jsonSchema?.properties &&
+        Object.keys(formData[policy.ipfsCid] || {}).length === 0
+      ) {
+        const initialData: Record<string, any> = {};
+        Object.keys(resolvedSchema.jsonSchema.properties).forEach((fieldName) => {
+          initialData[fieldName] = undefined;
+        });
+
+        // Call onFormChange to set the initial structure
+        onFormChange(policy.ipfsCid, { formData: initialData });
+      }
+    }, [resolvedSchema, policy.ipfsCid, formData, onFormChange]);
+
     useImperativeHandle(ref, () => ({
       validateForm: () => {
         if (formRef.current) {
@@ -70,46 +85,92 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
       <div className="mt-4 p-4 bg-opacity-50 rounded-lg border border-opacity-20">
         <style>
           {`
-            .policy-form-${policy.ipfsCid} * {
-              color: ${isDark ? 'rgb(255 255 255 / 0.8)' : 'rgb(17 24 39)'} !important;
+            .policy-form-${policy.ipfsCid} {
+              color: rgb(17 24 39) !important;
+            }
+            
+            .dark .policy-form-${policy.ipfsCid} {
+              color: rgb(255 255 255 / 0.8) !important;
             }
             
             .policy-form-${policy.ipfsCid} label {
-              color: ${isDark ? 'rgb(255 255 255 / 0.9)' : 'rgb(17 24 39)'};
-              font-weight: 500;
-              margin-bottom: 0.5rem;
+              color: inherit !important;
+              font-weight: 400;
+              font-size: 0.75rem;
+              margin-bottom: 0.25rem;
               display: block;
             }
             
             .policy-form-${policy.ipfsCid} input,
             .policy-form-${policy.ipfsCid} textarea,
             .policy-form-${policy.ipfsCid} select {
-              background-color: ${isDark ? 'rgb(255 255 255 / 0.05)' : 'rgb(249 250 251)'};
-              border: 1px solid ${isDark ? 'rgb(255 255 255 / 0.1)' : 'rgb(209 213 219)'};
-              color: ${isDark ? 'rgb(255 255 255 / 0.9)' : 'rgb(17 24 39)'};
+              background-color: rgb(249 250 251);
+              border: 1px solid rgb(209 213 219);
+              color: rgb(17 24 39);
               border-radius: 0.5rem;
-              padding: 0.75rem;
+              padding: 0.5rem;
               width: 100%;
+              font-size: 0.75rem;
               transition: all 0.2s ease;
+            }
+            
+            .dark .policy-form-${policy.ipfsCid} input,
+            .dark .policy-form-${policy.ipfsCid} textarea,
+            .dark .policy-form-${policy.ipfsCid} select {
+              background-color: rgb(255 255 255 / 0.05);
+              border: 1px solid rgb(255 255 255 / 0.1);
+              color: rgb(255 255 255 / 0.9);
             }
             
             .policy-form-${policy.ipfsCid} input:focus,
             .policy-form-${policy.ipfsCid} textarea:focus,
             .policy-form-${policy.ipfsCid} select:focus {
               outline: none;
-              border-color: ${isDark ? 'rgb(255 255 255 / 0.3)' : 'rgb(59 130 246)'};
-              box-shadow: 0 0 0 3px ${isDark ? 'rgb(255 255 255 / 0.1)' : 'rgb(59 130 246 / 0.1)'};
+              border-color: rgb(59 130 246);
+              box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+            }
+            
+            .dark .policy-form-${policy.ipfsCid} input:focus,
+            .dark .policy-form-${policy.ipfsCid} textarea:focus,
+            .dark .policy-form-${policy.ipfsCid} select:focus {
+              border-color: rgb(255 255 255 / 0.3);
+              box-shadow: 0 0 0 3px rgb(255 255 255 / 0.1);
             }
             
             .policy-form-${policy.ipfsCid} input::placeholder,
             .policy-form-${policy.ipfsCid} textarea::placeholder {
-              color: ${isDark ? 'rgb(255 255 255 / 0.4)' : 'rgb(107 114 128)'};
+              color: rgb(107 114 128);
             }
             
-            .policy-form-${policy.ipfsCid} .field-description {
-              color: ${isDark ? 'rgb(255 255 255 / 0.6)' : 'rgb(107 114 128)'};
-              font-size: 0.875rem;
-              margin-top: 0.25rem;
+            .dark .policy-form-${policy.ipfsCid} input::placeholder,
+            .dark .policy-form-${policy.ipfsCid} textarea::placeholder {
+              color: rgb(255 255 255 / 0.4);
+            }
+            
+            .policy-form-${policy.ipfsCid} * {
+              font-size: 0.625rem !important;
+            }
+            
+            .policy-form-${policy.ipfsCid} label {
+              font-size: 0.75rem !important;
+            }
+            
+            .policy-form-${policy.ipfsCid} input,
+            .policy-form-${policy.ipfsCid} textarea,
+            .policy-form-${policy.ipfsCid} select {
+              font-size: 0.75rem !important;
+            }
+            
+            .policy-form-${policy.ipfsCid} .field-description,
+            .policy-form-${policy.ipfsCid} .form-text,
+            .policy-form-${policy.ipfsCid} .help-text,
+            .policy-form-${policy.ipfsCid} .description,
+            .policy-form-${policy.ipfsCid} .field-help,
+            .policy-form-${policy.ipfsCid} small,
+            .policy-form-${policy.ipfsCid} .text-muted,
+            .policy-form-${policy.ipfsCid} p {
+              opacity: 0.7 !important;
+              font-size: 0.625rem !important;
             }
             
             .policy-form-${policy.ipfsCid} .field-error,
@@ -120,9 +181,20 @@ export const PolicyForm = forwardRef<PolicyFormRef, PolicyFormProps>(
             .policy-form-${policy.ipfsCid} .error-detail,
             .policy-form-${policy.ipfsCid} [role="alert"],
             .policy-form-${policy.ipfsCid} .text-destructive {
-              color: ${isDark ? 'rgb(248 113 113)' : 'rgb(239 68 68)'} !important;
+              color: rgb(239 68 68) !important;
               font-size: 0.875rem;
               margin-top: 0.25rem;
+            }
+            
+            .dark .policy-form-${policy.ipfsCid} .field-error,
+            .dark .policy-form-${policy.ipfsCid} .text-danger,
+            .dark .policy-form-${policy.ipfsCid} .invalid-feedback,
+            .dark .policy-form-${policy.ipfsCid} .form-text.text-danger,
+            .dark .policy-form-${policy.ipfsCid} .text-red-500,
+            .dark .policy-form-${policy.ipfsCid} .error-detail,
+            .dark .policy-form-${policy.ipfsCid} [role="alert"],
+            .dark .policy-form-${policy.ipfsCid} .text-destructive {
+              color: rgb(248 113 113) !important;
             }
             
             .policy-form-${policy.ipfsCid} button[type="submit"] {

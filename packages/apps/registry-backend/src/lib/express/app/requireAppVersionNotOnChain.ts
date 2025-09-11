@@ -24,7 +24,6 @@ export const requireAppVersionNotOnChain = () => {
       return;
     }
 
-
     if (!reqWithAppVersion.vincentAppVersion) {
       debug('AppVersion middleware did not run before requireAppVersionNotOnChain middleware');
       res.status(500).json({

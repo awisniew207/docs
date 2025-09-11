@@ -2,25 +2,30 @@ import { motion } from 'framer-motion';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
 import { AbilityAccordion } from '@/components/user-dashboard/connect/ui/AbilityAccordion';
 import { PolicyFormRef } from '@/components/user-dashboard/connect/ui/PolicyForm';
-import { ThemeType } from '@/components/user-dashboard/connect/ui/theme';
+import { AbilityHeader } from '@/components/user-dashboard/connect/ui/AbilityHeader';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 interface AppsAndVersionsProps {
   connectInfoMap: ConnectInfoMap;
-  theme: ThemeType;
-  isDark: boolean;
   formData: Record<string, any>;
   onFormChange: (abilityIpfsCid: string, policyIpfsCid: string, data: any) => void;
   onRegisterFormRef: (policyIpfsCid: string, ref: PolicyFormRef) => void;
+  selectedPolicies: Record<string, boolean>;
+  onPolicySelectionChange: (
+    abilityIpfsCid: string,
+    policyIpfsCid: string,
+    selected: boolean,
+  ) => void;
   permittedVersion?: string; // Optional prop to specify a specific version to render
 }
 
 export function PermittedAppInfo({
   connectInfoMap,
-  theme,
-  isDark,
   formData,
   onFormChange,
   onRegisterFormRef,
+  selectedPolicies,
+  onPolicySelectionChange,
   permittedVersion,
 }: AppsAndVersionsProps) {
   const appNames = Object.keys(connectInfoMap.versionsByApp);
@@ -45,7 +50,7 @@ export function PermittedAppInfo({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: appIndex * 0.1 }}
-            className="space-y-4"
+            className="space-y-1"
           >
             {(() => {
               const versionKey = `${appName}-${version.version}`;
@@ -74,6 +79,25 @@ export function PermittedAppInfo({
                       connectInfoMap.abilityVersionsByAppVersionAbility[abilityKey] || [];
                     const abilityVersion = abilityVersions[0];
 
+                    // If no visible policies, render a simple card without accordion
+                    if (visiblePolicies.length === 0) {
+                      return (
+                        <div
+                          key={abilityKey}
+                          className={`backdrop-blur-xl ${theme.cardBg} border ${theme.cardBorder} rounded-lg overflow-hidden`}
+                        >
+                          <div className="py-2 px-2 sm:py-2.5 sm:px-3">
+                            <AbilityHeader
+                              ability={ability}
+                              abilityVersion={abilityVersion}
+                              connectInfoMap={connectInfoMap}
+                            />
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // If there are visible policies, render the accordion
                     return (
                       <AbilityAccordion
                         key={abilityKey}
@@ -81,13 +105,13 @@ export function PermittedAppInfo({
                         abilityVersion={abilityVersion}
                         policies={visiblePolicies}
                         connectInfoMap={connectInfoMap}
-                        theme={theme}
-                        isDark={isDark}
                         formData={formData}
                         onFormChange={onFormChange}
                         onRegisterFormRef={onRegisterFormRef}
                         abilityIpfsCid={abilityVersion.ipfsCid}
                         defaultExpanded={false} // All abilities start closed
+                        selectedPolicies={selectedPolicies}
+                        onPolicySelectionChange={onPolicySelectionChange}
                       />
                     );
                   })}
