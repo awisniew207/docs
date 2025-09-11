@@ -147,7 +147,13 @@ export function ConnectPageWrapper() {
       );
     }
     // Check if both user's version and active version are disabled - app is unavailable
-    else if (agentPKP && !isPermitted && versionEnabled === false && activeVersionData && !activeVersionData.enabled) {
+    else if (
+      agentPKP &&
+      !isPermitted &&
+      versionEnabled === false &&
+      activeVersionData &&
+      !activeVersionData.enabled
+    ) {
       content = (
         <AppUnavailableConnect
           appData={data.app}
@@ -166,8 +172,8 @@ export function ConnectPageWrapper() {
         />
       );
     }
-    // Check for previously permitted PKP (unpermitted but has PKP - either enabled version or current active version)
-    else if (agentPKP && !isPermitted) {
+    // Check for previously permitted PKP (unpermitted but has PKP - only if it was actually previously permitted)
+    else if (agentPKP && !isPermitted && versionEnabled !== null) {
       content = (
         <RepermitConnect
           appData={data.app}
@@ -177,7 +183,17 @@ export function ConnectPageWrapper() {
         />
       );
     }
-    // Default to connect page
+    // Check for existing PKP that was never permitted for this app (reuse it)
+    else if (agentPKP && !isPermitted) {
+      content = (
+        <ConnectPage
+          connectInfoMap={data}
+          readAuthInfo={{ authInfo, sessionSigs, isProcessing, error }}
+          previouslyPermittedPKP={agentPKP}
+        />
+      );
+    }
+    // Default to connect page (will mint new PKP)
     else {
       content = (
         <ConnectPage
