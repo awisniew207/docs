@@ -1,7 +1,9 @@
 import { Button } from '@/components/shared/ui/button';
 import { DAppIcon, DAppIconFallback } from './DAppIcon';
 import { WalletConnectCard } from './WalletConnectCard';
-import { UserPlus } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
+import { useState } from 'react';
 
 type SessionMetadata = {
   name: string;
@@ -36,6 +38,7 @@ export function SessionProposal({
   processing,
   walletRegistered,
 }: SessionProposalProps) {
+  const [showPermissions, setShowPermissions] = useState(false);
   const dappMetadata = proposal?.params?.proposer?.metadata || {};
   const dappName = dappMetadata.name || 'Unknown';
   const dappUrl = dappMetadata.url || '';
@@ -45,65 +48,78 @@ export function SessionProposal({
   const permissions = extractPermissions(proposal);
 
   return (
-    <WalletConnectCard
-      variant="proposal"
-      title="New Connection Request"
-      icon={<UserPlus className="w-5 h-5" />}
-      className="mt-3"
-    >
+    <WalletConnectCard variant="proposal" title="New Connection Request" className="mt-3">
       {/* DApp Info */}
-      <div className="flex items-start mb-3 p-2 bg-white rounded-md border border-purple-100">
-        {dappIcon ? (
-          <DAppIcon
-            src={dappIcon}
-            alt={`${dappName} icon`}
-            size="md"
-            className="mr-3 flex-shrink-0"
-          />
-        ) : (
-          <DAppIconFallback name={dappName} size="md" className="mr-3 flex-shrink-0" />
+      <div className="flex flex-col mb-3">
+        <div className="flex items-start">
+          {dappIcon ? (
+            <DAppIcon
+              src={dappIcon}
+              alt={`${dappName} icon`}
+              size="md"
+              className="mr-3 flex-shrink-0"
+            />
+          ) : (
+            <DAppIconFallback name={dappName} size="md" className="mr-3 flex-shrink-0" />
+          )}
+          <div>
+            <p className={`font-semibold ${theme.text}`}>{dappName}</p>
+            {dappUrl && <p className={`text-xs ${theme.textMuted}`}>{dappUrl}</p>}
+            {dappDescription && (
+              <p className={`text-xs mt-1 ${theme.textMuted}`}>{dappDescription}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Permissions Dropdown within DApp Info */}
+        {permissions.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={() => setShowPermissions(!showPermissions)}
+              className={`w-full flex items-center justify-between p-1 rounded hover:${theme.itemHoverBg} transition-colors`}
+            >
+              <span className={`font-medium text-xs ${theme.text}`}>Requesting permission to:</span>
+              {showPermissions ? (
+                <ChevronUp className={`w-3 h-3 ${theme.textMuted}`} />
+              ) : (
+                <ChevronDown className={`w-3 h-3 ${theme.textMuted}`} />
+              )}
+            </button>
+            {showPermissions && (
+              <div className={`mt-2 p-2`}>
+                <ul className={`list-disc ml-4 text-xs space-y-1 ${theme.textMuted}`}>
+                  {permissions.map((permission, i) => (
+                    <li key={i}>{permission}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         )}
-        <div>
-          <p className="font-semibold text-purple-900">{dappName}</p>
-          {dappUrl && <p className="text-xs text-purple-600">{dappUrl}</p>}
-          {dappDescription && <p className="text-xs mt-1 text-purple-700">{dappDescription}</p>}
-        </div>
-      </div>
 
-      {/* Permissions */}
-      {permissions.length > 0 && (
-        <div className="mb-3 p-2 bg-white rounded-md border border-purple-100">
-          <p className="font-medium mb-2 text-purple-900">Requesting permission to:</p>
-          <ul className="list-disc ml-5 text-xs space-y-1 text-purple-800">
-            {permissions.map((permission, i) => (
-              <li key={i}>{permission}</li>
-            ))}
-          </ul>
+        {/* Action Buttons */}
+        <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 justify-center">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onApprove}
+            disabled={processing || !walletRegistered}
+            data-testid="approve-session-button"
+            className={`border ${theme.cardBorder} ${theme.text} hover:${theme.itemHoverBg}`}
+          >
+            {processing ? 'Processing...' : 'Approve Connection'}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onReject}
+            disabled={processing}
+            data-testid="reject-session-button"
+            className={`border ${theme.cardBorder} ${theme.text} hover:${theme.itemHoverBg}`}
+          >
+            Reject
+          </Button>
         </div>
-      )}
-
-      {/* Action Buttons */}
-      <div className="flex gap-2 mt-4">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onApprove}
-          disabled={processing || !walletRegistered}
-          data-testid="approve-session-button"
-          className="border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800"
-        >
-          {processing ? 'Processing...' : 'Approve Connection'}
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onReject}
-          disabled={processing}
-          data-testid="reject-session-button"
-          className="border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800"
-        >
-          Reject
-        </Button>
       </div>
     </WalletConnectCard>
   );

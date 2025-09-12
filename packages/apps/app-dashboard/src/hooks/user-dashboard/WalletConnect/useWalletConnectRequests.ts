@@ -69,11 +69,23 @@ export function useWalletConnectRequests(client: any, currentWalletAddress: stri
         if (!activeSessions[topic]) {
           clearSessionRequest(id);
           setPendingSessionRequests(getPendingSessionRequests());
-          throw new Error('Cannot process request: session is no longer active');
+          throw new Error(
+            `Cannot process request: session ${topic} is no longer active at approval time. Active sessions: ${Object.keys(activeSessions).join(', ')}`,
+          );
         }
 
         let result;
         let response;
+
+        // Auto-approve wallet_getCapabilities without user interaction
+        if (method === 'wallet_getCapabilities') {
+          result = getWalletCapabilities();
+          response = { id, jsonrpc: '2.0', result };
+          await client.respondSessionRequest({ topic, response });
+          clearSessionRequest(id);
+          setPendingSessionRequests(getPendingSessionRequests());
+          return { success: true, method };
+        }
 
         switch (method) {
           case 'personal_sign':
@@ -90,11 +102,6 @@ export function useWalletConnectRequests(client: any, currentWalletAddress: stri
           case 'eth_signTypedData':
           case 'eth_signTypedData_v4':
             result = await handleSignTypedData(pkpWallet, methodParams);
-            response = { id, jsonrpc: '2.0', result };
-            break;
-
-          case 'wallet_getCapabilities':
-            result = getWalletCapabilities();
             response = { id, jsonrpc: '2.0', result };
             break;
 

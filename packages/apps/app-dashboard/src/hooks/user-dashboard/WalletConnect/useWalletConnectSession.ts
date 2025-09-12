@@ -10,7 +10,6 @@ import {
   createWalletConnectClient,
   disconnectSession,
   registerPKPWallet,
-  resetWalletConnectClient,
 } from '@/components/user-dashboard/withdraw/WalletConnect/WalletConnectUtil';
 import useWalletConnectStore from '@/components/user-dashboard/withdraw/WalletConnect/WalletConnectStore';
 
@@ -137,15 +136,21 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
           const events = (requirements as any).events || [];
 
           const accounts = chains.map((chainId: string) => {
-            const formattedChainId = chainId.includes(':')
-              ? chainId
-              : `eip155:${chainId.replace('eip155:', '')}`;
+            // Ensure chainId is in the correct format (eip155:chainNumber)
+            let formattedChainId: string;
+            if (chainId.startsWith('eip155:')) {
+              formattedChainId = chainId; // Already in correct format
+            } else {
+              // Remove any existing eip155: prefix and add it properly
+              const cleanChainId = chainId.replace('eip155:', '');
+              formattedChainId = `eip155:${cleanChainId}`;
+            }
             return `${formattedChainId}:${formattedAddress}`;
           });
 
           approvedNamespaces[chain] = { accounts, methods, events };
         } else {
-          approvedNamespaces[chain] = requirements;
+          // Skip non-EIP155 namespaces since we only support Ethereum
         }
       }
 
@@ -163,31 +168,18 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
         namespaces: approvedNamespaces,
         sessionProperties,
       });
-
       setStatus({ message: 'Session approved successfully', type: 'success' });
       setPendingProposal(null);
       refreshSessions();
     } catch (error) {
       console.error('Failed to approve session:', error);
 
-      if (error instanceof Error && error.message.includes('No matching key')) {
-        await resetWalletConnectClient();
-        await createWalletConnectClient((clientInstance) => {
-          useWalletConnectStore.getState().actions.setClient(clientInstance);
-          refreshSessions();
-        });
+      setStatus({
+        message: error instanceof Error ? error.message : 'Failed to approve session',
+        type: 'error',
+      });
 
-        setStatus({
-          message: 'Session error occurred. Please try connecting again.',
-          type: 'warning',
-        });
-        setPendingProposal(null);
-      } else {
-        setStatus({
-          message: error instanceof Error ? error.message : 'Failed to approve session',
-          type: 'error',
-        });
-      }
+      setPendingProposal(null);
     } finally {
       setProcessingProposal(false);
     }
@@ -274,7 +266,12 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
     if (!client || !currentWalletAddress) return;
 
     // Only disconnect if the wallet address actually changed to a different address
-    if (previousWalletAddress.current && previousWalletAddress.current !== currentWalletAddress) {
+    // AND we had a previous address (not first time initialization)
+    if (
+      previousWalletAddress.current &&
+      previousWalletAddress.current !== currentWalletAddress &&
+      previousWalletAddress.current !== null
+    ) {
       const disconnectAllSessions = async () => {
         try {
           const activeSessions = client.getActiveSessions() || {};

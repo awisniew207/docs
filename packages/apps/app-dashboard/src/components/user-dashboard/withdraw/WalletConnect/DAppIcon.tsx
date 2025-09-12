@@ -19,7 +19,7 @@ export function DAppIcon({ src, alt, size = 'sm', className = '' }: DAppIconProp
     <img
       src={src}
       alt={alt}
-      className={`${sizeClasses} ${roundingClasses} border border-blue-100 ${className}`}
+      className={`${sizeClasses} ${roundingClasses} ${className}`}
       onError={(e) => {
         const target = e.target as HTMLImageElement;
         target.onerror = null;

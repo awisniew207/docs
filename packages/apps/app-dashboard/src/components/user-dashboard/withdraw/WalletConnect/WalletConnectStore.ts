@@ -48,38 +48,27 @@ const useWalletConnectStore = create<WalletConnectState>()((set, get) => ({
       set((state) => {
         if (!state.client) return { sessions: [] };
 
+        // Always use client as single source of truth
         const allSessions = Object.values(state.client.getActiveSessions() || {});
 
-        const updatedAccountSessions = { ...state.accountSessions };
-        if (state.currentWalletAddress) {
-          updatedAccountSessions[state.currentWalletAddress] = allSessions;
-        }
-
         return {
-          sessions: state.currentWalletAddress
-            ? updatedAccountSessions[state.currentWalletAddress] || []
-            : allSessions,
-          accountSessions: updatedAccountSessions,
+          sessions: allSessions,
+          // Clear account sessions - use client as single source of truth
+          accountSessions: {},
         };
       }),
     setCurrentWalletAddress: (address: string | null) =>
       set((state) => {
         if (!state.client) return { currentWalletAddress: address, sessions: [] };
-        if (state.currentWalletAddress) {
-          const currentSessions = Object.values(state.client.getActiveSessions() || {});
-          if (currentSessions.length > 0) {
-            state.accountSessions[state.currentWalletAddress] = currentSessions;
-          }
-        }
 
-        const sessionsToShow = address
-          ? state.accountSessions[address] || []
-          : Object.values(state.client.getActiveSessions() || {});
+        // Always use client as single source of truth
+        const allSessions = Object.values(state.client.getActiveSessions() || {});
 
         return {
           currentWalletAddress: address,
-          sessions: sessionsToShow,
-          accountSessions: { ...state.accountSessions },
+          sessions: allSessions,
+          // Clear account sessions - use client as single source of truth
+          accountSessions: {},
         };
       }),
     clearSessionsForAddress: async (address: string | null) => {
@@ -88,19 +77,19 @@ const useWalletConnectStore = create<WalletConnectState>()((set, get) => ({
       const state = get();
       if (!state.client) return;
 
-      const sessionsForAddress = state.accountSessions[address] || [];
+      // Disconnect all active sessions since we no longer store per-address
+      const allSessions = Object.values(state.client.getActiveSessions() || {});
+      console.log(`Clearing ${allSessions.length} active sessions for address change`);
 
-      if (sessionsForAddress.length === 0) return;
-
-      for (const session of sessionsForAddress) {
-        if (session.topic) {
+      for (const session of allSessions) {
+        if (session && session.topic) {
           try {
-            console.log(`Disconnecting session ${session.topic} for address ${address}`);
+            console.log(`Disconnecting session ${session.topic} for address change`);
             await state.client.disconnectSession({
               topic: session.topic,
               reason: {
                 code: 6000,
-                message: 'Wallet switched',
+                message: 'Wallet changed',
               },
             });
           } catch (error) {
@@ -109,16 +98,8 @@ const useWalletConnectStore = create<WalletConnectState>()((set, get) => ({
         }
       }
 
-      set((state) => {
-        const updatedAccountSessions = { ...state.accountSessions };
-
-        updatedAccountSessions[address] = [];
-
-        return {
-          accountSessions: updatedAccountSessions,
-          sessions: state.currentWalletAddress === address ? [] : state.sessions,
-        };
-      });
+      // Refresh sessions from client
+      get().actions.refreshSessions();
     },
   },
 }));

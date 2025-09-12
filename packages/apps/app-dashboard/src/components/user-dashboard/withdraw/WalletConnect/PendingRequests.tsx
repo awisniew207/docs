@@ -3,7 +3,7 @@ import { WalletConnectCard } from './WalletConnectCard';
 import { DAppIcon, DAppIconFallback } from './DAppIcon';
 import { ethers } from 'ethers';
 import { IWalletKit } from '@reown/walletkit';
-import { PenTool, Send, FileText, Settings, HelpCircle } from 'lucide-react';
+import { PenTool, Send, FileText, HelpCircle } from 'lucide-react';
 
 interface PendingRequest {
   id: string;
@@ -96,7 +96,7 @@ function RequestItem({
   const { description, icon, details } = getRequestInfo(method, methodParams);
 
   return (
-    <div className="rounded-md p-3 border shadow-sm transition-all hover:shadow-md bg-gradient-to-r from-cyan-50 to-slate-50 border-cyan-200">
+    <div className="rounded-md p-3 border shadow-sm transition-all hover:shadow-md bg-gray-50 border-gray-200 dark:bg-black/50 dark:border-gray-800">
       {/* dApp Info Header */}
       <div className="flex items-center gap-2 mb-2">
         {dAppInfo.icon ? (
@@ -110,20 +110,22 @@ function RequestItem({
               href={dAppInfo.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium hover:underline text-cyan-800"
+              className="text-sm font-medium hover:underline text-gray-800 dark:text-gray-200"
             >
               {dAppInfo.name}
             </a>
           ) : (
-            <span className="text-sm font-medium text-cyan-800">{dAppInfo.name}</span>
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+              {dAppInfo.name}
+            </span>
           )}
         </div>
       </div>
 
       {/* Request Info */}
       <div className="flex items-center gap-2 mb-2">
-        {icon && <span className="text-cyan-800">{icon}</span>}
-        <p className="font-medium text-cyan-800">{description}</p>
+        {icon && <span className="text-gray-800 dark:text-gray-200">{icon}</span>}
+        <p className="font-medium text-gray-800 dark:text-gray-200">{description}</p>
       </div>
 
       {details}
@@ -132,7 +134,7 @@ function RequestItem({
         <Button
           size="sm"
           variant="outline"
-          className="text-xs border-cyan-200 text-cyan-800 hover:bg-cyan-50"
+          className="text-xs border-gray-200 text-gray-800 hover:bg-gray-50 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-black"
           onClick={onApprove}
           disabled={processing}
         >
@@ -141,7 +143,7 @@ function RequestItem({
         <Button
           size="sm"
           variant="outline"
-          className="text-xs hover:bg-opacity-50 border-cyan-200 text-cyan-800"
+          className="text-xs hover:bg-opacity-50 border-gray-200 text-gray-800 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-black"
           onClick={onReject}
           disabled={processing}
         >
@@ -168,7 +170,7 @@ function getRequestInfo(method: string, methodParams: any[]) {
           ? Buffer.from(message.slice(2), 'hex').toString('utf8')
           : message;
       details = (
-        <div className="mt-2 p-2 bg-white rounded-md text-gray-800 text-xs font-mono whitespace-pre-wrap border border-gray-200 max-h-24 overflow-auto">
+        <div className="mt-2 p-2 bg-white rounded-md text-gray-800 text-xs font-mono whitespace-pre-wrap border border-gray-200 max-h-24 overflow-auto dark:bg-black dark:text-gray-200 dark:border-gray-800">
           {displayMsg}
         </div>
       );
@@ -195,19 +197,19 @@ function getRequestInfo(method: string, methodParams: any[]) {
       }
 
       details = (
-        <div className="mt-2 p-2 bg-white rounded-md text-gray-800 text-xs font-mono overflow-auto border border-gray-200">
+        <div className="mt-2 p-2 bg-white rounded-md text-gray-800 text-xs font-mono overflow-auto border border-gray-200 dark:bg-black dark:text-gray-200 dark:border-gray-800">
           <p className="mb-1">
-            <span className="text-gray-500">To:</span> {tx.to}
+            <span className="text-gray-500 dark:text-gray-400">To:</span> {tx.to}
           </p>
           {tx.value && (
             <p className="mb-1">
-              <span className="text-gray-500">Value:</span> {valueDisplay}
+              <span className="text-gray-500 dark:text-gray-400">Value:</span> {valueDisplay}
             </p>
           )}
           {tx.data && tx.data !== '0x' && (
             <div className="mb-1">
-              <span className="text-gray-500">Data:</span>
-              <div className="mt-1 p-2 bg-gray-50 rounded border max-h-32 overflow-auto break-all">
+              <span className="text-gray-500 dark:text-gray-400">Data:</span>
+              <div className="mt-1 p-2 bg-gray-50 rounded border max-h-32 overflow-auto break-all dark:bg-black dark:border-gray-800">
                 {tx.data}
               </div>
             </div>
@@ -236,19 +238,8 @@ function getRequestInfo(method: string, methodParams: any[]) {
       }
 
       details = (
-        <div className="mt-2 p-3 bg-white rounded-md text-gray-800 text-xs font-mono overflow-auto border border-gray-200 max-h-48">
+        <div className="mt-2 p-3 bg-white rounded-md text-gray-800 text-xs font-mono overflow-auto border border-gray-200 max-h-48 dark:bg-black dark:text-gray-200 dark:border-gray-800">
           <div className="whitespace-pre-wrap break-words">{typedDataDisplay}</div>
-        </div>
-      );
-      break;
-    }
-
-    case 'wallet_getCapabilities': {
-      icon = <Settings className="w-4 h-4" />;
-      description = 'Get Wallet Capabilities';
-      details = (
-        <div className="mt-2 p-2 bg-white rounded-md text-gray-800 text-xs font-mono overflow-auto border border-gray-200">
-          <p>Request for wallet capabilities</p>
         </div>
       );
       break;

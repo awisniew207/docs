@@ -80,6 +80,20 @@ const iconComponents = {
 
 const StatusMessage = ({ message, type = 'info' }: StatusMessageProps) => {
   if (!message) return <></>;
+
+  // Handle idle state specially
+  const isIdle = message === 'Idle';
+
+  if (isIdle) {
+    return (
+      <div className="flex items-center justify-center p-3 mb-4 rounded-lg text-sm leading-normal transition-all min-h-[48px] max-h-24 opacity-100 bg-gray-50 text-gray-500 border border-gray-200 dark:bg-black/50 dark:text-gray-400 dark:border-gray-800 overflow-hidden">
+        <span className="transition-opacity break-words text-center overflow-wrap-anywhere">
+          {message}
+        </span>
+      </div>
+    );
+  }
+
   // Simple lookup for status styles
   const statusStyles = statusClasses[type];
 
@@ -88,14 +102,18 @@ const StatusMessage = ({ message, type = 'info' }: StatusMessageProps) => {
 
   return (
     <div
-      className={`flex items-start p-3 mb-4 rounded-lg text-sm leading-normal transition-all min-h-[48px] opacity-100 ${statusStyles.container}`}
+      className={`flex items-start justify-center p-3 mb-4 rounded-lg text-sm leading-normal transition-all min-h-[48px] max-h-24 opacity-100 overflow-hidden ${statusStyles.container}`}
     >
       <div
-        className={`flex justify-center items-center w-5 h-5 flex-shrink-0 ${statusStyles.icon}`}
+        className={`flex justify-center items-center w-5 h-5 flex-shrink-0 mt-0.5 ${statusStyles.icon}`}
       >
         <IconComponent className={statusStyles.icon} />
       </div>
-      <span className="ml-3 transition-opacity flex-1 break-words">{message}</span>
+      <div className="ml-3 flex-1 overflow-y-auto max-h-16">
+        <span className="transition-opacity break-words text-center overflow-wrap-anywhere block">
+          {message}
+        </span>
+      </div>
     </div>
   );
 };

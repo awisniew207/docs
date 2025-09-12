@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 interface WalletConnectCardProps {
   children: ReactNode;
@@ -9,29 +10,29 @@ interface WalletConnectCardProps {
   className?: string;
 }
 
-const variantStyles = {
+const getVariantStyles = () => ({
   sessions: {
-    gradient: 'bg-white',
-    border: 'border-gray-200',
-    text: 'text-gray-800',
-    titleText: 'text-gray-900',
-    titleBorder: 'border-gray-200',
+    gradient: theme.cardBg,
+    border: theme.cardBorder,
+    text: theme.textMuted,
+    titleText: 'text-orange-500',
+    titleBorder: theme.cardBorder,
   },
   requests: {
-    gradient: 'bg-white',
-    border: 'border-gray-200',
-    text: 'text-gray-800',
-    titleText: 'text-gray-900',
-    titleBorder: 'border-gray-200',
+    gradient: theme.cardBg,
+    border: theme.cardBorder,
+    text: theme.textMuted,
+    titleText: 'text-orange-500',
+    titleBorder: theme.cardBorder,
   },
   proposal: {
-    gradient: 'bg-gradient-to-r from-purple-50 to-indigo-50',
-    border: 'border-purple-100',
-    text: 'text-purple-800',
-    titleText: 'text-purple-900',
-    titleBorder: 'border-purple-100',
+    gradient: theme.mainCard,
+    border: theme.mainCardBorder,
+    text: theme.text,
+    titleText: 'text-orange-500',
+    titleBorder: theme.cardBorder,
   },
-};
+});
 
 export function WalletConnectCard({
   children,
@@ -41,7 +42,7 @@ export function WalletConnectCard({
   subtitle,
   className = '',
 }: WalletConnectCardProps) {
-  const styles = variantStyles[variant];
+  const styles = getVariantStyles()[variant];
 
   return (
     <div
