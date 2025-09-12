@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { mainnet, polygon, arbitrum, optimism, base, AppKitNetwork } from '@reown/appkit/networks';
-import { yellowstone } from '@/config/chains';
 import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
@@ -34,7 +33,7 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
   // Initialize AppKit on demand
   useEffect(() => {
     if (!appKitInitialized) {
-      const allNetworks = [mainnet, polygon, arbitrum, optimism, base, yellowstone] as [
+      const allNetworks = [mainnet, polygon, arbitrum, optimism, base] as [
         AppKitNetwork,
         ...AppKitNetwork[],
       ];
