@@ -46,7 +46,7 @@ export function WalletConnectCard({
 
   return (
     <div
-      className={`w-full mt-4 p-3 ${styles.gradient} border ${styles.border} ${styles.text} text-sm rounded mb-3 shadow-sm ${className}`}
+      className={`w-full mt-4 p-3 ${styles.gradient} border ${styles.border} ${styles.text} text-sm rounded-lg mb-3 shadow-sm ${className}`}
     >
       <div
         className={`font-semibold mb-3 ${styles.titleText} border-b ${styles.titleBorder} pb-2 flex items-center`}
