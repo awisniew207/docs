@@ -96,7 +96,7 @@ function RequestItem({
   const { description, icon, details } = getRequestInfo(method, methodParams);
 
   return (
-    <div className="rounded-md p-3 border shadow-sm transition-all hover:shadow-md bg-gray-50 border-gray-200 dark:bg-black/50 dark:border-gray-800">
+    <div className="rounded-lg p-3 border shadow-sm transition-all hover:shadow-md bg-gray-50 border-gray-200 dark:bg-black/50 dark:border-gray-800">
       {/* dApp Info Header */}
       <div className="flex items-center gap-2 mb-2">
         {dAppInfo.icon ? (

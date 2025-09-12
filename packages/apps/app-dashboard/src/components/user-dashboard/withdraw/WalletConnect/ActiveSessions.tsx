@@ -121,7 +121,7 @@ function SessionItem({
 
   return (
     <div
-      className={`flex items-center justify-between gap-2 py-2 px-3 ${theme.cardBg} rounded-md border ${theme.cardBorder} shadow-sm transition-all hover:shadow-md`}
+      className={`flex items-center justify-between gap-2 py-2 px-3 ${theme.cardBg} rounded-lg border ${theme.cardBorder} shadow-sm transition-all hover:shadow-md`}
     >
       <div className="flex items-center gap-2">
         {dappIcon ? (
