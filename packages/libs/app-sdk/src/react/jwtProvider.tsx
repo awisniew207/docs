@@ -265,7 +265,7 @@ export const JwtProvider = ({
         app: decodedJWT.payload.app,
         authentication: decodedJWT.payload.authentication,
         jwt: jwtStr,
-        pkp: decodedJWT.payload.pkp,
+        pkp: decodedJWT.payload.pkpInfo,
       });
     } catch (error) {
       console.error(`Error logging in with JWT. Need to relogin: ${(error as Error).message}`);
