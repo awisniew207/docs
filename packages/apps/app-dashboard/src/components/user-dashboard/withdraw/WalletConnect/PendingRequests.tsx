@@ -4,6 +4,7 @@ import { DAppIcon, DAppIconFallback } from './DAppIcon';
 import { ethers } from 'ethers';
 import { IWalletKit } from '@reown/walletkit';
 import { PenTool, Send, FileText, HelpCircle } from 'lucide-react';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 interface PendingRequest {
   id: string;
@@ -110,22 +111,20 @@ function RequestItem({
               href={dAppInfo.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium hover:underline text-gray-800 dark:text-gray-200"
+              className={`text-sm font-medium hover:underline ${theme.text}`}
             >
               {dAppInfo.name}
             </a>
           ) : (
-            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              {dAppInfo.name}
-            </span>
+            <span className={`text-sm font-medium ${theme.text}`}>{dAppInfo.name}</span>
           )}
         </div>
       </div>
 
       {/* Request Info */}
       <div className="flex items-center gap-2 mb-2">
-        {icon && <span className="text-gray-800 dark:text-gray-200">{icon}</span>}
-        <p className="font-medium text-gray-800 dark:text-gray-200">{description}</p>
+        {icon && <span className={theme.text}>{icon}</span>}
+        <p className={`font-medium ${theme.text}`}>{description}</p>
       </div>
 
       {details}

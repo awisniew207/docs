@@ -518,7 +518,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => 
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="relative max-w-4xl max-w-[95vw] max-h-[90vh] overflow-auto"
+              className="relative max-w-[95vw] max-h-[90vh] overflow-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <button

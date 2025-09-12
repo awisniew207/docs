@@ -105,7 +105,7 @@ function getWalletCapabilities() {
 }
 
 /**
- * Notify the dapp that a transaction has completed successfully
+ * Notify the dApp that a transaction has completed successfully
  */
 function notifyTransactionComplete(client: IWalletKit, detail: any): void {
   const { topic, id, result } = detail;
@@ -115,9 +115,9 @@ function notifyTransactionComplete(client: IWalletKit, detail: any): void {
     return;
   }
 
-  console.log(`Notifying dapp of completed transaction: ${id} on topic ${topic}`);
+  console.log(`Notifying dApp of completed transaction: ${id} on topic ${topic}`);
 
-  // Send the response to the dapp
+  // Send the response to the dApp
   client
     .respondSessionRequest({
       topic,
@@ -136,7 +136,7 @@ function notifyTransactionComplete(client: IWalletKit, detail: any): void {
 }
 
 /**
- * Notify the dapp that a transaction has failed
+ * Notify the dApp that a transaction has failed
  */
 function notifyTransactionError(client: IWalletKit, detail: any): void {
   const { topic, id, error } = detail;
@@ -146,9 +146,9 @@ function notifyTransactionError(client: IWalletKit, detail: any): void {
     return;
   }
 
-  console.log(`Notifying dapp of transaction error: ${id} on topic ${topic}`);
+  console.log(`Notifying dApp of transaction error: ${id} on topic ${topic}`);
 
-  // Send the error response to the dapp
+  // Send the error response to the dApp
   client
     .respondSessionRequest({
       topic,

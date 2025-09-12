@@ -151,6 +151,7 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
           approvedNamespaces[chain] = { accounts, methods, events };
         } else {
           // Skip non-EIP155 namespaces since we only support Ethereum
+          continue;
         }
       }
 
