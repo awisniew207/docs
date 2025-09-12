@@ -62,7 +62,6 @@ export async function getPackageInfo({
   try {
     const packument = await getPackument(packageName);
 
-    // @ts-expect-error versions is unknown
     const targetVersion = packument.versions[version];
 
     if (!targetVersion) {
