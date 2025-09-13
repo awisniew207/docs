@@ -3,68 +3,49 @@ import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 export function WithdrawFormSkeleton() {
   return (
-    <div
-      className={`max-w-[550px] w-full mx-auto ${theme.cardBg} rounded-xl shadow-lg border ${theme.cardBorder} overflow-hidden`}
-    >
-      <div className={`px-6 pt-8 pb-6 border-b ${theme.cardBorder}`}>
-        <Skeleton className="h-6 w-20 mb-6" />
-
-        <div className="mb-4">
-          <Skeleton className="h-4 w-32 mb-2" />
-          <Skeleton className="h-4 w-80" />
-        </div>
-      </div>
-
-      <div className="px-6 pb-6">
-        <div className="flex items-center justify-center mb-8 mt-6 px-8">
-          <div className="pb-2 text-lg font-medium">
-            <div className="flex items-center gap-2 px-3">
-              <Skeleton className="h-5 w-28" />
-              <Skeleton className="h-6 w-8" />
-            </div>
-          </div>
-
-          <span className={`mx-8 ${theme.textMuted} pointer-events-none text-lg`}>|</span>
-
-          <div className="px-4 pb-2 text-lg font-medium flex items-center gap-2">
-            <Skeleton className="h-5 w-20" />
-            <Skeleton className="h-5 w-5" />
+    <div className="max-w-xl w-full mx-auto">
+      <div
+        className={`${theme.mainCard} rounded-2xl shadow-sm border ${theme.mainCardBorder} overflow-hidden`}
+      >
+        {/* Header */}
+        <div className={`px-6 py-4 border-b ${theme.cardBorder}`}>
+          <div className="flex items-center justify-center relative">
+            <Skeleton className="h-6 w-28" />
           </div>
         </div>
 
-        <div className="space-y-6">
-          {/* Balance section skeleton */}
-          <div className={`p-4 border rounded-lg ${theme.itemBg}`}>
-            <div className="flex justify-between items-center">
-              <div>
-                <Skeleton className="h-4 w-24 mb-1" />
-                <Skeleton className="h-8 w-32 mt-1" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <Skeleton className="h-10 w-32" />
+        <div className="px-6 py-6 space-y-6">
+          {/* Wallet Address Section */}
+          <div>
+            <Skeleton className="h-3 w-40 mb-2" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 flex-1" />
+              <Skeleton className="h-8 w-16" />
             </div>
           </div>
 
-          {/* Form fields skeleton */}
-          <div className="space-y-4">
-            <div>
-              <Skeleton className="h-4 w-20 mb-2" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div>
-              <Skeleton className="h-4 w-16 mb-2" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div>
-              <Skeleton className="h-4 w-24 mb-2" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          </div>
+          {/* Wallet Status Section */}
+          <div>
+            <Skeleton className="h-4 w-24 mb-3" />
 
-          {/* Button skeleton */}
-          <div className="pt-4">
-            <Skeleton className="h-12 w-full" />
+            {/* Status Message */}
+            <Skeleton className="h-10 w-full mb-4" />
+
+            {/* QR Scanner Button */}
+            <Skeleton className="h-12 w-full mb-4" />
+
+            {/* OR Divider */}
+            <div className="flex items-center my-4">
+              <div className={`flex-1 border-t ${theme.cardBorder}`}></div>
+              <span className={`px-3 text-sm ${theme.textMuted}`}>OR</span>
+              <div className={`flex-1 border-t ${theme.cardBorder}`}></div>
+            </div>
+
+            {/* URI Input */}
+            <div className="flex w-full mb-4">
+              <Skeleton className="h-10 flex-1 rounded-r-none" />
+              <Skeleton className="h-10 w-20 rounded-l-none" />
+            </div>
           </div>
         </div>
       </div>

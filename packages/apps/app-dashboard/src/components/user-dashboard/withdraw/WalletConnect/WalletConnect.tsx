@@ -45,6 +45,18 @@ export default function WalletConnectPage(params: {
   const { pendingSessionRequests, processingRequest, handleApproveRequest, handleRejectRequest } =
     useWalletConnectRequests(client, currentWalletAddress);
 
+  // Auto-hide success messages after 3 seconds
+  useEffect(() => {
+    if (status.message && status.type === 'success') {
+      const timer = setTimeout(() => {
+        setStatus({ message: '', type: undefined });
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [status.message, status.type, setStatus]);
+
   // Handle connect with URI
   const onConnect = useCallback(
     async (uriToConnect: string) => {
@@ -69,7 +81,7 @@ export default function WalletConnectPage(params: {
         setStatus({ message: 'Attempting to connect...', type: 'info' });
 
         await client.pair({ uri: uriToConnect });
-        setStatus({ message: 'Successfully paired with dapp', type: 'success' });
+        setStatus({ message: 'Successfully paired with dApp', type: 'success' });
       } catch (error) {
         console.error('WalletConnect error:', error);
         setStatus({
@@ -144,13 +156,23 @@ export default function WalletConnectPage(params: {
       ) : (
         <>
           {/* Unified status message */}
-          {status.message && <StatusMessage message={status.message} type={status.type} />}
+          <StatusMessage
+            message={status.message || 'Idle'}
+            type={status.message ? status.type : 'info'}
+          />
 
           {/* QR reader should be visible once we're initialized */}
           {client && !isInitializing && <QrReader onConnect={onConnect} />}
 
+          {/* OR divider */}
+          <div className="flex items-center my-4">
+            <div className={`flex-1 border-t ${theme.cardBorder}`}></div>
+            <span className={`px-3 text-sm ${theme.textMuted}`}>OR</span>
+            <div className={`flex-1 border-t ${theme.cardBorder}`}></div>
+          </div>
+
           {/* Manual URI input */}
-          <div className="flex w-full mt-4 mb-4">
+          <div className="flex w-full mb-4">
             <Input
               className={`w-full rounded-r-none ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
               placeholder="e.g. wc:a281567bb3e4..."

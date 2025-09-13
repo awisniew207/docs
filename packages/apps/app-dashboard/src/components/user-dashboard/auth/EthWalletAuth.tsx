@@ -1,10 +1,13 @@
-import { useState } from 'react';
-import { useAppKit } from '@reown/appkit/react';
+import { useState, useEffect, useRef } from 'react';
+import { createAppKit } from '@reown/appkit/react';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { mainnet, polygon, arbitrum, optimism, base, AppKitNetwork } from '@reown/appkit/networks';
 import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
 import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
 import StatusMessage from '../connect/StatusMessage';
+import { env } from '@/config/env';
 
 interface WalletAuthProps {
   authWithEthWallet: (
@@ -18,11 +21,50 @@ interface WalletAuthProps {
 export default function EthWalletAuth({ authWithEthWallet, setView, theme }: WalletAuthProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [appKitInitialized, setAppKitInitialized] = useState(false);
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
-  const { open } = useAppKit();
   const { setAuthInfo } = useSetAuthInfo();
+  const appKitRef = useRef<any>(null);
+
+  const { VITE_WALLETCONNECT_PROJECT_ID, VITE_DASHBOARD_URL } = env;
+
+  // Initialize AppKit on demand
+  useEffect(() => {
+    if (!appKitInitialized) {
+      const allNetworks = [mainnet, polygon, arbitrum, optimism, base] as [
+        AppKitNetwork,
+        ...AppKitNetwork[],
+      ];
+
+      const wagmiAdapter = new WagmiAdapter({
+        projectId: VITE_WALLETCONNECT_PROJECT_ID,
+        networks: allNetworks,
+      });
+
+      appKitRef.current = createAppKit({
+        adapters: [wagmiAdapter],
+        networks: [...allNetworks],
+        projectId: VITE_WALLETCONNECT_PROJECT_ID,
+        metadata: {
+          name: 'Vincent Auth',
+          description: 'Vincent Wallet Authentication',
+          url: typeof window !== 'undefined' ? window.location.origin : VITE_DASHBOARD_URL,
+          icons: [`${VITE_DASHBOARD_URL}/logo.svg`],
+        },
+        themeMode: 'dark',
+      });
+
+      setAppKitInitialized(true);
+    }
+  }, [appKitInitialized, VITE_WALLETCONNECT_PROJECT_ID, VITE_DASHBOARD_URL]);
+
+  const openWalletModal = () => {
+    if (appKitRef.current) {
+      appKitRef.current.open();
+    }
+  };
 
   // Simplified wallet ready state
   const isWalletReady = isConnected && address;
@@ -97,8 +139,9 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
           {!isWalletReady ? (
             <div className="flex justify-center">
               <Button
-                onClick={() => open()}
-                className={`w-full ${theme.accentBg} ${theme.accentHover} rounded-xl py-3 px-4 font-medium text-sm transition-all duration-200 hover:shadow-md flex items-center justify-center gap-2`}
+                onClick={openWalletModal}
+                disabled={!appKitInitialized}
+                className={`w-full ${theme.accentBg} ${theme.accentHover} rounded-xl py-3 px-4 font-medium text-sm transition-all duration-200 hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -108,7 +151,7 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
                     d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                Connect Wallet
+                {appKitInitialized ? 'Connect Wallet' : 'Initializing...'}
               </Button>
             </div>
           ) : (

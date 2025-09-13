@@ -1,6 +1,6 @@
 import { Button } from '@/components/shared/ui/button';
-import { Fragment, useState } from 'react';
-import ReactQrReader from 'react-qr-reader-es6';
+import { Fragment, useState, useRef, useEffect } from 'react';
+import QrScanner from 'qr-scanner';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 /**
@@ -13,77 +13,88 @@ interface IProps {
 /**
  * Component
  */
-export default function QrReader({ onConnect }: IProps) {
+export default function QrReaderComponent({ onConnect }: IProps) {
   const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const qrScannerRef = useRef<QrScanner | null>(null);
 
-  function onError() {
-    setShow(false);
-  }
-
-  async function onScan(data: string | null) {
-    if (data) {
-      await onConnect(data);
-      setShow(false);
+  async function handleScan(result: QrScanner.ScanResult) {
+    const qrText = result.data;
+    if (qrText) {
+      // Let the parent component handle all status messages
+      await onConnect(qrText);
+      // Close scanner after successful connection
+      handleCloseScanner();
     }
   }
 
   function onShowScanner() {
-    setLoading(true);
     setShow(true);
   }
 
+  const handleCloseScanner = () => {
+    // Properly stop and destroy QR scanner
+    if (qrScannerRef.current) {
+      qrScannerRef.current.stop();
+      qrScannerRef.current.destroy();
+      qrScannerRef.current = null;
+    }
+    setShow(false);
+  };
+
+  // Initialize QR scanner when showing
+  useEffect(() => {
+    if (show && videoRef.current && !qrScannerRef.current) {
+      qrScannerRef.current = new QrScanner(videoRef.current, handleScan, {
+        highlightScanRegion: false,
+        highlightCodeOutline: true,
+      });
+      qrScannerRef.current.start();
+    }
+
+    return () => {
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop();
+        qrScannerRef.current.destroy();
+        qrScannerRef.current = null;
+      }
+    };
+  }, [show]);
+
   return (
-    <div className="w-full flex flex-col items-center justify-center mb-6">
+    <div className="w-full">
       {show ? (
         <Fragment>
-          {loading && (
-            <div className="absolute z-10">
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-              </div>
-            </div>
-          )}
           <div
-            className={`w-full relative overflow-hidden rounded-lg border ${theme.cardBorder}`}
-            style={{ height: '300px' }}
+            className={`w-full max-w-sm mx-auto relative overflow-hidden rounded-lg border ${theme.cardBorder}`}
+            style={{ aspectRatio: '1/1' }}
           >
-            <ReactQrReader
-              onLoad={() => setLoading(false)}
-              showViewFinder={false}
-              onError={onError}
-              onScan={onScan}
-              style={{ width: '100%', height: '100%' }}
-            />
+            <video ref={videoRef} className="w-full h-full object-cover" playsInline muted />
           </div>
           <Button
             variant="outline"
-            className={`mt-4 ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
-            onClick={() => setShow(false)}
+            className={`mt-3 w-full ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
+            onClick={handleCloseScanner}
           >
             Cancel Scan
           </Button>
         </Fragment>
       ) : (
-        <div
-          className={`w-full flex flex-col items-center justify-center p-8 border ${theme.cardBorder} rounded-lg ${theme.mainCard}`}
+        <Button
+          variant="outline"
+          className={`w-full font-normal ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg} flex items-center justify-center gap-2`}
+          onClick={onShowScanner}
+          data-testid="qrcode-button"
         >
           <img
             src="/icons/qr-icon.svg"
-            width={100}
-            height={100}
+            width={20}
+            height={20}
             alt="qr code icon"
-            className="mb-4 opacity-90 dark:opacity-80"
+            className="opacity-70"
           />
-          <Button
-            variant="outline"
-            className={`mt-4 w-full font-normal ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
-            onClick={onShowScanner}
-            data-testid="qrcode-button"
-          >
-            Scan QR code
-          </Button>
-        </div>
+          Scan QR code
+        </Button>
       )}
     </div>
   );

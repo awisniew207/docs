@@ -57,6 +57,7 @@ export async function registerPKPWallet(
 
   const actions = getWalletConnectActions();
 
+  // Only reset if wallet actually changed to a different address
   if (walletHasChanged) {
     console.log(`Wallet has changed from ${storedWalletAddress} to ${newAddress}`);
 
@@ -75,12 +76,18 @@ export async function registerPKPWallet(
 
     // Update the current wallet address in the store
     actions.setCurrentWalletAddress(newAddress);
-  } else if (newAddress && storedWalletAddress !== newAddress) {
-    actions.setCurrentWalletAddress(newAddress);
-  }
 
-  // Get or create the client
-  await createWalletConnectClient();
+    // Get or create the client after reset
+    await createWalletConnectClient();
+  } else {
+    // Just update the address if it's not set, but don't reset client
+    if (newAddress && storedWalletAddress !== newAddress) {
+      actions.setCurrentWalletAddress(newAddress);
+    }
+
+    // Get or create the client (will reuse existing if available)
+    await createWalletConnectClient();
+  }
 
   if (sessionSigs) {
     try {
