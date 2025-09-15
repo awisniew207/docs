@@ -18,6 +18,7 @@ import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient, mintPKPToExistingPKP } from '@/utils/user-dashboard/lit';
 import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { BigNumber } from 'ethers';
+import { addPayee } from '@/utils/user-dashboard/addPayee';
 
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -25,7 +26,11 @@ interface ConnectPageProps {
   previouslyPermittedPKP?: IRelayPKP | null;
 }
 
-export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedPKP }: ConnectPageProps) {
+export function ConnectPage({
+  connectInfoMap,
+  readAuthInfo,
+  previouslyPermittedPKP,
+}: ConnectPageProps) {
   const navigate = useNavigate();
   const [localError, setLocalError] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
@@ -33,12 +38,12 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
   const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
 
-  const { 
-    formData, 
-    selectedPolicies, 
-    handleFormChange, 
-    handlePolicySelectionChange, 
-    getSelectedFormData 
+  const {
+    formData,
+    selectedPolicies,
+    handleFormChange,
+    handlePolicySelectionChange,
+    getSelectedFormData,
   } = useConnectFormData(connectInfoMap);
   const {
     generateJWT,
@@ -100,7 +105,14 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
       }
 
       const selectedFormData = getSelectedFormData();
-      console.log('selectedFormData', JSON.stringify(selectedFormData, (_, value) => value === undefined ? 'undefined' : value, 2));
+      console.log(
+        'selectedFormData',
+        JSON.stringify(
+          selectedFormData,
+          (_, value) => (value === undefined ? 'undefined' : value),
+          2,
+        ),
+      );
 
       const userPkpWallet = new PKPEthersWallet({
         controllerSessionSigs: readAuthInfo.sessionSigs,
@@ -125,13 +137,62 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
       }
       setAgentPKP(agentPKP);
 
-      await addPermittedActions({
-        wallet: userPkpWallet,
-        agentPKPTokenId: agentPKP.tokenId,
-        abilityIpfsCids: Object.keys(selectedFormData),
-      });
+      const client = getClient({ signer: userPkpWallet });
+
       try {
-        const client = getClient({ signer: userPkpWallet });
+        await addPermittedActions({
+          wallet: userPkpWallet,
+          agentPKPTokenId: agentPKP.tokenId,
+          abilityIpfsCids: Object.keys(selectedFormData),
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        // Check if this is a rate limit related error that addPayee might fix
+        const isRateLimitError = errorMessage.toLowerCase().includes('rate limit exceeded');
+        const isInsufficientFunds = errorMessage.toLowerCase().includes('insufficient funds');
+
+        if (isRateLimitError) {
+          console.warn(
+            'addPermittedActions failed with rate limit error, attempting addPayee retry',
+            error,
+          );
+          try {
+            await addPayee(readAuthInfo.authInfo.userPKP.ethAddress);
+            console.log('Successfully added payee, retrying addPermittedActions');
+
+            // Retry only addPermittedActions
+            await addPermittedActions({
+              wallet: userPkpWallet,
+              agentPKPTokenId: agentPKP.tokenId,
+              abilityIpfsCids: Object.keys(selectedFormData),
+            });
+          } catch (retryError) {
+            setLocalError(
+              retryError instanceof Error
+                ? `Failed after addPayee attempt: ${retryError.message}`
+                : 'Failed after addPayee attempt',
+            );
+            setIsConnectProcessing(false);
+            throw retryError;
+          }
+        } else if (isInsufficientFunds) {
+          // Insufficient funds - show helpful message with faucet link
+          setLocalError(
+            `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Fund here:`,
+          );
+          setIsConnectProcessing(false);
+          throw error;
+        } else {
+          // Other error - log to Sentry and fail
+          setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
+          setIsConnectProcessing(false);
+          throw error;
+        }
+      }
+
+      // Then, try permitApp (no retry logic needed here)
+      try {
         await client.permitApp({
           pkpEthAddress: agentPKP.ethAddress,
           appId: Number(connectInfoMap.app.appId),
@@ -140,16 +201,12 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
         });
 
         setIsConnectProcessing(false);
-
-        // Show success state for 3 seconds, then redirect
         setLocalSuccess('Permissions granted successfully!');
         console.log('agentPKP:', agentPKP);
-        setIsConnectProcessing(false);
-        // JWT generation moved to useEffect that depends on agentPKP
       } catch (error) {
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
         setIsConnectProcessing(false);
-        return;
+        throw error;
       }
     } else {
       setLocalError('Some of your permissions are not valid. Please check the form and try again.');
@@ -202,6 +259,11 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
           loadingStatus={loadingStatus}
           error={error || localError}
           success={localSuccess}
+          includeLinks={
+            localError?.includes('Insufficient')
+              ? 'https://chronicle-yellowstone-faucet.getlit.dev/'
+              : undefined
+          }
         />
 
         {/* Action Buttons */}
