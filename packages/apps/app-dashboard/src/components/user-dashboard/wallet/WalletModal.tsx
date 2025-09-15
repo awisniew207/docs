@@ -21,7 +21,8 @@ export const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => 
       <div className={`px-4 sm:px-6 py-4 border-b ${theme.cardBorder}`}>
         <h2 className={`text-lg font-medium ${theme.text} text-center mb-2`}>Connect to dApps</h2>
         <p className={`text-sm ${theme.textMuted} text-center`}>
-          Vincent uses WalletConnect to allow secure access to outside dApps
+          Vincent uses WalletConnect to allow secure access to dApps. To withdraw funds, please
+          connect to one of the dApps below. You can also use any other app of your choosing.
         </p>
       </div>
 
