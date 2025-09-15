@@ -139,42 +139,66 @@ export function ConnectPage({
 
       const client = getClient({ signer: userPkpWallet });
 
-      const attemptPermissions = async () => {
+      try {
         await addPermittedActions({
           wallet: userPkpWallet,
           agentPKPTokenId: agentPKP.tokenId,
           abilityIpfsCids: Object.keys(selectedFormData),
         });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
+        // Check if this is a rate limit related error that addPayee might fix
+        const isRateLimitError = errorMessage.toLowerCase().includes('insufficient funds');
+
+        if (isRateLimitError) {
+          console.warn(
+            'addPermittedActions failed with rate limit error, attempting addPayee retry',
+            error,
+          );
+          try {
+            await addPayee(agentPKP.ethAddress);
+            console.log('Successfully added payee, retrying addPermittedActions');
+
+            // Retry only addPermittedActions
+            await addPermittedActions({
+              wallet: userPkpWallet,
+              agentPKPTokenId: agentPKP.tokenId,
+              abilityIpfsCids: Object.keys(selectedFormData),
+            });
+          } catch (retryError) {
+            setLocalError(
+              retryError instanceof Error
+                ? `Failed after addPayee attempt: ${retryError.message}`
+                : 'Failed after addPayee attempt',
+            );
+            setIsConnectProcessing(false);
+            throw retryError;
+          }
+        } else {
+          // Not a rate limit error - log to Sentry and fail
+          setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
+          setIsConnectProcessing(false);
+          throw error;
+        }
+      }
+
+      // Then, try permitApp (no retry logic needed here)
+      try {
         await client.permitApp({
           pkpEthAddress: agentPKP.ethAddress,
           appId: Number(connectInfoMap.app.appId),
           appVersion: Number(connectInfoMap.app.activeVersion),
           permissionData: selectedFormData,
         });
-      };
-
-      try {
-        await attemptPermissions();
 
         setIsConnectProcessing(false);
         setLocalSuccess('Permissions granted successfully!');
         console.log('agentPKP:', agentPKP);
       } catch (error) {
-        console.warn('Permissions failed, attempting retry with addPayee', error);
-        try {
-          await addPayee(agentPKP.ethAddress);
-          console.log('Successfully added payee, retrying permissions');
-
-          await attemptPermissions();
-
-          setIsConnectProcessing(false);
-          setLocalSuccess('Permissions granted successfully!');
-        } catch (retryError) {
-          setLocalError(retryError instanceof Error ? retryError.message : 'Failed after retry');
-          setIsConnectProcessing(false);
-          throw retryError;
-        }
+        setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
+        setIsConnectProcessing(false);
+        throw error;
       }
     } else {
       setLocalError('Some of your permissions are not valid. Please check the form and try again.');
