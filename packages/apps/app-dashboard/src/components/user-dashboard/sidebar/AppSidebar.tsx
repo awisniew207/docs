@@ -153,7 +153,6 @@ export function AppSidebar({
 
   const handleSignOut = async () => {
     await clearAuthInfo();
-    window.location.reload();
   };
 
   const handleWarningClick = (appId: string) => {

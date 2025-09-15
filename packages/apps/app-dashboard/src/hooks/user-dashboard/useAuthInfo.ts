@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { getValidSessionSigs } from '../../utils/user-dashboard/getValidSessionSigs';
 import { disconnectWeb3 } from '@lit-protocol/auth-browser';
+import * as Sentry from '@sentry/react';
+
 // Define interfaces for the authentication info
 export interface AuthInfo {
   type: string;
@@ -44,22 +46,66 @@ export const useReadAuthInfo = (): ReadAuthInfo => {
         if (storedAuthInfo) {
           const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
           setAuthInfo(parsedAuthInfo);
-        }
-        const sigs = await getValidSessionSigs();
-        if (sigs) {
-          setSessionSigs(sigs);
+
+          const sigs = await getValidSessionSigs();
+          if (sigs) {
+            setSessionSigs(sigs);
+          } else {
+            setSessionSigs(null);
+          }
         } else {
-          await clearInfo();
+          // No auth info stored - just set states to null
+          setAuthInfo(null);
+          setSessionSigs(null);
         }
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Error retrieving auth info:', error);
-        setError(error as string);
-        await clearInfo();
+        setError(errorMessage);
+
+        // Report to Sentry
+        Sentry.captureException(error, {
+          tags: {
+            hook: 'useReadAuthInfo',
+            action: 'loadAuthInfo',
+          },
+          extra: {
+            hasStoredAuthInfo: !!localStorage.getItem(AUTH_INFO_KEY),
+          },
+        });
+
+        // Clear state but keep localStorage for retry
+        setAuthInfo(null);
+        setSessionSigs(null);
       } finally {
         setIsProcessing(false);
       }
     };
+
+    // Initial load
     loadAuthInfo();
+
+    // Listen for storage changes (including from same tab)
+    const handleStorageChange = (e: Event) => {
+      if (e instanceof StorageEvent) {
+        if (e.key !== AUTH_INFO_KEY && e.key !== null) {
+          return;
+        }
+      }
+
+      setIsProcessing(true);
+      loadAuthInfo();
+    };
+
+    // Listen for storage events (from OTHER tabs only)
+    window.addEventListener('storage', handleStorageChange);
+    // Listen for custom events (from SAME tab only)
+    window.addEventListener('auth-info-updated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-info-updated', handleStorageChange);
+    };
   }, []);
 
   return { authInfo, sessionSigs, isProcessing, error };
@@ -76,11 +122,24 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
   const setAuthInfo = useCallback((newAuthInfo: AuthInfo) => {
     try {
       localStorage.setItem(AUTH_INFO_KEY, JSON.stringify(newAuthInfo));
+
+      // Dispatch custom event to notify same-tab listeners
+      window.dispatchEvent(new CustomEvent('auth-info-updated'));
+
       return true;
     } catch (err) {
       const error = err as Error;
       console.error('Error storing auth info:', error);
       setError(error);
+
+      // Report to Sentry
+      Sentry.captureException(error, {
+        tags: {
+          hook: 'useSetAuthInfo',
+          action: 'setAuthInfo',
+        },
+      });
+
       throw error;
     }
   }, []);
@@ -103,12 +162,24 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
       }
 
       localStorage.setItem(AUTH_INFO_KEY, JSON.stringify(updatedAuthInfo));
+
+      // Dispatch custom event to notify same-tab listeners
+      window.dispatchEvent(new CustomEvent('auth-info-updated'));
+
       return true;
     } catch (err) {
       const error = err as Error;
       console.error('Error updating auth info:', error);
       setError(error);
-      localStorage.removeItem(AUTH_INFO_KEY);
+
+      // Report to Sentry
+      Sentry.captureException(error, {
+        tags: {
+          hook: 'useSetAuthInfo',
+          action: 'updateAuthInfo',
+        },
+      });
+
       throw error;
     }
   }, []);
@@ -136,6 +207,15 @@ export const useClearAuthInfo = () => {
       const error = err as Error;
       console.error('Error clearing auth info:', error);
       setError(error);
+
+      // Report to Sentry
+      Sentry.captureException(error, {
+        tags: {
+          hook: 'useClearAuthInfo',
+          action: 'clearAuthInfo',
+        },
+      });
+
       throw error;
     }
   }, []);
@@ -148,6 +228,10 @@ export const useClearAuthInfo = () => {
 
 async function clearInfo() {
   localStorage.removeItem(AUTH_INFO_KEY);
+
+  // Dispatch custom event to notify all same-tab listeners
+  window.dispatchEvent(new CustomEvent('auth-info-updated'));
+
   await disconnectWeb3();
 }
 
