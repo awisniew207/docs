@@ -149,7 +149,8 @@ export function ConnectPage({
         const errorMessage = error instanceof Error ? error.message : String(error);
 
         // Check if this is a rate limit related error that addPayee might fix
-        const isRateLimitError = errorMessage.toLowerCase().includes('insufficient funds');
+        const isRateLimitError = errorMessage.toLowerCase().includes('rate limit exceeded');
+        const isInsufficientFunds = errorMessage.toLowerCase().includes('insufficient funds');
 
         if (isRateLimitError) {
           console.warn(
@@ -157,7 +158,7 @@ export function ConnectPage({
             error,
           );
           try {
-            await addPayee(agentPKP.ethAddress);
+            await addPayee(readAuthInfo.authInfo.userPKP.ethAddress);
             console.log('Successfully added payee, retrying addPermittedActions');
 
             // Retry only addPermittedActions
@@ -175,8 +176,15 @@ export function ConnectPage({
             setIsConnectProcessing(false);
             throw retryError;
           }
+        } else if (isInsufficientFunds) {
+          // Insufficient funds - show helpful message with faucet link
+          setLocalError(
+            `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Fund here:`,
+          );
+          setIsConnectProcessing(false);
+          throw error;
         } else {
-          // Not a rate limit error - log to Sentry and fail
+          // Other error - log to Sentry and fail
           setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
           setIsConnectProcessing(false);
           throw error;
@@ -251,6 +259,11 @@ export function ConnectPage({
           loadingStatus={loadingStatus}
           error={error || localError}
           success={localSuccess}
+          includeLinks={
+            localError?.includes('Insufficient')
+              ? 'https://chronicle-yellowstone-faucet.getlit.dev/'
+              : undefined
+          }
         />
 
         {/* Action Buttons */}

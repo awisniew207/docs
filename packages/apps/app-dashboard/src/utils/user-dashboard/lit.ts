@@ -308,13 +308,6 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
     ethAddress: response.pkpEthAddress,
   };
 
-  try {
-    await addPayee(newPKP.ethAddress);
-  } catch (err) {
-    console.warn('Failed to add payee', err);
-    throw err;
-  }
-
   return newPKP;
 }
 

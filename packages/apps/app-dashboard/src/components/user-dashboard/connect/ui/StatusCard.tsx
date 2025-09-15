@@ -6,9 +6,16 @@ interface StatusCardProps {
   loadingStatus?: string | null;
   error?: string | null;
   success?: string | null;
+  includeLinks?: string;
 }
 
-export function StatusCard({ isLoading, loadingStatus, error, success }: StatusCardProps) {
+export function StatusCard({
+  isLoading,
+  loadingStatus,
+  error,
+  success,
+  includeLinks,
+}: StatusCardProps) {
   if (!isLoading && !error && !success) {
     return null;
   }
@@ -43,17 +50,28 @@ export function StatusCard({ isLoading, loadingStatus, error, success }: StatusC
         <Icon className={`w-5 h-5 ${iconClass} ${isLoading && !success ? 'animate-spin' : ''}`} />
         <div className="flex-1 min-w-0">
           <p className={`text-sm font-medium ${theme.text}`}>{title}</p>
-          <p
-            className={`text-xs ${theme.textMuted} mt-1`}
-            style={{
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
-            {message}
-          </p>
+          <div className={`text-xs ${theme.textMuted} mt-1`}>
+            <p
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {message}
+            </p>
+            {includeLinks && (
+              <a
+                href={includeLinks}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="!text-orange-500 underline hover:!text-orange-600 mt-1 inline-block"
+              >
+                {includeLinks}
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>
