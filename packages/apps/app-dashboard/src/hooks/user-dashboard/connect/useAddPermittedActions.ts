@@ -64,6 +64,7 @@ export const useAddPermittedActions = () => {
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Failed to add permitted actions');
         console.error(error);
+        throw error;
       } finally {
         setIsLoading(false);
       }

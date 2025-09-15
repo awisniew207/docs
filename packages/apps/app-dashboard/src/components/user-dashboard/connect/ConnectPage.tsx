@@ -18,6 +18,7 @@ import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { litNodeClient, mintPKPToExistingPKP } from '@/utils/user-dashboard/lit';
 import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { BigNumber } from 'ethers';
+import { addPayee } from '@/utils/user-dashboard/addPayee';
 
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -25,7 +26,11 @@ interface ConnectPageProps {
   previouslyPermittedPKP?: IRelayPKP | null;
 }
 
-export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedPKP }: ConnectPageProps) {
+export function ConnectPage({
+  connectInfoMap,
+  readAuthInfo,
+  previouslyPermittedPKP,
+}: ConnectPageProps) {
   const navigate = useNavigate();
   const [localError, setLocalError] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
@@ -33,12 +38,12 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
   const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
 
-  const { 
-    formData, 
-    selectedPolicies, 
-    handleFormChange, 
-    handlePolicySelectionChange, 
-    getSelectedFormData 
+  const {
+    formData,
+    selectedPolicies,
+    handleFormChange,
+    handlePolicySelectionChange,
+    getSelectedFormData,
   } = useConnectFormData(connectInfoMap);
   const {
     generateJWT,
@@ -100,7 +105,14 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
       }
 
       const selectedFormData = getSelectedFormData();
-      console.log('selectedFormData', JSON.stringify(selectedFormData, (_, value) => value === undefined ? 'undefined' : value, 2));
+      console.log(
+        'selectedFormData',
+        JSON.stringify(
+          selectedFormData,
+          (_, value) => (value === undefined ? 'undefined' : value),
+          2,
+        ),
+      );
 
       const userPkpWallet = new PKPEthersWallet({
         controllerSessionSigs: readAuthInfo.sessionSigs,
@@ -125,31 +137,44 @@ export function ConnectPage({ connectInfoMap, readAuthInfo, previouslyPermittedP
       }
       setAgentPKP(agentPKP);
 
-      await addPermittedActions({
-        wallet: userPkpWallet,
-        agentPKPTokenId: agentPKP.tokenId,
-        abilityIpfsCids: Object.keys(selectedFormData),
-      });
-      try {
-        const client = getClient({ signer: userPkpWallet });
+      const client = getClient({ signer: userPkpWallet });
+
+      const attemptPermissions = async () => {
+        await addPermittedActions({
+          wallet: userPkpWallet,
+          agentPKPTokenId: agentPKP.tokenId,
+          abilityIpfsCids: Object.keys(selectedFormData),
+        });
+
         await client.permitApp({
           pkpEthAddress: agentPKP.ethAddress,
           appId: Number(connectInfoMap.app.appId),
           appVersion: Number(connectInfoMap.app.activeVersion),
           permissionData: selectedFormData,
         });
+      };
+
+      try {
+        await attemptPermissions();
 
         setIsConnectProcessing(false);
-
-        // Show success state for 3 seconds, then redirect
         setLocalSuccess('Permissions granted successfully!');
         console.log('agentPKP:', agentPKP);
-        setIsConnectProcessing(false);
-        // JWT generation moved to useEffect that depends on agentPKP
       } catch (error) {
-        setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
-        setIsConnectProcessing(false);
-        return;
+        console.warn('Permissions failed, attempting retry with addPayee', error);
+        try {
+          await addPayee(agentPKP.ethAddress);
+          console.log('Successfully added payee, retrying permissions');
+
+          await attemptPermissions();
+
+          setIsConnectProcessing(false);
+          setLocalSuccess('Permissions granted successfully!');
+        } catch (retryError) {
+          setLocalError(retryError instanceof Error ? retryError.message : 'Failed after retry');
+          setIsConnectProcessing(false);
+          throw retryError;
+        }
       }
     } else {
       setLocalError('Some of your permissions are not valid. Please check the form and try again.');
