@@ -11,7 +11,6 @@ import {
   AUTH_METHOD_TYPE,
   LIT_ABILITY,
   LIT_NETWORK,
-  LIT_RPC,
 } from '@lit-protocol/constants';
 import { AuthMethod, IRelayPKP, SessionSigs, LIT_NETWORKS_KEYS } from '@lit-protocol/types';
 import { LitActionResource, LitPKPResource } from '@lit-protocol/auth-helpers';
@@ -20,7 +19,7 @@ import { getPkpNftContract } from './get-pkp-nft-contract';
 import { addPayee } from './addPayee';
 import { env } from '@/config/env';
 
-const { VITE_ENV, VITE_STYTCH_PROJECT_ID } = env;
+const { VITE_ENV, VITE_STYTCH_PROJECT_ID, VITE_VINCENT_YELLOWSTONE_RPC } = env;
 
 export const DOMAIN = VITE_ENV === 'staging' ? 'localhost:5173' : 'dashboard.heyvincent.ai';
 export const ORIGIN = VITE_ENV === 'staging' ? `http://${DOMAIN}` : `https://${DOMAIN}`;
@@ -355,7 +354,7 @@ export async function mintPKPToExistingPKP(pkp: IRelayPKP): Promise<IRelayPKP> {
   const agentMintResponseJson = await agentMintResponse.json();
 
   // Wait for transaction and verify
-  const provider = new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE);
+  const provider = new ethers.providers.JsonRpcProvider(VITE_VINCENT_YELLOWSTONE_RPC);
   const txReceipt = await provider.waitForTransaction(agentMintResponseJson.requestId);
 
   if (txReceipt.status !== 1) {
