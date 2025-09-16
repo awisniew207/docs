@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { getValidSessionSigs } from '../../utils/user-dashboard/getValidSessionSigs';
 import { disconnectWeb3 } from '@lit-protocol/auth-browser';
-import * as Sentry from '@sentry/react';
 
 // Define interfaces for the authentication info
 export interface AuthInfo {
@@ -63,17 +62,6 @@ export const useReadAuthInfo = (): ReadAuthInfo => {
         console.error('Error retrieving auth info:', error);
         setError(errorMessage);
 
-        // Report to Sentry
-        Sentry.captureException(error, {
-          tags: {
-            hook: 'useReadAuthInfo',
-            action: 'loadAuthInfo',
-          },
-          extra: {
-            hasStoredAuthInfo: !!localStorage.getItem(AUTH_INFO_KEY),
-          },
-        });
-
         // Clear state but keep localStorage for retry
         setAuthInfo(null);
         setSessionSigs(null);
@@ -132,14 +120,6 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
       console.error('Error storing auth info:', error);
       setError(error);
 
-      // Report to Sentry
-      Sentry.captureException(error, {
-        tags: {
-          hook: 'useSetAuthInfo',
-          action: 'setAuthInfo',
-        },
-      });
-
       throw error;
     }
   }, []);
@@ -172,14 +152,6 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
       console.error('Error updating auth info:', error);
       setError(error);
 
-      // Report to Sentry
-      Sentry.captureException(error, {
-        tags: {
-          hook: 'useSetAuthInfo',
-          action: 'updateAuthInfo',
-        },
-      });
-
       throw error;
     }
   }, []);
@@ -207,14 +179,6 @@ export const useClearAuthInfo = () => {
       const error = err as Error;
       console.error('Error clearing auth info:', error);
       setError(error);
-
-      // Report to Sentry
-      Sentry.captureException(error, {
-        tags: {
-          hook: 'useClearAuthInfo',
-          action: 'clearAuthInfo',
-        },
-      });
 
       throw error;
     }
