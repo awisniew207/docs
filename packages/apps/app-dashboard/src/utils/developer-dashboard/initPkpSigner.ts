@@ -1,8 +1,10 @@
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
-import { LIT_RPC } from '@lit-protocol/constants';
 import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { SessionSigs } from '@lit-protocol/types';
 import { AuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { env } from '@/config/env';
+
+const { VITE_VINCENT_YELLOWSTONE_RPC } = env;
 
 type initPkpSignerProps = {
   authInfo: AuthInfo | null;
@@ -19,7 +21,7 @@ export const initPkpSigner = async ({ authInfo, sessionSigs }: initPkpSignerProp
       controllerSessionSigs: sessionSigs,
       pkpPubKey: authInfo.userPKP.publicKey,
       litNodeClient: litNodeClient,
-      rpc: LIT_RPC.CHRONICLE_YELLOWSTONE,
+      rpc: VITE_VINCENT_YELLOWSTONE_RPC,
     });
 
     await pkpWallet.init();

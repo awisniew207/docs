@@ -1,7 +1,9 @@
 import * as ethers from 'ethers';
 import { LIT_NETWORKS_KEYS } from '@lit-protocol/types';
-import { LIT_RPC } from '@lit-protocol/constants';
 import { datil } from '@lit-protocol/contracts';
+import { env } from '@/config/env';
+
+const { VITE_VINCENT_YELLOWSTONE_RPC } = env;
 
 function getContractFromJsSdk(
   network: string,
@@ -29,6 +31,6 @@ function getContractFromJsSdk(
 }
 
 export function getPkpNftContract(network: LIT_NETWORKS_KEYS) {
-  const provider = new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE);
+  const provider = new ethers.providers.JsonRpcProvider(VITE_VINCENT_YELLOWSTONE_RPC);
   return getContractFromJsSdk(network, 'PKPNFT', provider);
 }
