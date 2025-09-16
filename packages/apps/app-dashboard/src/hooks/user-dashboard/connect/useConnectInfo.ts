@@ -35,6 +35,7 @@ export const useConnectInfo = (
 ): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
   const [currentlyFetchingVersions, setCurrentlyFetchingVersions] = useState<string>('');
+  const versionsKey = versionsToFetch ? versionsToFetch.sort().join(',') : '';
 
   // Reset completion state when app changes
   useEffect(() => {
@@ -96,7 +97,9 @@ export const useConnectInfo = (
     }
 
     // Determine what versions we'll be fetching
-    const targetVersionsKey = JSON.stringify(versionsToFetch || [app?.activeVersion]);
+    const targetVersionsKey = versionsToFetch
+      ? versionsToFetch.sort().join(',')
+      : app?.activeVersion?.toString() || '';
 
     // Check if we're already fetching or have fetched these versions
     if (currentlyFetchingVersions === targetVersionsKey) {
@@ -107,7 +110,7 @@ export const useConnectInfo = (
 
     const fetchAllData = async () => {
       try {
-        // Step 1: Fetch version abilities
+        // Step 1: Fetch version abilities in parallel
         const versionAbilitiesData: Record<string, AppVersionAbility[]> = {};
 
         // Only fetch abilities for specified versions or just the active version
@@ -115,54 +118,158 @@ export const useConnectInfo = (
           ? appVersions.filter((v) => versionsToFetch.includes(v.version))
           : appVersions.filter((v) => v.version === app?.activeVersion);
 
-        for (const version of versionsToProcess) {
-          const result = await triggerListAppVersionAbilities({
+        // Parallelize version abilities fetching
+        const versionAbilitiesPromises = versionsToProcess.map((version) => {
+          const versionKey = `${appId}-${version.version}`;
+          return triggerListAppVersionAbilities({
             appId: Number(appId),
             version: Number(version.version),
-          });
+          })
+            .unwrap()
+            .then((data) => ({ versionKey, data: data || [] }))
+            .catch((error) => {
+              console.error(`Failed to fetch abilities for version ${version.version}:`, error);
+              return { versionKey, data: [] };
+            });
+        });
 
-          const versionKey = `${appId}-${version.version}`;
-          versionAbilitiesData[versionKey] = result.data || [];
-        }
+        const versionAbilitiesResults = await Promise.all(versionAbilitiesPromises);
+        versionAbilitiesResults.forEach(({ versionKey, data }) => {
+          versionAbilitiesData[versionKey] = data;
+        });
 
         setVersionAbilitiesData(versionAbilitiesData);
 
-        // Step 2: Fetch ability versions and parent abilities
+        // Step 2: Fetch ability versions and parent abilities in parallel
         const abilityVersions: Record<string, AbilityVersion> = {};
         const abilities: Record<string, Ability> = {};
 
-        for (const [_, abilitiesList] of Object.entries(versionAbilitiesData)) {
+        // Collect all unique abilities to fetch
+        const abilityFetchMap = new Map<string, { packageName: string; version: string }>();
+        const parentAbilitySet = new Set<string>();
+
+        for (const abilitiesList of Object.values(versionAbilitiesData)) {
           for (const ability of abilitiesList) {
-            const abilityVersionResult = await triggerGetAbilityVersion({
+            const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
+            abilityFetchMap.set(abilityKey, {
               packageName: ability.abilityPackageName,
               version: ability.abilityVersion,
             });
-
-            const abilityKey = `${ability.abilityPackageName}-${ability.abilityVersion}`;
-            if (abilityVersionResult.data) {
-              abilityVersions[abilityKey] = abilityVersionResult.data;
-            }
-
-            // Fetch parent ability info if we haven't already
-            if (!abilities[ability.abilityPackageName]) {
-              const abilityResult = await triggerGetAbility({
-                packageName: ability.abilityPackageName,
-              });
-
-              if (abilityResult.data) {
-                abilities[ability.abilityPackageName] = abilityResult.data;
-              }
-            }
+            parentAbilitySet.add(ability.abilityPackageName);
           }
         }
+
+        // Parallelize ability version fetching
+        const abilityVersionPromises = Array.from(abilityFetchMap.entries()).map(
+          ([abilityKey, { packageName, version }]) => {
+            return triggerGetAbilityVersion({
+              packageName,
+              version,
+            })
+              .unwrap()
+              .then((data) => ({ abilityKey, data }))
+              .catch((error) => {
+                console.error(`Failed to fetch ability version ${packageName}@${version}:`, error);
+                return { abilityKey, data: null };
+              });
+          },
+        );
+
+        // Parallelize parent ability fetching
+        const parentAbilityPromises = Array.from(parentAbilitySet).map((packageName) => {
+          return triggerGetAbility({
+            packageName,
+          })
+            .unwrap()
+            .then((data) => ({ packageName, data }))
+            .catch((error) => {
+              console.error(`Failed to fetch ability ${packageName}:`, error);
+              return { packageName, data: null };
+            });
+        });
+
+        // Wait for all ability-related fetches to complete
+        const [abilityVersionResults, parentAbilityResults] = await Promise.all([
+          Promise.all(abilityVersionPromises),
+          Promise.all(parentAbilityPromises),
+        ]);
+
+        // Process ability version results
+        abilityVersionResults.forEach(({ abilityKey, data }) => {
+          if (data) {
+            abilityVersions[abilityKey] = data;
+          }
+        });
+
+        // Process parent ability results
+        parentAbilityResults.forEach(({ packageName, data }) => {
+          if (data) {
+            abilities[packageName] = data;
+          }
+        });
 
         setAbilityVersionsData(abilityVersions);
         setAbilitiesData(abilities);
 
-        // Step 3: Fetch supported policies and parent policy info
+        // Step 3: Fetch supported policies and parent policy info in parallel
         const supportedPoliciesData: Record<string, PolicyVersion[]> = {};
         const policies: Record<string, Policy> = {};
 
+        // Collect all unique policies to fetch
+        const policyFetchMap = new Map<string, { packageName: string; version: string }>();
+        const parentPolicySet = new Set<string>();
+
+        for (const abilityVersion of Object.values(abilityVersions)) {
+          if (abilityVersion.supportedPolicies) {
+            for (const [policyPackageName, policyVersion] of Object.entries(
+              abilityVersion.supportedPolicies,
+            )) {
+              const policyKey = `${policyPackageName}-${policyVersion}`;
+              policyFetchMap.set(policyKey, {
+                packageName: policyPackageName,
+                version: policyVersion,
+              });
+              parentPolicySet.add(policyPackageName);
+            }
+          }
+        }
+
+        // Parallelize policy version fetching
+        const policyVersionPromises = Array.from(policyFetchMap.values()).map(
+          ({ packageName, version }) => {
+            return triggerGetPolicyVersion({
+              packageName,
+              version,
+            })
+              .unwrap()
+              .then((data) => ({ packageName, version, data }))
+              .catch((error) => {
+                console.error(`Failed to fetch policy version ${packageName}@${version}:`, error);
+                return { packageName, version, data: null };
+              });
+          },
+        );
+
+        // Parallelize parent policy fetching
+        const parentPolicyPromises = Array.from(parentPolicySet).map((packageName) => {
+          return triggerGetPolicy({
+            packageName,
+          })
+            .unwrap()
+            .then((data) => ({ packageName, data }))
+            .catch((error) => {
+              console.error(`Failed to fetch policy ${packageName}:`, error);
+              return { packageName, data: null };
+            });
+        });
+
+        // Wait for all policy-related fetches to complete
+        const [policyVersionResults, parentPolicyResults] = await Promise.all([
+          Promise.all(policyVersionPromises),
+          Promise.all(parentPolicyPromises),
+        ]);
+
+        // Process policy results and group by ability
         for (const [abilityKey, abilityVersion] of Object.entries(abilityVersions)) {
           const abilityPolicies: PolicyVersion[] = [];
 
@@ -170,30 +277,24 @@ export const useConnectInfo = (
             for (const [policyPackageName, policyVersion] of Object.entries(
               abilityVersion.supportedPolicies,
             )) {
-              const policyVersionResult = await triggerGetPolicyVersion({
-                packageName: policyPackageName,
-                version: policyVersion,
-              });
-
-              if (policyVersionResult.data) {
-                abilityPolicies.push(policyVersionResult.data);
-              }
-
-              // Fetch parent policy info if we haven't already
-              if (!policies[policyPackageName]) {
-                const policyResult = await triggerGetPolicy({
-                  packageName: policyPackageName,
-                });
-
-                if (policyResult.data) {
-                  policies[policyPackageName] = policyResult.data;
-                }
+              const policyResult = policyVersionResults.find(
+                (r) => r.packageName === policyPackageName && r.version === policyVersion,
+              );
+              if (policyResult?.data) {
+                abilityPolicies.push(policyResult.data);
               }
             }
           }
 
           supportedPoliciesData[abilityKey] = abilityPolicies;
         }
+
+        // Process parent policy results
+        parentPolicyResults.forEach(({ packageName, data }) => {
+          if (data) {
+            policies[packageName] = data;
+          }
+        });
 
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
@@ -209,12 +310,19 @@ export const useConnectInfo = (
 
     fetchAllData();
   }, [
-    appVersions?.length,
+    appVersions,
     appId,
-    app?.appId,
-    JSON.stringify(versionsToFetch),
+    app,
+    versionsKey,
     useActiveVersion,
     currentlyFetchingVersions,
+    appLoading,
+    appVersionsLoading,
+    triggerListAppVersionAbilities,
+    triggerGetAbilityVersion,
+    triggerGetPolicyVersion,
+    triggerGetAbility,
+    triggerGetPolicy,
   ]);
 
   // Construct ConnectInfoMap from available data
@@ -287,21 +395,20 @@ export const useConnectInfo = (
     policiesData,
   ]);
 
+  const hasError =
+    appError ||
+    appVersionsError ||
+    abilitiesError ||
+    abilityVersionsError ||
+    policiesError ||
+    abilitiesInfoError ||
+    policiesInfoError ||
+    (!appLoading && !app && isDataFetchingComplete);
+
   return {
     isLoading: !isDataFetchingComplete || (!useActiveVersion && !versionsToFetch),
-    isError:
-      appError ||
-      appVersionsError ||
-      abilitiesError ||
-      abilityVersionsError ||
-      policiesError ||
-      abilitiesInfoError ||
-      policiesInfoError ||
-      (!appLoading && !app && isDataFetchingComplete),
-    errors:
-      appError || appVersionsError || (!appLoading && !app && isDataFetchingComplete)
-        ? ['App not found']
-        : [],
+    isError: hasError,
+    errors: hasError ? ['App not found'] : [],
     data: connectInfoMap,
   };
 };
