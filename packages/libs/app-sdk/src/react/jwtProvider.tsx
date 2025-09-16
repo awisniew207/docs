@@ -202,10 +202,6 @@ export const JwtProvider = ({
       setLoading(true);
       await storage.removeItem(appJwtKey);
       setAuthInfo(null);
-    } catch (error) {
-      console.error(
-        `Error logging out. Could not remove your JWT from storage: ${(error as Error).message}`
-      );
     } finally {
       setLoading(false);
     }
