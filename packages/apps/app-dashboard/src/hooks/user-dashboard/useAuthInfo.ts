@@ -73,16 +73,15 @@ export const useReadAuthInfo = (): ReadAuthInfo => {
     // Initial load
     loadAuthInfo();
 
-    // Listen for storage changes (including from same tab)
+    // Listen for storage changes
     const handleStorageChange = (e: Event) => {
-      if (e instanceof StorageEvent) {
-        if (e.key !== AUTH_INFO_KEY && e.key !== null) {
-          return;
-        }
+      if (
+        (e instanceof StorageEvent && (e.key === AUTH_INFO_KEY || e.key === null)) ||
+        (e instanceof CustomEvent && e.type === 'auth-info-updated')
+      ) {
+        setIsProcessing(true);
+        loadAuthInfo();
       }
-
-      setIsProcessing(true);
-      loadAuthInfo();
     };
 
     // Listen for storage events (from OTHER tabs only)
@@ -196,7 +195,7 @@ async function clearInfo() {
   // Dispatch custom event to notify all same-tab listeners
   window.dispatchEvent(new CustomEvent('auth-info-updated'));
 
-  await disconnectWeb3();
+  disconnectWeb3();
 }
 
 // For backward compatibility
