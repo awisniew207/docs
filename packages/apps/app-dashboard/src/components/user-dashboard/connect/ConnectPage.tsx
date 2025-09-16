@@ -178,11 +178,10 @@ export function ConnectPage({
           }
         } else if (isInsufficientFunds) {
           // Insufficient funds - show helpful message with faucet link
-          setLocalError(
-            `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Fund here:`,
-          );
+          const customMessage = `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Please fund it with the faucet here:`;
+          setLocalError(customMessage);
           setIsConnectProcessing(false);
-          throw error;
+          throw new Error(customMessage);
         } else {
           // Other error - log to Sentry and fail
           setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
@@ -227,7 +226,7 @@ export function ConnectPage({
     jwtLoadingStatus ||
     actionsLoadingStatus ||
     (isConnectProcessing ? 'Processing connect...' : null);
-  const error = jwtError || actionsError || localError;
+  const error = localError || jwtError || actionsError;
 
   return (
     <div
