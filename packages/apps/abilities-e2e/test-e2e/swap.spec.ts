@@ -294,7 +294,6 @@ describe('Uniswap Swap Ability E2E Tests', () => {
   it('should fail precheck when signed quote recipient does not match delegator PKP ETH address', async () => {
     // Generate a quote with a different recipient address (malicious attempt)
     const maliciousRecipient = '0x0000000000000000000000000000000000000002';
-    console.log('Generating malicious Uniswap quote for precheck test...');
 
     const maliciousSignedQuote = await getSignedUniswapQuote({
       quoteParams: {
@@ -338,7 +337,6 @@ describe('Uniswap Swap Ability E2E Tests', () => {
   it('should fail execution when signed quote recipient does not match delegator PKP ETH address', async () => {
     // Generate a quote with a different recipient address (malicious attempt)
     const maliciousRecipient = '0x0000000000000000000000000000000000000001';
-    console.log('Generating malicious Uniswap quote with wrong recipient...');
 
     const maliciousSignedQuote = await getSignedUniswapQuote({
       quoteParams: {
