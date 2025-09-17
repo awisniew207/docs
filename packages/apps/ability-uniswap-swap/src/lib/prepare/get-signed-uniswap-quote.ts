@@ -66,6 +66,7 @@ export const getSignedUniswapQuote = async ({
   validateSignedUniswapQuote({
     prepareSuccessResult,
     expectedSignerEthAddress: pkpEthAddress,
+    expectedRecipientEthAddress: quoteParams.recipient,
   });
 
   return {

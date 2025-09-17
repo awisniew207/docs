@@ -6,9 +6,11 @@ import { PrepareSuccessResult } from './types';
 export const validateSignedUniswapQuote = ({
   prepareSuccessResult,
   expectedSignerEthAddress,
+  expectedRecipientEthAddress,
 }: {
   prepareSuccessResult: PrepareSuccessResult;
   expectedSignerEthAddress: string;
+  expectedRecipientEthAddress: string;
 }) => {
   const deterministicallyStringifiedQuote = deterministicJsonStringify(prepareSuccessResult.quote);
   if (!deterministicallyStringifiedQuote) {
@@ -25,6 +27,14 @@ export const validateSignedUniswapQuote = ({
   if (recoveredAddress !== expectedSignerEthAddress) {
     throw new Error(
       `Signature validation failed: recovered address ${recoveredAddress} does not match expected signer address ${expectedSignerEthAddress}`,
+    );
+  }
+
+  if (
+    prepareSuccessResult.quote.recipient.toLowerCase() !== expectedRecipientEthAddress.toLowerCase()
+  ) {
+    throw new Error(
+      `Signature validation failed: the recipient address in the quote: ${prepareSuccessResult.quote.recipient} does not match expected recipient address: ${expectedRecipientEthAddress}`,
     );
   }
 };

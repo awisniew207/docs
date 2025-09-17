@@ -10,6 +10,7 @@ export interface QuoteParams {
 export interface PrepareUniswapRoute {
   chainId: number;
   to: string;
+  recipient: string;
   value: string;
   calldata: string;
   quote: string;

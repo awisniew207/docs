@@ -11,6 +11,7 @@ export const abilityParamsSchema = z.object({
       quote: z.object({
         chainId: z.number().describe('The chain ID the swap was generated for.'),
         to: z.string().describe('The router contract address'),
+        recipient: z.string().describe('The address of the recipient of the swap'),
         value: z.string().describe('The value to send with the transaction'),
         calldata: z.string().describe('The encoded transaction data'),
         quote: z.string().describe('Expected output amount as decimal string'),
