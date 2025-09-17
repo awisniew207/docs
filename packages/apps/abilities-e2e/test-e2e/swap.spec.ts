@@ -364,7 +364,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
         },
       },
       {
-        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!, // Correct delegator PKP
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
       },
     );
     console.log(
