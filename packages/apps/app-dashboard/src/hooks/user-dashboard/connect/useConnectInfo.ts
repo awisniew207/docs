@@ -41,6 +41,7 @@ export const useConnectInfo = (
   useEffect(() => {
     setIsDataFetchingComplete(false);
     setCurrentlyFetchingVersions('');
+    setFetchErrors([]);
   }, [appId]);
 
   const {
@@ -77,6 +78,7 @@ export const useConnectInfo = (
   >({});
   const [abilitiesData, setAbilitiesData] = useState<Record<string, Ability>>({});
   const [policiesData, setPoliciesData] = useState<Record<string, Policy>>({});
+  const [fetchErrors, setFetchErrors] = useState<string[]>([]);
 
   // Fetch all data when appVersions changes
   useEffect(() => {
@@ -112,6 +114,7 @@ export const useConnectInfo = (
       try {
         // Step 1: Fetch version abilities in parallel
         const versionAbilitiesData: Record<string, AppVersionAbility[]> = {};
+        const errors: string[] = [];
 
         // Only fetch abilities for specified versions or just the active version
         const versionsToProcess = versionsToFetch
@@ -126,17 +129,15 @@ export const useConnectInfo = (
             version: Number(version.version),
           })
             .unwrap()
-            .then((data) => ({ versionKey, data: data || [] }))
+            .then((data) => [versionKey, data || []] as const)
             .catch((error) => {
               console.error(`Failed to fetch abilities for version ${version.version}:`, error);
-              return { versionKey, data: [] };
+              return [versionKey, []] as const;
             });
         });
 
         const versionAbilitiesResults = await Promise.all(versionAbilitiesPromises);
-        versionAbilitiesResults.forEach(({ versionKey, data }) => {
-          versionAbilitiesData[versionKey] = data;
-        });
+        Object.assign(versionAbilitiesData, Object.fromEntries(versionAbilitiesResults));
 
         setVersionAbilitiesData(versionAbilitiesData);
 
@@ -167,10 +168,12 @@ export const useConnectInfo = (
               version,
             })
               .unwrap()
-              .then((data) => ({ abilityKey, data }))
+              .then((data) => [abilityKey, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch ability version ${packageName}@${version}:`, error);
-                return { abilityKey, data: null };
+                // Report to Sentry without breaking the promise chain
+                setTimeout(() => { throw error; }, 0);
+                return [abilityKey, null] as const;
               });
           },
         );
@@ -181,10 +184,12 @@ export const useConnectInfo = (
             packageName,
           })
             .unwrap()
-            .then((data) => ({ packageName, data }))
+            .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch ability ${packageName}:`, error);
-              return { packageName, data: null };
+              // Report to Sentry without breaking the promise chain
+              setTimeout(() => { throw error; }, 0);
+              return [packageName, null] as const;
             });
         });
 
@@ -195,21 +200,31 @@ export const useConnectInfo = (
         ]);
 
         // Process ability version results
-        abilityVersionResults.forEach(({ abilityKey, data }) => {
+        abilityVersionResults.forEach(([abilityKey, data]) => {
           if (data) {
             abilityVersions[abilityKey] = data;
+          } else {
+            const [packageName, version] = abilityKey.split('@');
+            errors.push(`Failed to load ability version: ${packageName}@${version}`);
           }
         });
 
         // Process parent ability results
-        parentAbilityResults.forEach(({ packageName, data }) => {
+        parentAbilityResults.forEach(([packageName, data]) => {
           if (data) {
             abilities[packageName] = data;
+          } else {
+            errors.push(`Failed to load ability: ${packageName}`);
           }
         });
 
         setAbilityVersionsData(abilityVersions);
         setAbilitiesData(abilities);
+        
+        // Update errors if any abilities failed to load
+        if (errors.length > 0) {
+          setFetchErrors(prev => [...prev, ...errors]);
+        }
 
         // Step 3: Fetch supported policies and parent policy info in parallel
         const supportedPoliciesData: Record<string, PolicyVersion[]> = {};
@@ -242,10 +257,12 @@ export const useConnectInfo = (
               version,
             })
               .unwrap()
-              .then((data) => ({ packageName, version, data }))
+              .then((data) => [packageName, version, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch policy version ${packageName}@${version}:`, error);
-                return { packageName, version, data: null };
+                // Report to Sentry without breaking the promise chain
+                setTimeout(() => { throw error; }, 0);
+                return [packageName, version, null] as const;
               });
           },
         );
@@ -256,10 +273,12 @@ export const useConnectInfo = (
             packageName,
           })
             .unwrap()
-            .then((data) => ({ packageName, data }))
+            .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch policy ${packageName}:`, error);
-              return { packageName, data: null };
+              // Report to Sentry without breaking the promise chain
+              setTimeout(() => { throw error; }, 0);
+              return [packageName, null] as const;
             });
         });
 
@@ -278,10 +297,12 @@ export const useConnectInfo = (
               abilityVersion.supportedPolicies,
             )) {
               const policyResult = policyVersionResults.find(
-                (r) => r.packageName === policyPackageName && r.version === policyVersion,
+                ([pkgName, ver]) => pkgName === policyPackageName && ver === policyVersion,
               );
-              if (policyResult?.data) {
-                abilityPolicies.push(policyResult.data);
+              if (policyResult && policyResult[2]) {
+                abilityPolicies.push(policyResult[2]);
+              } else if (policyResult && !policyResult[2]) {
+                errors.push(`Failed to load policy version: ${policyPackageName}@${policyVersion}`);
               }
             }
           }
@@ -290,14 +311,21 @@ export const useConnectInfo = (
         }
 
         // Process parent policy results
-        parentPolicyResults.forEach(({ packageName, data }) => {
+        parentPolicyResults.forEach(([packageName, data]) => {
           if (data) {
             policies[packageName] = data;
+          } else {
+            errors.push(`Failed to load policy: ${packageName}`);
           }
         });
 
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
+        
+        // Update errors if any policies failed to load
+        if (errors.length > 0) {
+          setFetchErrors(prev => [...prev, ...errors]);
+        }
 
         // Mark data fetching as complete
         setIsDataFetchingComplete(true);
@@ -407,8 +435,8 @@ export const useConnectInfo = (
 
   return {
     isLoading: !isDataFetchingComplete || (!useActiveVersion && !versionsToFetch),
-    isError: hasError,
-    errors: hasError ? ['App not found'] : [],
+    isError: hasError || fetchErrors.length > 0,
+    errors: hasError ? ['App not found'] : fetchErrors,
     data: connectInfoMap,
   };
 };

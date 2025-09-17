@@ -53,9 +53,9 @@ export function useSidebarData({ userAddress }: UseSidebarDataProps): UseSidebar
     // If no permitted apps, set empty state and finish
     if (Object.keys(permittedVersionsFromHook).length === 0) {
       console.log('[useSidebarData] No permitted apps, setting empty state');
-      setApps([]);
-      setPermittedAppVersions({});
-      setAppVersionsMap({});
+      setApps((prev) => prev.length === 0 ? prev : []);
+      setPermittedAppVersions((prev) => Object.keys(prev).length === 0 ? prev : {});
+      setAppVersionsMap((prev) => Object.keys(prev).length === 0 ? prev : {});
       setAppsLoading(false);
       return;
     }

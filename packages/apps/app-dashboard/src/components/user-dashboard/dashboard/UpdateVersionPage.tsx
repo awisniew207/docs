@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { useUrlRedirectUri } from '@/hooks/user-dashboard/connect/useUrlRedirectUri';
 import { useEffect } from 'react';
+import { useInvalidateAgentPkpsCacheMutation } from '@/store/agentPkpsApi';
 
 interface UpdateVersionPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -66,6 +67,7 @@ export function UpdateVersionPage({
     handlePolicySelectionChange,
     getSelectedFormData,
   } = useConnectFormData(connectInfoMap);
+  const [invalidateAgentPkpsCache] = useInvalidateAgentPkpsCacheMutation();
 
   const {
     addPermittedActions,
@@ -117,6 +119,9 @@ export function UpdateVersionPage({
           appVersion: Number(connectInfoMap.app.activeVersion),
           permissionData: selectedFormData,
         });
+        
+        // Invalidate agent PKPs cache after permitting app
+        await invalidateAgentPkpsCache(readAuthInfo.authInfo.userPKP.ethAddress);
 
         setLocalStatus(null);
         // Show success state for 3 seconds, then redirect or reload
