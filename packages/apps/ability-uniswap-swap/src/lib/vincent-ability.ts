@@ -43,6 +43,7 @@ export const vincentAbility = createVincentAbility({
       validateSignedUniswapQuote({
         prepareSuccessResult: signedUniswapQuote,
         expectedSignerEthAddress: VincentPrepareMetadata.pkpEthAddress,
+        expectedRecipientEthAddress: delegatorPkpInfo.ethAddress,
       });
     } catch (error) {
       return fail({
@@ -109,6 +110,7 @@ export const vincentAbility = createVincentAbility({
       validateSignedUniswapQuote({
         prepareSuccessResult: signedUniswapQuote,
         expectedSignerEthAddress: VincentPrepareMetadata.pkpEthAddress,
+        expectedRecipientEthAddress: delegatorPkpInfo.ethAddress,
       });
     } catch (error) {
       return fail({

@@ -291,6 +291,97 @@ describe('Uniswap Swap Ability E2E Tests', () => {
     // );
   });
 
+  it('should fail precheck when signed quote recipient does not match delegator PKP ETH address', async () => {
+    // Generate a quote with a different recipient address (malicious attempt)
+    const maliciousRecipient = '0x0000000000000000000000000000000000000002';
+    console.log('Generating malicious Uniswap quote for precheck test...');
+
+    const maliciousSignedQuote = await getSignedUniswapQuote({
+      quoteParams: {
+        rpcUrl: RPC_URL,
+        tokenInAddress: SWAP_TOKEN_IN_ADDRESS,
+        tokenInAmount: SWAP_AMOUNT.toString(),
+        tokenOutAddress: SWAP_TOKEN_OUT_ADDRESS,
+        recipient: maliciousRecipient, // Wrong recipient!
+      },
+      ethersSigner: getDelegateeWallet(),
+      litNodeClient: LIT_NODE_CLIENT,
+    });
+
+    const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
+
+    // Try to precheck with the malicious quote
+    const precheckResult = await uniswapSwapAbilityClient.precheck(
+      {
+        rpcUrlForUniswap: RPC_URL,
+        signedUniswapQuote: {
+          quote: maliciousSignedQuote.quote,
+          signature: maliciousSignedQuote.signature,
+        },
+      },
+      {
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      },
+    );
+    console.log('Precheck result', util.inspect(precheckResult, { depth: 10 }));
+
+    // Precheck should fail with recipient validation error
+    expect(precheckResult).toBeDefined();
+    expect(precheckResult.success).toBe(false);
+
+    expect(precheckResult.result).toBeDefined();
+    expect(precheckResult.result!.reason).toBe(
+      `Uniswap quote validation failed: Signature validation failed: the recipient address in the quote: ${maliciousRecipient} does not match expected recipient address: ${TEST_CONFIG.userPkp!.ethAddress!}`,
+    );
+  });
+
+  it('should fail execution when signed quote recipient does not match delegator PKP ETH address', async () => {
+    // Generate a quote with a different recipient address (malicious attempt)
+    const maliciousRecipient = '0x0000000000000000000000000000000000000001';
+    console.log('Generating malicious Uniswap quote with wrong recipient...');
+
+    const maliciousSignedQuote = await getSignedUniswapQuote({
+      quoteParams: {
+        rpcUrl: RPC_URL,
+        tokenInAddress: SWAP_TOKEN_IN_ADDRESS,
+        tokenInAmount: SWAP_AMOUNT.toString(),
+        tokenOutAddress: SWAP_TOKEN_OUT_ADDRESS,
+        recipient: maliciousRecipient, // Wrong recipient!
+      },
+      ethersSigner: getDelegateeWallet(),
+      litNodeClient: LIT_NODE_CLIENT,
+    });
+
+    const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
+
+    // Try to execute with the malicious quote
+    const uniswapSwapExecutionResult = await uniswapSwapAbilityClient.execute(
+      {
+        rpcUrlForUniswap: RPC_URL,
+        signedUniswapQuote: {
+          quote: maliciousSignedQuote.quote,
+          signature: maliciousSignedQuote.signature,
+        },
+      },
+      {
+        delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!, // Correct delegator PKP
+      },
+    );
+    console.log(
+      'Uniswap swap execution result',
+      util.inspect(uniswapSwapExecutionResult, { depth: 10 }),
+    );
+
+    // Execution should fail with recipient validation error
+    expect(uniswapSwapExecutionResult).toBeDefined();
+    expect(uniswapSwapExecutionResult.success).toBe(false);
+
+    expect(uniswapSwapExecutionResult.result).toBeDefined();
+    expect((uniswapSwapExecutionResult.result! as { reason: string }).reason).toBe(
+      `Uniswap quote validation failed: Signature validation failed: the recipient address in the quote: ${maliciousRecipient} does not match expected recipient address: ${TEST_CONFIG.userPkp!.ethAddress!}`,
+    );
+  });
+
   it('should generate a Uniswap route for the swap', async () => {
     console.log('Generating Uniswap route...');
     SIGNED_UNISWAP_QUOTE = await getSignedUniswapQuote({

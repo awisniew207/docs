@@ -46,6 +46,7 @@ declare const pkpPublicKey: string;
                 ? quoteResult.trade.inputAmount.currency.wrapped.chainId
                 : quoteResult.trade.inputAmount.currency.chainId,
               to: quoteResult.methodParameters.to,
+              recipient: quoteParams.recipient,
               value: quoteResult.methodParameters.value,
               calldata: quoteResult.methodParameters.calldata,
               quote: quoteResult.quote.toExact(),
