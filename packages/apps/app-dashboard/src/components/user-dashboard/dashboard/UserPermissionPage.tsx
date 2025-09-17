@@ -16,7 +16,6 @@ import { litNodeClient } from '@/utils/user-dashboard/lit';
 import { PageHeader } from './ui/PageHeader';
 import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { useUrlRedirectUri } from '@/hooks/user-dashboard/connect/useUrlRedirectUri';
-import { useInvalidateAgentPkpsCacheMutation } from '@/store/agentPkpsApi';
 
 interface AppPermissionPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -66,7 +65,6 @@ export function AppPermissionPage({
 
   const { formData, handleFormChange, selectedPolicies, handlePolicySelectionChange } =
     useFormatUserPermissions(connectInfoMap, existingData, Number(permittedVersion));
-  const [invalidateAgentPkpsCache] = useInvalidateAgentPkpsCacheMutation();
 
   const {
     addPermittedActions,
@@ -262,9 +260,6 @@ export function AppPermissionPage({
         appVersion: Number(permittedVersion),
       });
       
-      // Invalidate agent PKPs cache after unpermitting app
-      await invalidateAgentPkpsCache(readAuthInfo.authInfo.userPKP.ethAddress);
-
       setLocalStatus(null);
       // Show success state until redirect
       setLocalSuccess('App unpermitted successfully!');

@@ -19,7 +19,6 @@ import { litNodeClient, mintPKPToExistingPKP } from '@/utils/user-dashboard/lit'
 import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { BigNumber } from 'ethers';
 import { addPayee } from '@/utils/user-dashboard/addPayee';
-import { useInvalidateAgentPkpsCacheMutation } from '@/store/agentPkpsApi';
 
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -60,7 +59,6 @@ export function ConnectPage({
     loadingStatus: actionsLoadingStatus,
     error: actionsError,
   } = useAddPermittedActions();
-  const [invalidateAgentPkpsCache] = useInvalidateAgentPkpsCacheMutation();
 
   // Handle redirect when JWT is ready
   useEffect(() => {
@@ -201,9 +199,6 @@ export function ConnectPage({
           permissionData: selectedFormData,
         });
         
-        // Invalidate agent PKPs cache after permitting app
-        await invalidateAgentPkpsCache(readAuthInfo.authInfo.userPKP.ethAddress);
-
         setIsConnectProcessing(false);
         setLocalSuccess('Permissions granted successfully!');
         console.log('agentPKP:', agentPKP);

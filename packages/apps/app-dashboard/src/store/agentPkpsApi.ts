@@ -60,8 +60,8 @@ export const agentPkpsApi = createApi({
         { type: 'AgentPkps', id: `${userAddress}-unpermitted` },
       ],
     }),
-    invalidateAgentPkpsCache: builder.mutation<void, string | void>({
-      queryFn: () => ({ data: undefined }),
+    invalidateAgentPkpsCache: builder.mutation<null, string | void>({
+      queryFn: () => ({ data: null }),
       invalidatesTags: (_, __, userAddress) =>
         userAddress 
           ? [
