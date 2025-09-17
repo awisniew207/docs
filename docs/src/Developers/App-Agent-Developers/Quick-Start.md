@@ -6,7 +6,7 @@ title: Quick Start
 
 The [Vincent Starter App](https://github.com/LIT-Protocol/vincent-starter-app) is a comprehensive reference implementation demonstrating how to build Vincent Apps that execute on-chain operations on behalf of Vincent users using their delegated Agent Wallets.
 
-This monorepo provides a full-stack implementation of a Dollar-Cost Averaging (DCA) Vincent App with frontend, backend API, and scheduled job processing.
+This monorepo provides a full-stack implementation of a Dollar-Cost Averaging (DCA) Vincent App with a frontend, backend API, and an autonomous agent that executes scheduled transactions on-chain according to the schedule permitted by the Vincent User.
 
 This guide will walk you through setting up the Vincent Starter App, understanding its architecture, and building your first Vincent App.
 
