@@ -245,7 +245,7 @@ If you haven't funded your Agent Wallet with WETH and ETH on Base, you'll of cou
 
 - Always run an Ability's `precheck` function to catch errors early. The flow should be: `prepare` (if the Ability requires it) → `precheck` → `execute`
 - The Vincent Agent Wallet pays for their own gas by default - check wallet balances before operations
-- Some Vincent Abilities, such as the ERC20 Approval Ability, can sponsor gas using the Alchemy Gas Manager - this required configuring the [Alchemy Gas Sponsorship](https://www.alchemy.com/docs/wallets/low-level-infra/gas-manager/gas-sponsorship/using-sdk/basic-gas-sponsorship)
+- Some Vincent Abilities, such as the ERC20 Approval Ability, can sponsor gas using the Alchemy Gas Manager - this requires configuring the [Alchemy Gas Sponsorship](https://www.alchemy.com/docs/wallets/low-level-infra/gas-manager/gas-sponsorship/using-sdk/basic-gas-sponsorship)
 
 ## Getting Help
 
