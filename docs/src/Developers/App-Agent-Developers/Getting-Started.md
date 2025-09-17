@@ -2,6 +2,7 @@
 category: Developers
 title: App & Agent Developers
 children:
+  - ./Quick-Start.md
   - ./Creating-Apps.md
   - ./Upgrading-Apps.md
   - ./Auth-Users.md
@@ -41,7 +42,8 @@ Vincent Apps enable secure, policy governed automation on behalf of Vincent User
 
 # Next Steps
 
-- Check out the [Creating a Vincent App](./Creating-Apps.md) guide to get started
+- Check out the [Quick Start](./Quick-Start.md) guide to get started with the Vincent Starter App example
+- Dive into the [Creating a Vincent App](./Creating-Apps.md) guide to get started with creating your own custom Vincent App
 - Learn how to [Authenticate Vincent Users](./Auth-Users.md) in your frontend app
 - See how to [execute Vincent Abilities](./Executing-Abilities.md) on behalf of your App Users
 - Checkout the official [Vincent Yield Maximizer](https://yield.heyvincent.ai/) Vincent App
