@@ -16,7 +16,7 @@ This guide will walk you through setting up the Vincent Starter App, understandi
 - **pnpm**: `^10.7.0`
 - **Docker** or a local MongoDB instance
 - A Vincent App with the ERC20 Approval and Uniswap Swap Abilities
-  - If you don't already have a Vincent App configured with the ERC20 Approval and Uniswap Swap Abilities, the [Creating a New Vincent App](#creating-a-new-vincent-app) section of this Quick Start will cover the steps on creating a new Vincent App you can use with the Starter App example.
+  - If you don't already have a Vincent App configured with the ERC20 Approval and Uniswap Swap Abilities, the [Creating a New Vincent App](#creating-a-new-vincent-app) section of this Quick Start will walk you through creating one
 
 ### Setting up Corepack for pnpm
 
