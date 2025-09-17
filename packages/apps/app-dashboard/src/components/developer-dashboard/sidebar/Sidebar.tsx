@@ -143,7 +143,6 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
 
   const handleSignOut = async () => {
     await clearAuthInfo();
-    window.location.reload();
   };
 
   const toggleMenu = (menuId: string) => {

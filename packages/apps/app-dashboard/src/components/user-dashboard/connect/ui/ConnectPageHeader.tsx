@@ -18,7 +18,6 @@ export function ConnectPageHeader({ authInfo }: ConnectPageHeaderProps) {
 
   const handleSignOut = async () => {
     await clearAuthInfo();
-    window.location.reload();
   };
 
   const formatAuthInfo = () => {

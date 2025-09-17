@@ -87,6 +87,8 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
         }
       };
 
+      await authWithEthWallet(address, signMessage);
+
       try {
         setAuthInfo({
           type: 'wallet',
@@ -96,8 +98,6 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
       } catch (storageError) {
         console.error('Error storing wallet auth info in localStorage:', storageError);
       }
-
-      await authWithEthWallet(address, signMessage);
     } catch (err: any) {
       console.error('Error authenticating with wallet:', err);
       let errorMessage = 'Failed to authenticate with wallet. Please try again.';

@@ -6,7 +6,7 @@ import { ThemeType } from './ui/theme';
 import useAuthenticate from '@/hooks/user-dashboard/useAuthenticate';
 import useAccounts from '@/hooks/user-dashboard/useAccounts';
 import { registerWebAuthn, getSessionSigs } from '@/utils/user-dashboard/lit';
-import { useSetAuthInfo, useClearAuthInfo, ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
+import { useSetAuthInfo, ReadAuthInfo } from '@/hooks/user-dashboard/useAuthInfo';
 import ConnectMethods from '../auth/ConnectMethods';
 
 import SignUpView from '../auth/SignUpView';
@@ -21,7 +21,6 @@ type ConnectViewProps = {
 export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   // ------ STATE AND HOOKS ------
   const { updateAuthInfo } = useSetAuthInfo();
-  const { clearAuthInfo } = useClearAuthInfo();
 
   // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
@@ -139,6 +138,21 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
     }
   }, [authMethod, userPKP, accounts, generateSessionSigs]);
 
+  // Save PKP info when we have both userPKP and sessionSigs
+  useEffect(() => {
+    if (userPKP && sessionSigs) {
+      try {
+        updateAuthInfo({
+          userPKP,
+        });
+      } catch (error) {
+        console.error('Error saving PKP info to localStorage:', error);
+        setStatusMessage(`Authentication Error: ${error}`);
+        setStatusType('error');
+      }
+    }
+  }, [userPKP, sessionSigs, updateAuthInfo]);
+
   // ------ LOADING STATES ------
 
   useEffect(() => {
@@ -169,18 +183,6 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
     }
   }, [authLoading, accountsLoading, sessionLoading, isProcessing, loadingMessage]);
 
-  // ------ CLEANUP ------
-
-  // Cleanup effect for connect flow
-  useEffect(() => {
-    return () => {
-      // Cleanup web3 connection when component unmounts
-      if (sessionSigs) {
-        clearAuthInfo();
-      }
-    };
-  }, [clearAuthInfo, sessionSigs]);
-
   // ------ RENDER CONTENT ------
 
   const renderContent = () => {
@@ -191,17 +193,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
     // If authenticated with a new PKP and session sigs
     if (userPKP && sessionSigs) {
-      // Connect flow: save PKP info and refresh the page so ConnectPageWrapper can re-evaluate
-      try {
-        updateAuthInfo({
-          userPKP,
-        });
-      } catch (error) {
-        console.error('Error saving PKP info to localStorage:', error);
-        setStatusMessage(`Authentication Error: ${error}`);
-        setStatusType('error');
-      }
-      window.location.reload();
+      // Connect flow: PKP info is saved via useEffect above
       return <Loading text="Finalizing authentication..." />;
     }
 
