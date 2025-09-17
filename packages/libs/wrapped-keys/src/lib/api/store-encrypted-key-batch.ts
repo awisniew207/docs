@@ -18,7 +18,7 @@ import { storePrivateKeyBatch } from '../service-client';
 export async function storeEncryptedKeyBatch(
   params: StoreEncryptedKeyBatchParams,
 ): Promise<StoreEncryptedKeyBatchResult> {
-  const { jwtToken, agentWalletAddress, litNodeClient, keyBatch } = params;
+  const { jwtToken, litNodeClient, keyBatch } = params;
 
   const storedKeyMetadataBatch: StoreKeyBatchParams['storedKeyMetadataBatch'] = keyBatch.map(
     ({
