@@ -6,8 +6,13 @@ import {
   authenticateWithEthWallet,
 } from '@/utils/user-dashboard/lit';
 
+interface AuthData {
+  authMethod: AuthMethod;
+  userValue: string;
+}
+
 export default function useAuthenticate() {
-  const [authMethod, setAuthMethod] = useState<AuthMethod>();
+  const [authData, setAuthData] = useState<AuthData>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
 
@@ -24,11 +29,14 @@ export default function useAuthenticate() {
   const authWithWebAuthn = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(undefined);
-    setAuthMethod(undefined);
+    setAuthData(undefined);
 
     try {
       const result: AuthMethod = await authenticateWithWebAuthn();
-      setAuthMethod(result);
+      setAuthData({
+        authMethod: result,
+        userValue: '', // WebAuthn doesn't have anything here
+      });
     } catch (err) {
       // Check if this is a user cancellation - if so, don't treat it as an error
       if (
@@ -49,10 +57,15 @@ export default function useAuthenticate() {
    * Authenticate with Stytch
    */
   const authWithStytch = useCallback(
-    async (accessToken: string, userId?: string, method?: string): Promise<void> => {
+    async (
+      accessToken: string,
+      userId?: string,
+      method?: string,
+      userValue?: string,
+    ): Promise<void> => {
       setLoading(true);
       setError(undefined);
-      setAuthMethod(undefined);
+      setAuthData(undefined);
 
       try {
         const result: AuthMethod = await authenticateWithStytch(
@@ -60,7 +73,10 @@ export default function useAuthenticate() {
           userId,
           method as 'sms' | 'email',
         );
-        setAuthMethod(result);
+        setAuthData({
+          authMethod: result,
+          userValue: userValue || 'Unknown', // Store the email/phone provided by Stytch
+        });
       } catch (err) {
         setError(err as Error);
       } finally {
@@ -77,11 +93,14 @@ export default function useAuthenticate() {
     async (address: string, signMessage: (message: string) => Promise<string>): Promise<void> => {
       setLoading(true);
       setError(undefined);
-      setAuthMethod(undefined);
+      setAuthData(undefined);
 
       try {
         const result: AuthMethod = await authenticateWithEthWallet(address, signMessage);
-        setAuthMethod(result);
+        setAuthData({
+          authMethod: result,
+          userValue: address, // Use the wallet address for display
+        });
       } catch (err) {
         // Don't show error for user rejection - it's not really an error
         if (
@@ -101,7 +120,7 @@ export default function useAuthenticate() {
     authWithWebAuthn,
     authWithStytch,
     authWithEthWallet,
-    authMethod,
+    authData,
     loading,
     error,
     clearError,
