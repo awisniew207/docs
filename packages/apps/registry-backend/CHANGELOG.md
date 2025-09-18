@@ -1,3 +1,9 @@
+## 2.1.2 (2025-09-18)
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.2.0
+
 ## 2.2.0 (2025-09-11)
 
 ### 🚀 Features

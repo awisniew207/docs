@@ -1,3 +1,17 @@
+# 4.0.0 (2025-09-18)
+
+### ⚠️ Breaking Changes
+
+- Add validation to the Unswap Swap Ability that the recipient of the Uniswap swap is the Agent Wallet (Delegator) PKP ETH address. ([5dfe737a](https://github.com/LIT-Protocol/Vincent/commit/5dfe737a))
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.2.0
+
+### ❤️ Thank You
+
+- Wyatt Barnes @spacesailor24
+
 # 3.0.0 (2025-09-11)
 
 ### ⚠️ Breaking Changes
