@@ -80,6 +80,17 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
     doInitialize();
   }, [client, isInitializing, refreshSessions]);
 
+  // Reset walletRegistered when agentPKP changes
+  useEffect(() => {
+    if (
+      agentPKP &&
+      previousWalletAddress.current &&
+      previousWalletAddress.current !== agentPKP.ethAddress
+    ) {
+      setWalletRegistered(false);
+    }
+  }, [agentPKP]);
+
   // Setup PKP wallet when client is available
   useEffect(() => {
     const shouldRegister = client && agentPKP && !walletRegistered;
