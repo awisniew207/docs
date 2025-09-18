@@ -171,7 +171,32 @@ Types include:
 
 ### Release Process
 
-Each package handles its own release cycle as they are fundamentally independent. The release process is managed by Nx with the `pnpm release` command.
+Currently, `packages/apps/registry-backend` specifies version numbers for the local Vincent packages it depends on, this was a temporary fix to allow for deployment. However, it disrupts the release process so the specified versions need to be converted to `workspace:*` references.
+
+1. Checkout a new branch called `release/YYYY-MM-DD`
+2. Update the following in `packages/apps/registry-backend/package.json`:
+
+```json
+"@lit-protocol/vincent-app-sdk": "workspace:*",
+"@lit-protocol/vincent-contracts-sdk": "workspace:*",
+"@lit-protocol/vincent-registry-sdk": "workspace:*",
+```
+
+3. Run `pnpm clean && pnpm i && pnpm build`
+4. Run `pnpm nx release --skip-publish --dry-run` and verify the output is expected
+5. Run `pnpm nx release --skip-publish` to consume the version plans, bump the version in the `package.json` files, and generate the `CHANGELOG.md` files for each package
+6. Run the following to publish the packages, excluding the `registry-sdk` package:
+
+Make sure to replace `YOUR_OTP` with your one-time password.
+
+```bash
+pnpm nx release publish -p ability-sdk app-sdk mcp-sdk contracts-sdk registry-backend policy-spending-limit policy-contract-whitelist ability-erc20-approval ability-erc20-transfer ability-uniswap-swap ability-evm-transaction-signer mcp-server abilities-e2e ability-morpho ability-aave ability-debridge policy-send-counter --otp=YOUR_OTP
+```
+
+7. Revert the changes made to `packages/apps/registry-backend/package.json`, but replace with the latest version numbers for each package
+8. Run `pnpm clean && pnpm i && pnpm build`
+9. Commit the `pnpm-lock.yaml`, push your changes, and push the generated git tags with `git push --tags`
+10. Open a PR against the `main` branch from your `release/YYYY-MM-DD` branch
 
 ## For AI Editors and IDEs
 
