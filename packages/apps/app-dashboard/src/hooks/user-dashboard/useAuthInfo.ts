@@ -46,9 +46,15 @@ export const useReadAuthInfo = (): ReadAuthInfo => {
           const parsedAuthInfo = JSON.parse(storedAuthInfo) as AuthInfo;
           setAuthInfo(parsedAuthInfo);
 
-          const sigs = await getValidSessionSigs();
-          if (sigs) {
-            setSessionSigs(sigs);
+          // Only try to get session sigs if we have a userPKP
+          if (parsedAuthInfo.userPKP) {
+            const sigs = await getValidSessionSigs();
+            if (sigs) {
+              setSessionSigs(sigs);
+            } else {
+              // If we have a userPKP but no valid session sigs, clear everything
+              await clearInfo();
+            }
           } else {
             setSessionSigs(null);
           }

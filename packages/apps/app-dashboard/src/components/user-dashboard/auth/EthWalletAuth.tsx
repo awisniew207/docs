@@ -3,7 +3,6 @@ import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { mainnet, polygon, arbitrum, optimism, base, AppKitNetwork } from '@reown/appkit/networks';
 import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
-import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
 import StatusMessage from '../connect/StatusMessage';
@@ -25,7 +24,6 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
-  const { setAuthInfo } = useSetAuthInfo();
   const appKitRef = useRef<any>(null);
 
   const { VITE_WALLETCONNECT_PROJECT_ID, VITE_DASHBOARD_URL } = env;
@@ -88,16 +86,6 @@ export default function EthWalletAuth({ authWithEthWallet, setView, theme }: Wal
       };
 
       await authWithEthWallet(address, signMessage);
-
-      try {
-        setAuthInfo({
-          type: 'wallet',
-          value: address,
-          authenticatedAt: new Date().toISOString(),
-        });
-      } catch (storageError) {
-        console.error('Error storing wallet auth info in localStorage:', storageError);
-      }
     } catch (err: any) {
       console.error('Error authenticating with wallet:', err);
       let errorMessage = 'Failed to authenticate with wallet. Please try again.';

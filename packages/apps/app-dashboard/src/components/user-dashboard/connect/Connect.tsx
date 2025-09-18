@@ -20,7 +20,7 @@ type ConnectViewProps = {
 
 export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
   // ------ STATE AND HOOKS ------
-  const { updateAuthInfo } = useSetAuthInfo();
+  const { setAuthInfo } = useSetAuthInfo();
 
   // Shared state for session sigs and agent PKP
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>();
@@ -51,7 +51,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // Authentication methods
   const {
-    authMethod,
+    authData,
     authWithWebAuthn,
     authWithStytch,
     authWithEthWallet,
@@ -99,7 +99,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
 
   // Generate session signatures on-demand
   const generateSessionSigs = useCallback(async () => {
-    if (!authMethod || !userPKP) return;
+    if (!authData || !userPKP) return;
 
     setSessionLoading(true);
     setSessionError(undefined);
@@ -107,7 +107,7 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
       // Generate session signatures for the user PKP
       const sigs = await getSessionSigs({
         pkpPublicKey: userPKP.publicKey,
-        authMethod,
+        authMethod: authData.authMethod,
       });
       setSessionSigs(sigs);
     } catch (err) {
@@ -115,43 +115,62 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
     } finally {
       setSessionLoading(false);
     }
-  }, [authMethod, userPKP, setSessionSigs, setSessionError, setSessionLoading]);
+  }, [authData, userPKP, setSessionSigs, setSessionError, setSessionLoading]);
 
   // If user is authenticated, fetch accounts
   useEffect(() => {
-    if (authMethod) {
-      fetchOrMintAccounts(authMethod);
+    if (authData) {
+      fetchOrMintAccounts(authData.authMethod);
     }
-  }, [authMethod, fetchOrMintAccounts]);
+  }, [authData, fetchOrMintAccounts]);
 
   // If user is authenticated and has accounts, select the first one
   useEffect(() => {
-    if (authMethod && accounts.length > 0) {
+    if (authData && accounts.length > 0) {
       setuserPKP(accounts[0]);
     }
-  }, [authMethod, accounts, setuserPKP]);
+  }, [authData, accounts, setuserPKP]);
 
   // If user is authenticated and has selected an account, generate session sigs
   useEffect(() => {
-    if (authMethod && userPKP && accounts.length > 0) {
+    if (authData && userPKP && accounts.length > 0) {
       generateSessionSigs();
     }
-  }, [authMethod, userPKP, accounts, generateSessionSigs]);
+  }, [authData, userPKP, accounts, generateSessionSigs]);
 
-  // Save PKP info when we have both userPKP and sessionSigs
+  // Save complete auth info when we have authData, userPKP and sessionSigs (ATOMIC)
   useEffect(() => {
-    if (userPKP && sessionSigs) {
+    if (authData && userPKP && sessionSigs) {
       try {
-        updateAuthInfo({
+        // Determine auth type based on authMethod
+        let authType = 'unknown';
+
+        if (authData.authMethod.authMethodType === AUTH_METHOD_TYPE.EthWallet) {
+          authType = 'wallet';
+        } else if (authData.authMethod.authMethodType === AUTH_METHOD_TYPE.StytchEmailFactorOtp) {
+          authType = 'email';
+        } else if (authData.authMethod.authMethodType === AUTH_METHOD_TYPE.StytchSmsFactorOtp) {
+          authType = 'phone';
+        } else if (authData.authMethod.authMethodType === AUTH_METHOD_TYPE.WebAuthn) {
+          authType = 'webauthn';
+        } else {
+          console.warn('Unknown auth method type:', authData.authMethod.authMethodType);
+        }
+
+        // Save everything together - no intermediate states!
+        setAuthInfo({
+          type: authType,
+          value: authData.userValue, // Use the user-entered value
           userPKP,
+          authenticatedAt: new Date().toISOString(),
         });
       } catch (error) {
-        console.error('Error saving PKP info to localStorage:', error);
+        console.error('Error saving complete auth info:', error);
         setStatusMessage(`Authentication Error: ${error}`);
         setStatusType('error');
       }
     }
-  }, [userPKP, sessionSigs, updateAuthInfo]);
+  }, [authData, userPKP, sessionSigs, setAuthInfo]);
 
   // ------ LOADING STATES ------
 
@@ -210,11 +229,12 @@ export default function ConnectView({ theme, readAuthInfo }: ConnectViewProps) {
     }
 
     // If authenticated but no accounts found
-    if (authMethod && accounts.length === 0) {
+    if (authData && accounts.length === 0) {
       return (
         <SignUpView
           authMethodType={
-            authMethod.authMethodType as (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE]
+            authData.authMethod
+              .authMethodType as (typeof AUTH_METHOD_TYPE)[keyof typeof AUTH_METHOD_TYPE]
           }
           handleRegisterWithWebAuthn={handleRegisterWithWebAuthn}
           authWithWebAuthn={authWithWebAuthn}

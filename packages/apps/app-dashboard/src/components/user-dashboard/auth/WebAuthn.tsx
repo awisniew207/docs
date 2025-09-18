@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
 import StatusMessage from '../connect/StatusMessage';
@@ -24,7 +23,6 @@ export default function WebAuthn({
   const [authLoading, setAuthLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [passkeyName, setPasskeyName] = useState<string>('Vincent Passkey');
-  const { setAuthInfo } = useSetAuthInfo();
 
   const handleBackClick = () => {
     // Clear the error from the parent component when going back
@@ -81,17 +79,6 @@ export default function WebAuthn({
     setError('');
     try {
       await authWithWebAuthn();
-
-      // Store WebAuthn information in localStorage with a basic entry
-      // since the response is undefined
-      try {
-        setAuthInfo({
-          type: 'webauthn',
-          authenticatedAt: new Date().toISOString(),
-        });
-      } catch (storageError) {
-        console.error('Error storing WebAuthn info in localStorage:', storageError);
-      }
     } catch (err) {
       console.error(err);
       let errorMessage = '';

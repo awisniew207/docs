@@ -8,7 +8,12 @@ import EthWalletAuth from './EthWalletAuth';
 
 interface ConnectProps {
   authWithWebAuthn: (credentialId: string, userId: string) => Promise<void>;
-  authWithStytch: (sessionJwt: string, userId: string, method: 'email' | 'phone') => Promise<void>;
+  authWithStytch: (
+    sessionJwt: string,
+    userId: string,
+    method: 'email' | 'phone',
+    userValue: string,
+  ) => Promise<void>;
   authWithEthWallet: (
     address: string,
     signMessage: (message: string) => Promise<string>,

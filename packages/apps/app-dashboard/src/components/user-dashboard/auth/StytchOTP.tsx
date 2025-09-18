@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useStytch } from '@stytch/react';
-import { useSetAuthInfo } from '../../../hooks/user-dashboard/useAuthInfo';
 import { z } from 'zod';
 import { Button } from '@/components/shared/ui/button';
 import { ThemeType } from '../connect/ui/theme';
@@ -38,7 +37,6 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
   const [countryName, setCountryName] = useState<string>('United States');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const stytchClient = useStytch();
-  const { setAuthInfo } = useSetAuthInfo();
 
   // Handle phone number changes and combine with country code
   const handlePhoneChange = (value: string) => {
@@ -167,18 +165,7 @@ const StytchOTP = ({ method, authWithStytch, setView, theme }: StytchOTPProps) =
         session_duration_minutes: 60,
       });
 
-      try {
-        setAuthInfo({
-          type: method,
-          value: userId,
-          userId: response.user_id,
-          authenticatedAt: new Date().toISOString(),
-        });
-      } catch (storageError) {
-        console.error('Error storing auth info in localStorage:', storageError);
-      }
-
-      await authWithStytch(response.session_jwt, response.user_id, method);
+      await authWithStytch(response.session_jwt, response.user_id, method, userId);
     } catch (err: any) {
       console.error(`Error authenticating with ${method} OTP:`, err);
       let errorMessage = 'Failed to verify code. Please try again.';
