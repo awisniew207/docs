@@ -917,8 +917,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@lit-protocol/vincent-app-sdk':
-        specifier: ^2.1.0
-        version: 2.1.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^2.2.0
+        version: 2.2.0(bufferutil@4.0.9)(react@19.1.1)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-contracts-sdk':
         specifier: ^1.2.0
         version: 1.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -2796,9 +2796,14 @@ packages:
   '@lit-protocol/vincent-ability-sdk@2.1.0':
     resolution: {integrity: sha512-GTC02zh/Kzqsnph4n6QTDH8t95ylTpFPHp9ImYehLTWw93vdSLWi8DR25TjtQ2Uet+RtrmLiMH0wnhJ3gWuYVw==}
 
-  '@lit-protocol/vincent-app-sdk@2.1.0':
-    resolution: {integrity: sha512-ZX5NlRITR+oPx6A6+4P3l3yBORHQAJsy39EGjWouQjZIcS2xz51z6WjDhW7LzZ4uFjnPHLPy7rL/N3VQnlqddQ==}
+  '@lit-protocol/vincent-app-sdk@2.2.0':
+    resolution: {integrity: sha512-RyBBPDR2B1VK0JV0FU9SXIDXYBZBVwpwg9h+PAVz3avB6LsMgw5oJ6PLy4AFr/VDk57oN/JkXtjrNqIIcMWHCA==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
+    peerDependencies:
+      react: ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@lit-protocol/vincent-contracts-sdk@1.2.0':
     resolution: {integrity: sha512-/b6OKSVQ9zO6Or/7yRxQv0Ex2tvukYe1310CdLb3gdEhmbdPRLTdqWJoJ3/cQIneevKM4edKtD92VI+HTgg2RQ==}
@@ -15308,7 +15313,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@lit-protocol/vincent-app-sdk@2.1.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-app-sdk@2.2.0(bufferutil@4.0.9)(react@19.1.1)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@lit-protocol/auth-helpers': 7.3.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/constants': 7.3.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -15319,6 +15324,8 @@ snapshots:
       ethers: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       tslib: 2.8.1
       zod: 3.25.64
+    optionalDependencies:
+      react: 19.1.1
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'

@@ -1,3 +1,16 @@
+## 1.1.1 (2025-09-18)
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.2.0
+- Updated policy-spending-limit to 2.1.1
+- Updated policy-contract-whitelist to 1.1.1
+- Updated ability-erc20-approval to 3.1.1
+- Updated ability-erc20-transfer to 0.1.1
+- Updated ability-uniswap-swap to 4.0.0
+- Updated ability-evm-transaction-signer to 0.1.1
+- Updated policy-send-counter to 0.2.1
+
 ## 1.1.0 (2025-09-11)
 
 ### 🚀 Features

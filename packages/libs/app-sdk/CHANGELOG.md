@@ -1,3 +1,13 @@
+## 2.2.0 (2025-09-18)
+
+### 🚀 Features
+
+- Add React components implementing common patterns consumers will use for jwt management ([40e984ba](https://github.com/LIT-Protocol/Vincent/commit/40e984ba))
+
+### ❤️ Thank You
+
+- FedericoAmura @FedericoAmura
+
 ## 2.1.0 (2025-09-11)
 
 ### 🚀 Features

@@ -1,3 +1,10 @@
+## 0.1.1 (2025-09-18)
+
+### 🧱 Updated Dependencies
+
+- Updated app-sdk to 2.2.0
+- Updated policy-send-counter to 0.2.1
+
 ## 0.1.0 (2025-09-11)
 
 ### 🚀 Features
