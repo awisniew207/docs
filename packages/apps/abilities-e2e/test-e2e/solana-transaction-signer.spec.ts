@@ -185,9 +185,62 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
       solTransactionSignerBundledAbility.ipfsCid,
     ]);
 
+    // EVM_CONTRACT_CONDITION = {
+    //   conditionType: 'evmContract',
+    //   contractAddress: VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
+    //   chain: 'yellowstone',
+    //   functionName: 'validateAbilityExecutionAndGetPolicies',
+    //   functionParams: [
+    //     TEST_APP_DELEGATEE_ACCOUNT.address,
+    //     pkpTokenId.toString(),
+    //     solTransactionSignerBundledAbility.ipfsCid,
+    //   ],
+    //   functionAbi: {
+    //     name: 'validateAbilityExecutionAndGetPolicies',
+    //     stateMutability: 'view',
+    //     inputs: [
+    //       { name: 'delegatee', type: 'address' },
+    //       { name: 'pkpTokenId', type: 'uint256' },
+    //       { name: 'abilityIpfsCid', type: 'string' },
+    //     ],
+    //     outputs: [{ name: '', type: 'tuple' }],
+    //   },
+    //   returnValueTest: { key: '', comparator: '=', value: 'true' },
+    // };
+
     EVM_CONTRACT_CONDITION = {
-      conditionType: 'evmContract',
       contractAddress: VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
+      functionAbi: {
+        name: 'validateAbilityExecutionAndGetPolicies',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [
+          { name: 'delegatee', type: 'address', internalType: 'address' },
+          { name: 'pkpTokenId', type: 'uint256', internalType: 'uint256' },
+          { name: 'abilityIpfsCid', type: 'string', internalType: 'string' },
+        ],
+        outputs: [
+          {
+            name: 'validation',
+            type: 'tuple',
+            internalType: 'struct VincentUserViewFacet.AbilityExecutionValidation',
+            components: [
+              { name: 'isPermitted', type: 'bool', internalType: 'bool' },
+              { name: 'appId', type: 'uint40', internalType: 'uint40' },
+              { name: 'appVersion', type: 'uint24', internalType: 'uint24' },
+              {
+                name: 'policies',
+                type: 'tuple[]',
+                internalType: 'struct VincentUserViewFacet.PolicyWithParameters[]',
+                components: [
+                  { name: 'policyIpfsCid', type: 'string', internalType: 'string' },
+                  { name: 'policyParameterValues', type: 'bytes', internalType: 'bytes' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
       chain: 'yellowstone',
       functionName: 'validateAbilityExecutionAndGetPolicies',
       functionParams: [
@@ -195,17 +248,11 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
         pkpTokenId.toString(),
         solTransactionSignerBundledAbility.ipfsCid,
       ],
-      functionAbi: {
-        name: 'validateAbilityExecutionAndGetPolicies',
-        stateMutability: 'view',
-        inputs: [
-          { name: 'delegatee', type: 'address' },
-          { name: 'pkpTokenId', type: 'uint256' },
-          { name: 'abilityIpfsCid', type: 'string' },
-        ],
-        outputs: [{ name: '', type: 'tuple' }],
+      returnValueTest: {
+        key: 'validation.isPermitted',
+        comparator: '=',
+        value: 'true',
       },
-      returnValueTest: { key: '', comparator: '=', value: 'true' },
     };
 
     // EVM_CONTRACT_CONDITION = {
