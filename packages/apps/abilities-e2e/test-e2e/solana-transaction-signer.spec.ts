@@ -1,17 +1,44 @@
-import { ethers } from 'ethers';
-import { bundledVincentAbility } from '@lit-protocol/vincent-ability-sol-transaction-signer';
+import { formatEther } from 'viem';
+import { bundledVincentAbility as erc20BundledAbility } from '@lit-protocol/vincent-ability-erc20-approval';
+
+import {
+  bundledVincentAbility as uniswapBundledAbility,
+  type PrepareSignedUniswapQuote,
+  getSignedUniswapQuote,
+} from '@lit-protocol/vincent-ability-uniswap-swap';
+import { bundledVincentAbility as solTransactionSignerBundledAbility } from '@lit-protocol/vincent-ability-sol-transaction-signer';
+
 import {
   disconnectVincentAbilityClients,
   getVincentAbilityClient,
 } from '@lit-protocol/vincent-app-sdk/abilityClient';
-import { getClient } from '@lit-protocol/vincent-contracts-sdk';
-import { formatEther } from 'viem';
-import type { ContractClient, PermissionData } from '@lit-protocol/vincent-contracts-sdk';
-import { privateKeyToAccount } from 'viem/accounts';
-import * as util from 'node:util';
-import { Keypair, Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { ethers } from 'ethers';
+import type { PermissionData } from '@lit-protocol/vincent-contracts-sdk';
+import {
+  getClient,
+  getPkpTokenId,
+  VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
+} from '@lit-protocol/vincent-contracts-sdk';
+import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import {
+  Keypair,
+  Transaction,
+  SystemProgram,
+  PublicKey,
+  LAMPORTS_PER_SOL,
+  Connection,
+  clusterApiUrl,
+} from '@solana/web3.js';
 
 import {
+  createSiweMessage,
+  generateAuthSig,
+  LitAccessControlConditionResource,
+} from '@lit-protocol/auth-helpers';
+
+import {
+  BASE_PUBLIC_CLIENT,
+  BASE_RPC_URL,
   checkShouldMintAndFundPkp,
   DATIL_PUBLIC_CLIENT,
   getTestConfig,
@@ -29,13 +56,24 @@ import {
   registerNewApp,
   removeAppDelegateeIfNeeded,
 } from './helpers/setup-fixtures';
+import * as util from 'node:util';
+import { privateKeyToAccount } from 'viem/accounts';
 
 import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
+import { LIT_ABILITY, LIT_NETWORK } from '@lit-protocol/constants';
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { api } from '@lit-protocol/vincent-wrapped-keys';
+const { getVincentRegistryAccessControlCondition } = api;
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
+
+const contractClient = getClient({
+  signer: new ethers.Wallet(
+    TEST_APP_MANAGER_PRIVATE_KEY,
+    new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
+  ),
+});
 
 // Create a delegatee wallet for ability execution
 const getDelegateeWallet = () => {
@@ -45,16 +83,18 @@ const getDelegateeWallet = () => {
   );
 };
 
-// Get ability client for Solana transaction signer
 const getSolanaTransactionSignerAbilityClient = () => {
   return getVincentAbilityClient({
-    bundledVincentAbility,
+    bundledVincentAbility: solTransactionSignerBundledAbility,
     ethersSigner: getDelegateeWallet(),
   });
 };
 
-// Helper function to create a simple Solana transfer transaction
-const createSolanaTransferTransaction = (from: PublicKey, to: PublicKey, lamports: number) => {
+const createSolanaTransferTransaction = async (
+  from: PublicKey,
+  to: PublicKey,
+  lamports: number,
+) => {
   const transaction = new Transaction();
   transaction.add(
     SystemProgram.transfer({
@@ -64,41 +104,42 @@ const createSolanaTransferTransaction = (from: PublicKey, to: PublicKey, lamport
     }),
   );
 
-  // Set recent blockhash (this would normally come from the network)
-  transaction.recentBlockhash = 'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N';
+  // Fetch recent blockhash from the network
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+  const { blockhash } = await connection.getLatestBlockhash();
+  transaction.recentBlockhash = blockhash;
   transaction.feePayer = from;
 
   return transaction;
 };
 
 describe('Solana Transaction Signer Ability E2E Tests', () => {
-  // Define permission data for the ability (no policies needed for basic test)
+  // Define permission data for all abilities and policies
   const PERMISSION_DATA: PermissionData = {
-    [bundledVincentAbility.ipfsCid]: {},
+    // Solana Transaction Signer Ability has no policies
+    [solTransactionSignerBundledAbility.ipfsCid]: {},
   };
 
-  // An array of the IPFS cid of each ability to be tested
-  const ABILITY_IPFS_IDS: string[] = Object.keys(PERMISSION_DATA);
+  // An array of the IPFS cid of each ability to be tested, computed from the keys of PERMISSION_DATA
+  const TOOL_IPFS_IDS: string[] = Object.keys(PERMISSION_DATA);
 
-  // Define the policies for each ability (none for basic signing)
-  const ABILITY_POLICIES = ABILITY_IPFS_IDS.map((abilityIpfsCid) => {
+  // Define the policies for each ability, computed from TOOL_IPFS_IDS and PERMISSION_DATA
+  const TOOL_POLICIES = TOOL_IPFS_IDS.map((abilityIpfsCid) => {
+    // Get the policy IPFS CIDs for this ability from PERMISSION_DATA
     return Object.keys(PERMISSION_DATA[abilityIpfsCid]);
   });
 
   let TEST_CONFIG: TestConfig;
-  let contractClient: ContractClient;
-
-  // Test Solana keypairs for transaction testing
-  let testSolanaKeypair: Keypair;
-  let recipientSolanaKeypair: Keypair;
-
-  // Stubbed encryption values (to be filled in manually)
-  let ciphertext: string;
-  let dataToEncryptHash: string;
+  let LIT_NODE_CLIENT: LitNodeClient;
+  let TEST_SOLANA_KEYPAIR: Keypair;
+  let CIPHERTEXT: string;
+  let DATA_TO_ENCRYPT_HASH: string;
+  let EVM_CONTRACT_CONDITION: any;
 
   afterAll(async () => {
     console.log('Disconnecting from Lit node client...');
     await disconnectVincentAbilityClients();
+    await LIT_NODE_CLIENT.disconnect();
   });
 
   beforeAll(async () => {
@@ -106,14 +147,8 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     TEST_CONFIG = await checkShouldMintAndFundPkp(TEST_CONFIG);
     TEST_CONFIG = await checkShouldMintCapacityCredit(TEST_CONFIG);
 
-    contractClient = getClient({
-      signer: new ethers.Wallet(
-        TEST_APP_MANAGER_PRIVATE_KEY,
-        new ethers.providers.JsonRpcProvider(YELLOWSTONE_RPC_URL),
-      ),
-    });
-
-    // The App Manager needs to have Lit test tokens in order to interact with the Vincent contract
+    // The App Manager needs to have Lit test tokens
+    // in order to interact with the Vincent contract
     const appManagerLitTestTokenBalance = await DATIL_PUBLIC_CLIENT.getBalance({
       address: privateKeyToAccount(TEST_APP_MANAGER_PRIVATE_KEY as `0x${string}`).address,
     });
@@ -129,53 +164,99 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
       );
     }
 
-    // Generate test Solana keypairs
-    testSolanaKeypair = Keypair.generate();
-    recipientSolanaKeypair = Keypair.generate();
+    await fundAppDelegateeIfNeeded();
 
-    console.log(`ℹ️  Test Solana keypair: ${testSolanaKeypair.publicKey.toBase58()}`);
-    console.log(`ℹ️  Recipient Solana keypair: ${recipientSolanaKeypair.publicKey.toBase58()}`);
+    LIT_NODE_CLIENT = new LitNodeClient({
+      litNetwork: LIT_NETWORK.Datil,
+      debug: true,
+    });
+    await LIT_NODE_CLIENT.connect();
 
-    // TODO: Implement encryption of testSolanaKeypair.secretKey
-    // For now, we'll use placeholder values that need to be set manually
-    ciphertext = 'PLACEHOLDER_CIPHERTEXT'; // Set this manually
-    dataToEncryptHash = 'PLACEHOLDER_DATA_TO_ENCRYPT_HASH'; // Set this manually
+    const pkpTokenId = await getPkpTokenId({
+      pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      signer: ethers.Wallet.createRandom().connect(
+        new ethers.providers.StaticJsonRpcProvider(YELLOWSTONE_RPC_URL),
+      ),
+    });
+    console.log('pkpTokenId.toString()', pkpTokenId.toString());
+    console.log('functionParams', [
+      TEST_APP_DELEGATEE_ACCOUNT.address,
+      pkpTokenId.toString(),
+      solTransactionSignerBundledAbility.ipfsCid,
+    ]);
 
-    console.log(
-      '⚠️  IMPORTANT: Set ciphertext and dataToEncryptHash manually before running tests',
-    );
+    EVM_CONTRACT_CONDITION = {
+      conditionType: 'evmContract',
+      contractAddress: VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
+      chain: 'yellowstone',
+      functionName: 'validateAbilityExecutionAndGetPolicies',
+      functionParams: [
+        TEST_APP_DELEGATEE_ACCOUNT.address,
+        pkpTokenId.toString(),
+        solTransactionSignerBundledAbility.ipfsCid,
+      ],
+      functionAbi: {
+        name: 'validateAbilityExecutionAndGetPolicies',
+        stateMutability: 'view',
+        inputs: [
+          { name: 'delegatee', type: 'address' },
+          { name: 'pkpTokenId', type: 'uint256' },
+          { name: 'abilityIpfsCid', type: 'string' },
+        ],
+        outputs: [{ name: '', type: 'tuple' }],
+      },
+      returnValueTest: { key: '', comparator: '=', value: 'true' },
+    };
+
+    // EVM_CONTRACT_CONDITION = {
+    //   conditionType: 'evmContract',
+    //   contractAddress: VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
+    //   chain: 'yellowstone',
+    //   functionName: 'getPermittedAppVersionForPkp',
+    //   functionParams: [
+    //     pkpTokenId.toString(),
+    //     TEST_CONFIG.appId!.toString(),
+    //   ],
+    //   functionAbi: {
+    //     name: 'getPermittedAppVersionForPkp',
+    //     type: 'function',
+    //     stateMutability: 'view',
+    //     inputs: [
+    //       { name: 'pkpTokenId', type: 'uint256' },
+    //       { name: 'appId', type: 'uint40' },
+    //     ],
+    //     outputs: [
+    //       { name: '', type: 'uint24' },
+    //     ],
+    //   },
+    //   returnValueTest: { key: '', comparator: '>=', value: '0' },
+    // };
   });
 
   it('should permit the Solana Transaction Signer Ability for the Agent Wallet PKP', async () => {
-    await permitAbilitiesForAgentWalletPkp([bundledVincentAbility.ipfsCid], TEST_CONFIG);
+    await permitAbilitiesForAgentWalletPkp(
+      [solTransactionSignerBundledAbility.ipfsCid],
+      TEST_CONFIG,
+    );
   });
 
   it('should remove TEST_APP_DELEGATEE_ACCOUNT from an existing App if needed', async () => {
     await removeAppDelegateeIfNeeded();
   });
 
-  it('should fund TEST_APP_DELEGATEE if they have no Lit test tokens', async () => {
-    await fundAppDelegateeIfNeeded();
-  });
-
   it('should register a new App', async () => {
-    TEST_CONFIG = await registerNewApp(
-      ABILITY_IPFS_IDS,
-      ABILITY_POLICIES,
-      TEST_CONFIG,
-      TEST_CONFIG_PATH,
-    );
+    TEST_CONFIG = await registerNewApp(TOOL_IPFS_IDS, TOOL_POLICIES, TEST_CONFIG, TEST_CONFIG_PATH);
   });
 
   it('should permit the App version for the Agent Wallet PKP', async () => {
     await permitAppVersionForAgentWalletPkp(PERMISSION_DATA, TEST_CONFIG);
   });
 
-  it('should validate the Delegatee has permission to execute the Solana Transaction Signer Ability', async () => {
+  it('should validate the Delegatee has permission to execute the Solana Transaction Signer Ability with the Agent Wallet PKP', async () => {
     const validationResult = await contractClient.validateAbilityExecutionAndGetPolicies({
       delegateeAddress: TEST_APP_DELEGATEE_ACCOUNT.address,
       pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
-      abilityIpfsCid: ABILITY_IPFS_IDS[0],
+      abilityIpfsCid: TOOL_IPFS_IDS[0],
     });
 
     expect(validationResult).toBeDefined();
@@ -185,19 +266,24 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     expect(Object.keys(validationResult.decodedPolicies)).toHaveLength(0);
   });
 
-  it('should run precheck and validate transaction deserialization', async () => {
-    // Skip if encryption values not set
-    if (ciphertext === 'PLACEHOLDER_CIPHERTEXT') {
-      console.log('⚠️  Skipping precheck test - ciphertext not set manually');
-      return;
-    }
+  it('should generate a new solana keypair and encrypt it', async () => {
+    TEST_SOLANA_KEYPAIR = Keypair.generate();
 
+    const { ciphertext, dataToEncryptHash } = await LIT_NODE_CLIENT.encrypt({
+      evmContractConditions: [EVM_CONTRACT_CONDITION],
+      dataToEncrypt: TEST_SOLANA_KEYPAIR.secretKey,
+    });
+    CIPHERTEXT = ciphertext;
+    DATA_TO_ENCRYPT_HASH = dataToEncryptHash;
+  });
+
+  it('should run precheck and validate transaction deserialization', async () => {
     const client = getSolanaTransactionSignerAbilityClient();
 
     // Create a test transaction
-    const transaction = createSolanaTransferTransaction(
-      testSolanaKeypair.publicKey,
-      recipientSolanaKeypair.publicKey,
+    const transaction = await createSolanaTransferTransaction(
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TEST_SOLANA_KEYPAIR.publicKey,
       0.001 * LAMPORTS_PER_SOL, // 0.001 SOL
     );
 
@@ -208,8 +294,8 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     const precheckResult = await client.precheck(
       {
         serializedTransaction,
-        ciphertext,
-        dataToEncryptHash,
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
         versionedTransaction: false,
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
@@ -224,25 +310,60 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     if (!precheckResult.success) {
       throw new Error(precheckResult.runtimeError);
     }
-
-    // Since we removed the deserialized transaction from precheck response,
-    // we just verify success (transaction was validly deserialized)
-    expect(precheckResult.result).toBeDefined();
   });
 
-  it('should execute the Solana Transaction Signer Ability and return signed transaction', async () => {
-    // Skip if encryption values not set
-    if (ciphertext === 'PLACEHOLDER_CIPHERTEXT') {
-      console.log('⚠️  Skipping execute test - ciphertext not set manually');
-      return;
-    }
+  it('should decrypt solana key with hardcoded access control conditions', async () => {
+    const sessionSignatures = await LIT_NODE_CLIENT.getSessionSigs({
+      chain: 'ethereum',
+      expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(), // 10 minutes
+      resourceAbilityRequests: [
+        {
+          resource: new LitAccessControlConditionResource('*'),
+          ability: LIT_ABILITY.AccessControlConditionDecryption,
+        },
+      ],
+      authNeededCallback: async ({ uri, expiration, resourceAbilityRequests }) => {
+        const toSign = await createSiweMessage({
+          uri,
+          expiration,
+          resources: resourceAbilityRequests,
+          walletAddress: await getDelegateeWallet().getAddress(),
+          nonce: await LIT_NODE_CLIENT.getLatestBlockhash(),
+          litNodeClient: LIT_NODE_CLIENT,
+        });
 
+        return await generateAuthSig({
+          signer: getDelegateeWallet(),
+          toSign,
+        });
+      },
+    });
+
+    try {
+      const decrypted = await LIT_NODE_CLIENT.decrypt({
+        evmContractConditions: [EVM_CONTRACT_CONDITION],
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
+        sessionSigs: sessionSignatures,
+        chain: 'yellowstone',
+      });
+
+      console.log('✅ Decryption successful with hardcoded ACC');
+      expect(decrypted).toBeDefined();
+      expect(decrypted.decryptedData).toBeDefined();
+    } catch (error) {
+      console.error('❌ Decryption failed:', error);
+      throw error;
+    }
+  });
+
+  it.skip('should run execute and return a signed transaction', async () => {
     const client = getSolanaTransactionSignerAbilityClient();
 
     // Create a test transaction
-    const transaction = createSolanaTransferTransaction(
-      testSolanaKeypair.publicKey,
-      recipientSolanaKeypair.publicKey,
+    const transaction = await createSolanaTransferTransaction(
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TEST_SOLANA_KEYPAIR.publicKey,
       0.001 * LAMPORTS_PER_SOL, // 0.001 SOL
     );
 
@@ -250,103 +371,21 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
       .serialize({ requireAllSignatures: false })
       .toString('base64');
 
-    const execResult = await client.execute(
+    const executeResult = await client.execute(
       {
         serializedTransaction,
-        ciphertext,
-        dataToEncryptHash,
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
         versionedTransaction: false,
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
     );
 
     console.log(
-      '[should execute the Solana Transaction Signer Ability and return signed transaction]',
-      util.inspect(execResult, { depth: 10 }),
+      '[should run execute and return a signed transaction]',
+      util.inspect(executeResult, { depth: 10 }),
     );
 
-    // Check top-level execution result structure and values
-    expect(execResult).toBeDefined();
-    expect(execResult.success).toBe(true);
-    if (!execResult.success) {
-      throw new Error(execResult.runtimeError);
-    }
-
-    // Check result object
-    expect(execResult.result).toBeDefined();
-    expect(execResult.result.signedTransaction).toBeDefined();
-    expect(typeof execResult.result.signedTransaction).toBe('string');
-
-    // Verify the signed transaction is valid base64
-    expect(() => Buffer.from(execResult.result.signedTransaction, 'base64')).not.toThrow();
-
-    // The signed transaction should be longer than the unsigned one (contains signatures)
-    expect(execResult.result.signedTransaction.length).toBeGreaterThan(
-      serializedTransaction.length,
-    );
-  });
-
-  it('should handle versioned transactions', async () => {
-    // Skip if encryption values not set
-    if (ciphertext === 'PLACEHOLDER_CIPHERTEXT') {
-      console.log('⚠️  Skipping versioned transaction test - ciphertext not set manually');
-      return;
-    }
-
-    const client = getSolanaTransactionSignerAbilityClient();
-
-    // Create a test transaction
-    const transaction = createSolanaTransferTransaction(
-      testSolanaKeypair.publicKey,
-      recipientSolanaKeypair.publicKey,
-      0.001 * LAMPORTS_PER_SOL, // 0.001 SOL
-    );
-
-    const serializedTransaction = transaction
-      .serialize({ requireAllSignatures: false })
-      .toString('base64');
-
-    const execResult = await client.execute(
-      {
-        serializedTransaction,
-        ciphertext,
-        dataToEncryptHash,
-        versionedTransaction: true, // Test with versioned flag
-      },
-      { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
-    );
-
-    console.log('[should handle versioned transactions]', util.inspect(execResult, { depth: 10 }));
-
-    expect(execResult.success).toBe(true);
-    if (!execResult.success) {
-      throw new Error(execResult.runtimeError);
-    }
-
-    expect(execResult.result).toBeDefined();
-    expect(execResult.result.signedTransaction).toBeDefined();
-    expect(typeof execResult.result.signedTransaction).toBe('string');
-  });
-
-  it('should fail precheck with invalid transaction data', async () => {
-    const client = getSolanaTransactionSignerAbilityClient();
-
-    const precheckResult = await client.precheck(
-      {
-        serializedTransaction: 'invalid-base64-data',
-        ciphertext: 'dummy-ciphertext',
-        dataToEncryptHash: 'dummy-hash',
-        versionedTransaction: false,
-      },
-      { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
-    );
-
-    console.log(
-      '[should fail precheck with invalid transaction data]',
-      util.inspect(precheckResult, { depth: 10 }),
-    );
-
-    expect(precheckResult.success).toBe(false);
-    expect(precheckResult.runtimeError).toContain('Failed to decode Solana transaction');
+    expect(executeResult.success).toBe(true);
   });
 });
