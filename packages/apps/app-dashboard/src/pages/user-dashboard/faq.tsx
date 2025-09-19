@@ -194,11 +194,15 @@ interface FAQItemProps {
 function FAQItem({ question, answer, isOpen, onToggle, setExpandedImage }: FAQItemProps) {
   const answerContent =
     typeof answer === 'function' && setExpandedImage ? answer(setExpandedImage) : answer;
+  const panelId = `faq-panel-${question.replace(/\s+/g, '-').toLowerCase()}`;
+
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 last:border-0">
       <button
         onClick={onToggle}
         className="w-full py-4 px-2 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
       >
         <span className="font-medium text-gray-900 dark:text-gray-100">{question}</span>
         <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
@@ -208,11 +212,14 @@ function FAQItem({ question, answer, isOpen, onToggle, setExpandedImage }: FAQIt
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id={panelId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
+            role="region"
+            aria-labelledby={`button-${panelId}`}
           >
             <div className="px-2 pb-4 text-gray-600 dark:text-gray-400 space-y-2">
               {answerContent as React.ReactNode}
@@ -230,13 +237,15 @@ export function FAQ() {
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
   const toggleItem = (index: number) => {
-    const newOpenItems = new Set(openItems);
-    if (newOpenItems.has(index)) {
-      newOpenItems.delete(index);
-    } else {
-      newOpenItems.add(index);
-    }
-    setOpenItems(newOpenItems);
+    setOpenItems((prevItems) => {
+      const newOpenItems = new Set(prevItems);
+      if (newOpenItems.has(index)) {
+        newOpenItems.delete(index);
+      } else {
+        newOpenItems.add(index);
+      }
+      return newOpenItems;
+    });
   };
 
   return (
@@ -327,6 +336,14 @@ export function FAQ() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80"
             onClick={() => setExpandedImage(null)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setExpandedImage(null);
+              }
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Expanded image view"
           >
             <motion.div
               initial={{ scale: 0.9 }}
