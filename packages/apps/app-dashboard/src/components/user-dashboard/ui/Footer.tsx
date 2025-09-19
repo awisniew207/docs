@@ -42,7 +42,7 @@ export function ConnectFooter() {
       </div>
       <div className={`flex items-center gap-1 text-xs font-medium ${theme.text}`}>
         <button
-          onClick={() => navigate('/user/faq')}
+          onClick={() => navigate('/faq')}
           className={`font-medium no-underline hover:opacity-80 transition-colors ${theme.text} !text-current cursor-pointer`}
           style={{
             textDecoration: 'none',

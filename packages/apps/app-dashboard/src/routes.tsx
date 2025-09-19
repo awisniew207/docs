@@ -80,7 +80,7 @@ const routes: RouteObject[] = [
     element: <RootPage />,
   },
   {
-    path: '/user/faq',
+    path: '/faq',
     element: <FAQ />,
   },
   {

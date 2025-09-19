@@ -377,7 +377,7 @@ export function AppSidebar({
                 asChild
                 className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
               >
-                <Link to="/user/faq">
+                <Link to="/faq">
                   <div className="flex items-center gap-3">
                     <div className={theme.textMuted}>
                       <HelpCircle className="h-4 w-4" />

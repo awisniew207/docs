@@ -96,15 +96,20 @@ export default function RootPage() {
             </a>
           </div>
           <div className="flex items-center gap-1 text-sm font-normal text-black">
-            <a
-              href="https://t.me/+aa73FAF9Vp82ZjJh"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-normal no-underline hover:opacity-80 transition-colors !text-black"
-              style={{ textDecoration: 'none', fontWeight: 'normal', fontStyle: 'normal' }}
+            <button
+              onClick={() => navigate('/faq')}
+              className="font-normal no-underline hover:opacity-80 transition-colors !text-black cursor-pointer"
+              style={{
+                textDecoration: 'none',
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+              }}
             >
-              Support
-            </a>
+              FAQ
+            </button>
             <span className="font-normal text-black"> / </span>
             <a
               href="https://www.litprotocol.com/legal/privacy-policy"
