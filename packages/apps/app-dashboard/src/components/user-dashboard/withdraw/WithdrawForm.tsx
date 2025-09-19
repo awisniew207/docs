@@ -95,7 +95,7 @@ export const WithdrawForm: React.FC<WithdrawFormProps> = ({
                 <Button
                   onClick={() => setActiveTab('walletconnect')}
                   variant="ghost"
-                  className={`w-full ${theme.textMuted} hover:${theme.text} transition-colors`}
+                  className="w-full text-orange-500 hover:text-orange-600 transition-colors"
                 >
                   Click here to go back to WalletConnect
                 </Button>
