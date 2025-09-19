@@ -1,6 +1,8 @@
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
+import { useNavigate } from 'react-router-dom';
 
 export function ConnectFooter() {
+  const navigate = useNavigate();
   return (
     <div
       className={`px-3 sm:px-6 py-3 border-t ${theme.cardBorder} ${theme.cardBg} flex flex-col items-center gap-2`}
@@ -39,15 +41,19 @@ export function ConnectFooter() {
         </a>
       </div>
       <div className={`flex items-center gap-1 text-xs font-medium ${theme.text}`}>
-        <a
-          href="https://t.me/+aa73FAF9Vp82ZjJh"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`font-medium no-underline hover:opacity-80 transition-colors ${theme.text} !text-current`}
-          style={{ textDecoration: 'none', fontStyle: 'normal' }}
+        <button
+          onClick={() => navigate('/user/faq')}
+          className={`font-medium no-underline hover:opacity-80 transition-colors ${theme.text} !text-current cursor-pointer`}
+          style={{
+            textDecoration: 'none',
+            fontStyle: 'normal',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+          }}
         >
-          Support
-        </a>
+          FAQ
+        </button>
         <span className={`font-medium ${theme.text}`}> / </span>
         <a
           href="https://www.litprotocol.com/legal/privacy-policy"

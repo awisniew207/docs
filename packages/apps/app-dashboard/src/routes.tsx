@@ -58,6 +58,7 @@ import { ExplorerLandingPage } from './pages/explorer/ExplorerLandingPage';
 
 import { Wallet } from './pages/user-dashboard/wallet';
 import { AllWallets } from './pages/user-dashboard/all-wallets';
+import { FAQ } from './pages/user-dashboard/faq';
 import { UserPermissionWrapper } from './components/user-dashboard/dashboard/UserPermissionWrapper';
 import { ConnectPageWrapper } from './components/user-dashboard/connect/ConnectPageWraper';
 import { PermittedAppsWrapper } from './components/user-dashboard/dashboard/PermittedAppsWrapper';
@@ -77,6 +78,10 @@ const routes: RouteObject[] = [
   {
     path: '/',
     element: <RootPage />,
+  },
+  {
+    path: '/user/faq',
+    element: <FAQ />,
   },
   {
     element: <AppLayoutWithProviders />,

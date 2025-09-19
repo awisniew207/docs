@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Package, Loader2, Sun, Moon, LogOut, TriangleAlert } from 'lucide-react';
+import { Package, Loader2, Sun, Moon, LogOut, TriangleAlert, HelpCircle } from 'lucide-react';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { toggleTheme } from '@/lib/theme';
 import { useTheme } from '@/hooks/useTheme';
@@ -371,6 +371,23 @@ export function AppSidebar({
           <div className={`border-t ${isDark ? 'border-white/10' : 'border-gray-900/10'} my-2`} />
 
           <SidebarMenu>
+            {/* FAQ */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
+              >
+                <Link to="/user/faq">
+                  <div className="flex items-center gap-3">
+                    <div className={theme.textMuted}>
+                      <HelpCircle className="h-4 w-4" />
+                    </div>
+                    <span className={`font-medium ${theme.text}`}>FAQ</span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
             {/* Theme Toggle */}
             <SidebarMenuItem>
               <SidebarMenuButton
