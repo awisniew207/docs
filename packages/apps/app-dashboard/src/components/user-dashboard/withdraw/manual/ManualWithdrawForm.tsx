@@ -146,6 +146,7 @@ export const ManualWithdraw: React.FC<ManualWithdrawProps> = ({ sessionSigs, age
         onSubmit={onSubmit}
         confirmationMode={isConfirmationMode}
         onCancel={onCancel}
+        isCustomToken={isCustomToken}
       />
     </div>
   );

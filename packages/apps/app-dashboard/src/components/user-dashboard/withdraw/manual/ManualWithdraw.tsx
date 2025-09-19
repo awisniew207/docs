@@ -13,6 +13,7 @@ interface WithdrawPanelProps {
   onSubmit: (e: React.FormEvent) => void;
   confirmationMode?: boolean;
   onCancel?: () => void;
+  isCustomToken: boolean;
 }
 
 export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
@@ -25,6 +26,7 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
   onSubmit,
   confirmationMode = false,
   onCancel,
+  isCustomToken,
 }) => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -56,20 +58,30 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
         </div>
         <div>
           <label className={`block text-xs mb-1 ${theme.text}`}>Amount</label>
-          <div className="flex">
+          {isCustomToken ? (
             <input
               type="text"
               value={withdrawAmount}
               onChange={handleAmountChange}
               placeholder="0.0"
-              className={`flex-1 p-2 border rounded-l text-sm ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
+              className={`w-full p-2 border rounded text-sm ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
             />
-            <span
-              className={`p-2 text-sm ${theme.itemBg} border border-l-0 rounded-r ${theme.cardBorder} ${theme.text}`}
-            >
-              {tokenSymbol || 'ETH'}
-            </span>
-          </div>
+          ) : (
+            <div className="flex">
+              <input
+                type="text"
+                value={withdrawAmount}
+                onChange={handleAmountChange}
+                placeholder="0.0"
+                className={`flex-1 p-2 border rounded-l text-sm ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
+              />
+              <span
+                className={`p-2 text-sm ${theme.itemBg} border border-l-0 rounded-r ${theme.cardBorder} ${theme.text}`}
+              >
+                {tokenSymbol || 'ETH'}
+              </span>
+            </div>
+          )}
         </div>
         {confirmationMode ? (
           <div className="flex gap-2">
