@@ -1,9 +1,8 @@
 import { IRelayPKP } from '@lit-protocol/types';
 import { ethers } from 'ethers';
-import { LIT_RPC } from '@lit-protocol/constants';
 import { env } from '@/config/env';
 
-const { VITE_VINCENT_DATIL_CONTRACT, VITE_DATIL_PKP_CONTRACT } = env;
+const { VITE_VINCENT_DATIL_CONTRACT, VITE_DATIL_PKP_CONTRACT, VITE_VINCENT_YELLOWSTONE_RPC } = env;
 
 // Create contract instance for the new PKP methods
 const PKP_INFO_ABI = [
@@ -52,7 +51,7 @@ export type AgentPkpsResult = {
  */
 export async function getAgentPkps(userAddress: string): Promise<AgentPkpsResult> {
   try {
-    const yellowstoneProvider = new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE);
+    const yellowstoneProvider = new ethers.providers.JsonRpcProvider(VITE_VINCENT_YELLOWSTONE_RPC);
     const pkpInfoContract = new ethers.Contract(
       VITE_DATIL_PKP_CONTRACT,
       PKP_INFO_ABI,
