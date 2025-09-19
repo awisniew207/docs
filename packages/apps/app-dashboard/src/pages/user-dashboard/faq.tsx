@@ -1,6 +1,5 @@
 import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
-import { useAuthGuard } from '@/hooks/user-dashboard/connect/useAuthGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/ui/card';
 import { Button } from '@/components/shared/ui/button';
 import { ChevronRight, ImageIcon, X, WalletIcon, ArrowLeft } from 'lucide-react';
@@ -226,14 +225,9 @@ function FAQItem({ question, answer, isOpen, onToggle, setExpandedImage }: FAQIt
 }
 
 export function FAQ() {
-  const authGuardElement = useAuthGuard();
   const navigate = useNavigate();
   const [openItems, setOpenItems] = useState<Set<number>>(new Set());
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
-
-  if (authGuardElement) {
-    return authGuardElement;
-  }
 
   const toggleItem = (index: number) => {
     const newOpenItems = new Set(openItems);
