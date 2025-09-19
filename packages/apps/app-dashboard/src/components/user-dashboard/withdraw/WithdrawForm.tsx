@@ -1,8 +1,9 @@
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import WalletConnectPage from '@/components/user-dashboard/withdraw/WalletConnect/WalletConnect';
+import { ManualWithdraw } from '@/components/user-dashboard/withdraw/manual/ManualWithdrawForm';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { Button } from '@/components/shared/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HelpCircle } from 'lucide-react';
 
 export interface WithdrawFormProps {
@@ -19,6 +20,19 @@ export const WithdrawForm: React.FC<WithdrawFormProps> = ({
   showHelpButton = false,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<'walletconnect' | 'manual'>('walletconnect');
+
+  // Listen for the custom event to switch to manual withdraw
+  useEffect(() => {
+    const handleSwitchToManual = () => {
+      setActiveTab('manual');
+    };
+
+    window.addEventListener('switchToManualWithdraw', handleSwitchToManual);
+    return () => {
+      window.removeEventListener('switchToManualWithdraw', handleSwitchToManual);
+    };
+  }, []);
 
   return (
     <div className="max-w-xl w-full mx-auto">
@@ -65,11 +79,29 @@ export const WithdrawForm: React.FC<WithdrawFormProps> = ({
             </div>
           </div>
 
-          {/* WalletConnect Section */}
-          <div>
-            <div className={`text-sm font-medium ${theme.text} mb-3`}>Wallet Status</div>
-            <WalletConnectPage agentPKP={agentPKP} sessionSigs={sessionSigs} />
-          </div>
+          {/* Content */}
+          {activeTab === 'walletconnect' ? (
+            <div>
+              <div className={`text-sm font-medium ${theme.text} mb-3`}>Wallet Status</div>
+              <WalletConnectPage agentPKP={agentPKP} sessionSigs={sessionSigs} />
+            </div>
+          ) : (
+            <div>
+              <div className={`text-sm font-medium ${theme.text} mb-3`}>Manual Withdraw</div>
+              <ManualWithdraw agentPKP={agentPKP} sessionSigs={sessionSigs} />
+
+              {/* Back to WalletConnect Button */}
+              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Button
+                  onClick={() => setActiveTab('walletconnect')}
+                  variant="ghost"
+                  className={`w-full ${theme.textMuted} hover:${theme.text} transition-colors`}
+                >
+                  Click here to go back to WalletConnect
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

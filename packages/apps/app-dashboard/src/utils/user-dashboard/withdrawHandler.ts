@@ -206,7 +206,7 @@ export const handleSubmit = async (
       }
 
       showStatus(
-        `Ready to send ${withdrawAmount} ${token.symbol} to ${withdrawAddress.slice(0, 6)}...${withdrawAddress.slice(-4)}.<br/>Estimated gas cost: ${costDisplay}`,
+        `Ready to send ${withdrawAmount} ${token.symbol} to ${withdrawAddress.slice(0, 6)}...${withdrawAddress.slice(-4)}.\nEstimated gas cost: ${costDisplay}`,
         'info',
       );
 
@@ -238,16 +238,13 @@ export const handleSubmit = async (
 
     if (transactionResult.success) {
       showStatus(
-        `${token.symbol} withdrawal confirmed!&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-black underline">View transaction</a>`,
+        `${token.symbol} withdrawal confirmed! View transaction: ${explorerTxUrl}`,
         'success',
       );
       return { success: true };
     } else {
       if (transactionResult.hash) {
-        showStatus(
-          `Transaction may have failed.&nbsp;&nbsp;<a href="${explorerTxUrl}" target="_blank" rel="noopener noreferrer" class="text-black underline">Check on explorer</a>`,
-          'warning',
-        );
+        showStatus(`Transaction may have failed. Check on explorer: ${explorerTxUrl}`, 'warning');
       } else {
         showStatus(transactionResult.error || 'Transaction failed', 'error');
       }
