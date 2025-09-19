@@ -33,6 +33,7 @@ import type {
   getPermittedAppsForPkps as _getPermittedAppsForPkps,
   getUnpermittedAppsForPkps as _getUnpermittedAppsForPkps,
   validateAbilityExecutionAndGetPolicies as _validateAbilityExecutionAndGetPolicies,
+  isDelegateePermitted as _isDelegateePermitted,
 } from './internal/user/UserView';
 
 /**
@@ -337,6 +338,15 @@ export interface ValidateAbilityExecutionAndGetPoliciesParams {
 /**
  * @category Interfaces
  * */
+export interface IsDelegateePermittedParams {
+  delegateeAddress: string;
+  pkpEthAddress: string;
+  abilityIpfsCid: string;
+}
+
+/**
+ * @category Interfaces
+ * */
 export interface GetLastPermittedAppVersionParams {
   pkpEthAddress: string;
   appId: number;
@@ -542,6 +552,14 @@ export interface ContractClient {
   validateAbilityExecutionAndGetPolicies(
     params: ValidateAbilityExecutionAndGetPoliciesParams,
   ): ReturnType<typeof _validateAbilityExecutionAndGetPolicies>;
+
+  /** Check if a delegatee is permitted to execute an ability with a PKP
+   *
+   * @returns Boolean indicating whether the delegatee has permission
+   */
+  isDelegateePermitted(
+    params: IsDelegateePermittedParams,
+  ): ReturnType<typeof _isDelegateePermitted>;
 
   /** Re-permits an app using the last permitted version for a PKP
    *

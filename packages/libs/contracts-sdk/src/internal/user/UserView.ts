@@ -14,6 +14,7 @@ import type {
   GetAllAbilitiesAndPoliciesForAppOptions,
   GetPermittedAppsForPkpsOptions,
   ValidateAbilityExecutionAndGetPoliciesOptions,
+  IsDelegateePermittedOptions,
   GetLastPermittedAppVersionOptions,
   GetUnpermittedAppsForPkpsOptions,
   ContractPkpPermittedApps,
@@ -251,5 +252,27 @@ export async function getUnpermittedAppsForPkps(
   } catch (error: unknown) {
     const decodedError = decodeContractError(error, contract);
     throw new Error(`Failed to Get Unpermitted Apps For PKPs: ${decodedError}`);
+  }
+}
+
+export async function isDelegateePermitted(params: IsDelegateePermittedOptions): Promise<boolean> {
+  const {
+    contract,
+    args: { delegateeAddress, pkpEthAddress, abilityIpfsCid },
+  } = params;
+
+  try {
+    const pkpTokenId = await getPkpTokenId({ pkpEthAddress, signer: contract.signer });
+
+    const isPermitted: boolean = await contract.isDelegateePermitted(
+      delegateeAddress,
+      pkpTokenId,
+      abilityIpfsCid,
+    );
+
+    return isPermitted;
+  } catch (error: unknown) {
+    const decodedError = decodeContractError(error, contract);
+    throw new Error(`Failed to Check If Delegatee Is Permitted: ${decodedError}`);
   }
 }

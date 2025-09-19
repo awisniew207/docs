@@ -409,6 +409,65 @@ contract VincentUserViewFacet is VincentBase {
     }
 
     /**
+     * @dev Checks if a delegatee is permitted to execute an ability with a PKP
+     * @param delegatee The address of the delegatee
+     * @param pkpTokenId The PKP token ID
+     * @param abilityIpfsCid The IPFS CID of the ability
+     * @return isPermitted Whether the delegatee is permitted to execute the ability
+     */
+    function isDelegateePermitted(
+        address delegatee, 
+        uint256 pkpTokenId, 
+        string calldata abilityIpfsCid
+    ) external view returns (bool isPermitted) {
+        // Check for invalid inputs
+        if (delegatee == address(0)) {
+            revert ZeroAddressNotAllowed();
+        }
+        
+        if (pkpTokenId == 0) {
+            revert InvalidPkpTokenId();
+        }
+
+        if (bytes(abilityIpfsCid).length == 0) {
+            revert EmptyAbilityIpfsCid();
+        }
+
+        VincentAppStorage.AppStorage storage as_ = VincentAppStorage.appStorage();
+        VincentUserStorage.UserStorage storage us_ = VincentUserStorage.userStorage();
+
+        // Get the app ID that the delegatee belongs to
+        uint40 appId = as_.delegateeAddressToAppId[delegatee];
+        
+        // If appId is 0, delegatee is not associated with any app
+        if (appId == 0) {
+            revert DelegateeNotAssociatedWithApp(delegatee);
+        }
+
+        if (as_.appIdToApp[appId].isDeleted) {
+            revert AppHasBeenDeleted(appId);
+        }
+
+        // Hash the ability IPFS CID
+        bytes32 hashedAbilityIpfsCid = keccak256(abi.encodePacked(abilityIpfsCid));
+
+        // Get the permitted app version for this PKP and app
+        uint24 appVersion = us_.agentPkpTokenIdToAgentStorage[pkpTokenId].permittedAppVersion[appId];
+        
+        // If no version is permitted (appVersion == 0), return false
+        if (appVersion == 0) {
+            return false;
+        }
+
+        // Check if the app version is enabled and the ability is registered for this app version
+        VincentAppStorage.AppVersion storage versionedApp = 
+            as_.appIdToApp[appId].appVersions[getAppVersionIndex(appVersion)];
+
+        // Return true only if version is enabled AND ability is registered
+        return versionedApp.enabled && versionedApp.abilityIpfsCidHashes.contains(hashedAbilityIpfsCid);
+    }
+
+    /**
      * @dev Validates if a delegatee is permitted to execute an ability with a PKP and returns all relevant policies
      * @param delegatee The address of the delegatee
      * @param pkpTokenId The PKP token ID

@@ -407,6 +407,53 @@ describe('Vincent Contracts SDK E2E', () => {
       });
       expect(permittedVersion).toBe(TEST_CONFIG.appVersion);
     });
+
+    it('should validate delegatee permission using validateAbilityExecutionAndGetPolicies', async () => {
+      const validationResult = await USER_CLIENT.validateAbilityExecutionAndGetPolicies({
+        delegateeAddress: DELEGATEE_ADDRESS,
+        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        abilityIpfsCid: ABILITY_IPFS_CIDS[0],
+      });
+
+      expect(validationResult).toBeDefined();
+      expect(validationResult.isPermitted).toBe(true);
+      expect(validationResult.appId).toBe(TEST_CONFIG.appId!);
+      expect(validationResult.appVersion).toBe(TEST_CONFIG.appVersion!);
+      expect(validationResult.decodedPolicies).toBeDefined();
+    });
+
+    it('should validate delegatee permission using isDelegateePermitted', async () => {
+      const isPermitted = await USER_CLIENT.isDelegateePermitted({
+        delegateeAddress: DELEGATEE_ADDRESS,
+        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        abilityIpfsCid: ABILITY_IPFS_CIDS[0],
+      });
+
+      expect(isPermitted).toBe(true);
+    });
+
+    it('should return false for non-registered delegatee using isDelegateePermitted', async () => {
+      const nonRegisteredDelegatee = ethers.Wallet.createRandom().address;
+
+      await expect(
+        USER_CLIENT.isDelegateePermitted({
+          delegateeAddress: nonRegisteredDelegatee,
+          pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+          abilityIpfsCid: ABILITY_IPFS_CIDS[0],
+        }),
+      ).rejects.toThrow('DelegateeNotAssociatedWithApp');
+    });
+
+    it('should return false for invalid ability IPFS CID using isDelegateePermitted', async () => {
+      const nonExistentAbility = 'QmInvalidAbilityCid123456789';
+      const isPermitted = await USER_CLIENT.isDelegateePermitted({
+        delegateeAddress: DELEGATEE_ADDRESS,
+        pkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        abilityIpfsCid: nonExistentAbility,
+      });
+
+      expect(isPermitted).toBe(false);
+    });
   });
 
   describe('App Lifecycle', () => {

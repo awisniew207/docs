@@ -293,6 +293,13 @@ contract VincentUserFacetTest is Test {
         assertEq(abilityExecutionValidation.policies[0].policyIpfsCid, POLICY_IPFS_CID_1);
         assertEq(abilityExecutionValidation.policies[0].policyParameterValues, POLICY_PARAMETER_VALUES_1);
 
+        bool isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_CHARLIE,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_1
+        );
+        assertTrue(isPermitted);
+
         abilityExecutionValidation = vincentUserViewFacet.validateAbilityExecutionAndGetPolicies(
             APP_DELEGATEE_CHARLIE,
             PKP_TOKEN_ID_1,
@@ -302,6 +309,13 @@ contract VincentUserFacetTest is Test {
         assertEq(abilityExecutionValidation.appId, newAppId_1);
         assertEq(abilityExecutionValidation.appVersion, newAppVersion_1);
         assertEq(abilityExecutionValidation.policies.length, 0);
+
+        isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_CHARLIE,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_2
+        );
+        assertTrue(isPermitted);
 
         abilityExecutionValidation = vincentUserViewFacet.validateAbilityExecutionAndGetPolicies(
             APP_DELEGATEE_DAVID,
@@ -315,6 +329,13 @@ contract VincentUserFacetTest is Test {
         assertEq(abilityExecutionValidation.policies[0].policyIpfsCid, POLICY_IPFS_CID_1);
         assertEq(abilityExecutionValidation.policies[0].policyParameterValues, POLICY_PARAMETER_VALUES_1);
 
+        isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_DAVID,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_1
+        );
+        assertTrue(isPermitted);
+
         abilityExecutionValidation = vincentUserViewFacet.validateAbilityExecutionAndGetPolicies(
             APP_DELEGATEE_EVE,
             PKP_TOKEN_ID_2,
@@ -326,6 +347,13 @@ contract VincentUserFacetTest is Test {
         assertEq(abilityExecutionValidation.policies.length, 1);
         assertEq(abilityExecutionValidation.policies[0].policyIpfsCid, POLICY_IPFS_CID_1);
         assertEq(abilityExecutionValidation.policies[0].policyParameterValues, POLICY_PARAMETER_VALUES_1);
+
+        isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_EVE,
+            PKP_TOKEN_ID_2,
+            ABILITY_IPFS_CID_1
+        );
+        assertTrue(isPermitted);
     }
 
     function testUnPermitAppVersion() public {
@@ -424,6 +452,20 @@ contract VincentUserFacetTest is Test {
         );
         assertFalse(abilityExecutionValidation.isPermitted);
 
+        bool isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_CHARLIE,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_1
+        );
+        assertFalse(isPermitted);
+
+        isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_CHARLIE,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_2
+        );
+        assertFalse(isPermitted);
+
         // Verify ability execution validation for App 2 is still permitted  
         abilityExecutionValidation = vincentUserViewFacet.validateAbilityExecutionAndGetPolicies(
             APP_DELEGATEE_DAVID,
@@ -433,6 +475,13 @@ contract VincentUserFacetTest is Test {
         assertTrue(abilityExecutionValidation.isPermitted);
         assertEq(abilityExecutionValidation.appId, newAppId_2);
         assertEq(abilityExecutionValidation.appVersion, newAppVersion_2);
+
+        isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_DAVID,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_1
+        );
+        assertTrue(isPermitted);
 
         // Test getUnpermittedAppsForPkps should show only App 1 as unpermitted
         uint256[] memory pkpTokenIds = new uint256[](1);
@@ -670,6 +719,13 @@ contract VincentUserFacetTest is Test {
         assertTrue(abilityExecutionValidation.isPermitted);
         assertEq(abilityExecutionValidation.policies.length, 1);
         assertEq(abilityExecutionValidation.policies[0].policyParameterValues, bytes("")); // Empty bytes after removal
+
+        bool isPermitted = vincentUserViewFacet.isDelegateePermitted(
+            APP_DELEGATEE_CHARLIE,
+            PKP_TOKEN_ID_1,
+            ABILITY_IPFS_CID_1
+        );
+        assertTrue(isPermitted);
     }
 
     /**

@@ -13,6 +13,7 @@ import type {
   SetAbilityPolicyParametersParams,
   UnPermitAppParams,
   ValidateAbilityExecutionAndGetPoliciesParams,
+  IsDelegateePermittedParams,
 } from '../../types';
 import type { BaseOptions, BaseWritableOptions } from '../types/options';
 
@@ -108,6 +109,15 @@ export interface GetPermittedAppsForPkpsOptions extends BaseOptions {
  * */
 export interface ValidateAbilityExecutionAndGetPoliciesOptions extends BaseOptions {
   args: ValidateAbilityExecutionAndGetPoliciesParams;
+}
+
+/**
+ * @category Interfaces
+ * @inline
+ * @expand
+ * */
+export interface IsDelegateePermittedOptions extends BaseOptions {
+  args: IsDelegateePermittedParams;
 }
 
 /**

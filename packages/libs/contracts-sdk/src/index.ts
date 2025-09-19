@@ -12,6 +12,7 @@ export type {
   RegisterNextVersionParams,
   RegisterAppParams,
   ValidateAbilityExecutionAndGetPoliciesParams,
+  IsDelegateePermittedParams,
   GetDelegatedPkpEthAddressesParams,
   GetAllAbilitiesAndPoliciesForAppParams,
   GetAllPermittedAppIdsForPkpParams,
