@@ -1,6 +1,10 @@
 interface StatusMessageProps {
   message: string;
   type?: 'info' | 'warning' | 'success' | 'error';
+  link?: {
+    url: string;
+    text: string;
+  };
 }
 
 // Define theme-aware styles using Tailwind dark: classes
@@ -78,7 +82,7 @@ const iconComponents = {
   info: LoadingIcon,
 } as const;
 
-const StatusMessage = ({ message, type = 'info' }: StatusMessageProps) => {
+const StatusMessage = ({ message, type = 'info', link }: StatusMessageProps) => {
   if (!message) return <></>;
 
   // Handle idle state specially
@@ -112,6 +116,19 @@ const StatusMessage = ({ message, type = 'info' }: StatusMessageProps) => {
       <div className="ml-3 flex-1 overflow-y-auto max-h-16">
         <span className="transition-opacity break-words text-center overflow-wrap-anywhere block">
           {message}
+          {link && (
+            <>
+              {' '}
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="!text-orange-500 hover:!text-orange-600 underline"
+              >
+                {link.text}
+              </a>
+            </>
+          )}
         </span>
       </div>
     </div>

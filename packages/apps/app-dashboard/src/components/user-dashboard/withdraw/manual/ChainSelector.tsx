@@ -35,13 +35,15 @@ export const ChainSelector: React.FC<ChainSelectorProps> = ({
   const explorerUrl = selectedChainOption?.blockExplorerUrl;
 
   return (
-    <div className="mb-4">
-      <label className={`block text-sm font-medium mb-2 ${theme.text}`}>Select Network</label>
+    <div>
       <select
         className={`w-full p-2 border rounded text-sm ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
         value={selectedChain}
         onChange={(e) => onChange(e.target.value)}
       >
+        <option value="" disabled>
+          Select Network
+        </option>
         {Object.values(chainOptionsDict)
           .sort((a, b) => a.label.localeCompare(b.label))
           .map((chain) => (
@@ -52,7 +54,7 @@ export const ChainSelector: React.FC<ChainSelectorProps> = ({
       </select>
 
       {explorerUrl && ethAddress && (
-        <div className="mt-2 text-sm">
+        <div className="mt-2 text-xs">
           <a
             href={`${explorerUrl}/address/${ethAddress}`}
             target="_blank"
@@ -73,7 +75,7 @@ export const ChainSelector: React.FC<ChainSelectorProps> = ({
                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
               />
             </svg>
-            View on {selectedChainOption?.label} block explorer
+            {selectedChainOption?.label} block explorer
           </a>
         </div>
       )}

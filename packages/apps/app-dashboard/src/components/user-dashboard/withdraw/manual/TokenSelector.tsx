@@ -16,6 +16,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
 }) => {
   return (
     <div className="mb-4">
+      <h6 className={`text-sm font-medium mb-3 ${theme.text}`}>Asset Type</h6>
       <div className="flex items-center mb-3">
         <input
           id="ethToken"
@@ -51,8 +52,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
       </div>
 
       {isCustomToken && (
-        <div className={`p-3 border rounded mb-3 ${theme.cardBg} ${theme.cardBorder}`}>
-          <h5 className={`text-sm font-medium mb-2 ${theme.text}`}>ERC-20 Token Details</h5>
+        <div className="mt-4">
           <div>
             <label className={`block text-xs mb-1 ${theme.text}`}>Token Address</label>
             <input
@@ -63,8 +63,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
               className={`w-full p-2 border rounded text-sm ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
             />
             <p className={`text-xs ${theme.textMuted} mt-1`}>
-              Enter the ERC-20 token contract address. We&apos;ll automatically fetch the token
-              details.
+              Enter the ERC-20 token contract address.
             </p>
           </div>
         </div>

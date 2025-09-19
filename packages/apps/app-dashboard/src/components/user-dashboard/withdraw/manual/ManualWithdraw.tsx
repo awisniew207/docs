@@ -1,5 +1,6 @@
 import React from 'react';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
+import { TokenSelector } from './TokenSelector';
 
 import { Button } from '@/components/shared/ui/button';
 
@@ -14,6 +15,9 @@ interface WithdrawPanelProps {
   confirmationMode?: boolean;
   onCancel?: () => void;
   isCustomToken: boolean;
+  setIsCustomToken: (value: boolean) => void;
+  customTokenAddress: string;
+  setCustomTokenAddress: (value: string) => void;
 }
 
 export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
@@ -27,6 +31,9 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
   confirmationMode = false,
   onCancel,
   isCustomToken,
+  setIsCustomToken,
+  customTokenAddress,
+  setCustomTokenAddress,
 }) => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -44,7 +51,12 @@ export const WithdrawPanel: React.FC<WithdrawPanelProps> = ({
 
   return (
     <div className={`p-3 border rounded mb-4 ${theme.cardBg} ${theme.cardBorder}`}>
-      <h5 className={`text-sm font-medium mb-3 ${theme.text}`}>Withdrawal Details</h5>
+      <TokenSelector
+        isCustomToken={isCustomToken}
+        customTokenAddress={customTokenAddress}
+        setIsCustomToken={setIsCustomToken}
+        setCustomTokenAddress={setCustomTokenAddress}
+      />
       <form onSubmit={onSubmit} className="space-y-3">
         <div>
           <label className={`block text-xs mb-1 ${theme.text}`}>Recipient Address</label>

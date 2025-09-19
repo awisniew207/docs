@@ -22,7 +22,11 @@ async function initLitNodeClient() {
   return litNodeClient;
 }
 
-type ShowStatusFn = (message: string, type: StatusType) => void;
+type ShowStatusFn = (
+  message: string,
+  type: StatusType,
+  link?: { url: string; text: string },
+) => void;
 
 // Standard ERC20 token ABI - just the functions we need
 const ERC20_ABI = [
@@ -42,6 +46,11 @@ export const handleSubmit = async (
   showStatus: ShowStatusFn,
   isConfirming = false,
 ) => {
+  if (!chainId) {
+    showStatus('Please select a network', 'warning');
+    return { success: false };
+  }
+
   if (!withdrawAmount || !withdrawAddress) {
     showStatus('Please fill all fields', 'warning');
     return { success: false };
@@ -106,7 +115,10 @@ export const handleSubmit = async (
         showStatus(`Detected token: ${symbol}`, 'info');
       } catch (error: unknown) {
         console.error('Error fetching token details:', error);
-        showStatus('Could not fetch token details. Check token address and try again.', 'error');
+        showStatus(
+          'Could not fetch token details. Please check token address and network and try again.',
+          'error',
+        );
         return { success: false };
       }
     } else {
@@ -237,14 +249,17 @@ export const handleSubmit = async (
     const explorerTxUrl = `${explorerUrl}/tx/${transactionResult.hash}`;
 
     if (transactionResult.success) {
-      showStatus(
-        `${token.symbol} withdrawal confirmed! View transaction: ${explorerTxUrl}`,
-        'success',
-      );
+      showStatus(`${token.symbol} withdrawal confirmed!`, 'success', {
+        url: explorerTxUrl,
+        text: 'View transaction',
+      });
       return { success: true };
     } else {
       if (transactionResult.hash) {
-        showStatus(`Transaction may have failed. Check on explorer: ${explorerTxUrl}`, 'warning');
+        showStatus(`Transaction may have failed.`, 'warning', {
+          url: explorerTxUrl,
+          text: 'Check on explorer',
+        });
       } else {
         showStatus(transactionResult.error || 'Transaction failed', 'error');
       }

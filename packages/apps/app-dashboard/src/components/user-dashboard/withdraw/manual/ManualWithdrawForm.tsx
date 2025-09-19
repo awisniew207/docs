@@ -2,11 +2,11 @@ import { useCallback, useState, useEffect } from 'react';
 import { SessionSigs, IRelayPKP } from '@lit-protocol/types';
 import { LIT_CHAINS } from '@lit-protocol/constants';
 import StatusMessage from '@/components/user-dashboard/connect/StatusMessage';
+import { theme } from '@/components/user-dashboard/connect/ui/theme';
 
 import { ChainSelector } from './ChainSelector';
-import { TokenSelector } from './TokenSelector';
 import { WithdrawPanel } from './ManualWithdraw';
-import { BalanceDisplay } from './BalanceDisplay';
+import { Button } from '@/components/shared/ui/button';
 import { StatusType } from '@/types/shared/StatusType';
 import { handleSubmit } from '@/utils/user-dashboard/withdrawHandler';
 import { ethers } from 'ethers';
@@ -27,11 +27,12 @@ export interface TokenDetails {
 
 export const ManualWithdraw: React.FC<ManualWithdrawProps> = ({ sessionSigs, agentPKP }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedChain, setSelectedChain] = useState<string>('ethereum');
+  const [selectedChain, setSelectedChain] = useState<string>('');
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const [withdrawAddress, setWithdrawAddress] = useState<string>('');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<StatusType>('info');
+  const [statusLink, setStatusLink] = useState<{ url: string; text: string } | null>(null);
   const [isCustomToken, setIsCustomToken] = useState<boolean>(false);
   const [customTokenAddress, setCustomTokenAddress] = useState<string>('');
   const [nativeBalance, setNativeBalance] = useState<string>('0');
@@ -42,19 +43,28 @@ export const ManualWithdraw: React.FC<ManualWithdrawProps> = ({ sessionSigs, age
   });
   const [isConfirmationMode, setIsConfirmationMode] = useState<boolean>(false);
 
-  const showStatus = (message: string, type: StatusType = 'info') => {
+  const showStatus = (
+    message: string,
+    type: StatusType = 'info',
+    link?: { url: string; text: string },
+  ) => {
     setStatusMessage(message);
     setStatusType(type);
+    setStatusLink(link || null);
 
     // Clear success messages after 10 seconds
     if (type === 'success' && message.includes('withdrawal confirmed')) {
       setTimeout(() => {
         setStatusMessage(null);
+        setStatusLink(null);
       }, 10000);
     }
   };
 
   const refreshBalance = useCallback(async () => {
+    if (!selectedChain) {
+      return;
+    }
     setLoading(true);
     const chain = LIT_CHAINS[selectedChain];
     const rpcUrl = chain.rpcUrls[0];
@@ -114,28 +124,48 @@ export const ManualWithdraw: React.FC<ManualWithdrawProps> = ({ sessionSigs, age
 
   return (
     <div className="space-y-4">
-      {statusMessage && <StatusMessage message={statusMessage} type={statusType} />}
+      {statusMessage && (
+        <StatusMessage message={statusMessage} type={statusType} link={statusLink || undefined} />
+      )}
 
-      <BalanceDisplay
-        balance={nativeBalance}
-        token={nativeToken}
-        loading={loading}
-        refreshBalance={refreshBalance}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 lg:items-start">
+        <div className="flex flex-col h-full">
+          <h5 className={`text-sm font-medium mb-3 ${theme.text}`}>Network</h5>
+          <div
+            className={`p-4 border rounded ${theme.cardBg} ${theme.cardBorder} flex-1 flex flex-col justify-center`}
+          >
+            <ChainSelector
+              selectedChain={selectedChain}
+              ethAddress={agentPKP.ethAddress}
+              onChange={setSelectedChain}
+            />
+          </div>
+        </div>
 
-      <ChainSelector
-        selectedChain={selectedChain}
-        ethAddress={agentPKP.ethAddress}
-        onChange={setSelectedChain}
-      />
+        <div className="flex flex-col h-full">
+          <h5 className={`text-sm font-medium mb-3 ${theme.text}`}>Your Native Token Balance</h5>
+          <div
+            className={`p-4 border rounded ${theme.cardBg} ${theme.cardBorder} flex-1 flex flex-col justify-center`}
+          >
+            <div className="text-center">
+              <div className={`text-sm font-semibold ${theme.text} mb-3`}>
+                {nativeBalance} {nativeToken.symbol}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshBalance}
+                disabled={loading}
+                className={`px-2 py-0.5 text-xs ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
+              >
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <TokenSelector
-        isCustomToken={isCustomToken}
-        customTokenAddress={customTokenAddress}
-        setIsCustomToken={setIsCustomToken}
-        setCustomTokenAddress={setCustomTokenAddress}
-      />
-
+      <h5 className={`text-sm font-medium mb-3 ${theme.text}`}>Withdrawal Details</h5>
       <WithdrawPanel
         withdrawAddress={withdrawAddress}
         setWithdrawAddress={setWithdrawAddress}
@@ -147,6 +177,9 @@ export const ManualWithdraw: React.FC<ManualWithdrawProps> = ({ sessionSigs, age
         confirmationMode={isConfirmationMode}
         onCancel={onCancel}
         isCustomToken={isCustomToken}
+        setIsCustomToken={setIsCustomToken}
+        customTokenAddress={customTokenAddress}
+        setCustomTokenAddress={setCustomTokenAddress}
       />
     </div>
   );
