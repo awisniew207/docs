@@ -6,6 +6,7 @@ import {
   BookOpen,
   LogOut,
   ExternalLink,
+  HelpCircle,
   ChevronDown,
   ChevronRight,
   FileText,
@@ -14,7 +15,7 @@ import {
   Moon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { toggleTheme } from '@/lib/theme';
 import { useTheme } from '@/hooks/useTheme';
@@ -46,6 +47,7 @@ interface SidebarProps {
 export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps) {
   const location = useLocation();
   const params = useParams();
+  const navigate = useNavigate();
   const { clearAuthInfo } = useClearAuthInfo();
   const isDark = useTheme();
 
@@ -813,24 +815,6 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
       <SidebarFooter className="border-t border-sidebar-border">
         <div className="p-4 space-y-2">
           <SidebarMenu>
-            {/* Documentation */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() =>
-                  window.open('https://docs.heyvincent.ai/documents/Getting_Started.html', '_blank')
-                }
-                className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={theme.textMuted}>
-                    <BookOpen className="h-4 w-4" />
-                  </div>
-                  <span className={`font-medium ${theme.text}`}>Documentation</span>
-                  <ExternalLink className="h-3 w-3 ml-auto" />
-                </div>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
             {/* My Account */}
             <SidebarMenuItem>
               <AccountTooltip theme={theme} />
@@ -857,6 +841,39 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
           />
 
           <SidebarMenu>
+            {/* Documentation */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() =>
+                  window.open('https://docs.heyvincent.ai/documents/Getting_Started.html', '_blank')
+                }
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={theme.textMuted}>
+                    <BookOpen className="h-4 w-4" />
+                  </div>
+                  <span className={`font-medium ${theme.text}`}>Documentation</span>
+                  <ExternalLink className="h-3 w-3 ml-auto" />
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* FAQ */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate('/faq')}
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={theme.textMuted}>
+                    <HelpCircle className="h-4 w-4" />
+                  </div>
+                  <span className={`font-medium ${theme.text}`}>FAQ</span>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
             {/* Theme Toggle */}
             <SidebarMenuItem>
               <SidebarMenuButton
