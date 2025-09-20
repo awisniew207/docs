@@ -78,24 +78,20 @@ export async function getVincentRegistryAccessControlCondition({
       {
         name: 'delegatee',
         type: 'address',
-        internalType: 'address',
       },
       {
         name: 'pkpTokenId',
         type: 'uint256',
-        internalType: 'uint256',
       },
       {
         name: 'abilityIpfsCid',
         type: 'string',
-        internalType: 'string',
       },
     ],
     outputs: [
       {
         name: 'isPermitted',
         type: 'bool',
-        internalType: 'bool',
       },
     ],
     stateMutability: 'view',
