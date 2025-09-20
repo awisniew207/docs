@@ -1065,6 +1065,9 @@ importers:
       '@lit-protocol/vincent-contracts-sdk':
         specifier: workspace:*
         version: link:../contracts-sdk
+      '@lit-protocol/vincent-wrapped-keys':
+        specifier: workspace:*
+        version: link:../wrapped-keys
       ethers:
         specifier: 5.8.0
         version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -1078,6 +1081,9 @@ importers:
         specifier: ^3.25.64
         version: 3.25.64
     devDependencies:
+      '@solana/web3.js':
+        specifier: ^1.98.4
+        version: 1.98.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.1
@@ -5966,7 +5972,6 @@ packages:
 
   bun@1.2.22:
     resolution: {integrity: sha512-NnU1TEiH9LLv1jE+84AJ7ZGimdQzLgzbZNvK3enNh5qUHqkgDm99SiA7tnJnzfJW5OWBdoZzKae2zXu0pwQ/kA==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
